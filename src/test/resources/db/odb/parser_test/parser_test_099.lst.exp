@@ -135,16 +135,7 @@ Spreadsheet Variable Definition:
 00073                  ( COLUMN-WIDTH> 200 ) 
 00074                ) 
 00075              )
-00076  ;            ( |var len matrix|
-00077  ;              (
-00078  ;                ( TYPE> <<MATRIX>> )
-00079  ;                ( VARIABLE-LENGTH> TRUE )
-00080  ;                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
-00081  ;                ( COLUMN-WIDTH> 225 )
-00082  ;              )
-00083  ;            )
-00084            ) 
-00085          ) 
+00076              ( |var len matrix|
 
 
 Spreadsheet Variable Definition:
@@ -152,6 +143,22 @@ Spreadsheet Variable Definition:
 	type = MATRIX
 	variable length = false
 	column width = 200
+00077                (
+00078                  ( TYPE> <<MATRIX>> )
+00079                  ( VARIABLE-LENGTH> TRUE )
+00080                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
+00081                  ( COLUMN-WIDTH> 225 )
+00082                )
+00083              )
+00084            ) 
+00085          ) 
+
+
+Spreadsheet Variable Definition:
+	name = "var len matrix"
+	type = MATRIX
+	variable length = true
+	column width = 225
 00086          ( SPREADSHEET-VARIABLE-DEFINITIONS>
 00087           ( 
 00088              ( |a text var|
@@ -329,21 +336,56 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:020
 	offset = 00:00:00:030
 	value = pred_2(<arg1>), 00:00:02:000
-00151  ;                  )
-00152  ;                )
-00153  ;                ( VOCAB> ( |pred_1| |pred_2| ) )
-00154  ;              )
-00155  ;            )
-00156  ;            ( |var len matrix|
-00157  ;              (
-00158  ;                ( CELLS>
-00159  ;                  (
-00160  ;                    ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
-00161  ;                    ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
-00162  ;                    ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
-00163  ;                    ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) )
-00164  ;                    ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) ( |<arg2>| |<arg2>| ) )
-00165  ;                  )
+00151                    )
+00152                  )
+00153                  ( VOCAB> ( |pred_1| |pred_2| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 4
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = <arg1>, <arg2>
+00154                )
+00155              )
+00156              ( |var len matrix|
+00157                (
+00158                  ( CELLS>
+00159                    (
+00160                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
+00161                      ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 1
+	onset = 00:00:00:000
+	offset = 00:00:00:000
+	value = 1, 2.000000
+00162                      ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 2
+	onset = 00:00:00:010
+	offset = 00:00:00:020
+	value = a nominal, "a string"
+00163                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 3
+	onset = 00:00:00:020
+	offset = 00:00:00:030
+	value = pred_2(<arg1>), 00:00:02:000
+00164                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) ( |<arg2>| |<arg2>| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 4
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = <arg1>, <arg2>
+00165                    )
 00166                    ; unexpected EOF after value
 00167  ;                )
 00168  ;                ( VOCAB> ( |pred_1| |pred_2| ) )
@@ -360,12 +402,12 @@ Spreadsheet Variable Cell Definition:
 
 
 Spreadsheet Variable Cell Definition:
-	ord = 4
+	ord = 5
 	onset = 00:00:01:000
 	offset = 00:00:01:000
 	value = <arg1>, <arg2>
 
       ERROR  4 (Line 178:0): Encountered end of file unexpectedly.
-        EOF encountered in a spreadsheet variable cell list.
+        EOF in a CELLS> attribute.
 
 Unable to continue parse -- Aborting...

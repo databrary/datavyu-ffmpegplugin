@@ -154,16 +154,7 @@ Spreadsheet Variable Definition:
 00081                  ( COLUMN-WIDTH> 200 ) 
 00082                ) 
 00083              )
-00084  ;            ( |var len matrix|
-00085  ;              (
-00086  ;                ( TYPE> <<MATRIX>> )
-00087  ;                ( VARIABLE-LENGTH> TRUE )
-00088  ;                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
-00089  ;                ( COLUMN-WIDTH> 225 )
-00090  ;              )
-00091  ;            )
-00092            ) 
-00093          ) 
+00084              ( |var len matrix|
 
 
 Spreadsheet Variable Definition:
@@ -171,6 +162,22 @@ Spreadsheet Variable Definition:
 	type = MATRIX
 	variable length = false
 	column width = 200
+00085                (
+00086                  ( TYPE> <<MATRIX>> )
+00087                  ( VARIABLE-LENGTH> TRUE )
+00088                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
+00089                  ( COLUMN-WIDTH> 225 )
+00090                )
+00091              )
+00092            ) 
+00093          ) 
+
+
+Spreadsheet Variable Definition:
+	name = "var len matrix"
+	type = MATRIX
+	variable length = true
+	column width = 225
 00094          ( SPREADSHEET-VARIABLE-DEFINITIONS>
 00095           ( 
 00096           	( |<this-isnt-an-svar-name>| ; test to see if we are coercing s-var names correctly - part 2
@@ -413,19 +420,57 @@ Spreadsheet Variable Cell Definition:
 00188                ( "j" "random" "list" ) ; execess list value in a spreadsheet variable definition
 00189                |j random atom| ; a random atom excess value in a spreadsheet variable definition
 00190              )
-00191  ;            ( |var len matrix|
-00192  ;              (
-00193  ;                ( CELLS>
-00194  ;                  (
-00195  ;                    ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
-00196  ;                    ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
-00197  ;                    ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
-00198  ;                    ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) )
-00199  ;                    ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) ( |<arg2>| |<arg2>| ) )
-00200  ;                  )
-00201  ;                )
-00202  ;                ( VOCAB> ( |pred_1| |pred_2| ) )
-00203  ;              )
+00191              ( |var len matrix|
+
+      WARNING  44 (Line 190:13): Encountered excess values in a spreadsheet variable declaration.  The excess values were discarded.
+
+00192                (
+00193                  ( CELLS>
+00194                    (
+00195                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
+00196                      ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 1
+	onset = 00:00:00:000
+	offset = 00:00:00:000
+	value = 1, 2.000000
+00197                      ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 2
+	onset = 00:00:00:010
+	offset = 00:00:00:020
+	value = a nominal, "a string"
+00198                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 3
+	onset = 00:00:00:020
+	offset = 00:00:00:030
+	value = pred_2(<arg1>), 00:00:02:000
+00199                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) ( |<arg2>| |<arg2>| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 4
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = <arg1>, <arg2>
+00200                    )
+00201                  )
+00202                  ( VOCAB> ( |pred_1| |pred_2| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 5
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = <arg1>, <arg2>
+00203                )
 00204                ; unexpected EOF in a spreasheet variable definition 
 00205  ;            )
 00206  ;          )
@@ -437,10 +482,7 @@ Spreadsheet Variable Cell Definition:
 00212  ;  ) 
 00213  ;)
 
-      WARNING  44 (Line 190:13): Encountered excess values in a spreadsheet variable declaration.  The excess values were discarded.
-
-
       ERROR  4 (Line 213:0): Encountered end of file unexpectedly.
-        EOF encountered in the spreadsheet variable definitions list.
+        EOF encountered in a spreadsheet variable definition.
 
 Unable to continue parse -- Aborting...

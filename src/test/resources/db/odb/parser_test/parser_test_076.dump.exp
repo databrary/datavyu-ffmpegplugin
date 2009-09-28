@@ -90,6 +90,14 @@
     )
     ( SYSTEM>
       (
+        ( SHAPA-PANE-VARS>
+          (
+            |svar 1|
+            |svar 2|
+            |svar 3|
+            |svar 4|
+          )
+        )
       )
     )
   )

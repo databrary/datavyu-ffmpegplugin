@@ -29,3 +29,7 @@
       WARNING  22 (Line 17:31): The type of the value supplied for the a-list entry is inconsistant with that entry.
         The value of the QUERY> section must be a list.
 
+
+      WARNING  22 (Line 18:32): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the SYSTEM> section must be a list.
+

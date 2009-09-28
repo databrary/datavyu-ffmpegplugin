@@ -196,8 +196,13 @@ public class SpreadsheetPanel extends JPanel
      *
      * @param db The database that the column has been removed from.
      * @param colID The id of the freshly removed column.
+     * @param old_cov The column order vector prior to the deletion.
+     * @param new_cov The column order vector after to the deletion.
      */
-    public final void colDeletion(final Database db, final long colID) {
+    public final void colDeletion(final Database db, 
+                                  final long colID,
+                                  final Vector<Long> old_cov,
+                                  final Vector<Long> new_cov) {
         deselectAll();
         removeColumn(colID);
         relayoutCells();
@@ -208,11 +213,31 @@ public class SpreadsheetPanel extends JPanel
      *
      * @param db The database that the column has been added to.
      * @param colID The id of the newly added column.
+     * @param old_cov The column order vector prior to the insertion.
+     * @param new_cov The column order vector after to the insertion.
      */
-    public final void colInsertion(final Database db, final long colID) {
+    public final void colInsertion(final Database db,
+                                   final long colID,
+                                   final Vector<Long> old_cov,
+                                   final Vector<Long> new_cov) {
         deselectAll();
         addColumn(db, colID);
         relayoutCells();
+    }
+
+    /**
+     * Action to invoke when the column order vector is edited (i.e, the order
+     * of the columns is changed without any insertions or deletions).
+     *
+     * @param db The database that the column has been added to.
+     * @param old_cov The column order vector prior to the insertion.
+     * @param new_cov The column order vector after to the insertion.
+     */
+    public final void colOrderVectorEdited(final Database db,
+                                           final Vector<Long> old_cov,
+                                           final Vector<Long> new_cov) {
+        // do nothing for now
+        return;
     }
 
     /**

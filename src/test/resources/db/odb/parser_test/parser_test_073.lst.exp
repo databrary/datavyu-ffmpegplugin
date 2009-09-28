@@ -71,4 +71,8 @@ Spreadsheet Variable Definition:
         The value of the QUERY> section must be a list.
 
 00042    ) 
+
+      WARNING  22 (Line 41:15): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the SYSTEM> section must be a list.
+
 00043  )

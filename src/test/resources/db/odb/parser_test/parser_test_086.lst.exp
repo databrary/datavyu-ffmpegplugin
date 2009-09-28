@@ -135,18 +135,7 @@ Spreadsheet Variable Definition:
 00073                  ( COLUMN-WIDTH> 200 ) 
 00074                ) 
 00075              )
-00076  ; At present, openshapa doesn't handle variable length matricies well -- comment
-00077  ; this portion of the test out until we fix this.  JRM -- 7/13/09
-00078  ;            ( |var len matrix|
-00079  ;              (
-00080  ;                ( TYPE> <<MATRIX>> )
-00081  ;                ( VARIABLE-LENGTH> TRUE )
-00082  ;                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
-00083  ;                ( COLUMN-WIDTH> 225 )
-00084  ;              )
-00085  ;            )
-00086            ) 
-00087          ) 
+00076              ( |var len matrix|
 
 
 Spreadsheet Variable Definition:
@@ -154,14 +143,30 @@ Spreadsheet Variable Definition:
 	type = MATRIX
 	variable length = false
 	column width = 200
-00088          ( SPREADSHEET-VARIABLE-DEFINITIONS> 
-00089            (
-00090              ( |a text var|
-00091                (
-00092                  ( CELLS>
-00093                    (
-00094                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| "this is a text cell") )
-00095                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<val>| "") )
+00077                (
+00078                  ( TYPE> <<MATRIX>> )
+00079                  ( VARIABLE-LENGTH> TRUE )
+00080                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
+00081                  ( COLUMN-WIDTH> 225 )
+00082                )
+00083              )
+00084            ) 
+00085          ) 
+
+
+Spreadsheet Variable Definition:
+	name = "var len matrix"
+	type = MATRIX
+	variable length = true
+	column width = 225
+00086          ( SPREADSHEET-VARIABLE-DEFINITIONS> 
+00087            (
+00088              ( |a text var|
+00089                (
+00090                  ( CELLS>
+00091                    (
+00092                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| "this is a text cell") )
+00093                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<val>| "") )
 
 
 Spreadsheet Variable Cell Definition:
@@ -169,9 +174,9 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:000
 	offset = 00:00:00:000
 	value = this is a text cell
-00096                    )
-00097                  )
-00098                )
+00094                    )
+00095                  )
+00096                )
 
 
 Spreadsheet Variable Cell Definition:
@@ -179,13 +184,13 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:01:000
 	offset = 00:00:01:000
 	value = 
-00099              )
-00100              ( |a nominal var|
-00101                (
-00102                  ( CELLS>
-00103                    (
-00104                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| |this is nominal cell| ) )
-00105                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<val>| |<val>| ) )
+00097              )
+00098              ( |a nominal var|
+00099                (
+00100                  ( CELLS>
+00101                    (
+00102                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| |this is nominal cell| ) )
+00103                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<val>| |<val>| ) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -193,9 +198,9 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:000
 	offset = 00:00:00:000
 	value = this is nominal cell
-00106                    )
-00107                  )
-00108                )
+00104                    )
+00105                  )
+00106                )
 
 
 Spreadsheet Variable Cell Definition:
@@ -203,13 +208,13 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:01:000
 	offset = 00:00:01:000
 	value = 
-00109              )
-00110              ( |an integer var|
-00111                (
-00112                  ( CELLS>
-00113                    (
-00114                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| 10 ) )
-00115                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<val>| 0) )
+00107              )
+00108              ( |an integer var|
+00109                (
+00110                  ( CELLS>
+00111                    (
+00112                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| 10 ) )
+00113                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<val>| 0) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -217,9 +222,9 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:000
 	offset = 00:00:00:000
 	value = 10
-00116                    )
-00117                  )
-00118                )
+00114                    )
+00115                  )
+00116                )
 
 
 Spreadsheet Variable Cell Definition:
@@ -227,13 +232,13 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:01:000
 	offset = 00:00:01:000
 	value = 0
-00119              )
-00120              ( |a float var|
-00121                (
-00122                  ( CELLS>
-00123                    (
-00124                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| 10.0 ) )
-00125                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<val>| 0.0 ) )
+00117              )
+00118              ( |a float var|
+00119                (
+00120                  ( CELLS>
+00121                    (
+00122                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| 10.0 ) )
+00123                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<val>| 0.0 ) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -241,9 +246,9 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:000
 	offset = 00:00:00:000
 	value = 10.000000
-00126                    )
-00127                  )
-00128                )
+00124                    )
+00125                  )
+00126                )
 
 
 Spreadsheet Variable Cell Definition:
@@ -251,13 +256,13 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:01:000
 	offset = 00:00:01:000
 	value = 0.000000
-00129              )
-00130              ( |a predicate var|
-00131                (
-00132                  ( CELLS>
-00133                    (
-00134                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| ( |pred_1| ( TIME> 120 ) |a nominal| ) ) )
-00135                      ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<val>| ( |pred_1| "a string" |<arg2>| ) ) )
+00127              )
+00128              ( |a predicate var|
+00129                (
+00130                  ( CELLS>
+00131                    (
+00132                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| ( |pred_1| ( TIME> 120 ) |a nominal| ) ) )
+00133                      ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<val>| ( |pred_1| "a string" |<arg2>| ) ) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -265,7 +270,7 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:000
 	offset = 00:00:00:000
 	value = pred_1(00:00:02:000, a nominal)
-00136                      ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<val>| ( |pred_1| 10 1.0 ) ) )
+00134                      ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<val>| ( |pred_1| 10 1.0 ) ) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -273,7 +278,7 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:010
 	offset = 00:00:00:020
 	value = pred_1("a string", <arg2>)
-00137                      ( ( ONSET> 30 ) ( OFFSET> 40 ) ( |<val>| ( |pred_1| ( |pred_2| |<arg1>| ) |<arg2>| ) ) )
+00135                      ( ( ONSET> 30 ) ( OFFSET> 40 ) ( |<val>| ( |pred_1| ( |pred_2| |<arg1>| ) |<arg2>| ) ) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -281,7 +286,7 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:020
 	offset = 00:00:00:030
 	value = pred_1(10, 1.000000)
-00138                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<val>| ( ) ) )
+00136                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<val>| ( ) ) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -289,9 +294,9 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:030
 	offset = 00:00:00:040
 	value = pred_1(pred_2(<arg1>), <arg2>)
-00139                    )
-00140                  )
-00141                  ( VOCAB> ( |pred_1| |pred_2| ) )
+00137                    )
+00138                  )
+00139                  ( VOCAB> ( |pred_1| |pred_2| ) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -299,14 +304,14 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:01:000
 	offset = 00:00:01:000
 	value = ()
-00142                )
-00143              )
-00144              ( |fixed len matrix|
-00145                (
-00146                  ( CELLS>
-00147                    (
-00148                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
-00149                      ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
+00140                )
+00141              )
+00142              ( |fixed len matrix|
+00143                (
+00144                  ( CELLS>
+00145                    (
+00146                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
+00147                      ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -314,7 +319,7 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:000
 	offset = 00:00:00:000
 	value = 1, 2.000000
-00150                      ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
+00148                      ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -322,7 +327,7 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:010
 	offset = 00:00:00:020
 	value = a nominal, "a string"
-00151                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) ( |<arg2>| |<arg2>| ) )
+00149                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) ( |<arg2>| |<arg2>| ) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -330,9 +335,9 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:020
 	offset = 00:00:00:030
 	value = pred_2(<arg1>), 00:00:02:000
-00152                    )
-00153                  )
-00154                  ( VOCAB> ( |pred_1| |pred_2| ) )
+00150                    )
+00151                  )
+00152                  ( VOCAB> ( |pred_1| |pred_2| ) )
 
 
 Spreadsheet Variable Cell Definition:
@@ -340,33 +345,70 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:01:000
 	offset = 00:00:01:000
 	value = <arg1>, <arg2>
-00155                )
-00156              )
-00157  ; At present, openshapa doesn't handle variable length matricies well -- comment
-00158  ; this portion of the test out until we fix this.  JRM -- 7/13/09
-00159  ;            ( |var len matrix|
-00160  ;              (
-00161  ;                ( CELLS>
-00162  ;                  (
-00163  ;                    ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
-00164  ;                    ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
-00165  ;                    ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
-00166  ;                    ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) )
-00167  ;                    ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) ( |<arg2>| |<arg2>| ) )
-00168  ;                  )
-00169  ;                )
-00170  ;                ( VOCAB> ( |pred_1| |pred_2| ) )
-00171  ;              )
-00172  ;            )
-00173            )
-00174          )
-00175        ) 
-00176      ) 
-00177      ( QUERY> 2 )
-00178      ( SYSTEM> 3 )
+00153                )
+00154              )
+00155              ( |var len matrix|
+00156                (
+00157                  ( CELLS>
+00158                    (
+00159                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
+00160                      ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
 
-      WARNING  22 (Line 177:14): The type of the value supplied for the a-list entry is inconsistant with that entry.
+
+Spreadsheet Variable Cell Definition:
+	ord = 1
+	onset = 00:00:00:000
+	offset = 00:00:00:000
+	value = 1, 2.000000
+00161                      ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 2
+	onset = 00:00:00:010
+	offset = 00:00:00:020
+	value = a nominal, "a string"
+00162                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 3
+	onset = 00:00:00:020
+	offset = 00:00:00:030
+	value = pred_2(<arg1>), 00:00:02:000
+00163                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) ( |<arg2>| |<arg2>| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 4
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = <arg1>, <arg2>
+00164                    )
+00165                  )
+00166                  ( VOCAB> ( |pred_1| |pred_2| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 5
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = <arg1>, <arg2>
+00167                )
+00168              )
+00169            )
+00170          )
+00171        ) 
+00172      ) 
+00173      ( QUERY> 2 )
+00174      ( SYSTEM> 3 )
+
+      WARNING  22 (Line 173:14): The type of the value supplied for the a-list entry is inconsistant with that entry.
         The value of the QUERY> section must be a list.
 
-00179    ) 
-00180  )
+00175    ) 
+
+      WARNING  22 (Line 174:15): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the SYSTEM> section must be a list.
+
+00176  )

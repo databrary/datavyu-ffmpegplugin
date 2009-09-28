@@ -36,6 +36,10 @@
 
 00013                        (HEADER> 1.1) 
 
+      WARNING  22 (Line 12:32): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the SYSTEM> section must be a list.
+
+
       WARNING  17 (Line 13:24): Duplicate a-list entry detected.  All data contained in the duplicate entry will be discarded.
         Duplicate HEADER> entry
 

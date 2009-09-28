@@ -35,6 +35,10 @@
     )
     ( SYSTEM>
       (
+        ( SHAPA-PANE-VARS>
+          (
+          )
+        )
       )
     )
   )

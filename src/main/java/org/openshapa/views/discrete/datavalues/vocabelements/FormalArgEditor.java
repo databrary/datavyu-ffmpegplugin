@@ -59,13 +59,17 @@ public final class FormalArgEditor extends EditorComponent {
      * Reset the values by retrieving from the database.
      * @param cell The Parent cell that holds the matrix.
      * @param matrix The parent matrix that holds the DataValue.
+     *
+     * Changes: Replace call to vocabElement.getFormalArg() with call
+     *          to vocabElement.getFormalArgCopy().
+     *                                              9/15/09
      */
     public final void resetValue(final VocabElement ve) {
         vocabElement = ve;
 
         String fargName = "";
         try {
-            model = vocabElement.getFormalArg(argIndex);
+            model = vocabElement.getFormalArgCopy(argIndex);
         } catch (SystemErrorException e) {
 
         }

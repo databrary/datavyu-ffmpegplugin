@@ -34,30 +34,26 @@ public class ColumnList
     /***************************** Fields: ***********************************/
     /*************************************************************************/
 
-    /**
-     *
-     * db:  Reference to the instance of Database of which this vocab list
-     *      is part.
-     *
-     * cl:  Hashtable containg references to all instances of Column that
-     *      constitute the column list.
-     *
-     * nameMap: Hashmap mapping column names to column IDs.
-     *      This mapping is used both to allow lookups by column name,
-     *      and to determine if a column name is in use.
-     *
-     * listeners: Instance of ColumnListListeners use to maintain lists of
-     *      listeners for ColumnList insertions and deletions, and issue
-     *      notifications as appropriate.
-     */
-
     /** Reference to the Database of which this instance is part */
     protected Database db = null;
 
     /** Index of all instances of Column in the column list */
     protected OpenHashtable<Long, Column> cl = new OpenHashtable<Long, Column>();
 
+    /** Hashmap mapping column names to column IDs.  This mapping is used both
+     * to allow lookups by column name, and to determine if a column name is
+     * in use.
+     */
     protected HashMap<String, Long> nameMap = new HashMap<String, Long>();
+
+    /**
+     * Vector of long used to allow the user to maintain an ordering on the
+     * columns in the column list.
+     *
+     * The ID of each column in the column list must appear in the cov vector
+     * exactly once.
+     */
+    protected Vector<Long> cov = null;
 
     /**
      * instance of ColumnListListeners used to maintain lists of listeners,
@@ -65,19 +61,19 @@ public class ColumnList
      */
     protected ColumnListListeners listeners = null;
 
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
 
+    // ColumnList()
     /**
-     * ColumnList()
-     *
      * Constructor for the ColumnList class.
      *                                              -- 4/30/07
      *
      * Changes:
      *
-     *    - None.
+     *    - Added initialization code for the new cov field.
      */
     protected ColumnList(Database db)
          throws SystemErrorException
@@ -92,18 +88,24 @@ public class ColumnList
 
         this.db = db;
 
+        this.cov = new Vector<Long>();
+
         this.listeners = new ColumnListListeners(db, this);
 
         return;
 
     } /* ColumnList::ColumnList(db) */
 
+
+    // hashCode()
     /**
      * @return A hash code value for the object.
      */
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         int hash = super.hashCode();
+
         hash += HashUtils.Obj2H(db) * Constants.SEED1;
         hash += HashUtils.Obj2H(cl) * Constants.SEED2;
         hash += HashUtils.Obj2H(nameMap) * Constants.SEED3;
@@ -112,6 +114,8 @@ public class ColumnList
         return hash;
     }
 
+
+    // equals()
     /**
      * Compares this ColumnList against another.
      *
@@ -121,28 +125,38 @@ public class ColumnList
      * otherwise.
      */
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
+    public boolean equals(final Object obj) 
+    {
+        boolean result;
+
+        if (this == obj)
+        {
+            result = true;
         }
-        if ((obj == null) || (obj.getClass() != this.getClass())) {
-            return false;
+        else if ( ( obj == null ) || ( obj.getClass() != this.getClass() ) )
+        {
+            result = false;
+        }
+        else
+        {
+            // Must be this class to be here
+            ColumnList l = (ColumnList) obj;
+            result = super.equals(l)
+                && (db == null ? l.db == null : db.equals(l.db))
+                && (cl == null ? l.cl == null : cl.equals(l.cl))
+                && (nameMap == null ? l.nameMap == null
+                                    : nameMap.equals(l.nameMap))
+                && (cov == null ? l.cov == null : cov.equals(l.cov))
+                && (listeners == null ? l.listeners == null
+                                      : listeners.equals(l.listeners));
         }
 
-        // Must be this class to be here
-        ColumnList l = (ColumnList) obj;
-        return super.equals(l)
-            && (db == null ? l.db == null : db.equals(l.db))
-            && (cl == null ? l.cl == null : cl.equals(l.cl))
-            && (nameMap == null ? l.nameMap == null
-                                : nameMap.equals(l.nameMap))
-            && (listeners == null ? l.listeners == null
-                                  : listeners.equals(l.listeners));
+        return result;
     }
 
+
+    // toString() -- override
     /**
-     * toString() -- overrride
-     *
      * Returns a String representation of the contents of the column list.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -186,12 +200,221 @@ public class ColumnList
 
 
     /*************************************************************************/
+    /**************************** Accessors: *********************************/
+    /*************************************************************************/
+
+    // getColOrderVector()
+    /**
+     * Validate the column order vector (this.cov) maintained by the class
+     * and return a copy.
+     *
+     * @return copy of this.cov
+     *
+     * @throws org.openshapa.db.SystemErrorException if any errors are detected.
+     */
+    protected Vector<Long> getColOrderVector()
+        throws SystemErrorException
+    {
+        final String mName = "ColumnList::getColOrderVector(): ";
+        Vector<Long> cov_copy = null;
+
+        if ( this.cov == null )
+        {
+            throw new SystemErrorException(mName + "this.cov null on entry.");
+        }
+
+        if ( ! this.validateColOrderVector(this.cov) )
+        {
+            throw new SystemErrorException(mName +
+                    "invalid this.cov on entry,");
+        }
+
+        cov_copy = new Vector<Long>(this.cov);
+
+        return cov_copy;
+
+    } /* ColumnList::getColOrderVector() */
+
+
+    // setColOrderVector()
+    /**
+     * Verify that the supplied new column order vector is valid.  Throw a
+     * system error if it is not.
+     *
+     * Otherwise, replace the old column order vector with the new, and
+     * notify the listeners (all external).
+     *
+     * @param new_cov new column order vector
+     *
+     * @throws org.openshapa.db.SystemErrorException if any error is detected.
+     */
+    protected void setColOrderVector(Vector<Long> new_cov)
+        throws SystemErrorException
+    {
+        final String mName = "ColumnList::setColOrderVector(): ";
+        Vector<Long> old_cov = null;
+
+        if ( new_cov == null )
+        {
+            throw new SystemErrorException(mName + "new_cov null on entry.");
+        }
+
+        if ( ! this.validateColOrderVector(new_cov) )
+        {
+            throw new SystemErrorException(mName +
+                    "new_cov invalid on entry,");
+        }
+
+        old_cov = new Vector<Long>(this.cov);
+
+        // the column order vector is not used by the database, and thus, at
+        // least as of this writing, there is not need to surround it with a
+        // cascasde start and end.  However, it doesn't hurt, and it may be
+        // needed some day.
+
+        this.db.cascadeStart();
+
+        this.cov = new Vector<Long>(new_cov);
+
+        // inform listeners of the edit.
+
+        this.listeners.notifyListenersOfColOrderVectorEdit(old_cov, new_cov);
+
+        this.db.cascadeEnd();
+
+        return;
+
+    } /* ColumnList::setColOrderVector() */
+
+
+    // validateColOrderVector()
+    /**
+     * Validate the supplied test column order vector, and return true if
+     * it is valid, and false if it is not.
+     *
+     * To validate the column order vector we must:
+     *
+     * 1) verify that the cov contains the same number of elements
+     *    column list and the nameMap.
+     *
+     * 2) verify that the cov contains no duplicate elements.
+     *
+     * 3) verify that all the elements in the cov appear in the column list.
+     *
+     * At present, this method is private, as I don't see any need for it out
+     * side this method, as any external copies of the column order vector will
+     * be maintained by the user interface code, and not be directly accessible
+     * to the user.
+     *
+     * However, if the need presents itself, this method may be made protected,
+     * and then be made accessible via a new public call in Database.java.
+     *
+     *                                              -- 7/31/09
+     *
+     * @param test_cov reference to the column order vector to be tested.
+     *
+     * @return true if valid, false otherwise
+     *
+     * @throws org.openshapa.db.SystemErrorException if any errors are detected.
+     */
+
+    private boolean validateColOrderVector(Vector<Long> test_cov)
+        throws SystemErrorException
+    {
+        final String mName = "ColumnList::validateColOrderVector(): ";
+        boolean valid = true;
+        int i;
+        int cl_len;
+        int nameMap_len;
+        int test_cov_len = 0;
+        long col_id;
+        Vector<Long> tmp = null;
+
+        // do initial sanity checks
+
+        if ( this.cl == null )
+        {
+            throw new SystemErrorException(mName + "this.cl null on entry.");
+        }
+
+        if ( this.nameMap == null )
+        {
+            throw new SystemErrorException(mName + "this.cl null on entry.");
+        }
+
+        if ( test_cov == null )
+        {
+            throw new SystemErrorException(mName + "test_cov null on entry.");
+        }
+
+
+        // Now validate the test column order vector.  To do this:
+        //
+        // 1) verify that the test cov contains the same number of elements
+        //    column list and the nameMap.
+
+        if ( valid )
+        {
+            cl_len = this.cl.size();
+            nameMap_len = this.nameMap.size();
+            test_cov_len = test_cov.size();
+
+            if ( ( test_cov_len != cl_len ) ||
+                 ( test_cov_len != nameMap_len ) )
+            {
+                valid = false;
+            }
+        }
+
+
+        // 2) verify that the cov contains no duplicate elements.
+
+        if ( valid )
+        {
+            tmp = new Vector<Long>(test_cov);
+
+            java.util.Collections.sort(tmp);
+
+            for ( i = 0; i < test_cov_len - 1; i++ )
+            {
+                if ( tmp.get(i) == tmp.get(i + 1) )
+                {
+                    // cov has duplicate entries
+                    valid = false;
+                }
+            }
+
+            tmp = null;
+        }
+
+
+        // 3) verify that all the elements in the cov appear in the column list.
+
+        if ( valid )
+        {
+            for ( i = 0; i < test_cov_len; i++ )
+            {
+                col_id = test_cov.get(i);
+
+                if ( ! this.inColumnList(col_id) )
+                {
+                    valid = false;
+                }
+            }
+        }
+
+
+        return valid;
+
+    } /* ColumnList::validateColOrderVector() */
+
+
+    /*************************************************************************/
     /********************* Listener Manipulation: ****************************/
     /*************************************************************************/
 
+    // deregisterExternalListener()
     /**
-     * deregisterExternalListener()
-     *
      * If this.listeners is null, thow a system error exception.
      *
      * Otherwise, pass the deregister external change listeners message on to
@@ -221,9 +444,8 @@ public class ColumnList
     } /* ColumnList::deregisterExternalListener() */
 
 
+    // deregisterInternalListener()
     /**
-     * deregisterInternalListener()
-     *
      * If this.listeners is null, thow a system error exception.
      *
      * Otherwise, pass the deregister internal change listeners message on to
@@ -254,9 +476,8 @@ public class ColumnList
     } /* ColumnList::deregisterInternalListener() */
 
 
+    // registerExternalListener()
     /**
-     * registerExternalListener()
-     *
      * If this.listeners is null, thow a system error exception.
      *
      * Otherwise, pass the register external change listeners message on to the
@@ -286,9 +507,8 @@ public class ColumnList
     } /* ColumnList::registerExternalListener() */
 
 
+    // registerInternalListener()
     /**
-     * registerInternalListener()
-     *
      * If this.listeners is null, thow a system error exception.
      *
      * Otherwise, pass the register internal change listeners message on to the
@@ -322,9 +542,8 @@ public class ColumnList
     /****************************** Methods: *********************************/
     /*************************************************************************/
 
+    // addColumn()
     /**
-     * addColumn()
-     *
      * If the column is a DataColumn, verify that its associated matrix
      * vocab element exists and is in the vocab list.
      *
@@ -345,6 +564,10 @@ public class ColumnList
      *    - Added code to register the column as an internal listener of its
      *      matrix vocab element.
      *                                                   -- 3/22/08
+     *
+     *    - Added code to add the ID of the new column to the end of the
+     *      cov Vector.
+     *                                                 JRM -- 7/31/09
      */
 
     protected void addColumn(Column col)
@@ -354,6 +577,8 @@ public class ColumnList
         long mveID;
         DataColumn dc = null;
         DBElement dbe;
+        Vector<Long> old_cov = null;
+        Vector<Long> new_cov = null;
         MatrixVocabElement mve = null;
 
         if (col == null) {
@@ -423,6 +648,10 @@ public class ColumnList
 
         this.nameMap.put(col.getName(), col.getID());
 
+        old_cov = new Vector<Long>(this.cov);
+        this.cov.add(col.getID());
+        new_cov = new Vector<Long>(this.cov);
+
         col.constructItsCells();
 
         if ( col instanceof DataColumn )
@@ -435,7 +664,9 @@ public class ColumnList
 
         col.register();
 
-        this.listeners.notifyListenersOfColInsertion(col.getID());
+        this.listeners.notifyListenersOfColInsertion(col.getID(),
+                                                     old_cov,
+                                                     new_cov);
 
         this.db.cascadeEnd();
 
@@ -446,9 +677,8 @@ public class ColumnList
     } /* ColumnList::addColumn(col) */
 
 
+    // applyTemporalOrdering()
     /**
-     * applyTemporalOrdering()
-     *
      * Tell each column in the column list to sort its cells in onset order.
      *
      *                                               -- 3/20/08
@@ -570,9 +800,8 @@ public class ColumnList
     } /* ColumnList::getColumn(targetName) */
 
 
+    // getColumns()
     /**
-     * getColumns
-     *
      * Construct and return a vector containing copies of all Columns
      * in the column list.  If the column list is empty, return null.
      *
@@ -585,27 +814,35 @@ public class ColumnList
      *
      *    - Modified to use clone interface rather than instanceof CF-2009/01/12
      */
+
     protected java.util.Vector<Column> getColumns()
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         Vector<Column> cols = new Vector<Column>();
         Enumeration<Column> entries = this.cl.elements();
 
-        while (entries.hasMoreElements()) {
+        while (entries.hasMoreElements())
+        {
             Column col = entries.nextElement();
-            try {
+            
+            try
+            {
                 cols.add((Column) col.clone());
-            } catch (CloneNotSupportedException e) {
+            } 
+            
+            catch (CloneNotSupportedException e)
+            {
                 throw new SystemErrorException("Unable to clone column.");
             }
         }
 
         return cols;
+
     } /* ColumnList::getColumns() */
 
 
+    // getDataColumns()
     /**
-     * getDataColumns
-     *
      * Construct and return a vector containing copies of all DataColumns
      * in the column list.  If the column list is empty, return null.
      *
@@ -643,9 +880,8 @@ public class ColumnList
     } /* ColumnList::getDataColumns() */
 
 
+    // getReferenceColumns()
     /**
-     * getReferenceColumns
-     *
      * Construct and return a vector containing copies of all DataColumns
      * in the column list.  If the column list is empty, return null.
      *
@@ -687,9 +923,8 @@ public class ColumnList
     } /* ColumnList::getReferenceColumns() */
 
 
+    // inColumnList(targetID)
     /**
-     * inColumnList(targetID)
-     *
      * Return true if the column list contains an entry matching the
      * provided id.
      *
@@ -718,9 +953,8 @@ public class ColumnList
     } /* ColumnList::inColumnList(targetID) */
 
 
+    // inColumnList(targetName)
     /**
-     * inColumnList(targetName)
-     *
      * Return true if the supplied column name currently appears
      * in the column list, and false otherwise.
      *
@@ -759,9 +993,8 @@ public class ColumnList
     } /* ColumnList::inColumnList(targetName) */
 
 
+    // dataColumnInColumnList(targetID)
     /**
-     * dataColumnInColumnList(targetID)
-     *
      * Return true if the column list contains a data column matching the
      * provided id.
      *
@@ -800,9 +1033,8 @@ public class ColumnList
     } /* ColumnList::dataColumnInColumnList(targetID) */
 
 
+    // dataColumnInColumnList(targetName)
     /**
-     * dataColumnInColumnList(targetName)
-     *
      * Return true if the column list contains a data column matching the
      * provided name.
      *
@@ -857,9 +1089,8 @@ public class ColumnList
     } /* ColumnList::dataColumnInColumnList(targetName) */
 
 
+    // referenceColumnInColumnList(targetID)
     /**
-     * referenceColumnInColumnList(targetID)
-     *
      * Return true if the column list contains a reference column matching the
      * provided id.
      *
@@ -898,9 +1129,8 @@ public class ColumnList
     } /* ColumnList::referenceColumnInColumnList(targetID) */
 
 
+    // referenceColumnInColumnList(targetName)
     /**
-     * referenceColumnInColumnList(targetName)
-     *
      * Return true if the column list contains a data column matching the
      * provided name.
      *
@@ -956,9 +1186,8 @@ public class ColumnList
     } /* ColumnList::referenceColumnInColumnList(targetName) */
 
 
+    // removeColumn()
     /**
-     * removeColumn()
-     *
      * Verify that the Column indicated by the targetID is in the column list
      * and that it is empty (that is, it has no cells).  Throw a system error
      * if it is not.
@@ -975,6 +1204,10 @@ public class ColumnList
      *      Finally added calls to mark the beginning and end of any resulting
      *      cascade of changes.
      *                                                   -- 2/11/08
+     *
+     *    - Added code to remove the ID of the column from the cov -- the
+     *      column order vector.
+     *                                                   -- 7/31/09
      */
 
     protected void removeColumn(long targetID)
@@ -984,6 +1217,8 @@ public class ColumnList
         int i;
         long id;
         FormalArgument fArg;
+        Vector<Long> old_cov = null;
+        Vector<Long> new_cov = null;
         Column col = null;
 
         if ( targetID == DBIndex.INVALID_ID )
@@ -994,6 +1229,11 @@ public class ColumnList
         {
             throw new SystemErrorException(mName +
                                            "targetID not in vocab list.");
+        }
+        else if ( ! this.cov.contains(targetID) )
+        {
+            throw new SystemErrorException(mName +
+                    "targetID not in column order list.");
         }
 
         /* verify that the column is empty before proceeding
@@ -1019,7 +1259,17 @@ public class ColumnList
             ((DataColumn)col).setListeners(null);
         }
 
-        this.listeners.notifyListenersOfColDeletion(col.getID());
+        old_cov = new Vector<Long>(this.cov);
+        new_cov = new Vector<Long>(this.cov);
+        if ( ! new_cov.remove(col.getID()) )
+        {
+            throw new SystemErrorException(mName +
+                    "can't remove target ID from new_cov");
+        }
+
+        this.listeners.notifyListenersOfColDeletion(col.getID(),
+                                                    old_cov,
+                                                    new_cov);
 
         col.deregister();
 
@@ -1029,6 +1279,11 @@ public class ColumnList
         if ( (col = this.cl.remove(targetID)) == null )
         {
             throw new SystemErrorException(mName + "cl.remove() failed.");
+        }
+
+        if ( ! this.cov.remove(targetID) )
+        {
+            throw new SystemErrorException(mName + "cov.remove() failed.");
         }
 
         this.db.idx.removeElement(targetID);
@@ -1044,9 +1299,8 @@ public class ColumnList
     } /* ColumnList::removeColumn(targetID) */
 
 
+    // replaceDataColumn(new_dc)
     /**
-     * replaceDataColumn(new_dc)
-     *
      * Search the column list for an instance of DataColumn with the same id
      * as that of the supplied instance.  Verify that this instance has the
      * the same value in its itsMveID field as the supplied value.
@@ -1244,9 +1498,8 @@ public class ColumnList
     } /* ColumnList::replaceDataColumn(new_dc) */
 
 
+    // replaceReferenceColumn(new_rc)
     /**
-     * replaceReferenceColumn(new_rc)
-     *
      * Search the column list for an instance of ReferenceColumn with the same
      * id as that of the supplied instance.
      *
@@ -1367,9 +1620,8 @@ public class ColumnList
     } /* ColumnList::replaceReferenceColumn(new_dc) */
 
 
+    // toDBString()
     /**
-     * toDBString()
-     *
      * Returns a String representation of the contents of the ColumnList.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
@@ -1420,9 +1672,8 @@ public class ColumnList
     } /* ColumnList::toDBString() */
 
 
+    // toMODBFile_colDecs()
     /**
-     * toMODBFile_colDecs()
-     *
      * Write declarations of all non system data columns to the supplied file
      * in MacSHAPA ODB file format.  The output of this method is the
      * <s_var_dec_list> in the grammar defining the MacSHAPA ODB file
@@ -1498,9 +1749,8 @@ public class ColumnList
     } /* ColumnList::toMODBFile_colDecs() */
 
 
+    // toMODBFile_colDefs()
     /**
-     * toMODBFile_colDefs()
-     *
      * Write definitions of all user data columns to the supplied file
      * in MacSHAPA ODB file format.  The output of this method is the
      * <s_var_def_list> in the grammar defining the MacSHAPA ODB file

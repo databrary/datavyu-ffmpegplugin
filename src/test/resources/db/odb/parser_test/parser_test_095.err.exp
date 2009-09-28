@@ -36,6 +36,6 @@
 
 
       ERROR  4 (Line 213:0): Encountered end of file unexpectedly.
-        EOF encountered in the spreadsheet variable definitions list.
+        EOF encountered in a spreadsheet variable definition.
 
 Unable to continue parse -- Aborting...

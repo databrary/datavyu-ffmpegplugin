@@ -1165,6 +1165,22 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      *                                               -- 8/26/08
      */
 
+    // Note:  This method isn't used at present.  It was created as part of
+    //        listener code prior to the addition of support for column
+    //        predicates.
+    //
+    //        At present, the work that used to be done by this method is
+    //        being done by cascadeUpdateForMVEDefChange() -- however this
+    //        routine is a bit heavy weight, and does a bit more processing
+    //        than is strictly necessary.
+    //
+    //        If this becomes a problem, we may want to re-visit this
+    //        method and use it in cases where we are sure that the column
+    //        predicate implied by an MVE does not appear in a cell of the
+    //        Data column associated with the MVE.
+    //
+    //                                              JRM -- 9/20/09
+
     protected void cascadeUpdateForFargListChange(
                                 long[] n2o,
                                 long[] o2n,
@@ -1321,7 +1337,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                  java.util.Vector<FormalArgument> newCPFargList)
         throws SystemErrorException
     {
-        final String mName = "DataCell::cascadeUpdateForPVEDefChange(): ";
+        final String mName = "DataCell::cascadeUpdateForMVEDefChange(): ";
         DBElement dbe = null;
 
         if ( this.getDB() != db )
@@ -1372,10 +1388,15 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                 {
                     if ( ! fargDeleted[i] )
                     {
-                        try {
+                        try
+                        {
                             dv = (DataValue) this.val.getArg(i).clone();
-                        } catch (CloneNotSupportedException e) {
-                            throw new SystemErrorException("Unable to clone DataValue.");
+                        } 
+                        
+                        catch ( CloneNotSupportedException e )
+                        {
+                            throw new SystemErrorException(mName +
+                                    "Unable to clone DataValue.");
                         }
 
                         j = (int)o2n[i];
@@ -1402,6 +1423,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
             {
                 this.createPending(true);
             }
+
             this.cascadeMveMod = true;
             this.cascadeMveID = mveID;
             this.cascadeMveDel = false;
@@ -1448,7 +1470,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
                                                newCPFargList);
         }
         else if ( ( this.cascadeMveMod != true ) ||
-                  ( this.cascadePveID != mveID ) ||
+                  ( this.cascadeMveID != mveID ) ||
                   ( this.cascadePveMod != false ) ||
                   ( this.cascadePveID != DBIndex.INVALID_ID ) ||
                   ( this.cascadePveDel != false ) )
@@ -1477,11 +1499,11 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
      * If we are not, enter the cascade, create the pending copy, and tell
      * it to update for the predicate vocab element deletion.  Make note of the
      * supplied mveID, and of the fact that we entered the cascade due to a
-     * pve deletion.
+     * mve deletion.
      *
      * If we are already in a cascade, throw a system error unless the
      * we have already made note of our being in the cascade due to the
-     * deletion the MVE indicated by the pveID parameter.  In this latter case,
+     * deletion the MVE indicated by the mveID parameter.  In this latter case,
      * exit without taking any action.
      *
      * Note that this method should never be called if the supplied mveID

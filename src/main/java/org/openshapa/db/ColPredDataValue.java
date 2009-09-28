@@ -528,7 +528,7 @@ public final class ColPredDataValue extends DataValue {
 
     protected void updateForMVEDefChange(
                                  Database db,
-                                 long pveID,
+                                 long mveID,
                                  boolean nameChanged,
                                  String oldName,
                                  String newName,
@@ -564,24 +564,24 @@ public final class ColPredDataValue extends DataValue {
             throw new SystemErrorException(mName + "db mismatch.");
         }
 
-        if ( pveID == DBIndex.INVALID_ID )
+        if ( mveID == DBIndex.INVALID_ID )
         {
-            throw new SystemErrorException(mName + "pveID invalid.");
+            throw new SystemErrorException(mName + "mveID invalid.");
         }
 
-        dbe = this.getDB().idx.getElement(pveID);
+        dbe = this.getDB().idx.getElement(mveID);
 
-        if ( ! ( dbe instanceof PredicateVocabElement ) )
+        if ( ! ( dbe instanceof MatrixVocabElement ) )
         {
             throw new SystemErrorException(mName +
-                                           "pveID doesn't refer to a pve.");
+                                           "mveID doesn't refer to a mve.");
         }
 
 
         if ( this.itsValue != null )
         {
             this.itsValue.updateForMVEDefChange(db,
-                                                pveID,
+                                                mveID,
                                                 nameChanged,
                                                 oldName,
                                                 newName,

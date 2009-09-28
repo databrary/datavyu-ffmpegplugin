@@ -966,7 +966,7 @@ public class Predicate extends DBElement
         final String mName = "Predicate::toMODBFile()";
         int i = 0;
         int numArgs;
-        FormalArgument farg;
+        int numArgsToDisplay;
         DataValue arg;
 
         if ( output == null )
@@ -1000,9 +1000,46 @@ public class Predicate extends DBElement
                 throw new SystemErrorException(mName + "numArgs <= 0");
             }
 
+            if ( this.varLen )
+            {
+                numArgsToDisplay = 0;
+
+                i = 0;
+
+                /* scan the argument list to determine the number of the
+                 * last defined argument in the argument list, as set
+                 * numArgsToDisplay accordingly.
+                 */
+                while ( i < numArgs )
+                {
+                    arg = this.getArg(i);
+
+                    if ( ! ( arg instanceof UndefinedDataValue ) )
+                    {
+                        numArgsToDisplay = i;
+                    }
+
+                    i++;
+                }
+
+                numArgsToDisplay++;
+            }
+            else
+            {
+                numArgsToDisplay = numArgs;
+            }
+
+            if ( ( numArgsToDisplay < 1 ) || ( numArgsToDisplay > numArgs ) )
+            {
+                throw new SystemErrorException(mName +
+                        "numArgsToDisplay out of range.");
+            }
+
             output.printf("( |%s| ", this.predName);
 
-            while ( i < numArgs )
+            i = 0;
+
+            while ( i < numArgsToDisplay )
             {
                 arg = this.getArg(i);
 
@@ -1323,7 +1360,6 @@ public class Predicate extends DBElement
 
         if ( srcArgList.size() != numArgs )
         {
-            int j = 1/0;
             throw new SystemErrorException(mName + "arg list size mis-match");
         }
 
@@ -2089,11 +2125,13 @@ public class Predicate extends DBElement
                                            "mveID doesn't refer to a pve.");
         }
 
-        for ( DataValue dv : this.argList )
+        if ( this.pveID != DBIndex.INVALID_ID ) // the predicate is defined
         {
-            if ( dv instanceof ColPredDataValue )
+            for ( DataValue dv : this.argList )
             {
-                ((ColPredDataValue)dv).updateForMVEDefChange(db,
+                if ( dv instanceof ColPredDataValue )
+                {
+                    ((ColPredDataValue)dv).updateForMVEDefChange(db,
                                                           mveID,
                                                           nameChanged,
                                                           oldName,
@@ -2120,10 +2158,10 @@ public class Predicate extends DBElement
                                                           cpFargInserted,
                                                           oldCPFargList,
                                                           newCPFargList);
-            }
-            else if ( dv instanceof PredDataValue )
-            {
-                ((PredDataValue)dv).updateForMVEDefChange(db,
+                }
+                else if ( dv instanceof PredDataValue )
+                {
+                    ((PredDataValue)dv).updateForMVEDefChange(db,
                                                           mveID,
                                                           nameChanged,
                                                           oldName,
@@ -2150,6 +2188,7 @@ public class Predicate extends DBElement
                                                           cpFargInserted,
                                                           oldCPFargList,
                                                           newCPFargList);
+                }
             }
         }
 
@@ -2361,28 +2400,31 @@ public class Predicate extends DBElement
             }
         }
 
-        for ( DataValue dv : this.argList )
+        if ( this.pveID != DBIndex.INVALID_ID ) // i.e. the predicate is defined.
         {
-            if ( dv instanceof PredDataValue )
+            for ( DataValue dv : this.argList )
             {
-                ((PredDataValue)dv).updateForPVEDefChange(db,
-                                                          pveID,
-                                                          nameChanged,
-                                                          oldName,
-                                                          newName,
-                                                          varLenChanged,
-                                                          oldVarLen,
-                                                          newVarLen,
-                                                          fargListChanged,
-                                                          n2o,
-                                                          o2n,
-                                                          fargNameChanged,
-                                                          fargSubRangeChanged,
-                                                          fargRangeChanged,
-                                                          fargDeleted,
-                                                          fargInserted,
-                                                          oldFargList,
-                                                          newFargList);
+                if ( dv instanceof PredDataValue )
+                {
+                    ((PredDataValue)dv).updateForPVEDefChange(db,
+                                                              pveID,
+                                                              nameChanged,
+                                                              oldName,
+                                                              newName,
+                                                              varLenChanged,
+                                                              oldVarLen,
+                                                              newVarLen,
+                                                              fargListChanged,
+                                                              n2o,
+                                                              o2n,
+                                                              fargNameChanged,
+                                                              fargSubRangeChanged,
+                                                              fargRangeChanged,
+                                                              fargDeleted,
+                                                              fargInserted,
+                                                              oldFargList,
+                                                              newFargList);
+                }
             }
         }
 
@@ -3922,7 +3964,7 @@ public class Predicate extends DBElement
                     else
                     {
                         throw new SystemErrorException(mName + "New arg " +
-                                "type mismatch: column predicate DV, or " +
+                                "type mismatch: column predicate DV, or" +
                                 "undefined DV expected.");
                     }
                 }

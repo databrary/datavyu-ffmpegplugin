@@ -656,13 +656,8 @@ public abstract class DatabaseTest {
         arg = new QuoteStringDataValue(db, fargID, "q-string");
         argList0.add(arg);
         fargID = pve0.getFormalArg(5).getID();
-        arg = new UndefinedDataValue(db, fargID,
-                                     pve0.getFormalArg(5).getFargName());
+        arg = new UndefinedDataValue(db, fargID);
         argList0.add(arg);
-//            fargID = pve0.getFormalArg(6).getID();
-//            arg = new TimeStampDataValue(db, fargID,
-//                                         new TimeStamp(db.getTicks()));
-//            argList0.add(arg);
 
         return new Predicate(db, predID0, argList0);
     }
@@ -709,8 +704,7 @@ public abstract class DatabaseTest {
         arg = new QuoteStringDataValue(db, fargID, "q-string");
         argList0.add(arg);
         fargID = mve0.getFormalArg(4).getID();
-        arg = new UndefinedDataValue(db, fargID,
-                                     mve0.getFormalArg(4).getFargName());
+        arg = new UndefinedDataValue(db, fargID);
         argList0.add(arg);
 
         long mveid = mve0.getID();
@@ -879,6 +873,11 @@ public abstract class DatabaseTest {
         }
 
         if ( ! TestVocabElementExists(outStream, verbose) )
+        {
+            failures++;
+        }
+
+        if ( ! TestGetSetColOrderVector(outStream, verbose) )
         {
             failures++;
         }
@@ -9994,6 +9993,1399 @@ public abstract class DatabaseTest {
 
 
     /*************************************************************************/
+    /********************* Column List Test Code: ****************************/
+    /*************************************************************************/
+
+    /**
+     * TestGetSetColOrderVector()
+     *
+     * Test the getColOrderVector() and setColOrderVector() methods.  The
+     * testing must be a bit more involved that usual, as this is the only
+     * test code directed at the underlying methods in ColumnList.
+     *
+     *                                               -- 8/02/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public static boolean TestGetSetColOrderVector(java.io.PrintStream outStream,
+                                                    boolean verbose)
+    throws SystemErrorException {
+        String testBanner =
+            "Testing getColOrderVector() and setColOrderVector()              ";
+        String passBanner = "PASSED\n";
+        String failBanner = "FAILED\n";
+        String systemErrorExceptionString;
+        boolean completed = false;
+        boolean pass = true;
+        boolean threwSystemErrorException = false;
+        int failures = 0;
+        long col_0_ID = DBIndex.INVALID_ID;
+        long col_1_ID = DBIndex.INVALID_ID;
+        long col_2_ID = DBIndex.INVALID_ID;
+        long col_3_ID = DBIndex.INVALID_ID;
+        long col_4_ID = DBIndex.INVALID_ID;
+        long col_5_ID = DBIndex.INVALID_ID;
+        long col_6_ID = DBIndex.INVALID_ID;
+        long col_7_ID = DBIndex.INVALID_ID;
+        long mve_0_ID = DBIndex.INVALID_ID;
+        long mve_1_ID = DBIndex.INVALID_ID;
+        long mve_2_ID = DBIndex.INVALID_ID;
+        long mve_3_ID = DBIndex.INVALID_ID;
+        long mve_4_ID = DBIndex.INVALID_ID;
+        long mve_5_ID = DBIndex.INVALID_ID;
+        long mve_6_ID = DBIndex.INVALID_ID;
+        long mve_7_ID = DBIndex.INVALID_ID;
+        Database db = null;
+        MatrixVocabElement mve_0 = null;
+        MatrixVocabElement mve_1 = null;
+        MatrixVocabElement mve_2 = null;
+        MatrixVocabElement mve_3 = null;
+        MatrixVocabElement mve_4 = null;
+        MatrixVocabElement mve_5 = null;
+        MatrixVocabElement mve_6 = null;
+        MatrixVocabElement mve_7 = null;
+        DataColumn col_0 = null;
+        DataColumn col_1 = null;
+        DataColumn col_2 = null;
+        DataColumn col_3 = null;
+        DataColumn col_4 = null;
+        DataColumn col_5 = null;
+        DataColumn col_6 = null;
+        DataColumn col_7 = null;
+        Vector<Long> cov_00 = null;
+        Vector<Long> cov_01 = null;
+        Vector<Long> cov_02 = null;
+        Vector<Long> cov_03 = null;
+        Vector<Long> cov_04 = null;
+        Vector<Long> cov_05 = null;
+        Vector<Long> cov_06 = null;
+        Vector<Long> cov_07 = null;
+        Vector<Long> cov_08 = null;
+        Vector<Long> cov_09 = null;
+        Vector<Long> cov_10 = null;
+        Vector<Long> cov_11 = null;
+        Vector<Long> cov_12 = null;
+        Vector<Long> cov_13 = null;
+        Vector<Long> cov_14 = null;
+        Vector<Long> cov_15 = null;
+        Vector<Long> cov_16 = null;
+        Vector<Long> cov_17 = null;
+        Vector<Long> cov_18 = null;
+        Vector<Long> cov_19 = null;
+        Vector<Long> cov_20 = null;
+        Vector<Long> cov_21 = null;
+        Vector<Long> cov_22 = null;
+        Vector<Long> cov_23 = null;
+        Vector<Long> cov_24 = null;
+        Vector<Long> cov_25 = null;
+        Vector<Long> cov_26 = null;
+        Vector<Long> cov_27 = null;
+
+
+        outStream.print(testBanner);
+
+        if ( verbose )
+        {
+            outStream.print("\n");
+        }
+
+        /* setup for test */
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            db = null;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db = new ODBCDatabase();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( ! completed ) ||
+                 ( db == null ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.print("test setup failed to complete.\n");
+                    }
+
+                    if ( db == null )
+                    {
+                        outStream.print("new ODBCDatabase() returned null.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("unexpected system error " +
+                                "exception(1): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+
+        /* test setup is complete. */
+
+         
+        /* Begin with a series of data column adds with interleaved calls to
+         * getColOrderVector()
+         */
+
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                cov_00 = db.getColOrderVector();
+
+
+                col_0 = new DataColumn(db,
+                                       "col_0",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_0_ID = db.addColumn(col_0);
+                col_0 = db.getDataColumn(col_0_ID);
+                mve_0_ID = col_0.getItsMveID();
+                mve_0 = db.getMatrixVE(mve_0_ID);
+
+
+                cov_01 = db.getColOrderVector();
+
+
+                col_1 = new DataColumn(db,
+                                       "col_1",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_1_ID = db.addColumn(col_1);
+                col_1 = db.getDataColumn(col_1_ID);
+                mve_1_ID = col_1.getItsMveID();
+                mve_1 = db.getMatrixVE(mve_1_ID);
+
+
+                cov_02 = db.getColOrderVector();
+
+
+                col_2 = new DataColumn(db,
+                                       "col_2",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_2_ID = db.addColumn(col_2);
+                col_2 = db.getDataColumn(col_2_ID);
+                mve_2_ID = col_2.getItsMveID();
+                mve_2 = db.getMatrixVE(mve_2_ID);
+
+
+                cov_03 = db.getColOrderVector();
+
+
+                col_3 = new DataColumn(db,
+                                       "col_3",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_3_ID = db.addColumn(col_3);
+                col_3 = db.getDataColumn(col_3_ID);
+                mve_3_ID = col_3.getItsMveID();
+                mve_3 = db.getMatrixVE(mve_3_ID);
+
+
+                cov_04 = db.getColOrderVector();
+
+
+                col_4 = new DataColumn(db,
+                                       "col_4",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_4_ID = db.addColumn(col_4);
+                col_4 = db.getDataColumn(col_4_ID);
+                mve_4_ID = col_4.getItsMveID();
+                mve_4 = db.getMatrixVE(mve_4_ID);
+
+
+                cov_05 = db.getColOrderVector();
+
+
+                col_5 = new DataColumn(db,
+                                       "col_5",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_5_ID = db.addColumn(col_5);
+                col_5 = db.getDataColumn(col_5_ID);
+                mve_5_ID = col_5.getItsMveID();
+                mve_5 = db.getMatrixVE(mve_5_ID);
+
+
+                cov_06 = db.getColOrderVector();
+
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( col_0 == null ) ||
+                 ( col_1 == null ) ||
+                 ( col_2 == null ) ||
+                 ( col_3 == null ) ||
+                 ( col_4 == null ) ||
+                 ( col_5 == null ) ||
+                 ( mve_0 == null ) ||
+                 ( mve_1 == null ) ||
+                 ( mve_2 == null ) ||
+                 ( mve_3 == null ) ||
+                 ( mve_4 == null ) ||
+                 ( mve_5 == null ) ||
+                 ( cov_00 == null ) ||
+                 ( cov_01 == null ) ||
+                 ( cov_02 == null ) ||
+                 ( cov_03 == null ) ||
+                 ( cov_04 == null ) ||
+                 ( cov_05 == null ) ||
+                 ( cov_06 == null ) ||
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( col_0 == null )
+                    {
+                        outStream.print("col_0 == null.\n");
+                    }
+
+                    if ( col_1 == null )
+                    {
+                        outStream.print("col_1 == null.\n");
+                    }
+
+                    if ( col_2 == null )
+                    {
+                        outStream.print("col_2 == null.\n");
+                    }
+
+                    if ( col_3 == null )
+                    {
+                        outStream.print("col_3 == null.\n");
+                    }
+
+                    if ( col_4 == null )
+                    {
+                        outStream.print("col_4 == null.\n");
+                    }
+
+                    if ( col_5 == null )
+                    {
+                        outStream.print("col_5 == null.\n");
+                    }
+
+                    if ( mve_0 == null )
+                    {
+                        outStream.print("mve_0 == null.\n");
+                    }
+
+                    if ( mve_1 == null )
+                    {
+                        outStream.print("mve_1 == null.\n");
+                    }
+
+                    if ( mve_2 == null )
+                    {
+                        outStream.print("mve_2 == null.\n");
+                    }
+
+                    if ( mve_3 == null )
+                    {
+                        outStream.print("mve_3 == null.\n");
+                    }
+
+                    if ( mve_4 == null )
+                    {
+                        outStream.print("mve_4 == null.\n");
+                    }
+
+                    if ( mve_5 == null )
+                    {
+                        outStream.print("mve_5 == null.\n");
+                    }
+
+                    if ( cov_00 == null )
+                    {
+                        outStream.print("cov_00 == null.\n");
+                    }
+
+                    if ( cov_01 == null )
+                    {
+                        outStream.print("cov_01 == null.\n");
+                    }
+
+                    if ( cov_02 == null )
+                    {
+                        outStream.print("cov_02 == null.\n");
+                    }
+
+                    if ( cov_03 == null )
+                    {
+                        outStream.print("cov_03 == null.\n");
+                    }
+
+                    if ( cov_04 == null )
+                    {
+                        outStream.print("cov_04 == null.\n");
+                    }
+
+                    if ( cov_05 == null )
+                    {
+                        outStream.print("cov_05 == null.\n");
+                    }
+
+                    if ( cov_06 == null )
+                    {
+                        outStream.print("cov_06 == null.\n");
+                    }
+
+                    if ( ! completed )
+                    {
+                        outStream.print("test failed to complete(1).\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("unexpected system error " +
+                                "exception(1): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+            else
+            {
+                if ( cov_00.size() != 0 )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_00: \"%s\"\n",
+                                cov_00.toString());
+                    }
+                }
+
+                if ( ( cov_01.size() != 1 ) ||
+                     ( cov_01.get(0) != col_0_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_01: \"%s\"\n",
+                                cov_02.toString());
+                    }
+                }
+
+                if ( ( cov_02.size() != 2 ) ||
+                     ( cov_02.get(0) != col_0_ID ) ||
+                     ( cov_02.get(1) != col_1_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_02: \"%s\"\n",
+                                cov_02.toString());
+                    }
+                }
+
+                if ( ( cov_03.size() != 3 ) ||
+                     ( cov_03.get(0) != col_0_ID ) ||
+                     ( cov_03.get(1) != col_1_ID ) ||
+                     ( cov_03.get(2) != col_2_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_03: \"%s\"\n",
+                                cov_03.toString());
+                    }
+                }
+
+                if ( ( cov_04.size() != 4 ) ||
+                     ( cov_04.get(0) != col_0_ID ) ||
+                     ( cov_04.get(1) != col_1_ID ) ||
+                     ( cov_04.get(2) != col_2_ID ) ||
+                     ( cov_04.get(3) != col_3_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_04: \"%s\"\n",
+                                cov_04.toString());
+                    }
+                }
+
+                if ( ( cov_05.size() != 5 ) ||
+                     ( cov_05.get(0) != col_0_ID ) ||
+                     ( cov_05.get(1) != col_1_ID ) ||
+                     ( cov_05.get(2) != col_2_ID ) ||
+                     ( cov_05.get(3) != col_3_ID ) ||
+                     ( cov_05.get(4) != col_4_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_05: \"%s\"\n",
+                                cov_05.toString());
+                    }
+                }
+
+                if ( ( cov_06.size() != 6 ) ||
+                     ( cov_06.get(0) != col_0_ID ) ||
+                     ( cov_06.get(1) != col_1_ID ) ||
+                     ( cov_06.get(2) != col_2_ID ) ||
+                     ( cov_06.get(3) != col_3_ID ) ||
+                     ( cov_06.get(4) != col_4_ID ) ||
+                     ( cov_06.get(5) != col_5_ID ) )
+
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_06: \"%s\"\n",
+                                cov_06.toString());
+                    }
+                }
+            }
+        }
+
+        /* Now do several column deletions -- first, last, and one in the
+         * middle, all with interleaved calls to getColOrderVector().  Verify
+         * that we get the expected results.
+         *
+         * In passing, add a couple of new columns to keep the column list
+         * from getting too small.
+         */
+
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.removeColumn(col_0_ID);
+
+                cov_07 = db.getColOrderVector();
+
+                db.removeColumn(col_5_ID);
+
+                cov_08 = db.getColOrderVector();
+
+                db.removeColumn(col_3_ID);
+
+                cov_09 = db.getColOrderVector();
+
+
+                col_6 = new DataColumn(db,
+                                       "col_6",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_6_ID = db.addColumn(col_6);
+                col_6 = db.getDataColumn(col_6_ID);
+                mve_6_ID = col_6.getItsMveID();
+                mve_6 = db.getMatrixVE(mve_6_ID);
+
+
+                cov_10 = db.getColOrderVector();
+
+
+                col_7 = new DataColumn(db,
+                                       "col_7",
+                                       MatrixVocabElement.MatrixType.INTEGER);
+                col_7_ID = db.addColumn(col_7);
+                col_7 = db.getDataColumn(col_7_ID);
+                mve_7_ID = col_7.getItsMveID();
+                mve_7 = db.getMatrixVE(mve_7_ID);
+
+
+                cov_11 = db.getColOrderVector();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( cov_07 == null ) ||
+                 ( cov_08 == null ) ||
+                 ( cov_09 == null ) ||
+                 ( cov_10 == null ) ||
+                 ( cov_11 == null ) ||
+                 ( col_6 == null ) ||
+                 ( col_7 == null ) ||
+                 ( mve_6 == null ) ||
+                 ( mve_7 == null ) ||
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( cov_07 == null )
+                    {
+                        outStream.print("cov_07 == null.\n");
+                    }
+
+                    if ( cov_08 == null )
+                    {
+                        outStream.print("cov_08 == null.\n");
+                    }
+
+                    if ( cov_09 == null )
+                    {
+                        outStream.print("cov_09 == null.\n");
+                    }
+
+                    if ( cov_10 == null )
+                    {
+                        outStream.print("cov_10 == null.\n");
+                    }
+
+                    if ( cov_11 == null )
+                    {
+                        outStream.print("cov_11 == null.\n");
+                    }
+
+                    if ( col_6 == null )
+                    {
+                        outStream.print("col_6 == null.\n");
+                    }
+
+                    if ( col_7 == null )
+                    {
+                        outStream.print("col_7 == null.\n");
+                    }
+
+                    if ( mve_6 == null )
+                    {
+                        outStream.print("mve_6 == null.\n");
+                    }
+
+                    if ( mve_7 == null )
+                    {
+                        outStream.print("mve_7 == null.\n");
+                    }
+
+                    if ( ! completed )
+                    {
+                        outStream.print("test failed to complete(2).\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("unexpected system error " +
+                                "exception(2): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+            else
+            {
+                if ( ( cov_07.size() != 5 ) ||
+                     ( cov_07.get(0) != col_1_ID ) ||
+                     ( cov_07.get(1) != col_2_ID ) ||
+                     ( cov_07.get(2) != col_3_ID ) ||
+                     ( cov_07.get(3) != col_4_ID ) ||
+                     ( cov_07.get(4) != col_5_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_07: \"%s\"\n",
+                                cov_07.toString());
+                    }
+                }
+
+                if ( ( cov_08.size() != 4 ) ||
+                     ( cov_08.get(0) != col_1_ID ) ||
+                     ( cov_08.get(1) != col_2_ID ) ||
+                     ( cov_08.get(2) != col_3_ID ) ||
+                     ( cov_08.get(3) != col_4_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_08: \"%s\"\n",
+                                cov_08.toString());
+                    }
+                }
+
+                if ( ( cov_09.size() != 3 ) ||
+                     ( cov_09.get(0) != col_1_ID ) ||
+                     ( cov_09.get(1) != col_2_ID ) ||
+                     ( cov_09.get(2) != col_4_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_09: \"%s\"\n",
+                                cov_09.toString());
+                    }
+                }
+
+                if ( ( cov_10.size() != 4 ) ||
+                     ( cov_10.get(0) != col_1_ID ) ||
+                     ( cov_10.get(1) != col_2_ID ) ||
+                     ( cov_10.get(2) != col_4_ID ) ||
+                     ( cov_10.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_10: \"%s\"\n",
+                                cov_10.toString());
+                    }
+                }
+
+                if ( ( cov_11.size() != 5 ) ||
+                     ( cov_11.get(0) != col_1_ID ) ||
+                     ( cov_11.get(1) != col_2_ID ) ||
+                     ( cov_11.get(2) != col_4_ID ) ||
+                     ( cov_11.get(3) != col_6_ID ) ||
+                     ( cov_11.get(4) != col_7_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_11: \"%s\"\n",
+                                cov_11.toString());
+                    }
+                }
+            }
+        }
+
+
+        /* Now try setting the column order list -- only valid settings for
+         * now.
+         */
+
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                cov_12 = new Vector<Long>();
+                cov_12.add(col_7_ID);
+                cov_12.add(col_6_ID);
+                cov_12.add(col_4_ID);
+                cov_12.add(col_2_ID);
+                cov_12.add(col_1_ID);
+
+                db.setColOrderVector(cov_12);
+
+                cov_13 = db.getColOrderVector();
+
+                db.removeColumn(col_7_ID);
+
+                cov_14 = db.getColOrderVector();
+
+                cov_15 = new Vector<Long>();
+                cov_15.add(col_1_ID);
+                cov_15.add(col_4_ID);
+                cov_15.add(col_2_ID);
+                cov_15.add(col_6_ID);
+
+                db.setColOrderVector(cov_15);
+
+                cov_16 = db.getColOrderVector();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( cov_12 == null ) ||
+                 ( cov_13 == null ) ||
+                 ( cov_14 == null ) ||
+                 ( cov_15 == null ) ||
+                 ( cov_16 == null ) ||
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( cov_12 == null )
+                    {
+                        outStream.print("cov_12 == null.\n");
+                    }
+
+                    if ( cov_13 == null )
+                    {
+                        outStream.print("cov_13 == null.\n");
+                    }
+
+                    if ( cov_14 == null )
+                    {
+                        outStream.print("cov_14 == null.\n");
+                    }
+
+                    if ( cov_15 == null )
+                    {
+                        outStream.print("cov_15 == null.\n");
+                    }
+
+                    if ( cov_16 == null )
+                    {
+                        outStream.print("cov_16 == null.\n");
+                    }
+
+                    if ( ! completed )
+                    {
+                        outStream.print("test failed to complete(3).\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("unexpected system error " +
+                                "exception(3): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+            else
+            {
+                if ( ( cov_12.size() != 5 ) ||
+                     ( cov_12.get(0) != col_7_ID ) ||
+                     ( cov_12.get(1) != col_6_ID ) ||
+                     ( cov_12.get(2) != col_4_ID ) ||
+                     ( cov_12.get(3) != col_2_ID ) ||
+                     ( cov_12.get(4) != col_1_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_12: \"%s\"\n",
+                                cov_12.toString());
+                    }
+                }
+
+                if ( ( cov_13.size() != 5 ) ||
+                     ( cov_13.get(0) != col_7_ID ) ||
+                     ( cov_13.get(1) != col_6_ID ) ||
+                     ( cov_13.get(2) != col_4_ID ) ||
+                     ( cov_13.get(3) != col_2_ID ) ||
+                     ( cov_13.get(4) != col_1_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_13: \"%s\"\n",
+                                cov_13.toString());
+                    }
+                }
+
+                if ( ( cov_14.size() != 4 ) ||
+                     ( cov_14.get(0) != col_6_ID ) ||
+                     ( cov_14.get(1) != col_4_ID ) ||
+                     ( cov_14.get(2) != col_2_ID ) ||
+                     ( cov_14.get(3) != col_1_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_14: \"%s\"\n",
+                                cov_14.toString());
+                    }
+                }
+
+                if ( ( cov_15.size() != 4 ) ||
+                     ( cov_15.get(0) != col_1_ID ) ||
+                     ( cov_15.get(1) != col_4_ID ) ||
+                     ( cov_15.get(2) != col_2_ID ) ||
+                     ( cov_15.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_15: \"%s\"\n",
+                                cov_15.toString());
+                    }
+                }
+
+                if ( ( cov_16.size() != 4 ) ||
+                     ( cov_16.get(0) != col_1_ID ) ||
+                     ( cov_16.get(1) != col_4_ID ) ||
+                     ( cov_16.get(2) != col_2_ID ) ||
+                     ( cov_16.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_16: \"%s\"\n",
+                                cov_16.toString());
+                    }
+                }
+            }
+        }
+
+        /* pass a null to db.setColOrderVector() -- should fail */
+        if ( failures == 0 )
+        {
+            cov_17 = null;
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.setColOrderVector(cov_17);
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( completed )
+                    {
+                        outStream.print(
+                                "db.setColOrderVector(null) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("db.setColOrderVector(null) failed " +
+                                "to throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                cov_17 = db.getColOrderVector();
+
+                if ( cov_17 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.getColOrderVector() returned null " +
+                                "after db.setColOrderVector(null).\n");
+                    }
+                }
+                else if ( ( cov_17.size() != 4 ) ||
+                          ( cov_17.get(0) != col_1_ID ) ||
+                          ( cov_17.get(1) != col_4_ID ) ||
+                          ( cov_17.get(2) != col_2_ID ) ||
+                          ( cov_17.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected column order vector after" +
+                                "call to db.setColOrderVector(null): \"%s\"\n",
+                                cov_17.toString());
+                    }
+                }
+            }
+        }
+
+
+        /* pass a column order vector of incorrect length to
+         * db.setColOrderVector() -- should fail
+         */
+        if ( failures == 0 )
+        {
+            cov_18 = new Vector<Long>();
+            cov_18.add(col_1_ID);
+            cov_18.add(col_4_ID);
+            cov_18.add(col_2_ID);
+
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.setColOrderVector(cov_18);
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( completed )
+                    {
+                        outStream.print(
+                            "db.setColOrderVector(short vector) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("db.setColOrderVector(short vector) " +
+                                "failed to throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                cov_19 = db.getColOrderVector();
+
+                if ( cov_19 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.getColOrderVector() returned null " +
+                                "after db.setColOrderVector(short vector).\n");
+                    }
+                }
+                else if ( ( cov_19.size() != 4 ) ||
+                          ( cov_19.get(0) != col_1_ID ) ||
+                          ( cov_19.get(1) != col_4_ID ) ||
+                          ( cov_19.get(2) != col_2_ID ) ||
+                          ( cov_19.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected column order vector after" +
+                                "call to db.setColOrderVector(short vector): " +
+                                "\"%s\"\n", cov_19.toString());
+                    }
+                }
+            }
+        }
+
+
+        /* pass a column order vector with a bad column id to
+         * db.setColOrderVector() -- should fail
+         */
+        if ( failures == 0 )
+        {
+            cov_20 = new Vector<Long>();
+            cov_20.add(col_1_ID);
+            cov_20.add(col_4_ID);
+            cov_20.add(col_2_ID);
+            cov_20.add(mve_6_ID);
+
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.setColOrderVector(cov_20);
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( completed )
+                    {
+                        outStream.print(
+                            "db.setColOrderVector(bad id) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("db.setColOrderVector(bad id) " +
+                                "failed to throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                cov_21 = db.getColOrderVector();
+
+                if ( cov_21 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.getColOrderVector() returned null " +
+                                "after db.setColOrderVector(bad id).\n");
+                    }
+                }
+                else if ( ( cov_21.size() != 4 ) ||
+                          ( cov_21.get(0) != col_1_ID ) ||
+                          ( cov_21.get(1) != col_4_ID ) ||
+                          ( cov_21.get(2) != col_2_ID ) ||
+                          ( cov_21.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected column order vector after" +
+                                "call to db.setColOrderVector(bad id): " +
+                                "\"%s\"\n", cov_21.toString());
+                    }
+                }
+            }
+        }
+
+
+        /* pass a column order vector with a dulicate column id to
+         * db.setColOrderVector() -- should fail
+         */
+        if ( failures == 0 )
+        {
+            cov_22 = new Vector<Long>();
+            cov_22.add(col_1_ID);
+            cov_22.add(col_4_ID);
+            cov_22.add(col_2_ID);
+            cov_22.add(mve_1_ID);
+
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.setColOrderVector(cov_22);
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( completed ) ||
+                 ( ! threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( completed )
+                    {
+                        outStream.print(
+                            "db.setColOrderVector(dup id) completed.\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.print("db.setColOrderVector(dup id) " +
+                                "failed to throw a system error exception.\n");
+                    }
+                }
+            }
+            else
+            {
+                cov_23 = db.getColOrderVector();
+
+                if ( cov_23 == null )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.print("db.getColOrderVector() returned null " +
+                                "after db.setColOrderVector(dup id).\n");
+                    }
+                }
+                else if ( ( cov_23.size() != 4 ) ||
+                          ( cov_23.get(0) != col_1_ID ) ||
+                          ( cov_23.get(1) != col_4_ID ) ||
+                          ( cov_23.get(2) != col_2_ID ) ||
+                          ( cov_23.get(3) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected column order vector after" +
+                                "call to db.setColOrderVector(dup id): " +
+                                "\"%s\"\n", cov_23.toString());
+                    }
+                }
+            }
+        }
+
+
+        /* finally, delete all the columns, and verify that the
+         * getColOrderVector() returns the expected values.
+         */
+
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+            systemErrorExceptionString = null;
+
+            try
+            {
+                db.removeColumn(col_1_ID);
+
+                cov_24 = db.getColOrderVector();
+
+                db.removeColumn(col_4_ID);
+
+                cov_25 = db.getColOrderVector();
+
+                db.removeColumn(col_2_ID);
+
+                cov_26 = db.getColOrderVector();
+
+                db.removeColumn(col_6_ID);
+
+                cov_27 = db.getColOrderVector();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( cov_24 == null ) ||
+                 ( cov_25 == null ) ||
+                 ( cov_26 == null ) ||
+                 ( cov_27 == null ) ||
+                 ( ! completed ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( cov_24 == null )
+                    {
+                        outStream.print("cov_24 == null.\n");
+                    }
+
+                    if ( cov_25 == null )
+                    {
+                        outStream.print("cov_25 == null.\n");
+                    }
+
+                    if ( cov_26 == null )
+                    {
+                        outStream.print("cov_26 == null.\n");
+                    }
+
+                    if ( cov_27 == null )
+                    {
+                        outStream.print("cov_27 == null.\n");
+                    }
+
+                    if ( ! completed )
+                    {
+                        outStream.print("test failed to complete(2).\n");
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("unexpected system error " +
+                                "exception(2): \"%s\".\n",
+                                systemErrorExceptionString);
+                    }
+                }
+            }
+            else
+            {
+                if ( ( cov_24.size() != 3 ) ||
+                     ( cov_24.get(0) != col_4_ID ) ||
+                     ( cov_24.get(1) != col_2_ID ) ||
+                     ( cov_24.get(2) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_24: \"%s\"\n",
+                                cov_24.toString());
+                    }
+                }
+
+                if ( ( cov_25.size() != 2 ) ||
+                     ( cov_25.get(0) != col_2_ID ) ||
+                     ( cov_25.get(1) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_25: \"%s\"\n",
+                                cov_25.toString());
+                    }
+                }
+
+                if ( ( cov_26.size() != 1 ) ||
+                     ( cov_26.get(0) != col_6_ID ) )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_26: \"%s\"\n",
+                                cov_26.toString());
+                    }
+                }
+
+                if ( cov_27.size() != 0 )
+                {
+                    failures++;
+
+                    if ( verbose )
+                    {
+                        outStream.printf(
+                                "uexpected cov_27: \"%s\"\n",
+                                cov_27.toString());
+                    }
+                }
+            }
+        }
+
+        if ( failures > 0 )
+        {
+            pass = false;
+
+            if ( verbose )
+            {
+                outStream.printf("%d failures.\n", failures);
+            }
+        }
+        else if ( verbose )
+        {
+            outStream.print("All tests passed.\n");
+        }
+
+        if ( verbose )
+        {
+            /* print the banner again. */
+            outStream.print(testBanner);
+        }
+
+        if ( pass )
+        {
+            outStream.print(passBanner);
+        }
+        else
+        {
+            outStream.print(failBanner);
+        }
+
+        return pass;
+
+    } /* Database::TestGetSetColOrderVector() */
+
+
+    /*************************************************************************/
     /*********************** Listener Test Code: *****************************/
     /*************************************************************************/
 
@@ -10289,7 +11681,9 @@ public abstract class DatabaseTest {
      *
      * Changes:
      *
-     *    - None.
+     *    - Added call to TestMVEModListeners__test_02().
+     *
+     *                                              -- 9/6/09
      */
 
     public static boolean TestMVEModListeners(java.io.PrintStream outStream,
@@ -10312,6 +11706,7 @@ public abstract class DatabaseTest {
         }
 
         failures += TestMVEModListeners__test_01(outStream, verbose);
+        failures += TestMVEModListeners__test_02(outStream, verbose);
 
         if ( failures > 0 )
         {
@@ -12156,6 +13551,3106 @@ public abstract class DatabaseTest {
         return failures;
 
     } /* Datavase::TestMVEModListeners__test_01() */
+
+
+    /**
+     * TestMVEModListeners__test_02()
+     *
+     * This test is an extension of TestMVEModListeners__test_01() intended
+     * to add basic smoke checks for column predicates and undefined data
+     * values assigned to formal arguments of all types.
+     *
+     * Allocate a data base, and create several predicates and matrix data
+     * columns with formal arguments of all types.
+     * 
+     * Insert a selection of cells in the columns with various column predicate
+     * and predicate values.
+     *
+     * Change the values of the cells to undefined values.  Verify that the
+     * changes take.
+     *
+     * Then change the names of the formal arguments.  Verify that the
+     * values of the undefined values are modified accordingly.
+     *
+     * Changes the values of the cells and back to defined values again.
+     * Verify that the changes take.
+     *
+     * Ensure that the test cells contain column predicates, both as values
+     * of untypes and column predicate arguments, and as values of argument
+     * of predicates.
+     *
+     * Add, remove, and re-arrange formal arguments in the underlying matrix
+     * vocab elements.  Verify that the instances are changed accordingly.
+     *
+     * Combine the above and verify the expected results.
+     *
+     * Return the number of failures.
+     *
+     *                                               -- 9/6/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    private static int TestMVEModListeners__test_02(
+            java.io.PrintStream outStream,
+            boolean verbose)
+    throws SystemErrorException {
+        final String header = "test 02: ";
+        String systemErrorExceptionString = "";
+        String expectedString0 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<val>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<val>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), " +
+               "pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), " +
+               "mdc0(<val>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, (1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (pve0(4))), " +
+                 "(5, 00:00:04:000, 00:00:05:000, (\"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, (00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, (<val>)))), " +
+               "(pdc, " +
+                 "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                  "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                  "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+               "(fdc, " +
+                 "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                  "(2, 00:00:01:000, 00:00:02:000, (<val>)))), " +
+               "(mdc1, " +
+                 "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
+                  "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                  "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
+                  "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+               "(ndc, " +
+                 "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                  "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                  "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                 "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                  "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                  "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                  "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+               "(mdc3, ()), " +
+               "(tdc, " +
+                 "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+               "(idc, " +
+                 "((1, 00:00:00:000, 00:00:01:000, (0)), " +
+                  "(2, 00:00:01:000, 00:00:02:000, (<val>))))))))";
+        String expectedString1 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<val>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<val>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), " +
+               "pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), " +
+               "mdc0(<val>, <arg1>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, (1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (pve0(4))), " +
+                 "(5, 00:00:04:000, 00:00:05:000, (\"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, (00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, (<val>)))), " +
+               "(pdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+               "(fdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)))), " +
+               "(mdc1, " +
+                "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+               "(ndc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                "((1, 00:00:00:000, 00:00:01:000, (pve0(1), <arg1>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2), <arg1>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3), <arg1>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+               "(mdc3, ()), " +
+               "(tdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+               "(idc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0)), " +
+                "(2, 00:00:01:000, 00:00:02:000, (<val>))))))))";
+        String expectedString2 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<val>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<val>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), " +
+               "pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), " +
+               "mdc0(<arg-1>, <val>, <arg1>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, (1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (pve0(4))), " +
+                 "(5, 00:00:04:000, 00:00:05:000, (\"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, (00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, (<val>)))), " +
+               "(pdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+               "(fdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)))), " +
+               "(mdc1, " +
+                "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+               "(ndc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, pve0(1), <arg1>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, pve1(1, 2), <arg1>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, pve2(1, 2, 3), <arg1>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (<arg-1>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+               "(mdc3, ()), " +
+               "(tdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+               "(idc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>))))))))";
+        String expectedString3 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<val>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<val>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), " +
+               "pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), " +
+               "mdc0(<arg-1>, <arg0.5>, <val>, <arg1>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, (1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (pve0(4))), " +
+                 "(5, 00:00:04:000, 00:00:05:000, (\"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, (00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, (<val>)))), " +
+               "(pdc, " +
+                 "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                  "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                  "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+                "(fdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<val>)))), " +
+               "(mdc1, " +
+                 "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha))), " +
+                  "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo))), " +
+                  "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie))), " +
+                  "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+               "(ndc, " +
+                 "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                 "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                  "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                  "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                  "(4, 00:00:03:000, 00:00:04:000, (<arg-1>, <arg0.5>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+                "(mdc3, ()), " +
+                "(tdc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+                "(idc, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (0)), " +
+                    "(2, 00:00:01:000, 00:00:02:000, (<val>))))))))";
+        String expectedString4 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<val>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<val>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, " +
+                    "<arg6-qs>, <arg7-ts>, <arg8-ut>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), " +
+               "pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), " +
+               "mdc0(<arg-1>, <arg0.5>, <val>, <arg1>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, (1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (pve0(4))), (5, 00:00:04:000, 00:00:05:000, (\"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, (00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, (<val>)))), " +
+               "(pdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+               "(fdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)))), " +
+               "(mdc1, " +
+                "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)))), " +
+               "(ndc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (<arg-1>, <arg0.5>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+               "(mdc3, ()), " +
+               "(tdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+               "(idc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0)), " +
+                "(2, 00:00:01:000, 00:00:02:000, (<val>))))))))";
+        String expectedString5 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<val>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<arg0-ut>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, " +
+                    "<arg5-p>, <arg6-qs>, <arg7-ts>, <val>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, " +
+                    "<arg6-qs>, <arg7-ts>, <arg8-ut>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), mdc0(<arg-1>, <arg0.5>, <val>, <arg1>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                 "(5, 00:00:04:000, 00:00:05:000, (<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, (<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, (<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, <val>)))), " +
+               "(pdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+               "(fdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)))), " +
+               "(mdc1, " +
+                "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)))), " +
+               "(ndc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (<arg-1>, <arg0.5>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+               "(mdc3, ()), " +
+               "(tdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+               "(idc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0)), " +
+                "(2, 00:00:01:000, 00:00:02:000, (<val>))))))))";
+        String expectedString6 = 
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<val>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<arg0-ut>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, <arg6-qs>, <arg7-ts>, <val>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, <arg6-qs>, <arg7-ts>, <arg8-ut>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), " +
+               "pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), " +
+               "mdc0(<arg-1>, <arg0.5>, <val>, <arg1>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                 "(5, 00:00:04:000, 00:00:05:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, <val>)))), " +
+               "(pdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+               "(fdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)))), " +
+               "(mdc1, " +
+                "((1, 00:00:00:000, 00:00:01:000, " +
+                    "(pve0(alpha), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, " +
+                    "(pve1(alpha, bravo), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, " +
+                    "(pve2(alpha, bravo, charlie), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(5, 00:00:04:000, 00:00:05:000, " +
+                    "(11, mdc3(11, 00:00:00:000, 00:00:00:001, a_nominal), 10.000000, 10, TEN, pve0(<arg0>), \"ten\", 00:01:00:000, 11.000000)), " +
+                 "(6, 00:00:06:000, 00:00:07:000, " +
+                    "(TWENTY-ONE, " +
+                     "mdc3(<ord>, <onset>, <offset>, <val>), " +
+                     "20.000000, " +
+                     "20, " +
+                     "TWENTY, " +
+                     "pve1(mdc3(<ord>, <onset>, <offset>, <val>), <arg1>), " +
+                     "\"twenty\", " +
+                     "00:02:00:000, " +
+                     "\"twentry-one\")), " +
+                 "(7, 00:00:07:000, 00:00:08:000, " +
+                    "(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, <arg6-qs>, <arg7-ts>, <arg8-ut>)))), " +
+               "(ndc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                "((1, 00:00:00:000, 00:00:01:000, " +
+                    "(<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, " +
+                    "(<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, " +
+                    "(<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(<arg-1>, <arg0.5>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+               "(mdc3, ()), " +
+               "(tdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+               "(idc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>))))))))";
+        String expectedString7 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<val>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<arg0-ut>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, <arg6-qs>, <arg7-ts>, <val>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, <arg6-qs>, <arg7-ts>, <arg8-ut>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), " +
+               "pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), " +
+               "mdc0(<arg-1>, <arg0.5>, <val>, <arg1>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                 "(5, 00:00:04:000, 00:00:05:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, " +
+                    "(<arg0-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, <val>)), " +
+                 "(8, 00:00:04:000, 00:00:05:000, " +
+                    "(110, " +
+                     "mdc2(11, " +
+                          "00:00:00:000, " +
+                          "00:00:00:001, " +
+                          "nan, " +
+                          "mdc3(11, 00:00:00:000, 00:00:00:001, yan), " +
+                          "222.200000, " +
+                          "222, " +
+                          "TWO-HUNDRED-TWENTY-TWO, " +
+                          "pve1(<arg0>, <arg1>), " +
+                          "\"two-hundred-twenty-two\", " +
+                          "00:00:02:002, <val>), " +
+                     "100.000000, " +
+                     "100, " +
+                     "HUNDRED, " +
+                     "pve0(<arg0>), " +
+                     "\"hundred\", " +
+                     "00:10:00:000, " +
+                     "110.000000)), " +
+                 "(9, 00:00:06:000, 00:00:07:000, " +
+                   "(TWO-HUNDRED-ONE, " +
+                    "mdc2(<ord>, <onset>, <offset>, <arg0-ut>, <arg1-cp>, " +
+                         "<arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, <arg6-qs>, " +
+                         "<arg7-ts>, <val>), " +
+                    "200.000000, " +
+                    "200, " +
+                    "TWO-HUNDRED, " +
+                    "pve1(<arg0>, <arg1>), " +
+                    "\"two-hundred\", " +
+                    "00:20:00:000, " +
+                    "\"two-hundred-one\")))), " +
+               "(pdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+               "(fdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)))), " +
+               "(mdc1, " +
+                "((1, 00:00:00:000, 00:00:01:000, (pve0(alpha), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (pve1(alpha, bravo), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve2(alpha, bravo, charlie), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                   "(pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), " +
+                    "(), " +
+                    "0.000000, " +
+                    "0, " +
+                    ", " +
+                    "(), " +
+                    "\"\", " +
+                    "00:00:00:000, " +
+                    "<arg8-ut>)), " +
+                 "(5, 00:00:04:000, 00:00:05:000, " +
+                   "(11, " +
+                    "mdc3(11, 00:00:00:000, 00:00:00:001, a_nominal), " +
+                    "10.000000, " +
+                    "10, " +
+                    "TEN, " +
+                    "pve0(<arg0>), " +
+                    "\"ten\", " +
+                    "00:01:00:000, " +
+                    "11.000000)), " +
+                 "(6, 00:00:06:000, 00:00:07:000, " +
+                   "(TWENTY-ONE, " +
+                    "mdc3(<ord>, <onset>, <offset>, <val>), " +
+                    "20.000000, " +
+                    "20, " +
+                    "TWENTY, " +
+                    "pve1(mdc3(<ord>, <onset>, <offset>, <val>), <arg1>), " +
+                    "\"twenty\", " +
+                    "00:02:00:000, " +
+                    "\"twentry-one\")), " +
+                 "(7, 00:00:07:000, 00:00:08:000, " +
+                   "(<val>, " +
+                    "<arg1-cp>, " +
+                    "<arg2-f>, " +
+                    "<arg3-i>, " +
+                    "<arg4-n>, " +
+                    "<arg5-p>, " +
+                    "<arg6-qs>, " +
+                    "<arg7-ts>, " +
+                    "<arg8-ut>)))), " +
+               "(ndc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                   "(<arg-1>, " +
+                    "<arg0.5>, " +
+                    "pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), " +
+                    "<arg1>)))), " +
+               "(mdc3, ()), " +
+               "(tdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+               "(idc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>))))))))";
+        String expectedString8 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<val>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<arg-a-ut>, <arg-b-cp>, <arg-c-f>, <arg-d-i>, <arg-e-n>, " +
+                    "<arg-f-p>, <arg-g-qs>, <arg-h-ts>, <arg-i-ut>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, " +
+                    "<arg6-qs>, <arg7-ts>, <arg8-ut>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), " +
+               "pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), " +
+               "mdc0(<arg-1>, <arg0.5>, <val>, <arg1>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                 "(5, 00:00:04:000, 00:00:05:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg-i-ut>)), " +
+                 "(8, 00:00:04:000, 00:00:05:000, " +
+                   "(110, " +
+                    "mdc2(11, " +
+                         "00:00:00:000, " +
+                         "00:00:00:001, " +
+                         "nan, " +
+                         "mdc3(11, " +
+                              "00:00:00:000, " +
+                              "00:00:00:001, " +
+                              "yan), " +
+                         "222.200000, " +
+                         "222, " +
+                         "TWO-HUNDRED-TWENTY-TWO, " +
+                         "pve1(<arg0>, <arg1>), " +
+                         "\"two-hundred-twenty-two\", " +
+                         "00:00:02:002, " +
+                         "<arg-i-ut>), " +
+                    "100.000000, " +
+                    "100, " +
+                    "HUNDRED, " +
+                    "pve0(<arg0>), " +
+                    "\"hundred\", " +
+                    "00:10:00:000, " +
+                    "110.000000)), " +
+                 "(9, 00:00:06:000, 00:00:07:000, " +
+                   "(TWO-HUNDRED-ONE, " +
+                     "mdc2(<ord>, " +
+                          "<onset>, " +
+                          "<offset>, " +
+                          "<arg-a-ut>, " +
+                          "<arg-b-cp>, " +
+                          "<arg-c-f>, " +
+                          "<arg-d-i>, " +
+                          "<arg-e-n>, " +
+                          "<arg-f-p>, " +
+                          "<arg-g-qs>, " +
+                          "<arg-h-ts>, " +
+                          "<arg-i-ut>), " +
+                     "200.000000, " +
+                     "200, " +
+                     "TWO-HUNDRED, " +
+                     "pve1(<arg0>, <arg1>), " +
+                     "\"two-hundred\", " +
+                     "00:20:00:000, " +
+                     "\"two-hundred-one\")))), " +
+               "(pdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+               "(fdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)))), " +
+               "(mdc1, " +
+                "((1, 00:00:00:000, 00:00:01:000, " +
+                   "(pve0(alpha), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, " +
+                   "(pve1(alpha, bravo), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, " +
+                   "(pve2(alpha, bravo, charlie), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                   "(pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), " +
+                    "(), " +
+                    "0.000000, " +
+                    "0, " +
+                    ", " +
+                    "(), " +
+                    "\"\", " +
+                    "00:00:00:000, " +
+                    "<arg8-ut>)), " +
+                 "(5, 00:00:04:000, 00:00:05:000, " +
+                   "(11, " +
+                    "mdc3(11, 00:00:00:000, 00:00:00:001, a_nominal), " +
+                    "10.000000, " +
+                    "10, " +
+                    "TEN, " +
+                    "pve0(<arg0>), " +
+                    "\"ten\", " +
+                    "00:01:00:000, " +
+                    "11.000000)), " +
+                 "(6, 00:00:06:000, 00:00:07:000, " +
+                   "(TWENTY-ONE, " +
+                     "mdc3(<ord>, <onset>, <offset>, <val>), " +
+                     "20.000000, " +
+                     "20, " +
+                     "TWENTY, " +
+                     "pve1(mdc3(<ord>, <onset>, <offset>, <val>), <arg1>), " +
+                     "\"twenty\", " +
+                     "00:02:00:000, " +
+                     "\"twentry-one\")), " +
+                 "(7, 00:00:07:000, 00:00:08:000, " +
+                   "(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, <arg6-qs>, <arg7-ts>, <arg8-ut>)))), " +
+               "(ndc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                   "(<arg-1>, <arg0.5>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+               "(mdc3, ()), " +
+               "(tdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+               "(idc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>))))))))";
+        String expectedString9 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<arg-a-ut>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<arg-a-ut>, <arg-b-cp>, <arg-c-f>, <arg-d-i>, <arg-e-n>, " +
+                    "<arg-f-p>, <arg-g-qs>, <arg-h-ts>, <arg-i-ut>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, " +
+                    "<arg6-qs>, <arg7-ts>, <arg8-ut>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), " +
+               "pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), " +
+               "mdc0(<arg-1>, <arg0.5>, <val>, <arg1>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                 "(5, 00:00:04:000, 00:00:05:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg-i-ut>)), " +
+                 "(8, 00:00:04:000, 00:00:05:000, " +
+                   "(110, " +
+                    "mdc2(11, " +
+                         "00:00:00:000, " +
+                         "00:00:00:001, " +
+                         "nan, " +
+                         "mdc3(11, " +
+                              "00:00:00:000, " +
+                              "00:00:00:001, " +
+                              "yan), " +
+                         "222.200000, " +
+                         "222, " +
+                         "TWO-HUNDRED-TWENTY-TWO, " +
+                         "pve1(<arg0>, <arg1>), " +
+                         "\"two-hundred-twenty-two\", " +
+                         "00:00:02:002, " +
+                         "<arg-i-ut>), " +
+                    "100.000000, " +
+                    "100, " +
+                    "HUNDRED, " +
+                    "pve0(<arg0>), " +
+                    "\"hundred\", " +
+                    "00:10:00:000, " +
+                    "110.000000)), " +
+                 "(9, 00:00:06:000, 00:00:07:000, " +
+                   "(TWO-HUNDRED-ONE, " +
+                     "mdc2(<ord>, " +
+                          "<onset>, " +
+                          "<offset>, " +
+                          "<arg-a-ut>, " +
+                          "<arg-b-cp>, " +
+                          "<arg-c-f>, " +
+                          "<arg-d-i>, " +
+                          "<arg-e-n>, " +
+                          "<arg-f-p>, " +
+                          "<arg-g-qs>, " +
+                          "<arg-h-ts>, " +
+                          "<arg-i-ut>), " +
+                     "200.000000, " +
+                     "200, " +
+                     "TWO-HUNDRED, " +
+                     "pve1(<arg0>, <arg1>), " +
+                     "\"two-hundred\", " +
+                     "00:20:00:000, " +
+                     "\"two-hundred-one\")))), " +
+               "(pdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+               "(fdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)))), " +
+               "(mdc1, " +
+                "((1, 00:00:00:000, 00:00:01:000, " +
+                   "(pve0(alpha), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, " +
+                   "(pve1(alpha, bravo), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, " +
+                   "(pve2(alpha, bravo, charlie), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                   "(pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), " +
+                    "(), " +
+                    "0.000000, " +
+                    "0, " +
+                    ", " +
+                    "(), " +
+                    "\"\", " +
+                    "00:00:00:000, " +
+                    "<arg8-ut>)), " +
+                 "(5, 00:00:04:000, 00:00:05:000, " +
+                   "(11, " +
+                    "mdc3(11, 00:00:00:000, 00:00:00:001, a_nominal), " +
+                    "10.000000, " +
+                    "10, " +
+                    "TEN, " +
+                    "pve0(<arg0>), " +
+                    "\"ten\", " +
+                    "00:01:00:000, " +
+                    "11.000000)), " +
+                 "(6, 00:00:06:000, 00:00:07:000, " +
+                   "(TWENTY-ONE, " +
+                     "mdc3(<ord>, <onset>, <offset>, <arg-a-ut>), " +
+                     "20.000000, " +
+                     "20, " +
+                     "TWENTY, " +
+                     "pve1(mdc3(<ord>, <onset>, <offset>, <arg-a-ut>), <arg1>), " +
+                     "\"twenty\", " +
+                     "00:02:00:000, " +
+                     "\"twentry-one\")), " +
+                 "(7, 00:00:07:000, 00:00:08:000, " +
+                   "(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, <arg6-qs>, <arg7-ts>, <arg8-ut>)))), " +
+               "(ndc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                   "(<arg-1>, <arg0.5>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+               "(mdc3, ()), " +
+               "(tdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+               "(idc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<val>))))))))";
+        String expectedString10 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<arg-a-ut>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<arg-a-ut>, <arg-b-cp>, <arg-c-f>, <arg-d-i>, <arg-e-n>, " +
+                    "<arg-f-p>, <arg-g-qs>, <arg-h-ts>, <arg-i-ut>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, " +
+                    "<arg6-qs>, <arg7-ts>, <arg8-ut>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), " +
+               "pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), " +
+               "mdc0(<arg-1>, <arg0.5>, <val>, <arg1>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                 "(5, 00:00:04:000, 00:00:05:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg-i-ut>)), " +
+                 "(8, 00:00:04:000, 00:00:05:000, " +
+                   "(110, " +
+                    "mdc2(11, " +
+                         "00:00:00:000, " +
+                         "00:00:00:001, " +
+                         "nan, " +
+                         "mdc3(11, " +
+                              "00:00:00:000, " +
+                              "00:00:00:001, " +
+                              "yan), " +
+                         "222.200000, " +
+                         "222, " +
+                         "TWO-HUNDRED-TWENTY-TWO, " +
+                         "pve1(<arg0>, <arg1>), " +
+                         "\"two-hundred-twenty-two\", " +
+                         "00:00:02:002, " +
+                         "<arg-i-ut>), " +
+                    "100.000000, " +
+                    "100, " +
+                    "HUNDRED, " +
+                    "pve0(<arg0>), " +
+                    "\"hundred\", " +
+                    "00:10:00:000, " +
+                    "110.000000)), " +
+                 "(9, 00:00:06:000, 00:00:07:000, " +
+                   "(TWO-HUNDRED-ONE, " +
+                     "mdc2(<ord>, " +
+                          "<onset>, " +
+                          "<offset>, " +
+                          "<arg-a-ut>, " +
+                          "<arg-b-cp>, " +
+                          "<arg-c-f>, " +
+                          "<arg-d-i>, " +
+                          "<arg-e-n>, " +
+                          "<arg-f-p>, " +
+                          "<arg-g-qs>, " +
+                          "<arg-h-ts>, " +
+                          "<arg-i-ut>), " +
+                     "200.000000, " +
+                     "200, " +
+                     "TWO-HUNDRED, " +
+                     "pve1(<arg0>, <arg1>), " +
+                     "\"two-hundred\", " +
+                     "00:20:00:000, " +
+                     "\"two-hundred-one\")))), " +
+               "(pdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (())), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (pve1(<arg0>, <arg1>))), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+               "(fdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (2.000000)))), " +
+               "(mdc1, " +
+                "((1, 00:00:00:000, 00:00:01:000, " +
+                   "(pve0(alpha), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, " +
+                   "(pve1(alpha, bravo), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, " +
+                   "(pve2(alpha, bravo, charlie), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                   "(pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), " +
+                    "(), " +
+                    "0.000000, " +
+                    "0, " +
+                    ", " +
+                    "(), " +
+                    "\"\", " +
+                    "00:00:00:000, " +
+                    "<arg8-ut>)), " +
+                 "(5, 00:00:04:000, 00:00:05:000, " +
+                   "(11, " +
+                    "mdc3(11, 00:00:00:000, 00:00:00:001, a_nominal), " +
+                    "10.000000, " +
+                    "10, " +
+                    "TEN, " +
+                    "pve0(<arg0>), " +
+                    "\"ten\", " +
+                    "00:01:00:000, " +
+                    "11.000000)), " +
+                 "(6, 00:00:06:000, 00:00:07:000, " +
+                   "(TWENTY-ONE, " +
+                     "mdc3(<ord>, <onset>, <offset>, <arg-a-ut>), " +
+                     "20.000000, " +
+                     "20, " +
+                     "TWENTY, " +
+                     "pve1(mdc3(<ord>, <onset>, <offset>, <arg-a-ut>), <arg1>), " +
+                     "\"twenty\", " +
+                     "00:02:00:000, " +
+                     "\"twentry-one\")), " +
+                 "(7, 00:00:07:000, 00:00:08:000, " +
+                   "(nominal_one, " +
+                    "mdc3(<ord>, <onset>, <offset>, <arg-a-ut>), " +
+                    "1.000000, " +
+                    "1, " +
+                    "ONE, " +
+                    "pve1(mdc3(<ord>, <onset>, <offset>, <arg-a-ut>), <arg1>), " +
+                    "\"quote string one\", " +
+                    "00:02:00:000, " +
+                    "\"quote-string-1\")))), " +
+               "(ndc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (another_nominal)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                   "(<arg-1>, <arg0.5>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+               "(mdc3, ()), " +
+               "(tdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, ()), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (another text string)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+               "(idc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (0)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (2))))))))";
+        String expectedString11 =
+        "(Undefined " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(mdc3(<arg-a-ut>), " +
+               "tdc(<val>), " +
+               "idc(<val>), " +
+               "mdc2(<arg-a-ut>, <arg-b-cp>, <arg-c-f>, <arg-d-i>, <arg-e-n>, " +
+                    "<arg-f-p>, <arg-g-qs>, <arg-h-ts>, <arg-i-ut>), " +
+               "pdc(<val>), " +
+               "fdc(<val>), " +
+               "mdc1(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, " +
+                    "<arg6-qs>, <arg7-ts>, <arg8-ut>), " +
+               "ndc(<val>), " +
+               "pve2(<arg0>, <arg1>, <arg2>), " +
+               "pve1(<arg0>, <arg1>), " +
+               "pve0(<arg0>), " +
+               "mdc0(<arg-1>, <arg0.5>, <val>, <arg1>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((mdc2, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 1)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 2.000000)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                 "(5, 00:00:04:000, 00:00:05:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                 "(6, 00:00:05:000, 00:00:06:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                 "(7, 00:00:06:000, 00:00:07:000, (<arg-a-ut>, (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg-i-ut>)), " +
+                 "(8, 00:00:04:000, 00:00:05:000, " +
+                   "(110, " +
+                    "mdc2(11, " +
+                         "00:00:00:000, " +
+                         "00:00:00:001, " +
+                         "nan, " +
+                         "mdc3(11, " +
+                              "00:00:00:000, " +
+                              "00:00:00:001, " +
+                              "yan), " +
+                         "222.200000, " +
+                         "222, " +
+                         "TWO-HUNDRED-TWENTY-TWO, " +
+                         "pve1(<arg0>, <arg1>), " +
+                         "\"two-hundred-twenty-two\", " +
+                         "00:00:02:002, " +
+                         "<arg-i-ut>), " +
+                    "100.000000, " +
+                    "100, " +
+                    "HUNDRED, " +
+                    "pve0(<arg0>), " +
+                    "\"hundred\", " +
+                    "00:10:00:000, " +
+                    "110.000000)), " +
+                 "(9, 00:00:06:000, 00:00:07:000, " +
+                   "(TWO-HUNDRED-ONE, " +
+                     "mdc2(<ord>, " +
+                          "<onset>, " +
+                          "<offset>, " +
+                          "<arg-a-ut>, " +
+                          "<arg-b-cp>, " +
+                          "<arg-c-f>, " +
+                          "<arg-d-i>, " +
+                          "<arg-e-n>, " +
+                          "<arg-f-p>, " +
+                          "<arg-g-qs>, " +
+                          "<arg-h-ts>, " +
+                          "<arg-i-ut>), " +
+                     "200.000000, " +
+                     "200, " +
+                     "TWO-HUNDRED, " +
+                     "pve1(<arg0>, <arg1>), " +
+                     "\"two-hundred\", " +
+                     "00:20:00:000, " +
+                     "\"two-hundred-one\")))), " +
+               "(pdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<val>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (pve1(<arg0>, <arg1>))), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (pve0(4))))), " +
+               "(fdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<val>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (2.000000)))), " +
+               "(mdc1, " +
+                "((1, 00:00:00:000, 00:00:01:000, " +
+                   "(pve0(alpha), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, " +
+                   "(pve1(alpha, bravo), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, " +
+                   "(pve2(alpha, bravo, charlie), (), 0.000000, 0, , (), \"\", 00:00:00:000, <arg8-ut>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                   "(pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), " +
+                    "(), " +
+                    "0.000000, " +
+                    "0, " +
+                    ", " +
+                    "(), " +
+                    "\"\", " +
+                    "00:00:00:000, " +
+                    "<arg8-ut>)), " +
+                 "(5, 00:00:04:000, 00:00:05:000, " +
+                   "(11, " +
+                    "mdc3(11, 00:00:00:000, 00:00:00:001, a_nominal), " +
+                    "10.000000, " +
+                    "10, " +
+                    "TEN, " +
+                    "pve0(<arg0>), " +
+                    "\"ten\", " +
+                    "00:01:00:000, " +
+                    "11.000000)), " +
+                 "(6, 00:00:06:000, 00:00:07:000, " +
+                   "(TWENTY-ONE, " +
+                     "mdc3(<ord>, <onset>, <offset>, <arg-a-ut>), " +
+                     "20.000000, " +
+                     "20, " +
+                     "TWENTY, " +
+                     "pve1(mdc3(<ord>, <onset>, <offset>, <arg-a-ut>), <arg1>), " +
+                     "\"twenty\", " +
+                     "00:02:00:000, " +
+                     "\"twentry-one\")), " +
+                 "(7, 00:00:07:000, 00:00:08:000, " +
+                   "(<val>, <arg1-cp>, <arg2-f>, <arg3-i>, <arg4-n>, <arg5-p>, <arg6-qs>, <arg7-ts>, <arg8-ut>)))), " +
+               "(ndc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<val>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (another_nominal)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a_nominal)))), " +
+               "(mdc0, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<arg-1>, <arg0.5>, pve0(1), <arg1>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (<arg-1>, <arg0.5>, pve1(1, 2), <arg1>)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (<arg-1>, <arg0.5>, pve2(1, 2, 3), <arg1>)), " +
+                 "(4, 00:00:03:000, 00:00:04:000, " +
+                   "(<arg-1>, <arg0.5>, pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)), <arg1>)))), " +
+               "(mdc3, ()), " +
+               "(tdc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<val>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (another text string)), " +
+                 "(3, 00:00:02:000, 00:00:03:000, (a text string)))), " +
+               "(idc, " +
+                "((1, 00:00:00:000, 00:00:01:000, (<val>)), " +
+                 "(2, 00:00:01:000, 00:00:02:000, (2))))))))";
+        String expectedString12 =
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<val>), " +
+                 "mdc3(<val>), " +
+                 "mdc1(<arg1>, <arg2>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <val>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 2.000000)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, <val>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.000000, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.000000)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.000000, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (0.000000, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (0.000000, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (0.000000, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (0.000000, 0, (), \"\", 00:00:00:000, <arg7>)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (10.000000, 10, pve0(<arg0>), \"ten\", 00:01:00:000, 11.000000)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (20.000000, 20, pve1(<arg0>, <arg1>), \"twenty\", 00:02:00:000, \"twentry-one\"))))))))";
+        String expectedString13 =
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<val>), " +
+                 "mdc3(<val>), " +
+                 "mdc1(<arg1>, <arg2>, <arg4>, <arg5>, <arg6>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <val>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 2.000000)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, <val>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.000000, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.000000)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.000000, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (0.000000, 0, (), \"\", 00:00:00:000)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (0.000000, 0, (), \"\", 00:00:00:000)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (0.000000, 0, (), \"\", 00:00:00:000)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (0.000000, 0, (), \"\", 00:00:00:000)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (10.000000, 10, pve0(<arg0>), \"ten\", 00:01:00:000)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (20.000000, 20, pve1(<arg0>, <arg1>), \"twenty\", 00:02:00:000))))))))";
+        String expectedString14 =
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<val>), " +
+                 "mdc3(<val>), " +
+                 "mdc1(<arg4>, <arg1>, <arg2>, <arg5>, <arg6>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <val>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 2.000000)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, <val>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.000000, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.000000)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.000000, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, ((), 0.000000, 0, \"\", 00:00:00:000)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, ((), 0.000000, 0, \"\", 00:00:00:000)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, ((), 0.000000, 0, \"\", 00:00:00:000)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, ((), 0.000000, 0, \"\", 00:00:00:000)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (pve0(<arg0>), 10.000000, 10, \"ten\", 00:01:00:000)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (pve1(<arg0>, <arg1>), 20.000000, 20, \"twenty\", 00:02:00:000))))))))";
+        String expectedString15 =
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<val>), " +
+                 "mdc3(<val>), " +
+                 "mdc1(<arg6>, <arg5>, <arg2>, <arg4>, <arg1>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg0>, <arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <val>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 1)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 2.000000)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, THREE)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, pve0(4))), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, \"five\")), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, 00:01:00:000)), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (<arg0>, 0.000000, 0, , (), \"\", 00:00:00:000, <val>)), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (110, 100.000000, 100, HUNDRED, pve0(<arg0>), \"hundred\", 00:10:00:000, 110.000000)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (TWO-HUNDRED-ONE, 200.000000, 200, TWO-HUNDRED, pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, \"two-hundred-one\")))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (00:00:00:000, \"\", 0, (), 0.000000)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (00:00:00:000, \"\", 0, (), 0.000000)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (00:00:00:000, \"\", 0, (), 0.000000)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (00:00:00:000, \"\", 0, (), 0.000000)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (00:01:00:000, \"ten\", 10, pve0(<arg0>), 10.000000)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (00:02:00:000, \"twenty\", 20, pve1(<arg0>, <arg1>), 20.000000))))))))";
+        String expectedString16 =
+          "(Undefined " +
+            "((VocabList) " +
+              "(vl_contents: " +
+                "(mdc0(<val>), " +
+                 "mdc3(<val>), " +
+                 "mdc1(<arg6>, <arg5>, <arg2>, <arg4>, <arg1>), " +
+                 "pve2(<arg0>, <arg1>, <arg2>), " +
+                 "pve1(<arg0>, <arg1>), " +
+                 "mdc2(<arg1>, <arg2>, <new_arg>, <arg4>, <arg5>, <arg6>, <arg3>), " +
+                 "pve0(<arg0>)))) " +
+            "((ColumnList) " +
+              "(cl_contents: " +
+                "((mdc2, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (0.000000, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (0.000000, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (0.000000, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (0.000000, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (0.000000, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(6, 00:00:05:000, 00:00:06:000, (0.000000, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(7, 00:00:06:000, 00:00:07:000, (0.000000, 0, , (), \"\", 00:00:00:000, )), " +
+                   "(8, 00:00:04:000, 00:00:05:000, (100.000000, 100, , pve0(<arg0>), \"hundred\", 00:10:00:000, HUNDRED)), " +
+                   "(9, 00:00:06:000, 00:00:07:000, (200.000000, 200, , pve1(<arg0>, <arg1>), \"two-hundred\", 00:20:00:000, TWO-HUNDRED)))), " +
+                "(mdc0, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (pve0(1))), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (pve1(1, 2))), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (pve2(1, 2, 3))), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (pve2(pve0(<arg0>), pve1(<arg0>, <arg1>), pve2(<arg0>, <arg1>, <arg2>)))))), " +
+                "(mdc3, ()), " +
+                "(mdc1, " +
+                  "((1, 00:00:00:000, 00:00:01:000, (00:00:00:000, \"\", 0, (), 0.000000)), " +
+                   "(2, 00:00:01:000, 00:00:02:000, (00:00:00:000, \"\", 0, (), 0.000000)), " +
+                   "(3, 00:00:02:000, 00:00:03:000, (00:00:00:000, \"\", 0, (), 0.000000)), " +
+                   "(4, 00:00:03:000, 00:00:04:000, (00:00:00:000, \"\", 0, (), 0.000000)), " +
+                   "(5, 00:00:04:000, 00:00:05:000, (00:01:00:000, \"ten\", 10, pve0(<arg0>), 10.000000)), " +
+                   "(6, 00:00:06:000, 00:00:07:000, (00:02:00:000, \"twenty\", 20, pve1(<arg0>, <arg1>), 20.000000))))))))";
+        String testStringA = null;
+        String testStringB = null;
+        String testStringC = null;
+        boolean completed;
+        boolean threwSystemErrorException = false;
+        int failures = 0;
+        long fdcID = DBIndex.INVALID_ID;
+        long idcID = DBIndex.INVALID_ID;
+        long mdc0ID = DBIndex.INVALID_ID;
+        long mdc1ID = DBIndex.INVALID_ID;
+        long mdc2ID = DBIndex.INVALID_ID;
+        long mdc3ID = DBIndex.INVALID_ID;
+        long ndcID = DBIndex.INVALID_ID;
+        long pdcID = DBIndex.INVALID_ID;
+        long tdcID = DBIndex.INVALID_ID;
+        long fmveID = DBIndex.INVALID_ID;
+        long imveID = DBIndex.INVALID_ID;
+        long mmve0ID = DBIndex.INVALID_ID;
+        long mmve1ID = DBIndex.INVALID_ID;
+        long mmve2ID = DBIndex.INVALID_ID;
+        long mmve3ID = DBIndex.INVALID_ID;
+        long nmveID = DBIndex.INVALID_ID;
+        long pmveID = DBIndex.INVALID_ID;
+        long tmveID = DBIndex.INVALID_ID;
+        long pve0ID = DBIndex.INVALID_ID;
+        long pve1ID = DBIndex.INVALID_ID;
+        long pve2ID = DBIndex.INVALID_ID;
+        Database db = null;
+        DataColumn fdc = null;
+        DataColumn idc = null;
+        DataColumn mdc0 = null;
+        DataColumn mdc1 = null;
+        DataColumn mdc2 = null;
+        DataColumn mdc3 = null;
+        DataColumn ndc = null;
+        DataColumn pdc = null;
+        DataColumn tdc = null;
+        MatrixVocabElement fmve = null;
+        MatrixVocabElement imve = null;
+        MatrixVocabElement mmve0 = null;
+        MatrixVocabElement mmve1 = null;
+        MatrixVocabElement mmve2 = null;
+        MatrixVocabElement mmve3 = null;
+        MatrixVocabElement nmve = null;
+        MatrixVocabElement pmve = null;
+        MatrixVocabElement tmve = null;
+        PredicateVocabElement pve0 = null;
+        PredicateVocabElement pve1 = null;
+        PredicateVocabElement pve2 = null;
+        FormalArgument farg = null;
+        DataCell dc = null;
+        DataCell m_cell0 = null;
+        DataCell p_cell0 = null;
+
+        /* setup test */
+        if ( failures == 0 )
+        {
+            completed = false;
+            threwSystemErrorException = false;
+
+            try
+            {
+                // allocate a new database
+
+                db = new ODBCDatabase();
+
+
+                // create a selection of predicates
+
+                pve0 = new PredicateVocabElement(db, "pve0");
+                farg = new UnTypedFormalArg(db, "<arg0>");
+                pve0.appendFormalArg(farg);
+                pve0ID = db.addPredVE(pve0);
+                pve0 = db.getPredVE(pve0ID);
+
+                pve1 = new PredicateVocabElement(db, "pve1");
+                farg = new UnTypedFormalArg(db, "<arg0>");
+                pve1.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg1>");
+                pve1.appendFormalArg(farg);
+                pve1ID = db.addPredVE(pve1);
+                pve1 = db.getPredVE(pve1ID);
+
+                pve2 = new PredicateVocabElement(db, "pve2");
+                farg = new UnTypedFormalArg(db, "<arg0>");
+                pve2.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg1>");
+                pve2.appendFormalArg(farg);
+                farg = new UnTypedFormalArg(db, "<arg2>");
+                pve2.appendFormalArg(farg);
+                pve2ID = db.addPredVE(pve2);
+                pve2 = db.getPredVE(pve2ID);
+
+
+                // create Data columns
+                fdc = new DataColumn(db, "fdc",
+                                     MatrixVocabElement.MatrixType.FLOAT);
+                fdcID = db.addColumn(fdc);
+                fdc = db.getDataColumn(fdcID);
+                fmveID = fdc.getItsMveID();
+                fmve = db.getMatrixVE(fmveID);
+
+                idc = new DataColumn(db, "idc",
+                                     MatrixVocabElement.MatrixType.INTEGER);
+                idcID = db.addColumn(idc);
+                idc = db.getDataColumn(idcID);
+                imveID = idc.getItsMveID();
+                imve = db.getMatrixVE(imveID);
+
+                mdc0 = new DataColumn(db, "mdc0",
+                                     MatrixVocabElement.MatrixType.MATRIX);
+                mdc0ID = db.addColumn(mdc0);
+                mdc0 = db.getDataColumn(mdc0ID);
+                mmve0ID = mdc0.getItsMveID();
+                mmve0 = db.getMatrixVE(mmve0ID);
+
+                mdc1 = new DataColumn(db, "mdc1",
+                                     MatrixVocabElement.MatrixType.MATRIX);
+                mdc1ID = db.addColumn(mdc1);
+                mdc1 = db.getDataColumn(mdc1ID);
+                mmve1ID = mdc1.getItsMveID();
+                mmve1 = db.getMatrixVE(mmve1ID);
+
+                mdc2 = new DataColumn(db, "mdc2",
+                                     MatrixVocabElement.MatrixType.MATRIX);
+                mdc2ID = db.addColumn(mdc2);
+                mdc2 = db.getDataColumn(mdc2ID);
+                mmve2ID = mdc2.getItsMveID();
+                mmve2 = db.getMatrixVE(mmve2ID);
+
+                mdc3 = new DataColumn(db, "mdc3",
+                                     MatrixVocabElement.MatrixType.MATRIX);
+                mdc3ID = db.addColumn(mdc3);
+                mdc3 = db.getDataColumn(mdc3ID);
+                mmve3ID = mdc3.getItsMveID();
+                mmve3 = db.getMatrixVE(mmve3ID);
+
+                ndc = new DataColumn(db, "ndc",
+                                     MatrixVocabElement.MatrixType.NOMINAL);
+                ndcID = db.addColumn(ndc);
+                ndc = db.getDataColumn(ndcID);
+                nmveID = ndc.getItsMveID();
+                nmve = db.getMatrixVE(nmveID);
+
+                pdc = new DataColumn(db, "pdc",
+                                     MatrixVocabElement.MatrixType.PREDICATE);
+                pdcID = db.addColumn(pdc);
+                pdc = db.getDataColumn(pdcID);
+                pmveID = pdc.getItsMveID();
+                pmve = db.getMatrixVE(pmveID);
+
+                tdc = new DataColumn(db, "tdc",
+                                     MatrixVocabElement.MatrixType.TEXT);
+                tdcID = db.addColumn(tdc);
+                tdc = db.getDataColumn(tdcID);
+                tmveID = tdc.getItsMveID();
+                tmve = db.getMatrixVE(tmveID);
+
+
+
+                // create a selection of cells
+
+                // cells for fdc
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        fdcID,
+                        fmveID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            fmveID,
+                            FloatDataValue.Construct(db, 0.0))));
+
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        fdcID,
+                        fmveID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            fmveID,
+                            UndefinedDataValue.Construct(db,
+                                        fmve.getFormalArg(0).getFargName()))));
+
+                // cells for idc
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        idcID,
+                        imveID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            imveID,
+                            IntDataValue.Construct(db, 0))));
+
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        idcID,
+                        imveID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            imveID,
+                            UndefinedDataValue.Construct(db,
+                                        imve.getFormalArg(0).getFargName()))));
+
+                // cells for mdc0
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc0ID,
+                        mmve0ID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            mmve0ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    IntDataValue.Construct(db, 1))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc0ID,
+                        mmve0ID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            mmve0ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve1ID,
+                                    IntDataValue.Construct(db, 1),
+                                    IntDataValue.Construct(db, 2))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc0ID,
+                        mmve0ID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            mmve0ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    IntDataValue.Construct(db, 1),
+                                    IntDataValue.Construct(db, 2),
+                                    IntDataValue.Construct(db, 3))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc0ID,
+                        mmve0ID,
+                        180,
+                        240,
+                        Matrix.Construct(
+                            db,
+                            mmve0ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve1ID,
+                                            null,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve2ID,
+                                            null,
+                                            null,
+                                            null)))))));
+
+
+                // cells for mdc1
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc1ID,
+                        mmve1ID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            mmve1ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    NominalDataValue.Construct(db, "alpha"))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc1ID,
+                        mmve1ID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            mmve1ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve1ID,
+                                    NominalDataValue.Construct(db, "alpha"),
+                                    NominalDataValue.Construct(db, "bravo"))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc1ID,
+                        mmve1ID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            mmve1ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    NominalDataValue.Construct(db, "alpha"),
+                                    NominalDataValue.Construct(db, "bravo"),
+                                    NominalDataValue.Construct(db, "charlie"))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc1ID,
+                        mmve1ID,
+                        180,
+                        240,
+                        Matrix.Construct(
+                            db,
+                            mmve1ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve2ID,
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve0ID,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve1ID,
+                                            null,
+                                            null)),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve2ID,
+                                            null,
+                                            null,
+                                            null)))))));
+
+
+                // cells for mdc2
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc2ID,
+                        mmve2ID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            mmve2ID,
+                            IntDataValue.Construct(db, 1))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc2ID,
+                        mmve2ID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            mmve2ID,
+                            FloatDataValue.Construct(db, 2.0))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc2ID,
+                        mmve2ID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            mmve2ID,
+                            NominalDataValue.Construct(db, "THREE"))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc2ID,
+                        mmve2ID,
+                        180,
+                        240,
+                        Matrix.Construct(
+                            db,
+                            mmve2ID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    IntDataValue.Construct(db, 4))))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc2ID,
+                        mmve2ID,
+                        240,
+                        300,
+                        Matrix.Construct(
+                            db,
+                            mmve2ID,
+                            QuoteStringDataValue.Construct(db, "five"))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc2ID,
+                        mmve2ID,
+                        300,
+                        360,
+                        Matrix.Construct(
+                            db,
+                            mmve2ID,
+                            TimeStampDataValue.Construct(db, 3600))));
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc2ID,
+                        mmve2ID,
+                        360,
+                        420,
+                        Matrix.Construct(
+                            db,
+                            mmve2ID,
+                            new UndefinedDataValue(db))));
+
+
+                // cells for mdc3 -- none or now
+
+                // cells for ndc
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        ndcID,
+                        nmveID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            nmveID,
+                            NominalDataValue.Construct(db, ""))));
+
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        ndcID,
+                        nmveID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            nmveID,
+                            UndefinedDataValue.Construct(db,
+                                        nmve.getFormalArg(0).getFargName()))));
+
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        ndcID,
+                        nmveID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            nmveID,
+                            NominalDataValue.Construct(db, "a_nominal"))));
+
+
+                // cells for pdc
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        pdcID,
+                        pmveID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            pmveID,
+                            PredDataValue.Construct(db, null))));
+
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        pdcID,
+                        pmveID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            pmveID,
+                            UndefinedDataValue.Construct(db,
+                                        pmve.getFormalArg(0).getFargName()))));
+
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        pdcID,
+                        pmveID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            pmveID,
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    IntDataValue.Construct(db, 4))))));
+
+
+                // cells for tdc
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        tdcID,
+                        tmveID,
+                        0,
+                        60,
+                        Matrix.Construct(
+                            db,
+                            tmveID,
+                            TextStringDataValue.Construct(db, ""))));
+
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        tdcID,
+                        tmveID,
+                        60,
+                        120,
+                        Matrix.Construct(
+                            db,
+                            tmveID,
+                            UndefinedDataValue.Construct(db,
+                                        tmve.getFormalArg(0).getFargName()))));
+
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        tdcID,
+                        tmveID,
+                        120,
+                        180,
+                        Matrix.Construct(
+                            db,
+                            tmveID,
+                            TextStringDataValue.Construct(db, "a text string"))));
+
+
+                // create the test string
+                testStringA = db.toString();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( ! completed ) ||
+                 ( db == null ) ||
+                 ( testStringA == null ) ||
+                 ( expectedString0.compareTo(testStringA) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test setup failed to complete.\n",
+                                         header);
+                    }
+
+                    if ( db == null )
+                    {
+                        outStream.printf(
+                                "%s new ODBCDatabase() returned null.\n",
+                                header);
+                    }
+
+                    if ( testStringA == null )
+                    {
+                        outStream.printf(
+                             "%s testStringA is null.\n", header);
+                    }
+                    else if ( expectedString0.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringA doesn't match expectedString0.\n" +
+                             "testString = \"%s\".\n", header, testStringA);
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test setup: \"%s\".\n",
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+
+        /* Now, try to add arguments of all types to
+
+
+        /* try adding some arguments -- all untyped for now */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            testStringC = "";
+            completed = false;
+            threwSystemErrorException = false;
+
+            try
+            {
+                mmve0.appendFormalArg(new UnTypedFormalArg(db, "<arg1>"));
+                db.replaceMatrixVE(mmve0);
+                mmve0 = db.getMatrixVE(mmve0ID);
+
+                // create the test string
+                testStringA = db.toString();
+
+                mmve0.insertFormalArg(new UnTypedFormalArg(db, "<arg-1>"), 0);
+                db.replaceMatrixVE(mmve0);
+                mmve0 = db.getMatrixVE(mmve0ID);
+
+                // create the test string
+                testStringB = db.toString();
+
+                mmve0.insertFormalArg(new UnTypedFormalArg(db, "<arg0.5>"), 1);
+                db.replaceMatrixVE(mmve0);
+                mmve0 = db.getMatrixVE(mmve0ID);
+
+                testStringC = db.toString();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( ! completed ) ||
+                 ( expectedString1.compareTo(testStringA) != 0 ) ||
+                 ( expectedString2.compareTo(testStringB) != 0 ) ||
+                 ( expectedString3.compareTo(testStringC) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 1 failed to complete.\n",
+                                         header);
+                    }
+
+                    if ( expectedString1.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringA doesn't match expectedString1.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+
+                    if ( expectedString2.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringB doesn't match expectedString2.\n" +
+                             "testStringB = \"%s\".\n", header, testStringB);
+                    }
+
+                    if ( expectedString3.compareTo(testStringC) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringC doesn't match expectedString3.\n" +
+                             "testStringC = \"%s\".\n", header, testStringC);
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 1: \"%s\".\n",
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+
+
+        /* add some more arguments -- this time typed. */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            completed = false;
+            threwSystemErrorException = false;
+
+            try
+            {
+                mmve1.appendFormalArg(new ColPredFormalArg(db, "<arg1-cp>"));
+                mmve1.appendFormalArg(new FloatFormalArg(db, "<arg2-f>"));
+                mmve1.appendFormalArg(new IntFormalArg(db, "<arg3-i>"));
+                mmve1.appendFormalArg(new NominalFormalArg(db, "<arg4-n>"));
+                mmve1.appendFormalArg(new PredFormalArg(db, "<arg5-p>"));
+                mmve1.appendFormalArg(new QuoteStringFormalArg(db, "<arg6-qs>"));
+                mmve1.appendFormalArg(new TimeStampFormalArg(db, "<arg7-ts>"));
+                mmve1.appendFormalArg(new UnTypedFormalArg(db, "<arg8-ut>"));
+                db.replaceMatrixVE(mmve1);
+                mmve1 = db.getMatrixVE(mmve1ID);
+
+                // create the test string
+                testStringA = db.toString();
+
+
+                mmve2.insertFormalArg(new UnTypedFormalArg(db, "<arg0-ut>"), 0);
+                mmve2.insertFormalArg(new ColPredFormalArg(db, "<arg1-cp>"), 1);
+                mmve2.insertFormalArg(new FloatFormalArg(db, "<arg2-f>"), 2);
+                mmve2.insertFormalArg(new IntFormalArg(db, "<arg3-i>"), 3);
+                mmve2.insertFormalArg(new NominalFormalArg(db, "<arg4-n>"), 4);
+                mmve2.insertFormalArg(new PredFormalArg(db, "<arg5-p>"), 5);
+                mmve2.insertFormalArg(new QuoteStringFormalArg(db, "<arg6-qs>"), 6);
+                mmve2.insertFormalArg(new TimeStampFormalArg(db, "<arg7-ts>"), 7);
+
+                db.replaceMatrixVE(mmve2);
+                mmve2 = db.getMatrixVE(mmve2ID);
+
+                // create the test string
+                testStringB = db.toString();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( ! completed ) ||
+                 ( expectedString4.compareTo(testStringA) != 0 ) ||
+                 ( expectedString5.compareTo(testStringB) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 2 failed to complete.\n",
+                                         header);
+                    }
+
+                    if ( expectedString4.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString4.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+
+                    if ( expectedString5.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringB doesn't match expectedString5.\n" +
+                             "testStringB = \"%s\".\n", header, testStringB);
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 2: \"%s\".\n",
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+
+
+        /* In preparation for further tests, create some new cells and
+         * insert them in the data columns.
+         */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            completed = false;
+            threwSystemErrorException = false;
+
+            try
+            {
+                /* add some cells to mdc1 */
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc1ID,
+                        mmve1ID,
+                        240,
+                        300,
+                        Matrix.Construct(
+                            db,
+                            mmve1ID,
+                            IntDataValue.Construct(db, 11),
+                            ColPredDataValue.Construct(
+                                db,
+                                ColPred.Construct(
+                                    db,
+                                    mmve3ID,
+                                    IntDataValue.Construct(db, 11),
+                                    TimeStampDataValue.Construct(db, 0),
+                                    TimeStampDataValue.Construct(db, 1),
+                                    NominalDataValue.Construct(db,
+                                                               "a_nominal"))),
+                            FloatDataValue.Construct(db, 10.0),
+                            IntDataValue.Construct(db, 10),
+                            NominalDataValue.Construct(db, "TEN"),
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    null)),
+                            QuoteStringDataValue.Construct(db, "ten"),
+                            TimeStampDataValue.Construct(db, 3600),
+                            FloatDataValue.Construct(db, 11.0))));
+
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc1ID,
+                        mmve1ID,
+                        360,
+                        420,
+                        Matrix.Construct(
+                            db,
+                            mmve1ID,
+                            NominalDataValue.Construct(db, "TWENTY-ONE"),
+                            ColPredDataValue.Construct(
+                                db,
+                                ColPred.Construct(
+                                    db,
+                                    mmve3ID,
+                                    UndefinedDataValue.Construct(db, "<ord>"),
+                                    UndefinedDataValue.Construct(db, "<onset>"),
+                                    UndefinedDataValue.Construct(db, "<offset>"),
+                                    UndefinedDataValue.Construct(db,"<val>"))),
+                            FloatDataValue.Construct(db, 20.0),
+                            IntDataValue.Construct(db, 20),
+                            NominalDataValue.Construct(db, "TWENTY"),
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve1ID,
+                                    ColPredDataValue.Construct(
+                                        db,
+                                        ColPred.Construct(
+                                            db,
+                                            mmve3ID,
+                                            UndefinedDataValue.Construct(db, "<ord>"),
+                                            UndefinedDataValue.Construct(db, "<onset>"),
+                                            UndefinedDataValue.Construct(db, "<offset>"),
+                                            UndefinedDataValue.Construct(db,"<val>"))),
+                                    null)),
+                            QuoteStringDataValue.Construct(db, "twenty"),
+                            TimeStampDataValue.Construct(db, 7200),
+                            QuoteStringDataValue.Construct(db, "twentry-one"))));
+
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc1ID,
+                        mmve1ID,
+                        420,
+                        480,
+                        Matrix.Construct(
+                            db,
+                            mmve1ID,
+                            UndefinedDataValue.Construct(db, "<val>"),
+                            UndefinedDataValue.Construct(db, "<arg1-cp>"),
+                            UndefinedDataValue.Construct(db, "<arg2-f>"),
+                            UndefinedDataValue.Construct(db, "<arg3-i>"),
+                            UndefinedDataValue.Construct(db, "<arg4-n>"),
+                            UndefinedDataValue.Construct(db, "<arg5-p>"),
+                            UndefinedDataValue.Construct(db, "<arg6-qs>"),
+                            UndefinedDataValue.Construct(db, "<arg7-ts>"),
+                            UndefinedDataValue.Construct(db, "<arg8-ut>"))));
+
+                // create the test string
+                testStringA = db.toString();
+
+
+                /* add some cells to mdc2 */
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc2ID,
+                        mmve2ID,
+                        240,
+                        300,
+                        Matrix.Construct(
+                            db,
+                            mmve2ID,
+                            IntDataValue.Construct(db, 110),
+                            ColPredDataValue.Construct(
+                                db,
+                                ColPred.Construct(
+                                    db,
+                                    mmve2ID,
+                                    IntDataValue.Construct(db, 11),
+                                    TimeStampDataValue.Construct(db, 0),
+                                    TimeStampDataValue.Construct(db, 1),
+                                    NominalDataValue.Construct(db, "nan"),
+                                    ColPredDataValue.Construct(
+                                        db,
+                                        ColPred.Construct(
+                                            db,
+                                            mmve3ID,
+                                            IntDataValue.Construct(db, 11),
+                                            TimeStampDataValue.Construct(db, 0),
+                                            TimeStampDataValue.Construct(db, 1),
+                                            NominalDataValue.Construct(db,
+                                                    "yan"))),
+                                    FloatDataValue.Construct(db, 222.2),
+                                    IntDataValue.Construct(db, 222),
+                                    NominalDataValue.Construct(db, "TWO-HUNDRED-TWENTY-TWO"),
+                                    PredDataValue.Construct(
+                                        db,
+                                        Predicate.Construct(
+                                            db,
+                                            pve1ID,
+                                            null,
+                                            null)),
+                                    QuoteStringDataValue.Construct(db, "two-hundred-twenty-two"),
+                                    TimeStampDataValue.Construct(db, 122),
+                                    UndefinedDataValue.Construct(db, "<val>"))),
+                            FloatDataValue.Construct(db, 100.0),
+                            IntDataValue.Construct(db, 100),
+                            NominalDataValue.Construct(db, "HUNDRED"),
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve0ID,
+                                    null)),
+                            QuoteStringDataValue.Construct(db, "hundred"),
+                            TimeStampDataValue.Construct(db, 36000),
+                            FloatDataValue.Construct(db, 110.0))));
+
+                db.appendCell(
+                    DataCell.Construct(
+                        db,
+                        mdc2ID,
+                        mmve2ID,
+                        360,
+                        420,
+                        Matrix.Construct(
+                            db,
+                            mmve2ID,
+                            NominalDataValue.Construct(db, "TWO-HUNDRED-ONE"),
+                            ColPredDataValue.Construct(
+                                db,
+                                ColPred.Construct(
+                                    db,
+                                    mmve2ID,
+                                    UndefinedDataValue.Construct(db, "<ord>"),
+                                    UndefinedDataValue.Construct(db, "<onset>"),
+                                    UndefinedDataValue.Construct(db, "<offset>"),
+                                    UndefinedDataValue.Construct(db, "<arg0-ut>"),
+                                    UndefinedDataValue.Construct(db, "<arg1-cp>"),
+                                    UndefinedDataValue.Construct(db, "<arg2-f>"),
+                                    UndefinedDataValue.Construct(db, "<arg3-i>"),
+                                    UndefinedDataValue.Construct(db, "<arg4-n>"),
+                                    UndefinedDataValue.Construct(db, "<arg5-p>"),
+                                    UndefinedDataValue.Construct(db, "<arg6-qs>"),
+                                    UndefinedDataValue.Construct(db, "<arg7-ts>"),
+                                    UndefinedDataValue.Construct(db, "<val>"))),
+                            FloatDataValue.Construct(db, 200.0),
+                            IntDataValue.Construct(db, 200),
+                            NominalDataValue.Construct(db, "TWO-HUNDRED"),
+                            PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve1ID,
+                                    null,
+                                    null)),
+                            QuoteStringDataValue.Construct(db, "two-hundred"),
+                            TimeStampDataValue.Construct(db, 72000),
+                            QuoteStringDataValue.Construct(db, "two-hundred-one"))));
+
+                // create the test string
+                testStringB = db.toString();
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( ! completed ) ||
+                 ( expectedString6.compareTo(testStringA) != 0 ) ||
+                 ( expectedString7.compareTo(testStringB) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 3 failed to complete.\n",
+                                         header);
+                    }
+
+                    if ( expectedString6.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString6.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+
+                    if ( expectedString7.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testStringB doesn't match expectedString7.\n" +
+                             "testStringB = \"%s\".\n", header, testStringB);
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 3: \"%s\".\n",
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+
+
+        /* Try changing the names of formal arguments of all types (except text
+         * string), and verfy that the values of the associated undefined data
+         * values change as well.
+         */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            testStringC = "";
+            completed = false;
+            threwSystemErrorException = false;
+
+            try
+            {
+                // replace the argument numbers with letters
+                farg = mmve2.getFormalArgCopy(0);
+                farg.setFargName("<arg-a-ut>");
+                mmve2.replaceFormalArg(farg, 0);
+
+                farg = mmve2.getFormalArgCopy(1);
+                farg.setFargName("<arg-b-cp>");
+                mmve2.replaceFormalArg(farg, 1);
+
+                farg = mmve2.getFormalArgCopy(2);
+                farg.setFargName("<arg-c-f>");
+                mmve2.replaceFormalArg(farg, 2);
+
+                farg = mmve2.getFormalArgCopy(3);
+                farg.setFargName("<arg-d-i>");
+                mmve2.replaceFormalArg(farg, 3);
+
+                farg = mmve2.getFormalArgCopy(4);
+                farg.setFargName("<arg-e-n>");
+                mmve2.replaceFormalArg(farg, 4);
+
+                farg = mmve2.getFormalArgCopy(5);
+                farg.setFargName("<arg-f-p>");
+                mmve2.replaceFormalArg(farg, 5);
+
+                farg = mmve2.getFormalArgCopy(6);
+                farg.setFargName("<arg-g-qs>");
+                mmve2.replaceFormalArg(farg, 6);
+
+                farg = mmve2.getFormalArgCopy(7);
+                farg.setFargName("<arg-h-ts>");
+                mmve2.replaceFormalArg(farg, 7);
+
+                farg = mmve2.getFormalArgCopy(8);
+                farg.setFargName("<arg-i-ut>");
+                mmve2.replaceFormalArg(farg, 8);
+
+                db.replaceMatrixVE(mmve2);
+                mmve2 = db.getMatrixVE(mmve2ID);
+
+                // create the test string
+                testStringA = db.toString();
+
+                // modify the formal argument name of an empty data column,
+                // whose associated column predicate appears in a diffent
+                // data column.
+                farg = mmve3.getFormalArgCopy(0);
+                farg.setFargName("<arg-a-ut>");
+                mmve3.replaceFormalArg(farg, 0);
+
+                db.replaceMatrixVE(mmve3);
+                mmve2 = db.getMatrixVE(mmve2ID);
+
+                // create the test string
+                testStringB = db.toString();
+
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( ! completed ) ||
+                 ( expectedString8.compareTo(testStringA) != 0 ) ||
+                 ( expectedString9.compareTo(testStringB) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 4 failed to complete.\n",
+                                         header);
+                    }
+
+                    if ( expectedString8.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString8.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+
+                    if ( expectedString9.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString9.\n" +
+                             "testStringA = \"%s\".\n", header, testStringB);
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                                "exception in test 4: \"%s\".\n",
+                                header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+
+        /* Try replacing undefined data values with regular values for all types
+         * of formal arguments, and then try replacing regular values with
+         * undefined values for all types of formal arguments.
+         */
+        if ( failures == 0 )
+        {
+            testStringA = "";
+            testStringB = "";
+            testStringC = "";
+            completed = false;
+            threwSystemErrorException = false;
+
+            try
+            {
+                // replace undefined data values with regular values
+                // for all types of formal arguments.
+                dc = (DataCell)db.getCell(fdcID, 2);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          fmveID,
+                          FloatDataValue.Construct(db, 2.0)));
+                db.replaceCell(dc);
+
+                dc = (DataCell)db.getCell(idcID, 2);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          imveID,
+                          IntDataValue.Construct(db, 2)));
+                db.replaceCell(dc);
+
+                dc = (DataCell)db.getCell(ndcID, 2);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          nmveID,
+                          NominalDataValue.Construct(db, "another_nominal")));
+                db.replaceCell(dc);
+
+
+                dc = (DataCell)db.getCell(mdc1ID, 7);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          mmve1ID,
+                          NominalDataValue.Construct(db, "nominal_one"),
+                          ColPredDataValue.Construct(
+                              db,
+                              ColPred.Construct(
+                                  db,
+                                  mmve3ID,
+                                  UndefinedDataValue.Construct(db, "<ord>"),
+                                  UndefinedDataValue.Construct(db, "<onset>"),
+                                  UndefinedDataValue.Construct(db, "<offset>"),
+                                  UndefinedDataValue.Construct(db,"<val>"))),
+                          FloatDataValue.Construct(db, 1.0),
+                          IntDataValue.Construct(db, 1),
+                          NominalDataValue.Construct(db, "ONE"),
+                          PredDataValue.Construct(
+                              db,
+                              Predicate.Construct(
+                                  db,
+                                  pve1ID,
+                                  ColPredDataValue.Construct(
+                                      db,
+                                      ColPred.Construct(
+                                          db,
+                                          mmve3ID,
+                                          UndefinedDataValue.Construct(db, "<ord>"),
+                                          UndefinedDataValue.Construct(db, "<onset>"),
+                                          UndefinedDataValue.Construct(db, "<offset>"),
+                                          UndefinedDataValue.Construct(db,"<val>"))),
+                                  null)),
+                          QuoteStringDataValue.Construct(db, "quote string one"),
+                          TimeStampDataValue.Construct(db, 7200),
+                          QuoteStringDataValue.Construct(db, "quote-string-1")));
+                db.replaceCell(dc);
+
+                dc = (DataCell)db.getCell(pdcID, 2);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          pmveID,
+                          PredDataValue.Construct(
+                                db,
+                                Predicate.Construct(
+                                    db,
+                                    pve1ID,
+                                    null,
+                                    null))));
+                db.replaceCell(dc);
+
+                dc = (DataCell)db.getCell(tdcID, 2);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          tmveID,
+                          TextStringDataValue.Construct(db,
+                                                        "another text string")));
+                db.replaceCell(dc);
+
+                // create the test string
+                testStringA = db.toString();
+
+
+                // replace undefined data values with regular values
+                // for all types of formal arguments.
+                dc = (DataCell)db.getCell(fdcID, 1);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          fmveID,
+                          UndefinedDataValue.Construct(db, "<val>")));
+                db.replaceCell(dc);
+
+                dc = (DataCell)db.getCell(idcID, 1);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          imveID,
+                          UndefinedDataValue.Construct(db, "<val>")));
+                db.replaceCell(dc);
+
+                dc = (DataCell)db.getCell(ndcID, 1);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          nmveID,
+                          UndefinedDataValue.Construct(db, "<val>")));
+                db.replaceCell(dc);
+
+
+                dc = (DataCell)db.getCell(mdc1ID, 7);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          mmve1ID,
+                          UndefinedDataValue.Construct(db, "<val>"),
+                          UndefinedDataValue.Construct(db, "<arg1-cp>"),
+                          UndefinedDataValue.Construct(db, "<arg2-f>"),
+                          UndefinedDataValue.Construct(db, "<arg3-i>"),
+                          UndefinedDataValue.Construct(db, "<arg4-n>"),
+                          UndefinedDataValue.Construct(db, "<arg5-p>"),
+                          UndefinedDataValue.Construct(db, "<arg6-qs>"),
+                          UndefinedDataValue.Construct(db, "<arg7-ts>"),
+                          UndefinedDataValue.Construct(db, "<arg8-ut>")));
+                db.replaceCell(dc);
+
+                dc = (DataCell)db.getCell(pdcID, 1);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          pmveID,
+                          UndefinedDataValue.Construct(db, "<val>")));
+                db.replaceCell(dc);
+
+                dc = (DataCell)db.getCell(tdcID, 1);
+                dc.setVal(Matrix.Construct(
+                          db,
+                          tmveID,
+                          UndefinedDataValue.Construct(db, "<val>")));
+                db.replaceCell(dc);
+
+                // create the test string
+                testStringB = db.toString();
+
+
+                completed = true;
+            }
+
+            catch (SystemErrorException e)
+            {
+                threwSystemErrorException = true;
+                systemErrorExceptionString = e.getMessage();
+            }
+
+            if ( ( ! completed ) ||
+                 ( expectedString10.compareTo(testStringA) != 0 ) ||
+                 ( expectedString11.compareTo(testStringB) != 0 ) ||
+                 ( threwSystemErrorException ) )
+            {
+                failures++;
+
+                if ( verbose )
+                {
+                    if ( ! completed )
+                    {
+                        outStream.printf("%s test 5 failed to complete.\n",
+                                         header);
+                    }
+
+                    if ( expectedString10.compareTo(testStringA) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString10.\n" +
+                             "testStringA = \"%s\".\n", header, testStringA);
+                    }
+
+                    if ( expectedString11.compareTo(testStringB) != 0 )
+                    {
+                        outStream.printf(
+                             "%s testString doesn't match expectedString11.\n" +
+                             "testStringB = \"%s\".\n", header, testStringB);
+                    }
+
+                    if ( threwSystemErrorException )
+                    {
+                        outStream.printf("%s unexpected system error " +
+                             "exception in test 5: \"%s\".\n",
+                             header, systemErrorExceptionString);
+                    }
+                }
+            }
+        }
+
+
+//        /* try deleting some arguments -- all untyped and all unset */
+//        if ( failures == 0 )
+//        {
+//            testStringA = "";
+//            testStringB = "";
+//            testStringC = "";
+//            completed = false;
+//            threwSystemErrorException = false;
+//
+//            try
+//            {
+//                mve0.deleteFormalArg(1);
+//                db.replaceMatrixVE(mve0);
+//                mve0 = db.getMatrixVE(mdc0_mveID);
+//
+//                // create the test string
+//                testStringA = db.toString();
+//
+//                mve0.deleteFormalArg(0);
+//                db.replaceMatrixVE(mve0);
+//                mve0 = db.getMatrixVE(mdc0_mveID);
+//
+//                // create the test string
+//                testStringB = db.toString();
+//
+//                mve0.deleteFormalArg(1);
+//                db.replaceMatrixVE(mve0);
+//                mve0 = db.getMatrixVE(mdc0_mveID);
+//
+//                // create the test string
+//                testStringC = db.toString();
+//
+//                completed = true;
+//            }
+//
+//            catch (SystemErrorException e)
+//            {
+//                threwSystemErrorException = true;
+//                systemErrorExceptionString = e.getMessage();
+//            }
+//
+//            if ( ( ! completed ) ||
+//                 ( expectedString8.compareTo(testStringA) != 0 ) ||
+//                 ( expectedString9.compareTo(testStringB) != 0 ) ||
+//                 ( expectedString10.compareTo(testStringC) != 0 ) ||
+//                 ( threwSystemErrorException ) )
+//            {
+//                failures++;
+//
+//                if ( verbose )
+//                {
+//                    if ( ! completed )
+//                    {
+//                        outStream.printf("%s test 4 failed to complete.\n",
+//                                         header);
+//                    }
+//
+//                    if ( expectedString8.compareTo(testStringA) != 0 )
+//                    {
+//                        outStream.printf(
+//                             "%s testString doesn't match expectedString8.\n" +
+//                             "testStringA = \"%s\".\n", header, testStringA);
+//                    }
+//
+//                    if ( expectedString9.compareTo(testStringB) != 0 )
+//                    {
+//                        outStream.printf(
+//                             "%s testStringB doesn't match expectedString9.\n" +
+//                             "testStringB = \"%s\".\n", header, testStringB);
+//                    }
+//
+//                    if ( expectedString10.compareTo(testStringC) != 0 )
+//                    {
+//                        outStream.printf(
+//                             "%s testStringC doesn't match expectedString10.\n" +
+//                             "testStringC = \"%s\".\n", header, testStringC);
+//                    }
+//
+//                    if ( threwSystemErrorException )
+//                    {
+//                        outStream.printf("%s unexpected system error " +
+//                                "exception in test 4: \"%s\".\n",
+//                                header, systemErrorExceptionString);
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//        /* try deleting more arguments -- all typed and/or set */
+//        if ( failures == 0 )
+//        {
+//            testStringA = "";
+//            testStringB = "";
+//            testStringC = "";
+//            completed = false;
+//            threwSystemErrorException = false;
+//
+//            try
+//            {
+//                mve1.deleteFormalArg(3);
+//                db.replaceMatrixVE(mve1);
+//                mve1 = db.getMatrixVE(mdc1_mveID);
+//
+//                // create the test string
+//                testStringA = db.toString();
+//
+//                mve1.deleteFormalArg(0);
+//                db.replaceMatrixVE(mve1);
+//                mve1 = db.getMatrixVE(mdc1_mveID);
+//
+//                // create the test string
+//                testStringB = db.toString();
+//
+//                mve1.deleteFormalArg(5);
+//                db.replaceMatrixVE(mve1);
+//                mve1 = db.getMatrixVE(mdc1_mveID);
+//
+//                // create the test string
+//                testStringC = db.toString();
+//
+//                completed = true;
+//            }
+//
+//            catch (SystemErrorException e)
+//            {
+//                threwSystemErrorException = true;
+//                systemErrorExceptionString = e.getMessage();
+//            }
+//
+//            if ( ( ! completed ) ||
+//                 ( expectedString11.compareTo(testStringA) != 0 ) ||
+//                 ( expectedString12.compareTo(testStringB) != 0 ) ||
+//                 ( expectedString13.compareTo(testStringC) != 0 ) ||
+//                 ( threwSystemErrorException ) )
+//            {
+//                failures++;
+//
+//                if ( verbose )
+//                {
+//                    if ( ! completed )
+//                    {
+//                        outStream.printf("%s test 5 failed to complete.\n",
+//                                         header);
+//                    }
+//
+//                    if ( expectedString11.compareTo(testStringA) != 0 )
+//                    {
+//                        outStream.printf(
+//                             "%s testString doesn't match expectedString11.\n" +
+//                             "testStringA = \"%s\".\n", header, testStringA);
+//                    }
+//
+//                    if ( expectedString12.compareTo(testStringB) != 0 )
+//                    {
+//                        outStream.printf(
+//                             "%s testStringB doesn't match expectedString12.\n" +
+//                             "testStringB = \"%s\".\n", header, testStringB);
+//                    }
+//
+//                    if ( expectedString13.compareTo(testStringC) != 0 )
+//                    {
+//                        outStream.printf(
+//                             "%s testStringC doesn't match expectedString13.\n" +
+//                             "testStringC = \"%s\".\n", header, testStringC);
+//                    }
+//
+//                    if ( threwSystemErrorException )
+//                    {
+//                        outStream.printf("%s unexpected system error " +
+//                                "exception in test 5: \"%s\".\n",
+//                                header, systemErrorExceptionString);
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//        /* try moving some arguments around */
+//        if ( failures == 0 )
+//        {
+//            testStringA = "";
+//            testStringB = "";
+//            testStringC = "";
+//            completed = false;
+//            threwSystemErrorException = false;
+//
+//            try
+//            {
+//                farg = mve1.getFormalArg(2);
+//                mve1.deleteFormalArg(2);
+//                mve1.insertFormalArg(farg, 0);
+//                db.replaceMatrixVE(mve1);
+//                mve1 = db.getMatrixVE(mdc1_mveID);
+//
+//                // create the test string
+//                testStringA = db.toString();
+//
+//
+//                farg = mve1.getFormalArg(4);
+//                mve1.deleteFormalArg(4);
+//                mve1.insertFormalArg(farg, 0);
+//                farg = mve1.getFormalArg(4);
+//                mve1.deleteFormalArg(4);
+//                mve1.insertFormalArg(farg, 1);
+//                farg = mve1.getFormalArg(4);
+//                mve1.deleteFormalArg(4);
+//                mve1.insertFormalArg(farg, 2);
+//                db.replaceMatrixVE(mve1);
+//                mve1 = db.getMatrixVE(mdc1_mveID);
+//
+//                // create the test string
+//                testStringB = db.toString();
+//
+//                completed = true;
+//            }
+//
+//            catch (SystemErrorException e)
+//            {
+//                threwSystemErrorException = true;
+//                systemErrorExceptionString = e.getMessage();
+//            }
+//
+//            if ( ( ! completed ) ||
+//                 ( expectedString14.compareTo(testStringA) != 0 ) ||
+//                 ( expectedString15.compareTo(testStringB) != 0 ) ||
+//                 ( threwSystemErrorException ) )
+//            {
+//                failures++;
+//
+//                if ( verbose )
+//                {
+//                    if ( ! completed )
+//                    {
+//                        outStream.printf("%s test 6 failed to complete.\n",
+//                                         header);
+//                    }
+//
+//                    if ( expectedString14.compareTo(testStringA) != 0 )
+//                    {
+//                        outStream.printf(
+//                             "%s testStringA doesn't match expectedString14.\n" +
+//                             "testStringA = \"%s\".\n", header, testStringA);
+//                    }
+//
+//                    if ( expectedString15.compareTo(testStringB) != 0 )
+//                    {
+//                        outStream.printf(
+//                             "%s testStringB doesn't match expectedString15.\n" +
+//                             "testStringB = \"%s\".\n", header, testStringB);
+//                    }
+//
+//                    if ( threwSystemErrorException )
+//                    {
+//                        outStream.printf("%s unexpected system error " +
+//                                "exception in test 6: \"%s\".\n",
+//                                header, systemErrorExceptionString);
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//        /* finally, mix things up a bit and see if we get confused */
+//        if ( failures == 0 )
+//        {
+//            testStringA = "";
+//            testStringB = "";
+//            testStringC = "";
+//            completed = false;
+//            threwSystemErrorException = false;
+//
+//            try
+//            {
+//                /* move arg 3 to the end of the argument list */
+//                farg = mve2.getFormalArg(3);
+//                mve2.deleteFormalArg(3);
+//                mve2.insertFormalArg(farg, 7);
+//
+//                /* insert an argument into the list */
+//                mve2.insertFormalArg(new NominalFormalArg(db, "<new_arg>"), 3);
+//
+//                /* delete the old first & final arguments in the matrix */
+//                mve2.deleteFormalArg(7);
+//                mve2.deleteFormalArg(0);
+//
+//                // apply the modified version to the db
+//                db.replaceMatrixVE(mve2);
+//                mve2 = db.getMatrixVE(mdc2_mveID);
+//
+//                // create the test string
+//                testStringA = db.toString();
+//
+//                completed = true;
+//            }
+//
+//            catch (SystemErrorException e)
+//            {
+//                threwSystemErrorException = true;
+//                systemErrorExceptionString = e.getMessage();
+//            }
+//
+//            if ( ( ! completed ) ||
+//                 ( expectedString16.compareTo(testStringA) != 0 ) ||
+//                 ( threwSystemErrorException ) )
+//            {
+//                failures++;
+//
+//                if ( verbose )
+//                {
+//                    if ( ! completed )
+//                    {
+//                        outStream.printf("%s test 7 failed to complete.\n",
+//                                         header);
+//                    }
+//
+//                    if ( expectedString16.compareTo(testStringA) != 0 )
+//                    {
+//                        outStream.printf(
+//                             "%s testStringA doesn't match expectedString16.\n" +
+//                             "testStringA = \"%s\".\n", header, testStringA);
+//                    }
+//
+//                    if ( threwSystemErrorException )
+//                    {
+//                        outStream.printf("%s unexpected system error " +
+//                                "exception in test 7: \"%s\".\n",
+//                                header, systemErrorExceptionString);
+//                    }
+//                }
+//            }
+//        }
+
+        return failures;
+
+    } /* Datavase::TestMVEModListeners__test_02() */
 
 
     /**

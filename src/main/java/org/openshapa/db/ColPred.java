@@ -493,7 +493,8 @@ implements InternalMatrixVocabElementListener {
                           boolean[] cpFargInserted,
                           Vector<FormalArgument> oldCPFargList,
                           Vector<FormalArgument> newCPFargList)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "ColPred::MVEChanged(): ";
         DBElement dbe = null;
         DataCell dc = null;
@@ -523,34 +524,45 @@ implements InternalMatrixVocabElementListener {
 
         dc = (DataCell)dbe;
 
-        // todo -- fix this
-        dc.cascadeUpdateForMVEDefChange(db,
-                                        MVEID,
-                                        nameChanged,
-                                        oldName,
-                                        newName,
-                                        varLenChanged,
-                                        oldVarLen,
-                                        newVarLen,
-                                        fargListChanged,
-                                        n2o,
-                                        o2n,
-                                        fargNameChanged,
-                                        fargSubRangeChanged,
-                                        fargRangeChanged,
-                                        fargDeleted,
-                                        fargInserted,
-                                        oldFargList,
-                                        newFargList,
-                                        cpn2o,
-                                        cpo2n,
-                                        cpFargNameChanged,
-                                        cpFargSubRangeChanged,
-                                        cpFargRangeChanged,
-                                        cpFargDeleted,
-                                        cpFargInserted,
-                                        oldCPFargList,
-                                        newCPFargList);
+        // If the data cell resides in the data column associated with the
+        // matrix vocab element indicated by MVEID, do nothing.  Otherwise
+        // call dc.cascadeUpdateForMVEDefChange().
+
+        if ( dc.getItsMveID() == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName +
+                    "dc.getItsMveID() returns invalid ID");
+        }
+        else if ( dc.getItsMveID() != MVEID )
+        {
+            dc.cascadeUpdateForMVEDefChange(db,
+                                            MVEID,
+                                            nameChanged,
+                                            oldName,
+                                            newName,
+                                            varLenChanged,
+                                            oldVarLen,
+                                            newVarLen,
+                                            fargListChanged,
+                                            n2o,
+                                            o2n,
+                                            fargNameChanged,
+                                            fargSubRangeChanged,
+                                            fargRangeChanged,
+                                            fargDeleted,
+                                            fargInserted,
+                                            oldFargList,
+                                            newFargList,
+                                            cpn2o,
+                                            cpo2n,
+                                            cpFargNameChanged,
+                                            cpFargSubRangeChanged,
+                                            cpFargRangeChanged,
+                                            cpFargDeleted,
+                                            cpFargInserted,
+                                            oldCPFargList,
+                                            newCPFargList);
+        }
 
         return;
 
@@ -901,7 +913,7 @@ implements InternalMatrixVocabElementListener {
         final String mName = "ColPred::toMODBFile()";
         int i = 0;
         int numArgs;
-        FormalArgument farg;
+        int numArgsToDisplay;
         DataValue arg;
 
         if ( output == null )
@@ -935,9 +947,51 @@ implements InternalMatrixVocabElementListener {
                 throw new SystemErrorException(mName + "numArgs <= 3");
             }
 
+            if ( this.varLen )
+            {
+                numArgsToDisplay = 0;
+
+                i = 0;
+
+                /* scan the argument list to determine the number of the
+                 * last defined argument in the argument list, as set
+                 * numArgsToDisplay accordingly.
+                 */
+                while ( i < numArgs )
+                {
+                    arg = this.getArg(i);
+
+                    if ( ! ( arg instanceof UndefinedDataValue ) )
+                    {
+                        numArgsToDisplay = i;
+                    }
+
+                    i++;
+                }
+
+                numArgsToDisplay++;
+
+                if ( numArgsToDisplay < 4 )
+                {
+                    numArgsToDisplay = 4;
+                }
+            }
+            else
+            {
+                numArgsToDisplay = numArgs;
+            }
+
+            if ( ( numArgsToDisplay < 4 ) || ( numArgsToDisplay > numArgs ) )
+            {
+                throw new SystemErrorException(mName +
+                        "numArgsToDisplay out of range.");
+            }
+
             output.printf("( |%s| ", this.mveName);
 
-            while ( i < (numArgs - 1) )
+            i = 0;
+
+            while ( i < numArgsToDisplay )
             {
                 arg = this.getArg(i);
 
@@ -1611,7 +1665,7 @@ implements InternalMatrixVocabElementListener {
                                      boolean cascadePveDel,
                                      long cascadePveID)
     throws SystemErrorException {
-        final String mName = "ColPred::deregisterWithPve(): ";
+        final String mName = "ColPred::deregisterWithMve(): ";
         DBElement dbe = null;
         MatrixVocabElement mve = null;
 
@@ -1634,7 +1688,7 @@ implements InternalMatrixVocabElementListener {
 
                 dbe = this.getDB().idx.getElement(this.mveID);
 
-                if ( ! ( dbe instanceof PredicateVocabElement ) )
+                if ( ! ( dbe instanceof MatrixVocabElement ) )
                 {
                     throw new SystemErrorException(mName +
                             "mveID doesn't refer to a mve.");
@@ -1965,6 +2019,7 @@ implements InternalMatrixVocabElementListener {
 
     }
 
+    // updateForMVEDefChange()
     /**
      * If this column predicate is defined by the indicated matrix vocab
      * element, update it for any changes in the implied column predicate.
@@ -2033,7 +2088,8 @@ implements InternalMatrixVocabElementListener {
                                  boolean[] cpFargInserted,
                                  java.util.Vector<FormalArgument> oldCPFargList,
                                  java.util.Vector<FormalArgument> newCPFargList)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
 
         final String mName = "ColPred::updateForMVEDefChange(): ";
         DBElement dbe = null;
@@ -2085,22 +2141,26 @@ implements InternalMatrixVocabElementListener {
             {
                 int i;
                 int j;
-                int numOldArgs;
-                int numNewArgs;
+                int numOldCPArgs;
+                int numNewCPArgs;
                 DataValue dv = null;
                 Vector<DataValue> newArgList = null;
 
                 newArgList = this.constructEmptyArgList(mve);
-                numOldArgs = oldFargList.size();
-                numNewArgs = newFargList.size();
+                numOldCPArgs = oldCPFargList.size();
+                numNewCPArgs = newCPFargList.size();
 
-                for ( i = 0; i < numOldArgs; i++ )
+                 for ( i = 0; i < numOldCPArgs; i++ )
                 {
                     if ( ! cpFargDeleted[i] )
                     {
-                        try {
+                        try
+                        {
                             dv = (DataValue) this.getArg(i).blindClone();
-                        } catch (CloneNotSupportedException e) {
+                        } 
+                        
+                        catch (CloneNotSupportedException e)
+                        {
                             throw new SystemErrorException("Unable to clone data value.");
                         }
 
@@ -2115,8 +2175,8 @@ implements InternalMatrixVocabElementListener {
                             dv.updateForFargChange(cpFargNameChanged[j],
                                                    cpFargSubRangeChanged[j],
                                                    cpFargRangeChanged[j],
-                                                   oldFargList.get(i),
-                                                   newFargList.get(j));
+                                                   oldCPFargList.get(i),
+                                                   newCPFargList.get(j));
                         }
 
                         newArgList.set(j, dv);
@@ -2127,73 +2187,78 @@ implements InternalMatrixVocabElementListener {
             }
         }
 
-        for ( DataValue dv : this.argList )
+        if ( this.mveID != DBIndex.INVALID_ID )
         {
-            if ( dv instanceof ColPredDataValue )
+            for ( DataValue dv : this.argList )
             {
-                ((ColPredDataValue)dv).updateForMVEDefChange(db,
-                                                          mveID,
-                                                          nameChanged,
-                                                          oldName,
-                                                          newName,
-                                                          varLenChanged,
-                                                          oldVarLen,
-                                                          newVarLen,
-                                                          fargListChanged,
-                                                          n2o,
-                                                          o2n,
-                                                          fargNameChanged,
-                                                          fargSubRangeChanged,
-                                                          fargRangeChanged,
-                                                          fargDeleted,
-                                                          fargInserted,
-                                                          oldFargList,
-                                                          newFargList,
-                                                          cpn2o,
-                                                          cpo2n,
-                                                          cpFargNameChanged,
-                                                          cpFargSubRangeChanged,
-                                                          cpFargRangeChanged,
-                                                          cpFargDeleted,
-                                                          fargInserted,
-                                                          oldCPFargList,
-                                                          newCPFargList);
-            }
-            else if ( dv instanceof PredDataValue )
-            {
-                ((PredDataValue)dv).updateForMVEDefChange(db,
-                                                          mveID,
-                                                          nameChanged,
-                                                          oldName,
-                                                          newName,
-                                                          varLenChanged,
-                                                          oldVarLen,
-                                                          newVarLen,
-                                                          fargListChanged,
-                                                          n2o,
-                                                          o2n,
-                                                          fargNameChanged,
-                                                          fargSubRangeChanged,
-                                                          fargRangeChanged,
-                                                          fargDeleted,
-                                                          fargInserted,
-                                                          oldFargList,
-                                                          newFargList,
-                                                          cpn2o,
-                                                          cpo2n,
-                                                          cpFargNameChanged,
-                                                          cpFargSubRangeChanged,
-                                                          cpFargRangeChanged,
-                                                          cpFargDeleted,
-                                                          fargInserted,
-                                                          oldCPFargList,
-                                                          newCPFargList);
+                if ( dv instanceof ColPredDataValue )
+                {
+                    ((ColPredDataValue)dv).updateForMVEDefChange(db,
+                                                              mveID,
+                                                              nameChanged,
+                                                              oldName,
+                                                              newName,
+                                                              varLenChanged,
+                                                              oldVarLen,
+                                                              newVarLen,
+                                                              fargListChanged,
+                                                              n2o,
+                                                              o2n,
+                                                              fargNameChanged,
+                                                              fargSubRangeChanged,
+                                                              fargRangeChanged,
+                                                              fargDeleted,
+                                                              fargInserted,
+                                                              oldFargList,
+                                                              newFargList,
+                                                              cpn2o,
+                                                              cpo2n,
+                                                              cpFargNameChanged,
+                                                              cpFargSubRangeChanged,
+                                                              cpFargRangeChanged,
+                                                              cpFargDeleted,
+                                                              fargInserted,
+                                                              oldCPFargList,
+                                                              newCPFargList);
+                }
+                else if ( dv instanceof PredDataValue )
+                {
+                    ((PredDataValue)dv).updateForMVEDefChange(db,
+                                                              mveID,
+                                                              nameChanged,
+                                                              oldName,
+                                                              newName,
+                                                              varLenChanged,
+                                                              oldVarLen,
+                                                              newVarLen,
+                                                              fargListChanged,
+                                                              n2o,
+                                                              o2n,
+                                                              fargNameChanged,
+                                                              fargSubRangeChanged,
+                                                              fargRangeChanged,
+                                                              fargDeleted,
+                                                              fargInserted,
+                                                              oldFargList,
+                                                              newFargList,
+                                                              cpn2o,
+                                                              cpo2n,
+                                                              cpFargNameChanged,
+                                                              cpFargSubRangeChanged,
+                                                              cpFargRangeChanged,
+                                                              cpFargDeleted,
+                                                              fargInserted,
+                                                              oldCPFargList,
+                                                              newCPFargList);
+                }
             }
         }
 
         return;
 
-    }
+    } /* ColPred::updateForMVEDefChange() */
+
+
 
     /**
      * It the supplied mveID matches this.mveID, set this.mveID to INVALID_ID.
@@ -5179,6 +5244,188 @@ implements InternalMatrixVocabElementListener {
         return cp;
 
     } /* ColPred::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4, arg5) */
+
+
+    public static ColPred Construct(Database db,
+                                    long mveID,
+                                    DataValue arg0,
+                                    DataValue arg1,
+                                    DataValue arg2,
+                                    DataValue arg3,
+                                    DataValue arg4,
+                                    DataValue arg5,
+                                    DataValue arg6)
+        throws SystemErrorException
+    {
+        final String mName = "ColPred::Construct(db, mveID, arg0, arg1, " +
+                                               "arg2, arg3, arg4, arg5, arg6)";
+        ColPred cp = null;
+
+        cp = ColPred.Construct(db, mveID, arg0, arg1, arg2, arg3, arg4, arg5);
+
+        if ( arg6 != null )
+        {
+            cp.replaceArg(6, arg6);
+        }
+
+        return cp;
+
+    } /* ColPred::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6) */
+
+
+    public static ColPred Construct(Database db,
+                                    long mveID,
+                                    DataValue arg0,
+                                    DataValue arg1,
+                                    DataValue arg2,
+                                    DataValue arg3,
+                                    DataValue arg4,
+                                    DataValue arg5,
+                                    DataValue arg6,
+                                    DataValue arg7)
+        throws SystemErrorException
+    {
+        final String mName = "ColPred::Construct(db, mveID, arg0, arg1, " +
+                                      "arg2, arg3, arg4, arg5, arg6, arg7)";
+        ColPred cp = null;
+
+        cp = ColPred.Construct(db, mveID, arg0, arg1, arg2, arg3,
+                               arg4, arg5, arg6);
+
+        if ( arg7 != null )
+        {
+            cp.replaceArg(7, arg7);
+        }
+
+        return cp;
+
+    } /* ColPred::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7) */
+
+
+    public static ColPred Construct(Database db,
+                                    long mveID,
+                                    DataValue arg0,
+                                    DataValue arg1,
+                                    DataValue arg2,
+                                    DataValue arg3,
+                                    DataValue arg4,
+                                    DataValue arg5,
+                                    DataValue arg6,
+                                    DataValue arg7,
+                                    DataValue arg8)
+        throws SystemErrorException
+    {
+        final String mName = "ColPred::Construct(db, mveID, arg0, arg1, " +
+                                      "arg2, arg3, arg4, arg5, arg6, arg7, arg8)";
+        ColPred cp = null;
+
+        cp = ColPred.Construct(db, mveID, arg0, arg1, arg2, arg3,
+                               arg4, arg5, arg6, arg7);
+
+        if ( arg8 != null )
+        {
+            cp.replaceArg(8, arg8);
+        }
+
+        return cp;
+
+    } /* ColPred::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) */
+
+
+    public static ColPred Construct(Database db,
+                                    long mveID,
+                                    DataValue arg0,
+                                    DataValue arg1,
+                                    DataValue arg2,
+                                    DataValue arg3,
+                                    DataValue arg4,
+                                    DataValue arg5,
+                                    DataValue arg6,
+                                    DataValue arg7,
+                                    DataValue arg8,
+                                    DataValue arg9)
+        throws SystemErrorException
+    {
+        final String mName = "ColPred::Construct(db, mveID, arg0, arg1, " +
+                              "arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)";
+        ColPred cp = null;
+
+        cp = ColPred.Construct(db, mveID, arg0, arg1, arg2, arg3,
+                               arg4, arg5, arg6, arg7, arg8);
+
+        if ( arg9 != null )
+        {
+            cp.replaceArg(9, arg9);
+        }
+
+        return cp;
+
+    } /* ColPred::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) */
+
+
+    public static ColPred Construct(Database db,
+                                    long mveID,
+                                    DataValue arg0,
+                                    DataValue arg1,
+                                    DataValue arg2,
+                                    DataValue arg3,
+                                    DataValue arg4,
+                                    DataValue arg5,
+                                    DataValue arg6,
+                                    DataValue arg7,
+                                    DataValue arg8,
+                                    DataValue arg9,
+                                    DataValue arg10)
+        throws SystemErrorException
+    {
+        final String mName = "ColPred::Construct(db, mveID, arg0, arg1, " +
+                      "arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)";
+        ColPred cp = null;
+
+        cp = ColPred.Construct(db, mveID, arg0, arg1, arg2, arg3,
+                               arg4, arg5, arg6, arg7, arg8, arg9);
+
+        if ( arg10 != null )
+        {
+            cp.replaceArg(10, arg10);
+        }
+
+        return cp;
+
+    } /* ColPred::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10) */
+
+
+    public static ColPred Construct(Database db,
+                                    long mveID,
+                                    DataValue arg0,
+                                    DataValue arg1,
+                                    DataValue arg2,
+                                    DataValue arg3,
+                                    DataValue arg4,
+                                    DataValue arg5,
+                                    DataValue arg6,
+                                    DataValue arg7,
+                                    DataValue arg8,
+                                    DataValue arg9,
+                                    DataValue arg10,
+                                    DataValue arg11)
+        throws SystemErrorException
+    {
+        final String mName = "ColPred::Construct(db, mveID, arg0, arg1, " +
+              "arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11)";
+        ColPred cp = null;
+
+        cp = ColPred.Construct(db, mveID, arg0, arg1, arg2, arg3,
+                               arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+
+        if ( arg11 != null )
+        {
+            cp.replaceArg(11, arg11);
+        }
+
+        return cp;
+
+    } /* ColPred::Construct(db, pveID, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11) */
 
     /**
      * @return A hash code value for the object.

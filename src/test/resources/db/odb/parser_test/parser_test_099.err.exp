@@ -3,6 +3,6 @@
 
 
       ERROR  4 (Line 178:0): Encountered end of file unexpectedly.
-        EOF encountered in a spreadsheet variable cell list.
+        EOF in a CELLS> attribute.
 
 Unable to continue parse -- Aborting...

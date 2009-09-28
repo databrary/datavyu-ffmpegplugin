@@ -1397,6 +1397,7 @@ public class VocabList {
                             throw new SystemErrorException(mName +
                                     "new/old farg type mismatch?!?");
                         }
+
                         if ( matchFound )
                         {
                             throw new SystemErrorException(mName +

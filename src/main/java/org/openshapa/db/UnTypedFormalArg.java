@@ -115,8 +115,7 @@ public class UnTypedFormalArg
         if ( ( salvage == null ) ||
              ( salvage.getItsFargID() == DBIndex.INVALID_ID ) )
         {
-            retVal =  new UndefinedDataValue(this.getDB(), this.getID(),
-                                             this.getFargName());
+            retVal =  new UndefinedDataValue(this.getDB(), this.getID());
         }
         else if ( salvage instanceof ColPredDataValue )
         {
@@ -156,8 +155,7 @@ public class UnTypedFormalArg
             {
                 // todo: Think of coercing the text string into a quote string
                 //       instead of just discarding it.
-                retVal =  new UndefinedDataValue(this.getDB(), this.getID(),
-                                             this.getFargName());
+                retVal =  new UndefinedDataValue(this.getDB(), this.getID());
             }
         }
         else if ( salvage instanceof TimeStampDataValue )
@@ -172,8 +170,7 @@ public class UnTypedFormalArg
         }
         else if ( salvage instanceof UndefinedDataValue )
         {
-            retVal =  new UndefinedDataValue(this.getDB(), this.getID(),
-                                             this.getFargName());
+            retVal =  new UndefinedDataValue(this.getDB(), this.getID());
         }
         else
         {
@@ -200,7 +197,7 @@ public class UnTypedFormalArg
         throws SystemErrorException
      {
 
-         return new UndefinedDataValue(this.getDB(), this.getID(), this.getFargName());
+         return new UndefinedDataValue(this.getDB(), this.getID());
 
      } /* UnTypedFormalArg::constructEmptyArg() */
 

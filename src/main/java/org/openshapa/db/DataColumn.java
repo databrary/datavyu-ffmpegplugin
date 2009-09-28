@@ -518,24 +518,28 @@ public class DataColumn extends Column
      *    - None.
      */
     protected void deregister()
-            throws SystemErrorException {
+            throws SystemErrorException
+    {
         final String mName = "DataColumn::deregister(): ";
         DBElement dbe = null;
         MatrixVocabElement mve;
 
-        if (this.itsMveID == DBIndex.INVALID_ID) {
+        if (this.itsMveID == DBIndex.INVALID_ID)
+        {
             throw new SystemErrorException(mName +
                     "this.itsMveID is invalid");
         }
 
         dbe = this.getDB().idx.getElement(this.itsMveID);
 
-        if (dbe == null) {
+        if (dbe == null)
+        {
             throw new SystemErrorException(mName +
                     "this.itsMveID has no referent");
         }
 
-        if (!(dbe instanceof MatrixVocabElement)) {
+        if ( ! ( dbe instanceof MatrixVocabElement ) )
+        {
             throw new SystemErrorException(mName +
                     "this.itsMveID does not refer to a MatrixVocabElement");
         }
@@ -1648,7 +1652,7 @@ public class DataColumn extends Column
 
             for ( i = 0; i < lvl.size(); i++ )
             {
-                output.printf("%s ", lvl.get(i));
+                output.printf("|%s| ", lvl.get(i));
             }
 
             output.printf(") )%s", newLine);
@@ -1707,14 +1711,21 @@ public class DataColumn extends Column
      *
      * Changes:
      *
-     *    - None.
+     *    - Added code to sort the local vocab list before returning it.
+     *
+     *      This shouldn't be necessary, but different versions of java seem
+     *      to be constructing the local vocab list in different orders.  This
+     *      isn't a real problem, as neither MacSHAPA nor OpenSHAPA care, but
+     *      it does break our tests.
+     *                                              JRM - 8/5/09
      */
 
     private Vector<String>
     toMODBFile_construct_local_vocab_list()
         throws SystemErrorException
     {
-        final String mName = "DataColumn::toMODBFile_construct_vocab_list(): ";
+        final String mName = 
+                "DataColumn::toMODBFile_construct_local_vocab_list(): ";
         int i;
         DataCell cell = null;
         Vector<String> lvl = null;
@@ -1774,6 +1785,23 @@ public class DataColumn extends Column
                             "the ID of a vocab element.");
                 }
             }
+
+            // For reason or reason's unknown, the above while loop results
+            // in the elements of the vocab list appearing in different order
+            // under Linux and MacOS.
+            //
+            // This shouldn't be, as java is supposed to give the same results
+            // on any supported platform.  Thus I'm guessing that this is a
+            // bug in either the JVM, or more likely, a library.
+            //
+            // Be this as it may, it is causing spurious test failures, so we
+            // have to enforce consistant order across different platforms.
+            //
+            // Do this by sorting the lvl vector before returning it.
+            //
+            //                                          JRM -- 8/5/09
+
+            java.util.Collections.sort(lvl);
         }
 
         this.localVocabIDSet = null;
@@ -1886,8 +1914,9 @@ public class DataColumn extends Column
 
         this.listeners.notifyListenersOfCellInsertion(newCell.getID());
 
-        if ((this.itsMveType == MatrixVocabElement.MatrixType.MATRIX) ||
-                (this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE)) {
+        if ( ( this.itsMveType == MatrixVocabElement.MatrixType.MATRIX ) ||
+             ( this.itsMveType == MatrixVocabElement.MatrixType.PREDICATE ) )
+        {
             newCell.registerPreds();
         }
 
@@ -2510,28 +2539,60 @@ public class DataColumn extends Column
             }
         }
 
-        if (fargListChanged) {
-            for (Cell c : this.itsCells) {
-                ((DataCell) c).cascadeUpdateForFargListChange(n2o,
-                        o2n,
-                        fargNameChanged,
-                        fargSubRangeChanged,
-                        fargRangeChanged,
-                        fargDeleted,
-                        fargInserted,
-                        oldFargList,
-                        newFargList,
-                        cpn2o,
-                        cpo2n,
-                        cpFargNameChanged,
-                        cpFargSubRangeChanged,
-                        cpFargRangeChanged,
-                        cpFargDeleted,
-                        cpFargInserted,
-                        oldCPFargList,
-                        newCPFargList);
-            }
+        for (Cell c : this.itsCells)
+        {
+            ((DataCell) c).cascadeUpdateForMVEDefChange(db,
+                                                        MVEID,
+                                                        nameChanged,
+                                                        oldName,
+                                                        newName,
+                                                        varLenChanged,
+                                                        oldVarLen,
+                                                        newVarLen,
+                                                        fargListChanged,
+                                                        n2o,
+                                                        o2n,
+                                                        fargNameChanged,
+                                                        fargSubRangeChanged,
+                                                        fargRangeChanged,
+                                                        fargDeleted,
+                                                        fargInserted,
+                                                        oldFargList,
+                                                        newFargList,
+                                                        cpn2o,
+                                                        cpo2n,
+                                                        cpFargNameChanged,
+                                                        cpFargSubRangeChanged,
+                                                        cpFargRangeChanged,
+                                                        cpFargDeleted,
+                                                        cpFargInserted,
+                                                        oldCPFargList,
+                                                        newCPFargList);
         }
+
+        // TODO: Delete this if all goes well
+//        if (fargListChanged) {
+//            for (Cell c : this.itsCells) {
+//                ((DataCell) c).cascadeUpdateForFargListChange(n2o,
+//                        o2n,
+//                        fargNameChanged,
+//                        fargSubRangeChanged,
+//                        fargRangeChanged,
+//                        fargDeleted,
+//                        fargInserted,
+//                        oldFargList,
+//                        newFargList,
+//                        cpn2o,
+//                        cpo2n,
+//                        cpFargNameChanged,
+//                        cpFargSubRangeChanged,
+//                        cpFargRangeChanged,
+//                        cpFargDeleted,
+//                        cpFargInserted,
+//                        oldCPFargList,
+//                        newCPFargList);
+//            }
+//        }
 
         return;
 
@@ -2555,8 +2616,9 @@ public class DataColumn extends Column
      *    - None.
      */
     public void MVEDeleted(Database db,
-            long MVEID)
-            throws SystemErrorException {
+                           long MVEID)
+        throws SystemErrorException
+    {
         final String mName = "DataColumn::MVEDeleted(): ";
 
         throw new SystemErrorException(mName + "should be un-reachable");

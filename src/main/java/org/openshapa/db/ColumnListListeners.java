@@ -80,23 +80,27 @@ public class ColumnListListeners extends Listeners
     /************************** Change Logging: ******************************/
     /*************************************************************************/
 
+    // notifyListenersOfColDeletion()
     /**
-     * notifyListenersOfColDeletion()
-     *
      * Advise the listeners of the deletion of a Column of the specified
-     * id from the column list.
+     * id from the column list.  Also send along copies of the old and
+     * new column order vector.
      *
      *                                                   -- 2/11/08
      *
      * Changes:
      *
-     *    - None.
+     *    - Added old_cov and new_cov parameters, and related code.
+     *                                                  -- 7/31/09
      */
 
-    protected void notifyListenersOfColDeletion(long colID)
+    protected void notifyListenersOfColDeletion(long colID,
+                      final java.util.Vector<Long> old_cov,
+                      final java.util.Vector<Long> new_cov)
         throws SystemErrorException
     {
-        final String mName = "ColumnListListeners::notifyListenersOfColDeletion()";
+        final String mName =
+                "ColumnListListeners::notifyListenersOfColDeletion()";
         ExternalColumnListListener el;
 
         // No internal listeners for now.
@@ -108,12 +112,12 @@ public class ColumnListListeners extends Listeners
             if ( ! ( o instanceof ExternalColumnListListener ) )
             {
                 throw new SystemErrorException(mName +
-                        ": o not a ExternalColumnListListener.");
+                        ": o not an ExternalColumnListListener.");
             }
 
             el = (ExternalColumnListListener)o;
 
-            el.colDeletion(this.db, colID);
+            el.colDeletion(this.db, colID, old_cov, new_cov);
         }
 
         return;
@@ -121,23 +125,27 @@ public class ColumnListListeners extends Listeners
     } /* ColumnListListeners::notifyListenersOfColDeletion() */
 
 
+    // notifyListenersOfColInsertion()
     /**
-     * notifyListenersOfColInsertion()
-     *
      * Advise the listeners of the inserion of a VocabElement of the specified
-     * id into the vocab list.
+     * id into the vocab list.  Also send along copies of the old and
+     * new column order vector.
      *
      *                                                   -- 2/11/08
      *
      * Changes:
      *
-     *    - None.
+     *    - Added old_cov and new_cov parameters, and related code.
+     *                                                  -- 7/31/09
      */
 
-    protected void notifyListenersOfColInsertion(long colID)
+    protected void notifyListenersOfColInsertion(long colID,
+                      final java.util.Vector<Long> old_cov,
+                      final java.util.Vector<Long> new_cov)
         throws SystemErrorException
     {
-        final String mName = "ColumnListListeners::notifyListenersOfColInsertion()";
+        final String mName =
+                "ColumnListListeners::notifyListenersOfColInsertion()";
         ExternalColumnListListener el;
 
         // No internal listeners for now.
@@ -149,17 +157,62 @@ public class ColumnListListeners extends Listeners
             if ( ! ( o instanceof ExternalColumnListListener ) )
             {
                 throw new SystemErrorException(mName +
-                        ": o not a ExternalColumnListListener.");
+                        ": o not an ExternalColumnListListener.");
             }
 
             el = (ExternalColumnListListener)o;
 
-            el.colInsertion(this.db, colID);
+            el.colInsertion(this.db, colID, old_cov, new_cov);
         }
 
         return;
 
     } /* ColumnListListeners::notifyListenersOfColInsertion() */
+
+
+    // notifyListenersOfColOrderVectorEdit()
+    /**
+     * Advise the listeners that the column order vector has been edited --
+     * meaning that it has been re-arranged, without entries being either
+     * added or deleted.
+     *
+     *                                                   -- 2/11/08
+     *
+     * Changes:
+     *
+     *    - Added old_cov and new_cov parameters, and related code.
+     *                                                  -- 7/31/09
+     */
+
+    protected void notifyListenersOfColOrderVectorEdit(
+                      final java.util.Vector<Long> old_cov,
+                      final java.util.Vector<Long> new_cov)
+        throws SystemErrorException
+    {
+        final String mName =
+                "ColumnListListeners::notifyListenersOfColOrderVectorEdit()";
+        ExternalColumnListListener el;
+
+        // No internal listeners for now.
+
+
+        // Notify the external listeners.
+        for ( Object o : this.els )
+        {
+            if ( ! ( o instanceof ExternalColumnListListener ) )
+            {
+                throw new SystemErrorException(mName +
+                        ": o not an ExternalColumnListListener.");
+            }
+
+            el = (ExternalColumnListListener)o;
+
+            el.colOrderVectorEdited(this.db, old_cov, new_cov);
+        }
+
+        return;
+
+    } /* ColumnListListeners::notifyListenersOfColOrderVectorEdit() */
 
 
     /*************************************************************************/

@@ -37,16 +37,25 @@ public final class UndefinedDataValue extends DataValue {
      * Value.
      *
      * @date 2007/08/16
+     *
+     * Changes:
+     *
+     *    - Deleted value parameter.    -- 9/27/09
      */
+
     public UndefinedDataValue(Database db,
-                              long fargID,
-                              String value)
+                              long fargID)
         throws SystemErrorException
     {
         super(db);
+
+        final String mName =
+                "UndefinedDataValue::UndefinedDataValue(db, fargID, value): ";
+
         this.setItsFargID(fargID);
-        this.setItsValue(value);
-    }
+
+    } /* UndefinedDataValue(db, fargID, value) */
+
 
     /**
      * Copy Constructor.
@@ -57,6 +66,7 @@ public final class UndefinedDataValue extends DataValue {
      *
      * @date 2007/08/16
      */
+
     public UndefinedDataValue(UndefinedDataValue dv)
         throws SystemErrorException
     {
@@ -283,7 +293,7 @@ public final class UndefinedDataValue extends DataValue {
                                     FormalArgument newFA)
         throws SystemErrorException
     {
-        final String mName = "TimeStampDataValue::updateForFargChange(): ";
+        final String mName = "UndefinedDataValue::updateForFargChange(): ";
         
         if ( ( oldFA == null ) || ( newFA == null ) )
         {
@@ -328,7 +338,7 @@ public final class UndefinedDataValue extends DataValue {
         
         return;
         
-    } /* TimeStampDataValue::updateForFargChange() */
+    } /* UndefinedDataValue::updateForFargChange() */
     
     
     /**
@@ -337,53 +347,45 @@ public final class UndefinedDataValue extends DataValue {
      * Nominally, this function should determine if the formal argument 
      * associated with the data value is subranged, and if it is, update
      * the data values representation of the subrange (if any) accordingly.  
-     * In passing, it would coerce the value ofthe datavalue into the subrange 
-     * if necessary.
+     * In passing, it would coerce the value of the datavalue into the subrange
+     * if necessary.  Typically, this happens when the range of the underlying
+     * formal argument changes, but it also applies when the data value is 
+     * assigned a formal argument ID.
      *
-     * This is meaningless for an undefine data value, as it never has a 
-     * value, and it is only associated with untyped formal arguments.
+     * The concept doesn't really fit undefined data values, however if we
+     * observe that the value of an undefined data value must always be the
+     * name of the associated formal argument (if any), a reasonable
+     * approximation comes to mind.
      *
-     * Thus the method verifies that the supplied formal argument is an
-     * UnTypedFormalArg, and that the value of the data value equals the
-     * name of the formal argument.
+     * Specifically, in this method we force the value of the undefined data
+     * value to equal the name of the specified formal argument.
      *
-     * The fa argument is a reference to the current representation of the
-     * formal argument associated with the data value.
+     * Note that this is a complete re-write of this method, and that this
+     * change was occasioned by the decision to allow undefined data values
+     * to be assigned to formal arguments of all types.
      *
-     *                                           -- 8/16/07
+     * The original date of this method was 8/16/07, but given the complete
+     * re-write, I am changing it to the current date
+     *
+     *                                           -- 9/6/09
      *
      * Changes:
      *
      *    - None.
      */
-    
+
     protected void updateSubRange(FormalArgument fa)
         throws SystemErrorException
     {
         final String mName = "UndefinedDataValue::updateSubRange(): ";
-        UnTypedFormalArg utfa;
         
         if ( fa == null )
         {
             throw new SystemErrorException(mName + "fa null on entry");    
         }
         
-        if ( fa instanceof UnTypedFormalArg )
-        {
-             this.subRange = false;
-        }
-        else
-        {
-            throw new SystemErrorException(mName + "Unexpected fa type");    
-        }
-        
-        utfa = (UnTypedFormalArg)fa;
-        
-        if ( utfa.getFargName().compareTo(this.itsValue) != 0 )
-        {
-            throw new SystemErrorException(mName + "farg name mismatch");    
-        }
-        
+        this.setItsValue(fa.getFargName());
+                
         return;
         
     } /* UndefinedDataValue::updateSubRange() */
@@ -466,5 +468,40 @@ public final class UndefinedDataValue extends DataValue {
 
         return hash;
     }
+
+
+    /*************************************************************************/
+    /************************ Class Methods: *********************************/
+    /*************************************************************************/
+
+    /**
+     * Construct()
+     *
+     * Construct instance of FloatDataValue with the specified initialization.
+     *
+     * Return reference to the newly constructed FloatDataValue if successful.
+     * Throws a system error exception on failure.
+     *
+     *                                               -- 3/31/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public static UndefinedDataValue Construct(Database db,
+                                               String s)
+        throws SystemErrorException
+    {
+        final String mName = "UndefinedDataValue::Construct(db, s)";
+        UndefinedDataValue udv = null;
+
+        udv = new UndefinedDataValue(db);
+
+        udv.setItsValue(s);
+
+        return udv;
+
+    } /* UndefinedDataValue::Construct(db, s) */
 
 } /* UndefinedDataValue */

@@ -435,7 +435,7 @@ public abstract class VocabElement extends DBElement {
 
     /**
      * Returns a copy of the n-th formal argument, or null if there is no such
-     * argument.
+     * argument.  Note that the itsVocabElementID field of the copy is reset.
      *
      * Changes:
      * <ul>
@@ -760,7 +760,7 @@ public abstract class VocabElement extends DBElement {
      *
      * @date 2007/02/27
      */
-    public FormalArgument getFormalArg(int n)
+    protected FormalArgument getFormalArg(int n)
         throws SystemErrorException
     {
         final String mName = "VocabElement::getFormalArg(): ";
@@ -803,7 +803,65 @@ public abstract class VocabElement extends DBElement {
 
         return fArg;
 
-    }
+    } // VocabElement::getFormalArg()
+
+    // getFormalArgCopy()
+    /**
+     * Returns a copy of the n-th formal argument, or null if there is no such
+     * argument.
+     *
+     * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
+     *
+     * @param n The index of the formal argument to return a copy of.
+     *
+     * @return A copy of the n-th formal argument, or null if no such argument
+     * exists.
+     *
+     * @throws SystemErrorException The
+     *
+     * @date 2007/02/27
+     */
+    public FormalArgument getFormalArgCopy(int n)
+        throws SystemErrorException
+    {
+        final String mName = "VocabElement::getFormalArgCopy(): ";
+        FormalArgument fArg = null;
+        FormalArgument fArgCopy = null;
+
+        if ( fArgList == null )
+        {
+            /* fArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "fArgList unitialized?!?!");
+        }
+        else if ( n < 0 )
+        {
+            /* can't have a negative index -- scream and die */
+            throw new SystemErrorException(mName + "negative index supplied");
+        }
+        else if ( n >= fArgList.size() )
+        {
+            /* n-th formal argument doesn't exist -- return null */
+            return null;
+        }
+
+        fArg = fArgList.get(n);
+
+        fArgCopy = fArg.CopyFormalArg(false, false);
+
+        if ( fArgCopy == null )
+        {
+            throw new SystemErrorException(mName + "fArgcopy is null");
+        }
+
+        return fArgCopy;
+
+    } // VocabElement::getFormalArgCopy()
+
 
     /**
      * Changes:
@@ -1119,7 +1177,7 @@ public abstract class VocabElement extends DBElement {
 
         return;
 
-    }
+    } // VocabElement::notifyListenersOfChange()
 
     /**
      * Notify all listeners of deletion message on to the instance of

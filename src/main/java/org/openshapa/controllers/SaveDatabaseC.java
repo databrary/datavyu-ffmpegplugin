@@ -41,6 +41,9 @@ public final class SaveDatabaseC {
      * Saves the database to the specified destination in a CSV format.
      *
      * @param outFile The path of the file to use when writing to disk.
+     *
+     * Changes: Replace call to vocabElement.getFormalArg() with call
+     *          to vocabElement.getFormalArgCopy().
      */
     public void saveAsCSV(final String outFile) {
         Database db = OpenSHAPA.getDatabase();
@@ -60,7 +63,7 @@ public final class SaveDatabaseC {
                     isMatrix = true;
                     out.write("-");
                     for (int j = 0; j < mve.getNumFormalArgs(); j++) {
-                        FormalArgument fa = mve.getFormalArg(j);
+                        FormalArgument fa = mve.getFormalArgCopy(j);
                         String name = fa.getFargName()
                                    .substring(1, fa.getFargName().length() - 1);
                         out.write(name + "|" + fa.getFargType().toString());
