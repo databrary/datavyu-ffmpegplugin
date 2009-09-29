@@ -181,6 +181,7 @@ public class VocabElementV extends JPanel {
         }
 
         hasVEChanged = hasChanged;
+        this.parentEditor.updateDialogState();
     }
 
     /**

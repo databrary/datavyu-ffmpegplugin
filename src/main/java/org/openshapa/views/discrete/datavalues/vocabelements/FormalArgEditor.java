@@ -23,12 +23,6 @@ public final class FormalArgEditor extends EditorComponent {
     /** Model this editor represents. */
     private FormalArgument model = null;
 
-    /** Text when editor gained focus (became current editor). */
-    private String textOnFocus;
-
-    /** true if the editor has the focus. */
-    private boolean edHasFocus;
-
     /** String holding the reserved characters. */
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
 
@@ -46,26 +40,25 @@ public final class FormalArgEditor extends EditorComponent {
         setEditable(true);
         argIndex = index;
         parentView = pv;
+        vocabElement = ve;
         resetValue(ve);
     }
 
     public void resetValue(final VocabElement ve) {
-        vocabElement = ve;
-
-        String fargName = "";
         try {
             model = vocabElement.getFormalArg(argIndex);
+
+            // Formal argument name contains "<" and ">" characters which we
+            // don't actually want.
+            String fargName = "";
+            if (model != null) {
+                fargName = model.getFargName()
+                                .substring(1, model.getFargName().length() - 1);
+            }
+            setText(fargName);
         } catch (SystemErrorException se) {
             logger.error("Unable to resetValue", se);
         }
-
-        // Formal argument name contains "<" and ">" characters which we don't
-        // actually want.
-        if (model != null) {
-            fargName = model.getFargName()
-                            .substring(1, model.getFargName().length() - 1);
-        }
-        setText(fargName);
     }
 
     /**
@@ -83,45 +76,26 @@ public final class FormalArgEditor extends EditorComponent {
     }
 
     /**
-     * @param aChar Character to test
-     * @return true if the character is a reserved character.
-     */
-    public boolean isReserved(final char aChar) {
-        return (RESERVED_CHARS.indexOf(aChar) >= 0);
-    }
-
-    /**
-     * focusSet is the signal that this editor has become "current".
-     * @param fe Focus Event
+     * Action to invoke when focus is gained.
+     *
+     * @param e The FocusEvent that triggered this action.
      */
     @Override
-    public void focusGained(final FocusEvent fe) {
-        textOnFocus = getText();
-        edHasFocus = true;
-        parentView.getParentDialog().updateDialogState();
+    public void focusGained(final FocusEvent e) {
     }
 
     /**
-     * Action to take when focus is lost for this editor.
-     * @param fe Focus Event
+     * Action to invoke when focus is lost.
+     *
+     * @param e The FocusEvent that triggered this action.
      */
     @Override
-    public void focusLost(final FocusEvent fe) {
-        edHasFocus = false;
-        if (!getText().equals(textOnFocus)) {
-            updateDatabase();
-        }
-    }
-
-    /**
-     * @return true if this editor has the focus.
-     */
-    public boolean hasFocus() {
-        return this.getParentComponent().hasFocus();
+    public void focusLost(final FocusEvent e) {
     }
 
     /**
      * The action to invoke when a key is typed.
+     *
      * @param e The KeyEvent that triggered this action.
      */
     @Override
@@ -131,20 +105,24 @@ public final class FormalArgEditor extends EditorComponent {
         if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
             && e.getKeyChar() == '\u0008') {
 
-            removeBehindCaret();
             try {
+                removeBehindCaret();
                 model.setFargName("<" + getText() + ">");
+                vocabElement.replaceFormalArg(model, argIndex);
+                parentView.setHasChanged(true);
             } catch (SystemErrorException se) {
-                logger.error("Unable to delete from predicate name", se);
+                logger.error("Unable to backspace from predicate name", se);
             }
 
         // The delete key removes digits ahead of the caret.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                    && e.getKeyChar() == '\u007F') {
 
-            removeAheadOfCaret();
             try {
+                removeAheadOfCaret();
                 model.setFargName("<" + getText() + ">");
+                vocabElement.replaceFormalArg(model, argIndex);
+                parentView.setHasChanged(true);
             } catch (SystemErrorException se) {
                 logger.error("Unable to delete from predicate name", se);
             }
@@ -154,36 +132,37 @@ public final class FormalArgEditor extends EditorComponent {
 
             try {
                 removeSelectedText();
-
                 StringBuffer currentValue = new StringBuffer(getText());
                 currentValue.insert(getCaretPosition(), e.getKeyChar());
                 model.setFargName("<" + currentValue.toString() + ">");
+                vocabElement.replaceFormalArg(model, argIndex);
 
                 // Advance caret over the top of the new char.
                 int pos = this.getCaretPosition() + 1;
                 this.setText(currentValue.toString());
                 this.setCaretPosition(pos);
 
+                parentView.setHasChanged(true);
             } catch (SystemErrorException se) {
                 logger.error("Unable to set new predicate name", se);
             }
         }
 
-        parentView.setHasChanged(true);
-        //parentElementV.rebuildContents();
         e.consume();
+    }
 
-        /*
-        if (!e.isConsumed()) {
-            if (isReserved(e.getKeyChar())) {
-                // Ignore reserved characters.
-                e.consume();
-            }
-        }*/
+    /**
+     * @param aChar Character to test
+     *
+     * @return true if the character is a reserved character.
+     */
+    public boolean isReserved(final char aChar) {
+        return (RESERVED_CHARS.indexOf(aChar) >= 0);
     }
 
     /**
      * Action to take by this editor when a key is pressed.
+     *
      * @param e The KeyEvent that triggered this action.
      */
     @Override
@@ -192,21 +171,10 @@ public final class FormalArgEditor extends EditorComponent {
 
     /**
      * Action to take by this editor when a key is released.
-     * @param e KeyEvent
+     *
+     * @param e The KeyEvent that triggered this action.
      */
     @Override
     public void keyReleased(final KeyEvent e) {
-        if (!getText().equals(textOnFocus)) {
-            parentView.setHasChanged(true);
-            parentView.getParentDialog().updateDialogState();
-        }
-    }
-
-    /**
-     * Update the database with the model value.
-     */
-    public void updateDatabase() {
-        // update the model.
-        System.out.println("FormalArgEditor updatedatabase called");
     }
 }
