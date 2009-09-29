@@ -29,7 +29,9 @@ public class VocabElementEditorFactory {
      * @return A vector of editor components to represent the element.
      */
     public static Vector<EditorComponent> buildVocabElement(
-         final JTextComponent ta, final VocabElement ve, final VocabElementV pv)
+                                                        final JTextComponent ta,
+                                                        final VocabElement ve,
+                                                        final VocabElementV pv)
     throws SystemErrorException {
 
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
@@ -72,7 +74,9 @@ public class VocabElementEditorFactory {
      * @return A vector of editor components to represent the argument.
      */
     public static Vector<EditorComponent> buildFormalArg(JTextComponent ta,
-                                       VocabElement ve, int i, VocabElementV pv)
+                                                         VocabElement ve,
+                                                         int i,
+                                                         VocabElementV pv)
     throws SystemErrorException {
 
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
@@ -96,7 +100,10 @@ public class VocabElementEditorFactory {
      * @return A vector of editor components to represent the argument.
      */
     public static Vector<EditorComponent> buildFormalArgWithType(
-                    JTextComponent ta, VocabElement ve, int i, VocabElementV pv)
+                                                              JTextComponent ta,
+                                                              VocabElement ve,
+                                                              int i,
+                                                              VocabElementV pv)
     throws SystemErrorException {
 
         Vector<EditorComponent> eds = new Vector<EditorComponent>();

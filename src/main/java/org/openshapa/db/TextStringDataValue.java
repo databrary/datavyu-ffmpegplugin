@@ -300,7 +300,7 @@ public final class TextStringDataValue extends DataValue
      * The output of this method will an instantiation of <text_quote_string>
      * (as defined in the grammar defining the MacSHAPA ODB file format).
      *
-     *                                              JRM -- 1/18/09
+     *                                              1/18/09
      *
      * Changes:
      *

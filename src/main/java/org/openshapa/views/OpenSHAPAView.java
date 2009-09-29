@@ -77,7 +77,7 @@ public final class OpenSHAPAView extends FrameView {
         // BugzID:492 - Set the shortcut for new cell, so a keystroke that won't
         // get confused for the "carriage return". The shortcut for new cells
         // is handled in OpenSHAPA.java
-        newCellMenuItem.setAccelerator(KeyStroke.getKeyStroke('\u2387'));
+        newCellMenuItem.setAccelerator(KeyStroke.getKeyStroke('\u21A9'));
 
         // BugzID:521 + 468 - Define accelerator keys based on Operating system.
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -377,6 +377,7 @@ public final class OpenSHAPAView extends FrameView {
         jSeparator3.setName("jSeparator3"); // NOI18N
         jMenu3.add(jSeparator3);
 
+        weakTemporalOrderMenuItem.setFont(new java.awt.Font("Silom", 0, 14)); // NOI18N
         weakTemporalOrderMenuItem.setName("weakTemporalOrderMenuItem"); // NOI18N
         weakTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

@@ -92,6 +92,14 @@
     )
     ( SYSTEM>
       (
+        ( SHAPA-PANE-VARS>
+          (
+            |a text var|
+            |a nominal var|
+            |really a matrix|
+            |fixed len matrix|
+          )
+        )
       )
     )
   )

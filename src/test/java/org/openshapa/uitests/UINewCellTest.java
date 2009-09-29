@@ -70,7 +70,7 @@ public final class UINewCellTest extends UISpecTestCase {
      private String[] floatTestInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
             "If x?7 then. x? 2 ", "589.138085638", "000389.5"
-            /*BugzID: 486 "-0.1", "0.2", "-0.0", "-", "-0", "-123"*/};
+            /*BugzID: 486 "-0.1", "0.2", "-0.0", "-", "-0"*/};
 
     static {
       UISpec4J.init();
@@ -178,7 +178,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varRadio = "integer";
 
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
-            "72", "999999999999999999", "3895", "<val>", "-123", "0"};
+            "72", "999999999999999999", "3895", "<val>", "0"};
         pasteTest(varName, varRadio, integerTestInput, expectedTestOutput);
     }
 

@@ -567,7 +567,7 @@ public class ColumnList
      *
      *    - Added code to add the ID of the new column to the end of the
      *      cov Vector.
-     *                                                 JRM -- 7/31/09
+     *                                                 7/31/09
      */
 
     protected void addColumn(Column col)
@@ -1686,7 +1686,7 @@ public class ColumnList
      * Note that this method throws away a lot of information about each
      * data column, as this data is not used in MacSHAPA.
      *
-     *                                              JRM -- 12/31/08
+     *                                              12/31/08
      *
      * Changes:
      *
@@ -1763,7 +1763,7 @@ public class ColumnList
      * Note that this method throws away a lot of information about each
      * data column, as this data is not used in MacSHAPA.
      *
-     *                                              JRM -- 12/31/08
+     *                                              12/31/08
      *
      * Changes:
      *

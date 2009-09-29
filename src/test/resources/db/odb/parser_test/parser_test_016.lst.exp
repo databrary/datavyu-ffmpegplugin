@@ -33,4 +33,8 @@ debug level = 3
         The value of the QUERY> section must be a list.
 
 00018                     ) 
+
+      WARNING  22 (Line 17:32): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the SYSTEM> section must be a list.
+
 00019  )

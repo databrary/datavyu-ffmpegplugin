@@ -44,9 +44,14 @@ public final class FormalArgTypeEditor extends EditorComponent {
      * @param cell The parent data cell this editor resides within.
      * @param matrix Matrix holding the datavalue this editor will represent.
      * @param matrixIndex The index of the datavalue within the matrix.
+     *
+     * Changes: Replace call to vocabElement.getFormalArg() with call
+     *          to vocabElement.getFormalArgCopy().
      */
-    public FormalArgTypeEditor(final JTextComponent ta, final VocabElement ve,
-                                      final int index, final VocabElementV pv) {
+    public FormalArgTypeEditor(final JTextComponent ta,
+                               final VocabElement ve,
+                               final int index,
+                               final VocabElementV pv) {
         super(ta);
         setEditable(true);
         argIndex = index;
@@ -64,7 +69,7 @@ public final class FormalArgTypeEditor extends EditorComponent {
 
         String fargType = "";
         try {
-            model = vocabElement.getFormalArg(argIndex);
+            model = vocabElement.getFormalArgCopy(argIndex);
             FArgType ft = model.getFargType();
             fargType = ft.toString().substring(0, 1);
         } catch (SystemErrorException e) {

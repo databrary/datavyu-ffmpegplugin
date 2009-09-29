@@ -23,6 +23,10 @@
 
 00012                        (NONE-SUCH> |<a_formal_arg>|)
 
+      WARNING  22 (Line 11:32): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the SYSTEM> section must be a list.
+
+
       WARNING  18 (Line 12:24): Encountered unknown or unexpected alist entry.  Entry will be read and discarded.
         The entry is located in the database body a-list.
 

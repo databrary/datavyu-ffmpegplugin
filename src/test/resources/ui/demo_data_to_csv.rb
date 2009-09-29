@@ -117,7 +117,7 @@ begin
         fargid = mve0.get_formal_arg(3).get_id()
         fdv3 = QuoteStringDataValue.new($db, fargid, "qs")
         fargid = mve0.get_formal_arg(4).get_id()
-        fdv4 = UndefinedDataValue.new($db, fargid, mve0.get_formal_arg(4).get_farg_name())
+        fdv4 = UndefinedDataValue.new($db, fargid)
 
         if dd == 0
           # construct a matrix with null args in first cell of column

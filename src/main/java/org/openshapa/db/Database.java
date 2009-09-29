@@ -431,7 +431,7 @@ public abstract class Database
      *
      * I am modifying the method to throw a system error unconditionally.
      *
-     *                                      JRM -- 7/26/09
+     *                                      7/26/09
      *
      * @return throws system error unconditionally.
      */
@@ -444,7 +444,7 @@ public abstract class Database
                 "direct access to internal database structures.  It should " +
                 "not exist and must not be used.  I am leaving it in place " +
                 "to prevent the creation of something similar in the " +
-                "future. -- JRM");
+                "future.");
 
         // This is the old body of the method.  DO NOT re-enable it.
         // return this.vl;
@@ -2152,7 +2152,7 @@ public abstract class Database
      *    - None.
      */
 
-    protected boolean toMODBFile_includeDataColumnInUserSection(DataColumn dc)
+    protected boolean toMODBFile_includeDataColumnInUserSection(final DataColumn dc)
     {
 
         return(true);
@@ -2961,7 +2961,7 @@ public abstract class Database
      *      Added test to see if the target mve is a system mve, and throw a
      *      system error if it is.  Need this to prevent the UI code from
      *      modifying system matricies.
-     *                                              JRM -- 7/25/09
+     *                                              7/25/09
      *   </li>
      * </ul>
      */
@@ -3020,7 +3020,7 @@ public abstract class Database
      * essential, as there is no other way for code above the level of the
      * database to add new arguements to a system variable length predicate.
      *
-     *                                              JRM -- 7/26/09
+     *                                              7/26/09
      *
      * @param targetID id of the variable length predicate vocab element to
      *          which a new argument is to be added.
@@ -3107,7 +3107,7 @@ public abstract class Database
      *      system error if it is.  Need this to prevent the insertion of
      *      system predicates from outside the database.
      *
-     *                                              JRM -- 7/25/09
+     *                                              7/25/09
      *   </li>
      * </ul>
      */
@@ -3381,7 +3381,7 @@ public abstract class Database
      *      Added test to see if the target pve is a system pve, and throw a
      *      system error if it is.  Need this to prevent the UI code from
      *      modifying system predicates.
-     *                                              JRM -- 7/25/09
+     *                                              7/25/09
      *   </li>
      * </ul>
      */
@@ -3607,7 +3607,7 @@ public abstract class Database
         throw new SystemErrorException(mName + "This routine allows the user " +
                 "to corrupt the data base.  It should not exist and must not " +
                 "be used.  I am leaving it in place to prevent the creation " +
-                "of something similar in the future. -- JRM");
+                "of something similar in the future.");
 
         // This is the old body of the method.  DO NOT re-enable it.
         // this.vl.removeVocabElement(targetID);

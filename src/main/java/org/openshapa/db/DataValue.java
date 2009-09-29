@@ -172,7 +172,7 @@ public abstract class DataValue extends DBElement
      * the grammar defining the MacSHAPA ODB file format) depending on
      * context.
      *
-     *                                              JRM -- 1/17/09
+     *                                              1/17/09
      *
      * Changes:
      *
@@ -331,7 +331,9 @@ public abstract class DataValue extends DBElement
      *
      * Changes:
      *
-     *    - None.
+     *    - Modified method to accept either a predicate ID or a column 
+     *      predicate ID in the itsPredID field.
+     *                                              -- 8/23/09
      */
     
     public void setItsCellID(long ID)
@@ -346,6 +348,7 @@ public abstract class DataValue extends DBElement
         MatrixVocabElement mve = null;
         FormalArgument fa = null;
         Predicate pred = null;
+        ColPred cPred = null;
         
         if ( this.itsFargID == DBIndex.INVALID_ID )
         {
@@ -422,8 +425,6 @@ public abstract class DataValue extends DBElement
 
             if ( ! matchFound )
             {
-                // todo: delete the following line eventually
-                // int j = 1/0;
                 throw new SystemErrorException(mName + 
                         "Target cell's mve does not contain itsFarg");
             }
@@ -431,8 +432,8 @@ public abstract class DataValue extends DBElement
         else /* this.itsPredID != DBIndex.INVALID_ID */
         {
             /* The data value must be a top level argument of the predicate
-             * indicated by this.itsPredID.  Verify that the supplied ID 
-             * matches the cell ID of the containining predicate.
+             * or column predicate indicated by this.itsPredID.  Verify that
+             * the supplied ID matches the cell ID of the containing predicate.
              */
             dbe = this.getDB().idx.getElement(this.itsPredID);
 
@@ -442,19 +443,31 @@ public abstract class DataValue extends DBElement
                         "this.itsPredID has no referent");
             }
 
-            if ( ! ( dbe instanceof Predicate ) )
+            if ( dbe instanceof Predicate )
             {
-                throw new SystemErrorException(mName + 
-                        "this.itsPredID doesn't refer to a Predicate");
-            }
+                pred = (Predicate)dbe;
 
-            /* If we get this far, we know that dbe is a Predicate */
-            pred = (Predicate)dbe;
-            
-            if ( pred.getCellID() != ID )
+                if ( pred.getCellID() != ID )
+                {
+                    throw new SystemErrorException(mName +
+                            "ID != pred.getCellID()");
+                }
+            }
+            else if ( dbe instanceof ColPred )
             {
-                throw new SystemErrorException(mName + 
-                                               "ID != pred.getCellID()");
+                cPred = (ColPred)dbe;
+
+                if ( cPred.getCellID() != ID )
+                {
+                    throw new SystemErrorException(mName +
+                            "ID != cPred.getCellID()");
+                }
+            }
+            else
+            {
+                throw new SystemErrorException(mName +
+                       "this.itsPredID doesn't refer to either a Predicate " +
+                       "or a column predicate");
             }
         }
         
@@ -518,18 +531,14 @@ public abstract class DataValue extends DBElement
             case NOMINAL:
             case PREDICATE:
             case TIME_STAMP:
-                this.itsFargID = ID;
-                this.itsFargType = fargType;
-                this.updateSubRange(fa);
-                break;
-            
             case QUOTE_STRING:
             case TEXT:
             case UNTYPED:
                 this.itsFargID = ID;
                 this.itsFargType = fargType;
+                this.updateSubRange(fa);
                 break;
-                
+
             case UNDEFINED:
                 throw new SystemErrorException(mName + 
                                                "formal arg type undefined???");
@@ -561,19 +570,23 @@ public abstract class DataValue extends DBElement
      *
      * Changes:
      *
-     *    - None.
+     *    - Modified the method to also accept column predicates.
+     *                                              -- 8/23/09
      */
     
     public void setItsPredID(long ID)
         throws SystemErrorException
     {
-        final String mName = "DataValue::setItsCellID(): ";
+        final String mName = "DataValue::setItsPredID(): ";
         boolean matchFound = false;
         int i;
+        long mveID;
         long pveID;
         DBElement dbe = null;
         Predicate pred = null;
         PredicateVocabElement pve = null;
+        ColPred cPred = null;
+        MatrixVocabElement mve = null;
         FormalArgument fa = null;
         
         if ( this.itsFargID == DBIndex.INVALID_ID )
@@ -594,53 +607,100 @@ public abstract class DataValue extends DBElement
             throw new SystemErrorException(mName + "ID has no referent");
         }
         
-        if ( ! ( dbe instanceof Predicate ) )
+        if ( dbe instanceof Predicate )
         {
-            throw new SystemErrorException(mName + 
-                    "ID doesn't refer to a Predicate");
-        }
-        
-        /* If we get this far, we know that dbe is a DataCell */
-        pred = (Predicate)dbe;
-        
-        pveID = pred.getPveID();
-        
-        if ( pveID == DBIndex.INVALID_ID )
-        {
-            throw new SystemErrorException(mName + "pveID == INVALID_ID");    
-        }
-        
-        dbe = this.getDB().idx.getElement(pveID);
-        
-        if ( dbe == null )
-        {
-            throw new SystemErrorException(mName + "pveID has no referent");
-        }
-        
-        if ( ! ( dbe instanceof PredicateVocabElement ) )
-        {
-            throw new SystemErrorException(mName + 
-                    "pveID doesn't refer to a PredicateVocabElement");
-        }
-        
-        /* If we get this far, we know that dbe is a PredicateVocabElement */
-        pve = (PredicateVocabElement)dbe;
+            /* If we get here, we know that dbe is a Predicate */
+            pred = (Predicate)dbe;
 
-        i = 0;
-        matchFound = false;
-        while ( ( i < pve.getNumFormalArgs() ) && ( ! matchFound ) )
-        {
-            if ( pve.getFormalArg(i).getID() == itsFargID )
+            pveID = pred.getPveID();
+
+            if ( pveID == DBIndex.INVALID_ID )
             {
-                matchFound = true;
+                throw new SystemErrorException(mName + "pveID == INVALID_ID");
             }
-            i++;
+
+            dbe = this.getDB().idx.getElement(pveID);
+
+            if ( dbe == null )
+            {
+                throw new SystemErrorException(mName + "pveID has no referent");
+            }
+
+            if ( ! ( dbe instanceof PredicateVocabElement ) )
+            {
+                throw new SystemErrorException(mName +
+                        "pveID doesn't refer to a PredicateVocabElement");
+            }
+
+            /* If we get this far, we know that dbe is a PredicateVocabElement */
+            pve = (PredicateVocabElement)dbe;
+
+            i = 0;
+            matchFound = false;
+            while ( ( i < pve.getNumFormalArgs() ) && ( ! matchFound ) )
+            {
+                if ( pve.getFormalArg(i).getID() == itsFargID )
+                {
+                    matchFound = true;
+                }
+                i++;
+            }
+
+            if ( ! matchFound )
+            {
+                throw new SystemErrorException(mName +
+                        "Target pred's pve does not contain itsFarg");
+            }
         }
-        
-        if ( ! matchFound )
+        else if ( dbe instanceof ColPred )
         {
-            throw new SystemErrorException(mName + 
-                    "Target pred's pve does not contain itsFarg");
+            /* If we get here, we know that dbe is a Predicate */
+            cPred = (ColPred)dbe;
+
+            mveID = cPred.getMveID();
+
+            if ( mveID == DBIndex.INVALID_ID )
+            {
+                throw new SystemErrorException(mName + "mveID == INVALID_ID");
+            }
+
+            dbe = this.getDB().idx.getElement(mveID);
+
+            if ( dbe == null )
+            {
+                throw new SystemErrorException(mName + "mveID has no referent");
+            }
+
+            if ( ! ( dbe instanceof MatrixVocabElement ) )
+            {
+                throw new SystemErrorException(mName +
+                        "mveID doesn't refer to a MatrixVocabElement");
+            }
+
+            /* If we get this far, we know that dbe is a MatrixVocabElement */
+            mve = (MatrixVocabElement)dbe;
+
+            i = 0;
+            matchFound = false;
+            while ( ( i < mve.getNumCPFormalArgs() ) && ( ! matchFound ) )
+            {
+                if ( mve.getCPFormalArg(i).getID() == itsFargID )
+                {
+                    matchFound = true;
+                }
+                i++;
+            }
+
+            if ( ! matchFound )
+            {
+                throw new SystemErrorException(mName +
+                        "Target col pred's mve does not contain itsFarg");
+            }
+        }
+        else
+        {
+            throw new SystemErrorException(mName +
+                "ID doesn't refer to either a Predicate or a Column Predicate");
         }
         
         this.itsPredID = ID;
@@ -793,7 +853,7 @@ public abstract class DataValue extends DBElement
      * the supplied data column with the ID of the base PVE or MVE
      * respectively.
      *
-     *                                      JRM -- 7/2/09
+     *                                      7/2/09
      *
      * Changes;
      *

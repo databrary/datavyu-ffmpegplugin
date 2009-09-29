@@ -46,6 +46,11 @@
     )
     ( SYSTEM>
       (
+        ( SHAPA-PANE-VARS>
+          (
+            |_a-text-var_|
+          )
+        )
       )
     )
   )

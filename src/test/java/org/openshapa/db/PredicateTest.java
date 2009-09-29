@@ -1145,8 +1145,7 @@ public class PredicateTest {
                                          new TimeStamp(db.getTicks()));
             argList0.add(arg);
             fargID = pve0.getFormalArg(6).getID();
-            arg = new UndefinedDataValue(db, fargID,
-                                         pve0.getFormalArg(6).getFargName());
+            arg = new UndefinedDataValue(db, fargID);
             argList0.add(arg);
 
             pred0 = new Predicate(db, predID0, argList0);
@@ -1197,8 +1196,7 @@ public class PredicateTest {
             argList1 = new Vector<DataValue>();
 
             fargID = pve1.getFormalArg(0).getID();
-            arg = new UndefinedDataValue(db, fargID,
-                                         pve1.getFormalArg(0).getFargName());
+            arg = new UndefinedDataValue(db, fargID);
             argList1.add(arg);
 
             pred1 = new Predicate(db, predID1, argList1);
@@ -1918,8 +1916,7 @@ public class PredicateTest {
                                          new TimeStamp(db.getTicks()));
             argList.add(arg);
             fargID = pve0.getFormalArg(6).getID();
-            arg = new UndefinedDataValue(db, fargID,
-                                         pve0.getFormalArg(6).getFargName());
+            arg = new UndefinedDataValue(db, fargID);
             argList.add(arg);
             /* now add an extranious argument */
             arg = new IntDataValue(db, fargID, 33);
@@ -1988,8 +1985,7 @@ public class PredicateTest {
                                          new TimeStamp(db.getTicks()));
             argList.add(arg);
             fargID = pve0.getFormalArg(6).getID();
-            arg = new UndefinedDataValue(db, fargID,
-                                         pve0.getFormalArg(6).getFargName());
+            arg = new UndefinedDataValue(db, fargID);
             /* don't add the last argument */
 
 
@@ -2055,8 +2051,7 @@ public class PredicateTest {
 
             /* swap arguments for entries 5 & 6 */
             fargID = pve0.getFormalArg(6).getID();
-            arg = new UndefinedDataValue(db, fargID,
-                                         pve0.getFormalArg(6).getFargName());
+            arg = new UndefinedDataValue(db, fargID);
             argList.add(arg);
             fargID = pve0.getFormalArg(5).getID();
             arg = new TimeStampDataValue(db, fargID,
@@ -3894,8 +3889,7 @@ public class PredicateTest {
                                              new TimeStamp(db.getTicks()));
                 argList0.add(arg);
                 fargID = pve4.getFormalArg(6).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                             pve4.getFormalArg(6).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
                 argList0.add(arg);
 
                 pred0  = new Predicate(db, pve4ID, argList0);
@@ -5455,8 +5449,7 @@ public class PredicateTest {
             try
             {
                 fargID = pve4.getFormalArg(6).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                            pve4.getFormalArg(6).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
                 floatArg0 = new FloatDataValue(db);
                 floatArg0.setItsValue(1066.0);
                 intArg0 = new IntDataValue(db);
@@ -6080,8 +6073,7 @@ public class PredicateTest {
                                          new TimeStamp(db.getTicks()));
             argList0.add(arg);
             fargID = pve1.getFormalArg(6).getID();
-            arg = new UndefinedDataValue(db, fargID,
-                                         pve1.getFormalArg(6).getFargName());
+            arg = new UndefinedDataValue(db, fargID);
             argList0.add(arg);
 
             pred1a = new Predicate(db, pveID1, argList0);
@@ -7070,8 +7062,7 @@ public class PredicateTest {
                                              new TimeStamp(db.getTicks()));
                 argList0.add(arg);
                 fargID = pve0.getFormalArg(6).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                             pve0.getFormalArg(6).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
                 argList0.add(arg);
 
                 pred0 = new Predicate(db, pve0ID, argList0);

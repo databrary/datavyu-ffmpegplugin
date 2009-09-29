@@ -600,6 +600,17 @@ public abstract class FormalArgument
         {
              switch ( fa0.getFargType() )
              {
+                 case COL_PREDICATE:
+                     if ( ( ! ( fa0 instanceof ColPredFormalArg ) ) ||
+                          ( ! ( fa1 instanceof ColPredFormalArg ) ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (0).");
+                     }
+                     /* column predicates don't support subranges at present.
+                      */
+                     break;
+
                  case FLOAT:
                      FloatFormalArg ffa0, ffa1;
 
@@ -808,6 +819,17 @@ public abstract class FormalArgument
         {
              switch ( fa0.getFargType() )
              {
+                 case COL_PREDICATE:
+                     if ( ( ! ( fa0 instanceof ColPredFormalArg ) ) ||
+                          ( ! ( fa1 instanceof ColPredFormalArg ) ) )
+                     {
+                         throw new SystemErrorException(mName +
+                                 "farg type / class mismatch (0).");
+                     }
+                     /* column predicates don't support subranges at present.
+                      */
+                      break;
+
                  case FLOAT:
                      FloatFormalArg ffa0, ffa1;
 

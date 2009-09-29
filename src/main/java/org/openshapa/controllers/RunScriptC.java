@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.util.FileFilters.RBFilter;
 import org.openshapa.views.ConsoleV;
+import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
  * Controller for running scripts.
@@ -135,6 +136,12 @@ public final class RunScriptC {
         } catch (FileNotFoundException e) {
             logger.error("Unable to execute script: ", e);
         }
+
+        // Display any changes.
+        SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
+                                                            .getMainView()
+                                                            .getComponent();
+        view.relayoutCells();
     }
 
     /** The logger for this class. */

@@ -205,26 +205,20 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @param db The database.
      */
     public void endCascade(final Database db) {
-        boolean dirty = false;
         if (colChanges.colDeleted) {
             // Not tested yet should be handled by ColumnListener in spreadsheet
             return;
         }
+
         if (colChanges.cellDeleted.size() > 0) {
             for (Long cellID : colChanges.cellDeleted) {
                 datapanel.deleteCellByID(cellID);
             }
-            dirty = true;
         }
         if (colChanges.cellInserted.size() > 0) {
             for (Long cellID : colChanges.cellInserted) {
                 datapanel.insertCellByID(db, cellID);
             }
-            dirty = true;
-        }
-        if (colChanges.varLenChanged) {
-            // all cells need to be redrawn but none are being added or deleted
-            dirty = true;
         }
 
         if (colChanges.nameChanged) {
@@ -237,9 +231,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             }
         }
 
-        if (dirty) {
-            spreadsheetPanel.relayoutCells();
-        }
         colChanges.reset();
     }
 

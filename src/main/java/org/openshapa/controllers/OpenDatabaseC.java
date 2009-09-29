@@ -32,6 +32,7 @@ import org.openshapa.db.TextStringDataValue;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.db.UnTypedFormalArg;
 import org.openshapa.db.UndefinedDataValue;
+import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
  * Controller for opening a database from disk.
@@ -77,9 +78,16 @@ public final class OpenDatabaseC {
                 mainFrame.setTitle(rMap.getString("Application.title")
                                + " - " + OpenSHAPA.getDatabase().getName());
             }
+
         } catch (SystemErrorException se) {
             logger.error("Can't set db name to the name of the CSV file.", se);
         }
+
+        // Display any changes.
+        SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
+                                                            .getMainView()
+                                                            .getComponent();
+        view.relayoutCells();
     }
 
     /**
@@ -179,6 +187,9 @@ public final class OpenDatabaseC {
      * @throws IOException If unable to read the file correctly.
      * @throws SystemErrorException If unable to update the database with the
      * predicate variable data.
+     *
+     * Changes: Replace call to vocabElement.getFormalArg() with call
+     *          to vocabElement.getFormalArgCopy().
      */
     private String parseMatrixVariable(final BufferedReader csvFile,
                                        final DataColumn dc,
@@ -207,7 +218,7 @@ public final class OpenDatabaseC {
 
             Vector<DataValue> arguments = new Vector<DataValue>();
             for (int i = 0; i < mve.getNumFormalArgs(); i++) {
-                FormalArgument ma = mve.getFormalArg(i);
+                FormalArgument ma = mve.getFormalArgCopy(i);
                 boolean emptyArg = false;
                 if (tokens[i + 2].charAt(0) == '<') {
                     emptyArg = true;

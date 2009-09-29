@@ -163,6 +163,9 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * @return The displayable version of the null argument.
+     *
+     * Changes: Replace call to vocabElement.getFormalArg() with call
+     *          to vocabElement.getFormalArgCopy().
      */
     public final String getNullArg() {
         String t = "";
@@ -171,13 +174,13 @@ public abstract class DataValueEditor extends EditorComponent {
                 long mveid = parentMatrix.getMveID();
                 MatrixVocabElement mve = parentMatrix.getDB()
                                                      .getMatrixVE(mveid);
-                FormalArgument fa = mve.getFormalArg(mIndex);
+                FormalArgument fa = mve.getFormalArgCopy(mIndex);
                 t = fa.toString();
             } else if (parentMatrix != null && parentPredicate != null) {
                 Predicate p = parentPredicate.getItsValue();
                 PredicateVocabElement pve = parentMatrix.getDB()
                                                     .getPredVE(p.getPveID());
-                FormalArgument fa = pve.getFormalArg(pIndex);
+                FormalArgument fa = pve.getFormalArgCopy(pIndex);
                 t = fa.toString();
             }
         } catch (SystemErrorException e) {
@@ -220,6 +223,9 @@ public abstract class DataValueEditor extends EditorComponent {
                 break;
 
             case KeyEvent.VK_LEFT:
+                int selectStart = this.getSelectionStart();
+                int selectEnd = this.getSelectionEnd();
+
                 // Move caret to the left.
                 int c = Math.max(0, this.getCaretPosition() - 1);
                 this.setCaretPosition(c);
@@ -235,12 +241,31 @@ public abstract class DataValueEditor extends EditorComponent {
                     setCaretPosition(Math.max(0, getCaretPosition() - 1));
                 }
                 e.consume();
+
+                // If the user is holding down shift - alter the selection as
+                // well as the caret position.
+                if (e.getModifiers() == KeyEvent.SHIFT_MASK) {
+                    // Shrink selection left - removed entire selection.
+                    if (getCaretPosition() == selectStart) {
+                        select(selectStart, selectStart);
+                    // Grow selection left.
+                    } else if (getCaretPosition() < selectStart) {
+                        select(selectEnd, getCaretPosition());
+                    // Shrink selection left.
+                    } else {
+                        select(selectStart, getCaretPosition());
+                    }
+                }
+
                 break;
 
             case KeyEvent.VK_RIGHT:
+                selectStart = this.getSelectionStart();
+                selectEnd = this.getSelectionEnd();
+
                 // Move caret to the right.
                 c = Math.min(this.getText().length(),
-                             this.getCaretPosition() + 1);
+                                 this.getCaretPosition() + 1);
                 this.setCaretPosition(c);
 
                 // If after the move, we have a character to the right that
@@ -256,6 +281,22 @@ public abstract class DataValueEditor extends EditorComponent {
                                               getCaretPosition() + 1));
                 }
                 e.consume();
+
+                // If the user is holding down shift - alter the selection as
+                // well as the caret position.
+                if (e.getModifiers() == KeyEvent.SHIFT_MASK) {
+                    // Shrink selection right - removed entire selection.
+                    if (getCaretPosition() == selectEnd) {
+                        select(selectEnd, selectEnd);
+                    // Grow selection right.
+                    } else if (getCaretPosition() > selectEnd) {
+                        select(selectStart, getCaretPosition());
+                    // Shrink select right.
+                    } else {
+                        select(getCaretPosition(), selectEnd);
+                    }
+                }
+
                 break;
 
             default:

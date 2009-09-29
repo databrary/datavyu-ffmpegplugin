@@ -135,6 +135,17 @@
     )
     ( SYSTEM>
       (
+        ( SHAPA-PANE-VARS>
+          (
+            |a text var|
+            |a nominal var|
+            |an integer var|
+            |a float var|
+            |a predicate var|
+            |fixed len matrix|
+            |var len matrix|
+          )
+        )
       )
     )
   )

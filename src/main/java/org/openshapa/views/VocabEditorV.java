@@ -37,25 +37,18 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
     /** The database that this vocab editor is manipulating. */
     private Database db;
-
     /** The logger for the vocab editor. */
     private static Logger logger = Logger.getLogger(VocabEditorV.class);
-
     /** The currently selected vocab element. */
     private VocabElementV selectedVocabElement;
-
     /** The currently selected formal argument. */
     private FormalArgEditor selectedArgument;
-
     /** Index of the currently selected formal argument within the element. */
     private int selectedArgumentI;
-
     /** The collection of vocab element views in the current vocab listing. */
     private Vector<VocabElementV> veViews;
-
     /** Collection of vocab element views that are to be deleted completely. */
     private Vector<VocabElementV> veViewsToDeleteCompletely;
-
     /** Vertical frame for holding the current listing of Vocab elements. */
     private JPanel verticalFrame;
 
@@ -111,6 +104,16 @@ public final class VocabEditorV extends OpenSHAPADialog {
 //        jPanel1.add(verticalFrame, BorderLayout.NORTH);
         updateDialogState();
         this.getRootPane().setDefaultButton(okButton);
+
+        // Hide all the broken stuff.
+        this.deleteButton.setVisible(false);
+        this.moveArgLeftButton.setVisible(false);
+        this.moveArgRightButton.setVisible(false);
+        this.argTypeComboBox.setVisible(false);
+        this.varyArgCheckBox.setVisible(false);
+        this.addArgButton.setVisible(false);
+        this.addMatrixButton.setVisible(false);
+        this.addPredicateButton.setVisible(false);
     }
 
     /**
@@ -120,7 +123,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public void addPredicate() {
         try {
             PredicateVocabElement pve = new PredicateVocabElement(db,
-                                                                  "predicate");
+                    "predicate");
             addVocabElement(pve);
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
@@ -164,7 +167,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             VocabElement ve = selectedVocabElement.getModel();
             ve.deleteFormalArg(selectedArgumentI);
             ve.insertFormalArg(selectedArgument.getModel(),
-                               (selectedArgumentI - 1));
+                    (selectedArgumentI - 1));
             selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
 
@@ -183,7 +186,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             VocabElement ve = selectedVocabElement.getModel();
             ve.deleteFormalArg(selectedArgumentI);
             ve.insertFormalArg(selectedArgument.getModel(),
-                               (selectedArgumentI + 1));
+                    (selectedArgumentI + 1));
             selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
         } catch (SystemErrorException e) {
@@ -239,8 +242,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public void setVaryingArgs() {
         if (selectedVocabElement != null) {
             try {
-                selectedVocabElement.getModel()
-                                    .setVarLen(varyArgCheckBox.isSelected());
+                selectedVocabElement.getModel().setVarLen(varyArgCheckBox.isSelected());
                 selectedVocabElement.rebuildContents();
             } catch (SystemErrorException e) {
                 logger.error("Unable to set varying arguments.", e);
@@ -258,7 +260,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             veViewsToDeleteCompletely.add(selectedVocabElement);
             selectedVocabElement.setDeleted(true);
 
-        // User has argument selected - delete it from the vocab element.
+            // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
             VocabElement ve = selectedVocabElement.getModel();
             try {
@@ -312,7 +314,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
                  * back, as matrix vocabulary elements MUST NOT be deleted
                  * directly from the data base.  Doing so will corrupt it.
                  *
-                 *                                      JRM -- 7/26/09
+                 *                                      7/26/09
                  */
                 db.removePredVE(view.getModel().getID());
                 verticalFrame.remove(view);
@@ -347,10 +349,10 @@ public final class VocabEditorV extends OpenSHAPADialog {
                          * However this could change, so best program
                          * defensively.
                          *
-                         *                                    JRM -- 7/26/09
+                         *                                    7/26/09
                          */
-                        if ( ( db.colNameInUse(ve.getName()) ||
-                             ( db.predNameInUse(ve.getName()) ) ) ) {
+                        if ((db.colNameInUse(ve.getName()) ||
+                                (db.predNameInUse(ve.getName())))) {
 
                             // the string passed to the exception probably
                             // should be modified to allow localization.
@@ -408,9 +410,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * model.
      */
     public void updateDialogState() {
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                      .getContext()
-                                      .getResourceMap(VocabEditorV.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext().getResourceMap(VocabEditorV.class);
 
         boolean containsC = false;
         selectedVocabElement = null;
@@ -451,8 +451,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             argTypeComboBox.setEnabled(true);
             varyArgCheckBox.setEnabled(true);
             deleteButton.setEnabled(true);
-            varyArgCheckBox.setSelected(selectedVocabElement.getModel()
-                                                            .getVarLen());
+            varyArgCheckBox.setSelected(selectedVocabElement.getModel().getVarLen());
         } else {
             addArgButton.setEnabled(false);
             argTypeComboBox.setEnabled(false);
@@ -477,8 +476,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
             // W00t - argument is selected - populate the index so that the user
             // can shift the argument around.
-            selectedArgumentI = selectedVocabElement.getModel()
-                               .findFormalArgIndex(selectedArgument.getModel());
+            selectedArgumentI = selectedVocabElement.getModel().findFormalArgIndex(selectedArgument.getModel());
 
             if (selectedArgumentI > 0) {
                 this.moveArgLeftButton.setEnabled(true);
@@ -487,8 +485,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             }
 
             try {
-                if (selectedArgumentI < (selectedVocabElement.getModel()
-                                                     .getNumFormalArgs() - 1)) {
+                if (selectedArgumentI < (selectedVocabElement.getModel().getNumFormalArgs() - 1)) {
                     this.moveArgRightButton.setEnabled(true);
                 } else {
                     this.moveArgRightButton.setEnabled(false);
@@ -683,9 +680,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * @param evt The event that triggered this action.
      */
     private void argTypeComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_argTypeComboBoxItemStateChanged
-        if (selectedVocabElement != null
-            && selectedArgument != null
-            && evt.getStateChange() == ItemEvent.SELECTED) {
+        if (selectedVocabElement != null && selectedArgument != null && evt.getStateChange() == ItemEvent.SELECTED) {
 
             // Need to change the type of the selected argument.
             FormalArgument oldArg = selectedArgument.getModel();
@@ -708,9 +703,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
                     return;
                 }
 
-                selectedVocabElement.getModel()
-                                    .replaceFormalArg(newArg,
-                                                  selectedArgument.getArgPos());
+                selectedVocabElement.getModel().replaceFormalArg(newArg,
+                        selectedArgument.getArgPos());
                 selectedVocabElement.setHasChanged(true);
 
                 // Store the selectedVocabElement in a temp variable -
@@ -730,7 +724,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
             }
         }
     }//GEN-LAST:event_argTypeComboBoxItemStateChanged
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addArgButton;
     private javax.swing.JButton addMatrixButton;
