@@ -1,18 +1,15 @@
 package org.openshapa.views.discrete;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JPanel;
-import org.openshapa.Configuration;
 
 /**
  * A JPanel which can be used for piecing together spreadsheet elements, it will
  * correctly pass on mouse events.
  */
 public class SpreadsheetElementPanel extends JPanel
-implements MouseListener, KeyListener {
+implements MouseListener {
 
     /**
      * Constructor.
@@ -20,7 +17,6 @@ implements MouseListener, KeyListener {
     public SpreadsheetElementPanel() {
         super();
         this.addMouseListener(this);
-        this.addKeyListener(this);
     }
 
     /**
@@ -61,47 +57,6 @@ implements MouseListener, KeyListener {
      * @param me The mouse event that triggered this action.
      */
     public void mouseClicked(final MouseEvent me) {
-    }
-
-    /**
-     * The action to invoke when a key is pressed on the keyboard.
-     *
-     * @param ke The key event that triggered this action.
-     */
-    public void keyPressed(final KeyEvent ke) {
-    }
-
-    /**
-     * The action to invoke when a key is released on the keyboard.
-     *
-     * @param ke The key event that triggered this action.
-     */
-    public void keyReleased(final KeyEvent ke) {
-    }
-
-    /**
-     * The action to invoke when a key is typed on the keyboard.
-     *
-     * @param ke The key event that triggered this action.
-     */
-    public void keyTyped(final KeyEvent ke) {
-    }
-
-    /**
-     * Process key events that have been dispatched to this component, pass them
-     * through to all listeners, and then if they are not consumed pass it onto
-     * the parent of this component.
-     *
-     * @param ke They keyboard event that was dispatched to this component.
-     */
-    @Override
-    public final void processKeyEvent(final KeyEvent ke) {
-        super.processKeyEvent(ke);
-
-        if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP
-            || ke.getKeyCode() == KeyEvent.VK_DOWN) {
-            this.getParent().dispatchEvent(ke);
-        }
     }
 
     /**

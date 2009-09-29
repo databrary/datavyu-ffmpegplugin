@@ -17,10 +17,14 @@ import java.awt.Component;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.LinkedList;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
@@ -39,8 +43,7 @@ import org.openshapa.Configuration;
  * the main application class, DocumentEditorApp. For an overview of the
  * application see the comments for the DocumentEditorApp class.
  */
-public final class OpenSHAPAView extends FrameView
-implements KeyEventDispatcher {
+public final class OpenSHAPAView extends FrameView {
 
     /**
      * Constructor.
@@ -49,33 +52,57 @@ implements KeyEventDispatcher {
      */
     public OpenSHAPAView(SingleFrameApplication app) {
         super(app);
-        KeyboardFocusManager key = KeyboardFocusManager
+        KeyboardFocusManager manager = KeyboardFocusManager
                                    .getCurrentKeyboardFocusManager();
-        key.addKeyEventDispatcher(this);
+
+        manager.addKeyEventDispatcher(new KeyEventDispatcher() {
+                /**
+                 * Dispatches the keystroke to the correct action.
+                 *
+                 * @param evt The event that triggered this action.
+                 *
+                 * @return true if the KeyboardFocusManager should take no
+                 * further action with regard to the KeyEvent; false otherwise.
+                 */
+                public boolean dispatchKeyEvent(KeyEvent evt) {
+                    // Pass the keyevent onto the keyswitchboard so that it can
+                    // route it to the correct action.
+                    return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
+                }
+        });
 
         // generated GUI builder code
         initComponents();
 
+        // BugzID:492 - Set the shortcut for new cell, so a keystroke that won't
+        // get confused for the "carriage return". The shortcut for new cells
+        // is handled in OpenSHAPA.java
+        newCellMenuItem.setAccelerator(KeyStroke.getKeyStroke('\u21A9'));
+
+        // BugzID:521 + 468 - Define accelerator keys based on Operating system.
+        int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+        weakTemporalOrderMenuItem.setAccelerator(KeyStroke
+                .getKeyStroke(KeyEvent.VK_T, keyMask));
+
+        strongTemporalOrderMenuItem .setAccelerator(KeyStroke
+                .getKeyStroke(KeyEvent.VK_T, InputEvent.SHIFT_MASK | keyMask));
+
+        // This just sets the visual appearance of the accelerator - the actual
+        // short cut is handled in org.openshapa.OpenSHAPA.dispatchKeyEvent.
+        // Set zoom in to keyMask + '+'
+        zoomInMenuItem.setAccelerator(KeyStroke
+                .getKeyStroke(KeyEvent.VK_PLUS, keyMask));
+
+        // Set zoom out to keyMask + '-'
+        zoomOutMenuItem.setAccelerator(KeyStroke
+                .getKeyStroke(KeyEvent.VK_MINUS, keyMask));
+
+        // Set reset zoom to keyMask + '0'
+        resetZoomMenuItem.setAccelerator(KeyStroke
+                .getKeyStroke(KeyEvent.VK_0, keyMask));
+
         SpreadsheetPanel panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
-    }
-
-    public OpenSHAPAView getOpenSHAPAView(){
-        return this;
-    }
-
-    /**
-     * Dispatches the keystroke to the correct action.
-     *
-     * @param evt The event that triggered this action.
-     *
-     * @return true if the KeyboardFocusManager should take no further action
-     * with regard to the KeyEvent; false  otherwise
-     */
-    public boolean dispatchKeyEvent(java.awt.event.KeyEvent evt) {
-        // Pass the keyevent onto the keyswitchboard so that it can route it
-        // to the correct action.
-        return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
     }
 
     /**
@@ -302,7 +329,9 @@ implements KeyEventDispatcher {
         fileMenu.add(saveAsMenuItem);
 
         fileMenuSeparator.setName("fileMenuSeparator"); // NOI18N
-        fileMenu.add(fileMenuSeparator);
+        if (OpenSHAPA.getPlatform() != Platform.MAC) {
+            fileMenu.add(fileMenuSeparator);
+        }
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
@@ -337,7 +366,6 @@ implements KeyEventDispatcher {
         jSeparator2.setName("jSeparator2"); // NOI18N
         jMenu3.add(jSeparator2);
 
-        newCellMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ENTER, 0));
         newCellMenuItem.setName("newCellMenuItem"); // NOI18N
         newCellMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -349,7 +377,7 @@ implements KeyEventDispatcher {
         jSeparator3.setName("jSeparator3"); // NOI18N
         jMenu3.add(jSeparator3);
 
-        weakTemporalOrderMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
+        weakTemporalOrderMenuItem.setFont(new java.awt.Font("Silom", 0, 14)); // NOI18N
         weakTemporalOrderMenuItem.setName("weakTemporalOrderMenuItem"); // NOI18N
         weakTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -358,7 +386,6 @@ implements KeyEventDispatcher {
         });
         jMenu3.add(weakTemporalOrderMenuItem);
 
-        strongTemporalOrderMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         strongTemporalOrderMenuItem.setName("strongTemporalOrderMenuItem"); // NOI18N
         strongTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -369,7 +396,6 @@ implements KeyEventDispatcher {
 
         zoomMenu.setName("zoomMenu"); // NOI18N
 
-        zoomInMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PLUS, java.awt.event.InputEvent.META_MASK));
         zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
         zoomInMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -378,7 +404,6 @@ implements KeyEventDispatcher {
         });
         zoomMenu.add(zoomInMenuItem);
 
-        zoomOutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_MINUS, java.awt.event.InputEvent.META_MASK));
         zoomOutMenuItem.setName("zoomOutMenuItem"); // NOI18N
         zoomOutMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -390,7 +415,6 @@ implements KeyEventDispatcher {
         jSeparator5.setName("jSeparator5"); // NOI18N
         zoomMenu.add(jSeparator5);
 
-        resetZoomMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_0, java.awt.event.InputEvent.META_MASK));
         resetZoomMenuItem.setName("resetZoomMenuItem"); // NOI18N
         resetZoomMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

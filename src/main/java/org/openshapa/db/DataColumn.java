@@ -331,7 +331,7 @@ public class DataColumn extends Column
      * field into the listeners, so that they will be informed when the
      * field changes.
      *
-     *                                      JRM -- 8/29/07
+     *                                      8/29/07
      *
      * Changes:
      *
@@ -1416,7 +1416,7 @@ public class DataColumn extends Column
      * Note that this method throws away a lot of information about each
      * data column element, as this data is not used in MacSHAPA.
      *
-     *                                              JRM -- 12/31/08
+     *                                              12/31/08
      *
      * Changes:
      *
@@ -1574,7 +1574,7 @@ public class DataColumn extends Column
      * Note that this method throws away a lot of information about each
      * data column, as this data is not used in MacSHAPA.
      *
-     *                                              JRM -- 12/31/08
+     *                                              12/31/08
      *
      * Changes:
      *
@@ -1707,7 +1707,7 @@ public class DataColumn extends Column
      *    predicates and columns that appear in the data column at this point
      *    in time, and returns that vector.
      *
-     *                                              JRM -- 7/20/09
+     *                                              7/20/09
      *
      * Changes:
      *
@@ -1717,7 +1717,7 @@ public class DataColumn extends Column
      *      to be constructing the local vocab list in different orders.  This
      *      isn't a real problem, as neither MacSHAPA nor OpenSHAPA care, but
      *      it does break our tests.
-     *                                              JRM - 8/5/09
+     *                                              8/5/09
      */
 
     private Vector<String>
@@ -1799,7 +1799,7 @@ public class DataColumn extends Column
             //
             // Do this by sorting the lvl vector before returning it.
             //
-            //                                          JRM -- 8/5/09
+            //                                          8/5/09
 
             java.util.Collections.sort(lvl);
         }
@@ -1820,7 +1820,7 @@ public class DataColumn extends Column
      * Thow a sytem error on entry if either this.localVocabIDSet is null,
      * or the supplied ID is invalid.
      *
-     *                                      JRM -- 7/22/09
+     *                                      7/22/09
      *
      * Changes:
      *

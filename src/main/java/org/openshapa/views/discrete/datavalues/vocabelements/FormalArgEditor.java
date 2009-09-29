@@ -36,22 +36,16 @@ public final class FormalArgEditor extends EditorComponent {
     private static Logger logger = Logger.getLogger(FormalArgEditor.class);
 
     /** The parent editor window that this argument belongs too. */
-    private VocabElementV parentV;
+    private VocabElementV parentView;
 
-    /**
-     * Constructor.
-     *
-     * @param ta The parent JTextComponent the editor is in.
-     * @param cell The parent data cell this editor resides within.
-     * @param matrix Matrix holding the datavalue this editor will represent.
-     * @param matrixIndex The index of the datavalue within the matrix.
-     */
-    public FormalArgEditor(final JTextComponent ta, final VocabElement ve,
-                                final int index, final VocabElementV pv) {
+    public FormalArgEditor(final JTextComponent ta,
+                           final VocabElement ve,
+                           final int index,
+                           final VocabElementV pv) {
         super(ta);
         setEditable(true);
         argIndex = index;
-        parentV = pv;
+        parentView = pv;
         resetValue(ve);
     }
 
@@ -64,20 +58,21 @@ public final class FormalArgEditor extends EditorComponent {
      *          to vocabElement.getFormalArgCopy().
      *                                              9/15/09
      */
-    public final void resetValue(final VocabElement ve) {
+    public void resetValue(final VocabElement ve) {
         vocabElement = ve;
 
         String fargName = "";
         try {
             model = vocabElement.getFormalArgCopy(argIndex);
         } catch (SystemErrorException e) {
-
+            logger.error("Unable to resetValue", e);
         }
+
         // Formal argument name contains "<" and ">" characters which we don't
         // actually want.
         if (model != null) {
             fargName = model.getFargName()
-                               .substring(1, model.getFargName().length() - 1);
+                            .substring(1, model.getFargName().length() - 1);
         }
         setText(fargName);
     }
@@ -97,21 +92,6 @@ public final class FormalArgEditor extends EditorComponent {
     }
 
     /**
-     * The action to invoke when a key is typed.
-     * @param e The KeyEvent that triggered this action.
-     */
-    @Override
-    public void keyTyped(final KeyEvent e) {
-        if (!e.isConsumed()) {
-
-            if (isReserved(e.getKeyChar())) {
-                // Ignore reserved characters.
-                e.consume();
-            }
-        }
-    }
-
-    /**
      * @param aChar Character to test
      * @return true if the character is a reserved character.
      */
@@ -127,7 +107,7 @@ public final class FormalArgEditor extends EditorComponent {
     public void focusGained(final FocusEvent fe) {
         textOnFocus = getText();
         edHasFocus = true;
-        parentV.getParentDialog().updateDialogState();
+        parentView.getParentDialog().updateDialogState();
     }
 
     /**
@@ -146,8 +126,71 @@ public final class FormalArgEditor extends EditorComponent {
      * @return true if this editor has the focus.
      */
     public boolean hasFocus() {
-        return edHasFocus;
+        return this.getParentComponent().hasFocus();
     }
+
+    /**
+     * The action to invoke when a key is typed.
+     * @param e The KeyEvent that triggered this action.
+     */
+    @Override
+    public void keyTyped(final KeyEvent e) {
+
+        // The backspace key removes digits from behind the caret.
+        if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+            && e.getKeyChar() == '\u0008') {
+
+            removeBehindCaret();
+            try {
+                model.setFargName("<" + getText() + ">");
+            } catch (SystemErrorException se) {
+                logger.error("Unable to delete from predicate name", se);
+            }
+
+        // The delete key removes digits ahead of the caret.
+        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                   && e.getKeyChar() == '\u007F') {
+
+            removeAheadOfCaret();
+            try {
+                model.setFargName("<" + getText() + ">");
+            } catch (SystemErrorException se) {
+                logger.error("Unable to delete from predicate name", se);
+            }
+
+        // If the character is not reserved - add it to the name of the pred
+        } else if (!this.isReserved(e.getKeyChar())) {
+
+            try {
+                removeSelectedText();
+
+                StringBuffer currentValue = new StringBuffer(getText());
+                currentValue.insert(getCaretPosition(), e.getKeyChar());
+                model.setFargName("<" + currentValue.toString() + ">");
+
+                // Advance caret over the top of the new char.
+                int pos = this.getCaretPosition() + 1;
+                this.setText(currentValue.toString());
+                this.setCaretPosition(pos);
+
+            } catch (SystemErrorException se) {
+                logger.error("Unable to set new predicate name", se);
+            }
+        }
+
+        parentView.setHasChanged(true);
+        //parentElementV.rebuildContents();
+        e.consume();
+
+        /*
+        if (!e.isConsumed()) {
+            if (isReserved(e.getKeyChar())) {
+                // Ignore reserved characters.
+                e.consume();
+            }
+        }*/
+    }
+
     /**
      * Action to take by this editor when a key is pressed.
      * @param e The KeyEvent that triggered this action.
@@ -163,15 +206,15 @@ public final class FormalArgEditor extends EditorComponent {
     @Override
     public void keyReleased(final KeyEvent e) {
         if (!getText().equals(textOnFocus)) {
-            parentV.setHasChanged(true);
-            parentV.getParentDialog().updateDialogState();
+            parentView.setHasChanged(true);
+            parentView.getParentDialog().updateDialogState();
         }
     }
 
     /**
      * Update the database with the model value.
      */
-    public final void updateDatabase() {
+    public void updateDatabase() {
         // update the model.
         System.out.println("FormalArgEditor updatedatabase called");
     }

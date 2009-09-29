@@ -15,7 +15,13 @@ import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.event.MouseEvent;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.Box.Filler;
@@ -388,8 +394,8 @@ implements ExternalDataCellListener, Selectable {
             cell.getDB().replaceCell(dcell);
 
             if (selected) {
-            // method names don't reflect usage - we didn't really create this
-            // cell just now.
+                // method names don't reflect usage - we didn't really create
+                // this cell just now.
                 OpenSHAPA.setLastCreatedColId(cell.getItsColID());
                 OpenSHAPA.setLastCreatedCellId(cell.getID());
             }
@@ -471,7 +477,7 @@ implements ExternalDataCellListener, Selectable {
     public void DCellDeleted(Database db,
                              long colID,
                              long cellID) {
-        // TODO- Figure out how to work with cells that are deleted.
+        // TODO - Figure out how to work with cells that are deleted.
     }
 
     /**

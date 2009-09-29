@@ -341,7 +341,7 @@ public final class PredicateVocabElement extends VocabElement
      * Note that this method throws away a lot of information about each
      * predicate vocab element, as this data is not used in MacSHAPA.
      *
-     *                                              JRM -- 12/31/08
+     *                                              12/31/08
      *
      * Changes:
      *

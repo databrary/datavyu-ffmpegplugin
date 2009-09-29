@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
+import javax.swing.JFrame;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.db.Column;
 import org.openshapa.db.DataCell;
@@ -30,6 +32,7 @@ import org.openshapa.db.TextStringDataValue;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.db.UnTypedFormalArg;
 import org.openshapa.db.UndefinedDataValue;
+import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
  * Controller for opening a database from disk.
@@ -56,6 +59,35 @@ public final class OpenDatabaseC {
      */
     public OpenDatabaseC(final File sourceFile) {
         this.loadCSV(sourceFile);
+
+        // BugzID:449 - Set filename in spreadsheet window and database if the
+        // database name is undefined.
+        try {
+            if (OpenSHAPA.getDatabase().getName().equals("Undefined")) {
+                String dbName = sourceFile.getName();
+                dbName = dbName.substring(0, dbName.lastIndexOf('.'));
+                OpenSHAPA.getDatabase().setName(dbName);
+
+                // Update the name of the window to include the name we just set
+                // in the database.
+                JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+                ResourceMap rMap = OpenSHAPA.getApplication()
+                                            .getContext()
+                                            .getResourceMap(OpenSHAPA.class);
+
+                mainFrame.setTitle(rMap.getString("Application.title")
+                               + " - " + OpenSHAPA.getDatabase().getName());
+            }
+
+        } catch (SystemErrorException se) {
+            logger.error("Can't set db name to the name of the CSV file.", se);
+        }
+
+        // Display any changes.
+        SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
+                                                            .getMainView()
+                                                            .getComponent();
+        view.relayoutCells();
     }
 
     /**
@@ -264,8 +296,8 @@ public final class OpenDatabaseC {
      * datavalues we are creating from the populator.
      */
     private String parseEntries(final BufferedReader csvFile,
-                              final DataColumn dc,
-                              final EntryPopulator populator)
+                                final DataColumn dc,
+                                final EntryPopulator populator)
     throws IOException, SystemErrorException {
 
         // Keep parsing lines and putting them in the newly formed nominal
@@ -368,7 +400,7 @@ public final class OpenDatabaseC {
                 String[] vocabElement = vocabElems[i].split("\\|");
 
                 // Add text formal argument.
-                if (vocabElement[1].equalsIgnoreCase("text")) {
+                if (vocabElement[1].equalsIgnoreCase("quote_string")) {
                     fa = new QuoteStringFormalArg(db,
                                                   "<" + vocabElement[0] + ">");
 

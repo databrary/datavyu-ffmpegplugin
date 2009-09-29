@@ -5,7 +5,6 @@ import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.PredDataValue;
 import org.openshapa.db.QuoteStringDataValue;
-import org.openshapa.db.SystemErrorException;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**
@@ -78,32 +77,6 @@ public final class QuoteStringDataValueEditor extends DataValueEditor {
     }
 
     /**
-     * Update the model to reflect the value represented by the
-     * editor's text representation.
-     */
-    @Override
-    public void updateModelValue() {
-        QuoteStringDataValue dv = (QuoteStringDataValue) getModel();
-        try {
-            dv.setItsValue(getText());
-        } catch (SystemErrorException e) {
-            // logger
-        }
-    }
-
-    /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
-     */
-    @Override
-    public boolean sanityCheck() {
-        boolean res = true;
-        // could call a subRange test for this dataval?
-        // Todo
-        return res;
-    }
-
-    /**
      * Recalculate the string for this editor.
      * Overrides to handle the extra quote character fixed texts.
      */
@@ -117,8 +90,9 @@ public final class QuoteStringDataValueEditor extends DataValueEditor {
      * Modify the text of the quote fixed texts if we are a null arg.
      */
     private void checkQuotes() {
+        QuoteStringDataValue qsdv = (QuoteStringDataValue) getModel();
         if (leftQuote != null && rightQuote != null) {
-            if (!isNullArg()) {
+            if (!qsdv.isEmpty()) {
                 leftQuote.setText("\"");
                 rightQuote.setText("\"");
                 String t = getText();
@@ -136,8 +110,9 @@ public final class QuoteStringDataValueEditor extends DataValueEditor {
      * But do not cause MatrixRootView to be called.
      */
     private void initQuotes() {
+        QuoteStringDataValue qsdv = (QuoteStringDataValue) getModel();
         if (leftQuote != null && rightQuote != null) {
-            if (!isNullArg()) {
+            if (!qsdv.isEmpty()) {
                 leftQuote.resetText("\"");
                 rightQuote.resetText("\"");
                 String t = getText();

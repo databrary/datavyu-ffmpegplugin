@@ -1116,7 +1116,7 @@ public class MacshapaODBReader
          * Constructor for an new instance of Token.  This method calls the
          * super class constructor, and sets the reader field
          *
-         *                                                JRM - 12/14/08
+         *                                                12/14/08
          *
          * Parameters:
          *
@@ -2230,7 +2230,7 @@ public class MacshapaODBReader
      * Note that this method should be called exactly once in the life of any
      * instance of MacshapaODBReader.
      *
-     *                                                JRM - 2/3/09
+     *                                                2/3/09
      *
      * Parameters:
      *
@@ -3266,7 +3266,7 @@ public class MacshapaODBReader
             // For now at least, lets keep this code -- albeit with a system
             // error at the end of the clause to let us know if my reasoning
             // is faulty.
-            //                                          JRM -- 12/25/08
+            //                                          12/25/08
             token.code = EOF_TOK;
 
             post_error_message(token, UNEXPECTED_END_OF_FILE_ERR,
@@ -3465,7 +3465,7 @@ public class MacshapaODBReader
          * place, but throwing a system error that should be flagged if we
          * ever actually do end a numeric token with and EOF.
          *
-         *                                      JRM -- 12/25/08
+         *                                      12/25/08
          */
 
 	if ( ( done ) || ( this.end_of_file ) )

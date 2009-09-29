@@ -1,6 +1,8 @@
 package org.openshapa.views.discrete.datavalues;
 
+import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
+import org.apache.log4j.Logger;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.PredDataValue;
@@ -13,6 +15,17 @@ import org.openshapa.db.TextStringDataValue;
 public final class TextStringDataValueEditor extends DataValueEditor {
 
     /**
+     * String holding the reserved characters - these are characters that are
+     * users are unable to enter into a text field.
+     */
+    // BugzID:524 - If Character is an escape key - ignore it.
+    private static final String RESERVED_CHARS = "\u001B";
+
+    /** The logger for this class. */
+    private static Logger logger = Logger
+                                   .getLogger(TextStringDataValueEditor.class);
+
+    /**
      * Constructor.
      *
      * @param ta The parent JTextComponent the editor is in.
@@ -21,9 +34,9 @@ public final class TextStringDataValueEditor extends DataValueEditor {
      * @param matrixIndex The index of the datavalue within the matrix.
      */
     public TextStringDataValueEditor(final JTextComponent ta,
-                            final DataCell cell,
-                            final Matrix matrix,
-                            final int matrixIndex) {
+                                     final DataCell cell,
+                                     final Matrix matrix,
+                                     final int matrixIndex) {
         super(ta, cell, matrix, matrixIndex);
         setAcceptReturnKey(true);
     }
@@ -39,37 +52,64 @@ public final class TextStringDataValueEditor extends DataValueEditor {
      * @param matrixIndex The index of the datavalue within the matrix.
      */
     public TextStringDataValueEditor(final JTextComponent ta,
-                            final DataCell cell,
-                            final PredDataValue p,
-                            final int pi,
-                            final Matrix matrix,
-                            final int matrixIndex) {
+                                     final DataCell cell,
+                                     final PredDataValue p,
+                                     final int pi,
+                                     final Matrix matrix,
+                                     final int matrixIndex) {
         super(ta, cell, p, pi, matrix, matrixIndex);
         setAcceptReturnKey(true);
     }
 
     /**
-     * Update the model to reflect the value represented by the
-     * editor's text representation.
+     * The action to invoke when a key is typed.
+     *
+     * @param e The KeyEvent that triggered this action.
      */
     @Override
-    public void updateModelValue() {
-        TextStringDataValue dv = (TextStringDataValue) getModel();
+    public void keyTyped(final KeyEvent e) {
+        super.keyTyped(e);
+
+        TextStringDataValue tsdv = (TextStringDataValue) getModel();
+        // Just a regular vanilla keystroke - insert it into text field.
+        if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
+            && !isReserved(e.getKeyChar())) {
+            this.removeSelectedText();
+            StringBuffer currentValue = new StringBuffer(getText());
+
+            // If we have a delete or backspace key - do not insert.
+            if (!(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                  && e.getKeyChar() == '\u007F') &&
+                !(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                  && e.getKeyChar() == '\u0008')) {
+                currentValue.insert(getCaretPosition(), e.getKeyChar());
+            }
+
+            // Advance caret over the top of the new char.
+            int pos = this.getCaretPosition() + 1;
+            this.setText(currentValue.toString());
+            this.setCaretPosition(pos);
+            e.consume();
+
+        // All other key strokes are consumed.
+        } else {
+            e.consume();
+        }
+
+        // Push the character changes into the database.
         try {
-            dv.setItsValue(getText());
-        } catch (SystemErrorException e) {
-            // logger
+            tsdv.setItsValue(this.getText());
+            updateDatabase();
+        } catch (SystemErrorException se) {
+            logger.error("Unable to edit text string", se);
         }
     }
 
     /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
+     * @param aChar Character to test
+     * @return true if the character is a reserved character.
      */
-    @Override
-    public boolean sanityCheck() {
-        boolean res = true;
-        // could call a subRange test for this dataval?
-        return res;
+    public boolean isReserved(final char aChar) {
+        return (RESERVED_CHARS.indexOf(aChar) >= 0);
     }
 }

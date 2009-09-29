@@ -952,7 +952,7 @@ public class Predicate extends DBElement
      * of this method is an instantiation of <pred_value> or <pred_cell_value>
      * (as defined in the grammar defining the MacSHAPA ODB file format).
      *
-     *                                              JRM -- 1/30/09
+     *                                              1/30/09
      *
      * Changes:
      *
@@ -1067,7 +1067,7 @@ public class Predicate extends DBElement
      *
      * Otherwise do nothing.
      *
-     *                                      JRM -- 7/2/09
+     *                                      7/2/09
      *
      * Changes;
      *

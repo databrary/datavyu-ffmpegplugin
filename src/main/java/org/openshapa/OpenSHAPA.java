@@ -10,6 +10,7 @@ import org.openshapa.views.ListVariables;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.QTVideoController;
 import java.awt.KeyEventDispatcher;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +50,10 @@ implements KeyEventDispatcher {
          */
         int modifiers = evt.getModifiers();
         if (evt.getID() == KeyEvent.KEY_PRESSED
-                && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
+            && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
+
+            // BugzID:468 - Define accelerator keys based on OS.
+            int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
             switch (evt.getKeyCode()) {
                 /**
                  * This case is because VK_PLUS is not linked to a key on the
@@ -60,12 +64,12 @@ implements KeyEventDispatcher {
                  * that there is nothing left to be done with these keys.
                  */
                 case KeyEvent.VK_EQUALS:
-                    if (modifiers == KeyEvent.META_MASK) {
+                    if (modifiers == keyMask) {
                         view.changeFontSize(OpenSHAPAView.ZOOM_INTERVAL);
                     }
                     return true;
                 case KeyEvent.VK_MINUS:
-                    if (modifiers == KeyEvent.META_MASK) {
+                    if (modifiers == keyMask) {
                         view.changeFontSize(-OpenSHAPAView.ZOOM_INTERVAL);
                     }
                     return true;
@@ -141,7 +145,6 @@ implements KeyEventDispatcher {
                     qtVideoController.findAction();
                 break;
             case KeyEvent.VK_ENTER:
-                //this.createNewCell();
                 new CreateNewCellC();
                 break;
             default:
@@ -217,10 +220,12 @@ implements KeyEventDispatcher {
             // Initalise DB
             db = new MacshapaDatabase();
 
+            // BugzID:449 - Set default database name.
+            db.setName("Database1");
+
             // Initalise last created values
             lastCreatedCellID = 0;
             lastCreatedColID = 0;
-
 
             // Build output streams for the scripting engine.
             consoleOutputStream = new PipedInputStream();
@@ -240,6 +245,15 @@ implements KeyEventDispatcher {
         // Make view the new view so we can keep track of it for hotkeys.
         view = new OpenSHAPAView(this);
         show(view);
+
+        // BugzID:449 - Update the name of the window to include the default
+        // name of the database.
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = OpenSHAPA.getApplication()
+                                    .getContext()
+                                    .getResourceMap(OpenSHAPA.class);
+        mainFrame.setTitle(rMap.getString("Application.title")
+                           + " - " + OpenSHAPA.getDatabase().getName());
     }
 
     /**

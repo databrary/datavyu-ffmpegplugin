@@ -172,7 +172,7 @@ public abstract class DataValue extends DBElement
      * the grammar defining the MacSHAPA ODB file format) depending on
      * context.
      *
-     *                                              JRM -- 1/17/09
+     *                                              1/17/09
      *
      * Changes:
      *
@@ -853,7 +853,7 @@ public abstract class DataValue extends DBElement
      * the supplied data column with the ID of the base PVE or MVE
      * respectively.
      *
-     *                                      JRM -- 7/2/09
+     *                                      7/2/09
      *
      * Changes;
      *

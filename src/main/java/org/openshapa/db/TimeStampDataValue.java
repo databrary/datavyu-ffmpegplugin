@@ -1,12 +1,3 @@
-/*
- * TimeStampDataValue.java
- *
- * Created on August 19, 2007, 6:03 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
@@ -18,86 +9,57 @@ import org.openshapa.util.HashUtils;
  */
 public final class TimeStampDataValue extends DataValue
 {
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-    /*
-     * ItsDefault:  Constant containing the value to be assigned to all
-     *      time stamp data values unless otherwise specified.  Note that we
-     *      only take the ticks from this value -- ticks per second is drawn
-     *      from the current value in the host database.
-     *
-     * itsValue:   TimeStamp containing the value assigned to the formal
-     *      argument.
-     *
-     * minVal:  If subRange is true, this field contains the minimum value
-     *      that may be assigned to the formal argument associated with the
-     *      data value.   This value should always be the same as the minVal
-     *      of the associated instance of TimeStampFormalArg.
-     *
-     *      To save space, when subRange is false, this field should be null.
-     *
-     *      Note that this data value may be used to hold an time stamp
-     *      value assigned to an untype formal argument, in which case
-     *      subrange will always be false.
-     *
-     * maxVal:  If subRange is true, this field contains the maximum value
-     *      that may be assigned to the formal argument associated with the
-     *      data value.   This value should always be the same as the maxVal
-     *      of the associated instance of TimeStampFormalArg.
-     *
-     *      To save space, when subRange is false, this field should be null.
-     *
-     *      Note that this data value may be used to hold an integer
-     *      value assigned to an untype formal arhasgument, in which case
-     *      subrange will always be false.
+    /**
+     * Constant containing the value to be assigned to all time stamp data
+     * values unless otherwise specified.  Note that we only take the ticks from
+     * this value -- ticks per second is drawn from the current value in the
+     * host database.
      */
-
-    /** default value for time stamps */
     final TimeStamp ItsDefault = new TimeStamp(Database.DEFAULT_TPS, 0);
 
-    /** the value assigned to the associated formal argument in this case */
+    /**
+     * TimeStamp containing the value assigned to the formal argument.
+     */
     TimeStamp itsValue = new TimeStamp(ItsDefault);
 
-    /** the minimum value -- if subrange is true.  null otherwise */
+    /**
+     * If subRange is true, this field contains the minimum value that may be
+     * assigned to the formal argument associated with the data value.  This
+     * value should always be the same as the minVal of the associated instance
+     * of TimeStampFormalArg.
+     *
+     * To save space, when subRange is false, this field should be null.
+     *
+     * Note that this data value may be used to hold an time stamp value
+     * assigned to an untype formal argument, in which case subrange will always
+     * be false.
+     */
     TimeStamp minVal = null;
 
-    /** the maximum value -- if subrange is true.  null otherwise */
+    /**
+     * If subRange is true, this field contains the maximum value that may be
+     * assigned to the formal argument associated with the data value.  This
+     * value should always be the same as the maxVal of the associated instance
+     * of TimeStampFormalArg.
+     *
+     * To save space, when subRange is false, this field should be null.
+     *
+     * Note that this data value may be used to hold an integer value assigned
+     * to an untype formal arhasgument, in which case subrange will always be
+     * false.
+     */
     TimeStamp maxVal = null;
 
 
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
     /**
-     * TimeStampDataValue()
+     * Constructor.
      *
-     * Constructor for instances of TimeStampDataValue.
+     * @param db The parent database for this TimeStampDataValue.
      *
-     * Four versions of this constructor.
+     * @throws SystemErrorException If the supplied database is NULL.
      *
-     * The first takes a reference to a database as its parameter and just
-     * calls the super() constructor.
-     *
-     * The second takes a reference to a database, and a formal argument ID, and
-     * attempts to set the itsFargID field of the data value accordingly.
-     *
-     * The third takes a reference to a database, a formal argument ID, and
-     * a value as arguments, and attempts to set the itsFargID and itsValue
-     * of the data value accordingly.
-     *
-     * The fourth takes a reference to an instance of TimeStampDataValue as an
-     * argument, and uses it to create a copy.
-     *
-     *                                               -- 8/16/07
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @date 2007/08/16
      */
-
     public TimeStampDataValue(Database db)
         throws SystemErrorException
     {
@@ -106,6 +68,19 @@ public final class TimeStampDataValue extends DataValue
         this.itsValue.setTPS(db.getTicks());
 
     } /* TimeStampDataValue::TimeStampDataValue(db) */
+
+
+    /**
+     * Constructor.
+     *
+     * @param db The parent database for this TimeStampDataValue.
+     * @param fargID The ID of the parent formal argument that this DataValue is
+     * assigned too.
+     *
+     * @throws SystemErrorException If the supplied database is NULL.
+     *
+     * @date 2007/08/16
+     */
 
     public TimeStampDataValue(Database db,
                               long fargID)
@@ -116,6 +91,20 @@ public final class TimeStampDataValue extends DataValue
         this.setItsFargID(fargID);
 
     } /* TimeStampDataValue::TimeStampDataValue(db, fargID) */
+
+
+    /**
+     * Constructor.
+     *
+     * @param db The parent database for this TimeStampDataValue.
+     * @param fargID The ID of the parent formal argument that this DataValue is
+     * assigned too.
+     * @param value The value to use for this TimeStampDataValue.
+     *
+     * @throws SystemErrorException If the supplied database is NULL.
+     *
+     * @date 2007/08/16
+     */
 
     public TimeStampDataValue(Database db,
                               long fargID,
@@ -135,6 +124,18 @@ public final class TimeStampDataValue extends DataValue
         this.itsValue.setTPS(db.getTicks());
 
     } /* TimeStampDataValue::TimeStampDataValue(db, fargID, value) */
+
+
+    /**
+     * Copy Constructor.
+     *
+     * @param dv The TimeStampDataValue to copy.
+     *
+     * @throws SystemErrorException If the supplied TimeStampDataValue is NULL
+     * or the parent database of the supplied TimeStampDataValue is NULL.
+     *
+     * @date 2007/08/16
+     */
 
     public TimeStampDataValue(TimeStampDataValue dv)
         throws SystemErrorException
@@ -167,6 +168,7 @@ public final class TimeStampDataValue extends DataValue
      * @throws java.lang.CloneNotSupportedException If the clone interface has
      * not been implemented.
      */
+
     @Override
     protected Object clone() throws CloneNotSupportedException {
         TimeStampDataValue clone = (TimeStampDataValue) super.clone();
@@ -180,20 +182,15 @@ public final class TimeStampDataValue extends DataValue
         return clone;
     }
 
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
 
+    // getItsValue()
     /**
-     * getItsValue()
+     * @return A copy of the current value of the data value.
      *
-     * Return a copy of the current value of the data value.
+     * @throws SystemErrorException If Unable to create a copy of the value
+     * stored in this TimeStampDataValue.
      *
-     *                           -- 8/16/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/16
      */
 
     public TimeStamp getItsValue()
@@ -204,9 +201,9 @@ public final class TimeStampDataValue extends DataValue
 
     } /* TimeStampDataValue::getItsValue() */
 
+
+    // setItsValue()
     /**
-     * setItsValue()
-     *
      * Set itsValue to the specified value.  If subrange is true, coerce the
      * value into the subrange.  Note that the time base of the supplied
      * value must equal the time base of the current value of the data value.
@@ -215,11 +212,19 @@ public final class TimeStampDataValue extends DataValue
      * range for a TimeStamp.  The TimeStamp class will throw a system error
      * if this is the case.
      *
-     *                                               -- 8/16/07
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @param value The new value to use for this TimeStampDataValue.
+     *
+     * @throws SystemErrorException If the supplied value is NULL or the
+     * supplied time stamp has a mismatched ticks per second value.
+     *
+     * @param 2007/08/16
      */
 
     public void setItsValue(TimeStamp value)
@@ -274,31 +279,23 @@ public final class TimeStampDataValue extends DataValue
 
     } /* TimeStampDataValue::setItsValue() */
 
+
+    // isDefault()
     /**
      * @return true if the value equals the default value
      */
+
     @Override
     public boolean isDefault() {
         return itsValue.equals(ItsDefault);
-    }
+    } /* TimeStampDataValue::isDefault() */
 
 
-    /*************************************************************************/
-    /*************************** Overrides: **********************************/
-    /*************************************************************************/
-
+    // toString()
     /**
-     * toString()
+     * @returns A String representation of the DBValue for display.
      *
-     * Returns a String representation of the DBValue for display.
-     *
-     *                                   -- 8/15/07
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *     - None.
+     * @date 2007/08/15
      */
 
     public String toString()
@@ -309,20 +306,22 @@ public final class TimeStampDataValue extends DataValue
     } /* TimeStampDataValue::toString() */
 
 
+    // toDBString()
     /**
-     * toDBString()
-     *
      * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
-     *                                       -- 8/15/07
-     *
-     * @return the string value.
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @return The TimeStampDataValue in a database string format.
+     *
+     * @date 2007/08/15
      */
 
     public String toDBString()
@@ -350,20 +349,29 @@ public final class TimeStampDataValue extends DataValue
     } /* TimeStampDataValue::toDBString() */
 
 
+    // toMODBFile()
     /**
-     * toMODBFile()
-     *
      * Write the MacSHAPA ODB file style definition of itsValue to the
      * supplied file in MacSHAPA ODB file format.
      *
      * The output of this method will an instantiation of <time_stamp>
      * (as defined in the grammar defining the MacSHAPA ODB file format).
      *
-     *                                              JRM -- 1/24/09
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @param output The stream that that this TimeStampDataValue is being
+     * dumped too (in MacSHAPA ODB file format).
+     *
+     * @throws SystemErrorException If the supplied output is NULL or the value
+     * of the TimeStampDataValue is zero.
+     * @throws IOException If unable to write to the output stream.
+     *
+     * @date 2009/01/24
      */
 
     protected void toMODBFile(java.io.PrintStream output)
@@ -389,16 +397,26 @@ public final class TimeStampDataValue extends DataValue
     } /* TimeStampDataValue::toMODBFile() */
 
 
+    // updateForFargChange()
     /**
-     * updateForFargChange()
-     *
      * Update for a change in the formal argument name, and/or subrange.
      *
-     *                                           -- 3/22/08
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @param fargNameChanged true if the formal argument name changed.
+     * @param fargSubRangeChanged true if the formal argument sub range changed.
+     * @param fargRangeChanged true if the formal argument range changed.
+     * @param oldFA The formal argument pre the change.
+     * @param newFA the formal argument post the change.
+     *
+     * @throws SystemErrorException if oldFA or newFA are null.
+     *
+     * @date 2008/03/22
      */
 
     public void updateForFargChange(boolean fargNameChanged,
@@ -451,22 +469,26 @@ public final class TimeStampDataValue extends DataValue
     } /* TimeStampDataValue::updateForFargChange() */
 
 
+    // updateSubRange()
     /**
-     * updateSubRange()
-     *
      * Determine if the formal argument associated with the data value is
      * subranged, and if it is, updates the data values representation of
      * the subrange (if any) accordingly.  In passing, coerce the value of
      * the datavalue into the subrange if necessary.
      *
-     * The fa argument is a reference to the current representation of the
-     * formal argument associated with the data value.
-     *
-     *                                           -- 8/16/07
+     * @param fa A reference to the current representation of the formal
+     * argument associated with the data value.
      *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @date 2007/08/16
+     *
+     * @throws SystemErrorException if the supplied FA is NULL.
      */
 
     protected void updateSubRange(FormalArgument fa)
@@ -530,21 +552,22 @@ public final class TimeStampDataValue extends DataValue
     } /* TimeStampDataValue::updateSubRange() */
 
 
-    /*************************************************************************/
-    /***************************** Methods: **********************************/
-    /*************************************************************************/
-
+    // coerceToRange()
     /**
-     * coerceToRange()
-     *
      * If the supplied value is in range for the associated formal argument,
      * simply return it.  Otherwise, coerce it to the nearest value that is
      * in range.
-     *                                               -- 070815
      *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @param value The TimeStamp value to coerce to the nominated range.
+     *
+     * @date 2007/08/15
      */
 
     public TimeStamp coerceToRange(TimeStamp value)
@@ -591,24 +614,24 @@ public final class TimeStampDataValue extends DataValue
     } /* TimeStampDataValue::coerceToRange() */
 
 
-    /*************************************************************************/
-    /************************ Class Methods: *********************************/
-    /*************************************************************************/
-
+    // Construct()
     /**
-     * Construct()
-     *
      * Construct an instance of TimeStampDataValue with the specified
      * initialization.  Use the supplied database to provide tps.
      *
-     * Returns a reference to the newly constructed TimeStampDataValue if
+     * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
+     *
+     * @return a Reference to the newly constructed TimeStampDataValue if
      * successful.  Throws a system error exception on failure.
      *
-     *                                               -- 3/31/08
+     * @throws SystemErrorException If unable to create a TimeStampDataValue.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2008/03/31
      */
 
     public static TimeStampDataValue Construct(Database db,
@@ -626,9 +649,11 @@ public final class TimeStampDataValue extends DataValue
 
     } /* TimeStampDataValue::Construct(db, ticks) */
 
+
     /**
      * @return A hash code value for the object.
      */
+
     @Override
     public int hashCode() {
         int hash = super.hashCode();
@@ -640,6 +665,7 @@ public final class TimeStampDataValue extends DataValue
         return hash;
     }
 
+
     /**
      * Compares this TimeStampDataValue against another object.
      *
@@ -647,6 +673,7 @@ public final class TimeStampDataValue extends DataValue
      *
      * @return true if the Object obj is logically equal to this.
      */
+
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {

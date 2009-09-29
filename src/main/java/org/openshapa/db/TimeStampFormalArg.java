@@ -1,12 +1,3 @@
-/*
- * TimeStampFormalArg.java
- *
- * Created on February 11, 2007, 11:08 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
@@ -20,55 +11,39 @@ import org.openshapa.util.HashUtils;
  */
 public class TimeStampFormalArg extends FormalArgument
 {
-
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
     /**
-     *
-     * subRange: Boolean flag indicating whether the formal argument can be
-     *      replaced by any time stamp, or only by some time stamp that lies
-     *      within the closed interval defined by the minVal and maxVal fields
-     *      discussed below
-     *
-     * minVal:  Timestamp field used to specify the minimum time stamp that
-     *      can be used to replace the formal argument if subRange is true.
-     *      If subRange is false, this field is ignored and should be set to
-     *      null.
-     *
-     * maxVal:  Timestamp field used to specify the maximum time stamp that
-     *      can be used to replace the formal argument if subRange is
-     *      true.  If subRange is false, this field is ignored and should be
-     *      set to null.
+     * Boolean flag indicating whether the formal argument can be replaced by
+     * any time stamp, or only by some time stamp that lies within the closed
+     * interval defined by the minVal and maxVal fields discussed below.
      */
-
     boolean subRange = false;
+
+
+    /**
+     * Timestamp field used to specify the minimum time stamp that can be used
+     * to replace the formal argument if subRange is true. If subRange is false,
+     * this field is ignored and should be set to null.
+     */
     TimeStamp minVal = null;
+
+
+    /**
+     * Timestamp field used to specify the maximum time stamp that can be used
+     * to replace the formal argument if subRange is true.  If subRange is
+     * false, this field is ignored and should be set to null.
+     */
     TimeStamp maxVal = null;
 
 
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
     /**
-     * TimeStampFormalArg()
+     * Constructor.
      *
-     * Constructors for time stamp typed formal arguments.
+     * @param db The parent database that this TimeStampFormalArg will belong
+     * too.
      *
-     * Four versions of this constructor -- one that takes a Database reference
-     * as its only parameter, one that takes a database reference and a formal
-     * argument name as a parameters, and one that takes a Database reference,
-     * a formal argument name, minimum value, and maximum value as parameters,
-     * and finally one that take an instance of TimeStampFormalArg as its only
-     * parameter and returs a copy.
+     * @throws SystemErrorException If the supplied database is NULL.
      *
-     *                                           -- 2/12/07
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @date 2007/02/12
      */
 
     public TimeStampFormalArg(Database db)
@@ -81,6 +56,19 @@ public class TimeStampFormalArg extends FormalArgument
 
     } /* TimeStampFormalArg() -- one parameter */
 
+
+    /**
+     * Constructor.
+     *
+     * @param db The parent database that this TimeStampFormalArg will belong
+     * too.
+     * @param name The name to use for the new TimeStampFormalArg.
+     *
+     * @throws SystemErrorException If the supplied database is NULL.
+     *
+     * @date 2007/02/12
+     */
+
     public TimeStampFormalArg(Database db,
                               String name)
         throws SystemErrorException
@@ -90,6 +78,23 @@ public class TimeStampFormalArg extends FormalArgument
         this.fargType = FArgType.TIME_STAMP;
 
     } /* TimeStampFormalArg() -- two parameter s*/
+
+
+    /**
+     * Constructor.
+     *
+     * @param db The parent database that this TimeStampFormalArg will belong
+     * too.
+     * @param name The name to use for the TimeStampFormalArg.
+     * @param minVal The minimum possible value that can be assigned to this
+     * formal argument.
+     * @param maxVal The maximum possible value that can be assigned to this
+     * formal argument.
+     *
+     * @throws SystemErrorException If the supplied database is NULL.
+     *
+     * @date 2007/02/12
+     */
 
     public TimeStampFormalArg(Database db,
                               String name,
@@ -112,14 +117,6 @@ public class TimeStampFormalArg extends FormalArgument
         else if ( ( minVal == null ) || ( maxVal == null ) )
         {
             throw new SystemErrorException(mName + "minVal xor maxVal is null");
-        }
-        else if ( ( ! ( minVal instanceof TimeStamp ) ) ||
-                  ( ! ( maxVal instanceof TimeStamp ) ) )
-        {
-            /* I'm not sure this can happen, but check it anyway */
-
-            throw new SystemErrorException(mName +
-                                           "minVal or maxVal not a TimeStamp");
         }
         else if ( minVal.getTPS() != maxVal.getTPS() )
         {
@@ -148,6 +145,18 @@ public class TimeStampFormalArg extends FormalArgument
         }
     } /* TimeStampFormalArg() -- three parameters */
 
+
+    /**
+     * Copy Constructor.
+     *
+     * @param fArg The TimeStampFormalArg to copy.
+     *
+     * @throws SystemErrorException If the supplied formal argument is null, or
+     * the parent database of the supplied formal argument is null.
+     *
+     * @date 2007/02/12
+     */
+
     public TimeStampFormalArg(TimeStampFormalArg fArg)
         throws SystemErrorException
     {
@@ -161,26 +170,30 @@ public class TimeStampFormalArg extends FormalArgument
     } /* TimeStampFormalArg() -- make copy */
 
 
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
-
+    // setRange()
     /**
-     * setRange()
-     *
      * Set the range of legal values that this formal arguement can assume.
      *
      * If the new minVal and maxVal are null, set subRange to false.
      *
      * Otherwise, set subRange to true, and set the new minVal and maxVal.
      *
-     *                                           -- 2/5/07
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @param minVal The minimum legal value for this TimeStampFormalArg.
+     * @param maxVal The maximum legal value for this TimeStampFormalArg.
      *
+     * @throws SystemErrorException If the supplied minVal or maxVal timestamps
+     * are null or have a different tick system.
+     *
+     * @date 2007/02/05
      */
+
     public void setRange(TimeStamp minVal, TimeStamp maxVal)
         throws SystemErrorException
     {
@@ -195,14 +208,6 @@ public class TimeStampFormalArg extends FormalArgument
         else if ( ( minVal == null ) || ( maxVal == null ) )
         {
             throw new SystemErrorException(mName + "minVal xor maxVal is null");
-        }
-        else if ( ( ! ( minVal instanceof TimeStamp ) ) ||
-                  ( ! ( maxVal instanceof TimeStamp ) ) )
-        {
-            /* I'm not sure this can happen, but check it anyway */
-
-            throw new SystemErrorException(mName +
-                                           "minVal or maxVal not a TimeStamp");
         }
         else if ( minVal.getTPS() != maxVal.getTPS() )
         {
@@ -236,23 +241,30 @@ public class TimeStampFormalArg extends FormalArgument
 
     } /* IntFormalArg::setRange() */
 
+
+    // getSubRange()
     /**
-     * getSubRange(), getMinVal(), and getMaxVal()
+     * @return True if the TimeStampFormalArg has a defined minimum and maximum
+     * range, false otherwise.
      *
-     * Accessor routines used to obtain the current values of the subRange,
-     * minVal, and maxVal fields.
-     *                                           -- 2/5/07
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @date 2007/02/05
      */
 
     public boolean getSubRange()
     {
         return subRange;
     }
+
+
+    // getMinVal()
+    /**
+     * @return A copy of the minimum possible value for this TimeStampFormalArg.
+     *
+     * @throws SystemErrorException If unable to create a copy of the minimum
+     * timestamp value.
+     *
+     * @date 2007/02/05
+     */
 
     public TimeStamp getMinVal()
         throws SystemErrorException
@@ -266,6 +278,17 @@ public class TimeStampFormalArg extends FormalArgument
             return new TimeStamp(this.minVal);
         }
     }
+
+
+    // getMaxVal()
+    /**
+     * @return A copy of the maximum possible value for this TimeStampFormalArg.
+     *
+     * @throws SystemErrorException If unable to create a copy of the maximum
+     * timestamp value.
+     *
+     * @date 2007/02/05
+     */
 
     public TimeStamp getMaxVal()
         throws SystemErrorException
@@ -281,20 +304,25 @@ public class TimeStampFormalArg extends FormalArgument
     }
 
 
-    /*************************************************************************/
-    /***************************** Overrides: ********************************/
-    /*************************************************************************/
-
+    // constructArgWithSalvage() - Override of abstract method in FormalArgument
     /**
-     * constructArgWithSalvage()  Override of abstract method in FormalArgument
+     * Builds a instance of DataValue initialized from salvage.
      *
+     * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
+     *
+     * @param The DataValue to salvage when constructing a formal argument.
+     *
+     * @return An a instance of DataValue initialized from salvage.
      * Return an instance of TimeStampDataValue initialized from salvage if
      * possible, and to the default for newly created instances of
      * TimeStampDataValue otherwise.
      *
-     * Changes:
-     *
-     *    - None.
+     * @throws SystemErrorException If unable to create a data value.
      */
 
     DataValue constructArgWithSalvage(DataValue salvage)
@@ -330,15 +358,10 @@ public class TimeStampFormalArg extends FormalArgument
     } /* TimeStampDataValue::constructArgWithSalvage(salvage) */
 
 
+    // constructEmptyArg()  Override of abstract method in FormalArgument
     /**
-     * constructEmptyArg()  Override of abstract method in FormalArgument
-     *
-     * Return an instance of TimeStampDataValue initialized as appropriate for
+     * @return An instance of TimeStampDataValue initialized as appropriate for
      * an argument that has not had any value assigned to it by the user.
-     *
-     * Changes:
-     *
-     *    - None.
      */
 
      public DataValue constructEmptyArg()
@@ -350,21 +373,23 @@ public class TimeStampFormalArg extends FormalArgument
      } /* TimeStampFormalArg::constructEmptyArg() */
 
 
+    // toDBString()
     /**
-     * toDBString() -- Override of abstract method in DataValue
-     *
      * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
      *
-     * @return the string value.
-     *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
-     *
+     * @return A database string representation of the TimeStampFormalArg.
      */
+
     public String toDBString() {
 
         if ( subRange )
@@ -382,17 +407,30 @@ public class TimeStampFormalArg extends FormalArgument
     } /* TimeStampFormalArg::toDBString() */
 
 
+    // isValidValue() -- Override of abstract method in FormalArgument
     /**
-     * isValidValue() -- Override of abstract method in FormalArgument
+     * Checks if the supplied object is valid value to be assigned to this
+     * formal argument.
+     *
+     * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
+     *
+     * @param Object The object to check if it is a valid value.
+     *
+     * @return True if the supplied object can be assigned to this
+     * TimeStampFormalArg, false otherwise.
      *
      * Boolean metho that returns true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
-     *                                              -- 2/5/07
+     * @throws SystemErrorException If the ticks per second of the supplied
+     * object fails to match the min and max permitted values.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/02/05
      */
 
     public boolean isValidValue(Object obj)
@@ -427,9 +465,12 @@ public class TimeStampFormalArg extends FormalArgument
 
     } /* TimeStampFormalArg::isValidValue() */
 
+
+    // hashCode()
     /**
      * @return A hash code value for the object.
      */
+
     @Override
     public int hashCode() {
         int hash = super.hashCode() * Constants.SEED1;
@@ -440,6 +481,8 @@ public class TimeStampFormalArg extends FormalArgument
         return hash;
     }
 
+
+    // equals()
     /**
      * Compares this TimeStampFormalArg against another object.
      *
@@ -447,6 +490,7 @@ public class TimeStampFormalArg extends FormalArgument
      *
      * @return true if the Object obj is logically equal to this.
      */
+
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {

@@ -1,10 +1,5 @@
 package org.openshapa.views.discrete.datavalues;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
@@ -19,12 +14,12 @@ import org.openshapa.db.SystemErrorException;
  */
 public final class NominalDataValueEditor extends DataValueEditor {
 
-    /** String holding the reserved characters. */
-    private static final String NOMINAL_RESERVED_CHARS = ")(<>|,;\t\r\n";
-
-    /** The reserved replacement is a character that replaces reserved
-     *  characters pasted into nominal views. */
-    private static final Character RESERVED_REPLACEMENT = '_';
+    /**
+     * String holding the reserved characters - these are characters that are
+     * users are unable to enter into a nominal field.
+     */
+    // BugzID:524 - If Character is an escape key - ignore it.
+    private static final String RESERVED_CHARS = ")(<>|,;\t\r\n\"\u001B";
 
     /** The logger for this class. */
     private static Logger logger = Logger
@@ -66,18 +61,46 @@ public final class NominalDataValueEditor extends DataValueEditor {
 
     /**
      * The action to invoke when a key is typed.
+     *
      * @param e The KeyEvent that triggered this action.
      */
     @Override
     public void keyTyped(final KeyEvent e) {
         super.keyTyped(e);
 
-        if (!e.isConsumed()) {
+        // Just a regular vanilla keystroke - insert it into nominal field.
+        NominalDataValue ndv = (NominalDataValue) getModel();
 
-            if (isReserved(e.getKeyChar())) {
-                // Ignore reserved characters.
-                e.consume();
+        if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
+            && !isReserved(e.getKeyChar())) {
+            this.removeSelectedText();
+            StringBuffer currentValue = new StringBuffer(getText());
+
+            // If we have a delete or backspace key - do not insert.
+            if (!(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                  && e.getKeyChar() == '\u007F') &&
+                !(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                  && e.getKeyChar() == '\u0008')) {
+                currentValue.insert(getCaretPosition(), e.getKeyChar());
             }
+
+            // Advance caret over the top of the new char.
+            int pos = this.getCaretPosition() + 1;
+            this.setText(currentValue.toString());
+            this.setCaretPosition(pos);
+            e.consume();
+
+        // All other keystrokes are consumed.
+        } else {
+            e.consume();
+        }
+
+        // Push the character changes into the database.
+        try {
+            ndv.setItsValue(this.getText());
+            updateDatabase();
+        } catch (SystemErrorException se) {
+            logger.error("Unable to edit text string", se);
         }
     }
 
@@ -86,69 +109,6 @@ public final class NominalDataValueEditor extends DataValueEditor {
      * @return true if the character is a reserved character.
      */
     public boolean isReserved(final char aChar) {
-        return (NOMINAL_RESERVED_CHARS.indexOf(aChar) >= 0);
-    }
-
-    /**
-     * Update the model to reflect the value represented by the
-     * editor's text representation.
-     */
-    @Override
-    public void updateModelValue() {
-        NominalDataValue dv = (NominalDataValue) getModel();
-        try {
-            dv.setItsValue(getText());
-        } catch (SystemErrorException e) {
-            logger.error("Unable to edit nominal value", e);
-        }
-    }
-
-    /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
-     */
-    @Override
-    public boolean sanityCheck() {
-        boolean res = true;
-        // could call a subRange test for this dataval
-        return res;
-    }
-
-    /**
-     * Sanitize the text in the clipboard.
-     * @return true if it is okay to call the JTextComponent's paste command.
-     */
-    @Override
-    public boolean prePasteCheck() {
-        // Get the contents of the clipboard.
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        Transferable contents = clipboard.getContents(null);
-        boolean hasText = (contents != null)
-                 && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-
-        // No valid text in clipboard. Bail.
-        if (!hasText) {
-            return false;
-        }
-
-        // Valid text in clipboard
-        try {
-            // Get the text
-            String text = (String) contents
-                                  .getTransferData(DataFlavor.stringFlavor);
-
-            // Replace reserved characters with a suitable replacement.
-            for (Character reservedCh : NOMINAL_RESERVED_CHARS.toCharArray()) {
-                text = text.replace(reservedCh, RESERVED_REPLACEMENT);
-            }
-
-            // Put the modified text back into the clipboard
-            Transferable transferableText = new StringSelection(text);
-            clipboard.setContents(transferableText, null);
-        } catch (Exception ex) {
-            logger.error("Unable to get clipboard contents", ex);
-            return false;
-        }
-        return true;
+        return (RESERVED_CHARS.indexOf(aChar) >= 0);
     }
 }

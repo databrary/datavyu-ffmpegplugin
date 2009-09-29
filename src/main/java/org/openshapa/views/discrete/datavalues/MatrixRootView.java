@@ -2,7 +2,6 @@ package org.openshapa.views.discrete.datavalues;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.SystemErrorException;
@@ -16,7 +15,7 @@ import org.openshapa.views.discrete.EditorTracker;
 
 /**
  * JTextArea view of the Matrix (database cell) data.
-*/
+ */
 public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /** The selection (used for cells) for the parent spreadsheet. */
@@ -43,8 +42,8 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      * represent.
      */
     public MatrixRootView(final Selector cellSelection,
-                   final DataCell cell,
-                   final Matrix matrix) {
+                          final DataCell cell,
+                          final Matrix matrix) {
         super();
         setLineWrap(true);
         setWrapStyleWord(true);
@@ -76,12 +75,20 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      * @param m The Matrix to display.
      */
     public void setMatrix(final Matrix m) {
+        // Determine selected editor, and internal caret position.
+        int pos = this.getCaretPosition();
+        EditorComponent comp = edTracker.findEditor(pos);
+        int edPos = comp.getCaretPosition();
+
         try {
             if (editors.size() == 0) {
                 editors.addAll(DataValueEditorFactory.
                                              buildMatrix(this, parentCell, m));
             } else {
                 for (EditorComponent ed : editors) {
+                    // BugzID:503 - This needs to be refactored. Should not be
+                    // doing reflection to determine type. Should boil down to
+                    // a simple ed.resetValue(parentCell, m);
                     DataValueEditorFactory.resetValue(ed, parentCell, m);
                 }
             }
@@ -90,6 +97,9 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
         }
 
         rebuildText();
+
+        // restore caret position inside current editor.
+        comp.setCaretPosition(edPos);
     }
 
     /**
@@ -105,6 +115,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * Used in the UISpec4j tests.
+     *
      * @return The editor tracker for this MatrixRootView.
      */
     public EditorTracker getEdTracker() {
@@ -141,30 +152,10 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     }
 
     /**
-     * Process key events that have been dispatched to this component, pass
-     * them through to all listeners, and then if they are not consumed pass
-     * it onto the parent of this component.
-     *
-     * @param ke They keyboard event that was dispatched to this component.
-     */
-    @Override
-    public void processKeyEvent(final KeyEvent ke) {
-
-        super.processKeyEvent(ke);
-
-        if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP
-            || ke.getKeyCode() == KeyEvent.VK_DOWN) {
-            getParent().dispatchEvent(ke);
-        }
-    }
-
-    /**
      * Pastes contents of the clipboard into the nominal data value view.
      */
     @Override
-    public final void paste() {
-        if (edTracker.prePasteCheck()) {
-            super.paste();
-        }
+    public void paste() {
+        edTracker.paste();
     }
 }

@@ -1,16 +1,12 @@
 package org.openshapa.views;
 
-import org.openshapa.OpenSHAPA;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
 import javax.swing.JDialog;
 
 /**
  * Generic OpenSHAPA dialog - handles work common to all dialogs (handling of
  * keystrokes, etc).
  */
-public abstract class OpenSHAPADialog extends JDialog
-implements KeyEventDispatcher {
+public abstract class OpenSHAPADialog extends JDialog {
 
     /**
      * Constructor. Creates a new OpenSHAPADialog.
@@ -21,31 +17,5 @@ implements KeyEventDispatcher {
     public OpenSHAPADialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-        KeyboardFocusManager key = KeyboardFocusManager
-                                   .getCurrentKeyboardFocusManager();
-        key.addKeyEventDispatcher(this);
-    }
-
-    /**
-     * Dispatches the keystroke to the correct action.
-     *
-     * @param evt The event that triggered this action.
-     *
-     * @return true if the KeyboardFocusManager should take no further action
-     * with regard to the KeyEvent; false  otherwise
-     */
-    public boolean dispatchKeyEvent(java.awt.event.KeyEvent evt) {
-        // Pass the keyevent onto the keyswitchboard so that it can route it
-        // to the correct action.
-        return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        KeyboardFocusManager key = KeyboardFocusManager
-                                   .getCurrentKeyboardFocusManager();
-        key.removeKeyEventDispatcher(this);
-        super.finalize();
     }
 }

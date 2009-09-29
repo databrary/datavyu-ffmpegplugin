@@ -66,8 +66,8 @@ public final class UITimestampTest extends UISpecTestCase {
         for (int i = 0; i < numOfTests; i++) {
             onset = c.elementAt(i).getOnset();
             offset = c.elementAt(i).getOffset();
-            c.elementAt(i).enterOnsetText(testInput[i]);
-            c.elementAt(i).enterOffsetText(testInput[i]);
+            c.elementAt(i).enterText(Cell.ONSET, testInput[i]);
+            c.elementAt(i).enterText(Cell.OFFSET, testInput[i]);
 
             assertTrue(c.elementAt(i).getOnset().getText().equals(
                     expectedTestOutput[i]));
@@ -79,44 +79,46 @@ public final class UITimestampTest extends UISpecTestCase {
     /**
      * Test advanced editing the onset and offset timestamps.
      * @throws java.lang.Exception on any error
-     */
-    /*BUGZID400:public void testTimestampAdvancedEditing() throws Exception {
-        TextBox onset, offset;
-
+     *//* BugzID:540
+    public void testTimestampAdvancedEditing() throws Exception {
         String[] testInput = {"123456789", "1234", "a13", "12:34:56:789",
-            "4.43", "12:34"};
+                              "4.43", "12:34", "12:78:93:999", "12:34"};
 
         int numOfTests = testInput.length;
 
-         //advanced Input will be provided between testInput
+        //advanced Input will be provided between testInput
         Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
-            {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
-            {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
-            {Key.LEFT, Key.RIGHT}};
+           {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
+           {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
+           {Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
+                Key.BACKSPACE, Key.BACKSPACE}, {Key.LEFT, Key.LEFT,
+                Key.LEFT, Key.LEFT}};
 
-     //Expected output yet to be determined
-     String[] expectedTestOutput = {"12:34:56:789", "68:29:00:000",
-            "13:00:00:000", "12:34:56:789", "44:30:00:000", "13:19:33:999",
-            "13:19:33:999", "12:34:00:000", "12:34:56:000"};
+        String[] expectedTestOutput = {"12:34:56:712", "12:31:30:000",
+                                       "12:34:56:789", "12:34:50:744",
+                                       "44:31:23:400", "12:78:93:999",
+                                       "12:78:91:234"};
 
         Vector<Cell> c = createNewCells(numOfTests);
 
         for (int i = 0; i < numOfTests - 1; i++) {
-            onset = c.elementAt(i).getOnset();
-            offset = c.elementAt(i).getOffset();
-            c.elementAt(i).enterOnsetText(testInput[i]);
-            c.elementAt(i).enterOffsetText(testInput[i]);
+            TextBox onset = c.elementAt(i).getOnset();
+            TextBox offset = c.elementAt(i).getOffset();
+            c.elementAt(i).enterText(Cell.ONSET, testInput[i], advancedInput[i],
+                    testInput[i+1]);
+            c.elementAt(i).enterText(Cell.OFFSET, testInput[i],
+                    advancedInput[i], testInput[i+1]);
 
             assertTrue(c.elementAt(i).getOnset().getText().equals(
                     expectedTestOutput[i]));
             assertTrue(c.elementAt(i).getOffset().getText().equals(
                     expectedTestOutput[i]));
         }
-    }
-     */
+    }*/
 
     /**
      * Test pasting the onset and offset timestamps.
+     *
      * @throws java.lang.Exception on any error
      */
     public void testTimestampPasting() throws Exception {
@@ -128,18 +130,20 @@ public final class UITimestampTest extends UISpecTestCase {
         int numOfTests = testInput.length;
 
         String[] expectedTestOutput = {"12:34:56:789", "68:29:00:000",
-            "00:00:00:000", "12:34:56:789", "00:00:00:000", "13:19:33:999",
+            "13:00:00:000", "12:34:56:789", "44:30:00:000", "13:19:33:999",
             "13:19:33:999", "12:34:00:000", "12:34:56:000"};
 
         Vector<Cell> c = createNewCells(numOfTests);
-        Clipboard clip = null;
         for (int i = 0; i < numOfTests; i++) {
             onset = c.elementAt(i).getOnset();
             offset = c.elementAt(i).getOffset();
-            clip.putText(testInput[i]);
+            Clipboard.putText(testInput[i]);
 
             // Paste doesn't seem to request focus correctly.
+            onset.selectAll();
             onset.pasteFromClipboard();
+
+            offset.selectAll();
             offset.pasteFromClipboard();
 
             assertTrue(onset.getText().equalsIgnoreCase(

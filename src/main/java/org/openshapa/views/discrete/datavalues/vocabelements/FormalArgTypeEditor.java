@@ -48,8 +48,10 @@ public final class FormalArgTypeEditor extends EditorComponent {
      * Changes: Replace call to vocabElement.getFormalArg() with call
      *          to vocabElement.getFormalArgCopy().
      */
-    public FormalArgTypeEditor(final JTextComponent ta, final VocabElement ve,
-                                      final int index, final VocabElementV pv) {
+    public FormalArgTypeEditor(final JTextComponent ta,
+                               final VocabElement ve,
+                               final int index,
+                               final VocabElementV pv) {
         super(ta);
         setEditable(true);
         argIndex = index;

@@ -7936,7 +7936,7 @@ public abstract class DatabaseTest {
      *      predicate.  This change was necessitated by my tightening up
      *      who can create and/or modify system predicates.
      *
-     *                                              JRM -- 7/26/09
+     *                                              7/26/09
      *   </li>
      * </ul>
      */
@@ -9455,7 +9455,7 @@ public abstract class DatabaseTest {
      *      predicate.  This was made necessary by my tightening up on
      *      restrictions on who can create or modify a system predicate.
      * 
-     *                                              JRM -- 7/26/09
+     *                                              7/26/09
      */
 
     public static boolean TestVocabElementExists(java.io.PrintStream outStream,

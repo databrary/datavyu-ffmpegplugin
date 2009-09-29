@@ -94,6 +94,8 @@
                 <Property name="name" type="java.lang.String" value="fileMenuSeparator" noResource="true"/>
               </Properties>
               <AuxValues>
+                <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="}"/>
+                <AuxValue name="JavaCodeGenerator_AddingCodePre" type="java.lang.String" value="if (OpenSHAPA.getPlatform() != Platform.MAC) {"/>
                 <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
               </AuxValues>
@@ -166,9 +168,6 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="newCellMenuItem">
               <Properties>
-                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="ENTER"/>
-                </Property>
                 <Property name="name" type="java.lang.String" value="newCellMenuItem" noResource="true"/>
               </Properties>
               <Events>
@@ -182,8 +181,8 @@
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="weakTemporalOrderMenuItem">
               <Properties>
-                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Ctrl+T"/>
+                <Property name="font" type="java.awt.Font" noResource="true" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Silom" size="14" style="0"/>
                 </Property>
                 <Property name="name" type="java.lang.String" value="weakTemporalOrderMenuItem" noResource="true"/>
               </Properties>
@@ -193,9 +192,6 @@
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="strongTemporalOrderMenuItem">
               <Properties>
-                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Shift+Ctrl+T"/>
-                </Property>
                 <Property name="name" type="java.lang.String" value="strongTemporalOrderMenuItem" noResource="true"/>
               </Properties>
               <Events>
@@ -209,9 +205,6 @@
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="zoomInMenuItem">
                   <Properties>
-                    <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                      <KeyStroke key="Meta+PLUS"/>
-                    </Property>
                     <Property name="name" type="java.lang.String" value="zoomInMenuItem" noResource="true"/>
                   </Properties>
                   <Events>
@@ -220,9 +213,6 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="zoomOutMenuItem">
                   <Properties>
-                    <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                      <KeyStroke key="Meta+MINUS"/>
-                    </Property>
                     <Property name="name" type="java.lang.String" value="zoomOutMenuItem" noResource="true"/>
                   </Properties>
                   <Events>
@@ -236,9 +226,6 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="resetZoomMenuItem">
                   <Properties>
-                    <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                      <KeyStroke key="Meta+0"/>
-                    </Property>
                     <Property name="name" type="java.lang.String" value="resetZoomMenuItem" noResource="true"/>
                   </Properties>
                   <Events>

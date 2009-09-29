@@ -419,6 +419,10 @@ public abstract class Column
                                                          name));
         }
 
+        if (d.cl.inColumnList(name)) {
+            throw new LogicErrorException(rMap.getString("Error.exists", name));
+        }
+
         if (d.vl.inVocabList(name)) {
             VocabElement e = d.getVocabElement(name);
             if (e.getSystem()) {
@@ -428,10 +432,6 @@ public abstract class Column
                 throw new LogicErrorException(rMap.getString("Error.exists",
                                                              name));
             }
-        }
-
-        if (d.cl.inColumnList(name)) {
-            throw new LogicErrorException(rMap.getString("Error.exists", name));
         }
 
         return true;

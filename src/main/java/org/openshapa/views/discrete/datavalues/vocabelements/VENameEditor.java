@@ -34,8 +34,9 @@ public final class VENameEditor extends EditorComponent {
      * @param ve The parent VocabElement the editor is in.
      * @param pv The parent VocabElementV the editor is in.
      */
-    public VENameEditor(final JTextComponent ta, final VocabElement ve,
-                                                    final VocabElementV pv) {
+    public VENameEditor(final JTextComponent ta,
+                        final VocabElement ve,
+                        final VocabElementV pv) {
         super(ta);
         setEditable(true);
         parentV = pv;

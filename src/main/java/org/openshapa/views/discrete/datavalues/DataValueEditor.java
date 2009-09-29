@@ -39,32 +39,11 @@ public abstract class DataValueEditor extends EditorComponent {
     /** The index of the data value within its parent predicate. */
     private int pIndex;
 
-    /** Is the data value now null? */
-    private boolean argIsNull;
-
     /** Text when editor gained focus (became current editor). */
     private String textOnFocus;
 
-    /** Previous text during edits. */
-    private String prevText;
-
-    /** Previous caret location during edits. */
-    private int prevCaret;
-
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(DataValueEditor.class);
-
-    /**
-     * Update the model to reflect the value represented by the editor's text
-     * representation.
-     */
-    public abstract void updateModelValue();
-
-    /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
-     */
-    public abstract boolean sanityCheck();
 
     /**
      * Constructor.
@@ -141,8 +120,6 @@ public abstract class DataValueEditor extends EditorComponent {
             logger.error("Unable to create DataValueEditor: ", ex);
         }
 
-        argIsNull = (this.getModel() == null || this.getModel().isEmpty());
-
         updateStrings();
     }
 
@@ -166,8 +143,6 @@ public abstract class DataValueEditor extends EditorComponent {
             logger.error("Unable to create DataValue View: ", ex);
         }
 
-        argIsNull = (this.getModel() == null || this.getModel().isEmpty());
-
         updateStrings();
     }
 
@@ -177,7 +152,7 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     public void updateStrings() {
         String t = "";
-        if (!isNullArg()) {
+        if (!this.getModel().isEmpty()) {
             t = this.getModel().toString();
         } else {
             t = getNullArg();
@@ -240,9 +215,93 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public void keyPressed(final KeyEvent e) {
-        prevText = getText();
-        prevCaret = getCaretPosition();
-        checkNullArgKeyTyped(e);
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_BACK_SPACE:
+            case KeyEvent.VK_DELETE:
+                // Ignore - handled when the key is typed.
+                e.consume();
+                break;
+
+            case KeyEvent.VK_LEFT:
+                int selectStart = this.getSelectionStart();
+                int selectEnd = this.getSelectionEnd();
+
+                // Move caret to the left.
+                int c = Math.max(0, this.getCaretPosition() - 1);
+                this.setCaretPosition(c);
+
+                // If after the move, we have a character to the left is
+                // preserved character we need to skip one before passing
+                // the key event down to skip again (effectively skipping
+                // the preserved character).
+                int b = Math.max(0, getCaretPosition());
+                c = Math.max(0, this.getCaretPosition() - 1);
+                if (this.isPreserved(getText().charAt(b))
+                    || this.isPreserved(getText().charAt(c))) {
+                    setCaretPosition(Math.max(0, getCaretPosition() - 1));
+                }
+                e.consume();
+
+                // If the user is holding down shift - alter the selection as
+                // well as the caret position.
+                if (e.getModifiers() == KeyEvent.SHIFT_MASK) {
+                    // Shrink selection left - removed entire selection.
+                    if (getCaretPosition() == selectStart) {
+                        select(selectStart, selectStart);
+                    // Grow selection left.
+                    } else if (getCaretPosition() < selectStart) {
+                        select(selectEnd, getCaretPosition());
+                    // Shrink selection left.
+                    } else {
+                        select(selectStart, getCaretPosition());
+                    }
+                }
+
+                break;
+
+            case KeyEvent.VK_RIGHT:
+                selectStart = this.getSelectionStart();
+                selectEnd = this.getSelectionEnd();
+
+                // Move caret to the right.
+                c = Math.min(this.getText().length(),
+                                 this.getCaretPosition() + 1);
+                this.setCaretPosition(c);
+
+                // If after the move, we have a character to the right that
+                // is a preserved character, we need to skip one before
+                // passing the key event down to skip again (effectively
+                // skipping the preserved character)
+                b = Math.min(getText().length() - 1, getCaretPosition());
+                c = Math.min(getText().length() - 1, getCaretPosition() + 1);
+                if (c < this.getText().length()
+                    && (this.isPreserved(getText().charAt(c))
+                        || this.isPreserved(getText().charAt(b)))) {
+                    setCaretPosition(Math.min(getText().length() - 1,
+                                              getCaretPosition() + 1));
+                }
+                e.consume();
+
+                // If the user is holding down shift - alter the selection as
+                // well as the caret position.
+                if (e.getModifiers() == KeyEvent.SHIFT_MASK) {
+                    // Shrink selection right - removed entire selection.
+                    if (getCaretPosition() == selectEnd) {
+                        select(selectEnd, selectEnd);
+                    // Grow selection right.
+                    } else if (getCaretPosition() > selectEnd) {
+                        select(selectStart, getCaretPosition());
+                    // Shrink select right.
+                    } else {
+                        select(getCaretPosition(), selectEnd);
+                    }
+                }
+
+                break;
+
+            default:
+                break;
+        }
     }
 
     /**
@@ -251,7 +310,26 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        checkNullArgKeyTyped(e);
+        // The backspace key removes digits from behind the caret.
+        if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+            && e.getKeyChar() == '\u0008') {
+
+            // Can't delete an empty data value.
+            if (!this.getModel().isEmpty()) {
+                this.removeBehindCaret();
+                e.consume();
+            }
+
+        // The delete key removes digits ahead of the caret.
+        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                   && e.getKeyChar() == '\u007F') {
+
+            // Can't delete an empty data value.
+            if (!this.getModel().isEmpty()) {
+                this.removeAheadOfCaret();
+                e.consume();
+            }
+        }
     }
 
     /**
@@ -260,83 +338,28 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public void keyReleased(final KeyEvent e) {
+        boolean argIsNull = true;
+
         if (getText().length() == 0) {
-            argIsNull = true;
             setText(getNullArg());
         } else {
             argIsNull = (getText().equals(getNullArg()));
         }
+
         if (argIsNull) {
             selectAll();
-        } else {
-            if (!sanityCheck()) {
-                setText(prevText);
-                setCaretPosition(prevCaret);
-            }
         }
-    }
-
-    /**
-     * Determine if the next key action is going to create a null arg or
-     * if the editor is already effectively a null arg.
-     * @param e KeyEvent
-     */
-    public final void checkNullArgKeyTyped(final KeyEvent e) {
-        // if we are a null arg already
-        // consume chars that do not make sense
-        // backspace, enter, tab and delete
-        if (isNullArg()) {
-            boolean consumeIfNull = false;
-            int type = e.getID();
-            int loc = e.getKeyLocation();
-            char ch = e.getKeyChar();
-            int code = e.getKeyCode();
-            if (type == KeyEvent.KEY_TYPED) {
-                consumeIfNull = ((ch == '\b')
-                                || (ch == '\t')
-                                || (ch == '\n')
-                                || (ch == '\u007f'));
-            } else {
-                consumeIfNull = ((code == KeyEvent.VK_BACK_SPACE)
-                                || (code == KeyEvent.VK_TAB)
-                                || ((code == KeyEvent.VK_ENTER
-                                        && loc != KeyEvent.KEY_LOCATION_NUMPAD))
-                                || (code == KeyEvent.VK_DELETE));
-            }
-            if (consumeIfNull) {
-                e.consume();
-            }
-        }
-    }
-
-    /**
-     * @return true if the editor is currently displaying a "null" arg.
-     */
-    public final boolean isNullArg() {
-        return argIsNull;
     }
 
     /**
      * Update the database with the model value.
      */
-    public final void updateDatabase() {
-        // reget the parentCell in case onset or offset have been changed.
+    public void updateDatabase() {
         try {
+            // reget the parentCell in case onset or offset have been changed.
             parentCell = (DataCell) parentCell.getDB()
-                                                   .getCell(parentCell.getID());
-        } catch (SystemErrorException e) {
-            logger.error("Unable to reget the cell data: ", e);
-        }
+                                              .getCell(parentCell.getID());
 
-        // update the model.
-        if (isNullArg()) {
-            updateModelNull();
-        } else {
-            // call the subclass (template pattern)
-            updateModelValue();
-        }
-
-        try {
             // Update the OpenSHAPA database with the latest values.
             if (parentMatrix != null && parentPredicate == null) {
                 parentMatrix.replaceArg(mIndex, model);
@@ -355,21 +378,13 @@ public abstract class DataValueEditor extends EditorComponent {
     }
 
     /**
-     * Update the model to reflect a null value.
-     */
-    public final void updateModelNull() {
-        DataValue dv = (DataValue) getModel();
-        dv.clearValue();
-    }
-
-    /**
      * Override selection to catch if the value is null.
      * @param startClick Start character of the selection.
      * @param endClick End character of the selection.
      */
     @Override
     public final void select(final int startClick, final int endClick) {
-        if (!isNullArg()) {
+        if (!this.getModel().isEmpty()) {
             super.select(startClick, endClick);
         } else {
             super.select(0, Integer.MAX_VALUE);
@@ -411,5 +426,4 @@ public abstract class DataValueEditor extends EditorComponent {
     public final int getmIndex() {
         return this.mIndex;
     }
-
 }

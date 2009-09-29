@@ -3,14 +3,25 @@ package org.openshapa.views.discrete.datavalues;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
 import javax.swing.text.JTextComponent;
 import org.openshapa.db.FloatDataValue;
 import org.openshapa.db.PredDataValue;
+import org.openshapa.util.Constants;
 
 /**
  * This class is the character editor of a FloatDataValue.
  */
 public final class FloatDataValueEditor extends DataValueEditor {
+
+    /** The base of the number system we are using. */
+    private static final int BASE = 10;
+
+    /** The maximum number of decimal places. */
+    private static final int MAX_DECIMAL_PLACES = 6;
+
+    /** 'Negative' zero - used for checking specials. */
+    private static final String NEGATIVE_ZERO = "-0.00000";
 
     /**
      * Constructor.
@@ -25,6 +36,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
                                 final Matrix matrix,
                                 final int matrixIndex) {
         super(ta, cell, matrix, matrixIndex);
+        this.addPreservedChars(".");
     }
 
     /**
@@ -44,27 +56,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
                                 final Matrix matrix,
                                 final int matrixIndex) {
         super(ta, cell, p, pi, matrix, matrixIndex);
-    }
-
-    /**
-     * The action to invoke when a key is typed.
-     * @param e The KeyEvent that triggered this action.
-     */
-    @Override
-    public void keyPressed(final KeyEvent e) {
-        super.keyPressed(e);
-
-        if (!e.isConsumed()) {
-            switch (e.getKeyCode()) {
-                case KeyEvent.VK_BACK_SPACE:
-                case KeyEvent.VK_DELETE:
-                    // Ignore - handled when the key is typed.
-                    e.consume();
-                    break;
-                default:
-                    break;
-            }
-        }
+        this.addPreservedChars(".");
     }
 
     /**
@@ -73,189 +65,200 @@ public final class FloatDataValueEditor extends DataValueEditor {
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        super.keyTyped(e);
+        FloatDataValue fdv = (FloatDataValue) getModel();
 
-        if (e.isConsumed()) {
-            return;
-        }
-
-        char ch = e.getKeyChar();
-        //  For some of the tests with ch
-        // '\u007F' = Delete character
-        // '\u0008' = Backspace character
-
-        // consume characters that we do not use.
-        if (!Character.isDigit(ch) && ch != '.' && ch != '-'
-                                  && ch != '\u007F' && ch != '\u0008') {
+        // BugzID:422 - Disallow key presses if user is in front of -ve sign
+        if (getText().startsWith("-") && getCaretPosition() == 0
+            && e.getKeyChar() != '-') {
             e.consume();
             return;
         }
-
-        // Current text in the editor
-        String t = getText();
-        // the new text that will be set from this keystroke
-        String newStr = "";
-        // current selection start and end (start can equal end)
-        int selStart = getSelectionStart();
-        int selEnd = getSelectionEnd();
-        // the new position of the caret
-        int caret = 0;
 
         // '-' key toggles the state of a negative / positive number.
-        // ignores the current selection and resets the caret
-        if (ch == '-') {
-            if (isNullArg()) {
-                newStr = "-";
-                caret = 1;
-            } else if (t.startsWith("-")) {
-                // remove the '-'
-                newStr = t.substring(1);
-                caret = 0;
+        if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD
+          || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
+          && e.getKeyChar() == '-') {
+
+            // Move the caret to behind the - sign, or front of the number.
+            if (fdv.getItsValue() < 0.0) {
+                setCaretPosition(0);
             } else {
-                // add the '-'
-                newStr = "-" + t;
-                caret = 1;
+                setCaretPosition(1);
             }
 
-        // else handle digits, decimal, backspace and delete keys
-        } else if (Character.isDigit(ch) || ch == '.' || ch == '\u007F'
-                || ch == '\u0008') {
-
-                // if its a backspace and there is no selection,
-                // create a selection of one char to the left
-            if (ch == '\u0008' && selStart == selEnd) {
-                selStart = Math.max(selStart - 1, 0);
-
-                // if it is a delete and there is no selection,
-                // create a selection of one char to the right.
-            } else if (ch == '\u007F' && selStart == selEnd) {
-                selEnd = Math.min(selEnd + 1, t.length());
-            }
-
-            // Add the char just typed.  Backspace and Delete do not add any.
-            String addStr = "";
-            if (ch != '\u0008' && ch != '\u007F') {
-                addStr += ch;
-            }
-            // create the new string and calculate the new caret position
-            newStr = t.substring(0, selStart) + addStr + t.substring(selEnd);
-            caret = selStart + addStr.length();
-        }
-
-        // check if the new string is now a "null" value.
-        if (newStr.length() == 0) {
-            setText(newStr);
+            // Toggle state of a negative / positive number.
+            fdv.setItsValue(-fdv.getItsValue());
             e.consume();
-            return;
-        }
 
-        // the new string is not empty
-        // check the decimal is still okay (might have been deleted)
-        int dotPos = newStr.indexOf('.');
-        // if no decimal found, put one back at the caret
-        if (dotPos < 0) {
-            newStr = newStr.substring(0, caret) + "." + newStr.substring(caret);
+        // '.' key shifts the location of the decimal point.
+        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                   && e.getKeyChar() == '.') {
 
-            // special case if delete key, move caret to other side of decimal.
-            if (ch == '\u007F') {
-                caret++;
+            // Shift the decimal point to the current caret position.
+            int factor = getCaretPosition() - getText().indexOf('.');
+            if (factor > 0) {
+                factor--;
             }
 
-        // else if user typed a '.', check incase we now have two decimals
-        } else if (ch == '.') {
-            int secDotPos = newStr.indexOf('.', dotPos + 1);
-            // if we have two decimals we must have just added one.
-            // Keep the one where the original selection started.
-            if (secDotPos >= 0) {
-                if (dotPos == selStart) {
-                    dotPos = secDotPos;
+            // Determine max fraction - if empty, use a default of 1.
+            int maxFrac = 1;
+            if (!fdv.isEmpty()) {
+                maxFrac = Math.min(MAX_DECIMAL_PLACES,
+                                   getText().length() - getText().indexOf('.')
+                                                      - factor - 1);
+            }
+
+            fdv.setItsValue(fdv.getItsValue() * Math.pow(BASE, factor));
+
+            // Determine the precision to use - prevent the user from exceding
+            // six decimal places.
+            DecimalFormat formatter = new DecimalFormat(Constants.FLOAT_FORMAT);
+            formatter.setMaximumFractionDigits(maxFrac);
+            this.setText(formatter.format(fdv.getItsValue()));
+
+            // Work out the position of the caret (just after the '.' point).
+            setCaretPosition(this.getText().indexOf('.') + 1);
+            e.consume();
+
+        // The backspace key removes digits from behind the caret.
+        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                   && e.getKeyChar() == '\u0008') {
+
+            // Can't delete empty float data value.
+            if (!fdv.isEmpty()) {
+                this.removeBehindCaret();
+
+                // Allow the provision of a 'null' value - that will permit
+                // users to transition the cell contents to a '<val>' state.
+                Double newD = buildValue(this.getText());
+                if (newD != null && !newD.equals(fdv.getItsValue())) {
+                    fdv.setItsValue(newD);
+                } else if (newD == null) {
+                    fdv.clearValue();
                 }
-                // remove the decimal we don't want
-                newStr = newStr.substring(0, dotPos)
-                                                + newStr.substring(dotPos + 1);
+                e.consume();
             }
-        }
 
-        // before we reformat the value, record the position of the decimal.
-        dotPos = newStr.indexOf('.');
+        // The delete key removes digits ahead of the caret.
+        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                   && e.getKeyChar() == '\u007F') {
 
-        // reformat the value to a correct double.
-        if (!allowedSpecial(newStr)) {
-            // set the datavalue and retrieve the string version of it
-            FloatDataValue fdv = (FloatDataValue) getModel();
-            try {
-                fdv.setItsValue(newStr);
-                newStr = fdv.toString();
-            } catch (NumberFormatException ex) {
-                // whatever was typed is not allowed as a new float.
-                // restore to previous text and caret
-                newStr = t;
-                caret = selStart;
+            // Can't delete empty float data value.
+            if (!fdv.isEmpty()) {
+                this.removeAheadOfCaret();
+
+                // Allow the provision of a 'null' value - that will permit
+                // users to transition the cell contents to a '<val>' state.
+                Double newD = buildValue(this.getText());
+                if (newD != null && !newD.equals(fdv.getItsValue())) {
+                    fdv.setItsValue(newD);
+                    this.setCaretPosition(this.getCaretPosition());
+                } else if (newD == null) {
+                    fdv.clearValue();
+                }
+                e.consume();
             }
-        }
 
-        // recalculate the caret incase the decimal moved in the reformat
-        // if user typed a '.', caret is always one beyond.
-            if (ch == '.') {
-                caret = newStr.indexOf('.') + 1;
+        // Key stoke is number - insert number at current caret position.
+        } else if (Character.isDigit(e.getKeyChar()) && !excedesPrecision()) {
+            this.removeSelectedText();
 
-        // else nudge the caret by any change in position of the decimal.
+            // BugzID: 565 - Reject keystroke if a leading zero.
+            if (e.getKeyChar() == '0' && this.getText().length() > 0) {
+                if ((fdv.getItsValue() > 0 && getCaretPosition() == 0)
+                    || (fdv.getItsValue() < 0 && getCaretPosition() <= 1)
+                    || fdv.getItsValue() == 0.0) {
+                  e.consume();
+                  return;
+                }
+            }
+
+            StringBuffer currentValue = new StringBuffer(getText());
+            currentValue.insert(getCaretPosition(), e.getKeyChar());
+
+            // Dealing with someone who has just entered in - remove trailing 0
+            // between the caret and decimal place.
+            if (getText().equals(NEGATIVE_ZERO) && getCaretPosition() == 1) {
+                currentValue.deleteCharAt(getCaretPosition() + 1);
+            }
+
+            String nText = currentValue.toString();
+            if (nText.length() - 1 - nText.indexOf('.') > MAX_DECIMAL_PLACES) {
+                nText = nText.substring(0, nText.length() - 1);
+            }
+
+            // Advance caret over the top of the new char.
+            int pos = this.getCaretPosition();
+            if (fdv.getItsValue() != 0.0
+                || getText().equals(NEGATIVE_ZERO)
+                || getCaretPosition() != 1) {
+                pos = pos + 1;
+            }
+            this.setText(nText);
+            this.setCaretPosition(pos);
+
+            fdv.setItsValue(buildValue(currentValue.toString()));
+            e.consume();
+
+        // Every other key stroke is ignored by the float editor.
         } else {
-            caret += (newStr.indexOf('.') - dotPos);
-            }
+            e.consume();
+        }
 
-        // set the new text and caret location
-        setText(newStr);
-        setCaretPosition(caret);
-        e.consume();
+        this.updateDatabase();
     }
 
     /**
-     * Update the model to reflect the value represented by the
-     * editor's text representation.
+     * @return True if adding another character at the current caret position
+     * will execde the allowed precision for a floating value, false otherwise.
+     */
+    public boolean excedesPrecision() {
+        String text = getText();
+        if ((text.length() - text.indexOf('.') > MAX_DECIMAL_PLACES)
+            && (getCaretPosition() - text.indexOf('.') > MAX_DECIMAL_PLACES)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Recalculate the string for this editor.  In particular check if it
+     * is "null" and display the appropriate FormalArg.
      */
     @Override
-    public void updateModelValue() {
-        FloatDataValue dv = (FloatDataValue) getModel();
-        String str = getText();
-        if (allowedSpecial(str)) {
-            str = "0.0";
-        }
-        dv.setItsValue(str);
-        // special case for numeric - reget the text from the db if losing focus
-        // incase the user types characters that will not cause a change in the
-        // numeric data value - no notification of a change will be sent by db
-        // so we need to do this
-        setText(dv.toString());
-    }
+    public void updateStrings() {
+        String t = "";
+        FloatDataValue fdv = (FloatDataValue) getModel();
+        if (!fdv.isEmpty()) {
+            DecimalFormat formatter = new DecimalFormat(Constants.FLOAT_FORMAT);
 
-    /**
-     * Sanity check the current text of the editor and return a boolean.
-     * @return true if the text is an okay representation for this DataValue.
-     */
-    @Override
-    public boolean sanityCheck() {
-        boolean res = true;
-        // could call a subRange test for this dataval
-        if (!allowedSpecial(getText())) {
-            FloatDataValue fdv = (FloatDataValue) getModel();
-            try {
-                fdv.setItsValue(getText());
-            } catch (NumberFormatException e) {
-                res = false;
+            // BugzID:522 - Prevent overiding precision defined by user.
+            if (this.getText() != null && this.getText().length() > 0) {
+                int maxFrac = getText().length() - getText().indexOf('.') - 1;
+                formatter.setMaximumFractionDigits(maxFrac);
             }
+
+            t = formatter.format(fdv.getItsValue());
+        } else {
+            t = getNullArg();
         }
-        return res;
+
+        this.resetText(t);
     }
 
     /**
-     * Check if the string supplied is one allowed while typing in a float.
-     * For when typing in the first characters '-' and '.'.
-     * @param str the string to check
-     * @return true if we allow this string to represent a float even
-     * though it would not pass a conversion operation.
+     * Builds a new Double value from a string.
+     *
+     * @param textField The String that you want to create a Double from.
+     *
+     * @return A Double value that can be used setting the database.
      */
-    private boolean allowedSpecial(final String str) {
-        return (str.equals(".") || str.equals("-") || str.equals("-."));
+    public Double buildValue(final String textField) {
+        try {
+            return new Double(textField);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

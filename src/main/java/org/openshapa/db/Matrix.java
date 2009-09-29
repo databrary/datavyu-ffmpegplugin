@@ -663,7 +663,7 @@ public class Matrix implements Cloneable {
      * Note that this method throws away a lot of information about each
      * data column, as this data is not used in MacSHAPA.
      *
-     *                                              JRM -- 12/31/08
+     *                                              12/31/08
      *
      * Changes:
      *
@@ -780,7 +780,7 @@ public class Matrix implements Cloneable {
      * Pass the toMODBFile_update_local_vocab_list() message on to all data
      * values in the matrix.
      * 
-     *                                          JRM -- 7/22/09
+     *                                          7/22/09
      * 
      * Changes:
      * 
