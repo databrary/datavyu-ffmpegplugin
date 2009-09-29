@@ -8,9 +8,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
+import java.util.regex.Pattern;
 import javax.swing.JFileChooser;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
+import org.openshapa.views.continuous.DataViewer;
+import au.com.nicta.echomod.asd.AirspaceViewer;
+import java.io.File;
 
 /**
  * Quicktime video controller.
@@ -28,7 +32,7 @@ public final class QTVideoController extends OpenSHAPADialog {
 
         initComponents();
         setName(this.getClass().getSimpleName());
-        viewers = new Vector<QTVideoViewer>();
+        viewers = new Vector<DataViewer>();
     }
 
     public void setCurrentLocation(final long milliseconds) {
@@ -55,7 +59,7 @@ public final class QTVideoController extends OpenSHAPADialog {
     public void shutdown(final QTVideoViewer viewer) {
         for (int i = 0; i < this.viewers.size(); i++) {
             if (viewer == this.viewers.elementAt(i)) {
-                this.viewers.elementAt(i).dispose();
+                //this.viewers.elementAt(i).dispose();
                 this.viewers.remove(viewer);
             }
         }
@@ -262,6 +266,9 @@ public final class QTVideoController extends OpenSHAPADialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private static final Pattern RE_MOV = Pattern.compile( " ^ .+ \\. m.. $ ", Pattern.COMMENTS );
+    private static final Pattern RE_ATC = Pattern.compile( " ^ .+ \\. atc $ ", Pattern.COMMENTS );
+
     /**
      * Action to invoke when the user clicks on the open button.
      *
@@ -272,10 +279,17 @@ public final class QTVideoController extends OpenSHAPADialog {
         int result = jd.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            QTVideoViewer viewer = new QTVideoViewer(this);
-            viewer.setVideoFile(jd.getSelectedFile());
-            OpenSHAPA.getApplication().show(viewer);
+            File f = jd.getSelectedFile();
+            DataViewer viewer = null;
+            if ( RE_MOV.matcher(f.getName()).matches() )        { viewer = new QTVideoViewer(); }
+            else if ( RE_ATC.matcher(f.getName()).matches() )   { viewer = new AirspaceViewer(); }
+            else {
+                Logger.getLogger(this.getClass()).warn("No DataViewer available.");
+                return;
+            }
 
+            viewer.setDataFeed(f);
+            OpenSHAPA.getApplication().show(viewer.getParentJFrame());
             // Add the QTVideoViewer to the list of viewers we are controlling.
             this.viewers.add(viewer);
         }
@@ -287,7 +301,7 @@ public final class QTVideoController extends OpenSHAPADialog {
     @Action
     public void syncCtrlAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).syncCtrl();
+            //this.viewers.elementAt(i).syncCtrl();
         }
     }
 
@@ -297,7 +311,7 @@ public final class QTVideoController extends OpenSHAPADialog {
     @Action
     public void syncAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).sync();
+            //this.viewers.elementAt(i).sync();
         }
     }
 
@@ -308,7 +322,7 @@ public final class QTVideoController extends OpenSHAPADialog {
     @Action
     public void setCellOnsetAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).setCellStartTime();
+            //this.viewers.elementAt(i).setCellStartTime();
         }
     }
 
@@ -318,7 +332,7 @@ public final class QTVideoController extends OpenSHAPADialog {
     @Action
     public void setCellOffsetAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).setCellStopTime();
+            //this.viewers.elementAt(i).setCellStopTime();
         }
     }
 
@@ -460,7 +474,7 @@ public final class QTVideoController extends OpenSHAPADialog {
     @Action
     public void createNewCellAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).createNewCell();
+            //this.viewers.elementAt(i).createNewCell();
         }
     }
 
@@ -470,7 +484,7 @@ public final class QTVideoController extends OpenSHAPADialog {
     @Action
     public void setNewCellStopTime() {
         for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).setNewCellStopTime();
+            //this.viewers.elementAt(i).setNewCellStopTime();
         }
     }
 
@@ -480,7 +494,7 @@ public final class QTVideoController extends OpenSHAPADialog {
     @Action
     public void syncVideoAction() {
         for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).sync();
+            //this.viewers.elementAt(i).sync();
         }
     }
 
@@ -550,7 +564,7 @@ public final class QTVideoController extends OpenSHAPADialog {
     private TimeStamp currentTimestamp = null;
 
     /** The list of viewers associated with this controller. */
-    private Vector<QTVideoViewer> viewers;
+    private Vector<DataViewer> viewers;
 
     /** The dialog to present to the user when they desire to load a file. */
     private FileDialog jfc;
