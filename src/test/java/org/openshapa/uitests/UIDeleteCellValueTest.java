@@ -65,19 +65,15 @@ public final class UIDeleteCellValueTest extends UISpecTestCase {
         MenuBar menuBar = window.getMenuBar();
 
         // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
+        WindowInterceptor.init(menuBar.getMenu("Script").getSubMenu(
+                "Run script").triggerClick()).process(FileChooserHandler.init()
+                .assertIsOpenDialog().assertAcceptsFilesOnly().select(demoFile))
                 .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+
+            public Trigger process(Window console) {
+                return console.getButton("Close").triggerClick();
+            }
+        }).run();
 
         //2. Open spreadsheet and check that script has data
         Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) (
@@ -107,19 +103,15 @@ public final class UIDeleteCellValueTest extends UISpecTestCase {
         MenuBar menuBar = window.getMenuBar();
 
         // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+        WindowInterceptor.init(menuBar.getMenu("Script").getSubMenu(
+                "Run script").triggerClick()).process(FileChooserHandler.init().
+                assertIsOpenDialog().assertAcceptsFilesOnly().select(demoFile)).
+                process(new WindowHandler() {
+
+            public Trigger process(Window console) {
+                return console.getButton("Close").triggerClick();
+            }
+        }).run();
 
         //2. Open spreadsheet and check that script has data
         Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) (
@@ -133,14 +125,14 @@ public final class UIDeleteCellValueTest extends UISpecTestCase {
         deleteAllTest(ss, type);
     }
 
-     /**
+    /**
      * Test deleting values from integer cells.
      * @throws java.lang.Exception on any error
      */
     public void testDeleteIntCell() throws Exception {
         String type = "INTEGER";
 
-               String root = System.getProperty("testPath");
+        String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/all_column_types.rb");
         assertTrue(demoFile.exists());
 
@@ -149,19 +141,15 @@ public final class UIDeleteCellValueTest extends UISpecTestCase {
         MenuBar menuBar = window.getMenuBar();
 
         // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+        WindowInterceptor.init(menuBar.getMenu("Script").getSubMenu(
+                "Run script").triggerClick()).process(FileChooserHandler.init().
+                assertIsOpenDialog().assertAcceptsFilesOnly().select(demoFile)).
+                process(new WindowHandler() {
+
+            public Trigger process(Window console) {
+                return console.getButton("Close").triggerClick();
+            }
+        }).run();
 
         //2. Open spreadsheet and check that script has data
         Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) (
@@ -175,14 +163,14 @@ public final class UIDeleteCellValueTest extends UISpecTestCase {
         deleteAllTest(ss, type);
     }
 
-         /**
+    /**
      * Test deleting values from text cells.
      * @throws java.lang.Exception on any error
      */
     public void testDeleteTextCell() throws Exception {
         String type = "TEXT";
 
-               String root = System.getProperty("testPath");
+        String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/all_column_types.rb");
         assertTrue(demoFile.exists());
 
@@ -191,19 +179,15 @@ public final class UIDeleteCellValueTest extends UISpecTestCase {
         MenuBar menuBar = window.getMenuBar();
 
         // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+        WindowInterceptor.init(menuBar.getMenu("Script").getSubMenu(
+                "Run script").triggerClick()).process(FileChooserHandler.init().
+                assertIsOpenDialog().assertAcceptsFilesOnly().select(demoFile)).
+                process(new WindowHandler() {
+
+            public Trigger process(Window console) {
+                return console.getButton("Close").triggerClick();
+            }
+        }).run();
 
         //2. Open spreadsheet and check that script has data
         Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) (
@@ -211,11 +195,13 @@ public final class UIDeleteCellValueTest extends UISpecTestCase {
                 Spreadsheet.class)[0].getAwtComponent())));
         assertTrue(ss.getColumns().size() > 0);
 
-        /*BugzID629:highlightAndBackspaceTest(ss, type);
-        highlightAndDeleteTest(ss, type);
-        backSpaceAllTest(ss, type);
-        deleteAllTest(ss, type);*/
+    /*BugzID629:highlightAndBackspaceTest(ss, type);
+    highlightAndDeleteTest(ss, type);
+    backSpaceAllTest(ss, type);
+    deleteAllTest(ss, type);*/
     }
+
+
 
     /**
      * Tests deletion by selecting all and pressing backspace.

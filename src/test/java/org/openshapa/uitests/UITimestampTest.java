@@ -154,6 +154,70 @@ public final class UITimestampTest extends UISpecTestCase {
     }
 
     /**
+     * Test deleting the onset and offset timestamps.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testTimestampDeletion() throws Exception {
+        String[] testInput = {"123456789", "12:34:56:789", "127893999",
+        "12:78:93:999"};
+
+        int numOfTests = testInput.length;
+
+        Vector<Cell> cells = createNewCells(numOfTests);
+        for (int i = 0; i < numOfTests; i++) {
+            cells.elementAt(i).enterText(Cell.ONSET, testInput[i]);
+            cells.elementAt(i).enterText(Cell.OFFSET, testInput[i]);
+        }
+
+        //highlight and backspace test
+        Cell c = cells.elementAt(0);
+        c.selectAllAndTypeKey(Cell.ONSET, Key.BACKSPACE);
+        assertTrue(c.getOnset().getText().equals("00:00:00:000"));
+        c.selectAllAndTypeKey(Cell.OFFSET, Key.BACKSPACE);
+        assertTrue(c.getOffset().getText().equals("00:00:00:000"));
+
+        //highlight and delete test
+        c = cells.elementAt(1);
+        c.selectAllAndTypeKey(Cell.ONSET, Key.DELETE);
+        assertTrue(c.getOnset().getText().equals("00:00:00:000"));
+        c.selectAllAndTypeKey(Cell.OFFSET, Key.DELETE);
+        assertTrue(c.getOffset().getText().equals("00:00:00:000"));
+
+        //backspace all
+        c = cells.elementAt(2);
+        c.pressKeys(Cell.ONSET, new Key [] {Key.END});
+        int temp = c.getOnset().getText().length();
+        for (int i = 0; i < temp + 1; i++) {
+            c.enterText(Cell.ONSET, "\u0008");
+        }
+        assertTrue(c.getOnset().getText().equals("00:00:00:000"));
+
+        c.pressKeys(Cell.OFFSET, new Key [] {Key.END});
+        temp = c.getOnset().getText().length();
+        for (int i = 0; i < temp + 1; i++) {
+            c.enterText(Cell.OFFSET, "\u0008");
+        }
+        assertTrue(c.getOffset().getText().equals("00:00:00:000"));
+
+        //delete key all
+        c = cells.elementAt(3);
+        c.pressKeys(Cell.ONSET, new Key [] {Key.HOME});
+        temp = c.getOnset().getText().length();
+        for (int i = 0; i < temp + 1; i++) {
+            c.enterText(Cell.ONSET, "\u007f");
+        }
+        assertTrue(c.getOnset().getText().equals("00:00:00:000"));
+
+        c.pressKeys(Cell.OFFSET, new Key [] {Key.HOME});
+        temp = c.getOnset().getText().length();
+        for (int i = 0; i < temp + 1; i++) {
+            c.enterText(Cell.OFFSET, "\u007f");
+        }
+        assertTrue(c.getOffset().getText().equals("00:00:00:000"));
+    }
+
+    /**
      * Create a new cell.
      * @throws java.lang.Exception on any error
      */
