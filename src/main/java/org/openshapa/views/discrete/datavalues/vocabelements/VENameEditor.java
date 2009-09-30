@@ -49,7 +49,6 @@ public final class VENameEditor extends EditorComponent {
      */
     public void resetValue(final VocabElement ve) {
         vocabElement = ve;
-
         setText(vocabElement.getName());
     }
 
