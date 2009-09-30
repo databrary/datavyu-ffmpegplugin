@@ -32,6 +32,13 @@ public final class FormalArgEditor extends EditorComponent {
     /** The parent editor window that this argument belongs too. */
     private VocabElementV parentView;
 
+    /**
+     * @param ta The JTextComponent that this virtual editor floats ontop.
+     * @param ve The parent vocab element that this argument belongs too.
+     * @param index The index of the argument within the parent vocabelement
+     * that this Editor will represent.
+     * @param pv The parent vocab element view that this editor belongs too.
+     */
     public FormalArgEditor(final JTextComponent ta,
                            final VocabElement ve,
                            final int index,
@@ -41,10 +48,13 @@ public final class FormalArgEditor extends EditorComponent {
         argIndex = index;
         parentView = pv;
         vocabElement = ve;
-        resetValue(ve);
+        resetValue();
     }
 
-    public void resetValue(final VocabElement ve) {
+    /**
+     * Resets the text value of this editor.
+     */
+    public void resetValue() {
         try {
             model = vocabElement.getFormalArgCopy(argIndex);
 
@@ -167,6 +177,15 @@ public final class FormalArgEditor extends EditorComponent {
      */
     @Override
     public void keyPressed(final KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_BACK_SPACE:
+            case KeyEvent.VK_DELETE:
+                // Ignore - handled when the key is typed.
+                e.consume();
+                break;
+            default:
+                break;
+        }
     }
 
     /**

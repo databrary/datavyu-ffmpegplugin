@@ -58,8 +58,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * @param parent The parent frame for the vocab editor.
      * @param modal Is this dialog to be modal or not?
      */
-    public VocabEditorV(final Frame parent,
-            final boolean modal) {
+    public VocabEditorV(final Frame parent, final boolean modal) {
         super(parent, modal);
 
         db = OpenSHAPA.getDatabase();
@@ -372,6 +371,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
             veViewsToDeleteCompletely.clear();
             updateDialogState();
+            ((OpenSHAPAView) OpenSHAPA.getApplication().getMainView())
+                                      .showSpreadsheet();
 
         } catch (SystemErrorException e) {
             logger.error("Unable to apply vocab changes", e);
