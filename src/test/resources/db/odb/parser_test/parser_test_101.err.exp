@@ -1,0 +1,81 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING   9 (Line 93:25): Left parentheses expected.  Left parenthesis inserted to allow continued parse.
+        The opening left parenthesis of a spreadsheet variable cell a-list appears to be missing.
+
+
+      WARNING  20 (Line 98:23): Encountered an atom in an a-list.  The atom will be read and discarded.
+        The atom was detected in a spreadsheet variable cell a-list.
+
+
+      WARNING  78 (Line 109:19): Encountered a spreadsheet cell whose value is undefined.  Will use a default value.
+
+
+      WARNING  18 (Line 122:25): Encountered unknown or unexpected alist entry.  Entry will be read and discarded.
+        The entry is located in a spreadsheet variable cell a-list.
+
+
+      WARNING  17 (Line 123:25): Duplicate a-list entry detected.  All data contained in the duplicate entry will be discarded.
+        Duplicate ONSET> entry in a spreadsheet variable cell a-list.
+
+
+      WARNING  17 (Line 124:25): Duplicate a-list entry detected.  All data contained in the duplicate entry will be discarded.
+        Duplicate OFFSET> entry in a spreadsheet variable cell a-list.
+
+
+      WARNING  62 (Line 125:25): Encountered an undefined or out of order spreadsheet variable cell argument value.  The value will be discarded.
+
+
+      WARNING  19 (Line 126:25): Encountered list that is not an a-list entry in an a-list.  The list will be read and discarded.
+        The list is located in a spreadsheet variable cell a-list.
+
+
+      WARNING  20 (Line 127:23): Encountered an atom in an a-list.  The atom will be read and discarded.
+        The atom was detected in a spreadsheet variable cell a-list.
+
+
+      WARNING  79 (Line 134:19): Encountered a spreadsheet cell whose onset is undefined.  Will force onset to 00:00:00:00.
+
+
+      WARNING  80 (Line 134:19): Encountered a spreadsheet cell whose offset is undefined.  Will force offset to 00:00:00:00.
+
+
+      WARNING  78 (Line 134:19): Encountered a spreadsheet cell whose value is undefined.  Will use a default value.
+
+
+      WARNING  78 (Line 149:19): Encountered a spreadsheet cell whose value is undefined.  Will use a default value.
+
+
+      WARNING  78 (Line 164:19): Encountered a spreadsheet cell whose value is undefined.  Will use a default value.
+
+
+      WARNING  78 (Line 182:19): Encountered a spreadsheet cell whose value is undefined.  Will use a default value.
+
+
+      WARNING  62 (Line 211:25): Encountered an undefined or out of order spreadsheet variable cell argument value.  The value will be discarded.
+
+
+      WARNING  77 (Line 213:21): Encountered matrix spreadsheet cell which is missing one or more required arguments. These argument(s) will be filled in with formal arguments.
+
+
+      WARNING  77 (Line 220:21): Encountered matrix spreadsheet cell which is missing one or more required arguments. These argument(s) will be filled in with formal arguments.
+
+
+      WARNING  77 (Line 227:19): Encountered matrix spreadsheet cell which is missing one or more required arguments. These argument(s) will be filled in with formal arguments.
+
+
+      WARNING  62 (Line 252:25): Encountered an undefined or out of order spreadsheet variable cell argument value.  The value will be discarded.
+
+
+      WARNING  77 (Line 254:21): Encountered matrix spreadsheet cell which is missing one or more required arguments. These argument(s) will be filled in with formal arguments.
+
+
+      WARNING  77 (Line 268:21): Encountered matrix spreadsheet cell which is missing one or more required arguments. These argument(s) will be filled in with formal arguments.
+
+
+      ERROR  4 (Line 287:0): Encountered end of file unexpectedly.
+        EOF occurred in a spreadsheet variable cell a-list.
+
+Unable to continue parse -- Aborting...

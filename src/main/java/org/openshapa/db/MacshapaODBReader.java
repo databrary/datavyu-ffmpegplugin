@@ -1400,10 +1400,10 @@ public class MacshapaODBReader
                 throw new SystemErrorException(mName + 
                         "token_ptr->code isnt STRING_TOK on entry.");
             }
-            else if ( (this.aux & TEXT_QSTRING_FLAG) != 0 )
+            else if ( (this.aux & QSTRING_FLAG) != 0 )
             {
                 throw new SystemErrorException(mName + 
-                        "token already contains a predicate name.");
+                        "token already contains a quote string.");
             }
             else /* do the coersion */
             {
@@ -1417,7 +1417,7 @@ public class MacshapaODBReader
                     }
                 }
 
-                this.aux |= TEXT_QSTRING_FLAG;
+                this.aux |= QSTRING_FLAG;
             }
 
             return;
@@ -1492,7 +1492,7 @@ public class MacshapaODBReader
         
         /**********************************************************************
          *
-         * coerce_symbol_token_to_spreadsheet_variable_name()
+         * coerce_symbol_token_to_s_var_name()
          *
          * Coerce the string associated with a symbol token to a spread sheet
          * variable name.
@@ -1514,7 +1514,7 @@ public class MacshapaODBReader
          *
          **********************************************************************/
 
-        private void coerce_symbol_token_to_spreadsheet_variable_name()
+        private void coerce_symbol_token_to_s_var_name()
             throws SystemErrorException
         {
             final String mName = 
@@ -1565,7 +1565,7 @@ public class MacshapaODBReader
 
             return;
 
-        } /* Token::coerce_symbol_token_to_spreadsheet_variable_name() */
+        } /* Token::coerce_symbol_token_to_s_var_name() */
 
 	
 	/*********************************************************************
@@ -3522,7 +3522,7 @@ public class MacshapaODBReader
 
 		    /* TODO: it is possible that this warning may cause us 
 		     *       to exceed the limit on warnings, and to abort 
-		     *	 the parse.  Think on whether we need to check for
+		     *	     the parse.  Think on whether we need to check for
 		     *       this, and if so, what action we should take.
 		     */
 		}
@@ -4743,7 +4743,7 @@ public class MacshapaODBReader
      *     |  |  |       parse_arbitrary_list() R                                               
      *     |  |  |    parse_s_var_dec_list()                                                    
      *     |  |  |     +-parse_s_var_dec()                                                      
-     *     |  |  |     |    coerce_symbol_token_to_spreadsheet_variable_name()                  
+     *     |  |  |     |    coerce_symbol_token_to_s_var_name()
      *     |  |  |     |    append_str_to_ibuf()                                                
      *     |  |  |     |    CSymbols::lookupPred()                                                    
      *     |  |  |     |    CSymbols::lookupVar()                                                     
@@ -4780,7 +4780,7 @@ public class MacshapaODBReader
      *     |  |  |       parse_arbitrary_list() R                                               
      *     |  |  |    parse_s_var_def_list()                                                    
      *     |  |  |     +-parse_s_var_def()                                                      
-     *     |  |  |     |    coerce_symbol_token_to_spreadsheet_variable_name()                  
+     *     |  |  |     |    coerce_symbol_token_to_s_var_name()
      *     |  |  |     |    CSymbols::lookupVar()                                                     
      *     |  |  |     |    parse_s_var_def_alist()                                             
      *     |  |  |     |     +-parse_s_var_def_cells_attribute()                                
@@ -7886,9 +7886,8 @@ public class MacshapaODBReader
             /* type mismatch between formal argument and value.  Construct
              * an udefined data value, and flag a warning.
              */
-            dv = new UndefinedDataValue(this.db, 
-                                        farg.getID(), 
-                                        farg.getFargName());
+            dv = new UndefinedDataValue(this.db,
+                                        farg.getID());
 
             post_warning_message(this.l0_tok,
                     FARG_ARG_TYPE_MISMATCH_WARN, null);
@@ -7969,7 +7968,7 @@ public class MacshapaODBReader
                     "The expected formal argument will be used.\n");
         }
 
-        udv = new UndefinedDataValue(this.db, farg.getID(), farg.getFargName());
+        udv = new UndefinedDataValue(this.db, farg.getID());
         
         if ( ! this.abort_parse ) /* consume the token */
         {
@@ -8253,8 +8252,7 @@ public class MacshapaODBReader
              * an udefined data value, and flag a warning.
              */
             dv = new UndefinedDataValue(this.db, 
-                                        farg.getID(), 
-                                        farg.getFargName());
+                                        farg.getID());
 
             post_warning_message(this.l0_tok,
                     FARG_ARG_TYPE_MISMATCH_WARN, null);
@@ -8432,8 +8430,7 @@ public class MacshapaODBReader
         {
             // construct an empty argument
             value = new UndefinedDataValue(this.db, 
-                                           farg.getID(), 
-                                           farg.getFargName());
+                                           farg.getID());
         }
 
 	return(value);
@@ -8743,8 +8740,7 @@ public class MacshapaODBReader
                ( farg.fargType != FormalArgument.FArgType.UNTYPED ) ) )
         {
             dv = new UndefinedDataValue(this.db, 
-                                        farg.getID(), 
-                                        farg.getFargName());
+                                        farg.getID());
             
             if ( ! replace_with_farg )
             {
@@ -10237,178 +10233,164 @@ public class MacshapaODBReader
         }
 	
         /* parse the spreadsheet variable definition a-list */
+        
+        /* start with a little more sanity checking */
+
+        if ( ( s_var_type != MatrixVocabElement.MatrixType.FLOAT ) &&
+             ( s_var_type != MatrixVocabElement.MatrixType.INTEGER ) &&
+             ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) &&
+             ( s_var_type != MatrixVocabElement.MatrixType.NOMINAL ) &&
+             ( s_var_type != MatrixVocabElement.MatrixType.PREDICATE ) &&
+             ( s_var_type != MatrixVocabElement.MatrixType.TEXT ) )
         {
-            /* start with a little more sanity checking */
+                throw new SystemErrorException(mName +
+                        "s_var_type out of range.");
+        }
 
-            if ( ( s_var_type != MatrixVocabElement.MatrixType.FLOAT ) &&
-                 ( s_var_type != MatrixVocabElement.MatrixType.INTEGER ) &&
-                 ( s_var_type != MatrixVocabElement.MatrixType.MATRIX ) &&
-                 ( s_var_type != MatrixVocabElement.MatrixType.NOMINAL ) &&
-                 ( s_var_type != MatrixVocabElement.MatrixType.PREDICATE ) &&
-                 ( s_var_type != MatrixVocabElement.MatrixType.TEXT ) )
+        /* first parse the leading left parenthesis */
+        if ( (this.l0_tok).code == L_PAREN_TOK )
+        {
+            if ( ( (this.l1_tok).code == L_PAREN_TOK ) ||
+                 ( (this.l1_tok).code == R_PAREN_TOK ) )
             {
-                    throw new SystemErrorException(mName +
-                            "s_var_type out of range.");
+                get_next_token();
             }
+            else if ( (this.l1_tok).code == ALIST_LABEL_TOK )
+            {
+                post_warning_message(this.l1_tok, LEFT_PAREN_EXPECTED_WARN,
+                    "The opening left parenthesis of a spreadsheet " +
+                    "variable cell a-list appears to be missing.\n");
+            }
+            else
+            {
+                /* if a left paren is missing, the first item in the a-list
+                 * is not an a-list entry.  If we try to recover from this
+                 * error here, we will only confuse things further.  Thus
+                 * we eat the left parenthesis & let the cards fall where
+                 * they may.
+                 */
 
-            /* first parse the leading left parenthesis */
+                get_next_token();
+            }
+        }
+        else /* system error - we shouldn't have been called unless the next token is a '(' */
+        {
+            throw new SystemErrorException(mName +
+                "(this.l0_tok).code != L_PAREN_TOK.");
+        }
+
+        done        = false;
+        have_onset  = false;
+        have_offset = false;
+        onset       = null;
+        offset      = null;
+        arg_number  = 0;
+        num_fargs   = s_var_mve.getNumFormalArgs();
+
+        if ( num_fargs < 1 )
+        {
+            throw new SystemErrorException(mName + "mve has no arguments?!?");
+
+        }
+
+        argList = new Vector<DataValue>();
+        next_farg = s_var_mve.getFormalArg(0);
+
+        /* now parse the a-list assocated with the spreadsheet
+         * variable definition
+         */
+        while ( ( ! this.abort_parse ) &&
+                ( ! done ) )
+        {
             if ( (this.l0_tok).code == L_PAREN_TOK )
             {
-                if ( ( (this.l1_tok).code == L_PAREN_TOK ) ||
-                     ( (this.l1_tok).code == R_PAREN_TOK ) )
+                if ( (this.l1_tok).code == ALIST_LABEL_TOK )
                 {
-                    get_next_token();
-                }
-                else if ( (this.l1_tok).code == ALIST_LABEL_TOK )
-                {
-                    post_warning_message(this.l1_tok, LEFT_PAREN_EXPECTED_WARN,
-                        "The opening left parenthesis of a spreadsheet " +
-                        "variable cell a-list appears to be missing.\n");
-                }
-                else
-                {
-                    /* if a left paren is missing, the first item in the a-list
-                     * is not an a-list entry.  If we try to recover from this
-                     * error here, we will only confuse things further.  Thus
-                     * we eat the left parenthesis & let the cards fall where
-                     * they may.
-                     */
-
-                    get_next_token();
-                }
-            }
-            else /* system error - we shouldn't have been called unless the next token is a '(' */
-            {
-                throw new SystemErrorException(mName +
-                    "(this.l0_tok).code != L_PAREN_TOK.");
-            }
-
-            done        = false;
-            have_onset  = false;
-            have_offset = false;
-            onset       = null;
-            offset      = null;
-            arg_number  = 0;
-            num_fargs   = s_var_mve.getNumFormalArgs();
-            
-            if ( num_fargs < 1 )
-            {
-                throw new SystemErrorException(mName + "mve has no arguments?!?");
-                
-            }
-        
-            argList = new Vector<DataValue>();
-            next_farg = s_var_mve.getFormalArg(0);
-
-            /* now parse the a-list assocated with the spreadsheet
-             * variable definition
-             */
-            while ( ( ! this.abort_parse ) &&
-                    ( ! done ) )
-            {
-                if ( (this.l0_tok).code == L_PAREN_TOK )
-                {
-                    if ( (this.l1_tok).code == ALIST_LABEL_TOK )
+                    switch ( (this.l1_tok).aux )
                     {
-                        switch ( (this.l1_tok).aux )
-                        {
-                            case ONSET_LABEL:
-                                if ( ! have_onset )
-                                {
-                                    have_onset = true;
-                                    onset = parse_s_var_cell_onset_attribute();
-                                }
-                                else
-                                {
-                                    post_warning_message(this.l1_tok,
-                                            DUPLICATE_ALIST_ENTRY_WARN,
-                                            "Duplicate ONSET> entry in a " +
-                                            "spreadsheet variable cell a-list.\n");
-
-                                    if ( ! this.abort_parse )
-                                    {
-                                        parse_unknown_alist_entry();
-                                    }
-                                }
-                                break;
-
-                            case OFFSET_LABEL:
-                                if ( ! have_offset )
-                                {
-                                    have_offset = true;
-                                    offset = parse_s_var_cell_offset_attribute();
-                                }
-                                else
-                                {
-                                    post_warning_message(this.l1_tok,
-                                        DUPLICATE_ALIST_ENTRY_WARN,
-                                        "Duplicate OFFSET> entry in a " +
-                                        "spreadsheet variable cell a-list.\n");
-
-                                    if ( ! this.abort_parse )
-                                    {
-                                     parse_unknown_alist_entry();
-                                    }
-                                }
-                                break;
-
-                            default:
+                        case ONSET_LABEL:
+                            if ( ! have_onset )
+                            {
+                                have_onset = true;
+                                onset = parse_s_var_cell_onset_attribute();
+                            }
+                            else
+                            {
                                 post_warning_message(this.l1_tok,
-                                    UNKNOWN_OR_UNEXPECTED_ALIST_ENTRY_WARN,
-                                    "The entry is located in a spreadsheet " +
-                                    "variable cell a-list.\n");
+                                        DUPLICATE_ALIST_ENTRY_WARN,
+                                        "Duplicate ONSET> entry in a " +
+                                        "spreadsheet variable cell a-list.\n");
 
                                 if ( ! this.abort_parse )
                                 {
                                     parse_unknown_alist_entry();
                                 }
-                                break;
-                        }
-                    }
-                    else if ( ( (this.l1_tok).code == SYMBOL_TOK ) &&
-                              ( (((this.l1_tok).aux) & FORMAL_ARG_FLAG) != 0 ) )
-                    {
-                        if ( ( next_farg != null ) &&
-                             ( next_farg.getFargName().
-                               compareTo(this.l1_tok.str.toString()) == 0 ) )
-                        {
-                            next_arg =
-                                    parse_s_var_cell_value_attribute(next_farg,
-                                                                    arg_number,
-                                                                    s_var_type);
+                            }
+                            break;
 
-                            argList.add(next_arg);
-                             
-                            arg_number++;
-                             
-                            if ( arg_number < num_fargs )
+                        case OFFSET_LABEL:
+                            if ( ! have_offset )
                             {
-                                next_farg = s_var_mve.getFormalArg(arg_number);
+                                have_offset = true;
+                                offset = parse_s_var_cell_offset_attribute();
                             }
                             else
                             {
-                                next_farg = null;
+                                post_warning_message(this.l1_tok,
+                                    DUPLICATE_ALIST_ENTRY_WARN,
+                                    "Duplicate OFFSET> entry in a " +
+                                    "spreadsheet variable cell a-list.\n");
+
+                                if ( ! this.abort_parse )
+                                {
+                                 parse_unknown_alist_entry();
+                                }
                             }
-                        }
-                        else
-                        {
+                            break;
+
+                        default:
                             post_warning_message(this.l1_tok,
-                                    UNKNOWN_OR_OUT_OF_ORDER_CELL_VALUE_WARN,
-                                    null);
+                                UNKNOWN_OR_UNEXPECTED_ALIST_ENTRY_WARN,
+                                "The entry is located in a spreadsheet " +
+                                "variable cell a-list.\n");
 
                             if ( ! this.abort_parse )
                             {
-                                parse_arbitrary_list();
+                                parse_unknown_alist_entry();
                             }
+                            break;
+                    }
+                }
+                else if ( ( (this.l1_tok).code == SYMBOL_TOK ) &&
+                          ( (((this.l1_tok).aux) & FORMAL_ARG_FLAG) != 0 ) )
+                {
+                    if ( ( next_farg != null ) &&
+                         ( next_farg.getFargName().
+                           compareTo(this.l1_tok.str.toString()) == 0 ) )
+                    {
+                        next_arg =
+                                parse_s_var_cell_value_attribute(next_farg,
+                                                                arg_number,
+                                                                s_var_type);
+
+                        argList.add(next_arg);
+
+                        arg_number++;
+
+                        if ( arg_number < num_fargs )
+                        {
+                            next_farg = s_var_mve.getFormalArg(arg_number);
+                        }
+                        else
+                        {
+                            next_farg = null;
                         }
                     }
-                    else /* a-list contains a list that is not an a-list entry. */
-                         /* read it & discard it.                               */
+                    else
                     {
                         post_warning_message(this.l1_tok,
-                                NON_ALIST_ENTRY_LIST_IN_ALIST_WARN,
-                                "The list is located in a spreadsheet " +
-                                "variable cell a-list.\n");
+                                UNKNOWN_OR_OUT_OF_ORDER_CELL_VALUE_WARN,
+                                null);
 
                         if ( ! this.abort_parse )
                         {
@@ -10416,31 +10398,45 @@ public class MacshapaODBReader
                         }
                     }
                 }
-                else if ( (this.l0_tok).code == R_PAREN_TOK )
+                else /* a-list contains a list that is not an a-list entry. */
+                     /* read it & discard it.                               */
                 {
-                    done = true;
-                    get_next_token();
+                    post_warning_message(this.l1_tok,
+                            NON_ALIST_ENTRY_LIST_IN_ALIST_WARN,
+                            "The list is located in a spreadsheet " +
+                            "variable cell a-list.\n");
+
+                    if ( ! this.abort_parse )
+                    {
+                        parse_arbitrary_list();
+                    }
                 }
-                else if ( (this.l0_tok).code == EOF_TOK )
-                {
-                    done = true;
-                    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
-                    "EOF occurred in a spreadsheet variable cell a-list.\n",
-                    true, true);
-                }
-                else /* (this.l0_tok).code isn't '(', ')', or EOF */
-                {
-                    post_warning_message(this.l0_tok,
-                        NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN,
-                        "The atom was detected in a spreadsheet variable " +
-                        "cell a-list.\n");
+            }
+            else if ( (this.l0_tok).code == R_PAREN_TOK )
+            {
+                done = true;
+                get_next_token();
+            }
+            else if ( (this.l0_tok).code == EOF_TOK )
+            {
+                done = true;
+                post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
+                "EOF occurred in a spreadsheet variable cell a-list.\n",
+                true, true);
+            }
+            else /* (this.l0_tok).code isn't '(', ')', or EOF */
+            {
+                post_warning_message(this.l0_tok,
+                    NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN,
+                    "The atom was detected in a spreadsheet variable " +
+                    "cell a-list.\n");
 
                 if ( ! this.abort_parse )
                 {
                     get_next_token();
                 }
             }
-	    }
+        }
 
         /* Issue a warning if the onset is missing */
         if ( ( ! this.abort_parse ) && ( ! have_onset ) )
@@ -10449,7 +10445,7 @@ public class MacshapaODBReader
                     CELL_WITH_UNDEFINED_ONSET_WARN, null);
             onset = new TimeStamp(MACSHAPA_TICKS_PER_SECOND,
                                   MACSHAPA_MIN_TIME);
-	    }
+        }
 
         /* Issue a warning if the offset is missing */
         if ( ( ! this.abort_parse ) && ( ! have_offset ) )
@@ -10458,12 +10454,12 @@ public class MacshapaODBReader
                     CELL_WITH_UNDEFINED_OFFSET_WARN, null);
             offset = new TimeStamp(MACSHAPA_TICKS_PER_SECOND,
                                    MACSHAPA_MIN_TIME);
-	    }
+        }
 
-	    /* if we ran out of arguments before we ran out of formal 
-	     * arguments, must issue a warning and/or insert formal arguments
-	     * or a null value depending on the type of the spreadsheet 
-	     * variable.  
+        /* if we ran out of arguments before we ran out of formal
+         * arguments, must issue a warning and/or insert formal arguments
+         * or a null value depending on the type of the spreadsheet
+         * variable.
          *
          * In the old MacSHAPA odb reader code, there was an exception
          * for variable length matrix spreadsheet variables, where it was
@@ -10486,14 +10482,15 @@ public class MacshapaODBReader
          * this code for OpenSHAPA databases, this code will become a bit
          * more complicated, due to the possibility that undefined arguments
          * will be typed.
-	     */
-	    if ( ! this.abort_parse )
-	    {
-            if ( next_farg != null ) 
+         */
+        if ( ! this.abort_parse )
+        {
+            if ( next_farg != null )
             {
                 if ( s_var_type == MatrixVocabElement.MatrixType.MATRIX )
                 {
-                    if ( ! s_var_mve.getVarLen() )
+                    if ( ( ! s_var_mve.getVarLen() ) ||
+                         ( arg_number < 1 ) )
                     {
                         post_warning_message(this.l0_tok,
                                 REQ_ARGS_MISSING_FROM_MATRIX_WARN, null);
@@ -10522,8 +10519,7 @@ public class MacshapaODBReader
 
                     case MATRIX:
                         next_arg = new UndefinedDataValue(this.db,
-                                                   next_farg.getID(),
-                                                   next_farg.getFargName());
+                                                   next_farg.getID());
                         break;
 
                     case NOMINAL:
@@ -10570,9 +10566,9 @@ public class MacshapaODBReader
                     "non-matrix s_var with more than one argument?!?");
         }
 
-	    /* if no errors, create the cell and insert it */
-	    if ( ! this.abort_parse )
-	    {
+        /* if no errors, create the cell and insert it */
+        if ( ! this.abort_parse )
+        {
             long s_var_mve_ID = s_var_mve.getID();
 
             cellValue = new Matrix(this.db, s_var_mve_ID, argList);
@@ -10588,10 +10584,10 @@ public class MacshapaODBReader
                 dc = (DataCell)(this.db.getCell(dcID));
                 dump_s_var_cell_definition_to_listing(dc);
             }
-	    }
-	 }
+        }
 
-	 return;
+
+	return;
 
     } /* MacshapaODBReader::parse_s_var_cell() */
 
@@ -11840,7 +11836,7 @@ public class MacshapaODBReader
                     if ( ! this.abort_parse )
                     {
                         this.l0_tok.
-                            coerce_symbol_token_to_spreadsheet_variable_name();
+                            coerce_symbol_token_to_s_var_name();
                     }
                 }
 
@@ -13022,7 +13018,7 @@ public class MacshapaODBReader
 
 		    if ( ! this.abort_parse )
 		    {
-			this.l0_tok.coerce_symbol_token_to_spreadsheet_variable_name();
+			this.l0_tok.coerce_symbol_token_to_s_var_name();
 		    }
 		}
 
@@ -16581,6 +16577,14 @@ public class MacshapaODBReader
 //     *
 //     *************************************************************************/
 //
+    // stub -- discard eventually
+    private void parse_alignments_attribute()
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        parse_arbitrary_list();
+    }
+
 //    private void parse_alignments_attribute()
 //        throws SystemErrorException
 //    {
@@ -17735,7 +17739,7 @@ public class MacshapaODBReader
 //
 //                            if ( ! this.abort_parse )
 //                            {
-//                                coerce_symbol_token_to_spreadsheet_variable_name
+//                                coerce_symbol_token_to_s_var_name
 //                                    (&(this.l0_tok));
 //                            }
 //                        }
@@ -18036,6 +18040,14 @@ public class MacshapaODBReader
 //     *
 //     *******************************************************************************/
 //
+    // stub -- discard eventually
+    private void parse_groups_attribute()
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        parse_arbitrary_list();
+    }
+
 //    private void parse_groups_attribute()
 //        throws SystemErrorException
 //    {
@@ -19187,6 +19199,14 @@ public class MacshapaODBReader
 //     *
 //     *************************************************************************/
 //
+    // stub -- discard eventually
+    private void parse_import_formats_attribute()
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        parse_arbitrary_list();
+    }
+
 //    private void parse_import_formats_attribute()
 //        throws SystemErrorException
 //    {
@@ -23444,828 +23464,894 @@ public class MacshapaODBReader
 //        return;
 //
 //    } /* MacshapaODBReader::parse_imp_prods_attribute() */
-//
-//
-//    /*************************************************************************
-//     *
-//     * parse_shapa_pane_var_list()
-//     *
-//     * This method parses a list of spreadsheet variable names that are to
-//     * be added to the shapaPane of the current document, thereby making them
-//     * visible.  This list is generated by the following productions:
-//     * 
-//     *     <shapa_pane_var_list> --> '(' (<shapa_pane_var_name>)* ')'
-//     * 
-//     *     <shapa_pane_var_name> --> <s_var_name>
-//     *
-//     *                                              - 7/13/08
-//     *
-//     * Parameters:
-//     *
-//     *    - None.
-//     *
-//     * Returns:  Void.
-//     *
-//     * Changes:
-//     *
-//     *    - None.
-//     *
-//     *************************************************************************/
-//
-//    private void parse_shapa_pane_var_list()
-//        throws SystemErrorException
-//    {
-//        final String mName = "MacshapaODBReader::parse_shapa_pane_var_list()";
-//        boolean done;
-//        ColumnIndex index;
-//        Variable s_var_ptr;
-//        CShapaPane *shapa_pane_ptr;
-//
-//        if ( this.abort_parse )
-//        {
-//            throw new SystemErrorException(mName + 
-//                    "this.abort_parse TRUE on entry");
-//        }
-//        
-//        /* parse the shapa pane vars list */
-//        
-//        /* first parse the leading left parenthesis */
-//
-//        if ( (this.l0_tok).code == L_PAREN_TOK )
-//        {
-//            get_next_token();
-//        }
-//        else /* we shouldn't have been called unless the next token is a '(' */
-//        {
-//            throw3 new SystemErrorException(mName + 
-//                    "(this.l0_tok).code != L_PAREN_TOK.");
-//        }
-//
-//        /* now read the shapa pane variables list */
-//        if ( ! this.abort_parse )
-//        {
-//            done = false;
-//            index = 0;
-//
-//            shapa_pane_ptr = (CShapaPane *)(this.spread_doc_ptr->itsMainPane);
-//
-//            while ( ( ! this.abort_parse ) && ( ! done ) )
-//            {
-//                switch ( (this.l0_tok).code )
-//                {
-//                    case SYMBOL_TOK:
-//                        if ( ((this.l0_tok).aux & COLUMN_FLAG ) == 0 )
-//                        {
-//                            post_warning_message(this.l0_tok, INVALID_S_VAR_NAME_IN_SP_VAR_LIST_WARN,
-//                                "Will coerce the name to a valid spreadsheet variable name.\n",
-//                                read_vars);
-//
-//                            if ( ! this.abort_parse )
-//                            {
-//                                coerce_symbol_token_to_spreadsheet_variable_name
-//                                    (&(this.l0_tok));
-//                            }
-//                        }
-//
-//                        /* get pointer to the spreadsheet variable.  The 
-//                         * spreadsheet variable should already have been 
-//                         * defined.  If not, lookupVar() will return NULL.
-//                         */
-//
-//                        s_var_ptr = this.spread_doc_ptr->SymTable->
-//                            lookupVar((this.l0_tok).str_ptr);
-//
-//                        if ( s_var_ptr == NULL )
-//                        {
-//                            post_warning_message(this.l0_tok,
-//                                    REF_TO_UNDEF_S_VAR_IN_SP_VAR_LIST_WARN,
-//                                    "The entry in the shapa pane variables " +
-//                                    "list will be ignored.\n");
-//                        }
-//                        else if ( s_var_ptr->system )
-//                        {
-//                            post_warning_message(this.l0_tok,
-//                                    REF_TO_SYSTEM_S_VAR_IN_SP_VAR_LIST_WARN,
-//                                    "Since system spreadsheet variables never " +
-//                                    "appear on the spreadsheet, the entry " +
-//                                    "will be ignored.\n");
-//                        }
-//                        else if ( shapa_pane_ptr->FindColumnIndexOfVar(s_var_ptr) != FAIL )
-//                        {
-//                            post_warning_message(this.l0_tok,
-//                                    DUP_REF_TO_S_VAR_IN_SP_VAR_LIST_WARN,
-//                                    "The duplicate reference will be ignored.\n");
-//                        }
-//                        else /* insert the spreadsheet variable into the shapaPane */
-//                        {
-//                            shapa_pane_ptr->InsertVarIntoColumn(/* var            */ s_var_ptr,
-//                                                                /* colIndex       */ index,
-//                                                                /* updateTemporal */ FALSE,
-//                                                                /* updateVExtents */ TRUE,
-//                                                                /* redraw         */ FALSE);
-//                            index++;
-//                        }
-//
-//                        if ( ! this.abort_parse )
-//                        {
-//                            get_next_token();
-//                        }
-//                        break;
-//
-//                     case R_PAREN_TOK:
-//                         done = TRUE;
-//                         get_next_token();
-//                         break;
-//
-//                    case L_PAREN_TOK:
-//                        post_warning_message(this.l0_tok, NON_S_VAR_IN_SHAPA_VARS_LIST_WARN,
-//                                             "The item was a list.\n");
-//
-//                        if ( ! this.abort_parse )
-//                        {
-//                            parse_arbitrary_list();
-//                        }
-//                        break;
-//
-//                    case BOOL_TOK:
-//                    case ERROR_TOK:
-//                    case FLOAT_TOK:
-//                    case STRING_TOK:
-//                    case INT_TOK:
-//                    case ALIST_LABEL_TOK:
-//                    case PRIVATE_VAL_TOK:
-//                    case SETF_TOK:
-//                    case DB_VAR_TOK:
-//                    case QUOTE_TOK:
-//                        post_warning_message(this.l0_tok, NON_S_VAR_IN_SHAPA_VARS_LIST_WARN,
-//                                             "The item was an atom.\n");
-//
-//                        if ( ! this.abort_parse )
-//                        {
-//                            get_next_token();
-//                        }
-//                        break;
-//
-//                    case EOF_TOK:
-//                        post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
-//                                "EOF in the list associated with the SYSTEM> " +
-//                                "SHAPA-PANE-VARS> attribute.\n", 
-//                                true, true);
-//                        break;
-//
-//                     default:
-//                         throw new SystemErrorException(mName + 
-//                                 "Encountered unknown token type.");
-//                         break;
-//                }
-//
-//            } /* end while */
-//
-//            shapa_pane_ptr->UpdateShapaPaneTemporal(TRUE, FALSE);
-//        }
-//
-//        return;
-//
-//    } /* MacshapaODBReader::parse_shapa_pane_var_list() */
-//
-//
-//    /*************************************************************************
-//     *
-//     * parse_shapa_pane_vars_attribute()
-//     *
-//     * This method parses a SHAPA-PANE-VARS> attribute, which is generated by 
-//     * the following productions:
-//     * 
-//     *     <shapa_pane_vars_attribute> --> 
-//     *             '(' 'SHAPA-PANE-VARS>' <shapa_pane_var_list> ')'
-//     * 
-//     *     <shapa_pane_var_list> --> '(' (<shapa_pane_var_name>)* ')'
-//     * 
-//     *     <shapa_pane_var_name> --> <s_var_name>
-//     *
-//     * The purpose of this attribute is to support the insertion of user
-//     * spreadsheet variables into the shapaPane associated with the current
-//     * document, thereby making them visible on the spreadsheet.  However,
-//     * the actual insertions are made in shapa_pane_var_list().
-//     *
-//     *                                              - 10/28/95
-//     *
-//     * Parameters:
-//     *
-//     *    - None.
-//     *
-//     * Returns:  Void.
-//     *
-//     * Changes:
-//     *
-//     *    - None.
-//     *
-//     *************************************************************************/
-//
-//    private void parse_shapa_pane_vars_attribute()
-//        throws SystemErrorException
-//    {
-//        final String mName =
-//                "MacshapaODBReader::parse_shapa_pane_vars_attribute()";
-//        final String missing_shapa_pane_vars_list_mssg =
-//                "The SHAPA-PANE-VARS> attribute appears not to contain a " +
-//                "value.  All spreadsheet variables will be made visible.\n";
-//        final String shapa_pane_vars_list_type_mismatch_mssg = 
-//                "The value of a SHAPA-PANE-VARS> attribute must be a list " +
-//                "of spreadsheet names.  " +
-//                "All spreadsheet variables will be made visible.\n";
-//
-//        if ( this.abort_parse )
-//        {
-//            throw new SystemErrorException(mName + 
-//                    "this.abort_parse TRUE on entry");
-//        }
-//        
-//        /* parse the shapa pane vars attribute */
-//        
-//        /* first parse the leading left parenthesis */
-//
-//        if ( (this.l0_tok).code == L_PAREN_TOK )
-//        {
-//            get_next_token();
-//        }
-//        else /* we shouldn't have been called unless the next token is a '(' */
-//        {
-//            throw new SystemErrorException(mName + 
-//                    "(this.l0_tok).code != L_PAREN_TOK.");
-//        }
-//
-//        /* read the a-list entry name */
-//        if ( ! this.abort_parse )
-//        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
-//                 ( (this.l0_tok).aux == SHAPA_PANE_VARS_LABEL ) )
-//            {
-//                get_next_token();
-//            }
-//            else /* we shouldn't have been called unless the next token 
-//                  * is SHAPA-PANE-VARS> 
-//                  */
-//            {
-//                throw new SystemErrorException(mName + 
-//                        "this.l0_tok != SHAPA-PANE-VARS>.");
-//            }
-//        }
-//
-//        /* read the value associated with the a-list entry & discard 
-//         * any excess values 
-//         */
-//        if ( ! this.abort_parse )
-//        {
-//             switch ( (this.l0_tok).code )
-//             {
-//                 case R_PAREN_TOK:
-//                    post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
-//                                         missing_shapa_pane_vars_list_mssg);
-//
-//                    if ( ! this.abort_parse )
-//                    {
-//                        add_all_user_svars_to_shapa_pane();
-//                    }
-//                    break;
-//
-//                case L_PAREN_TOK:
-//                    parse_shapa_pane_var_list();
-//                    break;
-//
-//                case BOOL_TOK:
-//                case ERROR_TOK:
-//                case SYMBOL_TOK:
-//                case FLOAT_TOK:
-//                case STRING_TOK:
-//                case INT_TOK:
-//                case ALIST_LABEL_TOK:
-//                case PRIVATE_VAL_TOK:
-//                case SETF_TOK:
-//                case DB_VAR_TOK:
-//                case QUOTE_TOK:
-//                    post_warning_message(this.l0_tok, ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
-//                            shapa_pane_vars_list_type_mismatch_mssg);
-//
-//                    if ( ! this.abort_parse )
-//                    {
-//                        add_all_user_svars_to_shapa_pane();
-//                    }
-//
-//                    if ( ! this.abort_parse )
-//                    {
-//                        get_next_token();
-//                    }
-//                    break;
-//
-//                case EOF_TOK:
-//                    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
-//                            "EOF in the SYSTEM> SHAPA-PANE-VARS> attribute.\n",
-//                            true, true);
-//                    break;
-//
-//                default:
-//                    throw new SystemErrorException(mName + 
-//                            "Encountered unknown token type.");
-//                    break;
-//            }
-//        }
-//
-//        /* check for EOF */
-//        if ( ! this.abort_parse )
-//        {
-//            if ( (this.l0_tok).code == EOF_TOK )
-//            {
-//                post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
-//                                   "EOF in a SHAPA-PANE-VARS> attribute.\n",
-//                                   true, true);
-//            }
-//        }
-//
-//        /* discard any excess values that may appear in the 
-//         * SHAPA-PANE-VARS> a-list entry 
-//         */
-//        if ( ! this.abort_parse )
-//        {
-//            if ( (this.l0_tok).code != R_PAREN_TOK )
-//            {
-//                discard_excess_alist_entry_values();
-//
-//                if ( ! this.abort_parse )
-//                {
-//                    post_warning_message(this.l0_tok, EXCESS_VALUES_IN_ALIST_ENTRY_WARN,
-//                            "Excess values encountered the SYSTEM> " +
-//                            "SHAPA-PANE-VARS> attribute.\n");
-//                }
-//            }
-//        }
-//
-//        /* read the terminating right parenthesis */
-//        if ( ! this.abort_parse )
-//        {
-//            if ( (this.l0_tok).code == R_PAREN_TOK )
-//            {
-//                get_next_token();
-//            }
-//            else
-//            {
-//                /* since we are cleaning up any excess values in the shapa 
-//                 * pane vars list attribute, this else clause is unreachable 
-//                 * at present. Should we choose to drop the above attempt 
-//                 * at error recovery, this clause will again become reachable.
-//                 */
-//
-//                post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
-//                        "Closing parenthesis missing from the SYSTEM> " +
-//                        "SHAPA-PANE-VARS> attribute.\n");
-//            }
-//        }
-//
-//        return;
-//
-//    } /* MacshapaODBReader::parse_shapa_pane_vars_attribute() */
-//
-//
-//    /*************************************************************************
-//     *
-//     * parse_system_alist()
-//     *
-//     * This method parses the a-list associated with the system section of 
-//     * the open database body.  Structurally, this list is simply a list of
-//     * a-list entries, each of which is a two element list consisting a an
-//     * a-list entry name and its assocated value.  The productions generating
-//     * the user section a-list are given below:
-//     *
-//     *     <system_alist> --> '(' <system_attributes> ')'
-//     *
-//     *     <system_attributes> --> { [<shapa_pane_vars_attribute>]
-//     *                               [<groups_attribute>]
-//     *                               [<alignments-attribute>]
-//     *                               [<import_formats_attribute>] }
-//     *
-//     *     <shapa_pane_vars_attribute> --> 
-//     *             '(' 'SHAPA-PANE-VARS>' <shapa_pane_var_list> ')'
-//     *
-//     *     <groups_attribute> --> '(' 'GROUPS>' <groups_list> ')'
-//     *
-//     *     <alignments_attribute> --> '(' 'ALIGNMENTS>' <alignments_list> ')'
-//     *
-//     *     <import_formats_attribute> --> 
-//     *             '(' 'IMPORT-FORMAT-LISTS>' <imp_format_lists> ')'
-//     *
-//     * Note that the attributes in the system alist may appear in any order,
-//     * or they may be ommited entirely.
-//     *
-//     *                                              - 7/13/08
-//     *
-//     * Parameters:
-//     *
-//     *    - None.
-//     *
-//     * Returns:  Void.
-//     *
-//     * Changes:
-//     *
-//     *    - None.
-//     *
-//     *************************************************************************/
-//
-//    private void parse_system_alist()
-//        throws SystemErrorException
-//    {
-//        final String mName = "MacshapaODBReader::parse_system_alist()";
-//        boolean done;
-//        boolean have_shapa_pane_vars;
-//        boolean have_groups;
-//        boolean have_alignments;
-//        boolean have_import_formats;
-//
-//        if ( this.abort_parse )
-//        {
-//            throw new SystemErrorException(mName + 
-//                    "this.abort_parse TRUE on entry");
-//        }
-//        
-//        /* parse the user alist */
-//        
-//        /* first parse the leading left parenthesis */
-//
-//        if ( (this.l0_tok).code == L_PAREN_TOK )
-//        {
-//            if ( ( (this.l1_tok).code == L_PAREN_TOK ) || 
-//                 ( (this.l1_tok).code == R_PAREN_TOK ) )
-//            {
-//                get_next_token();
-//            }
-//            else if ( (this.l1_tok).code == ALIST_LABEL_TOK )
-//            {
-//                post_warning_message(this.l1_tok, LEFT_PAREN_EXPECTED_WARN,
-//                        "The opening left parenthesis of the SYSTEM> " +
-//                        "a-list appears to be missing.\n");
-//            }
-//            else 
-//            {
-//                /* if a left paren is missing, the first item in the a-list is 
-//                 * not an a-list entry.  If we try to recover from this error 
-//                 * here, we will only confuse things further.  Thus we eat the 
-//                 * left parenthesis & let the cards fall where they may.
-//                 */
-//
-//                get_next_token();
-//            }
-//        }
-//        else /* we shouldn't have been called unless the next token is a '(' */
-//        {
-//            throw new SystemErrorException(mName + 
-//                    "(this.l0_tok).code != L_PAREN_TOK.");
-//        }
-//
-//        done                 = false;
-//        have_shapa_pane_vars = false;
-//        have_groups          = false;
-//        have_alignments      = false;
-//        have_import_formats  = false;
-//
-//        /* now parse the a-list assocated with the predicate declaration */
-//        while ( ( ! this.abort_parse ) && 
-//                ( ! done ) )
-//        {
-//             if ( (this.l0_tok).code == L_PAREN_TOK )
-//             {
-//                 if ( (this.l1_tok).code == ALIST_LABEL_TOK )
-//                 {
-//                     switch ( (this.l1_tok).aux )
-//                     {
-//                         case SHAPA_PANE_VARS_LABEL:
-//                             if ( ! have_shapa_pane_vars )
-//                             {
-//                                 have_shapa_pane_vars = true;
-//                                 parse_shapa_pane_vars_attribute();
-//                             }
-//                             else
-//                             {
-//                                post_warning_message(this.l1_tok, DUPLICATE_ALIST_ENTRY_WARN,
-//                                        "Duplicate SHAPA-PANE-VARS> entry in " +
-//                                        "the SYSTEM> alist.\n");
-//
-//                                if ( ! this.abort_parse )
-//                                {
-//                                     parse_unknown_alist_entry();
-//                                }
-//                            }
-//                            break;
-//
-//                        case GROUPS_LABEL:
-//                            if ( ! have_groups )
-//                            {
-//                                have_groups = true;
-//                                parse_groups_attribute();
-//                            }
-//                            else
-//                            {
-//                                post_warning_message(this.l1_tok, DUPLICATE_ALIST_ENTRY_WARN,
-//                                        "Duplicate GROUPS> entry in the " +
-//                                        "SYSTEM> alist.\n");
-//
-//                                if ( ! this.abort_parse )
-//                                {
-//                                     parse_unknown_alist_entry();
-//                                }
-//                            }
-//                            break;
-//
-//                        case ALIGNMENTS_LABEL:
-//                            if ( ! have_alignments )
-//                            {
-//                                have_alignments = true;
-//
-//                                if ( ! have_shapa_pane_vars )
-//                                {
-//                                    parse_alignments_attribute();
-//                                }
-//                                else /* can't read alignments after we have 
-//                                      * read the shapa pane variables 
-//                                      */
-//                                {
-//                                    post_warning_message(this.l1_tok,
-//                                            ALIGNMENTS_AFTER_SHAPA_PANE_VARS_WARN,
-//                                            "The ALIGNMENTS> attribute will " +
-//                                            "be discarded.\n");
-//
-//                                    parse_unknown_alist_entry();
-//                                }
-//                            }
-//                            else
-//                            {
-//                                post_warning_message(this.l1_tok, DUPLICATE_ALIST_ENTRY_WARN,
-//                                        "Duplicate ALIGNMENTS> entry in the " +
-//                                        "SYSTEM> alist.\n");
-//
-//                                if ( ! this.abort_parse )
-//                                {
-//                                     parse_unknown_alist_entry();
-//                                }
-//                            }
-//                            break;
-//
-//                        case IMPORT_FORMATS_LIST_LABEL:
-//                            if ( ! have_import_formats )
-//                            {
-//                                have_import_formats = true;
-//                                parse_import_formats_attribute();
-//
+
+
+    /*************************************************************************
+     *
+     * parse_shapa_pane_var_list()
+     *
+     * This method parses a list of spreadsheet variable names that, in
+     * MacSHAPA, would be added to the shapaPane of the current document, and
+     * thus be made visible.
+     *
+     * Things work a little differently in OpenSHAPA.
+     *
+     * When the columns were created in the user section, they were all listed
+     * as being visible by default.  Thus this function constructs a vector
+     * containing the IDs of the columns appearing in the shapa pane var list,
+     * and modifies the column order vector to contain these IDs in appearance
+     * order at the head of the column order vector.  It then marks all columns
+     * that didn't appear in the shapa pane var list as invisible.
+     *
+     * The shapa pane var list is generated by the following productions:
+     * 
+     *     <shapa_pane_var_list> --> '(' (<shapa_pane_var_name>)* ')'
+     * 
+     *     <shapa_pane_var_name> --> <s_var_name>
+     *
+     *                                              - 8/6/09
+     *
+     * Parameters:
+     *
+     *    - None.
+     *
+     * Returns:  Void.
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     *************************************************************************/
+
+    private void parse_shapa_pane_var_list()
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReader::parse_shapa_pane_var_list()";
+        boolean done;
+        long dc_id;
+        int i;
+        Vector<Long> visibleColumns = new Vector<Long>();
+        Vector<Long> invisibleColumns = new Vector<Long>();
+        Vector<Long> new_cov = null;
+        Column col = null;
+        DataColumn dc = null;
+        MatrixVocabElement mve = null;
+
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName + 
+                    "this.abort_parse TRUE on entry");
+        }
+        
+        /* parse the shapa pane vars list */
+        
+        /* first parse the leading left parenthesis */
+
+        if ( (this.l0_tok).code == L_PAREN_TOK )
+        {
+            get_next_token();
+        }
+        else /* we shouldn't have been called unless the next token is a '(' */
+        {
+            throw new SystemErrorException(mName + 
+                    "(this.l0_tok).code != L_PAREN_TOK.");
+        }
+
+        /* now read the shapa pane variables list */
+        if ( ! this.abort_parse )
+        {
+            done = false;
+
+            while ( ( ! this.abort_parse ) && ( ! done ) )
+            {
+                switch ( (this.l0_tok).code )
+                {
+                    case SYMBOL_TOK:
+                        if ( ((this.l0_tok).aux & COLUMN_FLAG ) == 0 )
+                        {
+                            post_warning_message(this.l0_tok,
+                                    INVALID_S_VAR_NAME_IN_SP_VAR_LIST_WARN,
+                                    "Will coerce the name to a valid " +
+                                    "spreadsheet variable name.\n");
+
+                            if ( ! this.abort_parse )
+                            {
+                                this.l0_tok.coerce_symbol_token_to_s_var_name();
+                            }
+                        }
+
+                        // Determine if the specified spreadsheet variable
+                        // (AKA column) exists in the database.
+                        //
+                        // If it does, get a reference to it, and to its mve.
+                        //
+                        // Note that these references are to the database's
+                        // internal copies of the column and mve, so we must be
+                        // carefulnot to modify them in any way.
+
+                        dc = null;
+                        dc_id = DBIndex.INVALID_ID;
+
+                        if ( this.db.cl.inColumnList(this.l0_tok.str.toString()) )
+                        {
+                            // careful -- this is the database's internal copy
+                            // of the column.  Do not change it in any way.
+                            col = this.db.cl.getColumn(this.l0_tok.str.toString());
+
+                            if ( ! ( col instanceof DataColumn ) )
+                            {
+                                throw new SystemErrorException(mName +
+                                        "db contans a column that isn't a " +
+                                        "data column?!?");
+                            }
+
+                            dc = (DataColumn)col;
+
+                            dc_id = dc.getID();
+
+                            // careful -- this is the database's internal copy
+                            // of the mve.  Do not change it in any way.
+                            mve = this.db.vl.
+                                    getMatrixVocabElement(dc.getItsMveID());
+                        }
+
+                        if ( dc == null )
+                        {
+                            post_warning_message(this.l0_tok,
+                                    REF_TO_UNDEF_S_VAR_IN_SP_VAR_LIST_WARN,
+                                    "The entry in the shapa pane variables " +
+                                    "list will be ignored.\n");
+                        }
+                        else if ( ( mve.getSystem() ) &&
+                                  ( ! this.db.toMODBFile_includeDataColumnInUserSection(dc) ) )
+                        {
+                            post_warning_message(this.l0_tok,
+                                    REF_TO_SYSTEM_S_VAR_IN_SP_VAR_LIST_WARN,
+                                    "Since system spreadsheet variables never " +
+                                    "appear on the spreadsheet, the entry " +
+                                    "will be ignored.\n");
+                        }
+                        else if ( visibleColumns.contains(dc_id) )
+                        {
+                            post_warning_message(this.l0_tok,
+                                    DUP_REF_TO_S_VAR_IN_SP_VAR_LIST_WARN,
+                                    "The duplicate reference will be ignored.\n");
+                        }
+                        else /* append the column ID to the visible columns vector */
+                        {
+                            visibleColumns.add(dc_id);
+                        }
+
+                        dc = null;
+                        dc_id = DBIndex.INVALID_ID;
+                        mve = null;
+
+
+                        if ( ! this.abort_parse )
+                        {
+                            get_next_token();
+                        }
+                        break;
+
+                     case R_PAREN_TOK:
+                         done = true;
+                         get_next_token();
+                         break;
+
+                    case L_PAREN_TOK:
+                        post_warning_message(this.l0_tok,
+                                             NON_S_VAR_IN_SHAPA_VARS_LIST_WARN,
+                                             "The item was a list.\n");
+
+                        if ( ! this.abort_parse )
+                        {
+                            parse_arbitrary_list();
+                        }
+                        break;
+
+                    case BOOL_TOK:
+                    case ERROR_TOK:
+                    case FLOAT_TOK:
+                    case STRING_TOK:
+                    case INT_TOK:
+                    case ALIST_LABEL_TOK:
+                    case PRIVATE_VAL_TOK:
+                    case SETF_TOK:
+                    case DB_VAR_TOK:
+                    case QUOTE_TOK:
+                        post_warning_message(this.l0_tok,
+                                             NON_S_VAR_IN_SHAPA_VARS_LIST_WARN,
+                                             "The item was an atom.\n");
+
+                        if ( ! this.abort_parse )
+                        {
+                            get_next_token();
+                        }
+                        break;
+
+                    case EOF_TOK:
+                        post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
+                                "EOF in the list associated with the SYSTEM> " +
+                                "SHAPA-PANE-VARS> attribute.\n", 
+                                true, true);
+                        break;
+
+                     default:
+                         throw new SystemErrorException(mName + 
+                                 "Encountered unknown token type.");
+                         // break statement commented out to keep compiler happy
+                         // break;
+                }
+
+            } /* end while */
+
+            // if visibleColumns is not empty, we have work to do
+            if ( visibleColumns.size() > 0 )
+            {
+                invisibleColumns = this.db.getColOrderVector();
+
+                if ( ! invisibleColumns.removeAll(visibleColumns) )
+                {
+                    throw new SystemErrorException(mName + "no overlap " +
+                            "between visible and invisible columns?!?");
+                }
+
+                new_cov = new Vector<Long>(visibleColumns);
+
+                new_cov.addAll(invisibleColumns);
+
+                this.db.setColOrderVector(new_cov);
+
+                for ( i = 0; i < invisibleColumns.size(); i++ )
+                {
+                    dc_id = invisibleColumns.get(i);
+
+                    dc = this.db.getDataColumn(dc_id);
+
+                    dc.setHidden(true);
+
+                    this.db.replaceColumn(dc);
+                }
+            }
+        }
+
+        return;
+
+    } /* MacshapaODBReader::parse_shapa_pane_var_list() */
+
+
+    /*************************************************************************
+     *
+     * parse_shapa_pane_vars_attribute()
+     *
+     * This method parses a SHAPA-PANE-VARS> attribute, which is generated by 
+     * the following productions:
+     * 
+     *     <shapa_pane_vars_attribute> --> 
+     *             '(' 'SHAPA-PANE-VARS>' <shapa_pane_var_list> ')'
+     * 
+     *     <shapa_pane_var_list> --> '(' (<shapa_pane_var_name>)* ')'
+     * 
+     *     <shapa_pane_var_name> --> <s_var_name>
+     *
+     * The purpose of this attribute is to support the insertion of user
+     * spreadsheet variables into the shapaPane associated with the current
+     * document, thereby making them visible on the spreadsheet.  However,
+     * the actual insertions are made in shapa_pane_var_list().
+     *
+     *                                              - 10/28/95
+     *
+     * Parameters:
+     *
+     *    - None.
+     *
+     * Returns:  Void.
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     *************************************************************************/
+
+    private void parse_shapa_pane_vars_attribute()
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName =
+                "MacshapaODBReader::parse_shapa_pane_vars_attribute()";
+        final String missing_shapa_pane_vars_list_mssg =
+                "The SHAPA-PANE-VARS> attribute appears not to contain a " +
+                "value.  All spreadsheet variables will be made visible.\n";
+        final String shapa_pane_vars_list_type_mismatch_mssg = 
+                "The value of a SHAPA-PANE-VARS> attribute must be a list " +
+                "of spreadsheet names.  " +
+                "All spreadsheet variables will be made visible.\n";
+
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName + 
+                    "this.abort_parse TRUE on entry");
+        }
+        
+        /* parse the shapa pane vars attribute */
+        
+        /* first parse the leading left parenthesis */
+
+        if ( (this.l0_tok).code == L_PAREN_TOK )
+        {
+            get_next_token();
+        }
+        else /* we shouldn't have been called unless the next token is a '(' */
+        {
+            throw new SystemErrorException(mName + 
+                    "(this.l0_tok).code != L_PAREN_TOK.");
+        }
+
+        /* read the a-list entry name */
+        if ( ! this.abort_parse )
+        {
+            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) && 
+                 ( (this.l0_tok).aux == SHAPA_PANE_VARS_LABEL ) )
+            {
+                get_next_token();
+            }
+            else /* we shouldn't have been called unless the next token 
+                  * is SHAPA-PANE-VARS> 
+                  */
+            {
+                throw new SystemErrorException(mName + 
+                        "this.l0_tok != SHAPA-PANE-VARS>.");
+            }
+        }
+
+        /* read the value associated with the a-list entry & discard 
+         * any excess values 
+         */
+        if ( ! this.abort_parse )
+        {
+             switch ( (this.l0_tok).code )
+             {
+                 case R_PAREN_TOK:
+                    post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
+                                         missing_shapa_pane_vars_list_mssg);
+
+                    // By default, all columns are visible -- this in this
+                    // case, we have nothing to do.
+                    break;
+
+                case L_PAREN_TOK:
+                    parse_shapa_pane_var_list();
+                    break;
+
+                case BOOL_TOK:
+                case ERROR_TOK:
+                case SYMBOL_TOK:
+                case FLOAT_TOK:
+                case STRING_TOK:
+                case INT_TOK:
+                case ALIST_LABEL_TOK:
+                case PRIVATE_VAL_TOK:
+                case SETF_TOK:
+                case DB_VAR_TOK:
+                case QUOTE_TOK:
+                    post_warning_message(this.l0_tok, ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
+                            shapa_pane_vars_list_type_mismatch_mssg);
+
+                    // By default, all columns are visible -- thus in this case
+                    // we have nothing to do.
+
+                    if ( ! this.abort_parse )
+                    {
+                        get_next_token();
+                    }
+                    break;
+
+                case EOF_TOK:
+                    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
+                            "EOF in the SYSTEM> SHAPA-PANE-VARS> attribute.\n",
+                            true, true);
+                    break;
+
+                default:
+                    throw new SystemErrorException(mName + 
+                            "Encountered unknown token type.");
+                    // break statement commented out to keep the compiler happy.
+                    // break;
+            }
+        }
+
+        /* check for EOF */
+        if ( ! this.abort_parse )
+        {
+            if ( (this.l0_tok).code == EOF_TOK )
+            {
+                post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
+                                   "EOF in a SHAPA-PANE-VARS> attribute.\n",
+                                   true, true);
+            }
+        }
+
+        /* discard any excess values that may appear in the 
+         * SHAPA-PANE-VARS> a-list entry 
+         */
+        if ( ! this.abort_parse )
+        {
+            if ( (this.l0_tok).code != R_PAREN_TOK )
+            {
+                discard_excess_alist_entry_values();
+
+                if ( ! this.abort_parse )
+                {
+                    post_warning_message(this.l0_tok, EXCESS_VALUES_IN_ALIST_ENTRY_WARN,
+                            "Excess values encountered the SYSTEM> " +
+                            "SHAPA-PANE-VARS> attribute.\n");
+                }
+            }
+        }
+
+        /* read the terminating right parenthesis */
+        if ( ! this.abort_parse )
+        {
+            if ( (this.l0_tok).code == R_PAREN_TOK )
+            {
+                get_next_token();
+            }
+            else
+            {
+                /* since we are cleaning up any excess values in the shapa 
+                 * pane vars list attribute, this else clause is unreachable 
+                 * at present. Should we choose to drop the above attempt 
+                 * at error recovery, this clause will again become reachable.
+                 */
+
+                post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
+                        "Closing parenthesis missing from the SYSTEM> " +
+                        "SHAPA-PANE-VARS> attribute.\n");
+            }
+        }
+
+        return;
+
+    } /* MacshapaODBReader::parse_shapa_pane_vars_attribute() */
+
+
+    /*************************************************************************
+     *
+     * parse_system_alist()
+     *
+     * This method parses the a-list associated with the system section of 
+     * the open database body.  Structurally, this list is simply a list of
+     * a-list entries, each of which is a two element list consisting a an
+     * a-list entry name and its assocated value.  The productions generating
+     * the user section a-list are given below:
+     *
+     *     <system_alist> --> '(' <system_attributes> ')'
+     *
+     *     <system_attributes> --> { [<shapa_pane_vars_attribute>]
+     *                               [<groups_attribute>]
+     *                               [<alignments-attribute>]
+     *                               [<import_formats_attribute>] }
+     *
+     *     <shapa_pane_vars_attribute> --> 
+     *             '(' 'SHAPA-PANE-VARS>' <shapa_pane_var_list> ')'
+     *
+     *     <groups_attribute> --> '(' 'GROUPS>' <groups_list> ')'
+     *
+     *     <alignments_attribute> --> '(' 'ALIGNMENTS>' <alignments_list> ')'
+     *
+     *     <import_formats_attribute> --> 
+     *             '(' 'IMPORT-FORMAT-LISTS>' <imp_format_lists> ')'
+     *
+     * Note that the attributes in the system alist may appear in any order,
+     * or they may be ommited entirely.
+     *
+     *                                              - 7/13/08
+     *
+     * Parameters:
+     *
+     *    - None.
+     *
+     * Returns:  Void.
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     *************************************************************************/
+
+    private void parse_system_alist()
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReader::parse_system_alist()";
+        boolean done;
+        boolean have_shapa_pane_vars;
+        boolean have_groups;
+        boolean have_alignments;
+        boolean have_import_formats;
+
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName + 
+                    "this.abort_parse TRUE on entry");
+        }
+        
+        /* parse the user alist */
+        
+        /* first parse the leading left parenthesis */
+
+        if ( (this.l0_tok).code == L_PAREN_TOK )
+        {
+            if ( ( (this.l1_tok).code == L_PAREN_TOK ) || 
+                 ( (this.l1_tok).code == R_PAREN_TOK ) )
+            {
+                get_next_token();
+            }
+            else if ( (this.l1_tok).code == ALIST_LABEL_TOK )
+            {
+                post_warning_message(this.l1_tok, LEFT_PAREN_EXPECTED_WARN,
+                        "The opening left parenthesis of the SYSTEM> " +
+                        "a-list appears to be missing.\n");
+            }
+            else 
+            {
+                /* if a left paren is missing, the first item in the a-list is 
+                 * not an a-list entry.  If we try to recover from this error 
+                 * here, we will only confuse things further.  Thus we eat the 
+                 * left parenthesis & let the cards fall where they may.
+                 */
+
+                get_next_token();
+            }
+        }
+        else /* we shouldn't have been called unless the next token is a '(' */
+        {
+            throw new SystemErrorException(mName + 
+                    "(this.l0_tok).code != L_PAREN_TOK.");
+        }
+
+        done                 = false;
+        have_shapa_pane_vars = false;
+        have_groups          = false;
+        have_alignments      = false;
+        have_import_formats  = false;
+
+        /* now parse the a-list assocated with the predicate declaration */
+        while ( ( ! this.abort_parse ) && 
+                ( ! done ) )
+        {
+             if ( (this.l0_tok).code == L_PAREN_TOK )
+             {
+                 if ( (this.l1_tok).code == ALIST_LABEL_TOK )
+                 {
+                     switch ( (this.l1_tok).aux )
+                     {
+                         case SHAPA_PANE_VARS_LABEL:
+                             if ( ! have_shapa_pane_vars )
+                             {
+                                 have_shapa_pane_vars = true;
+                                 parse_shapa_pane_vars_attribute();
+                             }
+                             else
+                             {
+                                post_warning_message(this.l1_tok, DUPLICATE_ALIST_ENTRY_WARN,
+                                        "Duplicate SHAPA-PANE-VARS> entry in " +
+                                        "the SYSTEM> alist.\n");
+
+                                if ( ! this.abort_parse )
+                                {
+                                     parse_unknown_alist_entry();
+                                }
+                            }
+                            break;
+
+                        case GROUPS_LABEL:
+                            if ( ! have_groups )
+                            {
+                                have_groups = true;
+                                parse_groups_attribute();
+                            }
+                            else
+                            {
+                                post_warning_message(this.l1_tok, DUPLICATE_ALIST_ENTRY_WARN,
+                                        "Duplicate GROUPS> entry in the " +
+                                        "SYSTEM> alist.\n");
+
+                                if ( ! this.abort_parse )
+                                {
+                                     parse_unknown_alist_entry();
+                                }
+                            }
+                            break;
+
+                        case ALIGNMENTS_LABEL:
+                            if ( ! have_alignments )
+                            {
+                                have_alignments = true;
+
+                                if ( ! have_shapa_pane_vars )
+                                {
+                                    parse_alignments_attribute();
+                                }
+                                else /* can't read alignments after we have 
+                                      * read the shapa pane variables 
+                                      */
+                                {
+                                    post_warning_message(this.l1_tok,
+                                            ALIGNMENTS_AFTER_SHAPA_PANE_VARS_WARN,
+                                            "The ALIGNMENTS> attribute will " +
+                                            "be discarded.\n");
+
+                                    parse_unknown_alist_entry();
+                                }
+                            }
+                            else
+                            {
+                                post_warning_message(this.l1_tok, DUPLICATE_ALIST_ENTRY_WARN,
+                                        "Duplicate ALIGNMENTS> entry in the " +
+                                        "SYSTEM> alist.\n");
+
+                                if ( ! this.abort_parse )
+                                {
+                                     parse_unknown_alist_entry();
+                                }
+                            }
+                            break;
+
+                        case IMPORT_FORMATS_LIST_LABEL:
+                            if ( ! have_import_formats )
+                            {
+                                have_import_formats = true;
+                                parse_import_formats_attribute();
+
 //                                if ( this.proceed ) /* save the format list */
 //                                {
-//                                    this.spread_doc_ptr->itsFormatList = 
+//                                    this.spread_doc_ptr->itsFormatList =
 //                                         this.import_format_list_root;
 //                                }
-//                            }
-//                            else
-//                            {
-//                                post_warning_message(this.l1_tok, DUPLICATE_ALIST_ENTRY_WARN,
-//                                        "Duplicate IMPORT-FORMAT-LISTS> entry " +
-//                                        "in the SYSTEM> alist.\n");
-//
-//                                if ( ! this.abort_parse )
-//                                {
-//                                     parse_unknown_alist_entry();
-//                                }
-//                            }
-//                            break;
-//
-//                        default:
-//                            post_warning_message(this.l1_tok,
-//                                UNKNOWN_OR_UNEXPECTED_ALIST_ENTRY_WARN,
-//                                "The entry is located in the SYSTEM> a-list.\n");
-//
-//                            if ( ! this.abort_parse )
-//                            {
-//                                 parse_unknown_alist_entry();
-//                            }
-//                            break;
-//                    }
-//                }
-//                else /* a-list contains a list that is not an a-list entry. */
-//                     /* read it & discard it.                               */
-//                {
-//                    post_warning_message(this.l1_tok, NON_ALIST_ENTRY_LIST_IN_ALIST_WARN,
-//                            "The list is located in the SYSTEM> a-list.\n");
-//
-//                    if ( ! this.abort_parse )
-//                    {
-//                         parse_arbitrary_list();
-//                    }
-//                }
-//            }
-//            else if ( (this.l0_tok).code == R_PAREN_TOK )
-//            {
-//                done = true;
-//                get_next_token();
-//            }
-//            else if ( (this.l0_tok).code == EOF_TOK )
-//            {
-//                done = true;
-//                post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
-//                                   "EOF occurred in the SYSTEM> a-list.\n",
-//                                   true, true);
-//            }
-//            else /* (this.l0_tok).code isnt '(', ')', or EOF */
-//            {
-//                post_warning_message(this.l0_tok, NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN,
-//                        "The atom was detected in the SYSTEM> a-list.\n");
-//
-//                if ( ! this.abort_parse )
-//                {
-//                    get_next_token();
-//                }
-//            }
-//        }
-//
-//        /* check for missing <shapa_pane_vars_attribute>. */
-//
-//        if ( ( ! this.abort_parse ) && 
-//             ( ! have_shapa_pane_vars ) )
-//        {
-//            add_all_user_svars_to_shapa_pane();
-//        }
-//
-//        return;
-//
-//    } /* MacshapaODBReader::parse_system_alist() */
-//
-//
-//    /*************************************************************************
-//     *
-//     * parse_system_section()
-//     *
-//     * This method parses the system section of the open database body.
-//     * Structurally, the system section is an a-list entry with the label
-//     * "SYSTEM>" and a list as its value.  The production generating the 
-//     * user section is shown below.
-//     *
-//     *     <system_section> --> '(' 'SYSTEM>' <system_alist> ')'
-//     * 
-//     *
-//     *                                              - 7/13/08
-//     *
-//     * Parameters:
-//     *
-//     *    - None.
-//     *
-//     * Returns:  Void.
-//     *
-//     * Changes:
-//     *
-//     *    - None.
-//     *
-//     *************************************************************************/
+                            }
+                            else
+                            {
+                                post_warning_message(this.l1_tok, DUPLICATE_ALIST_ENTRY_WARN,
+                                        "Duplicate IMPORT-FORMAT-LISTS> entry " +
+                                        "in the SYSTEM> alist.\n");
 
-    // stub -- discard eventually
+                                if ( ! this.abort_parse )
+                                {
+                                     parse_unknown_alist_entry();
+                                }
+                            }
+                            break;
+
+                        default:
+                            post_warning_message(this.l1_tok,
+                                UNKNOWN_OR_UNEXPECTED_ALIST_ENTRY_WARN,
+                                "The entry is located in the SYSTEM> a-list.\n");
+
+                            if ( ! this.abort_parse )
+                            {
+                                 parse_unknown_alist_entry();
+                            }
+                            break;
+                    }
+                }
+                else /* a-list contains a list that is not an a-list entry. */
+                     /* read it & discard it.                               */
+                {
+                    post_warning_message(this.l1_tok, NON_ALIST_ENTRY_LIST_IN_ALIST_WARN,
+                            "The list is located in the SYSTEM> a-list.\n");
+
+                    if ( ! this.abort_parse )
+                    {
+                         parse_arbitrary_list();
+                    }
+                }
+            }
+            else if ( (this.l0_tok).code == R_PAREN_TOK )
+            {
+                done = true;
+                get_next_token();
+            }
+            else if ( (this.l0_tok).code == EOF_TOK )
+            {
+                done = true;
+                post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
+                                   "EOF occurred in the SYSTEM> a-list.\n",
+                                   true, true);
+            }
+            else /* (this.l0_tok).code isnt '(', ')', or EOF */
+            {
+                post_warning_message(this.l0_tok, NON_ALIST_ENTRY_ATOM_IN_ALIST_WARN,
+                        "The atom was detected in the SYSTEM> a-list.\n");
+
+                if ( ! this.abort_parse )
+                {
+                    get_next_token();
+                }
+            }
+        }
+
+        /* check for missing <shapa_pane_vars_attribute>. */
+
+        if ( ( ! this.abort_parse ) && 
+             ( ! have_shapa_pane_vars ) )
+        {
+            // Nothing to do here, as all columns are visible by default.
+        }
+
+        return;
+
+    } /* MacshapaODBReader::parse_system_alist() */
+
+
+    /*************************************************************************
+     *
+     * parse_system_section()
+     *
+     * This method parses the system section of the open database body.
+     * Structurally, the system section is an a-list entry with the label
+     * "SYSTEM>" and a list as its value.  The production generating the 
+     * user section is shown below.
+     *
+     *     <system_section> --> '(' 'SYSTEM>' <system_alist> ')'
+     * 
+     *
+     *                                              - 7/13/08
+     *
+     * Parameters:
+     *
+     *    - None.
+     *
+     * Returns:  Void.
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     *************************************************************************/
+
     private void parse_system_section()
         throws SystemErrorException,
                java.io.IOException
     {
-        parse_arbitrary_list();
-    }
-    
-//    private void parse_system_section()
-//        throws SystemErrorException
-//    {
-//        final String mName = "MacshapaODBReader::parse_system_section()";
-//
-//        if ( this.abort_parse )
-//        {
-//            throw new SystemErrorException(mName + 
-//                    "this.abort_parse TRUE on entry");
-//        }
-//        
-//        /* parse the system section */
-//        
-//        /* first parse the leading left parenthesis */
-//
-//        if ( (this.l0_tok).code == L_PAREN_TOK )
-//        {
-//            get_next_token();
-//        }
-//        else /* we shouldn't have been called unless the next token is a '(' */
-//        {
-//            throw new SystemErrorException(mName + 
-//                    "(this.l0_tok).code != L_PAREN_TOK.");
-//        }
-//
-//        /* read the a-list entry name */
-//        if ( ! this.abort_parse )
-//        {
-//            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
-//                 ( (this.l0_tok).aux == SYSTEM_LABEL ) )
-//            {
-//                get_next_token();
-//            }
-//            else /* system error - we shouldn't have been called unless the */
-//            {    /*         next token is the SYSTEM> a-list tag.    */
-//
-//                throw new SystemErrorException(mName + 
-//                        "this.l0_tok != \"SYSTEM>\".");
-//            }
-//        }
-//
-//        /* read the a-list associated with the user section */
-//        if ( ! this.abort_parse )
-//        {
-//            switch ( (this.l0_tok).code )
-//            {
-//                case L_PAREN_TOK:
-//                    parse_system_alist();
-//                    break;
-//
-//                case R_PAREN_TOK:
-//                    post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
-//                        "The SYSTEM> section appears not to have a value.\n");
-//                    break;
-//
-//                case INT_TOK:
-//                case ERROR_TOK:
-//                case SYMBOL_TOK:
-//                case FLOAT_TOK:
-//                case STRING_TOK:
-//                case BOOL_TOK:
-//                case ALIST_LABEL_TOK:
-//                case PRIVATE_VAL_TOK:
-//                case SETF_TOK:
-//                case DB_VAR_TOK:
-//                case QUOTE_TOK:
-//                    post_warning_message(this.l0_tok, ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
-//                        "The value of the SYSTEM> section must be a list.\n");
-//
-//                    if ( ! this.abort_parse )
-//                    {
-//                        get_next_token();
-//                    }
-//                    break;
-//
-//
-//                case EOF_TOK:
-//                    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
-//                                       "EOF in the SYSTEM> section.\n",
-//                                       true, true);
-//                    break;
-//
-//                 default:
-//                     throw new SystemErrorException(mName + 
-//                             "Encountered unknown token type.");
-//                     break;
-//            }
-//        }
-//
-//        /* check for EOF */
-//        if ( ! this.abort_parse )
-//        {
-//            if ( (this.l0_tok).code == EOF_TOK )
-//            {
-//                post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
-//                                   "EOF in SYSTEM> section.\n", true, true);
-//            }
-//        }
-//
-//        /* discard any excess values that may appear in the SYSTEM> section a-list */
-//        if ( ! this.abort_parse )
-//        {
-//            if ( (this.l0_tok).code != R_PAREN_TOK )
-//            {
-//                discard_excess_alist_entry_values();
-//
-//                if ( ! this.abort_parse )
-//                {
-//                    post_warning_message(this.l0_tok, EXCESS_VALUES_IN_ALIST_ENTRY_WARN,
-//                        "Excess values encountered in the SYSTEM> section.\n");
-//                }
-//            }
-//        }
-//
-//        /* finally, consume the closing parenthesis */
-//        if ( ! this.abort_parse )
-//        {
-//            if ( (this.l0_tok).code == R_PAREN_TOK )
-//            {
-//                get_next_token();
-//            }
-//            else 
-//            {
-//                /* since we are cleaning up any excess values in the system 
-//                 * section this else clause is unreachable at present.  Should 
-//                 * we choose to drop the above attempt at error recovery, this 
-//                 * clause will again become reachable.
-//                 */
-//
-//                post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
-//                        "The closing parenthesis was missing from the " +
-//                        "SYSTEM> section.\n");
-//            }
-//        }
-//
-//        return;
-//
-//    } /* MacshapaODBReader::parse_system_section() */
+        final String mName = "MacshapaODBReader::parse_system_section()";
+
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName + 
+                    "this.abort_parse TRUE on entry");
+        }
+        
+        /* parse the system section */
+        
+        /* first parse the leading left parenthesis */
+
+        if ( (this.l0_tok).code == L_PAREN_TOK )
+        {
+            get_next_token();
+        }
+        else /* we shouldn't have been called unless the next token is a '(' */
+        {
+            throw new SystemErrorException(mName + 
+                    "(this.l0_tok).code != L_PAREN_TOK.");
+        }
+
+        /* read the a-list entry name */
+        if ( ! this.abort_parse )
+        {
+            if ( ( (this.l0_tok).code == ALIST_LABEL_TOK ) &&
+                 ( (this.l0_tok).aux == SYSTEM_LABEL ) )
+            {
+                get_next_token();
+            }
+            else /* system error - we shouldn't have been called unless the */
+            {    /*         next token is the SYSTEM> a-list tag.    */
+
+                throw new SystemErrorException(mName + 
+                        "this.l0_tok != \"SYSTEM>\".");
+            }
+        }
+
+        /* read the a-list associated with the system section */
+        if ( ! this.abort_parse )
+        {
+            switch ( (this.l0_tok).code )
+            {
+                case L_PAREN_TOK:
+                    parse_system_alist();
+                    break;
+
+                case R_PAREN_TOK:
+                    post_warning_message(this.l0_tok, EMPTY_ALIST_ENTRY_WARN,
+                        "The SYSTEM> section appears not to have a value.\n");
+                    break;
+
+                case INT_TOK:
+                case ERROR_TOK:
+                case SYMBOL_TOK:
+                case FLOAT_TOK:
+                case STRING_TOK:
+                case BOOL_TOK:
+                case ALIST_LABEL_TOK:
+                case PRIVATE_VAL_TOK:
+                case SETF_TOK:
+                case DB_VAR_TOK:
+                case QUOTE_TOK:
+                    post_warning_message(this.l0_tok,
+                        ATTRIBUTE_VALUE_TYPE_MISMATCH_WARN,
+                        "The value of the SYSTEM> section must be a list.\n");
+
+                    if ( ! this.abort_parse )
+                    {
+                        get_next_token();
+                    }
+                    break;
+
+
+                case EOF_TOK:
+                    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
+                                       "EOF in the SYSTEM> section.\n",
+                                       true, true);
+                    break;
+
+                 default:
+                     throw new SystemErrorException(mName + 
+                             "Encountered unknown token type.");
+                     // commented out to keep the compiler happy.
+                     // break;
+            }
+        }
+
+        /* check for EOF */
+        if ( ! this.abort_parse )
+        {
+            if ( (this.l0_tok).code == EOF_TOK )
+            {
+                post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
+                                   "EOF in SYSTEM> section.\n", true, true);
+            }
+        }
+
+        /* discard any excess values that may appear in the SYSTEM> section a-list */
+        if ( ! this.abort_parse )
+        {
+            if ( (this.l0_tok).code != R_PAREN_TOK )
+            {
+                discard_excess_alist_entry_values();
+
+                if ( ! this.abort_parse )
+                {
+                    post_warning_message(this.l0_tok, EXCESS_VALUES_IN_ALIST_ENTRY_WARN,
+                        "Excess values encountered in the SYSTEM> section.\n");
+                }
+            }
+        }
+
+        /* finally, consume the closing parenthesis */
+        if ( ! this.abort_parse )
+        {
+            if ( (this.l0_tok).code == R_PAREN_TOK )
+            {
+                get_next_token();
+            }
+            else 
+            {
+                /* since we are cleaning up any excess values in the system 
+                 * section this else clause is unreachable at present.  Should 
+                 * we choose to drop the above attempt at error recovery, this 
+                 * clause will again become reachable.
+                 */
+
+                post_warning_message(this.l0_tok, RIGHT_PAREN_EXPECTED_WARN,
+                        "The closing parenthesis was missing from the " +
+                        "SYSTEM> section.\n");
+            }
+        }
+
+        return;
+
+    } /* MacshapaODBReader::parse_system_section() */
 
 
         
@@ -24523,7 +24609,7 @@ public class MacshapaODBReader
             throw new SystemErrorException(mName + "farg null on entry");
         }
         
-        if ( ( farg.fargType != FormalArgument.FArgType.COL_PREDICATE ) ||
+        if ( ( farg.fargType != FormalArgument.FArgType.COL_PREDICATE ) &&
              ( farg.fargType != FormalArgument.FArgType.UNTYPED ) )
         {
             throw new SystemErrorException(mName + 
@@ -24536,7 +24622,7 @@ public class MacshapaODBReader
                                            "Supplied farg has invalid ID.");
         }
         
-        /* try to parse the predicate value */
+        /* try to parse the column predicate value */
         
         /* first check to make sure that we are dealing with a defined 
          * column predicate.
@@ -24565,7 +24651,7 @@ public class MacshapaODBReader
 
                 if ( ! this.abort_parse )
                 {
-                    this.l1_tok.coerce_symbol_token_to_spreadsheet_variable_name();
+                    this.l1_tok.coerce_symbol_token_to_s_var_name();
                 }
 
                 if ( ! this.abort_parse )
@@ -24585,11 +24671,12 @@ public class MacshapaODBReader
                 }
             }
         }
-        else /* it ain't a predicate -- discard it, issue a warning & construct 
-              * a empty predicate place holder 
+        else /* it ain't a column predicate -- discard it, issue a warning &
+              * construct an empty column predicatepredicate place holder
               */
         {
-            post_warning_message(this.l1_tok, PRED_VALUE_EXPECTED_WARN, null);
+            post_warning_message(this.l1_tok, COL_PRED_VALUE_EXPECTED_WARN,
+                                 null);
         }
 
         if ( mve == null )
@@ -24753,9 +24840,8 @@ public class MacshapaODBReader
                 {
                     // construct an empty argument
                     next_arg = new UndefinedDataValue(this.db, 
-                                                      next_farg.getID(), 
-                                                      next_farg.getFargName());
-                }
+                                                      next_farg.getID());
+               }
                 
                 if ( ! this.abort_parse )
                 {
@@ -24835,65 +24921,44 @@ public class MacshapaODBReader
             /* if we ran out of arguments before we ran out of formal arguments, 
              * must issue a warning and insert formal arguments.  Note however 
              * that there is an exception in the case of variable length 
-             * predicates.  In this case, we simply make sure that there is at 
-             * least one argument, inserting a formal argument if there is not.
+             * column predicates.  In this case, we only issue a warning message
+             * if there are fewer than four arguments.
              */
-            // TODO: Figure out how we will support variable length preds and 
-            //       and update this code accordingly.
             if ( ! this.abort_parse )
             {
                 if ( next_farg != null )
                 {
-                    if ( varLen )
-                    {
-                        /* make sure we have at least one argument */
-                        if ( arg_num == 0 )
-                        {
-                            post_warning_message(this.l0_tok,
-                                    REQ_ARGS_MISSING_FROM_PRED_VAL_WARN,
-                                    null);
-                        }
-                        
-                        // TODO:  Here we make sure that the argument list 
-                        //        contains at least one argument in the 
-                        //        case of a variable length predicate or 
-                        //        column predicate.
-                        //
-                        //        This may or may not be the right thing to 
-                        //        do.  Return to this when we have variable
-                        //        length arguments hammered out.
-                        
-                        next_arg = new UndefinedDataValue(this.db, 
-                                                          next_farg.getID(), 
-                                                          next_farg.getFargName());
-                        argList.add(next_arg);
-                        next_arg = null;
-                    }
-                    else /* fill in the missing arguments with formal arguments */
+                    /* if the column predicate is fixed length and missing
+                     * any of its arguments, or variable length and has
+                     * less than four arguments, issue a warning message.
+                     */
+                    if ( ( ! varLen ) || ( arg_num < 4 ) )
                     {
                         post_warning_message(this.l0_tok,
                                 REQ_ARGS_MISSING_FROM_COL_PRED_VAL_WARN,
                                 null);
+                    }
 
-                        while ( ( ! this.abort_parse ) && 
-                                ( next_farg != null ) )
+                    /* in any case, go ahead and fill in the missing
+                     * arguments with with undefined values.
+                     */
+                    while ( ( ! this.abort_parse ) &&
+                            ( next_farg != null ) )
+                    {
+                        next_arg = new UndefinedDataValue(this.db,
+                                                  next_farg.getID());
+                        argList.add(next_arg);
+                        next_arg = null;
+
+                        arg_num++;
+
+                        if ( num_fargs > arg_num )
                         {
-                            next_arg = new UndefinedDataValue(this.db, 
-                                                          next_farg.getID(), 
-                                                          next_farg.getFargName());
-                            argList.add(next_arg);
-                            next_arg = null;
-
-                            arg_num++;
-
-                            if ( num_fargs > arg_num )
-                            {
-                                next_farg = mve.getCPFormalArg(arg_num);
-                            }
-                            else
-                            {
-                                next_farg = null;
-                            }
+                            next_farg = mve.getCPFormalArg(arg_num);
+                        }
+                        else
+                        {
+                            next_farg = null;
                         }
                     }
                 }
@@ -25170,8 +25235,6 @@ public class MacshapaODBReader
         {
             if ( ((this.l1_tok).aux & PRED_FLAG) != 0 )
             {
-                // TODO:  need to expand this for column predicates -- do
-                //        this when we get to testing queries.
                 if ( this.db.vl.predInVocabList(this.l1_tok.str.toString()) )
                 {
                     pve = this.db.getPredVE(this.l1_tok.str.toString());
@@ -25375,15 +25438,16 @@ public class MacshapaODBReader
 
                 } /* end switch */
                 
-                if ( ( next_arg == null ) && ( ! this.abort_parse ) )
+                if ( ( next_arg == null ) && 
+                     ( ! done ) &&
+                     ( ! this.abort_parse ) )
                 {
                     // construct an empty argument
                     next_arg = new UndefinedDataValue(this.db, 
-                                                      next_farg.getID(), 
-                                                      next_farg.getFargName());
+                                                      next_farg.getID());
                 }
                 
-                if ( ! this.abort_parse )
+                if ( ( ! done ) && ( ! this.abort_parse ) )
                 {
                     argList.add(next_arg);
                     next_arg = null;
@@ -25512,8 +25576,7 @@ public class MacshapaODBReader
                             ( next_farg != null ) )
                     {
                         next_arg = new UndefinedDataValue(this.db,
-                                                      next_farg.getID(),
-                                                      next_farg.getFargName());
+                                                      next_farg.getID());
                         argList.add(next_arg);
                         next_arg = null;
 
@@ -25533,8 +25596,11 @@ public class MacshapaODBReader
 
             /* Finally, construct the instance of predicate, load it into
              * a predicate data value, and return it. */
-            value = new Predicate(this.db, pve.getID(), argList);
-            arg = new PredDataValue(this.db, farg.getID(), value);
+            if ( ! this.abort_parse )
+            {
+                value = new Predicate(this.db, pve.getID(), argList);
+                arg = new PredDataValue(this.db, farg.getID(), value);
+            }
 
         } /* end if */
 
@@ -25610,8 +25676,6 @@ public class MacshapaODBReader
             throw new SystemErrorException(mName + 
                                            "(this.l0_tok).code != STRING_TOK");
         }
-        
-        value = this.l0_tok.str.toString();
 	
         if ( ( farg.fargType == FormalArgument.FArgType.QUOTE_STRING ) ||
              ( farg.fargType == FormalArgument.FArgType.UNTYPED ) )
@@ -25629,6 +25693,8 @@ public class MacshapaODBReader
                 }
             }
 
+            value = this.l0_tok.str.toString();
+
             dv = new QuoteStringDataValue(this.db, farg.getID(), value);
         }
         else
@@ -25637,8 +25703,7 @@ public class MacshapaODBReader
              * an udefined data value, and flag a warning.
              */
             dv = new UndefinedDataValue(this.db, 
-                                        farg.getID(), 
-                                        farg.getFargName());
+                                        farg.getID());
 
             post_warning_message(this.l0_tok,
                     FARG_ARG_TYPE_MISMATCH_WARN, null);
@@ -25902,8 +25967,7 @@ public class MacshapaODBReader
              * an udefined data value, and flag a warning.
              */
             dv = new UndefinedDataValue(this.db, 
-                                        farg.getID(), 
-                                        farg.getFargName());
+                                        farg.getID());
 
             post_warning_message(this.l0_tok,
                     FARG_ARG_TYPE_MISMATCH_WARN, null);

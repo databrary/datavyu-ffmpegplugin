@@ -1,0 +1,73 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  37 (Line 24:15): Encountered a predicate definition in which the name of the predicate is not a valid predicate name.
+        Will coerce the name to a valid predicate name.
+
+
+      WARNING 126 (Line 231:55): Encountered type mismatch between argument and formal argument.  Argument replaced with an undefined value.
+
+      WARNING 126 (Line 231:57): Encountered type mismatch between argument and formal argument.  Argument replaced with an undefined value.
+
+      WARNING  68 (Line 255:35): Encountered a predicate value with an invalid predicate name.
+        Will coerce the name to a valid predicate name.
+
+
+      WARNING  71 (Line 260:44): Illegal characters encountered in a quote string appearing in a matrix or predicate argument.  The illegal characters were replaced with spaces.
+        The quote string appeared in a matrix or predicate value.
+
+
+      WARNING  75 (Line 261:26): Encountered predicate value which is missing one or more required arguments.  These argument(s) will be filled in with formal arguments.
+
+
+      WARNING  69 (Line 266:35): Encountered a predicate value that refers to an undefined predicate.  The predicate value will be discarded.
+
+
+      WARNING  68 (Line 276:35): Encountered a predicate value with an invalid predicate name.
+        Will coerce the name to a valid predicate name.
+
+
+      WARNING  69 (Line 276:35): Encountered a predicate value that refers to an undefined predicate.  The predicate value will be discarded.
+
+
+      WARNING  70 (Line 281:46): Encountered a list that does not describe a predicate value where a predicate value was expected.  The list will be discarded.
+
+
+      WARNING  75 (Line 291:46): Encountered predicate value which is missing one or more required arguments.  These argument(s) will be filled in with formal arguments.
+
+
+      WARNING  74 (Line 296:54): Encountered excess arguments in a predicate value.  The excess arguments were discarded.
+
+
+      WARNING  75 (Line 301:46): Encountered predicate value which is missing one or more required arguments.  These argument(s) will be filled in with formal arguments.
+
+
+      WARNING  74 (Line 306:54): Encountered excess arguments in a predicate value.  The excess arguments were discarded.
+
+
+      WARNING  73 (Line 311:44): Encountered an illegal argument in a predicate value argument list.  Will replace the argument with the associated formal argument.
+
+
+      WARNING  73 (Line 311:55): Encountered an illegal argument in a predicate value argument list.  Will replace the argument with the associated formal argument.
+
+
+      WARNING  66 (Line 316:44): Encountered a formal argument whose name does not match the expected formal argumentname.
+        The formal argument appeared in a predicate value.  The expected formal argument will be used.
+
+
+      WARNING  66 (Line 316:58): Encountered a formal argument whose name does not match the expected formal argumentname.
+        The formal argument appeared in a predicate value.  The expected formal argument will be used.
+
+
+      WARNING  68 (Line 321:35): Encountered a predicate value with an invalid predicate name.
+        Will coerce the name to a valid predicate name.
+
+
+      WARNING  69 (Line 321:35): Encountered a predicate value that refers to an undefined predicate.  The predicate value will be discarded.
+
+
+      ERROR  4 (Line 341:0): Encountered end of file unexpectedly.
+        EOF encountered in a predicate value argument list.
+
+Unable to continue parse -- Aborting...

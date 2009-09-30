@@ -38,7 +38,7 @@ public final class FormalArgTypeEditor extends EditorComponent {
 
         String fargType = "";
         try {
-            FormalArgument model = vocabElement.getFormalArg(argIndex);
+            FormalArgument model = vocabElement.getFormalArgCopy(argIndex);
             FArgType ft = model.getFargType();
             fargType = ft.toString().substring(0, 1);
         } catch (SystemErrorException e) {

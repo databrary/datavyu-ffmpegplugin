@@ -32,7 +32,22 @@ package org.openshapa.db;
  * change list for it here so as to simplify processing elsewhere.
  *
  *                                               -- 2/2/08
+ *
+ * Changes:
+ *
+ *    - Added the itsColID field to MatrixVocabElementListeners.
+ *
+ *      This field is used to ensure that the instance of DataColumn
+ *      associated with itsVE is the first internal listener
+ *      called when notifyInternalListenersOfChange() is called.
+ *
+ *      This in turn simplifies management of the case in which the column
+ *      predicate implied by the associated MVE appears in a cell located
+ *      in the data column associated with itsVE.
+ *
+ *                                              -- 9/20/09
  */
+
 public class MatrixVocabElementListeners extends VocabElementListeners
 {
     /*************************************************************************/
@@ -374,7 +389,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
                 this.cpFargInserted[i] = false;
             }
 
-            for ( i = 3; i < newFargListLen; i++ )
+            for ( i = 3; i < newCPFargListLen; i++ )
             {
                 this.cpn2o[i] = this.n2o[i - 3] + 3;
                 this.cpFargNameChanged[i] = this.fargNameChanged[i - 3];
@@ -399,7 +414,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
      *
      * Changes:
      *
-     *    - None.
+     *    - None
      */
 
     protected void notifyInternalListenersOfChange()
@@ -467,7 +482,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
      *
      * Changes:
      *
-     *    - None.
+     *    - None
      */
 
     protected void notifyInternalListenersOfDeletion()

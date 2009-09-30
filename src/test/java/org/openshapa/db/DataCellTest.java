@@ -3187,8 +3187,7 @@ public class DataCellTest extends CellTest {
                 farg = (FormalArgument)(testCell.getDB().idx.getElement(
                                              newVal7.getArg(0).getItsFargID()));
                 udv = new UndefinedDataValue(testCell.getDB(),
-                                             newVal7.getArg(0).getItsFargID(),
-                                             farg.getFargName());
+                                             newVal7.getArg(0).getItsFargID());
                 newVal7.replaceArg(0, udv);
                 testCell.setVal(newVal7);
                 failures =+ MatrixTest.VerifyMatrixCopy(testCell.getVal(), newVal7,

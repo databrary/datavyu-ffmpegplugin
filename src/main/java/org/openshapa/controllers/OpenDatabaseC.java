@@ -187,6 +187,9 @@ public final class OpenDatabaseC {
      * @throws IOException If unable to read the file correctly.
      * @throws SystemErrorException If unable to update the database with the
      * predicate variable data.
+     *
+     * Changes: Replace call to vocabElement.getFormalArg() with call
+     *          to vocabElement.getFormalArgCopy().
      */
     private String parseMatrixVariable(final BufferedReader csvFile,
                                        final DataColumn dc,
@@ -215,7 +218,7 @@ public final class OpenDatabaseC {
 
             Vector<DataValue> arguments = new Vector<DataValue>();
             for (int i = 0; i < mve.getNumFormalArgs(); i++) {
-                FormalArgument ma = mve.getFormalArg(i);
+                FormalArgument ma = mve.getFormalArgCopy(i);
                 boolean emptyArg = false;
                 if (tokens[i + 2].charAt(0) == '<') {
                     emptyArg = true;

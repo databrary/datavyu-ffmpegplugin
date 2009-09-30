@@ -141,7 +141,7 @@ begin
         fargid = pve0.get_formal_arg(4).get_id()
         fdv4 = QuoteStringDataValue.new($db, fargid, "quote_string")
         fargid = pve0.get_formal_arg(5).get_id()
-        fdv5 = UndefinedDataValue.new($db, fargid, pve0.get_formal_arg(5).get_farg_name())
+        fdv5 = UndefinedDataValue.new($db, fargid)
 
         if dd == 0
           # construct a predicate with null args in first cell of column
@@ -167,7 +167,7 @@ begin
         fargid = mve0.get_formal_arg(3).get_id()
         fdv3 = QuoteStringDataValue.new($db, fargid, "qs")
         fargid = mve0.get_formal_arg(4).get_id()
-        fdv4 = UndefinedDataValue.new($db, fargid, mve0.get_formal_arg(4).get_farg_name())
+        fdv4 = UndefinedDataValue.new($db, fargid)
 
         if dd == 0
           # construct a matrix with null args in first cell of column

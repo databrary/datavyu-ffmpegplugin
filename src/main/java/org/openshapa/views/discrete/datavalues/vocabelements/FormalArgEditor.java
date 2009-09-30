@@ -46,7 +46,7 @@ public final class FormalArgEditor extends EditorComponent {
 
     public void resetValue(final VocabElement ve) {
         try {
-            model = vocabElement.getFormalArg(argIndex);
+            model = vocabElement.getFormalArgCopy(argIndex);
 
             // Formal argument name contains "<" and ">" characters which we
             // don't actually want.

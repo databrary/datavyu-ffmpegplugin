@@ -670,7 +670,7 @@ public class MatrixVocabElement extends VocabElement
      *
      *   - None.
      */
-    public FormalArgument getFormalArg(int n)
+    protected FormalArgument getFormalArg(int n)
         throws SystemErrorException
     {
         final String mName = "MatrixVocabElement::getFormalArg(): ";
@@ -694,6 +694,43 @@ public class MatrixVocabElement extends VocabElement
         return super.getFormalArg(n);
 
     } /*MatrixVocabElement::getFormalArg() */
+
+
+    /**
+     * getFormalArgCopy()
+     *
+     * Add some extry error checking to FormalArgument::getFormalArgCopy().
+     *
+     *                                           -- 9/15/09
+     *
+     * Changes:
+     *
+     *   - None.
+     */
+    public FormalArgument getFormalArgCopy(int n)
+        throws SystemErrorException
+    {
+        final String mName = "MatrixVocabElement::getFormalArgCopy(): ";
+
+        if ( type == MatrixType.UNDEFINED )
+        {
+            throw new SystemErrorException(mName +
+                    "must set type before getting arguments.");
+        }
+        else if ( fArgList == null )
+        {
+            /* fArgList hasn't been instantiated yet -- scream and die */
+            throw new SystemErrorException(mName + "fArgList unitialized?!?!");
+        }
+        else if ( ( type != MatrixType.MATRIX ) && ( n != 0 ) )
+        {
+            throw new SystemErrorException(mName +
+                    "n must be 0 if type isn't MATRIX.");
+        }
+
+        return super.getFormalArgCopy(n);
+
+    } /* MatrixVocabElement::getFormalArgCopy() */
 
 
     /**

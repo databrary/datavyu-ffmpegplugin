@@ -163,6 +163,9 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * @return The displayable version of the null argument.
+     *
+     * Changes: Replace call to vocabElement.getFormalArg() with call
+     *          to vocabElement.getFormalArgCopy().
      */
     public final String getNullArg() {
         String t = "";
@@ -171,13 +174,13 @@ public abstract class DataValueEditor extends EditorComponent {
                 long mveid = parentMatrix.getMveID();
                 MatrixVocabElement mve = parentMatrix.getDB()
                                                      .getMatrixVE(mveid);
-                FormalArgument fa = mve.getFormalArg(mIndex);
+                FormalArgument fa = mve.getFormalArgCopy(mIndex);
                 t = fa.toString();
             } else if (parentMatrix != null && parentPredicate != null) {
                 Predicate p = parentPredicate.getItsValue();
                 PredicateVocabElement pve = parentMatrix.getDB()
                                                     .getPredVE(p.getPveID());
-                FormalArgument fa = pve.getFormalArg(pIndex);
+                FormalArgument fa = pve.getFormalArgCopy(pIndex);
                 t = fa.toString();
             }
         } catch (SystemErrorException e) {

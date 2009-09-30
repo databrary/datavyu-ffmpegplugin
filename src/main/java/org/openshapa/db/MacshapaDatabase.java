@@ -199,7 +199,7 @@ public class MacshapaDatabase extends Database {
      *    - None.
      */
 
-    protected boolean toMODBFile_includeDataColumnInUserSection(DataColumn dc)
+    protected boolean toMODBFile_includeDataColumnInUserSection(final DataColumn dc)
     {
         boolean includeIt = true;
 
@@ -1440,7 +1440,15 @@ public class MacshapaDatabase extends Database {
 
         output.printf("%s  (%s", indent, newLine);
 
-        // dump system list entries here -- if any
+        toMODBFile_systemSection_shapaPaneVars(output,
+                                               newLine,
+                                               indent + "    ");
+
+        // add code to dump groups when we have reference columns going.
+
+        // add code to dump import formats when and if we find it necessary.
+
+        // add code to dump alignments when and if we find it necessary.
 
         output.printf("%s  )%s", indent, newLine);
 
@@ -1449,6 +1457,86 @@ public class MacshapaDatabase extends Database {
         return;
 
     } /* MacshapaDatabase::toMODBFile_systemSection() */
+
+
+    /**
+     * toMODBFile_systemSection_shapaPaneVars()
+     *
+     * Write the contents of the system section of a MacSHAPA ODB file to
+     * the supplied stream.
+     *
+     * The newLine parameter exists to assist debugging.  While MacSHAPA
+     * ODB files must always use '\r' as the new line character, in our
+     * internal test code, it is frequently useful to use '\n' instead.
+     *
+     *                                              JRM -- 12/29/08
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    protected void toMODBFile_systemSection_shapaPaneVars(
+                                                java.io.PrintStream output,
+                                                String newLine,
+                                                String indent)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName =
+                "MacshapaDatabase::toMODBFile_systemSection_shapaPaneVars()";
+        int i;
+        long id;
+        java.util.Vector<Long> cov;
+        Column col;
+        DataColumn dc;
+
+        if ( output == null )
+        {
+            throw new SystemErrorException(mName + "output null on entry");
+        }
+
+        if ( newLine == null )
+        {
+            throw new SystemErrorException(mName + "newLine null on entry");
+        }
+
+        if ( indent == null )
+        {
+            throw new SystemErrorException(mName + "indent null on entry");
+        }
+
+        cov = this.cl.getColOrderVector();
+
+        output.printf("%s( SHAPA-PANE-VARS>%s", indent, newLine);
+
+        output.printf("%s  (%s", indent, newLine);
+
+        for ( i = 0; i < cov.size(); i++ )
+        {
+            id = cov.get(i);
+
+            col = this.cl.getColumn(id);
+
+            if ( col instanceof DataColumn )
+            {
+                dc = (DataColumn)col;
+
+                if ( ( ! dc.getHidden() ) &&
+                     ( this.toMODBFile_includeDataColumnInUserSection(dc) ) )
+                {
+                    output.printf("%s    |%s|%s", indent, dc.getName(), newLine);
+                }
+            }
+        }
+
+        output.printf("%s  )%s", indent, newLine);
+
+        output.printf("%s)%s", indent, newLine);
+
+        return;
+
+    } /* MacshapaDatabase::toMODBFile_systemSection_shapaPaneVars() */
 
 
     /**

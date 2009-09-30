@@ -15,6 +15,10 @@
         The value of the QUERY> section must be a list.
 
 
+      WARNING  22 (Line 11:32): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of the SYSTEM> section must be a list.
+
+
       ERROR  4 (Line 13:0): Encountered end of file unexpectedly.
         EOF occurred the database body a-list.
 Unable to continue parse -- Aborting...

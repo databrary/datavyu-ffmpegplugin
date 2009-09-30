@@ -108,7 +108,7 @@
                     ( |<arg2>| |<arg2>| )
                   )
                 )
-                ( VOCAB> ( pred_2 ) )
+                ( VOCAB> ( |pred_2| ) )
               )
             )
             ( |an integer var|
@@ -211,7 +211,7 @@
                     ( |<val>| () )
                   )
                 )
-                ( VOCAB> ( pred_1 pred_2 ) )
+                ( VOCAB> ( |pred_1| |pred_2| ) )
               )
             )
           )
@@ -224,6 +224,17 @@
     )
     ( SYSTEM>
       (
+        ( SHAPA-PANE-VARS>
+          (
+            |a text var|
+            |a nominal var|
+            |an integer var|
+            |a float var|
+            |a predicate var|
+            |fixed len matrix|
+            |var len matrix|
+          )
+        )
       )
     )
   )

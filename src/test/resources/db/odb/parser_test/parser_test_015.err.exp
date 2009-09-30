@@ -40,7 +40,11 @@
       WARNING  85 (Line 20:27): Encountered an atom in the query list.  The atom will be discarded.
 
 
+      WARNING  20 (Line 24:34): Encountered an atom in an a-list.  The atom will be read and discarded.
+        The atom was detected in the SYSTEM> a-list.
+
+
       ERROR  4 (Line 26:0): Encountered end of file unexpectedly.
-        EOF encountered in an arbitrary list that was being discarded.
+        EOF occurred in the SYSTEM> a-list.
 
 Unable to continue parse -- Aborting...

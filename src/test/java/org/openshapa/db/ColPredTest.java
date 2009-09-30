@@ -2247,8 +2247,10 @@ public class ColPredTest {
                                              new TimeStamp(db.getTicks(), 60));
                 matrix_cp0_arg_list.add(arg);
                 fargID = matrix_mve0.getCPFormalArg(9).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve0.getFormalArg(6).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: Delete this if all goes well
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve0.getFormalArg(6).getFargName());
                 matrix_cp0_arg_list.add(arg);
                 matrix_cp0 = new ColPred(db, matrix_mve0_ID,
                                          matrix_cp0_arg_list);
@@ -2270,8 +2272,10 @@ public class ColPredTest {
                 arg = new QuoteStringDataValue(db, fargID, " a q string ");
                 matrix_cp1_arg_list.add(arg);
                 fargID = matrix_mve1.getCPFormalArg(4).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve1.getFormalArg(1).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this if all goes well.
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve1.getFormalArg(1).getFargName());
                 matrix_cp1_arg_list.add(arg);
                 fargID = matrix_mve1.getCPFormalArg(5).getID();
                 arg = new IntDataValue(db, fargID, 88);
@@ -2293,8 +2297,10 @@ public class ColPredTest {
                         new TimeStamp(db.getTicks(), 35 * db.getTicks()));
                 matrix_cp2_arg_list.add(arg);
                 fargID = matrix_mve2.getCPFormalArg(3).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve1.getFormalArg(0).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this if all goes well
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve1.getFormalArg(0).getFargName());
                 matrix_cp2_arg_list.add(arg);
                 matrix_cp2 = new ColPred(db, matrix_mve2_ID,
                                          matrix_cp2_arg_list);
@@ -4614,8 +4620,10 @@ public class ColPredTest {
                                              new TimeStamp(db.getTicks(), 60));
                 matrix_cp0_arg_list.add(arg);
                 fargID = matrix_mve0.getCPFormalArg(9).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve0.getCPFormalArg(9).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this if all goes well
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve0.getCPFormalArg(9).getFargName());
                 matrix_cp0_arg_list.add(arg);
                 matrix_cp0 = new ColPred(db, matrix_mve0_ID,
                                          matrix_cp0_arg_list);
@@ -4637,8 +4645,10 @@ public class ColPredTest {
                 arg = new QuoteStringDataValue(db, fargID, " a q string ");
                 matrix_cp1_arg_list.add(arg);
                 fargID = matrix_mve1.getCPFormalArg(4).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve1.getCPFormalArg(4).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this if all goes well
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve1.getCPFormalArg(4).getFargName());
                 matrix_cp1_arg_list.add(arg);
                 fargID = matrix_mve1.getCPFormalArg(5).getID();
                 arg = new IntDataValue(db, fargID, 88);
@@ -4660,8 +4670,10 @@ public class ColPredTest {
                         new TimeStamp(db.getTicks(), 35 * db.getTicks()));
                 matrix_cp2_arg_list.add(arg);
                 fargID = matrix_mve2.getCPFormalArg(3).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve2.getCPFormalArg(3).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: Delete this if all goes well
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve2.getCPFormalArg(3).getFargName());
                 matrix_cp2_arg_list.add(arg);
                 matrix_cp2 = new ColPred(db, matrix_mve2_ID,
                                          matrix_cp2_arg_list);
@@ -6499,8 +6511,10 @@ public class ColPredTest {
                                              new TimeStamp(db.getTicks(), 60));
                 matrix_cp0_arg_list.add(arg);
                 fargID = matrix_mve0.getCPFormalArg(9).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve0.getFormalArg(6).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this eventually
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve0.getFormalArg(6).getFargName());
                 matrix_cp0_arg_list.add(arg);
                 fargID = matrix_mve0.getCPFormalArg(10).getID();
                 arg = new ColPredDataValue(db, fargID,
@@ -6556,8 +6570,10 @@ public class ColPredTest {
                 arg = new QuoteStringDataValue(db, fargID, " a q string ");
                 matrix_cp16_arg_list.add(arg);
                 fargID = matrix_mve9.getCPFormalArg(4).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve9.getFormalArg(1).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this eventually if all goes well
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve9.getFormalArg(1).getFargName());
                 matrix_cp16_arg_list.add(arg);
                 fargID = matrix_mve9.getCPFormalArg(5).getID();
                 arg = new IntDataValue(db, fargID, 88);
@@ -6579,8 +6595,10 @@ public class ColPredTest {
                         new TimeStamp(db.getTicks(), 35 * db.getTicks()));
                 matrix_cp17_arg_list.add(arg);
                 fargID = matrix_mve10.getCPFormalArg(3).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve10.getFormalArg(0).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this if all goes well
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve10.getFormalArg(0).getFargName());
                 matrix_cp17_arg_list.add(arg);
                 matrix_cp17 = new ColPred(db, matrix_mve10_ID,
                                           matrix_cp17_arg_list);
@@ -9096,12 +9114,22 @@ public class ColPredTest {
                 nomArg = new NominalDataValue(db, fargID, "yan");
                 predArg = new PredDataValue(db, fargID,
                             new Predicate(db, pve1_ID));
-                textArg = new TextStringDataValue(db, fargID, "yats");
+
+                // col pred argument 3 of matrix_mve10 is untyped, and thus 
+                // cannot accept a text string as its value.  Thus the text
+                // argument allocation will fail if we supply the ID of this
+                // formal argument.  Hence, allocate the text arg without an
+                // ID.
+                textArg = new TextStringDataValue(db);
+                textArg.setItsValue("yats");
+
                 qsArg = new QuoteStringDataValue(db, fargID, "yaqs");
                 tsArg = new TimeStampDataValue(db, fargID,
                             new TimeStamp(db.getTicks(), 60));
-                undefArg = new UndefinedDataValue(db, fargID,
-                            matrix_mve10.getFormalArg(0).getFargName());
+                undefArg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this if all goes well
+//                undefArg = new UndefinedDataValue(db, fargID,
+//                            matrix_mve10.getFormalArg(0).getFargName());
 
                 completed = true;
             }
@@ -9463,8 +9491,12 @@ public class ColPredTest {
                 predArg = new PredDataValue(db, fargID,
                             new Predicate(db, pve1_ID));
 
-                fargID = matrix_mve0.getCPFormalArg(9).getID();
-                textArg = new TextStringDataValue(db, fargID, "yats");
+                // matrix_mve0 col pred formal arg 9 is float and thus
+                // cannot be replaced with a text string.  Thus the text arg
+                // allocation will fail if the constructor is passed its
+                // ID.  Thus, don't set an ID in this allocation.
+                textArg = new TextStringDataValue(db);
+                textArg.setItsValue("yats");
 
                 fargID = matrix_mve0.getCPFormalArg(7).getID();
                 qsArg = new QuoteStringDataValue(db, fargID, "yaqs");
@@ -9474,8 +9506,10 @@ public class ColPredTest {
                             new TimeStamp(db.getTicks(), 360));
 
                 fargID = matrix_mve0.getCPFormalArg(9).getID();
-                undefArg = new UndefinedDataValue(db, fargID,
-                            matrix_mve0.getCPFormalArg(9).getFargName());
+                undefArg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this eventually if all goes well
+//                undefArg = new UndefinedDataValue(db, fargID,
+//                            matrix_mve0.getCPFormalArg(9).getFargName());
 
                 fargID = matrix_mve0.getCPFormalArg(9).getID();
                 arg = new FloatDataValue(db, fargID, 10.0);
@@ -10847,8 +10881,10 @@ public class ColPredTest {
                                              new TimeStamp(db.getTicks(), 60));
                 matrix_cp0_arg_list.add(arg);
                 fargID = matrix_mve0.getCPFormalArg(9).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve0.getCPFormalArg(9).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this if all goes well
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve0.getCPFormalArg(9).getFargName());
                 matrix_cp0_arg_list.add(arg);
                 matrix_cp0 = new ColPred(db, matrix_mve0_ID,
                                          matrix_cp0_arg_list);
@@ -10870,8 +10906,10 @@ public class ColPredTest {
                 arg = new QuoteStringDataValue(db, fargID, " a q string ");
                 matrix_cp1_arg_list.add(arg);
                 fargID = matrix_mve1.getCPFormalArg(4).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve1.getCPFormalArg(4).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this if all goes well
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve1.getCPFormalArg(4).getFargName());
                 matrix_cp1_arg_list.add(arg);
                 fargID = matrix_mve1.getCPFormalArg(5).getID();
                 arg = new IntDataValue(db, fargID, 88);
@@ -10893,8 +10931,10 @@ public class ColPredTest {
                         new TimeStamp(db.getTicks(), 35 * db.getTicks()));
                 matrix_cp2_arg_list.add(arg);
                 fargID = matrix_mve2.getCPFormalArg(3).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                     matrix_mve2.getCPFormalArg(3).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this if all goes well
+//                arg = new UndefinedDataValue(db, fargID,
+//                                     matrix_mve2.getCPFormalArg(3).getFargName());
                 matrix_cp2_arg_list.add(arg);
                 matrix_cp2 = new ColPred(db, matrix_mve2_ID,
                                          matrix_cp2_arg_list);
@@ -12319,8 +12359,10 @@ public class ColPredTest {
                                              new TimeStamp(db.getTicks()));
                 argList0.add(arg);
                 fargID = mve0.getCPFormalArg(9).getID();
-                arg = new UndefinedDataValue(db, fargID,
-                                             mve0.getCPFormalArg(9).getFargName());
+                arg = new UndefinedDataValue(db, fargID);
+                // TODO: delete this if all goes well
+//                arg = new UndefinedDataValue(db, fargID,
+//                                             mve0.getCPFormalArg(9).getFargName());
                 argList0.add(arg);
 
                 cp0 = new ColPred(db, mve0ID, argList0);

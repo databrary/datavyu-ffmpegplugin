@@ -2152,7 +2152,7 @@ public abstract class Database
      *    - None.
      */
 
-    protected boolean toMODBFile_includeDataColumnInUserSection(DataColumn dc)
+    protected boolean toMODBFile_includeDataColumnInUserSection(final DataColumn dc)
     {
 
         return(true);
