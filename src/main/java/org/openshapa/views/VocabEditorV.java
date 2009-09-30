@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.db.VocabList;
 
 /**
  * A view for editing the database vocab.
@@ -113,7 +112,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
         this.addArgButton.setVisible(false);
         this.addMatrixButton.setVisible(false);
         this.addPredicateButton.setVisible(false);
-        this.revertButton.setVisible(false);
     }
 
     /**
@@ -280,20 +278,25 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void revertChanges() {
-        int tableSize = veViews.size();
-        int curPos = 0;
+        try {
+            for (VocabElementV vev : veViews) {
+                if (vev.hasChanged()) {
+                    // If the change is an existing vocab element - discard the
+                    // changes in the view.
+                    VocabElement ve = vev.getModel();
+                    if (ve.getID() != DBIndex.INVALID_ID) {
+                        vev.setModel(db.getVocabElement(ve.getID()));
+                    }
+                    // If the change is a delete - discard the delete change.
 
-        for (VocabElementV view : veViewsToDeleteCompletely) {
-            view.setDeleted(false);
-        }
+                    // If the change is a new vocab element - discard the new
+                    // element.
 
-        for (int i = 0; i < tableSize; i++) {
-            if (veViews.get(curPos).hasChanged()) {
-                verticalFrame.remove(veViews.get(curPos));
-                veViews.remove(curPos);
-            } else {
-                curPos++;
+                    vev.setHasChanged(false);
+                }
             }
+        } catch (SystemErrorException e) {
+            logger.error("Unable to revert changes in vocab editor.", e);
         }
 
         updateDialogState();
@@ -413,7 +416,9 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * model.
      */
     public void updateDialogState() {
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext().getResourceMap(VocabEditorV.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(VocabEditorV.class);
 
         boolean containsC = false;
         selectedVocabElement = null;
@@ -454,7 +459,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
             argTypeComboBox.setEnabled(true);
             varyArgCheckBox.setEnabled(true);
             deleteButton.setEnabled(true);
-            varyArgCheckBox.setSelected(selectedVocabElement.getModel().getVarLen());
+            varyArgCheckBox.setSelected(selectedVocabElement.getModel()
+                                                            .getVarLen());
         } else {
             addArgButton.setEnabled(false);
             argTypeComboBox.setEnabled(false);
@@ -683,7 +689,9 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * @param evt The event that triggered this action.
      */
     private void argTypeComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_argTypeComboBoxItemStateChanged
-        if (selectedVocabElement != null && selectedArgument != null && evt.getStateChange() == ItemEvent.SELECTED) {
+        if (selectedVocabElement != null
+            && selectedArgument != null
+            && evt.getStateChange() == ItemEvent.SELECTED) {
 
             // Need to change the type of the selected argument.
             FormalArgument oldArg = selectedArgument.getModel();
@@ -706,8 +714,9 @@ public final class VocabEditorV extends OpenSHAPADialog {
                     return;
                 }
 
-                selectedVocabElement.getModel().replaceFormalArg(newArg,
-                        selectedArgument.getArgPos());
+                selectedVocabElement.getModel()
+                                    .replaceFormalArg(newArg,
+                                                  selectedArgument.getArgPos());
                 selectedVocabElement.setHasChanged(true);
 
                 // Store the selectedVocabElement in a temp variable -
