@@ -377,7 +377,7 @@
     <dependency>
       <groupId>org.uispec4j</groupId>
       <artifactId>uispec4j</artifactId>
-      <version>v2.0-RC3-I</version>
+      <version>v2.0-RC3-J</version>
     </dependency>
 
     <dependency>
