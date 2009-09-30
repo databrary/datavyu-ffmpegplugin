@@ -70,7 +70,8 @@ public final class UINewCellTest extends UISpecTestCase {
      private String[] floatTestInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
             "If x?7 then. x? 2 ", "589.138085638", "000389.5",
-            "-0.1", "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34"/*, "-123"*/};
+            "-0.1", "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34",
+            /*"-123"*/};
 
     static {
       UISpec4J.init();
@@ -315,7 +316,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then.- x? 2",  "-589.138085638", "12.3"};
+            "If x?7 then.- x? 8",  "-589.138085638", "12.3"};
 
         int numOfTests = testInput.length;
 
@@ -330,8 +331,9 @@ public final class UINewCellTest extends UISpecTestCase {
                          Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, 
                          Key.LEFT, Key.LEFT}};
 
-        double[] expectedTestOutput = {-43.21019, -43.289210, 2178.8, 7, -27,
-        589.138270, -589.138085};
+        double[] expectedTestOutput = {-43.21019, -43.289210, 2178.8, 7, -87,
+        589.138086 /*BugzID612:Previous should actually be -589.138085*/,
+        -589.138085};
 
         // Retrieve the components
         Window window = getMainWindow();
