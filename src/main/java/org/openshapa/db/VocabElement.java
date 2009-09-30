@@ -251,7 +251,7 @@ public abstract class VocabElement extends DBElement {
      *
      * @date 2007/02/14
      */
-    protected void setName(String name)
+    public void setName(String name)
         throws SystemErrorException
     {
         final String mName = "VocabElement::setName(): ";
