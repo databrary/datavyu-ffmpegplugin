@@ -58,8 +58,8 @@ public final class UIDeleteCellValueTest extends UISpecTestCase {
 
         /*BugzID629:highlightAndBackspaceTest(type);
         highlightAndDeleteTest(type);
-        backSpaceAllTest(type);
-        deleteAllTest(type);*/
+        backSpaceAllTest(type); */
+        deleteAllTest(type);
     }
 
     /**
