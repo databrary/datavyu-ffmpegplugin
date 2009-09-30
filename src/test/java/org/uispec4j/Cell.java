@@ -150,6 +150,17 @@ public class Cell extends AbstractUIComponent {
         KeyUtils.enterString(getComponentByType(element), s2);
     }
 
+     /**
+     * presses keys in a cell element.
+     * @param element element to type value into
+     * @param keys Keys to type next
+     */
+    public final void pressKeys(final int element, final Key[] keys) {
+        requestFocus(element);
+
+        KeyUtils.enterKeys(getComponentByType(element), keys);
+    }
+
     /**
      * enters matrix text
      * @param s array of strings for each argument in Matrix
@@ -185,10 +196,6 @@ public class Cell extends AbstractUIComponent {
             ((TimeStampTextField) getComponentByType(element))
                     .focusGained(null);
         }
-
-    }
-
-    public final void select(){
 
     }
 
