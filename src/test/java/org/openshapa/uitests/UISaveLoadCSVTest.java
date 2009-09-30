@@ -55,6 +55,9 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         String tempFolder = System.getProperty("java.io.tmpdir");
         File savedCSV = new File(tempFolder + "/savedCSV.csv");
         savedCSV.deleteOnExit();
+        if(savedCSV.exists()) {
+            savedCSV.delete();
+        }
         assertFalse(savedCSV.exists());
 
         // 1. Open and run script to populate database
