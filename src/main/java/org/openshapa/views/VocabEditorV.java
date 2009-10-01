@@ -50,6 +50,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
     private Vector<VocabElementV> veViewsToDeleteCompletely;
     /** Vertical frame for holding the current listing of Vocab elements. */
     private JPanel verticalFrame;
+    /** Counter used to increment the new predicate name. */
+    private int numNewPreds;
 
     /**
      * Constructor.
@@ -66,6 +68,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         selectedVocabElement = null;
         selectedArgument = null;
         selectedArgumentI = -1;
+        numNewPreds = 1;
 
         // Populate current vocab list with vocab data from the database.
         veViews = new Vector<VocabElementV>();
@@ -112,7 +115,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
         this.varyArgCheckBox.setVisible(false);
         this.addArgButton.setVisible(false);
         this.addMatrixButton.setVisible(false);
-        this.addPredicateButton.setVisible(false);
     }
 
     /**
@@ -122,8 +124,14 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public void addPredicate() {
         try {
             PredicateVocabElement pve = new PredicateVocabElement(db,
-                    "predicate");
+                                        "predicate" + numNewPreds);
+
+            // The database dictates that predicates must have a single argument
+            // - add a default to get started.
+            pve.appendFormalArg(new IntFormalArg(db, "<integer>"));
             addVocabElement(pve);
+            numNewPreds++;
+
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
         }
@@ -280,20 +288,25 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void revertChanges() {
         try {
-            for (VocabElementV vev : veViews) {
-                if (vev.hasChanged()) {
+            for (VocabElementV view : veViews) {
+                if (view.hasChanged()) {
                     // If the change is an existing vocab element - discard the
                     // changes in the view.
-                    VocabElement ve = vev.getModel();
+                    VocabElement ve = view.getModel();
                     if (ve.getID() != DBIndex.INVALID_ID) {
-                        vev.setModel(db.getVocabElement(ve.getID()));
-                    }
-                    // If the change is a delete - discard the delete change.
+                        view.setModel(db.getVocabElement(ve.getID()));
 
                     // If the change is a new vocab element - discard the new
                     // element.
+                    } else {
+                        verticalFrame.remove(view);
+                        veViews.remove(view);
+                    }
 
-                    vev.setHasChanged(false);
+                    // If the change is a delete - discard the delete change.
+
+                    // Mark the view as unchanged.
+                    view.setHasChanged(false);
                 }
             }
         } catch (SystemErrorException e) {
