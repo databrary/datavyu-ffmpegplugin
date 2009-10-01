@@ -156,13 +156,13 @@ public class Cell extends AbstractUIComponent {
      * @param element element to type value into.
      * @param vti vector of TextItems.
      */
-    public final void enterText(final int element, final Vector<TextItem> vti) {
-        requestFocus(element);
-
-        for (TextItem t : vti) {
-            t.enterItem(getComponentByType(element));
-        }
-    }
+//    public final void enterText(final int element, final Vector<TextItem> vti) {
+//        requestFocus(element);
+//
+//        for (TextItem t : vti) {
+//            t.enterItem(getComponentByType(element));
+//        }
+//    }
 
      /**
      * presses keys in a cell element.
