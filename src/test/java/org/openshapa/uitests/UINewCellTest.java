@@ -12,7 +12,6 @@ import org.uispec4j.Key;
 import org.uispec4j.MenuBar;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.TextBox;
-import org.uispec4j.TextItem;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
