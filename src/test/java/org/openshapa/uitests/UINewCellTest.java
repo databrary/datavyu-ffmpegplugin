@@ -325,10 +325,10 @@ public final class UINewCellTest extends UISpecTestCase {
             {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
             {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE,
                 Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                Key.BACKSPACE, Key.BACKSPACE}, {Key.RIGHT}, 
-                {Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, 
-                         Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, 
-                         Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, 
+                Key.BACKSPACE, Key.BACKSPACE}, {Key.RIGHT},
+                {Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT,
+                         Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT,
+                         Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT,
                          Key.LEFT, Key.LEFT}};
 
         double[] expectedTestOutput = {-43.21019, -43.289210, 2178.8, 7, -87,
@@ -1012,6 +1012,7 @@ public final class UINewCellTest extends UISpecTestCase {
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
             TextBox t = c.getValue();
+            //Vector<TextItem> vti = new
             c.enterText(Cell.VALUE, testInput[i], advancedInput[i],
                     testInput[i + 1]);
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
