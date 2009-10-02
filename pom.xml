@@ -155,6 +155,7 @@
       <url>http://repo1.maven.org/maven2</url>
       <layout>default</layout>
     </repository>
+
   </repositories>
 
   <!-- Use an optimized build for releases. -->
@@ -235,7 +236,7 @@
                     <mainClass>org.openshapa.OpenSHAPA</mainClass>
                     <addClasspath>true</addClasspath>
                 </manifest>
-            </archive>           
+            </archive>
         </configuration>
       </plugin>
 
@@ -355,7 +356,7 @@
       <artifactId>swing-layout</artifactId>
       <version>1.0.3</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jdesktop</groupId>
       <artifactId>appframework</artifactId>
@@ -385,5 +386,7 @@
       <artifactId>openhashtable</artifactId>
       <version>0.1</version>
     </dependency>
+
   </dependencies>
 </project>
+
