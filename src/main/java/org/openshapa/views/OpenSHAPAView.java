@@ -377,7 +377,6 @@ public final class OpenSHAPAView extends FrameView {
         jSeparator3.setName("jSeparator3"); // NOI18N
         jMenu3.add(jSeparator3);
 
-        weakTemporalOrderMenuItem.setFont(new java.awt.Font("Silom", 0, 14)); // NOI18N
         weakTemporalOrderMenuItem.setName("weakTemporalOrderMenuItem"); // NOI18N
         weakTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

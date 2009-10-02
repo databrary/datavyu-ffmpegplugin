@@ -2,6 +2,10 @@ package org.openshapa.views.continuous;
 
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
+<<<<<<< HEAD
+=======
+import org.openshapa.views.QTVideoController;
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
@@ -14,6 +18,10 @@ import quicktime.io.QTFile;
 import quicktime.std.StdQTConstants;
 import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
+<<<<<<< HEAD
+=======
+import quicktime.std.movies.MovieDrawingComplete;
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 import quicktime.std.movies.media.SampleTimeInfo;
@@ -22,7 +30,11 @@ import quicktime.std.movies.media.SampleTimeInfo;
  * The viewer for a quicktime video file.
  */
 public final class QTVideoViewer extends JFrame
+<<<<<<< HEAD
 implements /*MovieDrawingComplete,*/ DataViewer {
+=======
+implements MovieDrawingComplete {
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(QTVideoViewer.class);
@@ -37,7 +49,11 @@ implements /*MovieDrawingComplete,*/ DataViewer {
     private Media visualMedia;
 
     /** The controller used to perform actions on this viewer. */
+<<<<<<< HEAD
     //private QTVideoController parentController;
+=======
+    private QTVideoController parentController;
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
 
     /** The "normal" playback speed. */
     private static final float NORMAL_SPEED = 1.0f;
@@ -63,11 +79,19 @@ implements /*MovieDrawingComplete,*/ DataViewer {
      * @param controller The controller invoking actions on this continous
      * data viewer.
      */
+<<<<<<< HEAD
     public QTVideoViewer(/*final QTVideoController controller*/) {
         try {
             movie = null;
             shuttleSpeed = 0.0f;
             //parentController = controller;
+=======
+    public QTVideoViewer(final QTVideoController controller) {
+        try {
+            movie = null;
+            shuttleSpeed = 0.0f;
+            parentController = controller;
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
 
             // Initalise QTJava.
             QTSession.open();
@@ -77,23 +101,35 @@ implements /*MovieDrawingComplete,*/ DataViewer {
         initComponents();
     }
 
+<<<<<<< HEAD
     public JFrame getParentJFrame() {
         return this;
     }
 
+=======
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
     /**
      * Method to open a video file for playback.
      *
      * @param videoFile The video file that this viewer is going to display to
      * the user.
      */
+<<<<<<< HEAD
     public void setDataFeed(final File videoFile) {
+=======
+    public void setVideoFile(final File videoFile) {
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
         try {
             this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
+<<<<<<< HEAD
             //movie.setDrawingCompleteProc(StdQTConstants
             //                             .movieDrawingCallWhenChanged, this);
+=======
+            movie.setDrawingCompleteProc(StdQTConstants
+                                         .movieDrawingCallWhenChanged, this);
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
             visualTrack = movie.getIndTrackType(1,
                                        StdQTConstants.visualMediaCharacteristic,
                                        StdQTConstants.movieTrackCharacteristic);
@@ -120,7 +156,11 @@ implements /*MovieDrawingComplete,*/ DataViewer {
      * @param m The movie that has had a single frame rendered.
      *
      * @return Error code on failure, 0 on success.
+<<<<<<< HEAD
      *//*
+=======
+     */
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
     public int execute(final Movie m) {
         try {
             double curTime = m.getTime() / (double) m.getTimeScale();
@@ -132,7 +172,11 @@ implements /*MovieDrawingComplete,*/ DataViewer {
         }
 
         return 0;
+<<<<<<< HEAD
     }*/
+=======
+    }
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
 
     /**
      * Creates a new cell in the database, and sets the start time (onset) of
@@ -400,7 +444,11 @@ implements /*MovieDrawingComplete,*/ DataViewer {
      * @throws QTException If unable to jog the movie by the specified number
      * of frames.
      */
+<<<<<<< HEAD
     public void jog(final int offset) throws QTException {
+=======
+    private void jog(final int offset) throws QTException {
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
         if (movie != null) {
             this.setVisible(true);
             shuttleSpeed = 0.0f;
@@ -419,12 +467,15 @@ implements /*MovieDrawingComplete,*/ DataViewer {
         }
     }
 
+<<<<<<< HEAD
     public long getCurrentTime() throws QTException {
         double curTime = movie.getTime() / (double) movie.getTimeScale();
         curTime = curTime * SECONDS_TO_MILLI;
         return (long) curTime;
     }
 
+=======
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -449,7 +500,11 @@ implements /*MovieDrawingComplete,*/ DataViewer {
      * @param evt The event that triggered this action.
      */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
+<<<<<<< HEAD
         //parentController.shutdown(this);
+=======
+        parentController.shutdown(this);
+>>>>>>> 016e5977bf79170acad06a88f451383914a4eece
     }//GEN-LAST:event_exitForm
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

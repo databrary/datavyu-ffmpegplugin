@@ -448,4 +448,11 @@ public abstract class EditorComponent {
         this.setText(cValue.toString());
         this.setCaretPosition(start);
     }
+
+    /**
+     * @return true if this editor has the focus.
+     */
+    public final boolean hasFocus() {
+        return parentComp.hasFocus();
+    }
 }

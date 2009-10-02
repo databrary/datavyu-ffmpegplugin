@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.awt.Frame;
+import java.util.ArrayList;
 import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -28,7 +29,8 @@ import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.db.VocabList;
+import org.openshapa.db.Column;
+import org.openshapa.db.DataColumn;
 
 /**
  * A view for editing the database vocab.
@@ -51,6 +53,10 @@ public final class VocabEditorV extends OpenSHAPADialog {
     private Vector<VocabElementV> veViewsToDeleteCompletely;
     /** Vertical frame for holding the current listing of Vocab elements. */
     private JPanel verticalFrame;
+    /** Counter used to increment the new predicate name. */
+    private int numNewPreds;
+    /** Counter used to increment the new matrix name. */
+    private int numNewMats;
 
     /**
      * Constructor.
@@ -58,8 +64,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * @param parent The parent frame for the vocab editor.
      * @param modal Is this dialog to be modal or not?
      */
-    public VocabEditorV(final Frame parent,
-                        final boolean modal) {
+    public VocabEditorV(final Frame parent, final boolean modal) {
         super(parent, modal);
 
         db = OpenSHAPA.getDatabase();
@@ -68,6 +73,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
         selectedVocabElement = null;
         selectedArgument = null;
         selectedArgumentI = -1;
+        numNewPreds = 1;
+        numNewMats = 1;
 
         // Populate current vocab list with vocab data from the database.
         veViews = new Vector<VocabElementV>();
@@ -112,8 +119,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
         this.argTypeComboBox.setVisible(false);
         this.varyArgCheckBox.setVisible(false);
         this.addArgButton.setVisible(false);
-        this.addMatrixButton.setVisible(false);
-        this.addPredicateButton.setVisible(false);
     }
 
     /**
@@ -123,8 +128,10 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public void addPredicate() {
         try {
             PredicateVocabElement pve = new PredicateVocabElement(db,
-                    "predicate");
+                                        "predicate" + numNewPreds);
             addVocabElement(pve);
+            numNewPreds++;
+
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
         }
@@ -138,9 +145,11 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void addMatrix() {
         try {
-            MatrixVocabElement mve = new MatrixVocabElement(db, "matrix");
+            MatrixVocabElement mve = new MatrixVocabElement(db, "matrix"
+                                                                + numNewMats);
             mve.setType(MatrixType.MATRIX);
             addVocabElement(mve);
+            numNewMats++;
         } catch (SystemErrorException e) {
             logger.error("Unable to create matrix vocab element", e);
         }
@@ -148,14 +157,25 @@ public final class VocabEditorV extends OpenSHAPADialog {
         updateDialogState();
     }
 
-    public void addVocabElement(VocabElement ve) {
+    /**
+     * Adds a vocab element to the vocab editor panel.
+     *
+     * @param ve The vocab element to add to the vocab editor.
+     *
+     * @throws SystemErrorException If unable to add the vocab element to the
+     * vocab editor.
+     */
+    public void addVocabElement(VocabElement ve) throws SystemErrorException {
+        // The database dictates that vocab elements must have a single argument
+        // add a default to get started.
+        ve.appendFormalArg(new IntFormalArg(db, "<integer>"));
+
         VocabElementV vev = new VocabElementV(ve, this);
         vev.setHasChanged(true);
         verticalFrame.add(vev);
         verticalFrame.validate();
         veViews.add(vev);
         // vev.getNameComponent().requestFocus();
-
     }
 
     /**
@@ -280,20 +300,37 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void revertChanges() {
-        int tableSize = veViews.size();
-        int curPos = 0;
+        try {
+            ArrayList<VocabElementV> toDelete = new ArrayList<VocabElementV>();
 
-        for (VocabElementV view : veViewsToDeleteCompletely) {
-            view.setDeleted(false);
-        }
+            for (VocabElementV view : veViews) {
+                if (view.hasChanged()) {
+                    // If the change is an existing vocab element - discard the
+                    // changes in the view.
+                    VocabElement ve = view.getModel();
+                    if (ve.getID() != DBIndex.INVALID_ID) {
+                        view.setModel(db.getVocabElement(ve.getID()));
 
-        for (int i = 0; i < tableSize; i++) {
-            if (veViews.get(curPos).hasChanged()) {
-                verticalFrame.remove(veViews.get(curPos));
-                veViews.remove(curPos);
-            } else {
-                curPos++;
+                    // If the change is a new vocab element - mark the view for
+                    // deletion.
+                    } else {
+                        toDelete.add(view);
+                    }
+
+                    // If the change is a delete - discard the delete change.
+
+                    // Mark the view as unchanged.
+                    view.setHasChanged(false);
+                }
             }
+
+            // Perform the removal of the vocab elements.
+            for (VocabElementV view : toDelete) {
+                verticalFrame.remove(view);
+                veViews.remove(view);
+            }
+        } catch (SystemErrorException e) {
+            logger.error("Unable to revert changes in vocab editor.", e);
         }
 
         updateDialogState();
@@ -305,18 +342,10 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void applyChanges() {
 
+        /* OLD apply:
         try {
             for (VocabElementV view : veViewsToDeleteCompletely) {
-
-                /* This code used to call db.removeVocabElement().  I replaced the call
-                 * with one to db.removePredVE() and modified db.removeVocabElement()
-                 * to throw a system error unconditionally.  Do not change it
-                 * back, as matrix vocabulary elements MUST NOT be deleted
-                 * directly from the data base.  Doing so will corrupt it.
-                 *
-                 *                                      7/26/09
-                 */
-                db.removePredVE(view.getModel().getID());
+                db.removeVE(view.getModel().getID());
                 verticalFrame.remove(view);
                 veViews.remove(view);
             }
@@ -326,38 +355,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
                     VocabElement ve = vev.getModel();
                     if (ve.getID() == DBIndex.INVALID_ID) {
-
-                        /* This code used to call db.getVocabList().  As
-                         * that method exposes internal structures to the
-                         * outside world, it should not exist, and I have
-                         * modified it to throw a system error unconditionally.
-                         *
-                         * As best I can tell, the objective of the old code
-                         * is to determine whether the name of the vocab
-                         * element that is about to be inserted is unique, and
-                         * if not, to throw a logic error exception.
-                         *
-                         * I have replaced the old call:
-                         *
-                         * VocabList.isValidElement(db.getVocabList(), ve);
-                         *
-                         * with new code that I believe serves the same purpose.
-                         *
-                         * Note that calling both db.colNameInUse() and
-                         * db.predNameInUse() is redundant at present, as
-                         * predicates and matricies share the same name space.
-                         * However this could change, so best program
-                         * defensively.
-                         *
-                         *                                    7/26/09
-                         */
-                        if ((db.colNameInUse(ve.getName()) ||
-                                (db.predNameInUse(ve.getName())))) {
-
-                            // the string passed to the exception probably
-                            // should be modified to allow localization.
-                            throw new LogicErrorException("ve name in use");
-                        }
+                        VocabList.isValidElement(db.getVocabList(), ve);
                         long id = db.addVocabElement(ve);
                         vev.setModel(db.getVocabElement(id));
 
@@ -370,6 +368,76 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
             veViewsToDeleteCompletely.clear();
             updateDialogState();
+
+        } catch (SystemErrorException e) {
+            logger.error("Unable to apply vocab changes", e);
+        } catch (LogicErrorException le) {
+            OpenSHAPA.getApplication().showWarningDialog(le);
+        }
+        */
+
+        try {
+            for (VocabElementV view : veViewsToDeleteCompletely) {
+                //db.removePredVE(view.getModel().getID());
+                //this needs to be db.removeVocabElement()
+                verticalFrame.remove(view);
+                veViews.remove(view);
+            }
+
+            for (VocabElementV vev : veViews) {
+                if (vev.hasChanged()) {
+
+                    VocabElement ve = vev.getModel();
+                    if (ve.getID() == DBIndex.INVALID_ID) {
+                        if ((db.colNameInUse(ve.getName()) ||
+                            (db.predNameInUse(ve.getName())))) {
+
+                            // the string passed to the exception probably
+                            // should be modified to allow localization.
+                            throw new LogicErrorException("ve name in use");
+                        }
+
+                        // If the new vocab element is a matrix vocab element,
+                        // we actually need to create a column.
+                        if (ve.getClass() == MatrixVocabElement.class) {
+                            Column.isValidColumnName(OpenSHAPA.getDatabase(),
+                                                     ve.getName());
+                            DataColumn dc = new DataColumn(db,
+                                                           ve.getName(),
+                                          MatrixVocabElement.MatrixType.MATRIX);
+                            long colID = db.addColumn(dc);
+                            dc = db.getDataColumn(colID);
+                            long mveID = dc.getItsMveID();
+                            MatrixVocabElement mve = db.getMatrixVE(mveID);
+                            // Delete default formal argument.
+                            mve.deleteFormalArg(0);
+
+                            // Add the formal arguments from the editor into
+                            // the database vocab element.
+                            for (int i = 0; i < ve.getNumFormalArgs(); i++) {
+                                mve.appendFormalArg(ve.getFormalArgCopy(i));
+                            }
+                            db.replaceVocabElement(mve);
+                            vev.setModel(mve);
+
+                        // Otherwise just a predicate - add the new vocab
+                        // element to the database.
+                        } else {
+                            long id = db.addVocabElement(ve);
+                            vev.setModel(db.getVocabElement(id));
+                        }
+
+                    } else {
+                        db.replaceVocabElement(ve);
+                    }
+                    vev.setHasChanged(false);
+                }
+            }
+
+            veViewsToDeleteCompletely.clear();
+            updateDialogState();
+            ((OpenSHAPAView) OpenSHAPA.getApplication().getMainView())
+                                      .showSpreadsheet();
 
         } catch (SystemErrorException e) {
             logger.error("Unable to apply vocab changes", e);
@@ -410,7 +478,9 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * model.
      */
     public void updateDialogState() {
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext().getResourceMap(VocabEditorV.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(VocabEditorV.class);
 
         boolean containsC = false;
         selectedVocabElement = null;
@@ -451,7 +521,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
             argTypeComboBox.setEnabled(true);
             varyArgCheckBox.setEnabled(true);
             deleteButton.setEnabled(true);
-            varyArgCheckBox.setSelected(selectedVocabElement.getModel().getVarLen());
+            varyArgCheckBox.setSelected(selectedVocabElement.getModel()
+                                                            .getVarLen());
         } else {
             addArgButton.setEnabled(false);
             argTypeComboBox.setEnabled(false);
@@ -680,7 +751,9 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * @param evt The event that triggered this action.
      */
     private void argTypeComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_argTypeComboBoxItemStateChanged
-        if (selectedVocabElement != null && selectedArgument != null && evt.getStateChange() == ItemEvent.SELECTED) {
+        if (selectedVocabElement != null
+            && selectedArgument != null
+            && evt.getStateChange() == ItemEvent.SELECTED) {
 
             // Need to change the type of the selected argument.
             FormalArgument oldArg = selectedArgument.getModel();
@@ -703,8 +776,9 @@ public final class VocabEditorV extends OpenSHAPADialog {
                     return;
                 }
 
-                selectedVocabElement.getModel().replaceFormalArg(newArg,
-                        selectedArgument.getArgPos());
+                selectedVocabElement.getModel()
+                                    .replaceFormalArg(newArg,
+                                                  selectedArgument.getArgPos());
                 selectedVocabElement.setHasChanged(true);
 
                 // Store the selectedVocabElement in a temp variable -

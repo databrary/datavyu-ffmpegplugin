@@ -315,31 +315,6 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     }
 
     /**
-     * Builds a new value from a string.
-     *
-     * @param textField The string that you want to create the value from.
-     *
-     * @return A value that can be set into the database.
-     */
-    public TimeStamp buildValue(final String textField) {
-        try {
-            long ticks = 0;
-
-            String[] timeChunks = textField.split(":");
-
-            ticks += (new Long(timeChunks[HH]) * HH_TO_TICKS);
-            ticks += (new Long(timeChunks[MM]) * MM_TO_TICKS);
-            ticks += (new Long(timeChunks[SS]) * SS_TO_TICKS);
-            ticks += (new Long(timeChunks[MMM]));
-
-            return new TimeStamp(SS_TO_TICKS, ticks);
-        } catch (SystemErrorException e) {
-            logger.error("Unable to build TimeStamp value", e);
-            return null;
-        }
-    }
-
-    /**
      * focusSet is the signal that this editor has become "current".
      * @param fe Focus Event
      */

@@ -3,6 +3,7 @@ package org.uispec4j;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import java.awt.Component;
 import java.awt.Font;
+import java.util.Vector;
 import javax.swing.text.JTextComponent;
 import junit.framework.Assert;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
@@ -151,6 +152,30 @@ public class Cell extends AbstractUIComponent {
     }
 
     /**
+     * types text into a cell element using a vector of TextItem.
+     * @param element element to type value into.
+     * @param vti vector of TextItems.
+     */
+//    public final void enterText(final int element, final Vector<TextItem> vti) {
+//        requestFocus(element);
+//
+//        for (TextItem t : vti) {
+//            t.enterItem(getComponentByType(element));
+//        }
+//    }
+
+     /**
+     * presses keys in a cell element.
+     * @param element element to type value into
+     * @param keys Keys to type next
+     */
+    public final void pressKeys(final int element, final Key[] keys) {
+        requestFocus(element);
+
+        KeyUtils.enterKeys(getComponentByType(element), keys);
+    }
+
+    /**
      * enters matrix text
      * @param s array of strings for each argument in Matrix
      */
@@ -185,10 +210,6 @@ public class Cell extends AbstractUIComponent {
             ((TimeStampTextField) getComponentByType(element))
                     .focusGained(null);
         }
-
-    }
-
-    public final void select(){
 
     }
 

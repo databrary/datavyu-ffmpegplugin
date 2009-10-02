@@ -181,6 +181,7 @@ public class VocabElementV extends JPanel {
         }
 
         hasVEChanged = hasChanged;
+        this.parentEditor.updateDialogState();
     }
 
     /**
@@ -283,5 +284,33 @@ public class VocabElementV extends JPanel {
      */
     public final boolean isDeletable() {
         return deleteVE;
+    }
+
+    /**
+     * @return VocabElementRootView vocabElementRootView.
+     */
+    public final VocabElementRootView getDataView() {
+        return veRootView;
+    }
+
+    /**
+     * @return JLabel change/delta icon.
+     */
+    public final JLabel getChangedIcon() {
+        return deltaIcon;
+    }
+
+    /**
+     * @return JLabel delete icon.
+     */
+    public final JLabel getDeleteIcon() {
+        return deleteIcon;
+    }
+
+     /**
+     * @return JLabel delete icon.
+     */
+    public final JLabel getTypeIcon() {
+        return typeIcon;
     }
 }
