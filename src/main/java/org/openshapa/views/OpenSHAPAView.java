@@ -31,11 +31,11 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.apache.log4j.Logger;
 import org.openshapa.controllers.OpenDatabaseC;
-import org.openshapa.db.Database;
 import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.Configuration;
+import org.openshapa.util.FileFilters.DBFilter;
 
 /**
  * This application is a simple text editor. This class displays the main frame
@@ -119,6 +119,7 @@ public final class OpenSHAPAView extends FrameView {
     @Action
     public void saveAs() {
         JFileChooser jd = new JFileChooser();
+        jd.addChoosableFileFilter(new DBFilter());
         jd.addChoosableFileFilter(new CSVFilter());
         int result = jd.showSaveDialog(this.getComponent());
 
@@ -139,7 +140,7 @@ public final class OpenSHAPAView extends FrameView {
 
         if (result == JFileChooser.APPROVE_OPTION) {
             try {
-                Database newDB = new MacshapaDatabase();
+                MacshapaDatabase newDB = new MacshapaDatabase();
                 OpenSHAPA.setDatabase(newDB);
                 OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
                                                            .getMainView();
