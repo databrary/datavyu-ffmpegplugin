@@ -13,7 +13,6 @@ import javax.swing.JFileChooser;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.openshapa.views.continuous.DataViewer;
-import au.com.nicta.echomod.asd.AirspaceViewer;
 import java.io.File;
 
 /**
@@ -282,7 +281,6 @@ public final class QTVideoController extends OpenSHAPADialog {
             File f = jd.getSelectedFile();
             DataViewer viewer = null;
             if ( RE_MOV.matcher(f.getName()).matches() )        { viewer = new QTVideoViewer(); }
-            else if ( RE_ATC.matcher(f.getName()).matches() )   { viewer = new AirspaceViewer(); }
             else {
                 Logger.getLogger(this.getClass()).warn("No DataViewer available.");
                 return;
