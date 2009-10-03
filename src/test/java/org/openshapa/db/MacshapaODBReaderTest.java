@@ -5120,9 +5120,6 @@ public class MacshapaODBReaderTest {
                 listing_stream,
                 error_stream);
 
-        modbr.max_errors = errorLimit;
-        modbr.max_warnings = warningLimit;
-
         db = modbr.readDB();
 
         db.toMODBFile(dump_stream, "\n");
