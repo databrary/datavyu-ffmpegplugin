@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.openshapa.views.continuous.DataViewer;
 import java.io.File;
+import org.openshapa.views.continuous.PluginManager;
 
 /**
  * Quicktime video controller.
@@ -277,6 +278,8 @@ public final class QTVideoController extends OpenSHAPADialog {
         JFileChooser jd = new JFileChooser();
         int result = jd.showOpenDialog(this);
 
+        PluginManager p = PluginManager.getInstance();
+
         if (result == JFileChooser.APPROVE_OPTION) {
             File f = jd.getSelectedFile();
             DataViewer viewer = null;
@@ -288,6 +291,7 @@ public final class QTVideoController extends OpenSHAPADialog {
 
             viewer.setDataFeed(f);
             OpenSHAPA.getApplication().show(viewer.getParentJFrame());
+
             // Add the QTDataViewer to the list of viewers we are controlling.
             this.viewers.add(viewer);
         }
