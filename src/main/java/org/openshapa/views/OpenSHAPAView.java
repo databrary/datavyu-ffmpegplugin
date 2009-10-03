@@ -35,7 +35,7 @@ import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.Configuration;
-import org.openshapa.util.FileFilters.MacDBFilter;
+import org.openshapa.util.FileFilters.MODBFilter;
 
 /**
  * This application is a simple text editor. This class displays the main frame
@@ -119,7 +119,7 @@ public final class OpenSHAPAView extends FrameView {
     @Action
     public void saveAs() {
         JFileChooser jd = new JFileChooser();
-        jd.addChoosableFileFilter(new MacDBFilter());
+        jd.addChoosableFileFilter(new MODBFilter());
         jd.addChoosableFileFilter(new CSVFilter());
         int result = jd.showSaveDialog(this.getComponent());
 
@@ -136,7 +136,7 @@ public final class OpenSHAPAView extends FrameView {
     public void open() {
         JFileChooser jd = new JFileChooser();
 
-        jd.addChoosableFileFilter(new MacDBFilter());
+        jd.addChoosableFileFilter(new MODBFilter());
         jd.addChoosableFileFilter(new CSVFilter());
         int result = jd.showOpenDialog(this.getComponent());
 

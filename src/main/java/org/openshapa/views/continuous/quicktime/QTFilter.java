@@ -4,14 +4,14 @@ import java.io.File;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * A file filter for CSV files.
+ * A file filter for movie files.
  */
 public class QTFilter extends FileFilter {
     /**
      * @return The discription of the file filter.
      */
     public String getDescription() {
-        return new String("CSV file");
+        return new String("movie file");
     }
 
     /**
@@ -22,6 +22,6 @@ public class QTFilter extends FileFilter {
      * @return true if the file is to be accepted, false otherwise.
      */
     public boolean accept(File file) {
-        return (file.getName().endsWith(".csv") || file.isDirectory());
+        return (file.getName().endsWith(".mov") || file.isDirectory());
     }
 }

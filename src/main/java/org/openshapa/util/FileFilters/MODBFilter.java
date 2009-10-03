@@ -6,7 +6,7 @@ import javax.swing.filechooser.FileFilter;
 /**
  * A file filter for legacy MacSHAPA database files.
  */
-public class MacDBFilter extends FileFilter {
+public class MODBFilter extends FileFilter {
     /**
      * @return The discription of the file filter.
      */

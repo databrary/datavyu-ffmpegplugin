@@ -20,7 +20,7 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.db.FormalArgument;
 import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.MatrixVocabElement.MatrixType;
-import org.openshapa.util.FileFilters.MacDBFilter;
+import org.openshapa.util.FileFilters.MODBFilter;
 
 /**
  * Controller for saving the database to disk.
@@ -48,7 +48,7 @@ public final class SaveDatabaseC {
             }            
             saveAsCSV(outputFile);
 
-        } else if (fileFilter.getClass() == MacDBFilter.class) {
+        } else if (fileFilter.getClass() == MODBFilter.class) {
             // Don't append ".db" if the path already contains it.
             if (!outputFile.contains(".db")) {
                 outputFile = destinationFile.concat(".db");
