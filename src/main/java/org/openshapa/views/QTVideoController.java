@@ -2,7 +2,7 @@ package org.openshapa.views;
 
 import org.openshapa.OpenSHAPA;
 import org.openshapa.db.TimeStamp;
-import org.openshapa.views.continuous.quicktime.QTVideoViewer;
+import org.openshapa.views.continuous.quicktime.QTDataViewer;
 import java.awt.FileDialog;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -55,7 +55,7 @@ public final class QTVideoController extends OpenSHAPADialog {
      *
      * @param viewer The viewer to shutdown.
      */
-    public void shutdown(final QTVideoViewer viewer) {
+    public void shutdown(final QTDataViewer viewer) {
         for (int i = 0; i < this.viewers.size(); i++) {
             if (viewer == this.viewers.elementAt(i)) {
                 //this.viewers.elementAt(i).dispose();
@@ -280,7 +280,7 @@ public final class QTVideoController extends OpenSHAPADialog {
         if (result == JFileChooser.APPROVE_OPTION) {
             File f = jd.getSelectedFile();
             DataViewer viewer = null;
-            if ( RE_MOV.matcher(f.getName()).matches() )        { viewer = new QTVideoViewer(); }
+            if ( RE_MOV.matcher(f.getName()).matches() )        { viewer = new QTDataViewer(); }
             else {
                 Logger.getLogger(this.getClass()).warn("No DataViewer available.");
                 return;
@@ -288,7 +288,7 @@ public final class QTVideoController extends OpenSHAPADialog {
 
             viewer.setDataFeed(f);
             OpenSHAPA.getApplication().show(viewer.getParentJFrame());
-            // Add the QTVideoViewer to the list of viewers we are controlling.
+            // Add the QTDataViewer to the list of viewers we are controlling.
             this.viewers.add(viewer);
         }
     }//GEN-LAST:event_openVideoButtonActionPerformed

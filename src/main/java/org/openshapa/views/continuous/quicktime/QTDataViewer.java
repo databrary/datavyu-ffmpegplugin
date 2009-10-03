@@ -19,11 +19,11 @@ import quicktime.std.movies.media.SampleTimeInfo;
 /**
  * The viewer for a quicktime video file.
  */
-public final class QTVideoViewer extends JFrame
+public final class QTDataViewer extends JFrame
 implements DataViewer {
 
     /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(QTVideoViewer.class);
+    private static Logger logger = Logger.getLogger(QTDataViewer.class);
 
     /** The quicktime movie this viewer is displaying. */
     private Movie movie;
@@ -58,7 +58,7 @@ implements DataViewer {
      * @param controller The controller invoking actions on this continous
      * data viewer.
      */
-    public QTVideoViewer() {
+    public QTDataViewer() {
         try {
             movie = null;
             shuttleSpeed = 0.0f;
