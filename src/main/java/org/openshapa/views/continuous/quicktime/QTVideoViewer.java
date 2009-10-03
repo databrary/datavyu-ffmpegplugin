@@ -1,5 +1,6 @@
-package org.openshapa.views.continuous;
+package org.openshapa.views.continuous.quicktime;
 
+import org.openshapa.views.continuous.*;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;

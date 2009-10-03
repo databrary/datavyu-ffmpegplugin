@@ -2,7 +2,7 @@ package org.openshapa.views;
 
 import org.openshapa.OpenSHAPA;
 import org.openshapa.db.TimeStamp;
-import org.openshapa.views.continuous.QTVideoViewer;
+import org.openshapa.views.continuous.quicktime.QTVideoViewer;
 import java.awt.FileDialog;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
