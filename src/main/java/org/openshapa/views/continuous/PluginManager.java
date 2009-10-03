@@ -96,6 +96,8 @@ public class PluginManager {
                         // If the file ends with Test.class - it is a unit test,
                         // add it to our list of tests.
                         } else {
+                           //Class test = Class.forName(cName);
+                            // Need to determine if class implements Plugin
                             //addTest(unitTests, pkgName.concat(files[i]));
                         }
                     }
