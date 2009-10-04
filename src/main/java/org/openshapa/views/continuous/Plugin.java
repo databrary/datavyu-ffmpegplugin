@@ -1,6 +1,6 @@
 package org.openshapa.views.continuous;
 
-import java.io.FileFilter;
+import javax.swing.filechooser.FileFilter;
 
 public interface Plugin {
     DataViewer getNewDataViewer();

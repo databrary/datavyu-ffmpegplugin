@@ -14,6 +14,8 @@ import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.openshapa.views.continuous.DataViewer;
 import java.io.File;
+import java.util.List;
+import javax.swing.filechooser.FileFilter;
 import org.openshapa.views.continuous.PluginManager;
 
 /**
@@ -266,9 +268,6 @@ public final class QTVideoController extends OpenSHAPADialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private static final Pattern RE_MOV = Pattern.compile( " ^ .+ \\. m.. $ ", Pattern.COMMENTS );
-    private static final Pattern RE_ATC = Pattern.compile( " ^ .+ \\. atc $ ", Pattern.COMMENTS );
-
     /**
      * Action to invoke when the user clicks on the open button.
      *
@@ -276,16 +275,23 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     private void openVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openVideoButtonActionPerformed
         JFileChooser jd = new JFileChooser();
-        int result = jd.showOpenDialog(this);
 
-        PluginManager p = PluginManager.getInstance();
+        // Add file filters for each of the supported plugins.
+        List<FileFilter> filters = PluginManager.getInstance()
+                                                .getPluginFileFilters();
+        for (FileFilter f : filters) {
+            jd.addChoosableFileFilter(f);
+        }
+        int result = jd.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
             File f = jd.getSelectedFile();
-            DataViewer viewer = null;
-            if ( RE_MOV.matcher(f.getName()).matches() )        { viewer = new QTDataViewer(); }
-            else {
-                Logger.getLogger(this.getClass()).warn("No DataViewer available.");
+
+            // Build the data viewer for the file.
+            DataViewer viewer = PluginManager.getInstance()
+                                             .buildViewerFromFile(f);
+            if (viewer == null) {
+                logger.error ("No DataViewer available.");
                 return;
             }
 

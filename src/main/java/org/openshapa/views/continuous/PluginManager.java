@@ -1,7 +1,6 @@
 package org.openshapa.views.continuous;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,6 +11,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 
 /**
@@ -146,7 +146,7 @@ public class PluginManager {
     /**
      * @return A list of all the filefilters representing viewer plugins.
      */
-    List<FileFilter> getPluginFileFilters() {
+    public List<FileFilter> getPluginFileFilters() {
         List<FileFilter> result = new ArrayList<FileFilter>();
         for (Plugin p : this.availablePlugins) {
             result.add(p.getFileFilter());
@@ -164,7 +164,7 @@ public class PluginManager {
      *
      * @return A valid data viewer for the supplied file.
      */
-    DataViewer buildViewerFromFile(final File dataFile) {
+    public DataViewer buildViewerFromFile(final File dataFile) {
         for (Plugin p : this.availablePlugins) {
             if (p.getFileFilter().accept(dataFile)) {
                 return p.getNewDataViewer();

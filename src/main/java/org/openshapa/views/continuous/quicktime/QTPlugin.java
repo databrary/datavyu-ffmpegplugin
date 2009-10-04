@@ -1,6 +1,6 @@
 package org.openshapa.views.continuous.quicktime;
 
-import java.io.FileFilter;
+import javax.swing.filechooser.FileFilter;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 
