@@ -45,14 +45,16 @@ public class PluginManager {
 
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             URL resource = loader.getResource("");
-            if (resource == null) {
-                throw new ClassNotFoundException("Can't get class loader.");
-            }
 
             // The classloader references a jar - open the jar file up and
             // iterate through all the entries and add the entries that are
-            // concrete Plugins.
-            if (resource.getFile().contains(".jar!")) {
+           // concrete Plugins.
+            if (resource == null) {
+                resource = loader.getResource("org/openshapa");
+                if (resource == null) {
+                    throw new ClassNotFoundException("Can't get class loader.");
+                }
+
                 String file = resource.getFile();
                 file = file.substring(0, file.indexOf("!"));
                 URI uri = new URI(file);
@@ -61,7 +63,10 @@ public class PluginManager {
 
                 Enumeration<JarEntry> entries = jar.entries();
                 while (entries.hasMoreElements()) {
-                    addPlugin(entries.nextElement().getName());
+                    String name = entries.nextElement().getName();
+                    if (name.endsWith(".class")) {
+                        addPlugin(name);
+                    }
                 }
 
             // The classloader references a bunch of .class files on disk,
