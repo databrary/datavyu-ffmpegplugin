@@ -1,6 +1,7 @@
 package org.openshapa.views.continuous;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -145,7 +146,14 @@ public class PluginManager {
     /**
      * @return A list of all the filefilters representing viewer plugins.
      */
-    //List<FileFilter> getPluginFileFilters();
+    List<FileFilter> getPluginFileFilters() {
+        List<FileFilter> result = new ArrayList<FileFilter>();
+        for (Plugin p : this.availablePlugins) {
+            result.add(p.getFileFilter());
+        }
+
+        return result;
+    }
 
     /**
      * Creates the correct kind of viewer from the supplied file. This will
