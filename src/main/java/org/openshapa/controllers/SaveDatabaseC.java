@@ -115,10 +115,24 @@ public final class SaveDatabaseC {
                     out.write(c.getOffset().toString());
                     out.write(",");
                     String value = c.getVal().toString();
-                    if (!isMatrix) {
-                        value = value.substring(1, value.length() - 1);
+                    String result = new String();
+
+                    // BugzID: 637 - We now insert an escape character when
+                    // exporting as CSV.
+                    for (int n = 0; n < value.length(); n++) {
+                        if (value.charAt(n) == '\\') {
+                            result = result.concat("\\\\");
+                        } else if (value.charAt(n) == ',') {
+                            result = result.concat("\\,");
+                        } else {
+                            result += value.charAt(n);
+                        }
                     }
-                    out.write(value);
+
+                    if (!isMatrix) {
+                        result = result.substring(1, result.length() - 1);
+                    }
+                    out.write(result);
                     out.newLine();
                 }
             }
