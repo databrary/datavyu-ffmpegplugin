@@ -1,7 +1,6 @@
 package org.openshapa.views;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.Database;
 import org.openshapa.db.LogicErrorException;
 import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
@@ -157,7 +156,7 @@ public final class NewDatabaseV extends OpenSHAPADialog {
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         try {
-            Database model = new MacshapaDatabase();
+            MacshapaDatabase model = new MacshapaDatabase();
             model.setName(this.getDatabaseName());
             model.setDescription(this.getDatabaseDescription());
 
