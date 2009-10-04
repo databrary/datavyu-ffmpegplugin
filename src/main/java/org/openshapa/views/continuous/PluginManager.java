@@ -164,7 +164,16 @@ public class PluginManager {
      *
      * @return A valid data viewer for the supplied file.
      */
-    //DataViewer buildViewerFromFile(final File dataFile);
+    DataViewer buildViewerFromFile(final File dataFile) {
+        for (Plugin p : this.availablePlugins) {
+            if (p.getFileFilter().accept(dataFile)) {
+                return p.getNewDataViewer();
+            }
+        }
+
+        // Ah-oh - no appropriate viewer found :(
+        return null;
+    }
 
     /** The single instance of the PluginManager for OpenSHAPA. */
     private static PluginManager instance = null;
