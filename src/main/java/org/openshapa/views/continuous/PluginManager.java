@@ -127,6 +127,8 @@ public class PluginManager {
                                         className.length() - ".class".length());
             cName = cName.replace('/', '.');
 
+            // Ignore UI tests - when they load they mess everything up (the
+            // uispec4j interceptor kicks in and the UI stops working.
             if (!cName.contains("org.uispec4j")
                 && !cName.contains("org.openshapa.uitests")) {
 
