@@ -275,7 +275,7 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     private void openVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openVideoButtonActionPerformed
         JFileChooser jd = new JFileChooser();
-
+        
         // Add file filters for each of the supported plugins.
         List<FileFilter> filters = PluginManager.getInstance()
                                                 .getPluginFileFilters();

@@ -25,7 +25,7 @@ public final class QTPlugin implements Plugin {
      * plugin supports.
      */
     public FileFilter getFileFilter() {
-        return (FileFilter) filter;
+        return filter;
     }
 
     /** The filter to use when looking for files that this plugin supports. */

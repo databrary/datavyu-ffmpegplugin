@@ -123,17 +123,23 @@ public class PluginManager {
      */
     private void addPlugin(final String className) {
         try {
-            String cName = className.substring(0, className.length() - ".class".length());
+            String cName = className.substring(0,
+                                        className.length() - ".class".length());
             cName = cName.replace('/', '.');
-            Class testClass = Class.forName(cName);
-            Class[] implInterfaces = testClass.getInterfaces();
-            for (Class c : implInterfaces) {
-                if (c.equals(plugin)) {
-                    Plugin p = (Plugin) testClass.newInstance();
-                    this.availablePlugins.add(p);
-                    break;
+
+            if (!cName.contains("org.uispec4j")
+                && !cName.contains("org.openshapa.uitests")) {
+
+                Class testClass = Class.forName(cName);
+                Class[] implInterfaces = testClass.getInterfaces();
+                for (Class c : implInterfaces) {
+                    if (c.equals(plugin)) {
+                        Plugin p = (Plugin) testClass.newInstance();
+                        this.availablePlugins.add(p);
+                        break;
+                    }
                 }
-            }
+             }
         } catch (InstantiationException e) {
             logger.error("Unable to instantiate plugin", e);
         } catch (IllegalAccessException e) {
