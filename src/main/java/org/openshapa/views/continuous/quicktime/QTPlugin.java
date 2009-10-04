@@ -6,6 +6,9 @@ import org.openshapa.views.continuous.Plugin;
 
 public final class QTPlugin implements Plugin {
 
+    public QTPlugin() {
+    }
+
     public DataViewer getNewDataViewer() {
         return new QTDataViewer();
     }

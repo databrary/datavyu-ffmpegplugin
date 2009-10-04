@@ -11,7 +11,7 @@ public class QTFilter extends FileFilter {
      * @return The discription of the file filter.
      */
     public String getDescription() {
-        return new String("movie file");
+        return new String("Movie files");
     }
 
     /**
@@ -22,6 +22,10 @@ public class QTFilter extends FileFilter {
      * @return true if the file is to be accepted, false otherwise.
      */
     public boolean accept(File file) {
-        return (file.getName().endsWith(".mov") || file.isDirectory());
+        return (file.getName().endsWith(".mov") 
+                || file.getName().endsWith(".avi")
+                || file.getName().endsWith(".mpg")
+                || file.getName().endsWith(".mp4")
+                || file.isDirectory());
     }
 }
