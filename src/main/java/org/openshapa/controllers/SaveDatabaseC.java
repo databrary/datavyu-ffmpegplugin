@@ -45,7 +45,7 @@ public final class SaveDatabaseC {
             // BugzID:541 - Don't append ".csv" if the path already contains it.
             if (!outputFile.contains(".csv")) {
                 outputFile = destinationFile.concat(".csv");
-            }            
+            }
             saveAsCSV(outputFile);
 
         } else if (fileFilter.getClass() == MODBFilter.class) {
@@ -151,9 +151,11 @@ public final class SaveDatabaseC {
                     // exporting as CSV.
                     for (int n = 0; n < value.length(); n++) {
                         if (value.charAt(n) == '\\') {
-                            result = result.concat("\\\\");
+                            char[] buff = {'\\', '\\'};
+                            result = result.concat(new String(buff));
                         } else if (value.charAt(n) == ',') {
-                            result = result.concat("\\,");
+                            char[] buff = {'\\', ','};
+                            result = result.concat(new String(buff));
                         } else {
                             result += value.charAt(n);
                         }

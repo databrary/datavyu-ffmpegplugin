@@ -141,9 +141,10 @@ public final class OpenDatabaseC {
             BufferedReader csvFile = new BufferedReader(new FileReader(sFile));
 
             // Read each line of the CSV file.
-            String line = csvFile.readLine();
+            String line = stripEscChars(csvFile.readLine());
+
             while (line != null) {
-                line = parseVariable(csvFile, line, db);
+                line = stripEscChars(parseVariable(csvFile, line, db));
             }
 
             csvFile.close();
@@ -156,6 +157,41 @@ public final class OpenDatabaseC {
         } catch (LogicErrorException e) {
             logger.error("Corrupted CSV file", e);
         }
+    }
+
+
+    /**
+     * Strips escape characters from a line of text.
+     *
+     * @param line The line of text to strip escape characters from.
+     *
+     * @return The line free fo escape characters, i.e. '\'.
+     */
+    private String stripEscChars(final String line) {
+        String result = "";
+        // Strip out the escape characters.
+        for (int i = 0; i < line.length(); i++) {
+            if (i < line.length() - 1) {
+                if (line.charAt(i) == '\\' && line.charAt(i + 1) == '\\') {
+                    char[] buff = {'\\'};
+                    result = result.concat(new String(buff));
+                    // Move over the escape character.
+                    i++;
+                } else if (line.charAt(i) == '\\'
+                           && line.charAt(i + 1) == ',') {
+                    char[] buff = {','};
+                    result = result.concat(new String(buff));
+                    // Move over the escape character.
+                    i++;
+                } else {
+                    result += line.charAt(i);
+                }
+            } else {
+                result += line.charAt(i);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -178,7 +214,7 @@ public final class OpenDatabaseC {
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
         // variable section.
-        String line = csvFile.readLine();
+        String line = stripEscChars(csvFile.readLine());
         while (line != null && Character.isDigit(line.charAt(0))) {
             // Split the line into tokens using a comma delimiter.
             String[] tokens = line.split(",");
@@ -205,7 +241,7 @@ public final class OpenDatabaseC {
             }
 
             // Get the next line in the file for reading.
-            line = csvFile.readLine();
+            line = stripEscChars(csvFile.readLine());
         }
 
         return line;
@@ -234,7 +270,7 @@ public final class OpenDatabaseC {
                                        final DataColumn dc,
                                        final MatrixVocabElement mve)
     throws IOException, SystemErrorException {
-        String line = csvFile.readLine();
+        String line = stripEscChars(csvFile.readLine());
         while (line != null && Character.isDigit(line.charAt(0))) {
             // Split the line into tokens using a comma delimiter.
             String[] tokens = line.split(",");
@@ -312,7 +348,7 @@ public final class OpenDatabaseC {
             dc.getDB().appendCell(cell);
 
             // Get the next line in the file for reading.
-            line = csvFile.readLine();
+            line = stripEscChars(csvFile.readLine());
         }
 
         return line;
@@ -342,7 +378,7 @@ public final class OpenDatabaseC {
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
         // variable section.
-        String line = csvFile.readLine();
+        String line = stripEscChars(csvFile.readLine());
         while (line != null && Character.isDigit(line.charAt(0))) {
 
             // Split the line into tokens using a comma delimiter.
@@ -367,7 +403,7 @@ public final class OpenDatabaseC {
             dc.getDB().appendCell(cell);
 
             // Get the next line in the file for reading.
-            line = csvFile.readLine();
+            line = stripEscChars(csvFile.readLine());
         }
 
         return line;
