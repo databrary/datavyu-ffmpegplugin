@@ -255,7 +255,7 @@ public final class TextStringDataValue extends DataValue
         if (this.itsValue == null) {
             return "";
         } else {
-            return StringUtils.escapeCSV(new String(this.itsValue));
+            return StringUtils.escapeCSV(this.itsValue);
         }
 
     }

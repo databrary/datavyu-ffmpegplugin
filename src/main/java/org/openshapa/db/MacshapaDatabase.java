@@ -1169,7 +1169,7 @@ public class MacshapaDatabase extends Database {
         output.printf("%s    ( VERSION> 1 )%s", indent, newLine);
         output.printf("%s    ( DEBUG-LEVEL> %d )%s",
                       indent, this.debugLevel, newLine);
-        output.printf("%s    ( MAX-ERRORS> %d )%s",
+        output.printf("%s    ( MAX_ERRORS> %d )%s",
                       indent, this.maxErrors, newLine);
         output.printf("%s    ( MAX-WARNINGS> %d )%s",
                       indent, this.maxWarnings, newLine);
