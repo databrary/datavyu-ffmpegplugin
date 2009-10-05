@@ -289,7 +289,7 @@ implements KeyEventDispatcher {
      *
      * @return The single database in use with this instance of OpenSHAPA
      */
-    public static Database getDatabase() {
+    public static MacshapaDatabase getDatabase() {
         return OpenSHAPA.getApplication().db;
     }
 
@@ -299,7 +299,7 @@ implements KeyEventDispatcher {
      *
      * @param newDB The new database to use for this instance of OpenSHAPA.
      */
-    public static void setDatabase(Database newDB) {
+    public static void setDatabase(MacshapaDatabase newDB) {
         OpenSHAPA.getApplication().db = newDB;
     }
 
@@ -418,7 +418,7 @@ implements KeyEventDispatcher {
     private static Logger logger = Logger.getLogger(OpenSHAPA.class);
 
     /** The current database we are working on. */
-    private Database db;
+    private MacshapaDatabase db;
 
     /** output stream for messages coming from the scripting engine. */
     private PipedInputStream consoleOutputStream;

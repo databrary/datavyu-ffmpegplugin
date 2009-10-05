@@ -3,13 +3,15 @@ package org.openshapa.controllers;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
-import org.openshapa.db.Database;
+import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.FileFilters.CSVFilter;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
@@ -18,6 +20,7 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.db.FormalArgument;
 import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.MatrixVocabElement.MatrixType;
+import org.openshapa.util.FileFilters.MODBFilter;
 
 /**
  * Controller for saving the database to disk.
@@ -36,35 +39,62 @@ public final class SaveDatabaseC {
     public SaveDatabaseC(final String destinationFile,
                          final FileFilter fileFilter) {
 
-        // BugzID:541 - Don't append ".csv" if the path already contains it.
         String outputFile = destinationFile.toLowerCase();
-        if (!outputFile.contains(".csv")) {
-            outputFile = destinationFile.concat(".csv");
-        }
 
         if (fileFilter.getClass() == CSVFilter.class) {
-            // BugzID:449 - Set filename in spreadsheet window and database to
-            // be the same as the file specified.
-            try {
-                String dbName = new File(outputFile).getName();
-                dbName = dbName.substring(0, dbName.lastIndexOf('.'));
-                OpenSHAPA.getDatabase().setName(dbName);
+            // BugzID:541 - Don't append ".csv" if the path already contains it.
+            if (!outputFile.contains(".csv")) {
+                outputFile = destinationFile.concat(".csv");
+            }            
+            saveAsCSV(outputFile);
 
-                // Update the name of the window to include the name we just
-                // set in the database.
-                JFrame mainFrame = OpenSHAPA.getApplication()
-                                   .getMainFrame();
-                ResourceMap rMap = OpenSHAPA.getApplication()
-                                   .getContext()
-                                   .getResourceMap(OpenSHAPA.class);
-
-                mainFrame.setTitle(rMap.getString("Application.title")
-                               + " - " + OpenSHAPA.getDatabase().getName());
-            } catch (SystemErrorException se) {
-                logger.error("Can't set db name to specified file.", se);
+        } else if (fileFilter.getClass() == MODBFilter.class) {
+            // Don't append ".db" if the path already contains it.
+            if (!outputFile.contains(".db")) {
+                outputFile = destinationFile.concat(".db");
             }
 
-            saveAsCSV(outputFile);
+            saveAsMacSHAPADB(outputFile);
+        }
+
+        // BugzID:449 - Set filename in spreadsheet window and database to
+        // be the same as the file specified.
+        try {
+            String dbName = new File(outputFile).getName();
+            dbName = dbName.substring(0, dbName.lastIndexOf('.'));
+            OpenSHAPA.getDatabase().setName(dbName);
+
+            // Update the name of the window to include the name we just
+            // set in the database.
+            JFrame mainFrame = OpenSHAPA.getApplication()
+                               .getMainFrame();
+            ResourceMap rMap = OpenSHAPA.getApplication()
+                               .getContext()
+                               .getResourceMap(OpenSHAPA.class);
+
+            mainFrame.setTitle(rMap.getString("Application.title")
+                           + " - " + OpenSHAPA.getDatabase().getName());
+        } catch (SystemErrorException se) {
+            logger.error("Can't set db name to specified file.", se);
+        }
+    }
+
+    /**
+     * Saves the database to the specified destination in a MacSHAPA format.
+     *
+     * @param outFile The path of the file to use when writing to disk.
+     */
+    public void saveAsMacSHAPADB(final String outFile) {
+        try {
+            PrintStream outStream = new PrintStream(outFile);
+            OpenSHAPA.getDatabase().toMODBFile(outStream, "\r");
+            outStream.close();
+        } catch (FileNotFoundException e) {
+            logger.error("Can't write macshapa db file '" + outFile + "'", e);
+        } catch (SystemErrorException e) {
+            logger.error("Can't write macshapa db file '" + outFile + "'", e);
+        } catch (IOException e) {
+            logger.error("Can't write macshapa db file '" + outFile + "'", e);
         }
     }
 
@@ -77,7 +107,7 @@ public final class SaveDatabaseC {
      *          to vocabElement.getFormalArgCopy().
      */
     public void saveAsCSV(final String outFile) {
-        Database db = OpenSHAPA.getDatabase();
+        MacshapaDatabase db = OpenSHAPA.getDatabase();
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(outFile));

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Vector;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
@@ -21,6 +22,7 @@ import org.openshapa.db.FormalArgument;
 import org.openshapa.db.IntDataValue;
 import org.openshapa.db.IntFormalArg;
 import org.openshapa.db.LogicErrorException;
+import org.openshapa.db.MacshapaODBReader;
 import org.openshapa.db.Matrix;
 import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.NominalDataValue;
@@ -58,7 +60,16 @@ public final class OpenDatabaseC {
      * disk.
      */
     public OpenDatabaseC(final File sourceFile) {
-        this.loadCSV(sourceFile);
+        String inputFile = sourceFile.toString().toLowerCase();
+
+        // If the file ends with CSV - treat it as a comma seperated file.
+        if (inputFile.endsWith(".csv")) {
+            this.openAsCSV(sourceFile);
+
+        // Otherwise treat it as a macshapa database file.
+        } else {
+            this.openAsMacSHAPADB(sourceFile);
+        }
 
         // BugzID:449 - Set filename in spreadsheet window and database if the
         // database name is undefined.
@@ -67,27 +78,55 @@ public final class OpenDatabaseC {
                 String dbName = sourceFile.getName();
                 dbName = dbName.substring(0, dbName.lastIndexOf('.'));
                 OpenSHAPA.getDatabase().setName(dbName);
-
-                // Update the name of the window to include the name we just set
-                // in the database.
-                JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-                ResourceMap rMap = OpenSHAPA.getApplication()
-                                            .getContext()
-                                            .getResourceMap(OpenSHAPA.class);
-
-                mainFrame.setTitle(rMap.getString("Application.title")
-                               + " - " + OpenSHAPA.getDatabase().getName());
             }
+
+            // Update the name of the window to include the name we just set
+            // in the database.
+            JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+            ResourceMap rMap = OpenSHAPA.getApplication()
+                                        .getContext()
+                                        .getResourceMap(OpenSHAPA.class);
+
+            mainFrame.setTitle(rMap.getString("Application.title")
+                           + " - " + OpenSHAPA.getDatabase().getName());
 
         } catch (SystemErrorException se) {
             logger.error("Can't set db name to the name of the CSV file.", se);
         }
 
-        // Display any changes.
+        // Display any changes to the database.
         SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
                                                             .getMainView()
                                                             .getComponent();
         view.relayoutCells();
+    }
+
+    /**
+     * This method treats a file as a MacSHAPA database file and attempts to
+     * populate the database with data.
+     *
+     * @param sFile The source file to use when populating the database.
+     */
+    public void openAsMacSHAPADB(final File sFile) {
+        try {
+            FileReader sReader = new FileReader(sFile);
+            BufferedReader sourceStream = new BufferedReader(sReader);
+            PrintStream listStream = new PrintStream(new File("read_list.log"));
+            PrintStream errorStream = new PrintStream(new File ("error.log"));
+
+            MacshapaODBReader modbr = new MacshapaODBReader(sourceStream,
+                                                            listStream,
+                                                            errorStream);
+            OpenSHAPA.setDatabase(modbr.readDB());
+        } catch (FileNotFoundException e) {
+            logger.error("Unable to load macshapa database:'" + sFile + "'", e);
+        } catch (SystemErrorException e) {
+            logger.error("Unable to load macshapa database:'" + sFile + "'", e);
+        } catch (IOException e) {
+            logger.error("Unable to load macshapa database:'" + sFile + "'", e);
+        } catch (LogicErrorException e) {
+            OpenSHAPA.getApplication().showWarningDialog(e);
+        }
     }
 
     /**
@@ -96,7 +135,7 @@ public final class OpenDatabaseC {
      *
      * @param sFile The source file to use when populating the database.
      */
-    public void loadCSV(final File sFile) {
+    public void openAsCSV(final File sFile) {
         try {
             Database db = OpenSHAPA.getDatabase();
             BufferedReader csvFile = new BufferedReader(new FileReader(sFile));
