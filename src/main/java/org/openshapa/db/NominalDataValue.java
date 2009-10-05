@@ -11,6 +11,7 @@ package org.openshapa.db;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
+import org.openshapa.util.StringUtils;
 
 
 /**
@@ -319,6 +320,14 @@ public final class NominalDataValue extends DataValue {
         }
 
     } /* NominalDataValue::toString() */
+
+    public String toEscapedString() {
+        if (this.itsValue == null) {
+            return "";
+        } else {
+            return StringUtils.escapeCSV(new String(this.itsValue));
+        }
+    }
 
 
     /**

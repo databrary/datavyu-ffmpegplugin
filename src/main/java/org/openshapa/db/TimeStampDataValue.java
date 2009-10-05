@@ -1,7 +1,9 @@
 package org.openshapa.db;
 
+import java.io.IOException;
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
+import org.openshapa.util.StringUtils;
 
 /**
  * An instance of TimeStampDataValue is used to store a time stamp value
@@ -305,6 +307,10 @@ public final class TimeStampDataValue extends DataValue
 
     } /* TimeStampDataValue::toString() */
 
+    public String toEscapedString() {
+        return StringUtils.escapeCSV(this.itsValue.toString());
+
+    }
 
     // toDBString()
     /**

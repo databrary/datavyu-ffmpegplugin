@@ -144,27 +144,12 @@ public final class SaveDatabaseC {
                     out.write(",");
                     out.write(c.getOffset().toString());
                     out.write(",");
-                    String value = c.getVal().toString();
-                    String result = new String();
-
-                    // BugzID: 637 - We now insert an escape character when
-                    // exporting as CSV.
-                    for (int n = 0; n < value.length(); n++) {
-                        if (value.charAt(n) == '\\') {
-                            char[] buff = {'\\', '\\'};
-                            result = result.concat(new String(buff));
-                        } else if (value.charAt(n) == ',') {
-                            char[] buff = {'\\', ','};
-                            result = result.concat(new String(buff));
-                        } else {
-                            result += value.charAt(n);
-                        }
-                    }
+                    String value = c.getVal().toEscapedString();
 
                     if (!isMatrix) {
-                        result = result.substring(1, result.length() - 1);
+                        value = value.substring(1, value.length() - 1);
                     }
-                    out.write(result);
+                    out.write(value);
                     out.newLine();
                 }
             }

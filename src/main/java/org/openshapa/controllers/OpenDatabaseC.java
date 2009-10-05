@@ -168,26 +168,29 @@ public final class OpenDatabaseC {
      * @return The line free fo escape characters, i.e. '\'.
      */
     private String stripEscChars(final String line) {
-        String result = "";
-        // Strip out the escape characters.
-        for (int i = 0; i < line.length(); i++) {
-            if (i < line.length() - 1) {
-                if (line.charAt(i) == '\\' && line.charAt(i + 1) == '\\') {
-                    char[] buff = {'\\'};
-                    result = result.concat(new String(buff));
-                    // Move over the escape character.
-                    i++;
-                } else if (line.charAt(i) == '\\'
-                           && line.charAt(i + 1) == ',') {
-                    char[] buff = {','};
-                    result = result.concat(new String(buff));
-                    // Move over the escape character.
-                    i++;
+        String result = null;
+
+        if (line != null) {
+            result = "";
+            for (int i = 0; i < line.length(); i++) {
+                if (i < line.length() - 1) {
+                    if (line.charAt(i) == '\\' && line.charAt(i + 1) == '\\') {
+                        char[] buff = {'\\'};
+                        result = result.concat(new String(buff));
+                        // Move over the escape character.
+                        i++;
+                    } else if (line.charAt(i) == '\\'
+                               && line.charAt(i + 1) == ',') {
+                        char[] buff = {','};
+                        result = result.concat(new String(buff));
+                        // Move over the escape character.
+                        i++;
+                    } else {
+                        result += line.charAt(i);
+                    }
                 } else {
                     result += line.charAt(i);
                 }
-            } else {
-                result += line.charAt(i);
             }
         }
 

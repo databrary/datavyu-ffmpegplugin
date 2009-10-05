@@ -252,6 +252,9 @@ public final class IntDataValue extends DataValue
         return ("" + this.itsValue);
     }
 
+    public String toEscapedString() {
+        return ("" + this.itsValue);
+    }
 
     /**
      * toDBString()
