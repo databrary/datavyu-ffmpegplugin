@@ -306,7 +306,9 @@ public final class OpenDatabaseC {
                         QuoteStringDataValue qsdv =
                                            new QuoteStringDataValue(dc.getDB());
                         if (!emptyArg) {
-                            qsdv.setItsValue(tokens[i + 2]);
+                            // Strip quotes from quote string.
+                            int newL = tokens[i + 2].length() - 1;
+                            qsdv.setItsValue(tokens[i + 2].substring(1, newL));
                         }
                         arguments.add(qsdv);
                         break;
