@@ -1,4 +1,4 @@
-package org.openshapa.views.continuous.quicktime;
+package org.openshapa.views.continuous.sound;
 
 import org.openshapa.views.continuous.*;
 import java.io.File;
@@ -19,11 +19,11 @@ import quicktime.std.movies.media.SampleTimeInfo;
 /**
  * The viewer for a quicktime video file.
  */
-public final class QTDataViewer extends JFrame
+public final class SoundDataViewer extends JFrame
 implements DataViewer {
 
     /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(QTDataViewer.class);
+    private static Logger logger = Logger.getLogger(SoundDataViewer.class);
 
     /** The quicktime movie this viewer is displaying. */
     private Movie movie;
@@ -58,7 +58,7 @@ implements DataViewer {
      * @param controller The controller invoking actions on this continous
      * data viewer.
      */
-    public QTDataViewer() {
+    public SoundDataViewer() {
         try {
             movie = null;
             shuttleSpeed = 0.0f;
@@ -78,29 +78,29 @@ implements DataViewer {
     /**
      * Method to open a video file for playback.
      *
-     * @param videoFile The video file that this viewer is going to display to
+     * @param audioFile The audio file that this viewer is going to display to
      * the user.
      */
-    public void setDataFeed(final File videoFile) {
+    public void setDataFeed(final File audioFile) {
         try {
-            this.setTitle(videoFile.getName());
-            OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
+            this.setTitle(audioFile.getName());
+            OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(audioFile));
             movie = Movie.fromFile(omf);
-            visualTrack = movie.getIndTrackType(1,
-                                       StdQTConstants.visualMediaCharacteristic,
-                                       StdQTConstants.movieTrackCharacteristic);
-            visualMedia = visualTrack.getMedia();
+//            visualTrack = movie.getIndTrackType(1,
+//                                       StdQTConstants.visualMediaCharacteristic,
+//                                       StdQTConstants.movieTrackCharacteristic);
+//            visualMedia = visualTrack.getMedia();
 
-            this.add(QTFactory.makeQTComponent(movie).asComponent());
+//            this.add(QTFactory.makeQTComponent(movie).asComponent());
             // Set the size of the window to be the same as the incoming video.
-            this.setBounds(this.getX(), this.getY(),
-                           movie.getBox().getWidth(),
-                           movie.getBox().getHeight());
-            this.pack();
+//            this.setBounds(this.getX(), this.getY(),
+//                           movie.getBox().getWidth(),
+//                           movie.getBox().getHeight());
+//            this.pack();
             this.invalidate();
             this.setVisible(true);
 
-            setName(this.getClass().getSimpleName() + videoFile.getName());
+            setName(this.getClass().getSimpleName() + audioFile.getName());
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
