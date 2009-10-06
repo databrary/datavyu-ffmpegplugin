@@ -15,13 +15,8 @@ import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontFormatException;
+import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.Box.Filler;
@@ -575,5 +570,17 @@ implements ExternalDataCellListener, Selectable {
      */
     public final MatrixRootView getDataView() {
         return dataPanel;
+    }
+
+    /**
+     * Method to call when painting the component.
+     * @param g
+     */
+    @Override
+    public void paint(Graphics g) {
+        // BugzID:474 - Set the size at paint time - somewhere else may have
+        // altered the font.
+        dataPanel.setFont(Configuration.getInstance().getSSDataFont());
+        super.paint(g);
     }
 }

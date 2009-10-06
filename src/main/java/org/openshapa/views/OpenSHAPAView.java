@@ -694,10 +694,8 @@ public final class OpenSHAPAView extends FrameView {
         config.setSSDataFont(biggerFont);
 
         //Create and redraw fresh window pane so all of the fonts are new again.
-        panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
-        this.setComponent(panel);
-        this.getComponent().revalidate();
-        this.getComponent().resetKeyboardActions();
+        panel.revalidate();
+        panel.repaint();
     }
 
     /**
