@@ -242,7 +242,8 @@ public final class OpenSHAPAView extends FrameView {
 
                 // All cells in the column removed - now delete the column.
                 OpenSHAPA.getDatabase().removeColumn(dc.getID());
-                this.showSpreadsheet();
+                panel.revalidate();
+                panel.repaint();
             }
         } catch (SystemErrorException e) {
             logger.error("Unable to delete columns.", e);
@@ -776,5 +777,6 @@ public final class OpenSHAPAView extends FrameView {
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(OpenSHAPAView.class);
 
+    /** The spreadsheet panel for this view. */
     private SpreadsheetPanel panel;
 }
