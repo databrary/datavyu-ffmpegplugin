@@ -26,6 +26,7 @@ public class QTFilter extends FileFilter {
                 || file.getName().endsWith(".avi")
                 || file.getName().endsWith(".mpg")
                 || file.getName().endsWith(".mp4")
+                || file.getName().endsWith(".wav")
                 || file.isDirectory());
     }
 }

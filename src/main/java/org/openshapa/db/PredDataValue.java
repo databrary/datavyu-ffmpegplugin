@@ -11,6 +11,7 @@ package org.openshapa.db;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
+import org.openshapa.util.StringUtils;
 
 
 /**
@@ -546,6 +547,14 @@ public final class PredDataValue extends DataValue
         else
         {
             return (this.itsValue.toString());
+        }
+    }
+
+    public String toEscapedString() {
+        if (this.itsValue == null) {
+            return("()");
+        } else {
+            return StringUtils.escapeCSV(this.itsValue.toString());
         }
     }
 

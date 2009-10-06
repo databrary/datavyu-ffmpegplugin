@@ -3,6 +3,7 @@ package org.openshapa.db;
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
 import java.util.Vector;
+import org.openshapa.util.StringUtils;
 
 /**
  * Class Matrix
@@ -437,6 +438,38 @@ public class Matrix implements Cloneable {
 
     } /* Matrix::argListToString() */
 
+    /**
+     * @return A string containing the values of the arguments in the format
+     * (value0, value1, ..., valueN) - with the exception that the values are
+     * outputed with escaped CSV characters.
+     *
+     * @throws SystemErrorException If unable to create the escaped string.
+     */
+    protected String argListToEscapedString() throws SystemErrorException {
+        String s = "";
+        int i = 0;
+
+        if (this.mveID != DBIndex.INVALID_ID) {
+            if (argList == null) {
+                throw new SystemErrorException("Arglist unitialized?!");
+            }
+
+
+            if (this.argList.size() <= 0) {
+                throw new SystemErrorException("numArgs <= 0");
+            }
+
+            while (i < (this.argList.size() - 1)) {
+                s += this.getArg(i).toEscapedString() + ", ";
+                i++;
+            }
+
+            s += this.getArg(i).toEscapedString();
+        }
+
+        return s;
+    }
+
 
     /**
      * insertInIndex()
@@ -866,6 +899,18 @@ public class Matrix implements Cloneable {
         return (s);
 
     } /* Matrix::toString() */
+
+    public String toEscapedString() {
+        String s;
+
+        try {
+            s = "(" + this.argListToEscapedString() + ")";
+        } catch (SystemErrorException e) {
+            s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
+        }
+
+        return s;
+    }
 
     /*************************************************************************/
     /********************* Argument List Management: *************************/

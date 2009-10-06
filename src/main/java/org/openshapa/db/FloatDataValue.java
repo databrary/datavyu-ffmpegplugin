@@ -243,6 +243,12 @@ public final class FloatDataValue extends DataValue {
         return ("" + formatter.format(itsValue));
     }
 
+    public String toEscapedString()
+    {
+        DecimalFormat formatter = new DecimalFormat(Constants.FLOAT_FORMAT);
+        return ("" + formatter.format(itsValue));
+    }
+
 
     /**
      * toDBString()

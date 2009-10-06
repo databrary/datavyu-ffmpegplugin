@@ -45,7 +45,7 @@ public final class SaveDatabaseC {
             // BugzID:541 - Don't append ".csv" if the path already contains it.
             if (!outputFile.contains(".csv")) {
                 outputFile = destinationFile.concat(".csv");
-            }            
+            }
             saveAsCSV(outputFile);
 
         } else if (fileFilter.getClass() == MODBFilter.class) {
@@ -144,7 +144,8 @@ public final class SaveDatabaseC {
                     out.write(",");
                     out.write(c.getOffset().toString());
                     out.write(",");
-                    String value = c.getVal().toString();
+                    String value = c.getVal().toEscapedString();
+
                     if (!isMatrix) {
                         value = value.substring(1, value.length() - 1);
                     }
