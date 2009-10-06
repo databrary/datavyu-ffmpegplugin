@@ -36,6 +36,10 @@ public final class UIZoomTest extends UISpecTestCase {
         UISpec4J.init();
     }
 
+    public void testNull() {
+        assertTrue(true);
+    }
+
    /**
      * Test zooming in and reset.
      *//*
