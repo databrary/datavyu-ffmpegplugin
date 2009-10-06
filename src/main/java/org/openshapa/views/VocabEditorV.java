@@ -80,6 +80,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         veViews = new Vector<VocabElementV>();
         veViewsToDeleteCompletely = new Vector<VocabElementV>();
         verticalFrame = new JPanel();
+        verticalFrame.setName("verticalFrame");
         verticalFrame.setLayout(new BoxLayout(verticalFrame, BoxLayout.Y_AXIS));
         try {
             Vector<MatrixVocabElement> matVEs = db.getMatrixVEs();

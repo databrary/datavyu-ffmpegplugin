@@ -9,9 +9,12 @@ import java.util.Vector;
 import org.uispec4j.Cell;
 import org.uispec4j.Clipboard;
 import org.uispec4j.Key;
+import org.uispec4j.KeysItem;
 import org.uispec4j.MenuBar;
 import org.uispec4j.Spreadsheet;
+import org.uispec4j.StringItem;
 import org.uispec4j.TextBox;
+import org.uispec4j.TextItem;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
@@ -368,12 +371,15 @@ public final class UINewCellTest extends UISpecTestCase {
             Cell c = cells.elementAt(i);
             TextBox t = c.getValue();
 
-            c.enterText(Cell.VALUE, testInput[i], advancedInput[i],
-                    testInput[i + 1]);
+            Vector<TextItem> vti = new Vector<TextItem>();
+            vti.add(new StringItem(testInput[i]));
+            vti.add(new KeysItem(advancedInput[i]));
+            vti.add(new StringItem(testInput[i + 1]));
+
+            c.enterText(Cell.VALUE, vti);
 
             assertTrue(Double.parseDouble(t.getText())
                     == expectedTestOutput[i]);
-
         }
     }
 
@@ -1012,9 +1018,14 @@ public final class UINewCellTest extends UISpecTestCase {
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
             TextBox t = c.getValue();
-            //Vector<TextItem> vti = new
-            c.enterText(Cell.VALUE, testInput[i], advancedInput[i],
-                    testInput[i + 1]);
+
+            Vector<TextItem> vti = new Vector<TextItem>();
+            vti.add(new StringItem(testInput[i]));
+            vti.add(new KeysItem(advancedInput[i]));
+            vti.add(new StringItem(testInput[i + 1]));
+
+            c.enterText(Cell.VALUE, vti);
+
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
     }
