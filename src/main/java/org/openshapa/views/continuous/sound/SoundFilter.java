@@ -1,17 +1,14 @@
-package org.openshapa.views.continuous.quicktime;
+package org.openshapa.views.continuous.sound;
 
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
 
-/**
- * A file filter for movie files.
- */
-public class QTFilter extends FileFilter {
+public class SoundFilter extends FileFilter {
     /**
      * @return The discription of the file filter.
      */
     public String getDescription() {
-        return new String("Movie files");
+        return new String("Audio files");
     }
 
     /**
@@ -22,10 +19,7 @@ public class QTFilter extends FileFilter {
      * @return true if the file is to be accepted, false otherwise.
      */
     public boolean accept(File file) {
-        return (file.getName().endsWith(".mov") 
-                || file.getName().endsWith(".avi")
-                || file.getName().endsWith(".mpg")
-                || file.getName().endsWith(".mp4")
+        return (file.getName().endsWith(".wav")
                 || file.isDirectory());
     }
 }
