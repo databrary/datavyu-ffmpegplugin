@@ -27,6 +27,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
+import org.openshapa.util.AboutHandler;
 import org.openshapa.views.AboutV;
 
 /**
@@ -409,6 +410,7 @@ implements KeyEventDispatcher {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 System.setProperty("com.apple.mrj.application.apple.menu.about.name", "OpenSHAPA");
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                new AboutHandler();
             } catch (ClassNotFoundException cnfe) {
                 logger.error("Unable to start OpenSHAPA", cnfe);
             } catch (InstantiationException ie) {

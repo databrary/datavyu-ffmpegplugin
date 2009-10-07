@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
  * available to OpenSHAPA - this single instance will hunt down and load all
  * plugins that implement the Plugin interface.
  */
-public class PluginManager {
+public final class PluginManager {
 
     /**
      * @return The single instance of the PluginManager object in OpenSHAPA.
