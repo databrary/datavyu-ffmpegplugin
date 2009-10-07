@@ -40,6 +40,7 @@ import org.openshapa.db.Cell;
 import org.openshapa.db.DataColumn;
 import org.openshapa.util.FileFilters.MODBFilter;
 
+
 /**
  * This application is a simple text editor. This class displays the main frame
  * of the application and provides much of the logic. This class is called by
@@ -194,6 +195,14 @@ public final class OpenSHAPAView extends FrameView {
     }
 
     /**
+     * Action for showing the about window.
+     */
+    @Action
+    public void showAboutWindow() {
+        OpenSHAPA.getApplication().showAboutWindow();
+    }
+
+    /**
      * Action for showing the spreadsheet.
      */
     @Action
@@ -316,7 +325,7 @@ public final class OpenSHAPAView extends FrameView {
         jSeparator4 = new javax.swing.JSeparator();
         favScripts = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
-        aboutMenuItem1 = new javax.swing.JMenuItem();
+        aboutMenuItem = new javax.swing.JMenuItem();
         contentsMenuItem = new javax.swing.JMenuItem();
 
         mainPanel.setName("mainPanel"); // NOI18N
@@ -525,11 +534,13 @@ public final class OpenSHAPAView extends FrameView {
 
         menuBar.add(scriptMenu);
 
+        helpMenu.setAction(actionMap.get("showVariableList")); // NOI18N
         helpMenu.setName("helpMenu"); // NOI18N
 
-        aboutMenuItem1.setName("aboutMenuItem1"); // NOI18N
+        aboutMenuItem.setAction(actionMap.get("showAboutWindow")); // NOI18N
+        aboutMenuItem.setName("aboutMenuItem"); // NOI18N
         if (OpenSHAPA.getPlatform() != Platform.MAC) {
-            helpMenu.add(aboutMenuItem1);
+            helpMenu.add(aboutMenuItem);
         }
 
         contentsMenuItem.setAction(actionMap.get("runTests")); // NOI18N
@@ -730,7 +741,7 @@ public final class OpenSHAPAView extends FrameView {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem aboutMenuItem1;
+    private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem contentsMenuItem;
     private javax.swing.JMenu controllerMenu;
     private javax.swing.JMenuItem deleteColumnMenuItem;

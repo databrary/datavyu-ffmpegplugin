@@ -1,7 +1,6 @@
 package org.openshapa;
 
 import org.openshapa.controllers.CreateNewCellC;
-import org.openshapa.db.Database;
 import org.openshapa.db.LogicErrorException;
 import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
@@ -28,6 +27,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
+import org.openshapa.views.AboutV;
 
 /**
  * The main class of the application.
@@ -177,6 +177,15 @@ implements KeyEventDispatcher {
             logger.error("Unable register column list listener: ", e);
         }
         OpenSHAPA.getApplication().show(listVarView);
+    }
+
+    /**
+     * Action for showing the about window.
+     */
+    public void showAboutWindow() {
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        aboutWindow = new AboutV(mainFrame, false);
+        OpenSHAPA.getApplication().show(aboutWindow);
     }
 
     /**
@@ -440,6 +449,9 @@ implements KeyEventDispatcher {
 
     /** The view to use for the quick time video controller. */
     private QTVideoController qtVideoController;
+
+    /** The view to use when displaying information about OpenSHAPA. */
+    private AboutV aboutWindow;
 
     /** Tracks if a NumPad key has been pressed. */
     private boolean numKeyDown = false;
