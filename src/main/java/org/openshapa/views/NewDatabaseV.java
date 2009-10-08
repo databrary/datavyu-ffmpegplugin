@@ -8,6 +8,7 @@ import org.openshapa.util.Constants;
 import java.awt.Frame;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 /**
@@ -55,6 +56,7 @@ public final class NewDatabaseV extends OpenSHAPADialog {
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewDatabaseV.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
+        setResizable(false);
 
         jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
         jLabel1.setToolTipText(resourceMap.getString("jLabel1.toolTipText")); // NOI18N
@@ -104,8 +106,8 @@ public final class NewDatabaseV extends OpenSHAPADialog {
                             .add(jLabel1))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(nameField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
-                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)))
+                            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
+                            .add(nameField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)))
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -123,11 +125,11 @@ public final class NewDatabaseV extends OpenSHAPADialog {
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jLabel2)
                     .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 111, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .add(28, 28, 28)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(cancelButton)
                     .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -157,6 +159,14 @@ public final class NewDatabaseV extends OpenSHAPADialog {
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         try {
             MacshapaDatabase model = new MacshapaDatabase();
+            ResourceMap r = Application.getInstance(OpenSHAPA.class)
+                                       .getContext()
+                                       .getResourceMap(NewDatabaseV.class);
+
+            if (!model.isValidDatabaseName(this.getDatabaseName())) {
+                throw new LogicErrorException(r.getString("Error.invalidName"));
+            }
+
             model.setName(this.getDatabaseName());
             model.setDescription(this.getDatabaseDescription());
 

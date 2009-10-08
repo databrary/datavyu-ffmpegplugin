@@ -7,6 +7,10 @@
 
 package org.openshapa.db;
 
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import org.openshapa.OpenSHAPA;
+
 /**
  * Abstract database class
  */
@@ -498,6 +502,17 @@ public abstract class Database
 
     } /* Database::seDescription() */
 
+    /**
+     * Determines if the supplied string is valid to use as a database name.
+     *
+     * @param newName The string to determine if it is valid.
+     *
+     * @return True if the supplied string is valid as a database name, false
+     * otherwise.
+     */
+    public boolean isValidDatabaseName(final String newName) {
+        return !(newName == null || newName.length() == 0);
+    }
 
     // setName()
     /**
@@ -521,8 +536,7 @@ public abstract class Database
     {
         final String mName = "Databaset::setName(): ";
 
-        if ( ( newName == null ) ||
-             ( newName.length() == 0 ) )
+        if ( !isValidDatabaseName(newName) )
         {
             throw new SystemErrorException(mName + "null or empty name");
         }
