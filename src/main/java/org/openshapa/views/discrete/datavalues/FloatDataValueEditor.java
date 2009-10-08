@@ -238,8 +238,12 @@ public final class FloatDataValueEditor extends DataValueEditor {
 
             // BugzID:522 - Prevent overiding precision defined by user.
             if (this.getText() != null && this.getText().length() > 0) {
-                int maxFrac = getText().length() - getText().indexOf('.') - 1;
-                formatter.setMaximumFractionDigits(Math.max(maxFrac, 1));
+                if (getText().equals(getNullArg())) {
+                    formatter.setMaximumFractionDigits(MAX_DECIMAL_PLACES - 1);
+                } else {
+                    int mFrac = getText().length() - getText().indexOf('.') - 1;
+                    formatter.setMaximumFractionDigits(Math.max(mFrac, 1));
+                }
             }
 
             t = formatter.format(fdv.getItsValue());

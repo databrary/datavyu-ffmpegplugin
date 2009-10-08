@@ -509,7 +509,7 @@ public final class UINewCellTest extends UISpecTestCase {
         int numOfTests = floatTestInput.length;
 
         double[] expectedFloatTestOutput = {1.9, -43.21, 289, 178, 0, 7.2,
-        589.138080, 389.5, -0.1, 0.2, 0, 0, 0};
+        589.138085, 389.5, -0.1, 0.2, 0, 0, 0, -0.34, -23.34, 0.34, 12.34};
 
         //Create new cells, check that they have been created
         ss.getSpreadsheetColumn(varName).requestFocus();
@@ -535,8 +535,8 @@ public final class UINewCellTest extends UISpecTestCase {
 
             c.enterText(Cell.VALUE, floatTestInput[i]);
 
-            /*BugzID:579assertTrue(Double.parseDouble(t.getText())
-                    == (expectedFloatTestOutput[i]));*/
+            assertTrue(Double.parseDouble(t.getText())
+                    == (expectedFloatTestOutput[i]));
         }
     }
 
