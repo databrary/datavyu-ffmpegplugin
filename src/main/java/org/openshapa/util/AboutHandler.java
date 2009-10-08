@@ -77,11 +77,18 @@ public class AboutHandler {
          * @return Value for the method being invoked.
          */
         public Object invoke(Object proxy, Method method, Object[] args) {
+            
             try {
+                Class ae = Class.forName("com.apple.eawt.ApplicationEvent");
+
                 if (method.getName().equals("handleAbout")) {
                     OpenSHAPA.getApplication().showAboutWindow();
 
-                    Class ae = Class.forName("com.apple.eawt.ApplicationEvent");
+                    Method setHandled = ae.getMethod("setHandled",
+                                                     boolean.class);
+                    setHandled.invoke(args[0], true);
+                } else if (method.getName().equals("handleQuit")) {
+                    // Accept the quit request.
                     Method setHandled = ae.getMethod("setHandled",
                                                      boolean.class);
                     setHandled.invoke(args[0], true);
