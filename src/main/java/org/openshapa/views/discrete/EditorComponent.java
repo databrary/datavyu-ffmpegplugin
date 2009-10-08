@@ -1,6 +1,7 @@
 package org.openshapa.views.discrete;
 
 import java.awt.Component;
+import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;

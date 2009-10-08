@@ -65,7 +65,7 @@ public final class UINewCellTest extends UISpecTestCase {
      private String[] integerTestInput = {"1a9", "10-432",
             "!28.9(", "178&", "~~~)",
             "If x?7 then x? 2 ", "99999999999999999999", "000389.5", "-", "-0",
-            /*"-123"*/};
+            "-123"};
 
      /**
       * Float test input.
@@ -182,7 +182,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varRadio = "integer";
 
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
-            "72", "999999999999999999", "3895", "<val>", "0", "-123"};
+            "72", "999999999999999999", "3895", "-", "0", "-123"};
         pasteTest(varName, varRadio, integerTestInput, expectedTestOutput);
     }
 
@@ -392,7 +392,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varRadio = "integer";
 
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
-            "72", "999999999999999999", "3895", "-", "-", "-123"};
+            "72", "999999999999999999", "3895", "-", "0", "-123"};
 
         createNewVariable(varName, varRadio);
 
@@ -577,7 +577,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varName = "matrixInteger1";
 
         String [] expectedIntTestOutput = {"19", "-43210", "289", "178", 
-        "<int>", "72", "999999999999999999", "3895", "-", "-", "-123"};
+        "<int>", "72", "999999999999999999", "3895", "-", "0", "-123"};
 
         runStandardTest(varName, integerTestInput,
                 expectedIntTestOutput, "<int>");
