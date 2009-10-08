@@ -257,6 +257,15 @@ public abstract class EditorComponent {
     }
 
     /**
+     * @return True if the all of the text in this editor component is selected,
+     * false otherwise.
+     */
+    public final boolean isAllSelected() {
+        int selectionLength = this.getSelectionEnd() - this.getSelectionStart();
+        return (selectionLength == this.getText().length());
+    }
+
+    /**
      * Given a startClick position and endClick position, select the text in
      * the JTextComponent.
      *
