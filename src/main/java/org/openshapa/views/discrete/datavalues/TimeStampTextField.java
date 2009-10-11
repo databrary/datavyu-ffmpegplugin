@@ -181,7 +181,16 @@ implements FocusListener, KeyListener {
     }
 
     /**
-     * Pastes contents of the clipboard into the nominal data value view.
+     * Cuts the current selection from the current time stam field into the
+     * clipboard.
+     */
+    @Override
+    public void cut() {
+        myEditor.cut();
+    }
+
+    /**
+     * Pastes contents of the clipboard into the time stamp text field.
      */
     @Override
     public void paste() {
