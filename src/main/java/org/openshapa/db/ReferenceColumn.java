@@ -1,10 +1,3 @@
-/*
- * ReferenceColumn.java
- *
- * Created on December 14, 2006, 7:06 PM
- *
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
@@ -12,58 +5,34 @@ import org.openshapa.util.HashUtils;
 import java.util.Vector;
 
 /**
- * Class ReferenceColumn
- *
  * Instances of ReferenceColumn are used to implement spreadsheet variables
  * whose cells are mirrors of other cells in the database.
  *
- *                                               -- 8/30/07
+ * @date 2007/08/30
  */
 public class ReferenceColumn extends Column
 {
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-    /*
-     * itsCells: Reference to a vector of ReferenceCell containing the cells
-     *      of the column.  This Vector is created when the column is inserted
-     *      into the column list, and not copied in the copy constructor.
+    /**
+     * Reference to a vector of ReferenceCell containing the cells of the
+     * column. This vector is created when the column is inserted into the
+     * column list, and not copied in the constructor.
      */
-
-    /** Vector of ReferenceCells for Column */
     private Vector<ReferenceCell> itsCells = null;
 
 
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
+    // ReferenceColumn()
     /**
-     * ReferenceColumn()
+     * Constructor.
      *
-     * Constructors for instances of ReferenceColumn.
+     * @param db The parent database that the new reference column will belong
+     * too.
+     * @param name The name to use for the new reference column.
      *
-     * Three versions of this constructor.
+     * @throws SystemErrorException If unable to create the new reference
+     * column.
      *
-     * The first takes only a reference to a database, and a name
-     * as its parameters.  This is the constructor that will typically be
-     * used when a new column is created in the spreadsheet.
-     *
-     * The second takes a reference to a database, a name, and initial values
-     * for the  hidden and readOnly field.  This constructor is intended for
-     * use when loading a Database from file.
-     *
-     *  The third takes an instance of ReferenceColum as its parameter, and returns
-     *  a copy.  Note that the itsCells field is NOT copied.
-     *
-     *                                               -- 8/29/07
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @date 2007/08/29
      */
-
     public ReferenceColumn(Database db, String name)
     throws SystemErrorException {
         super(db);
@@ -74,6 +43,21 @@ public class ReferenceColumn extends Column
 
     } /* ReferenceColumn::ReferenceColumn(db, name, type) */
 
+
+    // ReferenceColumn()
+    /**
+     * Constructor.
+     *
+     * @param db The parent database to use for this reference column.
+     * @param name The name to use for the new reference column.
+     * @param hidden Is the column hidden? True if yes, false otherwise.
+     * @param readOnly Is the column read-only? True if yes, false otherwise.
+     *
+     * @throws SystemErrorException If unable to create the new reference
+     * column.
+     *
+     * @date 2007/08/29
+     */
     public ReferenceColumn(Database db,
                            String name,
                            boolean hidden,
@@ -83,6 +67,18 @@ public class ReferenceColumn extends Column
 
     } /* ReferenceColumn::ReferenceColumn(db, name, hidden, readOnly) */
 
+
+    // ReferenceColumn()
+    /**
+     * Copy Constructor. Please note: The cells of the column are NOT copied.
+     *
+     * @param rc The ReferenceColumn that we are creating a duplicate from.
+     *
+     * @throws SystemErrorException If unable to create a new reference column
+     * from the supplied argument.
+     *
+     * @date 2007/08/29
+     */
     public ReferenceColumn(ReferenceColumn rc)
         throws SystemErrorException
     {
@@ -91,6 +87,8 @@ public class ReferenceColumn extends Column
 
     } /* ReferenceColumn::ReferenceColumn(rc) */
 
+
+    // clone()
     /**
      * Creates a new copy of the object.
      *
@@ -113,27 +111,14 @@ public class ReferenceColumn extends Column
     }
 
 
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
-
+    // getItsCells()
     /**
-     * getItsCells() & setItsCells()
+     * @return The list of cells that back this reference column. Note this
+     * method is protected and should only be used from within the openshapa.db
+     * package.
      *
-     * Get and set the current value of itsCells.  Note that these methods
-     * are protected and should only be called from within the openshapa.db
-     * package.  We will use them to transfer the vector of cells from one
-     * incarnation of the ReferencesColumn header to the next.
-     *
-     * Update numCells in passing.
-     *
-     *                                               -- 8/30/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/30
      */
-
     protected Vector<ReferenceCell> getItsCells()
     {
 
@@ -141,6 +126,16 @@ public class ReferenceColumn extends Column
 
     } /* ReferenceColumn::getItsCells() */
 
+
+    // setItsCells()
+    /**
+     * Set the cells this reference column represents. Note this method is
+     * protected and should only be used from within the openshapa.db package.
+     *
+     * @param cells The new list to use for the cells of the column.
+     *
+     * @date 2007/08/30
+     */
     protected void setItsCells(Vector<ReferenceCell> cells)
     {
 
@@ -158,26 +153,15 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::setItsCells(cells) */
 
 
-    /*************************************************************************/
-    /***************************** Overrides: ********************************/
-    /*************************************************************************/
-
-   /**
-     * toDBString()
-     *
-     * Returns a String representation of the ReferenceColumn for comparison
+    // toDBString()
+    /**
+     * @return A String representation of the ReferenceColumn for comparison
      * against the expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *    - None.
-     *
      */
 
+    @Override
     public String toDBString()
     {
         String s;
@@ -204,15 +188,10 @@ public class ReferenceColumn extends Column
 
     // toString()
     /**
-     * Returns a String representation of the ReferenceColumn for display.
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @return A String representation of the ReferenceColumn for display.
      */
+
+    @Override
     public String toString()
     {
         String s;
