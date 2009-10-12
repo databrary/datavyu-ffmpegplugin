@@ -1,12 +1,3 @@
-/*
- * TextStringDataValue.java
- *
- * Created on August 18, 2007, 5:34 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
@@ -17,69 +8,43 @@ import org.openshapa.util.StringUtils;
  * An instance of TextStringDataValue is used to store a quote string value
  * assigned to a formal argument.
  */
-
 public final class TextStringDataValue extends DataValue
 {
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
-    /*
-     * ItsDefault:  Constant containing the value to be assigned to all
-     *      float data values unless otherwise specified.
-     *
-     * itsValue:   Long containing the value assigned to the formal argument.
-     *
-     * minVal & maxVal don't appear in TextStringDataValue as at present,
-     *      we don't support subranging in quote strings
-     */
-
-    /** default value for text strings */
+    /** default value for text strings. */
     final String ItsDefault = null;
 
-    /** the value assigned to the associated formal argument in this case */
+    /** The value assigned to this text string data value. */
     String itsValue = ItsDefault;
 
 
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
     /**
-     * TextStringDataValue()
+     * Constructor.
      *
-     * Constructor for instances of TextStringDataValue.
+     * @param db The parent database to which this TextStringDataValue will
+     * belong.
+     * @throws SystemErrorException If unable to create the TextStringDataValue.
      *
-     * Four versions of this constructor.
-     *
-     * The first takes a reference to a database as its parameter and just
-     * calls the super() constructor.
-     *
-     * The second takes a reference to a database, and a formal argument ID, and
-     * attempts to set the itsFargID field of the data value accordingly.
-     *
-     * The third takes a reference to a database, a formal argument ID, and
-     * a value as arguments, and attempts to set the itsFargID and itsValue
-     * of the data value accordingly.
-     *
-     * The fourth takes a reference to an instance of TextStringDataValue as an
-     * argument, and uses it to create a copy.
-     *
-     *                                               -- 8/16/07
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @date 2007/08/16
      */
-
     public TextStringDataValue(Database db)
         throws SystemErrorException
     {
-
         super(db);
 
     } /* TextStringDataValue::TextStringDataValue(db) */
 
+
+    /**
+     * Constructor.
+     *
+     * @param db The parent database to which this TextStringDataValue will
+     * belong.
+     * @param fargID The ID of a parent formal argument, that this is a value
+     * for.
+     * @throws SystemErrorException If unable to create the TextStringDataValue.
+     *
+     * @date 2007/08/16
+     */
     public TextStringDataValue(Database db,
                                long fargID)
         throws SystemErrorException
@@ -90,6 +55,20 @@ public final class TextStringDataValue extends DataValue
 
     } /* TextStringDataValue::TextStringDataValue(db, fargID) */
 
+
+    /**
+     * Constructor.
+     *
+     * @param db The parent database to which this TextStringDataValue will
+     * belong.
+     * @param fargID The ID of a parent formal argument, that this is a value
+     * for.
+     * @param value The value to use with this TextStringDataValue.
+     *
+     * @throws SystemErrorException If unable to create the TextStringDataValue.
+     *
+     * @date 2007/08/16
+     */
     public TextStringDataValue(Database db,
                                long fargID,
                                String value)
@@ -103,10 +82,19 @@ public final class TextStringDataValue extends DataValue
 
     } /* TextStringDataValue::TextStringDataValue(db, fargID, value) */
 
+
+    /**
+     * Copy Constructor.
+     *
+     * @param dv The data value to create a copy from.
+     *
+     * @throws SystemErrorException If unable to create the TextStringDataValue.
+     *
+     * @date 2007/08/16
+     */
     public TextStringDataValue(TextStringDataValue dv)
         throws SystemErrorException
     {
-
         super(dv);
 
         if ( dv.itsValue != null )
@@ -120,12 +108,13 @@ public final class TextStringDataValue extends DataValue
 
     } /* TextStringDataValue::TextStringDataValue(dv) */
 
+
     /**
      * Creates a new copy of the object.
      *
      * @return A duplicate of this object.
      *
-     * @throws java.lang.CloneNotSupportedException If the clone interface has
+     * @throws CloneNotSupportedException If the clone interface has
      * not been implemented.
      */
     @Override
@@ -141,23 +130,14 @@ public final class TextStringDataValue extends DataValue
         return clone;
     }
 
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
 
+    // getItsValue()
     /**
-     * getItsValue()
+     * @returns If the a value is defined, a copy of the current value,
+     * otherwise return null.
      *
-     * If the data value is currently defined, return a string containing a
-     * copy of the the current value of the data value.  Otherwise return null.
-     *
-     *                           -- 8/16/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/16
      */
-
     public String getItsValue()
     {
 
@@ -173,19 +153,16 @@ public final class TextStringDataValue extends DataValue
     } /* TextStringDataValue::getItsValue() */
 
 
-    /**
-     * setItsValue()
+    // setItsValue()
+    /**     * Set itsValue to the specified value if it is valid.
+     * Sets itsValue to the specified value.
      *
-     * Set itsValue to the specified value if it is valid.  Otherwise
-     * throw a system error.
+     * @param value The new value to use for this data value.
      *
-     *                                               -- 8/16/07
+     * @throws SystemErrorException if the supplied value is invalid.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/16
      */
-
     public void setItsValue(String value)
         throws SystemErrorException
     {
@@ -210,6 +187,8 @@ public final class TextStringDataValue extends DataValue
 
     } /* TextStringDataValue::setItsValue() */
 
+
+    // isDefault()
     /**
      * @return true if the value equals the default value
      */
@@ -220,24 +199,12 @@ public final class TextStringDataValue extends DataValue
     }
 
 
-    /*************************************************************************/
-    /*************************** Overrides: **********************************/
-    /*************************************************************************/
-
+    // toString()
     /**
-     * toString()
+     * @return the string representation of the DBValue for display.
      *
-     * Returns a String representation of the DBValue for display.
-     *
-     *                                   -- 8/15/07
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *     - None.
+     * @date 2007/08/15
      */
-
     public String toString()
     {
         if ( this.itsValue == null )
@@ -251,6 +218,12 @@ public final class TextStringDataValue extends DataValue
 
     } /* TextStringDataValue::toString() */
 
+
+    // toEscapedString()
+    /**
+     * @return The string represnetation of the DBValue with CSV delimiters
+     * escaped with a '\'.
+     */
     public String toEscapedString() {
         if (this.itsValue == null) {
             return "";
@@ -260,22 +233,15 @@ public final class TextStringDataValue extends DataValue
 
     }
 
+
+    // toDBString()
     /**
-     * toDBString()
-     *
-     * Returns a database String representation of the DBValue for comparison
+     * @return A database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      * <i>This function is intended for debugging purposses.</i>
      *
-     *                                       -- 8/15/07
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/15
      */
-
     public String toDBString()
     {
         if ( this.itsValue == null )
@@ -300,22 +266,23 @@ public final class TextStringDataValue extends DataValue
     } /* TextStringDataValue::toDBString() */
 
 
+    // toMODBFile()
     /**
-     * toMODBFile()
-     *
      * Write the MacSHAPA ODB file style definition of itsValue to the
      * supplied file in MacSHAPA ODB file format.
      *
      * The output of this method will an instantiation of <text_quote_string>
      * (as defined in the grammar defining the MacSHAPA ODB file format).
      *
-     *                                              1/18/09
+     * @param output The target stream to output this TextStringDataValue as a
+     * MacSHAPA ODB file.
      *
-     * Changes:
+     * @throws SystemErrorException If the supplied output is null
+     * @throws IOException If unable to write the TextStringDataValue to the
+     * supplied PrintStream.
      *
-     *    - None.
+     * @date 2009/01/18
      */
-
     protected void toMODBFile(java.io.PrintStream output)
         throws SystemErrorException,
                java.io.IOException
@@ -360,18 +327,21 @@ public final class TextStringDataValue extends DataValue
     } /* TextStringDataValue::toMODBFile() */
 
 
+    // updateForFargChange()
     /**
-     * updateForFargChange()
-     *
      * Update for a change in the formal argument name, and/or subrange.
      *
-     *                                           -- 3/22/08
+     * @param fargNameChanged Has the formal argument name changed?
+     * @param fargSubRangeChanged Has the formal argument subrange changed?
+     * @param fargRangeChanged Has the formal argument range changed?
+     * @param oldFA The old formal argument, before the indicated changes.
+     * @param newFA The new formal argument, fater the indicated changes.
      *
-     * Changes:
+     * @throws SystemErrorException If unable to update for formal argument
+     * change.
      *
-     *    - None.
+     * @date 2008/03/22
      */
-
     public void updateForFargChange(boolean fargNameChanged,
                                     boolean fargSubRangeChanged,
                                     boolean fargRangeChanged,
@@ -422,9 +392,8 @@ public final class TextStringDataValue extends DataValue
     } /* TextStringDataValue::updateForFargChange() */
 
 
+    // updateSubRange()
     /**
-     * updateSubRange()
-     *
      * Nominally, this method should determine if the formal argument
      * associated with the data value is subranged, and if it is, update
      * the data values representation of  the subrange (if ant) accordingly.
@@ -434,16 +403,14 @@ public final class TextStringDataValue extends DataValue
      * However, text strings can't be subranged at present, so all we do
      * is verify that the formal argument doesn't think otherwise.
      *
-     * The fa argument is a reference to the current representation of the
-     * formal argument associated with the data value.
+     * @param fa A reference to the current representation of the formal
+     * argument associated with the data value.
      *
-     *                                           -- 8/16/07
+     * @throws SystemErrorException if the supplied formal argument is null,
+     * or is not an instance of a TextStringFormalArg.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/16
      */
-
     protected void updateSubRange(FormalArgument fa)
         throws SystemErrorException
     {
@@ -476,13 +443,8 @@ public final class TextStringDataValue extends DataValue
     } /* TextStringDataValue::updateSubRange() */
 
 
-    /*************************************************************************/
-    /***************************** Methods: **********************************/
-    /*************************************************************************/
-
+    // coerceToRange()
     /**
-     * coerceToRange()
-     *
      * Nominally, this function tests to see if the supplied value is
      * in range for the associated formal argument, returns it if it
      * is, and coerces it into range if it isn't.
@@ -492,13 +454,12 @@ public final class TextStringDataValue extends DataValue
      * Thus we simply check to see if the value is valid, and return the
      * value if it is.  If it isn't, throw a system error.
      *
-     *                                               -- 07/08/18
+     * @param value The value to coerce to the range of the data value.
      *
-     * Changes:
+     * @throws SystemErrorException If the supplied value is invalid.
      *
-     *    - None.
+     * @date 2007/08/18
      */
-
     public String coerceToRange(String value)
         throws SystemErrorException
     {
@@ -520,26 +481,23 @@ public final class TextStringDataValue extends DataValue
     } /* TextStringDataValue::coerceToRange() */
 
 
-    /*************************************************************************/
-    /************************ Class Methods: *********************************/
-    /*************************************************************************/
-
+    // Construct()
     /**
-     * Construct()
-     *
      * Construct an instance of TextStringDataValue with the specified
      * initialization.
      *
-     * Returns a reference to the newly constructed TextStringDataValue if
-     * successful.  Throws a system error exception on failure.
+     * @param db The parent database that the new TextStringDataValue will
+     * belong too.
      *
-     *                                               -- 3/31/08
+     * @param t The value to supplied to the new TextStringDataValue.
      *
-     * Changes:
+     * @return A reference to the newly constructed TextStringDataValue if
+     * successful.
      *
-     *    - None.
+     * @throws SystemErrorException If unable to create the TextStringDataValue.
+     *
+     * @date 2008/03/31
      */
-
     public static TextStringDataValue Construct(Database db,
                                                 String t)
         throws SystemErrorException
@@ -555,6 +513,8 @@ public final class TextStringDataValue extends DataValue
 
     } /* TextStringDataValue::Construct(db, t) */
 
+
+    // hashCode()
     /**
      * @return A hash code value for the object.
      */
@@ -566,6 +526,8 @@ public final class TextStringDataValue extends DataValue
         return hash;
     }
 
+
+    // equals()
     /**
      * Compares this TextStringDataValue against another object.
      *
