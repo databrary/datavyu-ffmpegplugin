@@ -202,9 +202,8 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::toDBString() */
 
 
+    // toString()
     /**
-     * toString()
-     *
      * Returns a String representation of the ReferenceColumn for display.
      *
      * @return the string value.
@@ -233,23 +232,15 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::toString() */
 
 
-
-    /*************************************************************************/
-    /***************************** Methods: **********************************/
-    /*************************************************************************/
-
+    // constructItsCells()
     /**
-     * constructItsCells()
-     *
      * Allocate the Vector of ReferenceCell used to store cells.  This method
      * should only be called when the ReferenceColumn is being inserted in the
      * column list.
      *
-     *                                           -- 8/30/07
+     * @throws SystemErrorException If unable to construct its cells.
      *
-     * Changes:
-     *
-     *    - None.
+     * @param 2007/08/30
      */
 
     protected void constructItsCells()
@@ -272,18 +263,19 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::constructItsCells() */
 
 
+    // itsCellsToDBString()
     /**
-     * itsCellsToDBString()
-     *
      * Construct a string containing the values of the cells in a
      * format that displays the full status of the arguments and
      * facilitates debugging.
-     *                                           -- 8/30/07
      *
-     * Changes:
+     * @return A database string representation of the cells of this reference
+     * column.
      *
-     *    - None.
+     * @throws SystemErrorException If unable to convert the contents of the
+     * reference column into a DB string.
      *
+     * @date 2007/08/30
      */
 
     protected String itsCellsToDBString()
@@ -324,17 +316,16 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::itsCellsToDBString() */
 
 
+    // itsCellsToString()
     /**
-     * itsCellsToString()
-     *
      * Construct a string containing the values of the cells in the column.
      *
-     *                                           -- 8/30/07
+     * @return A string representation of the cells of this reference column.
      *
-     * Changes:
+     * @throws SystemErrorException If unable to convert the contents of its
+     * cells into a string.
      *
-     *    - None.
-     *
+     * @date 2007/08/30
      */
 
     protected String itsCellsToString()
@@ -375,20 +366,16 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::itsCellsToString() */
 
 
-    /*************************************************************************/
-    /************************* Cells Management: *****************************/
-    /*************************************************************************/
-
+    // appendCell()
     /**
-     * appendCell()
-     *
      * Append the supplied DataCell to the end of the vector of cells.
      *
-     *                                           -- 8/30/07
+     * @param newCell The new cell to append to the end of the vector of cells.
      *
-     * Changes:
+     * @throws SystemErrorException If unable to append the new cell to the
+     * reference column.
      *
-     *    - None.
+     * @date 2007/08/30
      */
 
     protected void appendCell(ReferenceCell newCell)
@@ -425,18 +412,21 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::appendCell(newCell) */
 
 
+    // getCell()
     /**
-     * getCell()
-     *
-     * Get the cell at the specified ord.  Note that this function returns
+     * Gets the cell at the specified ord. Note that this function returns
      * the actual cell -- not a copy.  For almost all purposes, the returned
      * cell should be treated as read only.
      *
-     *                                               -- 8/30/07
+     * @param ord The ordinal position of the cell to get from the database.
      *
-     * Changes:
+     * @return A reference to the actual cell (not a copy) at the nominated
+     * ordinal position.
      *
-     *    - None.
+     * @throws SystemErrorException If unable to retrieve the nominated cell
+     * from the column.
+     *
+     * @date 2007/08/30
      */
 
     protected ReferenceCell getCell(int ord)
@@ -468,16 +458,15 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::getCell() */
 
 
+    // getCellCopy()
     /**
-     * getCellCopy()
+     * Gets a copy of the cell at the nominated ordinal location.
      *
-     * Return a copy of the cell at the specified ord.
+     * @param ord The ordinal value of the cell to get a copy of.
      *
-     *                                           -- 8/30/07
+     * @return A copy of the cell at the specified ordinal value.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/30
      */
 
     protected ReferenceCell getCellCopy(int ord)
@@ -489,17 +478,16 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::getCell() */
 
 
+    // insertCell()
     /**
-     * insertCell()
-     *
      * Insert the supplied ReferenceCell in the indicated location in the vector
-     * of ReferenceCells.  Update the ords of the cells after the insertion point.
+     * of ReferenceCells. Update the ords of the cells after the insertion
+     * point.
      *
-     *                                               -- 8/30/07
+     * @param newCell The new cell to insert into the reference column
+     * @param ord The location to insert the new cell (ordinal value).
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/30
      */
 
     protected void insertCell(ReferenceCell newCell,
@@ -556,20 +544,18 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::insertCell(newCell, ord) */
 
 
+    // removeCell()
     /**
-     * removeCell()
-     *
      * Remove the cell indicated by the supplied ord from itsCells.  As a
      * sanity check, verify that the target cell has the indicated ID.
      * After the removal, update the ords of the remaining cells.
      *
-     * Return a reference to the ReferenceCell removed from itsCells.
+     * @param targetOrd The ordinal value of the reference cell to be removed.
+     * @param targetID The id of the reference cell to be removed.
      *
-     *                                       -- 8/30/07
+     * @return A reference to the ReferenceCell removed from itsCells.
      *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/30
      */
 
     protected ReferenceCell removeCell(int targetOrd,
@@ -637,18 +623,18 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::removeCell */
 
 
+    // replaceCell()
     /**
-     * replaceCell()
-     *
      * Replace the ReferenceCell at targetOrd in this.itsCells with the supplied
-     * ReferenceCell.  Return the old ReferenceCell.
-     *                                               -- 8/30/07
+     * ReferenceCell.
      *
-     * Changes:
+     * @param newCell The new cell to use at the supplied targetOrd.
+     * @param targetOrd The destination ordinal location for the new cell.
      *
-     *    - None.
+     * @return The old ReferenceCell.
+     *
+     * @date 2007/08/30
      */
-
     protected ReferenceCell replaceCell(ReferenceCell newCell,
                                         int targetOrd)
         throws SystemErrorException
@@ -702,18 +688,14 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::replaceCell() */
 
 
+    // sortItsCells()
     /**
-     * sortItsCells()
-     *
-     *
      * Sort itsCells by cell onset.
-     *                                               -- 3/20/08
      *
-     * Changes:
+     * @throws SystemErrorException Always - currently not implemented.
      *
-     *    - None.
+     * @date 2008/03/20
      */
-
     protected void sortItsCells()
         throws SystemErrorException
     {
@@ -724,19 +706,20 @@ public class ReferenceColumn extends Column
     } /* ReferenceColumn::sortItsCells() */
 
 
+    // validCell()
     /**
-     * validCell()
-     *
      * Verify that a cell has been correctly initialized for insertion into
      * itsCells.  Return true if it has been, and false otherwise.
      *
-     *                                               -- 8/30/07
+     * @param cell The cell to determine if it has been correctly initialized
+     * for insertion.
      *
-     * Changes:
+     * @return true If the cell is valid, false otherwise.
      *
-     *    - None.
+     * @throws SystemErrorException If unable to determine if the cell is valid.
+     *
+     * @date 2007/08/30
      */
-
     private boolean validCell(ReferenceCell cell)
         throws SystemErrorException
     {
@@ -786,6 +769,8 @@ public class ReferenceColumn extends Column
 
     } /* ReferenceColumn::validCell() */
 
+
+    // hashCode()
     /**
      * @return A hash code value for the object.
      */
@@ -797,6 +782,8 @@ public class ReferenceColumn extends Column
         return hash;
     }
 
+
+    // equals()
     /**
      * Compares this reference column against a object.
      *
