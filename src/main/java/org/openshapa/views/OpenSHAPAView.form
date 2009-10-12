@@ -116,20 +116,23 @@
             </MenuItem>
           </SubComponents>
         </Menu>
-        <Menu class="javax.swing.JMenu" name="jMenu3">
+        <Menu class="javax.swing.JMenu" name="spreadsheetMenu">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
               <action class="org.openshapa.views.OpenSHAPAView" id="showQTVideoController" methodName="showQTVideoController"/>
             </Property>
-            <Property name="name" type="java.lang.String" value="jMenu3" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="spreadsheetMenu" noResource="true"/>
           </Properties>
+          <Events>
+            <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="spreadsheetMenuMenuSelected"/>
+          </Events>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
+            <MenuItem class="javax.swing.JMenuItem" name="showSpreadsheetMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="org.openshapa.views.OpenSHAPAView" id="showSpreadsheet" methodName="showSpreadsheet"/>
                 </Property>
-                <Property name="name" type="java.lang.String" value="jMenuItem2" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="showSpreadsheetMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator1">
@@ -137,12 +140,12 @@
                 <Property name="name" type="java.lang.String" value="jSeparator1" noResource="true"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem4">
+            <MenuItem class="javax.swing.JMenuItem" name="vocabEditorMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="org.openshapa.views.OpenSHAPAView" id="showVocabEditor" methodName="showVocabEditor"/>
                 </Property>
-                <Property name="name" type="java.lang.String" value="jMenuItem4" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="vocabEditorMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
@@ -153,12 +156,12 @@
                 <Property name="name" type="java.lang.String" value="jMenuItem1" noResource="true"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
+            <MenuItem class="javax.swing.JMenuItem" name="newVariableMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="org.openshapa.views.OpenSHAPAView" id="showVariableList" methodName="showVariableList"/>
                 </Property>
-                <Property name="name" type="java.lang.String" value="jMenuItem3" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="newVariableMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator2">
@@ -179,11 +182,21 @@
                 <Property name="name" type="java.lang.String" value="jSeparator3" noResource="true"/>
               </Properties>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="deleteColumnMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="org.openshapa.views.OpenSHAPAView" id="deleteColumn" methodName="deleteColumn"/>
+                </Property>
+                <Property name="name" type="java.lang.String" value="deleteColumnMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JSeparator" name="jSeparator6">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator6" noResource="true"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="weakTemporalOrderMenuItem">
               <Properties>
-                <Property name="font" type="java.awt.Font" noResource="true" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Silom" size="14" style="0"/>
-                </Property>
                 <Property name="name" type="java.lang.String" value="weakTemporalOrderMenuItem" noResource="true"/>
               </Properties>
               <Events>
@@ -236,9 +249,9 @@
             </Menu>
           </SubComponents>
         </Menu>
-        <Menu class="javax.swing.JMenu" name="jMenu2">
+        <Menu class="javax.swing.JMenu" name="controllerMenu">
           <Properties>
-            <Property name="name" type="java.lang.String" value="jMenu2" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="controllerMenu" noResource="true"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="qtControllerItem">
@@ -296,14 +309,20 @@
             </MenuItem>
           </SubComponents>
         </Menu>
-        <Menu class="javax.swing.JMenu" name="helpMenu1">
+        <Menu class="javax.swing.JMenu" name="helpMenu">
           <Properties>
-            <Property name="name" type="java.lang.String" value="helpMenu1" noResource="true"/>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="org.openshapa.views.OpenSHAPAView" id="showVariableList" methodName="showVariableList"/>
+            </Property>
+            <Property name="name" type="java.lang.String" value="helpMenu" noResource="true"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem1">
+            <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">
               <Properties>
-                <Property name="name" type="java.lang.String" value="aboutMenuItem1" noResource="true"/>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="org.openshapa.views.OpenSHAPAView" id="showAboutWindow" methodName="showAboutWindow"/>
+                </Property>
+                <Property name="name" type="java.lang.String" value="aboutMenuItem" noResource="true"/>
               </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="}"/>

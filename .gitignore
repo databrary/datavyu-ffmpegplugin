@@ -8,3 +8,7 @@ test.txtDB
 *._*.properties
 nbproject
 nbactions.xml
+nb-configuration.xml
+src/main/java/au
+src/test/java/au
+src/main/resources/au

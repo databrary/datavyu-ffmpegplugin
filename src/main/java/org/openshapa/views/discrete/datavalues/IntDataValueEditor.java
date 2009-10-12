@@ -77,9 +77,7 @@ public final class IntDataValueEditor extends DataValueEditor {
             || e.getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
             && e.getKeyChar() == '-') {
 
-            // BugzID:405 - Only attempt to alter a valid int value, if an empty
-            // value, the character is "special" and should be pumped into the
-            // text field without altering the value.
+            // BugzID:405 - Only attempt to alter a valid int value.
             if (!idv.isEmpty()) {
                 // Move the caret to behind the - sign, or the front of the
                 // number.
@@ -91,6 +89,16 @@ public final class IntDataValueEditor extends DataValueEditor {
 
                 // Toggle state of a negative / positive number.
                 idv.setItsValue(-idv.getItsValue());
+                updateDatabase();
+                e.consume();
+
+            // No valid int value at the moment, the character is "special"...
+            // Remove selected text and replace with a '-' character, without
+            // updating the database.
+            } else {
+                this.removeSelectedText();
+                this.setText("-");
+                setCaretPosition(1);
                 e.consume();
             }
 
@@ -110,6 +118,8 @@ public final class IntDataValueEditor extends DataValueEditor {
                 } else {
                     idv.clearValue();
                 }
+
+                updateDatabase();
                 e.consume();
             }
 
@@ -129,6 +139,8 @@ public final class IntDataValueEditor extends DataValueEditor {
                 } else {
                     idv.clearValue();
                 }
+
+                updateDatabase();
                 e.consume();
             }
 
@@ -158,15 +170,13 @@ public final class IntDataValueEditor extends DataValueEditor {
                 idv.setItsValue(newValue);
             }
 
+            updateDatabase();
             e.consume();
 
         // Every other key stroke is ignored by the float editor.
         } else {
             e.consume();
         }
-
-
-        updateDatabase();
     }
 
     /**

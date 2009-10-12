@@ -2,6 +2,7 @@ package org.openshapa.db;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
+import org.openshapa.util.StringUtils;
 
 /**
  * An instance of UndefinedDataValue is used as a place holder for an untyped
@@ -199,6 +200,11 @@ public final class UndefinedDataValue extends DataValue {
     public String toString()
     {
         return new String(this.itsValue);
+    }
+
+    public String toEscapedString()
+    {
+        return StringUtils.escapeCSV(this.itsValue);
     }
 
 

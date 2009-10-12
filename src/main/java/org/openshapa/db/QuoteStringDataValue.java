@@ -11,6 +11,7 @@ package org.openshapa.db;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
+import org.openshapa.util.StringUtils;
 
 /**
  * An instance of QuoteStringDataValue is used to store a quote string value
@@ -245,6 +246,14 @@ public final class QuoteStringDataValue extends DataValue {
         }
 
     } /* QuoteStringDataValue::toString() */
+
+    public String toEscapedString() {
+        if (this.itsValue == null) {
+            return "\"\"";
+        } else {
+            return StringUtils.escapeCSV("\"" + this.itsValue + "\"");
+        }
+    }
 
 
     /**

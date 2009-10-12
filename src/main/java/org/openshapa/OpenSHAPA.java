@@ -1,7 +1,6 @@
 package org.openshapa;
 
 import org.openshapa.controllers.CreateNewCellC;
-import org.openshapa.db.Database;
 import org.openshapa.db.LogicErrorException;
 import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
@@ -28,6 +27,8 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
+import org.openshapa.util.AboutHandler;
+import org.openshapa.views.AboutV;
 
 /**
  * The main class of the application.
@@ -180,6 +181,15 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * Action for showing the about window.
+     */
+    public void showAboutWindow() {
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        aboutWindow = new AboutV(mainFrame, false);
+        OpenSHAPA.getApplication().show(aboutWindow);
+    }
+
+    /**
      * Show a warning dialog to the user.
      *
      * @param e The LogicErrorException to present to the user.
@@ -289,7 +299,7 @@ implements KeyEventDispatcher {
      *
      * @return The single database in use with this instance of OpenSHAPA
      */
-    public static Database getDatabase() {
+    public static MacshapaDatabase getDatabase() {
         return OpenSHAPA.getApplication().db;
     }
 
@@ -299,7 +309,7 @@ implements KeyEventDispatcher {
      *
      * @param newDB The new database to use for this instance of OpenSHAPA.
      */
-    public static void setDatabase(Database newDB) {
+    public static void setDatabase(MacshapaDatabase newDB) {
         OpenSHAPA.getApplication().db = newDB;
     }
 
@@ -400,6 +410,7 @@ implements KeyEventDispatcher {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 System.setProperty("com.apple.mrj.application.apple.menu.about.name", "OpenSHAPA");
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                new AboutHandler();
             } catch (ClassNotFoundException cnfe) {
                 logger.error("Unable to start OpenSHAPA", cnfe);
             } catch (InstantiationException ie) {
@@ -418,7 +429,7 @@ implements KeyEventDispatcher {
     private static Logger logger = Logger.getLogger(OpenSHAPA.class);
 
     /** The current database we are working on. */
-    private Database db;
+    private MacshapaDatabase db;
 
     /** output stream for messages coming from the scripting engine. */
     private PipedInputStream consoleOutputStream;
@@ -440,6 +451,9 @@ implements KeyEventDispatcher {
 
     /** The view to use for the quick time video controller. */
     private QTVideoController qtVideoController;
+
+    /** The view to use when displaying information about OpenSHAPA. */
+    private AboutV aboutWindow;
 
     /** Tracks if a NumPad key has been pressed. */
     private boolean numKeyDown = false;

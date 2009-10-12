@@ -139,11 +139,11 @@ public abstract class DataValue extends DBElement
     protected void valueSet() {
         this.empty = false;
     }
-        
+
     /*************************************************************************/
     /******************* Abstract Method Declarations: ***********************/
     /*************************************************************************/
-    
+
     /**
      * toString()
      *
@@ -156,6 +156,8 @@ public abstract class DataValue extends DBElement
      */
     @Override
     public abstract String toString();
+
+    public abstract String toEscapedString();
 
 
     /**

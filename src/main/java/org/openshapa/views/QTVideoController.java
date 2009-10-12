@@ -2,8 +2,7 @@ package org.openshapa.views;
 
 import org.openshapa.OpenSHAPA;
 import org.openshapa.db.TimeStamp;
-import org.openshapa.views.continuous.QTVideoViewer;
-import java.awt.FileDialog;
+import org.openshapa.views.continuous.quicktime.QTDataViewer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,6 +10,11 @@ import java.util.Vector;
 import javax.swing.JFileChooser;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
+import org.openshapa.views.continuous.DataViewer;
+import java.io.File;
+import java.util.List;
+import javax.swing.filechooser.FileFilter;
+import org.openshapa.views.continuous.PluginManager;
 
 /**
  * Quicktime video controller.
@@ -28,7 +32,7 @@ public final class QTVideoController extends OpenSHAPADialog {
 
         initComponents();
         setName(this.getClass().getSimpleName());
-        viewers = new Vector<QTVideoViewer>();
+        viewers = new Vector<DataViewer>();
     }
 
     public void setCurrentLocation(final long milliseconds) {
@@ -52,11 +56,11 @@ public final class QTVideoController extends OpenSHAPADialog {
      *
      * @param viewer The viewer to shutdown.
      */
-    public void shutdown(final QTVideoViewer viewer) {
+    public void shutdown(final QTDataViewer viewer) {
         for (int i = 0; i < this.viewers.size(); i++) {
             if (viewer == this.viewers.elementAt(i)) {
-                this.viewers.elementAt(i).dispose();
                 this.viewers.remove(viewer);
+                break;
             }
         }
     }
@@ -269,14 +273,30 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     private void openVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openVideoButtonActionPerformed
         JFileChooser jd = new JFileChooser();
+
+        // Add file filters for each of the supported plugins.
+        List<FileFilter> filters = PluginManager.getInstance()
+                                                .getPluginFileFilters();
+        for (FileFilter f : filters) {
+            jd.addChoosableFileFilter(f);
+        }
         int result = jd.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            QTVideoViewer viewer = new QTVideoViewer(this);
-            viewer.setVideoFile(jd.getSelectedFile());
-            OpenSHAPA.getApplication().show(viewer);
+            File f = jd.getSelectedFile();
 
-            // Add the QTVideoViewer to the list of viewers we are controlling.
+            // Build the data viewer for the file.
+            DataViewer viewer = PluginManager.getInstance()
+                                             .buildViewerFromFile(f);
+            if (viewer == null) {
+                logger.error("No DataViewer available.");
+                return;
+            }
+
+            viewer.setDataFeed(f);
+            OpenSHAPA.getApplication().show(viewer.getParentJFrame());
+
+            // Add the QTDataViewer to the list of viewers we are controlling.
             this.viewers.add(viewer);
         }
     }//GEN-LAST:event_openVideoButtonActionPerformed
@@ -286,9 +306,6 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void syncCtrlAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).syncCtrl();
-        }
     }
 
     /**
@@ -296,9 +313,6 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void syncAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).sync();
-        }
     }
 
 
@@ -307,9 +321,9 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void setCellOnsetAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).setCellStartTime();
-        }
+        // curTime needs to be in milliseconds and pulled from a timer
+        // mechanisim.
+        //new SetCellOnsetC((long) curTime);
     }
 
     /**
@@ -317,9 +331,9 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void setCellOffsetAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).setCellStopTime();
-        }
+        // curTime needs to be in milliseconds and pulled from a timer
+        // mechanisim.
+        //new SetCellOffsetC((long) curTime);
     }
 
     /**
@@ -327,8 +341,8 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void rewindAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).rewind();
+        for (DataViewer v : viewers) {
+            v.rewind();
         }
     }
 
@@ -337,8 +351,8 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void playAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).play();
+        for (DataViewer v : viewers) {
+            v.play();
         }
     }
 
@@ -347,8 +361,8 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void forwardAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).forward();
+        for (DataViewer v : viewers) {
+            v.forward();
         }
     }
 
@@ -365,8 +379,8 @@ public final class QTVideoController extends OpenSHAPADialog {
             // Determine the time in milliseconds.
             long milli = videoDate.getTime() - originDate.getTime();
 
-            for (int i = 0; i < this.viewers.size(); i++) {
-                this.viewers.elementAt(i).goBack(milli);
+            for (DataViewer v : viewers) {
+                v.goBack(milli);
             }
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
@@ -378,8 +392,8 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void shuttleBackAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).shuttleBack();
+        for (DataViewer v : viewers) {
+            v.shuttleBack();
         }
     }
 
@@ -388,8 +402,8 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void pauseAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).pause();
+        for (DataViewer v : viewers) {
+            v.pause();
         }
     }
 
@@ -398,8 +412,8 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void shuttleForwardAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).shuttleForward();
+        for (DataViewer v : viewers) {
+            v.shuttleForward();
         }
     }
 
@@ -416,8 +430,8 @@ public final class QTVideoController extends OpenSHAPADialog {
             // Determine the time in milliseconds.
             long milli = videoDate.getTime() - originDate.getTime();
 
-            for (int i = 0; i < this.viewers.size(); i++) {
-                this.viewers.elementAt(i).find(milli);
+            for (DataViewer v : viewers) {
+                v.find(milli);
             }
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
@@ -429,8 +443,8 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void jogBackAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).jogBack();
+        for (DataViewer v : viewers) {
+            v.jogBack();
         }
     }
 
@@ -439,8 +453,8 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void stopAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).stop();
+        for (DataViewer v : viewers) {
+            v.stop();
         }
     }
 
@@ -449,8 +463,8 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void jogForwardAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).jogForward();
+        for (DataViewer v : viewers) {
+            v.jogForward();
         }
     }
 
@@ -459,9 +473,9 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void createNewCellAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).createNewCell();
-        }
+        // curTime needs to be in milliseconds and pulled from a timer
+        // mechanisim.
+        // new CreateNewCellC(final long milliseconds);
     }
 
     /**
@@ -469,9 +483,9 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void setNewCellStopTime() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).setNewCellStopTime();
-        }
+        // curTime needs to be in milliseconds and pulled from a timer
+        // mechanisim.
+        // SetNewCellStopTimeC(final long milliseconds);
     }
 
     /**
@@ -479,13 +493,9 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void syncVideoAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            this.viewers.elementAt(i).sync();
-        }
     }
 
     private void syncVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncVideoButtonActionPerformed
-
     }//GEN-LAST:event_syncVideoButtonActionPerformed
 
     /**
@@ -543,15 +553,9 @@ public final class QTVideoController extends OpenSHAPADialog {
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(QTVideoController.class);
 
-    //protected Executive parent = null;
-    //private JButton lastButton = null;
-
     /** The current time stamp on the quicktime video controller. */
     private TimeStamp currentTimestamp = null;
 
     /** The list of viewers associated with this controller. */
-    private Vector<QTVideoViewer> viewers;
-
-    /** The dialog to present to the user when they desire to load a file. */
-    private FileDialog jfc;
+    private Vector<DataViewer> viewers;
 }

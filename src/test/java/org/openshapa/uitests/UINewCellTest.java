@@ -9,9 +9,12 @@ import java.util.Vector;
 import org.uispec4j.Cell;
 import org.uispec4j.Clipboard;
 import org.uispec4j.Key;
+import org.uispec4j.KeysItem;
 import org.uispec4j.MenuBar;
 import org.uispec4j.Spreadsheet;
+import org.uispec4j.StringItem;
 import org.uispec4j.TextBox;
+import org.uispec4j.TextItem;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
@@ -38,7 +41,7 @@ public final class UINewCellTest extends UISpecTestCase {
     /**
      * Different cell variable types.
      */
-    private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
+     private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
         "NOMINAL", "MATRIX", "FLOAT"
     };
 
@@ -61,8 +64,8 @@ public final class UINewCellTest extends UISpecTestCase {
       */
      private String[] integerTestInput = {"1a9", "10-432",
             "!28.9(", "178&", "~~~)",
-            "If x?7 then x? 2 ", "99999999999999999999", "000389.5", "-", "-0"
-            /*, "-123"*/};
+            "If x?7 then x? 2 ", "99999999999999999999", "000389.5", "-", "-0",
+            "-123"};
 
      /**
       * Float test input.
@@ -70,7 +73,8 @@ public final class UINewCellTest extends UISpecTestCase {
      private String[] floatTestInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
             "If x?7 then. x? 2 ", "589.138085638", "000389.5",
-            "-0.1", "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34"};
+            "-0.1", "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34",
+            /*"-123"*/};
 
     static {
       UISpec4J.init();
@@ -178,7 +182,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varRadio = "integer";
 
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
-            "72", "999999999999999999", "3895", "<val>", "0"};
+            "72", "999999999999999999", "3895", "-", "0", "-123"};
         pasteTest(varName, varRadio, integerTestInput, expectedTestOutput);
     }
 
@@ -315,7 +319,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] testInput = {"1a.9", "10-43.2",
             "!289(", "178.&", "0~~~)",
-            "If x?7 then.- x? 2",  "589.138085638"/*BugzID422:"()12.3"*/};
+            "If x?7 then.- x? 8",  "-589.138085638", "12.3"};
 
         int numOfTests = testInput.length;
 
@@ -324,10 +328,15 @@ public final class UINewCellTest extends UISpecTestCase {
             {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
             {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE,
                 Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                Key.BACKSPACE, Key.BACKSPACE}, {Key.RIGHT}};
+                Key.BACKSPACE, Key.BACKSPACE}, {Key.RIGHT},
+                {Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT,
+                         Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT,
+                         Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT, Key.LEFT,
+                         Key.LEFT, Key.LEFT}};
 
-        double[] expectedTestOutput = {-43.21019, -43.289210, 2178.8, 7, -27,
-        -27589.138085};
+        double[] expectedTestOutput = {-43.21019, -43.289210, 2178.8, 7, -87,
+        589.138086 /*BugzID612:Previous should actually be -589.138085*/,
+        -589.138085};
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -341,7 +350,7 @@ public final class UINewCellTest extends UISpecTestCase {
                 (window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent())));
 
-        //2. Create 6 new cell, check that they have been created
+        //2. Create new cells, check that they have been created
         for (int i = 0; i < numOfTests; i++) {
             menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
         }
@@ -362,12 +371,15 @@ public final class UINewCellTest extends UISpecTestCase {
             Cell c = cells.elementAt(i);
             TextBox t = c.getValue();
 
-            c.enterText(Cell.VALUE, testInput[i], advancedInput[i],
-                    testInput[i + 1]);
+            Vector<TextItem> vti = new Vector<TextItem>();
+            vti.add(new StringItem(testInput[i]));
+            vti.add(new KeysItem(advancedInput[i]));
+            vti.add(new StringItem(testInput[i + 1]));
+
+            c.enterText(Cell.VALUE, vti);
 
             assertTrue(Double.parseDouble(t.getText())
                     == expectedTestOutput[i]);
-
         }
     }
 
@@ -380,7 +392,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varRadio = "integer";
 
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
-            "72", "999999999999999999", "3895", "-", "-"};
+            "72", "999999999999999999", "3895", "-", "0", "-123"};
 
         createNewVariable(varName, varRadio);
 
@@ -497,7 +509,7 @@ public final class UINewCellTest extends UISpecTestCase {
         int numOfTests = floatTestInput.length;
 
         double[] expectedFloatTestOutput = {1.9, -43.21, 289, 178, 0, 7.2,
-        589.138080, 389.5, -0.1, 0.2, 0, 0, 0};
+        589.138085, 389.5, -0.1, 0.2, 0, 0, 0, -0.34, -23.34, 0.34, 12.34};
 
         //Create new cells, check that they have been created
         ss.getSpreadsheetColumn(varName).requestFocus();
@@ -523,8 +535,8 @@ public final class UINewCellTest extends UISpecTestCase {
 
             c.enterText(Cell.VALUE, floatTestInput[i]);
 
-            /*BugzID:579assertTrue(Double.parseDouble(t.getText())
-                    == (expectedFloatTestOutput[i]));*/
+            assertTrue(Double.parseDouble(t.getText())
+                    == (expectedFloatTestOutput[i]));
         }
     }
 
@@ -565,7 +577,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varName = "matrixInteger1";
 
         String [] expectedIntTestOutput = {"19", "-43210", "289", "178", 
-        "<int>", "72", "999999999999999999", "3895", "-", "-"};
+        "<int>", "72", "999999999999999999", "3895", "-", "0", "-123"};
 
         runStandardTest(varName, integerTestInput,
                 expectedIntTestOutput, "<int>");
@@ -609,7 +621,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String [] expectedInt2TestOutput = {"19", "-43210", "289", "178",
         "<int1>", "72", "999999999999999999",
-        "3895", "-", "0"};
+        "3895", "-", "0", "-123"};
 
         int numOfTests = integerTestInput.length;
 
@@ -628,7 +640,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String [] expectedInt2bTempOutput = {"19", "-43210", "289", "178",
         "<int1>", "72", "999999999999999999",
-        "3895", "<int1>", "0"};
+        "3895", "<int1>", "0", "-123"};
 
         String [][] expectedInt2bTestOutput =
                 new String [expectedInt2TestOutput.length]
@@ -1006,8 +1018,14 @@ public final class UINewCellTest extends UISpecTestCase {
             //4. Test different inputs as per specifications
             Cell c = cells.elementAt(i);
             TextBox t = c.getValue();
-            c.enterText(Cell.VALUE, testInput[i], advancedInput[i],
-                    testInput[i + 1]);
+
+            Vector<TextItem> vti = new Vector<TextItem>();
+            vti.add(new StringItem(testInput[i]));
+            vti.add(new KeysItem(advancedInput[i]));
+            vti.add(new StringItem(testInput[i + 1]));
+
+            c.enterText(Cell.VALUE, vti);
+
             assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
         }
     }

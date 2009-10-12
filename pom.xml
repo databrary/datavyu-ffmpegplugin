@@ -4,7 +4,7 @@
   <groupId>org.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>0.92</version>
+  <version>0.93</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
@@ -155,6 +155,7 @@
       <url>http://repo1.maven.org/maven2</url>
       <layout>default</layout>
     </repository>
+
   </repositories>
 
   <!-- Use an optimized build for releases. -->
@@ -235,7 +236,7 @@
                     <mainClass>org.openshapa.OpenSHAPA</mainClass>
                     <addClasspath>true</addClasspath>
                 </manifest>
-            </archive>           
+            </archive>
         </configuration>
       </plugin>
 
@@ -279,6 +280,46 @@
                   </configuration>
               </execution>
           </executions>
+      </plugin>
+
+      <!-- BugzID:571 - Insert build ID into properties file. -->
+      <plugin>
+        <dependencies>
+          <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant-apache-regexp</artifactId>
+            <version>1.6.5</version>
+          </dependency>
+
+         <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant-optional</artifactId>
+            <version>1.5.2</version>
+          </dependency>
+        </dependencies>
+
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+                <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>                
+                <taskdef
+                 name="replaceregexp"
+                 classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
+                <replaceregexp
+                 file="src/main/resources/org/openshapa/resources/OpenSHAPA.properties"
+                 match="Application.build =(.*)"
+                 replace="Application.build = b:${buildNumber}"/>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
@@ -355,7 +396,7 @@
       <artifactId>swing-layout</artifactId>
       <version>1.0.3</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jdesktop</groupId>
       <artifactId>appframework</artifactId>
@@ -377,7 +418,7 @@
     <dependency>
       <groupId>org.uispec4j</groupId>
       <artifactId>uispec4j</artifactId>
-      <version>v2.0-RC3-I</version>
+      <version>v2.0-RC3-L</version>
     </dependency>
 
     <dependency>
@@ -385,5 +426,7 @@
       <artifactId>openhashtable</artifactId>
       <version>0.1</version>
     </dependency>
+
   </dependencies>
 </project>
+

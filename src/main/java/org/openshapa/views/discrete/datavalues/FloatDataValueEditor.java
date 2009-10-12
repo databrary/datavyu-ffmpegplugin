@@ -61,6 +61,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
 
     /**
      * The action to invoke when a key is typed.
+     *
      * @param e The KeyEvent that triggered this action.
      */
     @Override
@@ -160,11 +161,13 @@ public final class FloatDataValueEditor extends DataValueEditor {
             }
 
         // Key stoke is number - insert number at current caret position.
-        } else if (Character.isDigit(e.getKeyChar()) && !excedesPrecision()) {
+        } else if (Character.isDigit(e.getKeyChar())
+                   && (!excedesPrecision() || isAllSelected())) {
             this.removeSelectedText();
 
             // BugzID: 565 - Reject keystroke if a leading zero.
-            if (e.getKeyChar() == '0' && this.getText().length() > 0) {
+            if (e.getKeyChar() == '0' && this.getText().length() > 0
+                && !this.getText().equals(".")) {
                 if ((fdv.getItsValue() > 0 && getCaretPosition() == 0)
                     || (fdv.getItsValue() < 0 && getCaretPosition() <= 1)
                     || fdv.getItsValue() == 0.0) {
@@ -235,8 +238,12 @@ public final class FloatDataValueEditor extends DataValueEditor {
 
             // BugzID:522 - Prevent overiding precision defined by user.
             if (this.getText() != null && this.getText().length() > 0) {
-                int maxFrac = getText().length() - getText().indexOf('.') - 1;
-                formatter.setMaximumFractionDigits(maxFrac);
+                if (getText().equals(getNullArg())) {
+                    formatter.setMaximumFractionDigits(MAX_DECIMAL_PLACES - 1);
+                } else {
+                    int mFrac = getText().length() - getText().indexOf('.') - 1;
+                    formatter.setMaximumFractionDigits(Math.max(mFrac, 1));
+                }
             }
 
             t = formatter.format(fdv.getItsValue());

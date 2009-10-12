@@ -403,7 +403,7 @@ public class MatrixVocabElement extends VocabElement
      *
      *    - None.
      */
-
+    @Override
     public void setName(String name)
         throws SystemErrorException
     {

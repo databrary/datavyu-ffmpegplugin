@@ -3,6 +3,7 @@ package org.uispec4j;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import java.awt.Component;
 import java.awt.Font;
+import java.util.Vector;
 import javax.swing.text.JTextComponent;
 import junit.framework.Assert;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
@@ -141,13 +142,37 @@ public class Cell extends AbstractUIComponent {
      * @param keys Keys to type next
      * @param s2 String to add at the end
      */
-    public final void enterText(final int element, final String s1,
-            final Key[] keys, final String s2) {
+//    public final void enterText(final int element, final String s1,
+//            final Key[] keys, final String s2) {
+//        requestFocus(element);
+//
+//        KeyUtils.enterString(getComponentByType(element), s1);
+//        KeyUtils.enterKeys(getComponentByType(element), keys);
+//        KeyUtils.enterString(getComponentByType(element), s2);
+//    }
+
+    /**
+     * types text into a cell element using a vector of TextItem.
+     * @param element element to type value into.
+     * @param vti vector of TextItems.
+     */
+    public final void enterText(final int element, final Vector<TextItem> vti) {
         requestFocus(element);
 
-        KeyUtils.enterString(getComponentByType(element), s1);
+        for (TextItem t : vti) {
+            t.enterItem(getComponentByType(element));
+        }
+    }
+
+     /**
+     * presses keys in a cell element.
+     * @param element element to type value into
+     * @param keys Keys to type next
+     */
+    public final void pressKeys(final int element, final Key[] keys) {
+        requestFocus(element);
+
         KeyUtils.enterKeys(getComponentByType(element), keys);
-        KeyUtils.enterString(getComponentByType(element), s2);
     }
 
     /**
@@ -185,10 +210,6 @@ public class Cell extends AbstractUIComponent {
             ((TimeStampTextField) getComponentByType(element))
                     .focusGained(null);
         }
-
-    }
-
-    public final void select(){
 
     }
 
