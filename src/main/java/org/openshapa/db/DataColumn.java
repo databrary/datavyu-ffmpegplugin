@@ -1528,7 +1528,8 @@ public class DataColumn extends Column
 
         // formal argument list:
 
-        output.printf("%s    ( FORMAL-ARG-LIST> ( ", indent);
+        output.printf("%s    ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| ",
+                      indent);
 
         i = 0;
         while ( i < numFargs )
@@ -1538,7 +1539,7 @@ public class DataColumn extends Column
             i++;
         }
 
-        output.printf(")%s", newLine);
+        output.printf(") )%s", newLine);
 
 
         // column width:

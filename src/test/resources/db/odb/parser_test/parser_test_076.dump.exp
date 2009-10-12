@@ -6,7 +6,7 @@
         ( NAME> "parser_test.db" )
         ( VERSION> 1 )
         ( DEBUG-LEVEL> 2 )
-        ( MAX_ERRORS> 10 )
+        ( MAX-ERRORS> 10 )
         ( MAX-WARNINGS> 50 )
       )
     )
@@ -22,7 +22,7 @@
               (
                 ( TYPE> <<TEXT>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
                 ( COLUMN-WIDTH> 200 )
               )
             )
@@ -30,7 +30,7 @@
               (
                 ( TYPE> <<MATRIX>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
                 ( COLUMN-WIDTH> 200 )
               )
             )
@@ -38,7 +38,7 @@
               (
                 ( TYPE> <<MATRIX>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<arg>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg>| ) )
                 ( COLUMN-WIDTH> 200 )
               )
             )
@@ -46,7 +46,7 @@
               (
                 ( TYPE> <<TEXT>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
                 ( COLUMN-WIDTH> 200 )
               )
             )

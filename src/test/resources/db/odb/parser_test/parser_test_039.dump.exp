@@ -6,7 +6,7 @@
         ( NAME> "parser_test.db" )
         ( VERSION> 1 )
         ( DEBUG-LEVEL> 0 )
-        ( MAX_ERRORS> 10 )
+        ( MAX-ERRORS> 10 )
         ( MAX-WARNINGS> 50 )
       )
     )

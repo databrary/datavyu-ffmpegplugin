@@ -6,7 +6,7 @@
         ( NAME> "tttttttttttt" )
         ( VERSION> 1 )
         ( DEBUG-LEVEL> 3 )
-        ( MAX_ERRORS> 10 )
+        ( MAX-ERRORS> 10 )
         ( MAX-WARNINGS> 99 )
       )
     )

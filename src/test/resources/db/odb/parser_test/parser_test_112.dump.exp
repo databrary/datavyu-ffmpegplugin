@@ -6,7 +6,7 @@
         ( NAME> "parser_test.db" )
         ( VERSION> 1 )
         ( DEBUG-LEVEL> 2 )
-        ( MAX_ERRORS> 10 )
+        ( MAX-ERRORS> 10 )
         ( MAX-WARNINGS> 50 )
       )
     )
@@ -14,9 +14,9 @@
       (
         ( PREDICATE-DEFINITIONS>
           (
-            ( not_a_pred_name ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
-            ( pred_2 ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
-            ( pred_1 ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) )
+            ( |not_a_pred_name| ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+            ( |pred_2| ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+            ( |pred_1| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) ) )
           )
         )
         ( SPREADSHEET-VARIABLE-DECLARATIONS>
@@ -25,7 +25,7 @@
               (
                 ( TYPE> <<INTEGER>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
                 ( COLUMN-WIDTH> 200 )
               )
             )
@@ -33,7 +33,7 @@
               (
                 ( TYPE> <<MATRIX>> )
                 ( VARIABLE-LENGTH> TRUE )
-                ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
                 ( COLUMN-WIDTH> 225 )
               )
             )
@@ -41,7 +41,7 @@
               (
                 ( TYPE> <<TEXT>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
                 ( COLUMN-WIDTH> 200 )
               )
             )
@@ -49,7 +49,7 @@
               (
                 ( TYPE> <<FLOAT>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
                 ( COLUMN-WIDTH> 200 )
               )
             )
@@ -57,7 +57,7 @@
               (
                 ( TYPE> <<NOMINAL>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
                 ( COLUMN-WIDTH> 200 )
               )
             )
@@ -65,7 +65,7 @@
               (
                 ( TYPE> <<PREDICATE>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
                 ( COLUMN-WIDTH> 200 )
               )
             )
@@ -73,7 +73,7 @@
               (
                 ( TYPE> <<MATRIX>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
                 ( COLUMN-WIDTH> 200 )
               )
             )
