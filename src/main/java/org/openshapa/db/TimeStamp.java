@@ -1,5 +1,6 @@
 package org.openshapa.db;
 
+import java.text.NumberFormat;
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
 
@@ -720,8 +721,8 @@ public class TimeStamp {
 class NumberFormatter
 {
   /** Static instances for use accross classes **/
-  public static java.text.NumberFormat numF2 = java.text.NumberFormat.getInstance();
-  public static java.text.NumberFormat numF3 = java.text.NumberFormat.getInstance();
+  public static NumberFormat numF2 = NumberFormat.getInstance();
+  public static NumberFormat numF3 = NumberFormat.getInstance();
 
   /**
    * Creates a new instance of NumberFormatter

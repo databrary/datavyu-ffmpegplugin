@@ -491,26 +491,27 @@ public final class UndefinedDataValue extends DataValue {
         return hash;
     }
 
-
-    /*************************************************************************/
-    /************************ Class Methods: *********************************/
-    /*************************************************************************/
-
+    // Construct()
     /**
-     * Construct()
-     *
-     * Construct instance of FloatDataValue with the specified initialization.
-     *
-     * Return reference to the newly constructed FloatDataValue if successful.
-     * Throws a system error exception on failure.
-     *
-     *                                               -- 3/31/08
+     * Construct a new instance of UndefinedDataValue.
      *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @param db The parent database that this Undefined data value will belong
+     * too.
+     * @param s The value to use for the new undefined data value.
+     *
+     * @return Reference to the new constructed UndefinedDataValue.
+     *
+     * @throws SystemErrorException on Failure.
+     *
+     * @date 2008/03/31
      */
-
     public static UndefinedDataValue Construct(Database db,
                                                String s)
         throws SystemErrorException

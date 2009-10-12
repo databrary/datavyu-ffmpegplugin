@@ -22,6 +22,6 @@ public class MODBFilter extends FileFilter {
      * @return true if the file is to be accepted, false otherwise.
      */
     public boolean accept(File file) {
-        return (file.getName().endsWith(".db") || file.isDirectory());
+        return (file.getName().endsWith(".odb") || file.isDirectory());
     }
 }

@@ -1,61 +1,39 @@
-/*
- * TextStringFormalArg.java
- *
- * Created on February 12, 2007, 9:18 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
 
 /**
- * Class TextStringFormalArg
- *
  * Instances of TextStringFormalArg are used as the formal argument in the
- * single element matricies used to implement text column variables
+ * single element matricies used to implement text column variables.
  */
 public class TextStringFormalArg extends FormalArgument
 {
 
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
     /**
-     *
-     * subRange: Boolean flag indicating whether the formal argument can be
-     *      replaced by any valid text string, or only by some text string
-     *      that matches some criteron.  At present, this will never be the
-     *      case, so this field will always be false.
+     * Boolean flag indicating whether the formal argument can be replaced by
+     * any valid text string, or only by some text string that matches some
+     * criteron.  At present, this will never be the case, so this field will
+     * always be false.
      */
-
     boolean subRange = false;
 
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
 
+    // TextStringFormalArg()
     /**
-     * TextStringFormalArg()
-     *
-     * Constructors for integer typed formal arguments.
-     *
-     * Two versions of this constructor -- one takes only a database reference
-     * as its argument.  Since the names of instances of TextStringFormalArg
-     * are never displayed, there is no need to set a formal argument name.
-     * Similarly, there is no subrange to be defined.
-     *
-     * The second version takes an instance of TextStringFormalArg and uses it
-     * to make a copy.
-     *
-     *                                          -- 2/12/07
+     * Constructor.
      *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @param db The parent database for this TextStringFormalArgument.
      *
+     * @throws SystemErrorException if Unable to create a TextStringFormalArg
+     *
+     * @date 2007/02/12
      */
 
     public TextStringFormalArg(Database db)
@@ -68,6 +46,16 @@ public class TextStringFormalArg extends FormalArgument
 
     } /* TextStringFormalArg() -- no parameters */
 
+    /**
+     * Copy Constructor.
+     *
+     * @param fArg TextStringFormalArg to copy.
+     *
+     * @throws SystemErrorException If unable to copy the supplied
+     * TextStringFormalArg
+     *
+     * @date 2007/02/12
+     */
     public TextStringFormalArg(TextStringFormalArg fArg)
         throws SystemErrorException
     {
@@ -84,45 +72,35 @@ public class TextStringFormalArg extends FormalArgument
     } /* TextStringFormalArg() -- make copy */
 
 
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
-
+    // getSubRange()
     /**
-     * getSubRange()
+     * @return The subrange used for this TextString formal argument.
      *
-     * Accessor routine used to obtain the current values of the subRange field.
-     *
-     *                                          -- 2/12/07
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @date 2007/02/12
      */
-
     public boolean getSubRange()
     {
         return subRange;
     }
 
 
-    /*************************************************************************/
-    /***************************** Overrides: ********************************/
-    /*************************************************************************/
-
+    // constructArgWithSalvage() - Override of abstract method in FormalArgument
     /**
-     * constructArgWithSalvage()  Override of abstract method in FormalArgument
-     *
-     * Return an instance of TextStringDataValue initialized from salvage if
-     * possible, and to the default for newly created instances of
-     * TextStringDataValue otherwise.
+     * Constructs a argument from salvage.
      *
      * Changes:
+     * <ul>
+     *   <li>
+     *     None.
+     *   </li>
+     * </ul>
      *
-     *    - None.
+     * @param salvage The data value to salvage when constructing a new
+     * TextStringDataValue.
+     *
+     * @return An instance of TextStringDataValue initialized from salvage if
+     * possible, otherwise a default instance of TextStringDataValue.
      */
-
     DataValue constructArgWithSalvage(DataValue salvage)
         throws SystemErrorException
     {
@@ -160,40 +138,29 @@ public class TextStringFormalArg extends FormalArgument
     } /* TextStringDataValue::constructArgWithSalvage(salvage) */
 
 
+    // constructEmptyArg() - Override of abstract method in FormalArgument.
     /**
-     * constructEmptyArg()  Override of abstract method in FormalArgument
+     * @return An empty value that can be used as an empty value for this formal
+     * argument.
      *
-     * Return an instance of TextStringDataValue initialized as appropriate for
-     * an argument that has not had any value assigned to it by the user.
-     *
-     * Changes:
-     *
-     *    - None.
+     * @throws SystemErrorException If unable to create an empty value for
+     * this formal argument.
      */
-
-     public DataValue constructEmptyArg()
+    public DataValue constructEmptyArg()
         throws SystemErrorException
-     {
-
-         return new TextStringDataValue(this.getDB(), this.getID());
-
-     } /* TextStringFormalArg::constructEmptyArg() */
+    {
+        return new TextStringDataValue(this.getDB(), this.getID());
+    } /* TextStringFormalArg::constructEmptyArg() */
 
 
+    // toDBString - Override of abstract method in DataValue.
     /**
-     * toDBString() -- Override of abstract method in DataValue
-     *
      * Returns a database String representation of the DBValue for comparison
      * against the database's expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
      *
      * @return the string value.
-     *
-     * Changes:
-     *
-     *    - None.
-     *
      */
     public String toDBString() {
 
@@ -202,19 +169,13 @@ public class TextStringFormalArg extends FormalArgument
     } /* TextStringFormalArg::toDBString() */
 
 
+    // isValidValue() - Override of abstract method in FormalArgument
     /**
-     * isValidValue() -- Override of abstract method in FormalArgument
-     *
-     * Boolean metho that returns true iff the provided value is an acceptable
+     * @return true iff the provided value is an acceptable
      * value to be assigned to this formal argument.
      *
-     *                                             -- 2/5/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/02/05
      */
-
     public boolean isValidValue(Object obj)
         throws SystemErrorException
     {
@@ -223,6 +184,8 @@ public class TextStringFormalArg extends FormalArgument
 
     } /* TextStringFormalArg::isValidValue() */
 
+
+    // hashCode()
     /**
      * @return A hash code value for the object.
      */
@@ -234,6 +197,8 @@ public class TextStringFormalArg extends FormalArgument
         return hash;
     }
 
+
+    // equals()
     /**
      * Compares this text string formal argument against a object.
      *

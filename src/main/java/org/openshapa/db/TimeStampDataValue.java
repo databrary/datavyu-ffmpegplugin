@@ -691,13 +691,13 @@ public final class TimeStampDataValue extends DataValue
         // Must be this class to be here
         TimeStampDataValue i = (TimeStampDataValue) obj;
         return (itsValue == i.itsValue
-                        || (itsValue != null && itsValue.equals(i.itsValue)))
+                || (itsValue != null && itsValue.equals(i.itsValue)))
             && (maxVal == i.maxVal
-                        || (maxVal != null && maxVal.equals(i.maxVal)))
+                || (maxVal != null && maxVal.equals(i.maxVal)))
             && (minVal == i.minVal
-                        || (minVal != null && minVal.equals(i.minVal)))
+                || (minVal != null && minVal.equals(i.minVal)))
             && (ItsDefault == i.ItsDefault
-                        || (ItsDefault != null && ItsDefault.equals(i.ItsDefault)))
+                || (ItsDefault != null && ItsDefault.equals(i.ItsDefault)))
             && super.equals(obj);
     }
 
