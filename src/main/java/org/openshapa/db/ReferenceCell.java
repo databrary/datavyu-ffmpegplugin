@@ -1,60 +1,33 @@
-/*
- * ReferenceCell.java
- *
- * Created on December 7, 2006, 5:46 PM
- *
- */
-
 package org.openshapa.db;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
 
 /**
- * A reference cell
+ * A reference cell.
  */
 public class ReferenceCell extends Cell
 {
-    /*************************************************************************/
-    /***************************** Fields: ***********************************/
-    /*************************************************************************/
     /**
-     * targetID  ID of the DataCell that this reference cell is mirroring.
-     *      This ID should be set on construction, and not changed thereafter.
+     * ID of the DataCell that this reference cell is mirroring. This ID should
+     * be set on construction, and not changed thereafter.
      */
-
-    /** ID of referenced cell. */
     private long targetID = DBIndex.INVALID_ID;
 
 
-    /*************************************************************************/
-    /*************************** Constructors: *******************************/
-    /*************************************************************************/
-
     /**
-     * DataCell()
+     * Constructor.
      *
-     * Constructor for instances of ReferenceCell.
+     * @param db The parent database that this reference cell will belong too.
+     * @param colID The ID of the parent column that this reference cell will
+     * belong too.
+     * @param targetID The id of the cell that the reference cell is pointing
+     * too.
      *
-     * Only three versions of this constructor.
+     * @throws SystemErrorException If unable to create the reference cell.
      *
-     * The first takes only a reference to a database, a column ID, and the
-     * ID of a target DataCell.
-     *
-     * The second is the same as the first, with the addition of comment
-     * parameter.
-     *
-     * The third takes a reference to an instance of ReferenceCell as its
-     * parameter, and returns a copy.
-     *
-     *                                               -- 8/29/07
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @date 2007/08/29
      */
-
     public ReferenceCell(Database db,
                          long colID,
                          long targetID)
@@ -68,6 +41,22 @@ public class ReferenceCell extends Cell
 
     } /* ReferenceCell::ReferenceCell(db, colID, targetID) */
 
+
+    // ReferenceCell()
+    /**
+     * Constructor.
+     *
+     * @param db The parent database that this reference cell will belong too.
+     * @param comment The comment to use with this reference cell.
+     * @param colID The id of the parent column that this reference cell will
+     * belong too.
+     * @param targetID The id of the cell that this reference cell is pointing
+     * too.
+     *
+     * @throws SystemErrorException If unable to create reference cell.
+     *
+     * @date 2007/08/29
+     */
     public ReferenceCell(Database db,
                          String comment,
                          long colID,
@@ -83,6 +72,16 @@ public class ReferenceCell extends Cell
     } /* ReferenceCell::ReferenceCell(db, colID, targetID) */
 
 
+    // ReferenceCell()
+    /**
+     * Copy Constructor.
+     *
+     * @param rc The reference cell that we are creating a duplicate from.
+     *
+     * @throws SystemErrorException If unable to create reference cell.
+     *
+     * @date 2007/08/29
+     */
     public ReferenceCell(ReferenceCell rc)
         throws SystemErrorException
     {
@@ -95,50 +94,27 @@ public class ReferenceCell extends Cell
     } /* ReferenceCell::ReferenceCell(rc) */
 
 
-    /*************************************************************************/
-    /***************************** Accessors: ********************************/
-    /*************************************************************************/
-
+    // getTargetID()
     /**
-     * getTargetID
+     * @return The ID of the target DataCell.
      *
-     * Return the ID of the target DataCell.
-     *
-     *                           -- 8/29/07
-     *
-     * Changes:
-     *
-     *    - None.
+     * @date 2007/08/29
      */
 
     public long getTargetID()
     {
-
         return targetID;
-
     } /* ReferenceCell::getTargetID() */
 
 
-    /*************************************************************************/
-    /***************************** Overrides: ********************************/
-    /*************************************************************************/
-
-   /**
-     * toDBString()
-     *
-     * Returns a String representation of the DataCell for comparison
-     * against the expected value.<br>
+    // toDBString()
+    /**
+     * @return A String representation of the DataCell for comparison against
+     * the expected value.<br>
      *
      * <i>This function is intended for debugging purposses.</i>
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *    - None.
-     *
      */
-
+    @Override
     public String toDBString()
     {
         String s;
@@ -158,17 +134,9 @@ public class ReferenceCell extends Cell
     } /* ReferenceCell::toDBString() */
 
 
+    // toString()
     /**
-     * toString()
-     *
-     * Returns a String representation of the DataCell for display.
-     *
-     * @return the string value.
-     *
-     * Changes:
-     *
-     *    - None.
-     *
+     * @return A String representation of the DataCell for display.
      */
     public String toString()
     {
@@ -189,21 +157,15 @@ public class ReferenceCell extends Cell
     } /* ReferenceCell::toString() */
 
 
-    /*************************************************************************/
-    /***************************** Methods: **********************************/
-    /*************************************************************************/
-
+    // lookupTargetCell()
     /**
-     * lookupTargetCell()
-     *
      * Attempt to look up the target of the reference cell, and return a
      * reference to the DataCell if it exists.  If there is no such DataCell,
      * throw a system error.
-     *                                               -- 8/30/07
      *
-     * Changes:
+     * @throws SystemErrorException If unable to lookup target cell.
      *
-     *    - None.
+     * @date 2007/08/30
      */
 
     private DataCell lookuptargetCell()
@@ -237,6 +199,8 @@ public class ReferenceCell extends Cell
 
     } /* referenceCell::lookuptargetCell() */
 
+
+    // hashCode()
     /**
      * @return A hash code value for the object.
      */
@@ -248,6 +212,8 @@ public class ReferenceCell extends Cell
         return hash;
     }
 
+
+    // equals()
     /**
      * Compares this reference cell against a object.
      *
