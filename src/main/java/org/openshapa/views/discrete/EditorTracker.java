@@ -431,6 +431,13 @@ implements FocusListener, KeyListener, MouseListener {
     }
 
     /**
+     * Cut text from the current editor.
+     */
+    public void cut() {
+        currentEditor.cut();
+    }
+
+    /**
      * @return The current editor for this editor tracker.
      */
     public EditorComponent getCurrentEditor() {

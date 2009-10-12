@@ -152,10 +152,19 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     }
 
     /**
-     * Pastes contents of the clipboard into the nominal data value view.
+     * Pastes contents of the clipboard into the editor tracker.
      */
     @Override
     public void paste() {
         edTracker.paste();
+    }
+
+    /**
+     * Copies the current selection into the clipboard and then deletes the
+     * selection.
+     */
+    @Override
+    public void cut() {
+        edTracker.cut();
     }
 }

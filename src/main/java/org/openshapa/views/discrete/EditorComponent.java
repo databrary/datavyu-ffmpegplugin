@@ -1,10 +1,11 @@
 package org.openshapa.views.discrete;
 
 import java.awt.Component;
-import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
  * JTextComponent. Subclasses of this abstract class are combined and used by an
  * EditorTracker to manage editing of the JTextComponent.
  */
-public abstract class EditorComponent {
+public abstract class EditorComponent implements ClipboardOwner {
 
     /** JTextComponent containing this EditorComponent. */
     private JTextComponent parentComp;
@@ -283,6 +284,31 @@ public abstract class EditorComponent {
             parentComp.setCaretPosition(start);
             parentComp.moveCaretPosition(end);
         }
+    }
+
+    /**
+     * Empty implementation of the ClipboardOwner interface.
+     */
+    public void lostOwnership(Clipboard aClipboard, Transferable aContents) {
+        //do nothing
+    }
+
+    /**
+     * Cut the contents of the current selection into the clipboard.
+     */
+    public void cut() {
+        // Copy the selection into the clipboard.
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        String aString = this.getText()
+                             .substring(this.getSelectionStart(),
+                                        this.getSelectionEnd());
+        StringSelection stringSelection = new StringSelection(aString);
+        clipboard.setContents(stringSelection, this);
+
+        // Pass in a backspace character to delete the current selection.
+        KeyEvent ke = new KeyEvent(this.getParentComponent(), 0, 0,
+                                   0, 0, '\u0008');
+        this.keyTyped(ke);
     }
 
     /**
