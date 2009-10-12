@@ -6,7 +6,7 @@
         ( NAME> "parser_test.db" )
         ( VERSION> 1 )
         ( DEBUG-LEVEL> 2 )
-        ( MAX_ERRORS> 10 )
+        ( MAX-ERRORS> 10 )
         ( MAX-WARNINGS> 50 )
       )
     )
@@ -14,8 +14,8 @@
       (
         ( PREDICATE-DEFINITIONS>
           (
-            ( pred-2 ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) )
-            ( a-pred ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
+            ( |pred-2| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) ) )
+            ( |a-pred| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
           )
         )
         ( SPREADSHEET-VARIABLE-DECLARATIONS>
@@ -24,7 +24,7 @@
               (
                 ( TYPE> <<MATRIX>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<val1>| |<val2>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val1>| |<val2>| ) )
                 ( COLUMN-WIDTH> 125 )
               )
             )
@@ -32,7 +32,7 @@
               (
                 ( TYPE> <<MATRIX>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<arg1>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| ) )
                 ( COLUMN-WIDTH> 125 )
               )
             )
@@ -40,7 +40,7 @@
               (
                 ( TYPE> <<TEXT>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
                 ( COLUMN-WIDTH> 125 )
               )
             )
@@ -48,7 +48,7 @@
               (
                 ( TYPE> <<NOMINAL>> )
                 ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<val>| )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
                 ( COLUMN-WIDTH> 125 )
               )
             )

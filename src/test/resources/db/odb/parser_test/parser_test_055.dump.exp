@@ -6,7 +6,7 @@
         ( NAME> "parser_test.db" )
         ( VERSION> 1 )
         ( DEBUG-LEVEL> 0 )
-        ( MAX_ERRORS> 10 )
+        ( MAX-ERRORS> 10 )
         ( MAX-WARNINGS> 50 )
       )
     )
@@ -14,12 +14,12 @@
       (
         ( PREDICATE-DEFINITIONS>
           (
-            ( pred_6 ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
-            ( pred_5 ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
-            ( pred_4 ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
-            ( pred_3 ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
-            ( pred_2 ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) )
-            ( pred_1 ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) )
+            ( |pred_6| ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+            ( |pred_5| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+            ( |pred_4| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+            ( |pred_3| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+            ( |pred_2| ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+            ( |pred_1| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) ) )
           )
         )
         ( SPREADSHEET-VARIABLE-DECLARATIONS>

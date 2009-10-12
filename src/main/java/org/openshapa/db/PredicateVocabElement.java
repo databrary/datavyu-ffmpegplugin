@@ -385,7 +385,7 @@ public final class PredicateVocabElement extends VocabElement
             throw new SystemErrorException(mName + "fArgList unitialized?!?!");
         }
 
-        output.printf("%s( %s ( ", indent, this.name);
+        output.printf("%s( |%s| ( ", indent, this.name);
 
         if ( this.varLen )
         {
@@ -409,7 +409,7 @@ public final class PredicateVocabElement extends VocabElement
             i++;
         }
 
-        output.printf(") ) )%s", newLine);
+        output.printf(") ) ) )%s", newLine);
 
         return;
 
