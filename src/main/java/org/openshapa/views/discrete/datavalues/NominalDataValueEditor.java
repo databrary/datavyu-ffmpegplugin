@@ -1,10 +1,12 @@
 package org.openshapa.views.discrete.datavalues;
 
+import java.awt.event.FocusEvent;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
+import org.openshapa.db.Database;
 import org.openshapa.db.NominalDataValue;
 import org.openshapa.db.PredDataValue;
 import org.openshapa.db.SystemErrorException;
@@ -60,6 +62,27 @@ public final class NominalDataValueEditor extends DataValueEditor {
     }
 
     /**
+     * Action to take when focus is lost for this editor.
+     * @param fe Focus Event
+     */
+    @Override
+    public void focusLost(final FocusEvent fe) {
+        // BugzID:581 - Trim trailing spaces from nominal (apparently they are
+        // not permitted.
+        try {
+            if (!Database.IsValidNominal(this.getText())
+                && !this.getText().equals(this.getNullArg())) {
+                NominalDataValue ndv = (NominalDataValue) getModel();
+                this.setText(ndv.getItsValue());
+            }
+        } catch (SystemErrorException e) {
+            logger.error("Unable to determine if nominal is valid", e);
+        }
+
+        super.focusLost(fe);
+    }
+
+    /**
      * The action to invoke when a key is typed.
      *
      * @param e The KeyEvent that triggered this action.
@@ -97,8 +120,10 @@ public final class NominalDataValueEditor extends DataValueEditor {
 
         // Push the character changes into the database.
         try {
-            ndv.setItsValue(this.getText());
-            updateDatabase();
+            if (Database.IsValidNominal(this.getText())) {
+                ndv.setItsValue(this.getText());
+                updateDatabase();
+            }
         } catch (SystemErrorException se) {
             logger.error("Unable to edit text string", se);
         }

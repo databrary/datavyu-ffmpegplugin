@@ -271,7 +271,7 @@ public final class UIDeleteCellValueTest extends UISpecTestCase {
         c.pressKeys(Cell.VALUE, new Key [] {Key.END});
         int temp = c.getValueText().length();
         for (int i = 0; i < temp + 1; i++) {
-            c.enterText(Cell.VALUE, "\u0008");
+            c.enterTextKeepFocus(Cell.VALUE, "\u0008");
         }
         assertTrue(t.getText().equals("<val>"));
     }
@@ -299,10 +299,10 @@ public final class UIDeleteCellValueTest extends UISpecTestCase {
         c.pressKeys(Cell.VALUE, new Key [] {Key.HOME});
         int temp = c.getValueText().length();
         for (int i = 0; i < temp + 1; i++) {
-            c.enterText(Cell.VALUE, "\u007f");
+            c.enterTextKeepFocus(Cell.VALUE, "\u007f");
         }
         assertTrue(t.getText().equals("<val>"));
-        }
+    }
 
 }
 

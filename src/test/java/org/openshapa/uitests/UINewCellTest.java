@@ -80,7 +80,7 @@ public final class UINewCellTest extends UISpecTestCase {
       UISpec4J.init();
     }
 
-     /**
+    /**
      * Test creating a new NOMINAL cell.
      * @throws java.lang.Exception on any error
      */
@@ -88,7 +88,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varName = "nomVar";
         String varRadio = "nominal";
 
-        String[] expectedNominalTestOutput = {"Subject stands up ",
+        String[] expectedNominalTestOutput = {"Subject stands up",
             "$10432", "Hand me the manual!", "Tote_that_bale",
             "Jeune fille celebre", "If x7 then x2"};
 
@@ -392,7 +392,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varRadio = "integer";
 
         String[] expectedTestOutput = {"19", "-43210", "289", "178", "<val>",
-            "72", "999999999999999999", "3895", "-", "0", "-123"};
+            "72", "999999999999999999", "3895", "<val>", "0", "-123"};
 
         createNewVariable(varName, varRadio);
 
@@ -462,7 +462,7 @@ public final class UINewCellTest extends UISpecTestCase {
         //Test nominal
         String varName = "matrixNominal1";
 
-        String[] expectedNominalTestOutput = {"Subject stands up ",
+        String[] expectedNominalTestOutput = {"Subject stands up",
             "$10432", "Hand me the manual!", "Tote_that_bale",
             "Jeune fille celebre", "If x7 then x2"};
 
@@ -577,7 +577,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String varName = "matrixInteger1";
 
         String [] expectedIntTestOutput = {"19", "-43210", "289", "178", 
-        "<int>", "72", "999999999999999999", "3895", "-", "0", "-123"};
+        "<int>", "72", "999999999999999999", "3895", "<int>", "0", "-123"};
 
         runStandardTest(varName, integerTestInput,
                 expectedIntTestOutput, "<int>");
@@ -621,7 +621,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String [] expectedInt2TestOutput = {"19", "-43210", "289", "178",
         "<int1>", "72", "999999999999999999",
-        "3895", "-", "0", "-123"};
+        "3895", "<int1>", "0", "-123"};
 
         int numOfTests = integerTestInput.length;
 
@@ -704,7 +704,7 @@ public final class UINewCellTest extends UISpecTestCase {
         //2a. Test nominal
         String varName = "matrixNominal2";
 
-        String [] expectedTestOutput = {"Subject stands up ",
+        String [] expectedTestOutput = {"Subject stands up",
             "$10432", "Hand me the manual!", "Tote_that_bale",
             "Jeune fille celebre", "If x7 then x2"};
 
@@ -722,7 +722,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String [][][] testInput = new String [nominalTestInput.length]
                 [nominalTestInput.length][2];
 
-        String [] expectedNominal2bTempOutput = {"Subject stands up ",
+        String [] expectedNominal2bTempOutput = {"Subject stands up",
             "$10432", "Hand me the manual!", "Tote_that_bale",
             "Jeune fille celebre", "If x7 then x2"};
 
@@ -750,7 +750,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         numOfTests = nominalTestInput.length;
         for (int i = 0; i < numOfTests; i++) {
-            //BugzID581:runMatrixTest(varName, testInput[i], expectedNominal2bTestOutput[i]);
+            runMatrixTest(varName, testInput[i], expectedNominal2bTestOutput[i]);
         }
     }
 

@@ -133,6 +133,18 @@ public class Cell extends AbstractUIComponent {
     public final void enterText(final int element, final String s) {
         requestFocus(element);
         KeyUtils.enterString(getComponentByType(element), s);
+        dropFocus(element);
+    }
+
+    /**
+     * Types text into a cell element, and keeps focus.
+     *
+     * @param element Element to type value into.
+     * @param s String to type
+     */
+    public final void enterTextKeepFocus(final int element, final String s) {
+        requestFocus(element);
+        KeyUtils.enterString(getComponentByType(element), s);
     }
 
      /**
@@ -210,7 +222,22 @@ public class Cell extends AbstractUIComponent {
             ((TimeStampTextField) getComponentByType(element))
                     .focusGained(null);
         }
+    }
 
+    /**
+     * Drops the focus of a particular element of cell.
+     *
+     * @param element element to lose focus.
+     */
+    public final void dropFocus(final int element) {
+        if (element == VALUE) {
+            ((MatrixRootView) getComponentByType(element)).focusLost(null);
+            ((MatrixRootView) getComponentByType(element)).getEdTracker()
+                                                          .focusLost(null);
+        } else {
+            ((TimeStampTextField) getComponentByType(element))
+                    .focusLost(null);
+        }
     }
 
     /**
