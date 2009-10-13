@@ -439,30 +439,4 @@ public class DataValueEditorFactory {
         eds.add(rightquote);
         return eds;
     }
-
-    /**
-     * Reset the value of an Editor component.
-     *
-     * @param ed The editor component.
-     * @param c The parent data cell.
-     * @param m The matrix.
-     */
-    public static void resetValue(EditorComponent ed, DataCell c, Matrix m) {
-        if (ed.getClass() == FloatDataValueEditor.class) {
-            ((FloatDataValueEditor) ed).resetValue(c, m);
-        } else if (ed.getClass() == IntDataValueEditor.class) {
-            ((IntDataValueEditor) ed).resetValue(c, m);
-        } else if (ed.getClass() == TextStringDataValueEditor.class) {
-            ((TextStringDataValueEditor) ed).resetValue(c, m);
-        } else if (ed.getClass() == NominalDataValueEditor.class) {
-            ((NominalDataValueEditor) ed).resetValue(c, m);
-        } else if (ed.getClass() == PredicateNameEditor.class) {
-            ((PredicateNameEditor) ed).resetValue(c, m);
-        } else if (ed.getClass() == QuoteStringDataValueEditor.class) {
-            ((QuoteStringDataValueEditor) ed).resetValue(c, m);
-        } else if (ed.getClass() == UndefinedDataValueEditor.class) {
-            ((UndefinedDataValueEditor) ed).resetValue(c, m);
-        }
-    }
-
 }

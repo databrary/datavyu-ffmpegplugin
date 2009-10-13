@@ -76,6 +76,7 @@ public final class VENameEditor extends EditorComponent {
                 model.setName(getText());
 
                 parentView.setHasChanged(true);
+                parentView.getParentDialog().updateDialogState();
             } catch (SystemErrorException se) {
                 logger.error("Unable to backspace from predicate name", se);
             }
@@ -89,6 +90,7 @@ public final class VENameEditor extends EditorComponent {
                 model.setName(getText());
 
                 parentView.setHasChanged(true);
+                parentView.getParentDialog().updateDialogState();
             } catch (SystemErrorException se) {
                 logger.error("Unable to delete from predicate name", se);
             }
@@ -108,6 +110,7 @@ public final class VENameEditor extends EditorComponent {
                 this.setCaretPosition(pos);
 
                 parentView.setHasChanged(true);
+                parentView.getParentDialog().updateDialogState();
             } catch (SystemErrorException se) {
                 logger.error("Unable to set new predicate name", se);
             }

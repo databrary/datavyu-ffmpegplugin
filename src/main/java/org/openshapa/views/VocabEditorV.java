@@ -115,7 +115,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
         // Hide all the broken stuff.
         this.deleteButton.setVisible(false);
-        this.moveArgLeftButton.setVisible(false);
         this.moveArgRightButton.setVisible(false);
         this.argTypeComboBox.setVisible(false);
         this.varyArgCheckBox.setVisible(false);
@@ -191,7 +190,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
                     (selectedArgumentI - 1));
             selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
-
             updateDialogState();
         } catch (SystemErrorException e) {
             logger.error("Unable to move formal argument left", e);

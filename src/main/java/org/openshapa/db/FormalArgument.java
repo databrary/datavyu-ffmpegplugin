@@ -195,8 +195,6 @@ public abstract class FormalArgument
             && (fargName.equals(f.fargName))
             && (fargType == null ? f.fargType == null
                                  : fargType.equals(f.fargType))
-            && (itsVocabElement == null ? f.itsVocabElement == null
-                                   : itsVocabElement.equals(f.itsVocabElement))
             && (itsVocabElementID == f.itsVocabElementID)
             && (hidden == f.hidden);
     }

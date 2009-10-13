@@ -10,6 +10,7 @@ import java.util.Vector;
 import javax.swing.JTextArea;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.db.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 
@@ -24,11 +25,14 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     /** The parent cell for this JPanel. */
     private DataCell parentCell = null;
 
-    /** The editors that make up the representation of the data. */
-    private Vector<EditorComponent> editors;
+    /** All the editors that make up the representation of the data. */
+    private Vector<EditorComponent> allEditors;
 
     /** The editor tracker responsible for the editor components. */
     private EditorTracker edTracker;
+
+    /** The current vocab used for this matrix root view. */
+    private VocabElement ve;
 
     /** The logger for this class. */
     private static Logger logger = Logger.getLogger(MatrixRootView.class);
@@ -50,8 +54,9 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
         sheetSelection = cellSelection;
         parentCell = cell;
-        editors = new Vector<EditorComponent>();
-        edTracker = new EditorTracker(this, editors);
+        allEditors = new Vector<EditorComponent>();
+        edTracker = new EditorTracker(this, allEditors);
+        ve = null;
 
         setMatrix(matrix);
 
@@ -81,15 +86,34 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
         int edPos = comp.getCaretPosition();
 
         try {
-            if (editors.size() == 0) {
-                editors.addAll(DataValueEditorFactory.
-                                             buildMatrix(this, parentCell, m));
-            } else {
-                for (EditorComponent ed : editors) {
-                    // BugzID:503 - This needs to be refactored. Should not be
-                    // doing reflection to determine type. Should boil down to
-                    // a simple ed.resetValue(parentCell, m);
-                    DataValueEditorFactory.resetValue(ed, parentCell, m);
+            if (m != null) {
+                // The vocab element changes before the matrix. We have no idea
+                // if the vocab element has changed ahead of time, so basically
+                // we need to store a local copy of the vocab element and
+                // locally determine if the vocab element has changed and update
+                // the editors accordingly.
+                VocabElement newVE = m.getDB().getVocabElement(m.getMveID());
+
+                // No editors exist yet - build some to begin with.
+                if (allEditors.size() == 0) {
+                    allEditors.addAll(DataValueEditorFactory
+                                      .buildMatrix(this, parentCell, m));
+                    ve = newVE;
+
+                // Check to see if the vocab for the matrix has changed - if so
+                // clear the current editors and start afresh.
+                } else if (ve != null && !ve.equals(newVE)) {
+                    allEditors.clear();
+                    allEditors.addAll(DataValueEditorFactory
+                                      .buildMatrix(this, parentCell, m));
+                    ve = newVE;
+
+                // Vocab hasn't changed - only values for the matrix. Simply
+                // update the values.
+                } else {
+                    for (EditorComponent ed : allEditors) {
+                        ed.resetValue(parentCell, m);
+                    }
                 }
             }
         } catch (SystemErrorException e) {
@@ -107,7 +131,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      */
     public void rebuildText() {
         String ans = "";
-        for (EditorComponent item : editors) {
+        for (EditorComponent item : allEditors) {
             ans += item.getText();
         }
         setText(ans);

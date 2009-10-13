@@ -161,8 +161,6 @@ public class VocabElementV extends JPanel {
      * Updates the display of the vocab element view by rebuilding its contents.
      */
     public final void rebuildContents() {
-        this.parentEditor.updateDialogState();
-
         veRootView.setVocabElement(veModel, this);
     }
 
@@ -181,7 +179,6 @@ public class VocabElementV extends JPanel {
         }
 
         hasVEChanged = hasChanged;
-        this.parentEditor.updateDialogState();
     }
 
     /**
@@ -243,14 +240,12 @@ public class VocabElementV extends JPanel {
      * argument view in this vocab element has focus.
      */
     public final FormalArgEditor getArgWithFocus() {
-        for (EditorComponent ed : veRootView.getEditors()) {
-            if (ed.getClass() == FormalArgEditor.class) {
-                FormalArgEditor fArgEd = (FormalArgEditor) ed;
-                if (fArgEd.hasFocus()) {
-                    return fArgEd;
-                }
-            }
+        EditorComponent ed = veRootView.getEdTracker()
+                             .findEditor(veRootView.getCaretPosition());
+        if (ed.getClass().equals(FormalArgEditor.class)) {
+            return (FormalArgEditor) ed;
         }
+
         return null;
     }
 

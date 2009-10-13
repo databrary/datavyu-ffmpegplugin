@@ -92,6 +92,7 @@ public final class FormalArgEditor extends EditorComponent {
      */
     @Override
     public void focusGained(final FocusEvent e) {
+        this.parentView.getParentDialog().updateDialogState();
     }
 
     /**
@@ -120,6 +121,7 @@ public final class FormalArgEditor extends EditorComponent {
                 model.setFargName("<" + getText() + ">");
                 vocabElement.replaceFormalArg(model, argIndex);
                 parentView.setHasChanged(true);
+                parentView.getParentDialog().updateDialogState();
             } catch (SystemErrorException se) {
                 logger.error("Unable to backspace from predicate name", se);
             }
@@ -133,6 +135,7 @@ public final class FormalArgEditor extends EditorComponent {
                 model.setFargName("<" + getText() + ">");
                 vocabElement.replaceFormalArg(model, argIndex);
                 parentView.setHasChanged(true);
+                parentView.getParentDialog().updateDialogState();
             } catch (SystemErrorException se) {
                 logger.error("Unable to delete from predicate name", se);
             }
@@ -153,6 +156,7 @@ public final class FormalArgEditor extends EditorComponent {
                 this.setCaretPosition(pos);
 
                 parentView.setHasChanged(true);
+                parentView.getParentDialog().updateDialogState();
             } catch (SystemErrorException se) {
                 logger.error("Unable to set new predicate name", se);
             }

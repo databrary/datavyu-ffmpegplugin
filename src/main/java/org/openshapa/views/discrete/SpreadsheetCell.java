@@ -26,6 +26,7 @@ import javax.swing.border.Border;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.openshapa.db.VocabElement;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 
