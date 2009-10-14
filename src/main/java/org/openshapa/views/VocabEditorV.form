@@ -124,12 +124,11 @@
     <Component class="javax.swing.JComboBox" name="argTypeComboBox">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="5">
-            <StringItem index="0" value="Untyped"/>
-            <StringItem index="1" value="Text"/>
-            <StringItem index="2" value="Nominal"/>
-            <StringItem index="3" value="Integer"/>
-            <StringItem index="4" value="Float"/>
+          <StringArray count="4">
+            <StringItem index="0" value="Text"/>
+            <StringItem index="1" value="Nominal"/>
+            <StringItem index="2" value="Integer"/>
+            <StringItem index="3" value="Float"/>
           </StringArray>
         </Property>
         <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">

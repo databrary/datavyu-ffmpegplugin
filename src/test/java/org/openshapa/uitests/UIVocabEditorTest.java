@@ -2,12 +2,9 @@ package org.openshapa.uitests;
 
 import java.io.File;
 import java.util.Vector;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.views.NewDatabaseV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.uispec4j.Cell;
@@ -146,7 +143,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 
         c.enterText(Cell.VALUE, vti);
 
-        assertTrue(t.getText().equalsIgnoreCase("predicate1(<integer>)"));
+        assertTrue(t.getText().equalsIgnoreCase("predicate1(<arg0>)"));
     }
 
     /** Test vocab editor creating new predicate and replacing VE name.
@@ -199,7 +196,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 
         c.enterText(Cell.VALUE, vti);
 
-        assertTrue(t.getText().equalsIgnoreCase(veName + "(<integer>)"));
+        assertTrue(t.getText().equalsIgnoreCase(veName + "(<arg0>)"));
     }
 
     /** Test vocab editor creating new predicate and adding to VE name.
@@ -254,7 +251,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 
         c.enterText(Cell.VALUE, vti);
 
-        assertTrue(t.getText().equalsIgnoreCase(veName + "(<integer>)"));
+        assertTrue(t.getText().equalsIgnoreCase(veName + "(<arg0>)"));
     }
 
     /** Test vocab editor creating new predicate and adding VE argument.
