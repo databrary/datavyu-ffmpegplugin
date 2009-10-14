@@ -115,7 +115,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
         // Hide all the broken stuff.
         this.deleteButton.setVisible(false);
-        this.moveArgRightButton.setVisible(false);
         this.argTypeComboBox.setVisible(false);
         this.varyArgCheckBox.setVisible(false);
         this.addArgButton.setVisible(false);
@@ -190,6 +189,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
                     (selectedArgumentI - 1));
             selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
+
             updateDialogState();
         } catch (SystemErrorException e) {
             logger.error("Unable to move formal argument left", e);
@@ -208,6 +208,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
                     (selectedArgumentI + 1));
             selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
+
+            updateDialogState();
         } catch (SystemErrorException e) {
             logger.error("Unable to move formal argument right", e);
         }
@@ -261,7 +263,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public void setVaryingArgs() {
         if (selectedVocabElement != null) {
             try {
-                selectedVocabElement.getModel().setVarLen(varyArgCheckBox.isSelected());
+                selectedVocabElement.getModel()
+                                    .setVarLen(varyArgCheckBox.isSelected());
                 selectedVocabElement.rebuildContents();
             } catch (SystemErrorException e) {
                 logger.error("Unable to set varying arguments.", e);
