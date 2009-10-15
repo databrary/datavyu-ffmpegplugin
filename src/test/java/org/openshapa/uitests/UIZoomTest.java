@@ -36,13 +36,9 @@ public final class UIZoomTest extends UISpecTestCase {
         UISpec4J.init();
     }
 
-    public void testNull() {
-        assertTrue(true);
-    }
-
    /**
      * Test zooming in and reset.
-     *//*
+     */
    public void testZoomingIn() {
         //Preparation
         Window window = getMainWindow();
@@ -69,11 +65,11 @@ public final class UIZoomTest extends UISpecTestCase {
                 .run();
 
         // 1a. Reset zoom and get start font size
-        menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-            .getSubMenu("Reset Zoom").click();
         Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
                 window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent()));
+        menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
+            .getSubMenu("Reset Zoom").click();
         startFontSize = ss.getColumns().elementAt(0).getCells().elementAt(0)
                 .getValueFont().getSize();
 
@@ -89,8 +85,11 @@ public final class UIZoomTest extends UISpecTestCase {
             //Zoom in
             menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
                     .getSubMenu("Zoom In").click();
-            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-                    Spreadsheet.class)[0].getAwtComponent()));
+            menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
+                    .getSubMenu("Zoom In").click();
+            menuBar.getMenu("Spreadsheet").getSubMenu("Show Spreadsheet").click();
+//            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
+//                    Spreadsheet.class)[0].getAwtComponent()));
             numberOfZooms++;
             firstCellFontSize = ss.getColumns().elementAt(0).getCells()
                     .elementAt(0).getValueFont().getSize();
@@ -113,8 +112,8 @@ public final class UIZoomTest extends UISpecTestCase {
         // 3. Reset zoom and check reset
         menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
                     .getSubMenu("Reset Zoom").click();
-        ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-                    Spreadsheet.class)[0].getAwtComponent()));
+//        ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
+//                    Spreadsheet.class)[0].getAwtComponent()));
         assertTrue(startFontSize == ss.getColumns().elementAt(0).getCells()
                     .elementAt(0).getValueFont().getSize());
 
@@ -130,8 +129,8 @@ public final class UIZoomTest extends UISpecTestCase {
             //Zoom out
             menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
                     .getSubMenu("Zoom Out").click();
-            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-                    Spreadsheet.class)[0].getAwtComponent()));
+//            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
+//                    Spreadsheet.class)[0].getAwtComponent()));
             numberOfZooms++;
             firstCellFontSize = ss.getColumns().elementAt(0).getCells()
                     .elementAt(0).getValueFont().getSize();
@@ -151,8 +150,8 @@ public final class UIZoomTest extends UISpecTestCase {
             //Zoom in
             menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
                     .getSubMenu("Zoom In").click();
-            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-                    Spreadsheet.class)[0].getAwtComponent()));
+//            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
+//                    Spreadsheet.class)[0].getAwtComponent()));
             numberOfZooms++;
             firstCellFontSize = ss.getColumns().elementAt(0).getCells()
                     .elementAt(0).getValueFont().getSize();
@@ -169,7 +168,7 @@ public final class UIZoomTest extends UISpecTestCase {
         }
 
         assertTrue(numberOfZooms > 1);
-    }*/
+    }
 
     /**
      * Test zooming out and reset.

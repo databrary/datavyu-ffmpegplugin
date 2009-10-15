@@ -759,7 +759,7 @@ public final class UINewCellTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
     public void testNewMatrixCellDoubleArgFloat() throws Exception {
-        // Retrieve the components
+       // Retrieve the components
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
 
@@ -767,6 +767,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/matrix_tests.rb");
         assertTrue(demoFile.exists());
+
 
         WindowInterceptor
                 .init(menuBar.getMenu("Script").getSubMenu("Run script")
@@ -787,39 +788,54 @@ public final class UINewCellTest extends UISpecTestCase {
         assertTrue(ss.getColumns().size() > 0);
 
         //2. Test double cell type
-        //2a. Test float
         String varName = "matrixFloat2";
 
-        int numOfTests = floatTestInput.length;
+        double[] expectedFloat2TestOutput = {1.9, -43.21, 289, 178, 0, 7.2,
+        589.138085, 389.5, -0.1, 0.2, 0, 0, 0, -0.34, -23.34, 0.34, 12.34};
 
-        //Create new cells, check that they have been created
-        ss.getSpreadsheetColumn(varName).requestFocus();
+        int numOfTests = integerTestInput.length;
+
+        //2a. Test integer, only first arg
         for (int i = 0; i < numOfTests; i++) {
-            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+            expectedFloat2TestOutput[i] = "(" + expectedFloat2TestOutput[i]
+                    + ", <int2>)";
         }
-        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
 
-        assertTrue(cells.size() == numOfTests);
+        runStandardTest(varName, integerTestInput, expectedFloat2TestOutput,
+                "(<int1>, <int2>)");
+
+        //2b. Recursively test all permutations of test input
+        String [][][] testInput = new String [expectedFloat2TestOutput.length]
+                [expectedFloat2TestOutput.length][2];
+
+        String [] expectedInt2bTempOutput = {"19", "-43210", "289", "178",
+        "<int1>", "72", "999999999999999999",
+        "3895", "<int1>", "0", "-123"};
+
+        String [][] expectedInt2bTestOutput =
+                new String [expectedFloat2TestOutput.length]
+                [expectedFloat2TestOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
-            /*BugzID:578 assertTrue(cells.elementAt(i).getOrd() == i + 1);*/
-            assertTrue((cells.elementAt(i).getOnset().getText())
-                    .equals("00:00:00:000"));
-            assertTrue((cells.elementAt(i).getOffset().getText())
-                    .equals("00:00:00:000"));
-            assertTrue(cells.elementAt(i).getValue().getText()
-                    .equals("(<float1>, <float2>)"));
-
-            //4. Test different inputs as per specifications
-            Cell c = cells.elementAt(i);
-            TextBox t = c.getValue();
-
-            c.enterText(Cell.VALUE, floatTestInput[i]);
-
-            /*BugzID579:assertTrue(Double.parseDouble(getArgFromMatrix(t.getText(), 0))
-                    == (expectedFloatTestOutput[i]));*/
+            for (int j = 0; j < numOfTests; j++) {
+                testInput[i][j][0] = integerTestInput[i];
+                testInput[i][j][1] = integerTestInput[j];
+                if (expectedInt2bTempOutput[i].equals("<int2>")) {
+                    expectedInt2bTestOutput[i][j] = "(<int1>"
+                        + ", " + expectedInt2bTempOutput[j] + ")";
+                } else if (expectedInt2bTempOutput[j].equals("<int1>")) {
+                    expectedInt2bTestOutput[i][j] = "(" + expectedInt2bTempOutput[i]
+                        + ", <int2>)";
+                } else {
+                expectedInt2bTestOutput[i][j] = "(" + expectedInt2bTempOutput[i]
+                        + ", " + expectedInt2bTempOutput[j] + ")";
+                }
+            }
         }
-        //2b. Need to write double argument tests, but difficult to write with bug 579. Must do later
+
+        for (int i = 0; i < numOfTests; i++) {
+            runMatrixTest(varName, testInput[i], expectedInt2bTestOutput[i]);
+        }
     }
 
     /**
