@@ -1,9 +1,9 @@
 package org.openshapa.views.continuous.quicktime;
 
-import org.openshapa.views.continuous.*;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
+import org.openshapa.views.continuous.DataViewer;
 import quicktime.QTException;
 import quicktime.QTSession;
 import quicktime.app.view.QTFactory;
@@ -14,16 +14,29 @@ import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
-import quicktime.std.movies.media.SampleTimeInfo;
 
 /**
  * The viewer for a quicktime video file.
  */
 public final class QTDataViewer extends JFrame
-implements DataViewer {
+        implements DataViewer {
+
+    //--------------------------------------------------------------------------
+    //
+    //
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(QTDataViewer.class);
+
+    /** Conversion from seconds to milliseconds. */
+    private static final long SECONDS_TO_MILLI = 1000L;
+
+    /** Conversion from milliseconds to seconds. */
+    private static final double MILLI_TO_SECONDS = 1F / SECONDS_TO_MILLI;
+
+    //--------------------------------------------------------------------------
+    //
+    //
 
     /** The quicktime movie this viewer is displaying. */
     private Movie movie;
@@ -34,43 +47,41 @@ implements DataViewer {
     /** The visual media for the above visual track. */
     private Media visualMedia;
 
-    /** The "normal" playback speed. */
-    private static final float NORMAL_SPEED = 1.0f;
+    /** Rate for playback. */
+    private float playRate;
 
-    /** Fastforward playback speed. */
-    private static final float FFORWARD_SPEED = 32.0f;
+    /** Frames per second. */
+    private float fps;
 
-    /** Rewind playback speed. */
-    private static final float RWIND_SPEED = -32.0f;
-
-    /** conversion factor for converting milliseconds to seconds. */
-    private static final double MILLI_TO_SECONDS = 0.001;
-
-    /** conversion factor for converting seconds to milliseconds. */
-    private static final double SECONDS_TO_MILLI = 1000.0;
-
-    /** The current shuttle speed. */
-    private float shuttleSpeed;
+    //--------------------------------------------------------------------------
+    // [initialization]
+    //
 
     /**
      * Constructor - creates new video viewer.
-     *
-     * @param controller The controller invoking actions on this continous
-     * data viewer.
      */
     public QTDataViewer() {
         try {
             movie = null;
-            shuttleSpeed = 0.0f;
 
             // Initalise QTJava.
             QTSession.open();
+
         } catch (QTException e) {
             logger.error("Unable to create QTVideoViewer", e);
         }
         initComponents();
     }
 
+
+    //--------------------------------------------------------------------------
+    // [interface] org.openshapa.views.continuous.DataViewer
+    //
+
+    /**
+     *
+     * @return A JFrame for display purposes.
+     */
     public JFrame getParentJFrame() {
         return this;
     }
@@ -91,6 +102,10 @@ implements DataViewer {
                                        StdQTConstants.movieTrackCharacteristic);
             visualMedia = visualTrack.getMedia();
 
+            fps =
+                    (float) visualMedia.getSampleCount()
+                    / visualMedia.getDuration() * visualMedia.getTimeScale();
+
             this.add(QTFactory.makeQTComponent(movie).asComponent());
             // Set the size of the window to be the same as the incoming video.
             this.setBounds(this.getX(), this.getY(),
@@ -107,114 +122,14 @@ implements DataViewer {
     }
 
     /**
-     * Jogs the data stream backwards by a single unit (i.e. frame for movie)
+     * @return The frames per second.
      */
-    public void jogBack() {
-        try {
-            this.setVisible(true);
-            this.jog(-1);
-        } catch (QTException e) {
-            logger.error("Unable to jogBack", e);
-        }
-    }
+    public float getFrameRate() { return fps; }
 
     /**
-     * Stops the playback of the continous data stream.
+     * @param rate The playback rate.
      */
-    public void stop() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.stop();
-            }
-        } catch (QTException e) {
-            logger.error("Unable to stop", e);
-        }
-    }
-
-    /**
-     * Jogs the data stream forwards by a single unit (i.e. frame for movie).
-     */
-    public void jogForward() {
-        try {
-            this.setVisible(true);
-            this.jog(1);
-        } catch (QTException e) {
-            logger.error("Unable to jogForward", e);
-        }
-    }
-
-    /**
-     * Shuttles the video stream backwards by the current shuttle speed.
-     * Repetative calls to shuttleBack increases the speed at which we reverse.
-     */
-    public void shuttleBack() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                if (shuttleSpeed == 0.0f) {
-                    shuttleSpeed = 1.0f / RWIND_SPEED;
-                } else {
-                    shuttleSpeed = shuttleSpeed * 2;
-                }
-                movie.setRate(shuttleSpeed);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to shuttleBack", e);
-        }
-    }
-
-    /**
-     * Pauses the playback of the continous data stream.
-     */
-    public void pause() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.stop();
-            }
-        } catch (QTException e) {
-            logger.error("pause", e);
-        }
-    }
-
-    /**
-     * Shuttles the video stream forwards by the current shuttle speed.
-     * Repetative calls to shuttleFoward increases the speed at which we fast
-     * forward.
-     */
-    public void shuttleForward() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                if (shuttleSpeed == 0.0f) {
-                    shuttleSpeed = 1.0f / FFORWARD_SPEED;
-                } else {
-                    shuttleSpeed = shuttleSpeed * 2;
-                }
-                movie.setRate(shuttleSpeed);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to shuttleForward", e);
-        }
-    }
-
-    /**
-     * Rewinds the continous data stream at a speed 32x normal.
-     */
-    public void rewind() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.setRate(RWIND_SPEED);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to rewind", e);
-        }
-    }
+    public void setPlaybackSpeed(final float rate) { this.playRate = rate; }
 
     /**
      * Plays the continous data stream at a regular 1x normal speed.
@@ -223,44 +138,61 @@ implements DataViewer {
         try {
             if (movie != null) {
                 this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.setRate(NORMAL_SPEED);
+                movie.setRate(playRate);
             }
         } catch (QTException e) {
             logger.error("Unable to play", e);
         }
     }
 
-    /**
-     * Fast forwards a continous data stream at a speed 32x normal.
+     /**
+     * Stops the playback of the continous data stream.
      */
-    public void forward() {
+    public void stop() {
         try {
             if (movie != null) {
                 this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.setRate(FFORWARD_SPEED);
+                movie.stop();
             }
         } catch (QTException e) {
-            logger.error("Unable to forward", e);
+            logger.error("Unable to stop", e);
+        }
+    }
+
+   /**
+     * @param offset Millisecond offset from current position.
+     */
+    public void seek(final long offset) {
+        try {
+            if (movie != null) {
+                this.setVisible(true);
+                //movie.stop();
+
+                double curTime = movie.getTime() / (float) movie.getTimeScale();
+                double seconds = offset * MILLI_TO_SECONDS;
+
+                seconds = curTime + seconds;
+                long qtime = (long) seconds * movie.getTimeScale();
+
+                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
+                movie.setTime(time);
+                pack();
+            }
+        } catch (QTException e) {
+            logger.error("Unable to go back", e);
         }
     }
 
     /**
-     * Find can be used to seek within a continous data stream - allowing the
-     * caller to jump to a specific time in the datastream.
-     *
-     * @param milliseconds The time within the continous data stream, specified
-     * in milliseconds from the start of the stream.
+     * @param position Millisecond absolute position for track.
      */
-    public void find(final long milliseconds) {
+    public void seekTo(final long position) {
         try {
             if (movie != null) {
                 this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.stop();
+                //movie.stop();
 
-                double seconds = milliseconds * MILLI_TO_SECONDS;
+                double seconds = position * MILLI_TO_SECONDS;
                 long qtime = (long) seconds * movie.getTimeScale();
 
                 TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
@@ -273,72 +205,20 @@ implements DataViewer {
     }
 
     /**
-     * Go back by the specified number of milliseconds and continue playing the
-     * data stream.
      *
-     * @param milliseconds The number of milliseconds to jump back by.
+     * @return Current time in milliseconds.
+     * @throws QTException If error occurs accessing underlying implemenation.
      */
-    public void goBack(final long milliseconds) {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.stop();
-
-                double curTime = movie.getTime() / (float) movie.getTimeScale();
-                double seconds = milliseconds * MILLI_TO_SECONDS;
-
-                seconds = curTime - seconds;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
-                movie.setTime(time);
-                movie.start();
-                pack();
-            }
-        } catch (QTException e) {
-            logger.error("Unable to go back", e);
-        }
-    }
-
-    public void syncCtrl() {
-    }
-
-    public void sync() {
-    }
-
-    /**
-     * Jogs the movie by a specified number of frames.
-     *
-     * @param offset The number of frames to jog the movie by.
-     *
-     * @throws QTException If unable to jog the movie by the specified number
-     * of frames.
-     */
-    public void jog(final int offset) throws QTException {
-        if (movie != null) {
-            this.setVisible(true);
-            shuttleSpeed = 0.0f;
-            movie.stop();
-
-            // Get the current frame.
-            SampleTimeInfo sTime = visualMedia.timeToSampleNum(movie.getTime());
-
-            // Get the time of the next frame.
-            int t = visualMedia
-                    .sampleNumToMediaTime(sTime.sampleNum + offset).time;
-            TimeRecord time = new TimeRecord(movie.getTimeScale(), t);
-
-            // Advance the movie to the next frame.
-            movie.setTime(time);
-        }
-    }
-
     public long getCurrentTime() throws QTException {
         double curTime = movie.getTime() / (double) movie.getTimeScale();
         curTime = curTime * SECONDS_TO_MILLI;
         return (long) curTime;
     }
+
+
+    //--------------------------------------------------------------------------
+    // [generated]
+    //
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -352,6 +232,7 @@ implements DataViewer {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

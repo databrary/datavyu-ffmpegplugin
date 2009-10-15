@@ -1,25 +1,95 @@
 package org.openshapa.views;
 
-import org.openshapa.OpenSHAPA;
-import org.openshapa.db.TimeStamp;
-import org.openshapa.views.continuous.quicktime.QTDataViewer;
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Vector;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
+import org.openshapa.db.TimeStamp;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.views.continuous.DataViewer;
-import java.io.File;
-import java.util.List;
-import javax.swing.filechooser.FileFilter;
 import org.openshapa.views.continuous.PluginManager;
 
 /**
  * Quicktime video controller.
  */
 public final class QTVideoController extends OpenSHAPADialog {
+
+    //--------------------------------------------------------------------------
+    //
+    //
+
+    /** One second in milliseconds. */
+    private static final long ONE_SECOND = 1000L;
+
+
+    /** Rate of playback for rewinding. */
+    private static final float REWIND_RATE = -32F;
+
+    /** Rate of normal playback. */
+    private static final float PLAY_RATE = 1F;
+
+    /** Rate of playback for fast forwarding. */
+    private static final float FFORWARD_RATE = 32F;
+
+    /** Sequence of allowable shuttle rates. */
+    private static final float[] SHUTTLE_RATES;
+
+    // Initialize SHUTTLE_RATES
+    // values: [ (2^-5), ..., (2^0), ..., (2^5) ]
+    static {
+        int POWER = 5;
+        SHUTTLE_RATES = new float[2 * POWER + 1];
+        float value = 1;
+        SHUTTLE_RATES[POWER] = value;
+        for (int i = 1; i <= POWER; ++i) {
+            value *= 2;
+            SHUTTLE_RATES[POWER + i] = value;
+            SHUTTLE_RATES[POWER - i] = 1F / value;
+        }
+    }
+
+    /**
+     * Enumeration of shuttle directions.
+     */
+    enum ShuttleDirection {
+        BACKWARDS(-1),
+        UNDEFINED(0),
+        FORWARDS(1);
+
+        private int parameter;
+
+        ShuttleDirection(final int p) { this.parameter = p; }
+
+        public int getParameter() { return parameter; }
+    }
+
+    //--------------------------------------------------------------------------
+    //
+    //
+
+    /** Stores the lowest frame rate for all available viewers. */
+    private float currentFPS = Float.MAX_VALUE;
+
+    /** Shuttle status flag. */
+    private ShuttleDirection shuttleDirection = ShuttleDirection.UNDEFINED;
+
+    /** Index of current shuttle rate. */
+    private int shuttleRate;
+
+    /** Paused status flag. */
+    private boolean isPaused;
+
+
+    //--------------------------------------------------------------------------
+    // [initialization]
+    //
 
     /**
      * Constructor. Creates a new QTVideoController.
@@ -32,9 +102,21 @@ public final class QTVideoController extends OpenSHAPADialog {
 
         initComponents();
         setName(this.getClass().getSimpleName());
-        viewers = new Vector<DataViewer>();
+        viewers = new HashSet<DataViewer>();
     }
 
+    //--------------------------------------------------------------------------
+    //
+    //
+
+    /**
+     * Set time location for data streams.
+     *
+     * @param milliseconds The millisecond time.
+     *
+     * @todo currently only sets the time stamp label of the controller. The
+     *       controller needs to run its own clock that should call this method
+     */
     public void setCurrentLocation(final long milliseconds) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -47,22 +129,31 @@ public final class QTVideoController extends OpenSHAPADialog {
         }
     }
 
+    /**
+     *
+     * @return The time stamp of the current location.
+     */
     public TimeStamp getCurrentLocation() {
         return (this.currentTimestamp);
     }
 
     /**
-     * Shutdowns the specified viewer.
+     * Get the current master clock time for the controller.
+     *
+     * @return Time in milliseconds.
+     */
+    private long getCurrentTime() {
+        return getCurrentLocation().getTime();
+    }
+
+    /**
+     * Remove the specifed viewer form the controller.
      *
      * @param viewer The viewer to shutdown.
+     * @return True if the controller contained this viewer.
      */
-    public void shutdown(final QTDataViewer viewer) {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            if (viewer == this.viewers.elementAt(i)) {
-                this.viewers.remove(viewer);
-                break;
-            }
-        }
+    public boolean shutdown(final DataViewer viewer) {
+        return viewers.remove(viewer);
     }
 
     /** This method is called from within the constructor to
@@ -77,6 +168,7 @@ public final class QTVideoController extends OpenSHAPADialog {
         topPanel = new javax.swing.JPanel();
         timestampLabel = new javax.swing.JLabel();
         openVideoButton = new javax.swing.JButton();
+        lblSpeed = new javax.swing.JLabel();
         gridButtonPanel = new javax.swing.JPanel();
         syncCtrlButton = new javax.swing.JButton();
         syncButton = new javax.swing.JButton();
@@ -129,6 +221,11 @@ public final class QTVideoController extends OpenSHAPADialog {
             }
         });
         topPanel.add(openVideoButton, java.awt.BorderLayout.LINE_START);
+
+        lblSpeed.setFont(new java.awt.Font("Courier New", 1, 12)); // NOI18N
+        lblSpeed.setText("*1.0");
+        lblSpeed.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        topPanel.add(lblSpeed, java.awt.BorderLayout.LINE_END);
 
         mainPanel.add(topPanel, java.awt.BorderLayout.NORTH);
 
@@ -296,6 +393,10 @@ public final class QTVideoController extends OpenSHAPADialog {
             viewer.setDataFeed(f);
             OpenSHAPA.getApplication().show(viewer.getParentJFrame());
 
+            // adjust the overall frame rate.
+            float fps = viewer.getFrameRate();
+            if (fps < currentFPS) { currentFPS = fps; }
+
             // Add the QTDataViewer to the list of viewers we are controlling.
             this.viewers.add(viewer);
         }
@@ -306,6 +407,9 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void syncCtrlAction() {
+        for (int i = 0; i < this.viewers.size(); i++) {
+            //this.viewers.elementAt(i).syncCtrl();
+        }
     }
 
     /**
@@ -313,6 +417,7 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void syncAction() {
+        for (DataViewer viewer : viewers) { viewer.seekTo(getCurrentTime()); }
     }
 
 
@@ -336,33 +441,90 @@ public final class QTVideoController extends OpenSHAPADialog {
         //new SetCellOffsetC((long) curTime);
     }
 
-    /**
-     * Action to invoke when the user clicks on the rewind button.
-     */
-    @Action
-    public void rewindAction() {
-        for (DataViewer v : viewers) {
-            v.rewind();
-        }
-    }
+
+    //--------------------------------------------------------------------------
+    // Playback actions
+    //
 
     /**
      * Action to invoke when the user clicks on the play button.
      */
     @Action
-    public void playAction() {
-        for (DataViewer v : viewers) {
-            v.play();
-        }
-    }
+    public void playAction() { playAt(PLAY_RATE); }
 
     /**
      * Action to invoke when the user clicks on the fast foward button.
      */
     @Action
-    public void forwardAction() {
-        for (DataViewer v : viewers) {
-            v.forward();
+    public void forwardAction() { playAt(FFORWARD_RATE); }
+
+    /**
+     * Action to invoke when the user clicks on the rewind button.
+     */
+    @Action
+    public void rewindAction() { playAt(REWIND_RATE); }
+
+    /**
+     * Action to invoke when the user clicks on the pause button.
+     *
+     * @todo pauses current playback but does not reset playback rate?
+     */
+    @Action
+    public void pauseAction() {
+        if (isPaused) { for (DataViewer viewer : viewers) { viewer.play(); } }
+        else          { for (DataViewer viewer : viewers) { viewer.stop(); } }
+        isPaused = !isPaused;
+    }
+
+    /**
+     * Action to invoke when the user clicks on the stop button.
+     *
+     * @todo Stops current playback and resets rate?
+     */
+    @Action
+    public void stopAction() {
+        lblSpeed.setText(String.format("x%(.3f", PLAY_RATE));
+        for (DataViewer viewer : viewers) {
+            viewer.stop();
+            viewer.setPlaybackSpeed(PLAY_RATE);
+        }
+        shuttleDirection = ShuttleDirection.UNDEFINED;
+        isPaused = true;      // @todo: handle stop->pause btn combination?
+    }
+
+    /**
+     * Action to invoke when the user clicks on the shuttle forward button.
+     *
+     * @todo proper behaviour for reversing shuttle direction?
+     */
+    @Action
+    public void shuttleForwardAction() { shuttle(ShuttleDirection.FORWARDS); }
+
+    /**
+     * Action to inovke when the user clicks on the shuttle back button.
+     */
+    @Action
+    public void shuttleBackAction() { shuttle(ShuttleDirection.BACKWARDS); }
+
+    /**
+     * Action to invoke when the user clicks on the find button.
+     */
+    @Action
+    public void findAction() {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
+            Date videoDate = format.parse(this.findTextField.getText());
+            Date originDate = format.parse("00:00:00:000");
+
+            // Determine the time in milliseconds.
+            long milli = videoDate.getTime() - originDate.getTime();
+
+            for (DataViewer viewer : viewers) {
+                viewer.seekTo(milli);
+            }
+
+        } catch (ParseException e) {
+            logger.error("unable to find within video", e);
         }
     }
 
@@ -379,94 +541,101 @@ public final class QTVideoController extends OpenSHAPADialog {
             // Determine the time in milliseconds.
             long milli = videoDate.getTime() - originDate.getTime();
 
-            for (DataViewer v : viewers) {
-                v.goBack(milli);
+            for (DataViewer viewer : viewers) {
+                viewer.seek(milli);
+                // viewer.play();   // @todo Leave the viewer in its current play state
             }
+
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
         }
     }
 
-    /**
-     * Action to inovke when the user clicks on the shuttle back button.
-     */
-    @Action
-    public void shuttleBackAction() {
-        for (DataViewer v : viewers) {
-            v.shuttleBack();
-        }
-    }
-
-    /**
-     * Action to invoke when the user clicks on the pause button.
-     */
-    @Action
-    public void pauseAction() {
-        for (DataViewer v : viewers) {
-            v.pause();
-        }
-    }
-
-    /**
-     * Action to invoke when the user clicks on the shuttle forward button.
-     */
-    @Action
-    public void shuttleForwardAction() {
-        for (DataViewer v : viewers) {
-            v.shuttleForward();
-        }
-    }
-
-    /**
-     * Action to invoke when the user clicks on the find button.
-     */
-    @Action
-    public void findAction() {
-        try {
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
-            Date videoDate = format.parse(this.findTextField.getText());
-            Date originDate = format.parse("00:00:00:000");
-
-            // Determine the time in milliseconds.
-            long milli = videoDate.getTime() - originDate.getTime();
-
-            for (DataViewer v : viewers) {
-                v.find(milli);
-            }
-        } catch (ParseException e) {
-            logger.error("unable to find within video", e);
-        }
-    }
 
     /**
      * Action to invoke when the user clicks on the jog backwards button.
      */
     @Action
-    public void jogBackAction() {
-        for (DataViewer v : viewers) {
-            v.jogBack();
-        }
-    }
-
-    /**
-     * Action to invoke when the user clicks on the stop button.
-     */
-    @Action
-    public void stopAction() {
-        for (DataViewer v : viewers) {
-            v.stop();
-        }
-    }
+    public void jogBackAction() { jump((long) (-ONE_SECOND / currentFPS)); }
 
     /**
      * Action to invoke when the user clicks on the jog forwards button.
      */
     @Action
-    public void jogForwardAction() {
-        for (DataViewer v : viewers) {
-            v.jogForward();
+    public void jogForwardAction() { jump((long) (ONE_SECOND / currentFPS)); }
+
+
+    //--------------------------------------------------------------------------
+    // [private] play back action helper functions
+    //
+
+    /**
+     *
+     * @param rate Rate of play.
+     */
+    private void playAt(final float rate) {
+        shuttleDirection = ShuttleDirection.UNDEFINED;
+        shuttleAt(rate);
+    }
+
+    /**
+     *
+     * @param direction The required direction of the shuttle.
+     */
+    private void shuttle(final ShuttleDirection direction) {
+        if (direction == shuttleDirection) {
+            ++shuttleRate;
+            if (SHUTTLE_RATES.length == shuttleRate) { --shuttleRate; }
+
+        } else {
+            if (ShuttleDirection.UNDEFINED == shuttleDirection) {
+                shuttleRate = -1;
+            } else if (direction != shuttleDirection) {
+                --shuttleRate;
+            }
+
+            if (0 > shuttleRate) {
+                shuttleDirection = direction;
+                shuttleRate = 0;
+            }
+        }
+
+        shuttleAt(
+                shuttleDirection.getParameter()
+                * SHUTTLE_RATES[shuttleRate]
+            );
+    }
+
+    /**
+     *
+     * @param rate Rate of shuttle.
+     */
+    private void shuttleAt(final float rate) {
+        isPaused = false;
+        lblSpeed.setText(String.format("x%(.3f", rate));
+        for (DataViewer viewer : viewers) {
+            viewer.setPlaybackSpeed(rate);
+            viewer.play();
         }
     }
+
+    /**
+     *
+     * @param step Milliseconds to jump.
+     */
+    private void jump(final long step) {
+        lblSpeed.setText(String.format("x%(.3f", PLAY_RATE));
+        for (DataViewer viewer : viewers) {
+            viewer.stop();
+            viewer.setPlaybackSpeed(PLAY_RATE);
+            viewer.seek(step);
+        }
+    }
+
+
+    //--------------------------------------------------------------------------
+    //
+    //
 
     /**
      * Action to invoke when the user clicks on the new cell button.
@@ -528,6 +697,7 @@ public final class QTVideoController extends OpenSHAPADialog {
     private javax.swing.JPanel gridButtonPanel;
     private javax.swing.JButton jogBackButton;
     private javax.swing.JButton jogForwardButton;
+    private javax.swing.JLabel lblSpeed;
     private javax.swing.JPanel leftButtonPanel;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JButton openVideoButton;
@@ -557,5 +727,5 @@ public final class QTVideoController extends OpenSHAPADialog {
     private TimeStamp currentTimestamp = null;
 
     /** The list of viewers associated with this controller. */
-    private Vector<DataViewer> viewers;
+    private Set<DataViewer> viewers;
 }
