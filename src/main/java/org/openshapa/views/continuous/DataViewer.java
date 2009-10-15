@@ -9,18 +9,15 @@ import java.io.File;
 import javax.swing.JFrame;
 
 /**
- * @todo    A generic definition for 'jog' is required. 'jog' is currently defined in terms of
- *          frames, which makes sense for movies, but may not for other data sources. If jog is not
- *          available for one type of data source then it will need to be precluded from all others
- *          to prevent sync issues.
- *
- * @author pwaller
+ * DataViewer interface.
  */
 public interface DataViewer {
 
 
     /**
+     * Get the display window.
      *
+     * @return A JFrame that will be displayed.
      */
     JFrame getParentJFrame();
 
@@ -32,52 +29,91 @@ public interface DataViewer {
     void setDataFeed(final File dataFeed);
 
     /**
+     * @return Frames per second.
+     */
+    float getFrameRate();
+
+    /**
+     * @return The current position within the data feed in milliseconds.
+     * @throws Exception If an error occurs.
+     */
+    long getCurrentTime() throws Exception;
+
+    /**
+     * Plays the continous data stream at a regular 1x normal speed.
+     */
+    void play();
+
+    /**
      * Stops the playback of the continous data stream.
      */
     void stop();
 
     /**
+     * Set the playback speed.
+     *
+     * @param rate Positive implies forwards, while negative implies reverse.
+     */
+    void setPlaybackSpeed(float rate);
+
+    /**
+     * Move the playback postion forwards or backwards relative to current
+     * positon.
+     *
+     * @param offset The millisecond offset from current playback position.
+     */
+    void seek(long offset);
+
+    /**
+     * Set the playback position to an absolute value.
+     *
+     * @param position The absolute millisecond playback position.
+     */
+    void seekTo(long position);
+
+
+    //--------------------------------------------------------------------------
+    // [depreciate]
+    //
+
+    /**
+     * Fast forwards a continous data stream at a speed 32x normal.
+     */
+//    void forward();
+
+    /**
+     * Rewinds the continous data stream at a speed 32x normal.
+     */
+//    void rewind();
+
+    /**
      * Jogs the data stream forwards by a single unit (i.e. frame for movie).
      */
-    void jogForward();
+//    void jogForward();
 
     /**
      * Jogs the data stream backwards by a single unit (i.e. frame for movie)
      */
-    void jogBack();
-
-    /**
-     * Shuttles the video stream backwards by the current shuttle speed.
-     * Repetative calls to shuttleBack increases the speed at which we reverse.
-     */
-    void shuttleBack();
-
-    /**
-     * Pauses the playback of the continous data stream.
-     */
-    void pause();
+//    void jogBack();
 
     /**
      * Shuttles the video stream forwards by the current shuttle speed.
      * Repetative calls to shuttleFoward increases the speed at which we fast
      * forward.
      */
-    void shuttleForward();
+//    void shuttleForward();
 
     /**
-     * Fast forwards a continous data stream at a speed 32x normal.
+     * Shuttles the video stream backwards by the current shuttle speed.
+     * Repetative calls to shuttleBack increases the speed at which we reverse.
      */
-    void forward();
+//    void shuttleBack();
 
     /**
-     * Rewinds the continous data stream at a speed 32x normal.
+     * Pauses the playback of the continous data stream.
      */
-    void rewind();
+//    void pause();
 
-    /**
-     * Plays the continous data stream at a regular 1x normal speed.
-     */
-    void play();
 
     /**
      * Find can be used to seek within a continous data stream - allowing the
@@ -86,7 +122,7 @@ public interface DataViewer {
      * @param milliseconds The time within the continous data stream, specified
      * in milliseconds from the start of the stream.
      */
-    void find(final long milliseconds);
+//    void find(final long milliseconds);
 
     /**
      * Go back by the specified number of milliseconds and continue playing the
@@ -94,7 +130,7 @@ public interface DataViewer {
      *
      * @param milliseconds The number of milliseconds to jump back by.
      */
-    void goBack(final long milliseconds);
+//    void goBack(final long milliseconds);
 
     /**
      * Jogs the movie by a specified number of frames.
@@ -104,10 +140,6 @@ public interface DataViewer {
      * @throws Exception If unable to jog the movie by the specified number
      * of frames.
      */
-    void jog(final int offset) throws Exception;
+//    void jog(final int offset) throws Exception;
 
-    /**
-     * @return The current position within the data feed in milliseconds.
-     */
-    long getCurrentTime() throws Exception;
 }

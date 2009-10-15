@@ -52,6 +52,12 @@ implements DataViewer {
     /** The current shuttle speed. */
     private float shuttleSpeed;
 
+    /** Rate for playback. */
+    private float playRate;
+
+    /** Frames per second. */
+    private float fps;
+
     /**
      * Constructor - creates new video viewer.
      *
@@ -74,6 +80,11 @@ implements DataViewer {
     public JFrame getParentJFrame() {
         return this;
     }
+
+    /**
+     * @return The frames per second.
+     */
+    public float getFrameRate() { return fps; }
 
     /**
      * Method to open a video file for playback.
@@ -103,6 +114,56 @@ implements DataViewer {
             setName(this.getClass().getSimpleName() + audioFile.getName());
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
+        }
+    }
+
+    /**
+     * @param rate The playback rate.
+     */
+    public void setPlaybackSpeed(final float rate) { this.playRate = rate; }
+
+   /**
+     * @param offset Millisecond offset from current position.
+     */
+    public void seek(final long offset) {
+        try {
+            if (movie != null) {
+                this.setVisible(true);
+                //movie.stop();
+
+                double curTime = movie.getTime() / (float) movie.getTimeScale();
+                double seconds = offset * MILLI_TO_SECONDS;
+
+                seconds = curTime + seconds;
+                long qtime = (long) seconds * movie.getTimeScale();
+
+                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
+                movie.setTime(time);
+                pack();
+            }
+        } catch (QTException e) {
+            logger.error("Unable to go back", e);
+        }
+    }
+
+    /**
+     * @param position Millisecond absolute position for track.
+     */
+    public void seekTo(final long position) {
+        try {
+            if (movie != null) {
+                this.setVisible(true);
+                //movie.stop();
+
+                double seconds = position * MILLI_TO_SECONDS;
+                long qtime = (long) seconds * movie.getTimeScale();
+
+                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
+                movie.setTime(time);
+                pack();
+            }
+        } catch (QTException e) {
+            logger.error("Unable to find", e);
         }
     }
 
