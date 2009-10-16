@@ -78,7 +78,8 @@ public final class IntDataValueEditor extends DataValueEditor {
             && e.getKeyChar() == '-') {
 
             // BugzID:405 - Only attempt to alter a valid int value.
-            if (!idv.isEmpty()) {
+            this.removeSelectedText();
+            if (!idv.isEmpty() && !getText().equals("")) {
                 // Move the caret to behind the - sign, or the front of the
                 // number.
                 if (idv.getItsValue() < 0) {
@@ -96,7 +97,6 @@ public final class IntDataValueEditor extends DataValueEditor {
             // Remove selected text and replace with a '-' character, without
             // updating the database.
             } else {
-                this.removeSelectedText();
                 this.setText("-");
                 setCaretPosition(1);
                 e.consume();
