@@ -1052,6 +1052,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 //        return false;
 //    }
 
+//    //CODE FOR ADDING AND REVERTING//
 //    /** Test vocab editor creating new predicate and reverting.
 //     * @throws java.lang.Exception on any error
 //     */
@@ -1066,6 +1067,8 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 //
 //        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
 //                .getPanel("verticalFrame");
+//
+//        vocElementsPanel.getUIComponents(VocabElement.class);
 //
 //        VocabElement oldVE = new VocabElement(((VocabElementV) (vocElementsPanel
 //            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
@@ -1325,7 +1328,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 //        assertTrue(t.getText().equalsIgnoreCase(
 //                "predicate1(<" + veArgName + ">)"));
 //    }
-
+//
     /**
      * Create a new variable.
      * @param varName String for the name of the variable
