@@ -6,6 +6,7 @@ import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
+import org.openshapa.util.FloatUtils;
 import org.uispec4j.Cell;
 import org.uispec4j.Clipboard;
 import org.uispec4j.Key;
@@ -810,6 +811,23 @@ public final class UINewCellTest extends UISpecTestCase {
     }
 
     /**
+     * Asserts true is two cell values are equal.
+     * @param value1 first cell value
+     * @param value2 second cell value
+     */
+    private void assertTrueEqualValues(final String value1, final String value2)
+    {
+        try {
+            //Handle doubles
+            assertTrue(FloatUtils.closeEnough(Double.parseDouble(value1),
+                    Double.parseDouble(value2)));
+        } catch (NumberFormatException nfe) {
+            //Handle other variable types
+            assertTrue(value1.equalsIgnoreCase(value2));
+        }
+    }
+
+    /**
      * Create a new variable.
      * @param varName String for the name of the variable
      * @param varRadio String for the corresponding radio button to click
@@ -869,14 +887,7 @@ public final class UINewCellTest extends UISpecTestCase {
             // Paste new contents.
             TextBox t = c.getValue();
             t.pasteFromClipboard();
-            try {
-                //Handle doubles
-                assertTrue(Double.parseDouble(t.getText())
-                        == Double.parseDouble(expectedTestOutput[i]));
-            } catch (NumberFormatException nfe) {
-                //Handle other variable types
-                assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
-            }
+            assertTrueEqualValues(t.getText(), expectedTestOutput[i]);
         }
     }
 
@@ -922,14 +933,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
             c.enterText(Cell.VALUE, vti);
 
-            try {
-                //Handle doubles
-                assertTrue(Double.parseDouble(t.getText())
-                        == Double.parseDouble(expectedTestOutput[i]));
-            } catch (NumberFormatException nfe) {
-                //Handle other variable types
-                assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
-            }
+            assertTrueEqualValues(t.getText(), expectedTestOutput[i]);
         }
     }
 
@@ -968,15 +972,7 @@ public final class UINewCellTest extends UISpecTestCase {
             String [] actualValues = getArgsFromMatrix(t.getText());
             String [] expectedValues = getArgsFromMatrix(expectedTestOutput[i]);
             for (int j = 0; j < numOfArgs; j++) {
-                try {
-                    //Handle doubles
-                    assertTrue(Double.parseDouble(actualValues[j])
-                            == Double.parseDouble(expectedValues[j]));
-                } catch (NumberFormatException nfe) {
-                    //Handle other variable types
-                    assertTrue(actualValues[j].equalsIgnoreCase(
-                            expectedValues[j]));
-                }
+                assertTrueEqualValues(actualValues[j], expectedValues[j]);
             }
         }
     }
@@ -1046,14 +1042,7 @@ public final class UINewCellTest extends UISpecTestCase {
             Cell c = cells.elementAt(i);
             TextBox t = c.getValue();
             c.enterText(Cell.VALUE, testInput[i]);
-            try {
-                //Handle doubles
-                assertTrue(Double.parseDouble(t.getText())
-                        == Double.parseDouble(expectedTestOutput[i]));
-            } catch (NumberFormatException nfe) {
-                //Handle other variable types
-                assertTrue(t.getText().equalsIgnoreCase(expectedTestOutput[i]));
-            }
+            assertTrueEqualValues(t.getText(), expectedTestOutput[i]);
         }
     }
 

@@ -5,6 +5,7 @@ import junitx.util.PrivateAccessor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openshapa.util.FloatUtils;
 import static org.junit.Assert.*;
 
 /**
@@ -552,7 +553,7 @@ public class FloatDataValueTest extends DataValueTest {
                 Double fdvmaxVal = (Double) PrivateAccessor.getField(fdv, "maxVal");            
                 Double fdvminVal = (Double) PrivateAccessor.getField(fdv, "minVal");            
 
-                if ( !FloatDataValue.closeEnough(fdvitsValue, fdvItsDefault))
+                if ( !FloatUtils.closeEnough(fdvitsValue, fdvItsDefault))
                 {
                     failures++;
 
@@ -564,7 +565,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdvmaxVal, 0.0) )
+                if ( !FloatUtils.closeEnough(fdvmaxVal, 0.0) )
                 {
                     failures++;
 
@@ -575,7 +576,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdvminVal, 0.0) )
+                if ( !FloatUtils.closeEnough(fdvminVal, 0.0) )
                 {
                     failures++;
 
@@ -840,7 +841,7 @@ public class FloatDataValueTest extends DataValueTest {
                 Double fdvmaxVal = (Double) PrivateAccessor.getField(fdv, "maxVal");
                 Double fdvminVal = (Double) PrivateAccessor.getField(fdv, "minVal");
 
-                if ( !FloatDataValue.closeEnough(fdvitsValue, fdvItsDefault) )
+                if ( !FloatUtils.closeEnough(fdvitsValue, fdvItsDefault) )
                 {
                     failures++;
 
@@ -852,7 +853,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdvmaxVal, 0.0) )
+                if ( !FloatUtils.closeEnough(fdvmaxVal, 0.0) )
                 {
                     failures++;
 
@@ -864,7 +865,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdvminVal, 0.0) )
+                if ( !FloatUtils.closeEnough(fdvminVal, 0.0) )
                 {
                     failures++;
 
@@ -906,7 +907,7 @@ public class FloatDataValueTest extends DataValueTest {
                 Double fdv_srmaxVal = (Double) PrivateAccessor.getField(fdv_sr, "maxVal");
                 Double fdv_srminVal = (Double) PrivateAccessor.getField(fdv_sr, "minVal");
 
-                if ( !FloatDataValue.closeEnough(fdv_sritsValue, fdv_srItsDefault) )
+                if ( !FloatUtils.closeEnough(fdv_sritsValue, fdv_srItsDefault) )
                 {
                     failures++;
 
@@ -918,7 +919,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdv_srmaxVal, ffa_sr.getMaxVal()) )
+                if ( !FloatUtils.closeEnough(fdv_srmaxVal, ffa_sr.getMaxVal()) )
                 {
                     failures++;
 
@@ -930,7 +931,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdv_srminVal, ffa_sr.getMinVal()) )
+                if ( !FloatUtils.closeEnough(fdv_srminVal, ffa_sr.getMinVal()) )
                 {
                     failures++;
 
@@ -1307,7 +1308,7 @@ public class FloatDataValueTest extends DataValueTest {
                 Double fdvmaxVal = (Double) PrivateAccessor.getField(fdv, "maxVal");
                 Double fdvminVal = (Double) PrivateAccessor.getField(fdv, "minVal");
 
-                if ( !FloatDataValue.closeEnough(fdvitsValue, 200.0) )
+                if ( !FloatUtils.closeEnough(fdvitsValue, 200.0) )
                 {
                     failures++;
 
@@ -1318,7 +1319,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdvmaxVal, 0.0) )
+                if ( !FloatUtils.closeEnough(fdvmaxVal, 0.0) )
                 {
                     failures++;
 
@@ -1330,7 +1331,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdvminVal, 0.0) )
+                if ( !FloatUtils.closeEnough(fdvminVal, 0.0) )
                 {
                     failures++;
 
@@ -1372,7 +1373,7 @@ public class FloatDataValueTest extends DataValueTest {
                 Double fdv_sr0maxVal = (Double) PrivateAccessor.getField(fdv_sr0, "maxVal");
                 Double fdv_sr0minVal = (Double) PrivateAccessor.getField(fdv_sr0, "minVal");
 
-                if ( !FloatDataValue.closeEnough(fdv_sr0itsValue, 1.0) )
+                if ( !FloatUtils.closeEnough(fdv_sr0itsValue, 1.0) )
                 {
                     failures++;
 
@@ -1383,7 +1384,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdv_sr0maxVal, ffa_sr.getMaxVal()) )
+                if ( !FloatUtils.closeEnough(fdv_sr0maxVal, ffa_sr.getMaxVal()) )
                 {
                     failures++;
 
@@ -1395,7 +1396,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdv_sr0minVal, ffa_sr.getMinVal()) )
+                if ( !FloatUtils.closeEnough(fdv_sr0minVal, ffa_sr.getMinVal()) )
                 {
                     failures++;
 
@@ -1436,7 +1437,7 @@ public class FloatDataValueTest extends DataValueTest {
                 Double fdv_sr1maxVal = (Double) PrivateAccessor.getField(fdv_sr1, "maxVal");
                 Double fdv_sr1minVal = (Double) PrivateAccessor.getField(fdv_sr1, "minVal");
 
-                if ( !FloatDataValue.closeEnough(fdv_sr1itsValue, ffa_sr.getMaxVal()) )
+                if ( !FloatUtils.closeEnough(fdv_sr1itsValue, ffa_sr.getMaxVal()) )
                 {
                     failures++;
 
@@ -1447,7 +1448,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdv_sr1maxVal, ffa_sr.getMaxVal()) )
+                if ( !FloatUtils.closeEnough(fdv_sr1maxVal, ffa_sr.getMaxVal()) )
                 {
                     failures++;
 
@@ -1459,7 +1460,7 @@ public class FloatDataValueTest extends DataValueTest {
                     }
                 }
 
-                if ( !FloatDataValue.closeEnough(fdv_sr1minVal, ffa_sr.getMinVal()) )
+                if ( !FloatUtils.closeEnough(fdv_sr1minVal, ffa_sr.getMinVal()) )
                 {
                     failures++;
 
@@ -2597,7 +2598,7 @@ public class FloatDataValueTest extends DataValueTest {
                 Double baseminVal = (Double) PrivateAccessor.getField(base, "minVal");
                 Double copyminVal = (Double) PrivateAccessor.getField(copy, "minVal");
 
-                if ( !FloatDataValue.closeEnough(baseitsValue, copyitsValue) )
+                if ( !FloatUtils.closeEnough(baseitsValue, copyitsValue) )
                 {
                     failures++;
 
@@ -2607,7 +2608,7 @@ public class FloatDataValueTest extends DataValueTest {
                                           baseDesc, copyDesc);
                     }
                 }
-                else if ( !FloatDataValue.closeEnough(basemaxVal, copymaxVal) )
+                else if ( !FloatUtils.closeEnough(basemaxVal, copymaxVal) )
                 {
                     failures++;
 
@@ -2617,7 +2618,7 @@ public class FloatDataValueTest extends DataValueTest {
                                           baseDesc, copyDesc);
                     }
                 }
-                else if ( !FloatDataValue.closeEnough(baseminVal, copyminVal) )
+                else if ( !FloatUtils.closeEnough(baseminVal, copyminVal) )
                 {
                     failures++;
 
