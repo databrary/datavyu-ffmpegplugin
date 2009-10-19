@@ -11,7 +11,7 @@ public class MODBFilter extends FileFilter {
      * @return The discription of the file filter.
      */
     public String getDescription() {
-        return new String("MacSHAPA database file");
+        return new String("MacSHAPA open database file");
     }
 
     /**

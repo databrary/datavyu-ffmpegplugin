@@ -263,8 +263,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
      */
     public Double buildValue(final String textField) {
         try {
-            return Double.parseDouble(textField);
-            //return new Double(textField);
+            return new Double(textField);
         } catch (NumberFormatException e) {
             return null;
         }
