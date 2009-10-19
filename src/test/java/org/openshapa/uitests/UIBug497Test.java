@@ -84,7 +84,7 @@ public final class UIBug497Test extends UISpecTestCase {
         String varType = "FLOAT";
         String varRadio = "float";
 
-        String testInput = "999999999999999999-239839231-23983923108.20831";
+        String testInput = "999999999999999999-239839231-2398392310820831";
 
         // Retrieve the components
         Window window = getMainWindow();
@@ -107,7 +107,7 @@ public final class UIBug497Test extends UISpecTestCase {
         // Paste new contents.
         TextBox t = c.getValue();
         t.pasteFromClipboard();
-        //Bug 568: expected output needs to be determined assertTrue(t.getText().equalsIgnoreCase("2999999999999999999"));
+        assertTrue(t.getText().equalsIgnoreCase("999999999999999.0"));
     }
 
     /**

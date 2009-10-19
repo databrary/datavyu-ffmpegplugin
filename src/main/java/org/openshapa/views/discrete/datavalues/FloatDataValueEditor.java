@@ -20,6 +20,12 @@ public final class FloatDataValueEditor extends DataValueEditor {
     /** The maximum number of decimal places. */
     private static final int MAX_DECIMAL_PLACES = 6;
 
+    /**
+     * What is the maximum length a floating value can take before we start to
+     * run into rounding errors.
+     */
+    private static final int MAX_LENGTH = 15;
+
     /** 'Negative' zero - used for checking specials. */
     private static final String NEGATIVE_ZERO = "-0.00000";
 
@@ -176,6 +182,13 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 }
             }
 
+            // BugzID: 568 - If we are likely to excede the precision of a
+            // double reject the keystroke.
+            if (getText().indexOf('.') >= MAX_LENGTH) {
+                e.consume();
+                return;
+            }
+
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
 
@@ -192,14 +205,12 @@ public final class FloatDataValueEditor extends DataValueEditor {
 
             // Advance caret over the top of the new char.
             int pos = this.getCaretPosition();
-            if (fdv.getItsValue() != 0.0
-                || getText().equals(NEGATIVE_ZERO)
+            if (fdv.getItsValue() != 0.0 || getText().equals(NEGATIVE_ZERO)
                 || getCaretPosition() != 1) {
                 pos = pos + 1;
             }
             this.setText(nText);
             this.setCaretPosition(pos);
-
             fdv.setItsValue(buildValue(currentValue.toString()));
             e.consume();
 
