@@ -216,6 +216,18 @@ public abstract class VocabElement extends DBElement {
     abstract public boolean isWellFormed(boolean newVE)
         throws SystemErrorException;
 
+
+    /**
+     * This prepares the vocab element for removal from the database, when
+     * deleting vocab elements, some types require the removal of additional
+     * data (columns, cells, etc) to ensure that the database does not become
+     * corrupted.
+     *
+     * @throws SystemErrorException If unable to prepare for removal.
+     */
+    abstract public void prepareForRemoval() throws SystemErrorException;
+
+
     /**
      * Gets the name of the vocab element.
      * getName() & setName()

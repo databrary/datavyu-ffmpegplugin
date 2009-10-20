@@ -7,6 +7,9 @@
 
 package org.openshapa.db;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class PredicateVocabElement
  *
@@ -201,6 +204,36 @@ public final class PredicateVocabElement extends VocabElement
         return wellFormed;
 
     } /* PredicateVocabElement::isWellFormed() */
+
+
+    /**
+     * This prepares the vocab element for removal from the database, when
+     * deleting vocab elements, some types require the removal of additional
+     * data (columns, cells, etc) to ensure that the database does not become
+     * corrupted.
+     *
+     * @throws SystemErrorException If unable to prepare for removal.
+     */
+    public void prepareForRemoval() throws SystemErrorException {
+        List<Long> cellsToRemove = new ArrayList<Long>();
+
+        // Build up a list of all the cells that use this predicate.
+        for(DataColumn dc : this.getDB().getDataColumns()) {
+            for (DataCell cell : dc.getItsCells()) {
+                if (cell.getItsMveID() == this.getID()) {
+                    cellsToRemove.add(cell.getID());
+                }
+            }
+        }
+
+        // Remove all the cells that use this predicate.
+        for (Long l : cellsToRemove) {
+            this.getDB().removeCell(l);
+        }
+
+        // Nothing additional needs to be done for predicate vocab element. I.e.
+        // We leave columns untouched.
+    }
 
 
     /**
