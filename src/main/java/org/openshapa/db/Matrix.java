@@ -2252,6 +2252,7 @@ public class Matrix implements Cloneable {
                     ((PredDataValue)dv).updateForPVEDeletion(db, pveID);
                 }
             }
+            dv.clearValue();
 
             i++;
         }

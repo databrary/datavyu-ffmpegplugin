@@ -9,6 +9,7 @@ package org.openshapa.db;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.openshapa.db.MatrixVocabElement.MatrixType;
 
 /**
  * Class PredicateVocabElement
@@ -215,24 +216,9 @@ public final class PredicateVocabElement extends VocabElement
      * @throws SystemErrorException If unable to prepare for removal.
      */
     public void prepareForRemoval() throws SystemErrorException {
-        List<Long> cellsToRemove = new ArrayList<Long>();
-
-        // Build up a list of all the cells that use this predicate.
-        for(DataColumn dc : this.getDB().getDataColumns()) {
-            for (DataCell cell : dc.getItsCells()) {
-                if (cell.getItsMveID() == this.getID()) {
-                    cellsToRemove.add(cell.getID());
-                }
-            }
-        }
-
-        // Remove all the cells that use this predicate.
-        for (Long l : cellsToRemove) {
-            this.getDB().removeCell(l);
-        }
-
         // Nothing additional needs to be done for predicate vocab element. I.e.
-        // We leave columns untouched.
+        // We leave columns untouched. The data for predicate vocab elements are
+        // handled with InternalVocabElementListeners.
     }
 
 

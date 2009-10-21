@@ -3615,7 +3615,9 @@ public abstract class Database
         throws SystemErrorException
     {
         this.vl.getVocabElement(targetID).prepareForRemoval();
-        this.vl.removeVocabElement(targetID);
+        if (this.vl.inVocabList(targetID)) {
+            this.vl.removeVocabElement(targetID);
+        }
     }
 
 
