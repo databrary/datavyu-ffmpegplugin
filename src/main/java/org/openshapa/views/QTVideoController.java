@@ -3,10 +3,12 @@ package org.openshapa.views;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
@@ -505,6 +507,18 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void shuttleBackAction() { shuttle(ShuttleDirection.BACKWARDS); }
+
+    /**
+     * Populates the find time in the controller.
+     *
+     * @param milliseconds The time to use when populating the find field.
+     */
+    public void setFindTime(final long milliseconds) {
+        // Populate the findTextField with the milliseconds.
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
+        format.setTimeZone(TimeZone.getTimeZone("GMT -1"));
+        this.findTextField.setText(format.format(new Date(milliseconds)));
+    }
 
     /**
      * Action to invoke when the user clicks on the find button.

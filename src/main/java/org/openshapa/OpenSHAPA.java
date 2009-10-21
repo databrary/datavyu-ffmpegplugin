@@ -100,50 +100,50 @@ implements KeyEventDispatcher {
 
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_DIVIDE:
-                qtVideoController.setCellOnsetAction();
+                dataController.setCellOnsetAction();
                 break;
             case KeyEvent.VK_ASTERISK:
             case KeyEvent.VK_MULTIPLY:
-                qtVideoController.setCellOffsetAction();
+                dataController.setCellOffsetAction();
                 break;
             case KeyEvent.VK_NUMPAD7:
-                qtVideoController.rewindAction();
+                dataController.rewindAction();
                 break;
             case KeyEvent.VK_NUMPAD8:
-                qtVideoController.playAction();
+                dataController.playAction();
                 break;
             case KeyEvent.VK_NUMPAD9:
-                qtVideoController.forwardAction();
+                dataController.forwardAction();
                 break;
             case KeyEvent.VK_NUMPAD4:
-                qtVideoController.shuttleBackAction();
+                dataController.shuttleBackAction();
                 break;
             case KeyEvent.VK_NUMPAD5:
-                qtVideoController.pauseAction();
+                dataController.pauseAction();
                 break;
             case KeyEvent.VK_NUMPAD6:
-                qtVideoController.shuttleForwardAction();
+                dataController.shuttleForwardAction();
                 break;
             case KeyEvent.VK_NUMPAD1:
-                qtVideoController.jogBackAction();
+                dataController.jogBackAction();
                 break;
             case KeyEvent.VK_NUMPAD2:
-                qtVideoController.stopAction();
+                dataController.stopAction();
                 break;
             case KeyEvent.VK_NUMPAD3:
-                qtVideoController.jogForwardAction();
+                dataController.jogForwardAction();
                 break;
             case KeyEvent.VK_NUMPAD0:
-                qtVideoController.createNewCellAction();
+                dataController.createNewCellAction();
                 break;
             case KeyEvent.VK_DECIMAL:
-                qtVideoController.setNewCellStopTime();
+                dataController.setNewCellStopTime();
                 break;
             case KeyEvent.VK_SUBTRACT:
-                    qtVideoController.goBackAction();
+                    dataController.goBackAction();
                 break;
             case KeyEvent.VK_ADD:
-                    qtVideoController.findAction();
+                    dataController.findAction();
                 break;
             case KeyEvent.VK_ENTER:
                 new CreateNewCellC();
@@ -161,9 +161,7 @@ implements KeyEventDispatcher {
      * Action for showing the quicktime video controller.
      */
     public void showQTVideoController() {
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        qtVideoController = new QTVideoController(mainFrame, false);
-        OpenSHAPA.getApplication().show(qtVideoController);
+        OpenSHAPA.getApplication().show(dataController);
     }
 
     /**
@@ -264,6 +262,9 @@ implements KeyEventDispatcher {
                                     .getResourceMap(OpenSHAPA.class);
         mainFrame.setTitle(rMap.getString("Application.title")
                            + " - " + OpenSHAPA.getDatabase().getName());
+
+        // Create video controller.
+        dataController = new QTVideoController(mainFrame, false);
     }
 
     /**
@@ -301,6 +302,17 @@ implements KeyEventDispatcher {
      */
     public static MacshapaDatabase getDatabase() {
         return OpenSHAPA.getApplication().db;
+    }
+
+    /**
+     * Gets the single instance of the data controller that is currently used
+     * with OpenSHAPA.
+     *
+     * @return The single data controller in use with this instance of
+     * OpenSHAPA.
+     */
+    public static QTVideoController getDataController() {
+        return OpenSHAPA.getApplication().dataController;
     }
 
     /**
@@ -450,7 +462,7 @@ implements KeyEventDispatcher {
     private ListVariables listVarView;
 
     /** The view to use for the quick time video controller. */
-    private QTVideoController qtVideoController;
+    private QTVideoController dataController;
 
     /** The view to use when displaying information about OpenSHAPA. */
     private AboutV aboutWindow;
@@ -458,7 +470,8 @@ implements KeyEventDispatcher {
     /** Tracks if a NumPad key has been pressed. */
     private boolean numKeyDown = false;
 
-    /** Constant variable for the OpenSHAPA main panel.  This is so we
+    /**
+     * Constant variable for the OpenSHAPA main panel.  This is so we
      * can send keyboard shortcuts to it while the QTController is in focus.
      * It actually get initialized in startup().
      */
