@@ -172,7 +172,12 @@ public final class QTVideoController
      */
     public void clockRate(final float rate) {
         lblSpeed.setText(FloatUtils.doubleToFractionStr(new Double(rate)));
-        for (DataViewer viewer : viewers) { viewer.setPlaybackSpeed(rate); }
+        for (DataViewer viewer : viewers) {
+            viewer.setPlaybackSpeed(rate);
+            if (!clock.isStopped()) {
+                viewer.play();
+            }
+        }
     }
 
     /**
@@ -448,7 +453,7 @@ public final class QTVideoController
      */
     @Action
     public void syncAction() {
-        for (DataViewer viewer : viewers) { viewer.seekTo(getCurrentTime()); }
+        //for (DataViewer viewer : viewers) { viewer.seekTo(getCurrentTime()); }
     }
 
 
@@ -477,19 +482,25 @@ public final class QTVideoController
      * Action to invoke when the user clicks on the play button.
      */
     @Action
-    public void playAction() { playAt(PLAY_RATE); }
+    public void playAction() {
+        playAt(PLAY_RATE);
+    }
 
     /**
      * Action to invoke when the user clicks on the fast foward button.
      */
     @Action
-    public void forwardAction() { playAt(FFORWARD_RATE); }
+    public void forwardAction() {
+        playAt(FFORWARD_RATE);
+    }
 
     /**
      * Action to invoke when the user clicks on the rewind button.
      */
     @Action
-    public void rewindAction() { playAt(REWIND_RATE); }
+    public void rewindAction() {
+        playAt(REWIND_RATE);
+    }
 
     /**
      * Action to invoke when the user clicks on the pause button.
