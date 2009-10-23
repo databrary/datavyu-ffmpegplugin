@@ -1052,6 +1052,283 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 //        return false;
 //    }
 
+//    //CODE FOR ADDING AND REVERTING//
+//    /** Test vocab editor creating new predicate and reverting.
+//     * @throws java.lang.Exception on any error
+//     */
+//    public void testAddNewPredicateAndRevert() throws Exception {
+//        //Preparation
+//        Window window = getMainWindow();
+//        MenuBar menuBar = window.getMenuBar();
+//
+//        // 1. Create a new predicate
+//        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+//                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+//
+//        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+//                .getPanel("verticalFrame");
+//
+//        vocElementsPanel.getUIComponents(VocabElement.class);
+//
+//        VocabElement oldVE = new VocabElement(((VocabElementV) (vocElementsPanel
+//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
+//
+//        vocEdWindow.getButton("Add Predicate()").click();
+//
+//        VocabElement oldVE = new VocabElement(((VocabElementV) (vocElementsPanel
+//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
+//
+//        //Check that VE exists
+//        //Revert
+//        //Check that vocab element has been removed
+//
+//        vocEdWindow.getButton("OK").click();
+//
+//        // 2. Create new predicate variable and cell
+//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
+//                window.getUIComponents(Spreadsheet.class)[0]
+//                .getAwtComponent()));
+//
+//        String varName = "predicate";
+//        createNewVariable(varName, varName.toUpperCase());
+//
+//        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+//
+//        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+//
+//        Cell c = cells.elementAt(0);
+//        TextBox t = c.getValue();
+//
+//        Vector<TextItem> vti = new Vector<TextItem>();
+//        vti.add(new StringItem(veName));
+//
+//        c.enterText(Cell.VALUE, vti);
+//
+//        assertTrue(t.getText().equalsIgnoreCase("predicate1(<arg0>)"));
+//    }
+//
+//    /** Test vocab editor creating new predicate and replacing VE name.
+//     * @throws java.lang.Exception on any error
+//     */
+//    public void testNewPredicateReplaceVEName() throws Exception {
+//        //Preparation
+//        Window window = getMainWindow();
+//        MenuBar menuBar = window.getMenuBar();
+//
+//        // 1. Create a new predicate
+//        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+//                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+//
+//        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+//                .getPanel("verticalFrame");
+//
+//        vocEdWindow.getButton("Add Predicate()").click();
+//
+//        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
+//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
+//
+//        String oldVEName = ve.getVEName();
+//
+//        Vector<TextItem> vti = new Vector<TextItem>();
+//
+//        vti.add(new StringItem("newName"));
+//        ve.replaceTextInName(vti);
+//
+//        String veName = ve.getVEName();
+//
+//        assertFalse(oldVEName.equals(veName));
+//
+//        vocEdWindow.getButton("OK").click();
+//
+//        // 2. Create new predicate variable and cell
+//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
+//                window.getUIComponents(Spreadsheet.class)[0]
+//                .getAwtComponent()));
+//
+//        String varName = "predicate";
+//        createNewVariable(varName, varName.toUpperCase());
+//
+//        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+//
+//        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+//
+//        Cell c = cells.elementAt(0);
+//        TextBox t = c.getValue();
+//
+//        c.enterText(Cell.VALUE, vti);
+//
+//        assertTrue(t.getText().equalsIgnoreCase(veName + "(<arg0>)"));
+//    }
+//
+//    /** Test vocab editor creating new predicate and adding to VE name.
+//     * @throws java.lang.Exception on any error
+//     */
+//    public void testNewPredicateAddingVEName() throws Exception {
+//        //Preparation
+//        Window window = getMainWindow();
+//        MenuBar menuBar = window.getMenuBar();
+//
+//        // 1. Create a new predicate
+//        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+//                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+//
+//        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+//                .getPanel("verticalFrame");
+//
+//        vocEdWindow.getButton("Add Predicate()").click();
+//
+//        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
+//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
+//
+//        String oldVEName = ve.getVEName();
+//
+//        Vector<TextItem> vti = new Vector<TextItem>();
+//
+//        vti.add(new StringItem("newName"));
+//        ve.enterText(vti);
+//
+//        String veName = ve.getVEName();
+//
+//        assertFalse(oldVEName.equals(veName));
+//
+//        vocEdWindow.getButton("OK").click();
+//
+//        // 2. Create new predicate variable and cell
+//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
+//                window.getUIComponents(Spreadsheet.class)[0]
+//                .getAwtComponent()));
+//
+//        String varName = "predicate";
+//        createNewVariable(varName, varName.toUpperCase());
+//
+//        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+//
+//        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+//
+//        Cell c = cells.elementAt(0);
+//        TextBox t = c.getValue();
+//
+//        vti.add(new StringItem("predicate1"));
+//
+//        c.enterText(Cell.VALUE, vti);
+//
+//        assertTrue(t.getText().equalsIgnoreCase(veName + "(<arg0>)"));
+//    }
+//
+//    /** Test vocab editor creating new predicate and adding VE argument.
+//     * @throws java.lang.Exception on any error
+//     */
+//    public void testNewPredicateAddingVEArgument() throws Exception {
+//        //Preparation
+//        Window window = getMainWindow();
+//        MenuBar menuBar = window.getMenuBar();
+//
+//        // 1. Create a new predicate
+//        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+//                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+//
+//        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+//                .getPanel("verticalFrame");
+//
+//        vocEdWindow.getButton("Add Predicate()").click();
+//
+//        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
+//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
+//
+//        String oldVEArgName = ve.getArgument(0);
+//
+//        Vector<TextItem> vti = new Vector<TextItem>();
+//
+//        vti.add(new StringItem("newName"));
+//        ve.enterTextInArg(0, vti);
+//
+//        String veArgName = ve.getArgument(0);
+//
+//        assertFalse(oldVEArgName.equals(veArgName));
+//
+//        vocEdWindow.getButton("OK").click();
+//
+//        // 2. Create new predicate variable and cell
+//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
+//                window.getUIComponents(Spreadsheet.class)[0]
+//                .getAwtComponent()));
+//
+//        String varName = "predicate";
+//        createNewVariable(varName, varName.toUpperCase());
+//
+//        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+//
+//        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+//
+//        Cell c = cells.elementAt(0);
+//        TextBox t = c.getValue();
+//
+//        vti.clear();
+//        vti.add(new StringItem("predicate1"));
+//
+//        c.enterText(Cell.VALUE, vti);
+//
+//        assertTrue(t.getText().equalsIgnoreCase(
+//                "predicate1(<" + veArgName + ">)"));
+//    }
+//
+//    /** Test vocab editor creating new predicate and replacing VE argument.
+//     * @throws java.lang.Exception on any error
+//     */
+//    public void testNewPredicateReplaceVEArgument() throws Exception {
+//        //Preparation
+//        Window window = getMainWindow();
+//        MenuBar menuBar = window.getMenuBar();
+//
+//        // 1. Create a new predicate
+//        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+//                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+//
+//        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+//                .getPanel("verticalFrame");
+//
+//        vocEdWindow.getButton("Add Predicate()").click();
+//
+//        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
+//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
+//
+//        String oldVEArgName = ve.getArgument(0);
+//
+//        Vector<TextItem> vti = new Vector<TextItem>();
+//
+//        vti.add(new StringItem("newName"));
+//        ve.replaceTextInArg(0, vti);
+//
+//        String veArgName = ve.getArgument(0);
+//
+//        assertFalse(oldVEArgName.equals(veArgName));
+//
+//        vocEdWindow.getButton("OK").click();
+//
+//        // 2. Create new predicate variable and cell
+//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
+//                window.getUIComponents(Spreadsheet.class)[0]
+//                .getAwtComponent()));
+//
+//        String varName = "predicate";
+//        createNewVariable(varName, varName.toUpperCase());
+//
+//        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+//
+//        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+//
+//        Cell c = cells.elementAt(0);
+//        TextBox t = c.getValue();
+//
+//        vti.clear();
+//        vti.add(new StringItem("predicate1"));
+//
+//        c.enterText(Cell.VALUE, vti);
+//
+//        assertTrue(t.getText().equalsIgnoreCase(
+//                "predicate1(<" + veArgName + ">)"));
+//    }
+//
     /**
      * Create a new variable.
      * @param varName String for the name of the variable

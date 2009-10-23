@@ -11,6 +11,7 @@ package org.openshapa.db;
 
 import org.openshapa.util.Constants;
 import java.text.DecimalFormat;
+import org.openshapa.util.FloatUtils;
 
 /**
  * An instance of FloatDataValue is used to store a floating point value
@@ -200,7 +201,7 @@ public final class FloatDataValue extends DataValue {
      */
     @Override
     public boolean isDefault() {
-        return closeEnough(itsValue, ItsDefault);
+        return FloatUtils.closeEnough(itsValue, ItsDefault);
     }
 
     /** @return the max value. */
@@ -558,22 +559,10 @@ public final class FloatDataValue extends DataValue {
         }
         // Must be this class to be here
         FloatDataValue f = (FloatDataValue) obj;
-        return closeEnough(f.itsValue, this.itsValue)
-            && closeEnough(f.maxVal, this.maxVal)
-            && closeEnough(f.minVal, this.minVal)
+        return FloatUtils.closeEnough(f.itsValue, this.itsValue)
+            && FloatUtils.closeEnough(f.maxVal, this.maxVal)
+            && FloatUtils.closeEnough(f.minVal, this.minVal)
             && super.equals(obj);
-    }
-
-    /** tolerance value for comparing two doubles for equality */
-    private final static double delta = 0.000001;
-
-    /**
-     * Compare two doubles and return true if close enough
-     * @param d1 first double
-     * @param d2 second double
-     */
-    public static boolean closeEnough(double d1, double d2) {
-        return (Math.abs(d1 - d2) < delta);
     }
 
 } /* FloatDataValue */

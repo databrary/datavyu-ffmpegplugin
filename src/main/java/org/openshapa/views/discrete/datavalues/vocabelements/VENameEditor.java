@@ -49,6 +49,7 @@ public final class VENameEditor extends EditorComponent {
      */
     @Override
     public void focusGained(final FocusEvent e) {
+        this.parentView.getParentDialog().updateDialogState();
     }
 
     /**

@@ -1083,19 +1083,44 @@ public class MatrixVocabElement extends VocabElement
     } /* MatrixVocabElement::isWellFormed() */
 
 
-     /**
-      * propagateID() -- Override
-      *
-      * Propagate the id assigned to the MatrixVocabElement to all current
-      * formal arguments, if any.  This method should be called after the
-      * MatrixVocabElement is assigned an ID and inserted into the vocab list.
-      *
-      *                                          -- 8/31/07
-      *
-      * Changes:
-      *
-      *   - None.
-      */
+    /**
+     * This prepares the vocab element for removal from the database, when
+     * deleting vocab elements, some types require the removal of additional
+     * data (columns, cells, etc) to ensure that the database does not become
+     * corrupted.
+     *
+     * @throws SystemErrorException If unable to prepare for removal.
+     */
+    public void prepareForRemoval() throws SystemErrorException {
+        // Matrix vocab elements are strongly linked to matrix columns - we need
+        // to delete cells and columns associated with this matrix value.
+        DataColumn dc = this.getDB().getDataColumn(this.getItsColID());
+
+        // Must remove cells from the data column before removing it.
+        while (dc.getNumCells() > 0) {
+            Cell c = this.getDB().getCell(dc.getID(), 1);
+            this.getDB().removeCell(c.getID());
+            dc = this.getDB().getDataColumn(this.getItsColID());
+        }
+
+        // All cells in the column removed - now delete the column.
+        this.getDB().removeColumn(this.getItsColID());
+    }
+
+
+    /**
+     * propagateID() -- Override
+     *
+     * Propagate the id assigned to the MatrixVocabElement to all current
+     * formal arguments, if any.  This method should be called after the
+     * MatrixVocabElement is assigned an ID and inserted into the vocab list.
+     *
+     *                                          -- 8/31/07
+     *
+     * Changes:
+     *
+     *   - None.
+     */
 
     public void propagateID()
         throws SystemErrorException

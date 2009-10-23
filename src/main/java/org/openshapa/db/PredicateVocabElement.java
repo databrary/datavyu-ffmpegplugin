@@ -7,6 +7,10 @@
 
 package org.openshapa.db;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.openshapa.db.MatrixVocabElement.MatrixType;
+
 /**
  * Class PredicateVocabElement
  *
@@ -201,6 +205,21 @@ public final class PredicateVocabElement extends VocabElement
         return wellFormed;
 
     } /* PredicateVocabElement::isWellFormed() */
+
+
+    /**
+     * This prepares the vocab element for removal from the database, when
+     * deleting vocab elements, some types require the removal of additional
+     * data (columns, cells, etc) to ensure that the database does not become
+     * corrupted.
+     *
+     * @throws SystemErrorException If unable to prepare for removal.
+     */
+    public void prepareForRemoval() throws SystemErrorException {
+        // Nothing additional needs to be done for predicate vocab element. I.e.
+        // We leave columns untouched. The data for predicate vocab elements are
+        // handled with InternalVocabElementListeners.
+    }
 
 
     /**

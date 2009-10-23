@@ -1629,7 +1629,9 @@ public class DataColumn extends Column
 
         output.printf("%s    ( CELLS>%s", indent, newLine);
 
-        cellIndent = indent + "      ";
+        output.printf("%s      (%s", indent, newLine);
+
+        cellIndent = indent + "        ";
         i = 0;
 
         while ( i < this.numCells )
@@ -1638,6 +1640,8 @@ public class DataColumn extends Column
             cell.toMODBFile(mve, output, newLine, cellIndent);
             i++;
         }
+
+        output.printf("%s      )%s", indent, newLine);
 
         output.printf("%s    )%s", indent, newLine);
 

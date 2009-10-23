@@ -84,52 +84,54 @@
               (
                 ( CELLS>
                   (
-                    ( ONSET> 0 )
-                    ( OFFSET> 0 )
-                    ( |<arg1>| 1 )
-                    ( |<arg2>| 2.000000 )
-                  )
-                  (
-                    ( ONSET> 10 )
-                    ( OFFSET> 20 )
-                    ( |<arg1>| |a nominal| )
-                    ( |<arg2>| "a string" )
-                  )
-                  (
-                    ( ONSET> 20 )
-                    ( OFFSET> 30 )
-                    ( |<arg1>| ( |pred_2| |<arg1>| ) )
-                    ( |<arg2>| ( TIME> 120 ) )
-                  )
-                  (
-                    ( ONSET> 60 )
-                    ( OFFSET> 60 )
-                    ( |<arg1>| |<arg1>| )
-                    ( |<arg2>| |<arg2>| )
-                  )
-                  (
-                    ( ONSET> 60 )
-                    ( OFFSET> 60 )
-                    ( |<arg1>| "first arg" )
-                    ( |<arg2>| "second arg" )
-                  )
-                  (
-                    ( ONSET> 61 )
-                    ( OFFSET> 61 )
-                    ( |<arg1>| "first arg" )
-                    ( |<arg2>| "second arg" )
-                  )
-                  (
-                    ( ONSET> 62 )
-                    ( OFFSET> 62 )
-                    ( |<arg1>| "first arg" )
-                    ( |<arg2>| "second arg" )
-                  )
-                  (
-                    ( ONSET> 63 )
-                    ( OFFSET> 63 )
-                    ( |<arg1>| "first arg" )
-                    ( |<arg2>| "second arg" )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<arg1>| 1 )
+                      ( |<arg2>| 2.000000 )
+                    )
+                    (
+                      ( ONSET> 10 )
+                      ( OFFSET> 20 )
+                      ( |<arg1>| |a nominal| )
+                      ( |<arg2>| "a string" )
+                    )
+                    (
+                      ( ONSET> 20 )
+                      ( OFFSET> 30 )
+                      ( |<arg1>| ( |pred_2| |<arg1>| ) )
+                      ( |<arg2>| ( TIME> 120 ) )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<arg1>| |<arg1>| )
+                      ( |<arg2>| |<arg2>| )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<arg1>| "first arg" )
+                      ( |<arg2>| "second arg" )
+                    )
+                    (
+                      ( ONSET> 61 )
+                      ( OFFSET> 61 )
+                      ( |<arg1>| "first arg" )
+                      ( |<arg2>| "second arg" )
+                    )
+                    (
+                      ( ONSET> 62 )
+                      ( OFFSET> 62 )
+                      ( |<arg1>| "first arg" )
+                      ( |<arg2>| "second arg" )
+                    )
+                    (
+                      ( ONSET> 63 )
+                      ( OFFSET> 63 )
+                      ( |<arg1>| "first arg" )
+                      ( |<arg2>| "second arg" )
+                    )
                   )
                 )
                 ( VOCAB> ( |pred_2| ) )
@@ -139,14 +141,16 @@
               (
                 ( CELLS>
                   (
-                    ( ONSET> 0 )
-                    ( OFFSET> 0 )
-                    ( |<val>| 10 )
-                  )
-                  (
-                    ( ONSET> 60 )
-                    ( OFFSET> 60 )
-                    ( |<val>| 0 )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| 10 )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<val>| 0 )
+                    )
                   )
                 )
               )
@@ -155,56 +159,58 @@
               (
                 ( CELLS>
                   (
-                    ( ONSET> 0 )
-                    ( OFFSET> 0 )
-                    ( |<arg1>| 1 )
-                    ( |<arg2>| 2.000000 )
-                  )
-                  (
-                    ( ONSET> 10 )
-                    ( OFFSET> 20 )
-                    ( |<arg1>| |a nominal| )
-                    ( |<arg2>| "a string" )
-                  )
-                  (
-                    ( ONSET> 20 )
-                    ( OFFSET> 30 )
-                    ( |<arg1>| ( |pred_2| |<arg1>| ) )
-                    ( |<arg2>| ( TIME> 120 ) )
-                  )
-                  (
-                    ( ONSET> 60 )
-                    ( OFFSET> 60 )
-                    ( |<arg1>| |<arg1>| )
-                  )
-                  (
-                    ( ONSET> 60 )
-                    ( OFFSET> 60 )
-                    ( |<arg1>| |<arg1>| )
-                  )
-                  (
-                    ( ONSET> 61 )
-                    ( OFFSET> 61 )
-                    ( |<arg1>| "first arg" )
-                    ( |<arg2>| "second arg" )
-                  )
-                  (
-                    ( ONSET> 62 )
-                    ( OFFSET> 62 )
-                    ( |<arg1>| "first arg" )
-                    ( |<arg2>| "second arg" )
-                  )
-                  (
-                    ( ONSET> 63 )
-                    ( OFFSET> 63 )
-                    ( |<arg1>| "first arg" )
-                    ( |<arg2>| "second arg" )
-                  )
-                  (
-                    ( ONSET> 64 )
-                    ( OFFSET> 64 )
-                    ( |<arg1>| "first arg" )
-                    ( |<arg2>| "second arg" )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<arg1>| 1 )
+                      ( |<arg2>| 2.000000 )
+                    )
+                    (
+                      ( ONSET> 10 )
+                      ( OFFSET> 20 )
+                      ( |<arg1>| |a nominal| )
+                      ( |<arg2>| "a string" )
+                    )
+                    (
+                      ( ONSET> 20 )
+                      ( OFFSET> 30 )
+                      ( |<arg1>| ( |pred_2| |<arg1>| ) )
+                      ( |<arg2>| ( TIME> 120 ) )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<arg1>| |<arg1>| )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<arg1>| |<arg1>| )
+                    )
+                    (
+                      ( ONSET> 61 )
+                      ( OFFSET> 61 )
+                      ( |<arg1>| "first arg" )
+                      ( |<arg2>| "second arg" )
+                    )
+                    (
+                      ( ONSET> 62 )
+                      ( OFFSET> 62 )
+                      ( |<arg1>| "first arg" )
+                      ( |<arg2>| "second arg" )
+                    )
+                    (
+                      ( ONSET> 63 )
+                      ( OFFSET> 63 )
+                      ( |<arg1>| "first arg" )
+                      ( |<arg2>| "second arg" )
+                    )
+                    (
+                      ( ONSET> 64 )
+                      ( OFFSET> 64 )
+                      ( |<arg1>| "first arg" )
+                      ( |<arg2>| "second arg" )
+                    )
                   )
                 )
                 ( VOCAB> ( |pred_2| ) )
@@ -214,14 +220,16 @@
               (
                 ( CELLS>
                   (
-                    ( ONSET> 0 )
-                    ( OFFSET> 0 )
-                    ( |<val>| "this is a text cell" )
-                  )
-                  (
-                    ( ONSET> 60 )
-                    ( OFFSET> 60 )
-                    ( |<val>| "" )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| "this is a text cell" )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<val>| "" )
+                    )
                   )
                 )
               )
@@ -230,14 +238,16 @@
               (
                 ( CELLS>
                   (
-                    ( ONSET> 0 )
-                    ( OFFSET> 0 )
-                    ( |<val>| 10.000000 )
-                  )
-                  (
-                    ( ONSET> 60 )
-                    ( OFFSET> 60 )
-                    ( |<val>| 0.000000 )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| 10.000000 )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<val>| 0.000000 )
+                    )
                   )
                 )
               )
@@ -246,14 +256,16 @@
               (
                 ( CELLS>
                   (
-                    ( ONSET> 0 )
-                    ( OFFSET> 0 )
-                    ( |<val>| |this is nominal cell| )
-                  )
-                  (
-                    ( ONSET> 60 )
-                    ( OFFSET> 60 )
-                    ( |<val>| |<val>| )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |this is nominal cell| )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<val>| |<val>| )
+                    )
                   )
                 )
               )
@@ -262,39 +274,41 @@
               (
                 ( CELLS>
                   (
-                    ( ONSET> 0 )
-                    ( OFFSET> 0 )
-                    ( |<val>| ( |pred_1| ( TIME> 120 ) |a nominal| ) )
-                  )
-                  (
-                    ( ONSET> 10 )
-                    ( OFFSET> 20 )
-                    ( |<val>| ( |pred_1| "a string" |<arg2>| ) )
-                  )
-                  (
-                    ( ONSET> 20 )
-                    ( OFFSET> 30 )
-                    ( |<val>| ( |pred_1| 10 1.000000 ) )
-                  )
-                  (
-                    ( ONSET> 30 )
-                    ( OFFSET> 40 )
-                    ( |<val>| ( |pred_1| ( |pred_2| |<arg1>| ) |<arg2>| ) )
-                  )
-                  (
-                    ( ONSET> 60 )
-                    ( OFFSET> 60 )
-                    ( |<val>| () )
-                  )
-                  (
-                    ( ONSET> 61 )
-                    ( OFFSET> 61 )
-                    ( |<val>| () )
-                  )
-                  (
-                    ( ONSET> 62 )
-                    ( OFFSET> 62 )
-                    ( |<val>| () )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( |pred_1| ( TIME> 120 ) |a nominal| ) )
+                    )
+                    (
+                      ( ONSET> 10 )
+                      ( OFFSET> 20 )
+                      ( |<val>| ( |pred_1| "a string" |<arg2>| ) )
+                    )
+                    (
+                      ( ONSET> 20 )
+                      ( OFFSET> 30 )
+                      ( |<val>| ( |pred_1| 10 1.000000 ) )
+                    )
+                    (
+                      ( ONSET> 30 )
+                      ( OFFSET> 40 )
+                      ( |<val>| ( |pred_1| ( |pred_2| |<arg1>| ) |<arg2>| ) )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<val>| () )
+                    )
+                    (
+                      ( ONSET> 61 )
+                      ( OFFSET> 61 )
+                      ( |<val>| () )
+                    )
+                    (
+                      ( ONSET> 62 )
+                      ( OFFSET> 62 )
+                      ( |<val>| () )
+                    )
                   )
                 )
                 ( VOCAB> ( |pred_1| |pred_2| ) )

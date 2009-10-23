@@ -59,6 +59,8 @@
             ( |really a matrix|
               (
                 ( CELLS>
+                  (
+                  )
                 )
                 ( VOCAB> ( ) )
               )
@@ -66,6 +68,8 @@
             ( |fixed len matrix|
               (
                 ( CELLS>
+                  (
+                  )
                 )
                 ( VOCAB> ( ) )
               )
@@ -73,12 +77,16 @@
             ( |a text var|
               (
                 ( CELLS>
+                  (
+                  )
                 )
               )
             )
             ( |a nominal var|
               (
                 ( CELLS>
+                  (
+                  )
                 )
               )
             )

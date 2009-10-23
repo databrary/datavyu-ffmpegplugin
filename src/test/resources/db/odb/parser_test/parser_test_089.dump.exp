@@ -83,6 +83,8 @@
             ( |fixed len matrix|
               (
                 ( CELLS>
+                  (
+                  )
                 )
                 ( VOCAB> ( ) )
               )
@@ -90,12 +92,16 @@
             ( |an integer var|
               (
                 ( CELLS>
+                  (
+                  )
                 )
               )
             )
             ( |var len matrix|
               (
                 ( CELLS>
+                  (
+                  )
                 )
                 ( VOCAB> ( ) )
               )
@@ -103,24 +109,32 @@
             ( |a text var|
               (
                 ( CELLS>
+                  (
+                  )
                 )
               )
             )
             ( |a float var|
               (
                 ( CELLS>
+                  (
+                  )
                 )
               )
             )
             ( |a nominal var|
               (
                 ( CELLS>
+                  (
+                  )
                 )
               )
             )
             ( |a predicate var|
               (
                 ( CELLS>
+                  (
+                  )
                 )
                 ( VOCAB> ( ) )
               )

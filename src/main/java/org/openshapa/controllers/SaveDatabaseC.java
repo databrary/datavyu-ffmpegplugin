@@ -50,8 +50,8 @@ public final class SaveDatabaseC {
 
         } else if (fileFilter.getClass() == MODBFilter.class) {
             // Don't append ".db" if the path already contains it.
-            if (!outputFile.contains(".db")) {
-                outputFile = destinationFile.concat(".db");
+            if (!outputFile.contains(".odb")) {
+                outputFile = destinationFile.concat(".odb");
             }
 
             saveAsMacSHAPADB(outputFile);

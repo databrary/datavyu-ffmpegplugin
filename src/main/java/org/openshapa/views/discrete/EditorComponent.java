@@ -232,8 +232,12 @@ public abstract class EditorComponent implements ClipboardOwner {
      * @return the selection start within the segment as a local value.
      */
     public final int getSelectionStart() {
-        int pos = Math.max(0, parentComp.getSelectionStart() - startPos);
-        pos = Math.min(pos, editorText.length());
+        int pos = 0;
+        if (parentComp != null) {
+            pos = Math.max(0, parentComp.getSelectionStart() - startPos);
+            pos = Math.min(pos, editorText.length());
+        }
+
         return pos;
     }
 
@@ -241,8 +245,12 @@ public abstract class EditorComponent implements ClipboardOwner {
      * @return the selection end within the segment as a local value.
      */
     public final int getSelectionEnd() {
-        int pos = Math.max(0, parentComp.getSelectionEnd() - startPos);
-        pos = Math.min(pos, editorText.length());
+        int pos = 0;
+        if (parentComp != null) {
+            pos = Math.max(0, parentComp.getSelectionEnd() - startPos);
+            pos = Math.min(pos, editorText.length());
+        }
+
         return pos;
     }
 

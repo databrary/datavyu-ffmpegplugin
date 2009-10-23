@@ -13,6 +13,7 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.PluginManager;
@@ -123,6 +124,12 @@ public final class QTVideoController
         initComponents();
         setName(this.getClass().getSimpleName());
         viewers = new HashSet<DataViewer>();
+
+        // Hide unsupported features.
+        this.syncVideoButton.setEnabled(false);
+        this.syncButton.setEnabled(false);
+        this.syncCtrlButton.setEnabled(false);
+        this.timestampSetupButton.setEnabled(false);
     }
 
     //--------------------------------------------------------------------------
@@ -162,7 +169,7 @@ public final class QTVideoController
      * @param rate Current (updated) clock rate.
      */
     public void clockRate(final float rate) {
-        lblSpeed.setText(String.format("x%(.3f", rate));
+        lblSpeed.setText(FloatUtils.doubleToFractionStr(new Double(rate)));
         for (DataViewer viewer : viewers) { viewer.setPlaybackSpeed(rate); }
     }
 
@@ -245,7 +252,6 @@ public final class QTVideoController
         setNewCellOnsetButton = new javax.swing.JButton();
         fillerPanel = new javax.swing.JPanel();
         timestampSetupButton = new javax.swing.JButton();
-        videoProgressBar = new javax.swing.JSlider();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Quicktime Video Controller");
@@ -272,9 +278,8 @@ public final class QTVideoController
         });
         topPanel.add(openVideoButton, java.awt.BorderLayout.LINE_START);
 
-        lblSpeed.setFont(new java.awt.Font("Courier New", 1, 12)); // NOI18N
-        lblSpeed.setText("*1.0");
-        lblSpeed.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        lblSpeed.setText("0");
+        lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 2));
         topPanel.add(lblSpeed, java.awt.BorderLayout.LINE_END);
 
         mainPanel.add(topPanel, java.awt.BorderLayout.NORTH);
@@ -284,14 +289,12 @@ public final class QTVideoController
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(QTVideoController.class, this);
         syncCtrlButton.setAction(actionMap.get("syncCtrlAction")); // NOI18N
-        syncCtrlButton.setIcon(resourceMap.getIcon("syncCtrlButton.icon")); // NOI18N
         syncCtrlButton.setMaximumSize(new java.awt.Dimension(32, 32));
         syncCtrlButton.setMinimumSize(new java.awt.Dimension(32, 32));
         syncCtrlButton.setPreferredSize(new java.awt.Dimension(32, 32));
         gridButtonPanel.add(syncCtrlButton);
 
         syncButton.setAction(actionMap.get("syncAction")); // NOI18N
-        syncButton.setIcon(resourceMap.getIcon("syncButton.icon")); // NOI18N
         gridButtonPanel.add(syncButton);
 
         setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction")); // NOI18N
@@ -350,13 +353,6 @@ public final class QTVideoController
 
         rightTimePanel.setBackground(java.awt.Color.white);
         rightTimePanel.setLayout(new java.awt.GridLayout(4, 1));
-
-        syncVideoButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/QTVideoController/eng/syncVideoButton.png"))); // NOI18N
-        syncVideoButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                syncVideoButtonActionPerformed(evt);
-            }
-        });
         rightTimePanel.add(syncVideoButton);
 
         goBackTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
@@ -387,24 +383,9 @@ public final class QTVideoController
 
         fillerPanel.setBackground(java.awt.Color.white);
         fillerPanel.setLayout(new java.awt.BorderLayout());
-
-        timestampSetupButton.setIcon(resourceMap.getIcon("timestampSetupButton.icon")); // NOI18N
-        timestampSetupButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                timestampSetupButtonActionPerformed(evt);
-            }
-        });
         fillerPanel.add(timestampSetupButton, java.awt.BorderLayout.CENTER);
 
         bottomPanel.add(fillerPanel, java.awt.BorderLayout.EAST);
-
-        videoProgressBar.setBackground(java.awt.Color.white);
-        videoProgressBar.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                videoProgressBarStateChanged(evt);
-            }
-        });
-        bottomPanel.add(videoProgressBar, java.awt.BorderLayout.SOUTH);
 
         mainPanel.add(bottomPanel, java.awt.BorderLayout.SOUTH);
 
@@ -548,6 +529,15 @@ public final class QTVideoController
      */
     @Action
     public void shuttleBackAction() { shuttle(ShuttleDirection.BACKWARDS); }
+
+    /**
+     * Populates the find time in the controller.
+     *
+     * @param milliseconds The time to use when populating the find field.
+     */
+    public void setFindTime(final long milliseconds) {
+        this.findTextField.setText(CLOCK_FORMAT.format(milliseconds));
+    }
 
     /**
      * Action to invoke when the user clicks on the find button.
@@ -695,27 +685,16 @@ public final class QTVideoController
     public void syncVideoAction() {
     }
 
-    private void syncVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncVideoButtonActionPerformed
-    }//GEN-LAST:event_syncVideoButtonActionPerformed
-
     /**
      * Action to invoke when the user clicks on the time stamp setup button.
      *
      * @param evt The event that triggered this action.
      */
-    private void timestampSetupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timestampSetupButtonActionPerformed
-    }//GEN-LAST:event_timestampSetupButtonActionPerformed
-
     /**
      * Action to invoke when the video progress bar state changes.
      *
      * @param evt The event that triggered this action.
      */
-    private void videoProgressBarStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_videoProgressBarStateChanged
-        if (!this.videoProgressBar.getValueIsAdjusting()) {
-        }
-    }//GEN-LAST:event_videoProgressBarStateChanged
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bottomPanel;
     private javax.swing.JButton createNewCellButton;
@@ -748,7 +727,6 @@ public final class QTVideoController
     private javax.swing.JLabel timestampLabel;
     private javax.swing.JButton timestampSetupButton;
     private javax.swing.JPanel topPanel;
-    private javax.swing.JSlider videoProgressBar;
     // End of variables declaration//GEN-END:variables
 
 }

@@ -3598,33 +3598,26 @@ public abstract class Database
     } /* Database::getVocabElement(targetName) */
 
 
-    // TODO:  Implement removeVocabElementAndAssociatedData(id)
-
     // removeVocabElement()
     /**
-     * Never use this routine.  It was created in error, and is left here
-     * as a scarecrow to prevent its re-implementation.
+     * This method removes the nominated vocab element and all data associated
+     * with the vocab element, i.e. this method will remove any cells that use
+     * the nominated vocab element, and will remove the column linked to a
+     * matrix vocab element.
      *
-     * Matrix vocab elements MUST NOT be deleted directly by the user.  In
-     * its original version, this method permitted this operation, and thus
-     * allowed corruption of the database.
+     * @param targetID The ID of the vocab element to remove from the database.
      *
-     * @param targetID
-     * @throws org.openshapa.db.SystemErrorException unconditionally.
+     * @throws org.openshapa.db.SystemErrorException If unable to remove the
+     * desired vocab element.
      */
 
     public void removeVocabElement(long targetID)
         throws SystemErrorException
     {
-        final String mName = "Database::removeVocabElement(targetID): ";
-
-        throw new SystemErrorException(mName + "This routine allows the user " +
-                "to corrupt the data base.  It should not exist and must not " +
-                "be used.  I am leaving it in place to prevent the creation " +
-                "of something similar in the future.");
-
-        // This is the old body of the method.  DO NOT re-enable it.
-        // this.vl.removeVocabElement(targetID);
+        this.vl.getVocabElement(targetID).prepareForRemoval();
+        if (this.vl.inVocabList(targetID)) {
+            this.vl.removeVocabElement(targetID);
+        }
     }
 
 

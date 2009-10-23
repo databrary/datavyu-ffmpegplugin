@@ -8,6 +8,7 @@ import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.SystemErrorException;
 import org.apache.log4j.Logger;
 import org.openshapa.db.Column;
+import org.openshapa.db.NominalFormalArg;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
@@ -213,7 +214,17 @@ public final class NewVariableV extends OpenSHAPADialog {
             DataColumn dc = new DataColumn(model,
                                            this.getVariableName(),
                                            this.getVariableType());
-            model.addColumn(dc);
+            long id = model.addColumn(dc);
+            dc = model.getDataColumn(id);
+
+            // If the column is a matrix - default to a single nominal variable
+            // rather than untyped.
+            if (matrixTypeButton.isSelected()) {
+                MatrixVocabElement mve = model.getMatrixVE(dc.getItsMveID());
+                mve.deleteFormalArg(0);
+                mve.appendFormalArg(new NominalFormalArg(model, "<arg0>"));
+                model.replaceMatrixVE(mve);
+            }
 
             // Display any changes.
             SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA
