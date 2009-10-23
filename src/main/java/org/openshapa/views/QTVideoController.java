@@ -13,6 +13,8 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.controllers.CreateNewCellC;
+import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
 import org.openshapa.views.continuous.DataViewer;
@@ -438,7 +440,7 @@ public final class QTVideoController
      */
     @Action
     public void syncCtrlAction() {
-        for (DataViewer viewer : viewers) { /* @todo */; }
+        //for (DataViewer viewer : viewers) { /* @todo */; }
     }
 
     /**
@@ -455,9 +457,7 @@ public final class QTVideoController
      */
     @Action
     public void setCellOnsetAction() {
-        // curTime needs to be in milliseconds and pulled from a timer
-        // mechanisim.
-        //new SetCellOnsetC((long) curTime);
+        //new SetCellOnsetC(getCurrentTime());
     }
 
     /**
@@ -465,9 +465,7 @@ public final class QTVideoController
      */
     @Action
     public void setCellOffsetAction() {
-        // curTime needs to be in milliseconds and pulled from a timer
-        // mechanisim.
-        //new SetCellOffsetC((long) curTime);
+        //new SetCellOffsetC(getCurrentTime());
     }
 
 
@@ -522,13 +520,17 @@ public final class QTVideoController
      * @todo proper behaviour for reversing shuttle direction?
      */
     @Action
-    public void shuttleForwardAction() { shuttle(ShuttleDirection.FORWARDS); }
+    public void shuttleForwardAction() {
+        shuttle(ShuttleDirection.FORWARDS);
+    }
 
     /**
      * Action to inovke when the user clicks on the shuttle back button.
      */
     @Action
-    public void shuttleBackAction() { shuttle(ShuttleDirection.BACKWARDS); }
+    public void shuttleBackAction() {
+        shuttle(ShuttleDirection.BACKWARDS);
+    }
 
     /**
      * Populates the find time in the controller.
@@ -663,9 +665,7 @@ public final class QTVideoController
      */
     @Action
     public void createNewCellAction() {
-        // curTime needs to be in milliseconds and pulled from a timer
-        // mechanisim.
-        // new CreateNewCellC(final long milliseconds);
+        new CreateNewCellC(getCurrentTime());
     }
 
     /**
@@ -673,9 +673,7 @@ public final class QTVideoController
      */
     @Action
     public void setNewCellStopTime() {
-        // curTime needs to be in milliseconds and pulled from a timer
-        // mechanisim.
-        // SetNewCellStopTimeC(final long milliseconds);
+        new SetNewCellStopTimeC(getCurrentTime());
     }
 
     /**
@@ -685,16 +683,6 @@ public final class QTVideoController
     public void syncVideoAction() {
     }
 
-    /**
-     * Action to invoke when the user clicks on the time stamp setup button.
-     *
-     * @param evt The event that triggered this action.
-     */
-    /**
-     * Action to invoke when the video progress bar state changes.
-     *
-     * @param evt The event that triggered this action.
-     */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bottomPanel;
     private javax.swing.JButton createNewCellButton;
