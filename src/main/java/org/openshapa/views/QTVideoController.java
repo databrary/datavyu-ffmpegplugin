@@ -1,33 +1,38 @@
 package org.openshapa.views;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SimpleTimeZone;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
-import org.openshapa.db.TimeStamp;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.util.ClockTimer;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.PluginManager;
 
 /**
  * Quicktime video controller.
  */
-public final class QTVideoController extends OpenSHAPADialog {
+public final class QTVideoController
+        extends OpenSHAPADialog
+        implements org.openshapa.util.ClockTimer.Listener {
 
     //--------------------------------------------------------------------------
+    // [static]
     //
-    //
+
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(QTVideoController.class);
 
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
-
 
     /** Rate of playback for rewinding. */
     private static final float REWIND_RATE = -32F;
@@ -70,12 +75,25 @@ public final class QTVideoController extends OpenSHAPADialog {
         public int getParameter() { return parameter; }
     }
 
+    /** Format for representing time. */
+    private static final DateFormat CLOCK_FORMAT;
+
+    // initialize standard date format for clock display.
+    static {
+        CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
+        CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
+    }
+
+
     //--------------------------------------------------------------------------
     //
     //
 
-    /** Stores the lowest frame rate for all available viewers. */
-    private float currentFPS = Float.MAX_VALUE;
+    /** The list of viewers associated with this controller. */
+    private Set<DataViewer> viewers;
+
+    /** Stores the highest frame rate for all available viewers. */
+    private float currentFPS = 1F;
 
     /** Shuttle status flag. */
     private ShuttleDirection shuttleDirection = ShuttleDirection.UNDEFINED;
@@ -83,8 +101,8 @@ public final class QTVideoController extends OpenSHAPADialog {
     /** Index of current shuttle rate. */
     private int shuttleRate;
 
-    /** Paused status flag. */
-    private boolean isPaused;
+    /** Clock timer. */
+    private ClockTimer clock = new ClockTimer();
 
 
     //--------------------------------------------------------------------------
@@ -100,9 +118,60 @@ public final class QTVideoController extends OpenSHAPADialog {
     public QTVideoController(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
 
+        clock.registerListener(this);
+
         initComponents();
         setName(this.getClass().getSimpleName());
         viewers = new HashSet<DataViewer>();
+    }
+
+    //--------------------------------------------------------------------------
+    // [interface] org.openshapa.util.ClockTimer.Listener
+    //
+
+    /**
+     * @param time Current clock time in milliseconds.
+     */
+    public void clockStart(final long time) {
+        setCurrentTime(time);
+        for (DataViewer viewer : viewers) {
+            viewer.seekTo(time);
+            viewer.play();
+        }
+    }
+
+    /**
+     * @param time Current clock time in milliseconds.
+     */
+    public void clockTick(final long time) {
+        setCurrentTime(time);
+    }
+
+    /**
+     * @param time Current clock time in milliseconds.
+     */
+    public void clockStop(final long time) {
+        setCurrentTime(time);
+        for (DataViewer viewer : viewers) {
+            viewer.stop();
+            viewer.seekTo(time);
+        }
+    }
+
+    /**
+     * @param rate Current (updated) clock rate.
+     */
+    public void clockRate(final float rate) {
+        lblSpeed.setText(String.format("x%(.3f", rate));
+        for (DataViewer viewer : viewers) { viewer.setPlaybackSpeed(rate); }
+    }
+
+    /**
+     * @param time Current clock time in milliseconds.
+     */
+    public void clockStep(final long time) {
+        setCurrentTime(time);
+        for (DataViewer viewer : viewers) { viewer.seekTo(time); }
     }
 
     //--------------------------------------------------------------------------
@@ -113,28 +182,9 @@ public final class QTVideoController extends OpenSHAPADialog {
      * Set time location for data streams.
      *
      * @param milliseconds The millisecond time.
-     *
-     * @todo currently only sets the time stamp label of the controller. The
-     *       controller needs to run its own clock that should call this method
      */
-    public void setCurrentLocation(final long milliseconds) {
-        try {
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
-            Date originDate = format.parse("00:00:00:000");
-            Date currentTime = new Date(originDate.getTime() + milliseconds);
-
-            this.timestampLabel.setText(format.format(currentTime));
-        } catch (ParseException e) {
-            logger.error("Unable to set current location", e);
-        }
-    }
-
-    /**
-     *
-     * @return The time stamp of the current location.
-     */
-    public TimeStamp getCurrentLocation() {
-        return (this.currentTimestamp);
+    public void setCurrentTime(final long milliseconds) {
+        timestampLabel.setText(CLOCK_FORMAT.format(milliseconds));
     }
 
     /**
@@ -143,7 +193,7 @@ public final class QTVideoController extends OpenSHAPADialog {
      * @return Time in milliseconds.
      */
     private long getCurrentTime() {
-        return getCurrentLocation().getTime();
+        return clock.getTime();
     }
 
     /**
@@ -395,7 +445,7 @@ public final class QTVideoController extends OpenSHAPADialog {
 
             // adjust the overall frame rate.
             float fps = viewer.getFrameRate();
-            if (fps < currentFPS) { currentFPS = fps; }
+            if (fps > currentFPS) { currentFPS = fps; }
 
             // Add the QTDataViewer to the list of viewers we are controlling.
             this.viewers.add(viewer);
@@ -407,9 +457,7 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void syncCtrlAction() {
-        for (int i = 0; i < this.viewers.size(); i++) {
-            //this.viewers.elementAt(i).syncCtrl();
-        }
+        for (DataViewer viewer : viewers) { /* @todo */; }
     }
 
     /**
@@ -471,9 +519,8 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void pauseAction() {
-        if (isPaused) { for (DataViewer viewer : viewers) { viewer.play(); } }
-        else          { for (DataViewer viewer : viewers) { viewer.stop(); } }
-        isPaused = !isPaused;
+        if (clock.isStopped()) { clock.start(); }
+        else                   { clock.stop(); }
     }
 
     /**
@@ -483,13 +530,9 @@ public final class QTVideoController extends OpenSHAPADialog {
      */
     @Action
     public void stopAction() {
-        lblSpeed.setText(String.format("x%(.3f", PLAY_RATE));
-        for (DataViewer viewer : viewers) {
-            viewer.stop();
-            viewer.setPlaybackSpeed(PLAY_RATE);
-        }
+        clock.stop();
+        clock.setRate(PLAY_RATE);
         shuttleDirection = ShuttleDirection.UNDEFINED;
-        isPaused = true;      // @todo: handle stop->pause btn combination?
     }
 
     /**
@@ -512,16 +555,10 @@ public final class QTVideoController extends OpenSHAPADialog {
     @Action
     public void findAction() {
         try {
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
-            Date videoDate = format.parse(this.findTextField.getText());
-            Date originDate = format.parse("00:00:00:000");
-
-            // Determine the time in milliseconds.
-            long milli = videoDate.getTime() - originDate.getTime();
-
-            for (DataViewer viewer : viewers) {
-                viewer.seekTo(milli);
-            }
+            jumpTo(CLOCK_FORMAT
+                    .parse(this.findTextField.getText())
+                    .getTime()
+                );
 
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
@@ -534,17 +571,10 @@ public final class QTVideoController extends OpenSHAPADialog {
     @Action
     public void goBackAction() {
         try {
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss:SSS");
-            Date videoDate = format.parse(this.goBackTextField.getText());
-            Date originDate = format.parse("00:00:00:000");
-
-            // Determine the time in milliseconds.
-            long milli = videoDate.getTime() - originDate.getTime();
-
-            for (DataViewer viewer : viewers) {
-                viewer.seek(milli);
-                // viewer.play();   // @todo Leave the viewer in its current play state
-            }
+            jump(-CLOCK_FORMAT
+                    .parse(this.goBackTextField.getText())
+                    .getTime()
+                );
 
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
@@ -611,25 +641,26 @@ public final class QTVideoController extends OpenSHAPADialog {
      * @param rate Rate of shuttle.
      */
     private void shuttleAt(final float rate) {
-        isPaused = false;
-        lblSpeed.setText(String.format("x%(.3f", rate));
-        for (DataViewer viewer : viewers) {
-            viewer.setPlaybackSpeed(rate);
-            viewer.play();
-        }
+        clock.setRate(rate);
+        clock.start();
     }
 
     /**
-     *
      * @param step Milliseconds to jump.
      */
     private void jump(final long step) {
-        lblSpeed.setText(String.format("x%(.3f", PLAY_RATE));
-        for (DataViewer viewer : viewers) {
-            viewer.stop();
-            viewer.setPlaybackSpeed(PLAY_RATE);
-            viewer.seek(step);
-        }
+        clock.stop();
+        clock.setRate(PLAY_RATE);
+        clock.stepTime(step);
+    }
+
+    /**
+     * @param time Absolute time to jump to.
+     */
+    private void jumpTo(final long time) {
+        clock.stop();
+        clock.setRate(PLAY_RATE);
+        clock.setTime(time);
     }
 
 
@@ -720,12 +751,4 @@ public final class QTVideoController extends OpenSHAPADialog {
     private javax.swing.JSlider videoProgressBar;
     // End of variables declaration//GEN-END:variables
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(QTVideoController.class);
-
-    /** The current time stamp on the quicktime video controller. */
-    private TimeStamp currentTimestamp = null;
-
-    /** The list of viewers associated with this controller. */
-    private Set<DataViewer> viewers;
 }
