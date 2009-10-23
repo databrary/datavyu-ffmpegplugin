@@ -79,8 +79,7 @@ public final class QTDataViewer extends JFrame
     //
 
     /**
-     *
-     * @return A JFrame for display purposes.
+     * @return The parent JFrame that this data viewer resides within.
      */
     public JFrame getParentJFrame() {
         return this;
@@ -141,7 +140,6 @@ public final class QTDataViewer extends JFrame
     public void play() {
         try {
             if (movie != null) {
-                this.setVisible(true);
                 movie.setRate(playRate);
             }
         } catch (QTException e) {
@@ -155,7 +153,6 @@ public final class QTDataViewer extends JFrame
     public void stop() {
         try {
             if (movie != null) {
-                this.setVisible(true);
                 movie.stop();
             }
         } catch (QTException e) {
@@ -169,8 +166,6 @@ public final class QTDataViewer extends JFrame
     public void seek(final long offset) {
         try {
             if (movie != null) {
-                this.setVisible(true);
-
                 double curTime = movie.getTime() / (float) movie.getTimeScale();
                 double seconds = offset * MILLI_TO_SECONDS;
 
@@ -192,8 +187,6 @@ public final class QTDataViewer extends JFrame
     public void seekTo(final long position) {
         try {
             if (movie != null) {
-                this.setVisible(true);
-
                 double seconds = position * MILLI_TO_SECONDS;
                 long qtime = (long) seconds * movie.getTimeScale();
 
