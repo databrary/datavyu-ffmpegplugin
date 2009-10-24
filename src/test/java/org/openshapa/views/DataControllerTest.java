@@ -14,14 +14,14 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.QTVideoController.ShuttleDirection;
+import org.openshapa.views.DataController.ShuttleDirection;
 
 /**
  *
  */
-public class QTVideoControllerTest {
+public class DataControllerTest {
 
-    public QTVideoControllerTest() {
+    public DataControllerTest() {
     }
 
     @BeforeClass
@@ -45,25 +45,25 @@ public class QTVideoControllerTest {
     //
     
     /**
-     * Test of setCurrentLocation method, of class QTVideoController.
+     * Test of setCurrentLocation method, of class DataController.
      */
 ////    @Test
 //    public void testSetCurrentLocation() {
 //        System.out.println("setCurrentLocation");
 //        long milliseconds = 0L;
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.setCurrentLocation(milliseconds);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of getCurrentLocation method, of class QTVideoController.
+//     * Test of getCurrentLocation method, of class DataController.
 //     */
 ////    @Test
 //    public void testGetCurrentLocation() {
 //        System.out.println("getCurrentLocation");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        TimeStamp expResult = null;
 //        TimeStamp result = instance.getCurrentLocation();
 //        assertEquals(expResult, result);
@@ -72,13 +72,13 @@ public class QTVideoControllerTest {
 //    }
 //
 //    /**
-//     * Test of shutdown method, of class QTVideoController.
+//     * Test of shutdown method, of class DataController.
 //     */
 ////    @Test
 //    public void testShutdown() {
 //        System.out.println("shutdown");
 //        DataViewer viewer = null;
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        boolean expResult = false;
 //        boolean result = instance.shutdown(viewer);
 //        assertEquals(expResult, result);
@@ -87,108 +87,108 @@ public class QTVideoControllerTest {
 //    }
 //
 //    /**
-//     * Test of syncCtrlAction method, of class QTVideoController.
+//     * Test of syncCtrlAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testSyncCtrlAction() {
 //        System.out.println("syncCtrlAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.syncCtrlAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of syncAction method, of class QTVideoController.
+//     * Test of syncAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testSyncAction() {
 //        System.out.println("syncAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.syncAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of setCellOnsetAction method, of class QTVideoController.
+//     * Test of setCellOnsetAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testSetCellOnsetAction() {
 //        System.out.println("setCellOnsetAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.setCellOnsetAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of setCellOffsetAction method, of class QTVideoController.
+//     * Test of setCellOffsetAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testSetCellOffsetAction() {
 //        System.out.println("setCellOffsetAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.setCellOffsetAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of playAction method, of class QTVideoController.
+//     * Test of playAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testPlayAction() {
 //        System.out.println("playAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.playAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of forwardAction method, of class QTVideoController.
+//     * Test of forwardAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testForwardAction() {
 //        System.out.println("forwardAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.forwardAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of rewindAction method, of class QTVideoController.
+//     * Test of rewindAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testRewindAction() {
 //        System.out.println("rewindAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.rewindAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of pauseAction method, of class QTVideoController.
+//     * Test of pauseAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testPauseAction() {
 //        System.out.println("pauseAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.pauseAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of stopAction method, of class QTVideoController.
+//     * Test of stopAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testStopAction() {
 //        System.out.println("stopAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.stopAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -199,7 +199,7 @@ public class QTVideoControllerTest {
         System.out.println("shuttle funtionality");
         try {
             float[] srates = (float[]) PrivateAccessor.getField(
-                    QTVideoController.class, "SHUTTLE_RATES"
+                    DataController.class, "SHUTTLE_RATES"
                 );
 
             assertEquals(11, srates.length);
@@ -212,12 +212,12 @@ public class QTVideoControllerTest {
         }
     }
     /**
-     * Test of shuttleForwardAction method, of class QTVideoController.
+     * Test of shuttleForwardAction method, of class DataController.
      */
     @Test
     public void testShuttleForwardAction() {
         System.out.println("shuttleForwardAction");
-        QTVideoController instance = new QTVideoController(null, true);
+        DataController instance = new DataController(null, true);
 
         try {
             assertEquals(
@@ -298,12 +298,12 @@ public class QTVideoControllerTest {
     }
 
     /**
-     * Test of shuttleBackAction method, of class QTVideoController.
+     * Test of shuttleBackAction method, of class DataController.
      */
     @Test
     public void testShuttleBackAction() {
         System.out.println("shuttleBackAction");
-        QTVideoController instance = new QTVideoController(null, true);
+        DataController instance = new DataController(null, true);
 
         try {
             assertEquals(
@@ -390,84 +390,84 @@ public class QTVideoControllerTest {
     }
 
 //    /**
-//     * Test of findAction method, of class QTVideoController.
+//     * Test of findAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testFindAction() {
 //        System.out.println("findAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.findAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of goBackAction method, of class QTVideoController.
+//     * Test of goBackAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testGoBackAction() {
 //        System.out.println("goBackAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.goBackAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of jogBackAction method, of class QTVideoController.
+//     * Test of jogBackAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testJogBackAction() {
 //        System.out.println("jogBackAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.jogBackAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of jogForwardAction method, of class QTVideoController.
+//     * Test of jogForwardAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testJogForwardAction() {
 //        System.out.println("jogForwardAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.jogForwardAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of createNewCellAction method, of class QTVideoController.
+//     * Test of createNewCellAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testCreateNewCellAction() {
 //        System.out.println("createNewCellAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.createNewCellAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of setNewCellStopTime method, of class QTVideoController.
+//     * Test of setNewCellStopTime method, of class DataController.
 //     */
 ////    @Test
 //    public void testSetNewCellStopTime() {
 //        System.out.println("setNewCellStopTime");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.setNewCellStopTime();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of syncVideoAction method, of class QTVideoController.
+//     * Test of syncVideoAction method, of class DataController.
 //     */
 ////    @Test
 //    public void testSyncVideoAction() {
 //        System.out.println("syncVideoAction");
-//        QTVideoController instance = null;
+//        DataController instance = null;
 //        instance.syncVideoAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");

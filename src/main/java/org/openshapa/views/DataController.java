@@ -25,7 +25,7 @@ import org.openshapa.views.continuous.PluginManager;
 /**
  * Quicktime video controller.
  */
-public final class QTVideoController
+public final class DataController
         extends OpenSHAPADialog
         implements org.openshapa.util.ClockTimer.Listener {
 
@@ -34,7 +34,7 @@ public final class QTVideoController
     //
 
     /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(QTVideoController.class);
+    private static Logger logger = Logger.getLogger(DataController.class);
 
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
@@ -115,12 +115,12 @@ public final class QTVideoController
     //
 
     /**
-     * Constructor. Creates a new QTVideoController.
+     * Constructor. Creates a new DataController.
      *
      * @param parent The parent of this form.
      * @param modal Should the dialog be modal or not?
      */
-    public QTVideoController(final java.awt.Frame parent, final boolean modal) {
+    public DataController(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
 
         clock.registerListener(this);
@@ -128,12 +128,6 @@ public final class QTVideoController
         initComponents();
         setName(this.getClass().getSimpleName());
         viewers = new HashSet<DataViewer>();
-
-        // Hide unsupported features.
-        this.syncVideoButton.setEnabled(false);
-        this.syncButton.setEnabled(false);
-        this.syncCtrlButton.setEnabled(false);
-        this.timestampSetupButton.setEnabled(false);
     }
 
     //--------------------------------------------------------------------------
@@ -229,12 +223,8 @@ public final class QTVideoController
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
-        mainPanel = new javax.swing.JPanel();
-        topPanel = new javax.swing.JPanel();
-        timestampLabel = new javax.swing.JLabel();
-        openVideoButton = new javax.swing.JButton();
-        lblSpeed = new javax.swing.JLabel();
         gridButtonPanel = new javax.swing.JPanel();
         syncCtrlButton = new javax.swing.JButton();
         syncButton = new javax.swing.JButton();
@@ -250,155 +240,322 @@ public final class QTVideoController
         findButton = new javax.swing.JButton();
         jogBackButton = new javax.swing.JButton();
         stopButton = new javax.swing.JButton();
+        createNewCellButton = new javax.swing.JButton();
         jogForwardButton = new javax.swing.JButton();
-        rightTimePanel = new javax.swing.JPanel();
-        syncVideoButton = new javax.swing.JButton();
+        setNewCellOnsetButton = new javax.swing.JButton();
         goBackTextField = new javax.swing.JTextField();
         findTextField = new javax.swing.JTextField();
-        bottomPanel = new javax.swing.JPanel();
-        leftButtonPanel = new javax.swing.JPanel();
-        createNewCellButton = new javax.swing.JButton();
-        setNewCellOnsetButton = new javax.swing.JButton();
-        fillerPanel = new javax.swing.JPanel();
-        timestampSetupButton = new javax.swing.JButton();
+        syncVideoButton = new javax.swing.JButton();
+        openVideoButton = new javax.swing.JButton();
+        timestampLabel = new javax.swing.JLabel();
+        topPanel = new javax.swing.JPanel();
+        lblSpeed = new javax.swing.JLabel();
+        createNewCell = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Quicktime Video Controller");
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataController.class);
+        setTitle(resourceMap.getString("title")); // NOI18N
         setName(""); // NOI18N
+        setResizable(false);
 
-        mainPanel.setBackground(java.awt.Color.white);
-        mainPanel.setLayout(new java.awt.BorderLayout(2, 0));
+        gridButtonPanel.setBackground(new java.awt.Color(255, 255, 255));
+        gridButtonPanel.setLayout(new java.awt.GridBagLayout());
 
-        topPanel.setBackground(java.awt.Color.white);
-        topPanel.setLayout(new java.awt.BorderLayout());
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(DataController.class, this);
+        syncCtrlButton.setAction(actionMap.get("syncCtrlAction")); // NOI18N
+        syncCtrlButton.setEnabled(false);
+        syncCtrlButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        syncCtrlButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        syncCtrlButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(syncCtrlButton, gridBagConstraints);
 
-        timestampLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        timestampLabel.setText("00:00:00:000");
-        timestampLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        topPanel.add(timestampLabel, java.awt.BorderLayout.CENTER);
+        syncButton.setAction(actionMap.get("syncAction")); // NOI18N
+        syncButton.setEnabled(false);
+        syncButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        syncButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        syncButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(syncButton, gridBagConstraints);
 
-        openVideoButton.setBackground(java.awt.Color.white);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(QTVideoController.class);
+        setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction")); // NOI18N
+        setCellOnsetButton.setIcon(resourceMap.getIcon("setCellOnsetButton.icon")); // NOI18N
+        setCellOnsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        setCellOnsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        setCellOnsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(setCellOnsetButton, gridBagConstraints);
+
+        setCellOffsetButton.setAction(actionMap.get("setCellOffsetAction")); // NOI18N
+        setCellOffsetButton.setIcon(resourceMap.getIcon("setCellOffsetButton.icon")); // NOI18N
+        setCellOffsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        setCellOffsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        setCellOffsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 1);
+        gridButtonPanel.add(setCellOffsetButton, gridBagConstraints);
+
+        rewindButton.setAction(actionMap.get("rewindAction")); // NOI18N
+        rewindButton.setIcon(resourceMap.getIcon("rewindButton.icon")); // NOI18N
+        rewindButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        rewindButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        rewindButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(rewindButton, gridBagConstraints);
+
+        playButton.setAction(actionMap.get("playAction")); // NOI18N
+        playButton.setIcon(resourceMap.getIcon("playButton.icon")); // NOI18N
+        playButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        playButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        playButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(playButton, gridBagConstraints);
+
+        forwardButton.setAction(actionMap.get("forwardAction")); // NOI18N
+        forwardButton.setIcon(resourceMap.getIcon("forwardButton.icon")); // NOI18N
+        forwardButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        forwardButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        forwardButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(forwardButton, gridBagConstraints);
+
+        goBackButton.setAction(actionMap.get("goBackAction")); // NOI18N
+        goBackButton.setIcon(resourceMap.getIcon("goBackButton.icon")); // NOI18N
+        goBackButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        goBackButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        goBackButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(goBackButton, gridBagConstraints);
+
+        shuttleBackButton.setAction(actionMap.get("shuttleBackAction")); // NOI18N
+        shuttleBackButton.setIcon(resourceMap.getIcon("shuttleBackButton.icon")); // NOI18N
+        shuttleBackButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        shuttleBackButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        shuttleBackButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(shuttleBackButton, gridBagConstraints);
+
+        pauseButton.setAction(actionMap.get("pauseAction")); // NOI18N
+        pauseButton.setIcon(resourceMap.getIcon("pauseButton.icon")); // NOI18N
+        pauseButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        pauseButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        pauseButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(pauseButton, gridBagConstraints);
+
+        shuttleForwardButton.setAction(actionMap.get("shuttleForwardAction")); // NOI18N
+        shuttleForwardButton.setIcon(resourceMap.getIcon("shuttleForwardButton.icon")); // NOI18N
+        shuttleForwardButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        shuttleForwardButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        shuttleForwardButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(shuttleForwardButton, gridBagConstraints);
+
+        findButton.setAction(actionMap.get("findAction")); // NOI18N
+        findButton.setIcon(resourceMap.getIcon("findButton.icon")); // NOI18N
+        findButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        findButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        findButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(findButton, gridBagConstraints);
+
+        jogBackButton.setAction(actionMap.get("jogBackAction")); // NOI18N
+        jogBackButton.setIcon(resourceMap.getIcon("jogBackButton.icon")); // NOI18N
+        jogBackButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        jogBackButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        jogBackButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(jogBackButton, gridBagConstraints);
+
+        stopButton.setAction(actionMap.get("stopAction")); // NOI18N
+        stopButton.setIcon(resourceMap.getIcon("stopButton.icon")); // NOI18N
+        stopButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        stopButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        stopButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(stopButton, gridBagConstraints);
+
+        createNewCellButton.setAction(actionMap.get("createNewCellAction")); // NOI18N
+        createNewCellButton.setIcon(resourceMap.getIcon("createNewCellButton.icon")); // NOI18N
+        createNewCellButton.setMaximumSize(new java.awt.Dimension(90, 45));
+        createNewCellButton.setMinimumSize(new java.awt.Dimension(90, 45));
+        createNewCellButton.setPreferredSize(new java.awt.Dimension(90, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(createNewCellButton, gridBagConstraints);
+
+        jogForwardButton.setAction(actionMap.get("jogForwardAction")); // NOI18N
+        jogForwardButton.setIcon(resourceMap.getIcon("jogForwardButton.icon")); // NOI18N
+        jogForwardButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        jogForwardButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        jogForwardButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(jogForwardButton, gridBagConstraints);
+
+        setNewCellOnsetButton.setAction(actionMap.get("setNewCellStopTime")); // NOI18N
+        setNewCellOnsetButton.setIcon(resourceMap.getIcon("setNewCellOnsetButton.icon")); // NOI18N
+        setNewCellOnsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        setNewCellOnsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        setNewCellOnsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(setNewCellOnsetButton, gridBagConstraints);
+
+        goBackTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        goBackTextField.setText("00:00:00:000");
+        goBackTextField.setMaximumSize(new java.awt.Dimension(80, 45));
+        goBackTextField.setMinimumSize(new java.awt.Dimension(80, 45));
+        goBackTextField.setPreferredSize(new java.awt.Dimension(80, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(goBackTextField, gridBagConstraints);
+
+        findTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        findTextField.setText("00:00:00:000");
+        findTextField.setMaximumSize(new java.awt.Dimension(80, 45));
+        findTextField.setMinimumSize(new java.awt.Dimension(80, 45));
+        findTextField.setPreferredSize(new java.awt.Dimension(80, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(findTextField, gridBagConstraints);
+
+        syncVideoButton.setEnabled(false);
+        syncVideoButton.setMaximumSize(new java.awt.Dimension(80, 45));
+        syncVideoButton.setMinimumSize(new java.awt.Dimension(80, 45));
+        syncVideoButton.setPreferredSize(new java.awt.Dimension(80, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(syncVideoButton, gridBagConstraints);
+
         openVideoButton.setText(resourceMap.getString("openVideoButton.text")); // NOI18N
+        openVideoButton.setMaximumSize(new java.awt.Dimension(90, 25));
+        openVideoButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        openVideoButton.setPreferredSize(new java.awt.Dimension(90, 25));
         openVideoButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openVideoButtonActionPerformed(evt);
             }
         });
-        topPanel.add(openVideoButton, java.awt.BorderLayout.LINE_START);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(openVideoButton, gridBagConstraints);
 
+        timestampLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        timestampLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        timestampLabel.setText("00:00:00:000");
+        timestampLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(timestampLabel, gridBagConstraints);
+
+        topPanel.setBackground(java.awt.Color.white);
+        topPanel.setLayout(new java.awt.BorderLayout());
+
+        lblSpeed.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         lblSpeed.setText("0");
         lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 2));
         topPanel.add(lblSpeed, java.awt.BorderLayout.LINE_END);
 
-        mainPanel.add(topPanel, java.awt.BorderLayout.NORTH);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 0);
+        gridButtonPanel.add(topPanel, gridBagConstraints);
 
-        gridButtonPanel.setBackground(java.awt.Color.white);
-        gridButtonPanel.setLayout(new java.awt.GridLayout(4, 4));
+        createNewCell.setIcon(resourceMap.getIcon("jButton1.icon")); // NOI18N
+        createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
+        createNewCell.setMinimumSize(new java.awt.Dimension(45, 90));
+        createNewCell.setPreferredSize(new java.awt.Dimension(45, 90));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(createNewCell, gridBagConstraints);
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(QTVideoController.class, this);
-        syncCtrlButton.setAction(actionMap.get("syncCtrlAction")); // NOI18N
-        syncCtrlButton.setMaximumSize(new java.awt.Dimension(32, 32));
-        syncCtrlButton.setMinimumSize(new java.awt.Dimension(32, 32));
-        syncCtrlButton.setPreferredSize(new java.awt.Dimension(32, 32));
-        gridButtonPanel.add(syncCtrlButton);
+        jLabel1.setText("@");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 0);
+        gridButtonPanel.add(jLabel1, gridBagConstraints);
 
-        syncButton.setAction(actionMap.get("syncAction")); // NOI18N
-        gridButtonPanel.add(syncButton);
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel2.setText("x");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridButtonPanel.add(jLabel2, gridBagConstraints);
 
-        setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction")); // NOI18N
-        setCellOnsetButton.setIcon(resourceMap.getIcon("setCellOnsetButton.icon")); // NOI18N
-        gridButtonPanel.add(setCellOnsetButton);
-
-        setCellOffsetButton.setAction(actionMap.get("setCellOffsetAction")); // NOI18N
-        setCellOffsetButton.setIcon(resourceMap.getIcon("setCellOffsetButton.icon")); // NOI18N
-        gridButtonPanel.add(setCellOffsetButton);
-
-        rewindButton.setAction(actionMap.get("rewindAction")); // NOI18N
-        rewindButton.setIcon(resourceMap.getIcon("rewindButton.icon")); // NOI18N
-        gridButtonPanel.add(rewindButton);
-
-        playButton.setAction(actionMap.get("playAction")); // NOI18N
-        playButton.setIcon(resourceMap.getIcon("playButton.icon")); // NOI18N
-        gridButtonPanel.add(playButton);
-
-        forwardButton.setAction(actionMap.get("forwardAction")); // NOI18N
-        forwardButton.setIcon(resourceMap.getIcon("forwardButton.icon")); // NOI18N
-        gridButtonPanel.add(forwardButton);
-
-        goBackButton.setAction(actionMap.get("goBackAction")); // NOI18N
-        goBackButton.setIcon(resourceMap.getIcon("goBackButton.icon")); // NOI18N
-        gridButtonPanel.add(goBackButton);
-
-        shuttleBackButton.setAction(actionMap.get("shuttleBackAction")); // NOI18N
-        shuttleBackButton.setIcon(resourceMap.getIcon("shuttleBackButton.icon")); // NOI18N
-        gridButtonPanel.add(shuttleBackButton);
-
-        pauseButton.setAction(actionMap.get("pauseAction")); // NOI18N
-        pauseButton.setIcon(resourceMap.getIcon("pauseButton.icon")); // NOI18N
-        gridButtonPanel.add(pauseButton);
-
-        shuttleForwardButton.setAction(actionMap.get("shuttleForwardAction")); // NOI18N
-        shuttleForwardButton.setIcon(resourceMap.getIcon("shuttleForwardButton.icon")); // NOI18N
-        gridButtonPanel.add(shuttleForwardButton);
-
-        findButton.setAction(actionMap.get("findAction")); // NOI18N
-        findButton.setIcon(resourceMap.getIcon("findButton.icon")); // NOI18N
-        gridButtonPanel.add(findButton);
-
-        jogBackButton.setAction(actionMap.get("jogBackAction")); // NOI18N
-        jogBackButton.setIcon(resourceMap.getIcon("jogBackButton.icon")); // NOI18N
-        gridButtonPanel.add(jogBackButton);
-
-        stopButton.setAction(actionMap.get("stopAction")); // NOI18N
-        stopButton.setIcon(resourceMap.getIcon("stopButton.icon")); // NOI18N
-        gridButtonPanel.add(stopButton);
-
-        jogForwardButton.setAction(actionMap.get("jogForwardAction")); // NOI18N
-        jogForwardButton.setIcon(resourceMap.getIcon("jogForwardButton.icon")); // NOI18N
-        gridButtonPanel.add(jogForwardButton);
-
-        mainPanel.add(gridButtonPanel, java.awt.BorderLayout.CENTER);
-
-        rightTimePanel.setBackground(java.awt.Color.white);
-        rightTimePanel.setLayout(new java.awt.GridLayout(4, 1));
-        rightTimePanel.add(syncVideoButton);
-
-        goBackTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        goBackTextField.setText("00:00:00:000");
-        rightTimePanel.add(goBackTextField);
-
-        findTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        findTextField.setText("00:00:00:000");
-        rightTimePanel.add(findTextField);
-
-        mainPanel.add(rightTimePanel, java.awt.BorderLayout.EAST);
-
-        bottomPanel.setBackground(java.awt.Color.white);
-        bottomPanel.setLayout(new java.awt.BorderLayout());
-
-        leftButtonPanel.setBackground(java.awt.Color.white);
-        leftButtonPanel.setLayout(new java.awt.GridBagLayout());
-
-        createNewCellButton.setAction(actionMap.get("createNewCellAction")); // NOI18N
-        createNewCellButton.setIcon(resourceMap.getIcon("createNewCellButton.icon")); // NOI18N
-        leftButtonPanel.add(createNewCellButton, new java.awt.GridBagConstraints());
-
-        setNewCellOnsetButton.setAction(actionMap.get("setNewCellStopTime")); // NOI18N
-        setNewCellOnsetButton.setIcon(resourceMap.getIcon("setNewCellOnsetButton.icon")); // NOI18N
-        leftButtonPanel.add(setNewCellOnsetButton, new java.awt.GridBagConstraints());
-
-        bottomPanel.add(leftButtonPanel, java.awt.BorderLayout.WEST);
-
-        fillerPanel.setBackground(java.awt.Color.white);
-        fillerPanel.setLayout(new java.awt.BorderLayout());
-        fillerPanel.add(timestampSetupButton, java.awt.BorderLayout.CENTER);
-
-        bottomPanel.add(fillerPanel, java.awt.BorderLayout.EAST);
-
-        mainPanel.add(bottomPanel, java.awt.BorderLayout.SOUTH);
-
-        getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
+        getContentPane().add(gridButtonPanel, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -696,25 +853,23 @@ public final class QTVideoController
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel bottomPanel;
+    private javax.swing.JButton createNewCell;
     private javax.swing.JButton createNewCellButton;
-    private javax.swing.JPanel fillerPanel;
     private javax.swing.JButton findButton;
     private javax.swing.JTextField findTextField;
     private javax.swing.JButton forwardButton;
     private javax.swing.JButton goBackButton;
     private javax.swing.JTextField goBackTextField;
     private javax.swing.JPanel gridButtonPanel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JButton jogBackButton;
     private javax.swing.JButton jogForwardButton;
     private javax.swing.JLabel lblSpeed;
-    private javax.swing.JPanel leftButtonPanel;
-    private javax.swing.JPanel mainPanel;
     private javax.swing.JButton openVideoButton;
     private javax.swing.JButton pauseButton;
     private javax.swing.JButton playButton;
     private javax.swing.JButton rewindButton;
-    private javax.swing.JPanel rightTimePanel;
     private javax.swing.JButton setCellOffsetButton;
     private javax.swing.JButton setCellOnsetButton;
     private javax.swing.JButton setNewCellOnsetButton;
@@ -725,7 +880,6 @@ public final class QTVideoController
     private javax.swing.JButton syncCtrlButton;
     private javax.swing.JButton syncVideoButton;
     private javax.swing.JLabel timestampLabel;
-    private javax.swing.JButton timestampSetupButton;
     private javax.swing.JPanel topPanel;
     // End of variables declaration//GEN-END:variables
 

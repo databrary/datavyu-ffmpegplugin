@@ -387,12 +387,12 @@ public final class OpenSHAPAView extends FrameView {
         spreadsheetMenu.setAction(actionMap.get("showQTVideoController")); // NOI18N
         spreadsheetMenu.setName("spreadsheetMenu"); // NOI18N
         spreadsheetMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                spreadsheetMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                spreadsheetMenuMenuSelected(evt);
             }
         });
 
@@ -495,12 +495,12 @@ public final class OpenSHAPAView extends FrameView {
 
         scriptMenu.setName("scriptMenu"); // NOI18N
         scriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                populateFavourites(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                populateFavourites(evt);
             }
         });
 
@@ -510,12 +510,12 @@ public final class OpenSHAPAView extends FrameView {
 
         runRecentScriptMenu.setName("runRecentScriptMenu"); // NOI18N
         runRecentScriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                populateRecentScripts(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                populateRecentScripts(evt);
             }
         });
 
