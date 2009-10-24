@@ -15,6 +15,7 @@ import org.jdesktop.application.Action;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
+import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
 import org.openshapa.views.continuous.DataViewer;
@@ -456,13 +457,12 @@ public final class QTVideoController
         //for (DataViewer viewer : viewers) { viewer.seekTo(getCurrentTime()); }
     }
 
-
     /**
      * Action to invoke when the user clicks the set cell onset button.
      */
     @Action
     public void setCellOnsetAction() {
-        //new SetCellOnsetC(getCurrentTime());
+        new SetSelectedCellStartTimeC(getCurrentTime());
     }
 
     /**
