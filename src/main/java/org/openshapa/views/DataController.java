@@ -503,7 +503,7 @@ public final class DataController
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(openVideoButton, gridBagConstraints);
 
-        timestampLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        timestampLabel.setFont(new java.awt.Font("Tahoma", 1, 11));
         timestampLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         timestampLabel.setText("00:00:00:000");
         timestampLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -516,7 +516,7 @@ public final class DataController
         topPanel.setBackground(java.awt.Color.white);
         topPanel.setLayout(new java.awt.BorderLayout());
 
-        lblSpeed.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        lblSpeed.setFont(new java.awt.Font("Tahoma", 1, 11));
         lblSpeed.setText("0");
         lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 2));
         topPanel.add(lblSpeed, java.awt.BorderLayout.LINE_END);
@@ -527,7 +527,11 @@ public final class DataController
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 0);
         gridButtonPanel.add(topPanel, gridBagConstraints);
 
-        createNewCell.setIcon(resourceMap.getIcon("jButton1.icon")); // NOI18N
+        createNewCell.setAction(actionMap.get("createCellAction")); // NOI18N
+        createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
+        createNewCell.setAlignmentY(0.0F);
+        createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        createNewCell.setLabel("");
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
         createNewCell.setMinimumSize(new java.awt.Dimension(45, 90));
         createNewCell.setPreferredSize(new java.awt.Dimension(45, 90));
@@ -547,7 +551,7 @@ public final class DataController
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 0);
         gridButtonPanel.add(jLabel1, gridBagConstraints);
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11));
         jLabel2.setText("x");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
@@ -828,6 +832,14 @@ public final class DataController
     //--------------------------------------------------------------------------
     //
     //
+
+    /**
+     * Action to invoke when the user clicks on the create new cell button.
+     */
+    @Action
+    public void createCellAction() {
+        new CreateNewCellC();
+    }
 
     /**
      * Action to invoke when the user clicks on the new cell button.

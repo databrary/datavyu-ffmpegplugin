@@ -496,7 +496,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="timestampLabel">
           <Properties>
-            <Property name="font" type="java.awt.Font" noResource="true" editor="org.netbeans.beaninfo.editors.FontEditor">
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Tahoma" size="11" style="1"/>
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
@@ -525,7 +525,7 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="lblSpeed">
               <Properties>
-                <Property name="font" type="java.awt.Font" noResource="true" editor="org.netbeans.beaninfo.editors.FontEditor">
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="11" style="1"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="0"/>
@@ -545,7 +545,13 @@
         </Container>
         <Component class="javax.swing.JButton" name="createNewCell">
           <Properties>
-            <Property name="icon" type="javax.swing.Icon" resourceKey="jButton1.icon"/>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="org.openshapa.views.DataController" id="createCellAction" methodName="createCellAction"/>
+            </Property>
+            <Property name="icon" type="javax.swing.Icon" resourceKey="createNewCell.icon"/>
+            <Property name="alignmentY" type="float" value="0.0"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="label" type="java.lang.String" value=""/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 90]"/>
             </Property>
@@ -574,7 +580,7 @@
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
           <Properties>
-            <Property name="font" type="java.awt.Font" noResource="true" editor="org.netbeans.beaninfo.editors.FontEditor">
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Tahoma" size="11" style="1"/>
             </Property>
             <Property name="text" type="java.lang.String" value="x"/>
