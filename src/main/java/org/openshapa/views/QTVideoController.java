@@ -16,6 +16,7 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
+import org.openshapa.controllers.SetSelectedCellStopTimeC;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
 import org.openshapa.views.continuous.DataViewer;
@@ -470,7 +471,7 @@ public final class QTVideoController
      */
     @Action
     public void setCellOffsetAction() {
-        //new SetCellOffsetC(getCurrentTime());
+        new SetSelectedCellStopTimeC(getCurrentTime());
     }
 
 
