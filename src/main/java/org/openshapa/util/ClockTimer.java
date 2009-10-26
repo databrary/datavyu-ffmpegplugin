@@ -166,7 +166,9 @@ public final class ClockTimer {
      * Set flag to stop clock at next time update (boundary).
      */
     public void stop() {
-        if (!isStopped) { stopClock = true; }
+        stopClock = true;
+        rate = 0;
+        notifyRate();
     }
 
     /**

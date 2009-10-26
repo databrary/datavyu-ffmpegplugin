@@ -81,6 +81,8 @@ public final class FloatUtils {
         // If we have a whole part, and a fraction add a spacer to the output.
         if (whole != 0 && numerator != 0) {
             result += " ";
+        } else if (whole == 0 && numerator == 0) {
+            result = "0";
         }
 
         // If we have a fraction component, add it to the output.

@@ -106,6 +106,9 @@ public final class DataController
     /** Index of current shuttle rate. */
     private int shuttleRate;
 
+    /** The rate to use when resumed from pause. */
+    private float pauseRate;
+
     /** Clock timer. */
     private ClockTimer clock = new ClockTimer();
 
@@ -128,6 +131,7 @@ public final class DataController
         initComponents();
         setName(this.getClass().getSimpleName());
         viewers = new HashSet<DataViewer>();
+        pauseRate = 0;
     }
 
     //--------------------------------------------------------------------------
@@ -666,24 +670,29 @@ public final class DataController
 
     /**
      * Action to invoke when the user clicks on the pause button.
-     *
-     * @todo pauses current playback but does not reset playback rate?
      */
     @Action
     public void pauseAction() {
-        if (clock.isStopped()) { clock.start(); }
-        else                   { clock.stop(); }
+        // Resume from pause at playback rate prior to pause.
+        if (clock.isStopped()) {
+            shuttleAt(pauseRate);
+
+        // Pause views - store current playback rate.
+        } else {
+            pauseRate = clock.getRate();
+            clock.stop();
+            lblSpeed.setText("["
+                     + FloatUtils.doubleToFractionStr(new Double(pauseRate))
+                     + "]");
+        }
     }
 
     /**
      * Action to invoke when the user clicks on the stop button.
-     *
-     * @todo Stops current playback and resets rate?
      */
     @Action
     public void stopAction() {
         clock.stop();
-        clock.setRate(PLAY_RATE);
         shuttleDirection = ShuttleDirection.UNDEFINED;
     }
 
@@ -795,10 +804,7 @@ public final class DataController
             }
         }
 
-        shuttleAt(
-                shuttleDirection.getParameter()
-                * SHUTTLE_RATES[shuttleRate]
-            );
+        shuttleAt(shuttleDirection.getParameter() * SHUTTLE_RATES[shuttleRate]);
     }
 
     /**
