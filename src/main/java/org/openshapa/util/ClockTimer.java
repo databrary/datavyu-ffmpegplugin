@@ -23,6 +23,9 @@ public final class ClockTimer {
     /** Clock initial delay. */
     private static final long CLOCK_DELAY = 0L;
 
+    /** Used to convert between nanoseconds and milliseconds. */
+    private static final long NANO_IN_MILLI = 1000000L;
+
 
     //--------------------------------------------------------------------------
     //
@@ -64,7 +67,10 @@ public final class ClockTimer {
     //
 
     /** */
-    private float time;
+    private double time;
+
+    /** Used to calculate elapsed time. */
+    private long nanoTime;
 
     /** */
     private Timer clock;
@@ -85,7 +91,7 @@ public final class ClockTimer {
     private long stepTime;
 
     /** Tick time (CLOCK_TICK * rate). */
-    private float tock = CLOCK_TICK;
+    private double tock = CLOCK_TICK;
 
     /** Update multiplier. */
     private float rate = 1F;
@@ -153,12 +159,12 @@ public final class ClockTimer {
     public float getRate() { return rate; }
 
     /**
-     *
+     * Initiate starting of clock.
      */
     public void start() {
         if (isStopped) {
-            startClock();
             notifyStart();
+            startClock();
         }
     }
 
@@ -199,15 +205,19 @@ public final class ClockTimer {
     }
 
     //--------------------------------------------------------------------------
-    //
+    // [private] implementation
     //
 
     /**
      *
      * @param ms Milliseconds to advance clock.
      */
-    private void tick(final float ms) {
-        time += ms;
+    private void tick(final double ms) {
+        //time += ms;
+
+        long currentNano = System.nanoTime();
+        time += rate * (currentNano - nanoTime) / NANO_IN_MILLI;
+        nanoTime = currentNano;
 
         // BugzID:466 - Prevent rewind wrapping the clock past zero.
         if (time <= 0) {
@@ -239,11 +249,13 @@ public final class ClockTimer {
     }
 
     /**
-     *
+     * Start the clock.
      */
     private void startClock() {
+        nanoTime = System.nanoTime();
+
         clock = new Timer();
-        clock.schedule(
+        clock.scheduleAtFixedRate(
                 new TimerTask() {
                         @Override public void run() { tick(tock); }
                     },
@@ -254,13 +266,17 @@ public final class ClockTimer {
     }
 
     /**
-     *
+     * Stop the clock.
      */
     private void stopClock() {
         clock.cancel();
         clock = null;
         isStopped = true;
     }
+
+    //
+    // emit clock signals to registered listeners
+    //
 
     /**
      * Notify clock listeners of tick event.
