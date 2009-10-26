@@ -1,0 +1,12 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  37 (Line 24:15): Encountered a predicate definition in which the name of the predicate is not a valid predicate name.
+        Will coerce the name to a valid predicate name.
+
+
+      ERROR  4 (Line 224:0): Encountered end of file unexpectedly.
+        EOF in a VOCAB> attribute.
+
+Unable to continue parse -- Aborting...

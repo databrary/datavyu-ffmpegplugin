@@ -193,10 +193,11 @@ implements InternalMatrixVocabElementListener {
             throw new SystemErrorException(mName + "colPred null on entry");
         }
 
-        this.mveID    = colPred.mveID;
-        this.mveName  = new String(colPred.mveName);
-        this.varLen   = colPred.varLen;
-        this.cellID   = colPred.cellID;
+        this.mveID      = colPred.mveID;
+        this.mveName    = new String(colPred.mveName);
+        this.varLen     = colPred.varLen;
+        this.cellID     = colPred.cellID;
+        this.queryVarOK = colPred.queryVarOK;
 
         if ( colPred.argList == null )
         {
@@ -235,10 +236,11 @@ implements InternalMatrixVocabElementListener {
             throw new SystemErrorException(mName + "pred null on entry");
         }
 
-        this.mveID    = colPred.mveID;
-        this.mveName  = new String(colPred.mveName);
-        this.varLen   = colPred.varLen;
-        this.cellID   = colPred.cellID;
+        this.mveID      = colPred.mveID;
+        this.mveName    = new String(colPred.mveName);
+        this.varLen     = colPred.varLen;
+        this.cellID     = colPred.cellID;
+        this.queryVarOK = colPred.queryVarOK;
 
         if ( colPred.argList == null )
         {
@@ -416,16 +418,51 @@ implements InternalMatrixVocabElementListener {
         return;
     }
 
+    // getVarLen()
     /**
      * @return Does this column predicate have a variable length number of
      * arguments (true) or not (false).
      *
      * @date 2008/08/10
      */
-    public boolean getVarLen() {
+    public boolean getVarLen()
+    {
         return this.varLen;
     }
 
+    // getQueryVarOK()
+    /**
+     * Return the current value of the queryVarOK field.
+     *
+     *                                      -- 10/05/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public boolean getQueryVarOK()
+    {
+        return this.queryVarOK;
+    }
+
+    // setQueryVarOK()
+    /**
+     * Set the queryVarOK field to true.
+     *
+     *                                      -- 10/05/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public void setQueryVarOK()
+    {
+        this.queryVarOK = true;
+    }
+
+    // MVEChanged()
     /**
      * Callback method for when a matrix vocab element is changed within the
      * database.
@@ -566,8 +603,10 @@ implements InternalMatrixVocabElementListener {
 
         return;
 
-    }
+    } /* ColPred::MVEChanged() */
 
+
+    // MVEDeleted()
     /**
      * Call back method that is invoked when a matrix vocab element is deleted.
      *
@@ -582,7 +621,8 @@ implements InternalMatrixVocabElementListener {
      * @date 2008/08/08
      */
     public void MVEDeleted(Database db, long MVEID)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "ColPred::MVEDeleted(): ";
         DBElement dbe = null;
         DataCell dc = null;
@@ -616,7 +656,7 @@ implements InternalMatrixVocabElementListener {
 
         return;
 
-    }
+    } /* ColPred::MVEDeleted() */
 
     /**
      * @return The current argument list as a string that can be dumped to a
@@ -899,7 +939,7 @@ implements InternalMatrixVocabElementListener {
      * of this method is an instantiation of <pred_value> or <pred_cell_value>
      * (as defined in the grammar defining the MacSHAPA ODB file format).
      *
-     *                                              1/30/09
+     *                                              JRM -- 1/30/09
      *
      * Changes:
      *
@@ -1020,7 +1060,7 @@ implements InternalMatrixVocabElementListener {
      *
      * Otherwise do nothing.
      *
-     *                                      7/2/09
+     *                                      JRM -- 7/2/09
      *
      * Changes;
      *

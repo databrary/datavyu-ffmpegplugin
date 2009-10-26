@@ -1,0 +1,27 @@
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  37 (Line 24:15): Encountered a predicate definition in which the name of the predicate is not a valid predicate name.
+        Will coerce the name to a valid predicate name.
+
+
+      WARNING  65 (Line 226:35): Encountered a cell value whose value appears to be missing.
+        The matrix cell argument will be left undefined.
+
+
+      WARNING  71 (Line 227:34): Illegal characters encountered in a quote string appearing in a matrix or predicate argument.  The illegal characters were replaced with spaces.
+        The quote string appeared in a matrix or predicate value.
+
+
+      WARNING  66 (Line 233:34): Encountered a formal argument whose name does not match the expected formal argumentname.
+        The formal argument appeared in a predicate value.  The expected formal argument will be used.
+
+
+      WARNING  76 (Line 234:34): Encountered an illegal argument in a matrix spreadsheet cell.  Will replace the argument with the associated formal argument.
+
+
+      ERROR  4 (Line 261:0): Encountered end of file unexpectedly.
+        EOF encountered in a matrix argument.
+
+Unable to continue parse -- Aborting...

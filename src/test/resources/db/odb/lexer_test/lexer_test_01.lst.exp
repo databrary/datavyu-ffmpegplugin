@@ -22,7 +22,7 @@
 
 ((code = 3(SYMBOL_TOK)) (aux = 7(PRED_FLAG|COLUMN_FLAG|NOMINAL_FLAG)) (val = 0.0) (str = a_pred_name) (line_number = 10) (line_index = 43))
 
-((code = 6(STRING_TOK)) (aux = 112(TEXT_QSTRING_FLAG|QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str = a quote string) (line_number = 10) (line_index = 57))
+((code = 6(STRING_TOK)) (aux = 224(TEXT_QSTRING_FLAG|QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str = a quote string) (line_number = 10) (line_index = 57))
 
 ((code = 2(R_PAREN_TOK)) (aux = 0) (val = 0.0) (str = )) (line_number = 10) (line_index = 74))
 
@@ -30,7 +30,7 @@
 
 00011  "this is a text quote string.  It 
 00012  contains an embedded new line, and a pair of embedded \"double quotes\""
-((code = 6(STRING_TOK)) (aux = 80(TEXT_QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str = this is a text quote string.  It 
+((code = 6(STRING_TOK)) (aux = 160(TEXT_QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str = this is a text quote string.  It 
 contains an embedded new line, and a pair of embedded "double quotes") (line_number = 11) (line_index = 1))
 
 00013  1 -1 
@@ -48,7 +48,7 @@ contains an embedded new line, and a pair of embedded "double quotes") (line_num
 ((code = 5(FLOAT_TOK)) (aux = 0) (val = 1.0) (str = 1.) (line_number = 14) (line_index = 21))
 
 00015  ""
-((code = 6(STRING_TOK)) (aux = 48(TEXT_QSTRING_FLAG|QSTRING_FLAG)) (val = 0.0) (str = ) (line_number = 15) (line_index = 1))
+((code = 6(STRING_TOK)) (aux = 96(TEXT_QSTRING_FLAG|QSTRING_FLAG)) (val = 0.0) (str = ) (line_number = 15) (line_index = 1))
 
 00016  TRUE FALSE
 ((code = 7(BOOL_TOK)) (aux = 1) (val = 0.0) (str = TRUE) (line_number = 16) (line_index = 1))
@@ -67,7 +67,7 @@ contains an embedded new line, and a pair of embedded "double quotes") (line_num
 00026  0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
 00027  0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
 00028  0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789"
-((code = 6(STRING_TOK)) (aux = 80(TEXT_QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str = 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+((code = 6(STRING_TOK)) (aux = 160(TEXT_QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str = 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789

@@ -232,13 +232,14 @@ public class MacshapaODBReader
     final int PRED_FLAG         = 0x01;
     final int COLUMN_FLAG       = 0x02;
     final int NOMINAL_FLAG      = 0x04;
-    final int FORMAL_ARG_FLAG   = 0x08;
-    final int ALL_SYMBOL_FLAGS  = 0x0F;
+    final int QUERY_VAR_FLAG    = 0x08; // may only be set if NOMINAL_FLAG is set
+    final int FORMAL_ARG_FLAG   = 0x10;
+    final int ALL_SYMBOL_FLAGS  = 0x1F;
 
-    final int TEXT_QSTRING_FLAG = 0x10;
-    final int QSTRING_FLAG      = 0x20;
-    final int NONBLANK_FLAG     = 0x40;
-    final int ALL_STRING_FLAGS  = 0x70;
+    final int TEXT_QSTRING_FLAG = 0x20;
+    final int QSTRING_FLAG      = 0x40;
+    final int NONBLANK_FLAG     = 0x80;
+    final int ALL_STRING_FLAGS  = 0xE0;
 
     /**
      * MacSHAPA Open Database Read Error Message code constants
@@ -248,23 +249,23 @@ public class MacshapaODBReader
      * error or warning message is defined.
      */
 
-    final int MAX_WARNINGS_EXCEEDED_ERR				=  0;
-    final int NEW_LINE_IN_SYMBOL_ERR				=  1;
-    final int UNTERMINATED_FORMAL_ARG_ERR			=  2;
-    final int ZERO_LENGTH_SYMBOL_ERR				=  3;
-    final int UNEXPECTED_END_OF_FILE_ERR                        =  4;
+    final int MAX_WARNINGS_EXCEEDED_ERR                 =  0;
+    final int NEW_LINE_IN_SYMBOL_ERR                    =  1;
+    final int UNTERMINATED_FORMAL_ARG_ERR               =  2;
+    final int ZERO_LENGTH_SYMBOL_ERR                    =  3;
+    final int UNEXPECTED_END_OF_FILE_ERR                =  4;
     final int ILL_FORMED_NUMERICAL_CONST_ERR			=  5;
-    final int UNKNOWN_TOKEN_TYPE_ERR				=  6;
-    final int ILL_FORMED_PRIVATE_VALUE_ERR			=  7;
-    final int LEFT_PAREN_EXPECTED_ERR				=  8;
-    final int RIGHT_PAREN_EXPECTED_ERR				=  9;
-    final int SETF_EXPECTED_ERR					= 10;
-    final int DB_VAR_EXPECTED_ERR				= 11;
-    final int QUOTE_EXPECTED_ERR				= 12;
-    final int MISSING_OR_OUT_OF_ORDER_ALIST_ENTRY_ERR           = 13;
-    final int REQUIRED_ALIST_ENTRIES_MISSING_ERR                = 14;
-    final int EMPTY_ALIST_ENTRY_ERR				= 15;
-    final int DATA_ITEM_TOO_LARGE_ERR                           = 16;
+    final int UNKNOWN_TOKEN_TYPE_ERR                    =  6;
+    final int ILL_FORMED_PRIVATE_VALUE_ERR              =  7;
+    final int LEFT_PAREN_EXPECTED_ERR                   =  8;
+    final int RIGHT_PAREN_EXPECTED_ERR                  =  9;
+    final int SETF_EXPECTED_ERR                         = 10;
+    final int DB_VAR_EXPECTED_ERR                       = 11;
+    final int QUOTE_EXPECTED_ERR                        = 12;
+    final int MISSING_OR_OUT_OF_ORDER_ALIST_ENTRY_ERR   = 13;
+    final int REQUIRED_ALIST_ENTRIES_MISSING_ERR        = 14;
+    final int EMPTY_ALIST_ENTRY_ERR                     = 15;
+    final int DATA_ITEM_TOO_LARGE_ERR                   = 16;
     
     final int NUMBER_OF_ERROR_MESSAGES				= 17;
     
@@ -1116,7 +1117,7 @@ public class MacshapaODBReader
          * Constructor for an new instance of Token.  This method calls the
          * super class constructor, and sets the reader field
          *
-         *                                                12/14/08
+         *                                                JRM - 12/14/08
          *
          * Parameters:
          *
@@ -1147,28 +1148,28 @@ public class MacshapaODBReader
         } /* Token::Token(reader) */
         
 
-	/*********************************************************************
-	 *
-	 * clip_numeric_token_string()
-	 *
-	 * If a numeric token is out of range, read_numeric_token() forces
-	 * the val field of the token to the nearest legal value.  However, we
-	 * must also force the string assocated with the token to a legal value.
-	 * This method tends to this matter.
-	 *
-	 *                                                 - 6/3/08
-	 *
-	 * Parameters:
-	 *
-	 *    - None.
-	 *
-	 * Returns:  Void
-	 *
-	 * Changes:
-	 *
-	 *    - None.
-	 *
-	 **********************************************************************/
+        /*********************************************************************
+         *
+         * clip_numeric_token_string()
+         *
+         * If a numeric token is out of range, read_numeric_token() forces
+         * the val field of the token to the nearest legal value.  However, we
+         * must also force the string assocated with the token to a legal value.
+         * This method tends to this matter.
+         *
+         *                                                 - 6/3/08
+         *
+         * Parameters:
+         *
+         *    - None.
+         *
+         * Returns:  Void
+         *
+         * Changes:
+         *
+         *    - None.
+         *
+         **********************************************************************/
 
         protected void clip_numeric_token_string()
             throws SystemErrorException
@@ -1568,25 +1569,25 @@ public class MacshapaODBReader
         } /* Token::coerce_symbol_token_to_s_var_name() */
 
 	
-	/*********************************************************************
-	 * save_char_to_token()
-	 *
-	 * The save_char_to_token() method adds new_char to the instance of
-	 * StringBuilder referenced by this.str.  If this.str is null, 
-	 * initialize it with the enpty string and then append new_char to it.
-	 *
-	 *					 - 6/3/08
-	 *
-	 * Parameters:
-	 *
-	 *    - new_char:  Char containing the new character to be added to 
-	 *	the token.
-	 *
-	 * Changes:
-	 *
-	 *    - None
-	 *
-	 ********************************************************************/
+        /*********************************************************************
+         * save_char_to_token()
+         *
+         * The save_char_to_token() method adds new_char to the instance of
+         * StringBuilder referenced by this.str.  If this.str is null,
+         * initialize it with the enpty string and then append new_char to it.
+         *
+         *					 - 6/3/08
+         *
+         * Parameters:
+         *
+         *    - new_char:  Char containing the new character to be added to
+         *	the token.
+         *
+         * Changes:
+         *
+         *    - None
+         *
+         ********************************************************************/
 
         protected void save_char_to_token(char new_char)
         {
@@ -1602,28 +1603,28 @@ public class MacshapaODBReader
         } /* Token::save_char_to_token() */
 
 	
-	/*********************************************************************
-	 *
-	 * toString()
-	 *
-	 * Debugging routine that returns the contents of an instance of 
-	 * Token rpresented in a string.
-	 * 
-	 *					     - 6/4/08
-	 *
-	 * Parameters:
-	 *
-	 *    - None.
-	 *
-	 * Returns:  
-	 * 
-	 *    - String containing text representation of the token.
-	 *
-	 *  Changes:
-	 *
-	 *        - None.
-	 *
-	 *******************************************************************************/
+        /*********************************************************************
+         *
+         * toString()
+         *
+         * Debugging routine that returns the contents of an instance of
+         * Token rpresented in a string.
+         *
+         *					     - 6/4/08
+         *
+         * Parameters:
+         *
+         *    - None.
+         *
+         * Returns:
+         *
+         *    - String containing text representation of the token.
+         *
+         *  Changes:
+         *
+         *        - None.
+         *
+         *******************************************************************************/
 
         @Override
         public String toString()
@@ -1698,46 +1699,47 @@ public class MacshapaODBReader
             StringBuilder cookedStr = null;
             String retVal = null;
 
-	    if ( ( this.code >= 0 ) && ( this.code <= MAX_TOKEN_CODE ) )
-	    {
-		retVal = new String("((code = " + this.code + "(" +
-			            token_code_names[this.code] + "))");
-	    }
-	    else
-	    {
-		retVal = new String("((code = " + this.code + "(Undefined))");
-	    }
+            if ( ( this.code >= 0 ) && ( this.code <= MAX_TOKEN_CODE ) )
+            {
+                retVal = new String("((code = " + this.code + "(" +
+                                token_code_names[this.code] + "))");
+            }
+            else
+            {
+                retVal = new String("((code = " + this.code + "(Undefined))");
+            }
 		
 
-	    /* dump the aux field */
-	    switch (this.code)
-	    {
-		case ALIST_LABEL_TOK:
-		    if ( ( this.aux >= 0 ) &&( this.aux <= NUMBER_OF_ALIST_LABELS ) )
-		    { 
-			retVal += " (aux = " + this.aux + "(" +
-				  a_list_labels[this.aux] + "))";
-		    }
-		    else
-		    {
-			retVal += " (aux = " + this.aux + 
-				  "(Unknown label code))";
-		    }
-		    break;
+            /* dump the aux field */
+            switch (this.code)
+            {
+                case ALIST_LABEL_TOK:
+                    if ( ( this.aux >= 0 ) &&
+                         ( this.aux <= NUMBER_OF_ALIST_LABELS ) )
+                    {
+                        retVal += " (aux = " + this.aux + "(" +
+                              a_list_labels[this.aux] + "))";
+                    }
+                    else
+                    {
+                        retVal += " (aux = " + this.aux +
+                              "(Unknown label code))";
+                    }
+                    break;
 
-		case PRIVATE_VAL_TOK:
-		    if ( ( this.aux >= 0 ) &&
-			 ( this.aux <= NUMBER_OF_PRIVATE_VALUES ) )
-		    {
-			retVal += " (aux = " + this.aux + "(" + 
-				  pval_names[this.aux] + "))";
-		    }
-		    else
-		    {
-			retVal += " (aux = " + this.aux + 
-				  "(Unknown private value code))";
-		    }
-		    break;
+                case PRIVATE_VAL_TOK:
+                    if ( ( this.aux >= 0 ) &&
+                          ( this.aux <= NUMBER_OF_PRIVATE_VALUES ) )
+                    {
+                        retVal += " (aux = " + this.aux + "(" +
+                                  pval_names[this.aux] + "))";
+                    }
+                    else
+                    {
+                        retVal += " (aux = " + this.aux +
+                                  "(Unknown private value code))";
+                    }
+                    break;
 
                 case SYMBOL_TOK:
                     retVal += " (aux = " + this.aux + "(";
@@ -1750,6 +1752,7 @@ public class MacshapaODBReader
                         boolean havePredFlag = false;
                         boolean haveColFlag = false;
                         boolean haveNomFlag = false;
+                        boolean haveQueryVarFlag = false;
                         boolean haveFargFlag = false;
                         boolean haveUnknownFlags = false;
                         int flagCount = 0;
@@ -1771,6 +1774,12 @@ public class MacshapaODBReader
                         {
                             flagCount++;
                             haveNomFlag = true;
+                        }
+
+                        if ( (this.aux & QUERY_VAR_FLAG) != 0 )
+                        {
+                            flagCount++;
+                            haveQueryVarFlag = true;
                         }
 
                         if ( (this.aux & FORMAL_ARG_FLAG) != 0 )
@@ -1817,6 +1826,18 @@ public class MacshapaODBReader
                             if ( haveNomFlag )
                             {
                                 retVal += "NOMINAL_FLAG";
+                                flagsListed++;
+
+                                if ( ( flagsListed > 0 ) &&
+                                     ( flagsListed < flagCount ) )
+                                {
+                                    retVal += "|";
+                                }
+                            }
+
+                            if ( haveQueryVarFlag )
+                            {
+                                retVal += "QUERY_VAR_FLAG";
                                 flagsListed++;
 
                                 if ( ( flagsListed > 0 ) &&
@@ -1950,9 +1971,9 @@ public class MacshapaODBReader
             retVal += " (line_number = " + this.line_number + ")" +
                       " (line_index = " + this.line_index + "))";
 
-	    return retVal;
+            return retVal;
 
-	} /* Token::toString() */
+        } /* Token::toString() */
 	
     }; /* class Token */
 
@@ -2230,7 +2251,7 @@ public class MacshapaODBReader
      * Note that this method should be called exactly once in the life of any
      * instance of MacshapaODBReader.
      *
-     *                                                2/3/09
+     *                                                JRM - 2/3/09
      *
      * Parameters:
      *
@@ -2952,30 +2973,30 @@ public class MacshapaODBReader
      *******************************************************************************/
 
     protected void get_next_token()
-	throws SystemErrorException,
-	       java.io.IOException
+        throws SystemErrorException,
+               java.io.IOException
     {
         final String mName = "macshapa_odb_reader::get_next_token(): ";
-	Token tempTok = null;
+    	Token tempTok = null;
 
-	if ( this.abort_scan )
-	{
-	    throw new SystemErrorException(mName + "abort_scan true on entry");
-	}
-	else if ( (this.l0_tok).code == EOF_TOK )
-	{
-	    post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR, null,
-                               true, true);
-	}
-	else
-	{
-	    tempTok = this.l0_tok;
-	    this.l0_tok = this.l1_tok;
-	    this.l1_tok = this.l2_tok;
-	    
-	    if ( this.l2_tok.code != EOF_TOK )
-	    {
-		this.l2_tok = tempTok;
+        if ( this.abort_scan )
+        {
+            throw new SystemErrorException(mName + "abort_scan true on entry");
+        }
+        else if ( (this.l0_tok).code == EOF_TOK )
+        {
+            post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR, null,
+                                   true, true);
+        }
+        else
+        {
+            tempTok = this.l0_tok;
+            this.l0_tok = this.l1_tok;
+            this.l1_tok = this.l2_tok;
+
+            if ( this.l2_tok.code != EOF_TOK )
+            {
+                this.l2_tok = tempTok;
 
                 if ( this.l2_tok.str == null )
                 {
@@ -3013,7 +3034,7 @@ public class MacshapaODBReader
             }
         }
 
-	return;
+        return;
 
     } /* MacshapaODBReader::get_next_token() */
 
@@ -3266,7 +3287,7 @@ public class MacshapaODBReader
             // For now at least, lets keep this code -- albeit with a system
             // error at the end of the clause to let us know if my reasoning
             // is faulty.
-            //                                          12/25/08
+            //                                          JRM -- 12/25/08
             token.code = EOF_TOK;
 
             post_error_message(token, UNEXPECTED_END_OF_FILE_ERR,
@@ -3465,7 +3486,7 @@ public class MacshapaODBReader
          * place, but throwing a system error that should be flagged if we
          * ever actually do end a numeric token with and EOF.
          *
-         *                                      12/25/08
+         *                                      JRM -- 12/25/08
          */
 
 	if ( ( done ) || ( this.end_of_file ) )
@@ -4166,52 +4187,53 @@ public class MacshapaODBReader
     private void read_symbol_token(char first_char,
 				   Token token)
         throws SystemErrorException,
-	       java.io.IOException
+    	       java.io.IOException
     {
         final String mName = "macshapa_odb_reader::read_symbol_token(): ";
-	char last_char;
-	char next_char;
-	boolean could_be_column;
-	boolean could_be_nominal;
-	boolean could_be_pred;
-	boolean done;
-	boolean escape;
-	boolean scanning_first_char;
+        char last_char;
+        char next_char;
+        boolean could_be_column;
+        boolean could_be_nominal;
+        boolean could_be_pred;
+        boolean could_be_query_var;
+        boolean done;
+        boolean escape;
+        boolean scanning_first_char;
 
-	done = false;
-	escape = false;
+        done = false;
+        escape = false;
 
-	if ( ( first_char != '|' ) || ( token == null ) )
-	{
-	    throw new SystemErrorException(mName + "bad param(s) on entry");
-	}
-	else
-	{
-	    if ( this.lookahead_char == '<' ) /* if anything, it is a formal */
-	    {				      /* argument.	             */
-		scanning_first_char = true;
-		next_char = first_char;
+        if ( ( first_char != '|' ) || ( token == null ) )
+        {
+            throw new SystemErrorException(mName + "bad param(s) on entry");
+        }
+        else
+        {
+            if ( this.lookahead_char == '<' ) /* if anything, it is a formal */
+            {				                  /* argument.                   */
+                scanning_first_char = true;
+                next_char = first_char;
 
-		while ( ( ! done ) && 
-			( ! this.end_of_file ) && 
-			( ! this.abort_scan ) )
-		{
-		    last_char = next_char;
-		    next_char = this.get_next_char();
+                while ( ( ! done ) &&
+                        ( ! this.end_of_file ) &&
+                        ( ! this.abort_scan ) )
+                {
+                    last_char = next_char;
+                    next_char = this.get_next_char();
 
-		    if ( escape )
-		    {
-			escape = false;
+                    if ( escape )
+                    {
+                       escape = false;
 
-			switch ( next_char )
-			{
-			    case '\\':
-			    case '|':
-				/**
-				 * no action required - we save the 
-				 * character below 
-				 */
-				break;
+                        switch ( next_char )
+                        {
+                            case '\\':
+                            case '|':
+                                /**
+                                 * no action required - we save the
+                                 * character below
+                                 */
+                                break;
 
                             default:  /* warning - illegal escape sequence */
                                 /* issue a warning ... */
@@ -4223,10 +4245,10 @@ public class MacshapaODBReader
                                 break;
                         }
 
-			/**
-			 * finally, save the character (possibly altered) 
-			 * to the token 
-			 */
+                        /**
+                         * finally, save the character (possibly altered)
+                         * to the token
+                         */
 
                         token.save_char_to_token(next_char);
                     }
@@ -4332,178 +4354,195 @@ public class MacshapaODBReader
                                 ")\n");
                     }
 
-		    scanning_first_char = false;
-
-		} /* end while */
-	    }
-	    else /* must be either a nominal, a predicate name, or a */
-	    {    /* column variable name.                            */
-		could_be_column = true;
-		could_be_nominal = true;
-		could_be_pred = true;
-
-		scanning_first_char = true;
-
-		while ( ( ! done ) && 
-			( ! this.end_of_file ) && 
-			( ! this.abort_scan ) )
-		{
-		    next_char = this.get_next_char();
-
-		    if ( escape )
-		    {
-			escape = false;
-
-			switch ( next_char )
-			{
-			    case '\\':
-			    case '|':
-				/**
-				 * no action required - we save the 
-				 * character below 
-				 */
-				break;
-
-                            default:  /* warning - illegal escape sequence */
-                                /* issue a warning ... */
-                                post_warning_message(token,
-                                    ILLEGAL_ESCAPE_SEQ_IN_SYMBOL_WARN,
-                                    "The sequence was: '" + next_char +
-                                    "'\n");
-                                /* ... and convert next_char to a '_' */
-                                next_char = '_';
-                                break;
-                        }
-
-			/**
-			 * finally, save the character (possibly altered) 
-			 * to the token 
-			 */
-
-			token.save_char_to_token(next_char);
-		    }
-		    else if ( next_char == '\\' )
-		    {
-			    escape = true;
-		    }
-		    else if ( next_char == ' ' )
-		    {
-			if ( scanning_first_char ) /* leading white space */
-			{
-			    /* issue warning and convert to '_' */
-
-                            post_warning_message(token,
-                                    LEADING_WS_IN_SYMBOL_ERR,
-                                     null);
-                            next_char = '_';
-                        }
-                        else if ( this.lookahead_char == '|' ) /* trailing   */
-                        {                                      /* whitespace */
-                            /* issue warning and convert to '_' */
-
-                            post_warning_message(token,
-                                    TRAILING_WS_IN_SYMBOL_ERR,
-                                     null);
-                            next_char = '_';
-                        }
-                        else /* internal whitespace */
-                        {
-                            could_be_pred = false;
-                        }
-
-			token.save_char_to_token(next_char);
-		    }
-		    else if ( next_char == '|' )
-		    {
-			done = true;
-
-			if ( scanning_first_char )
-			{
-			    /**
-			     * we have encountered a zero length symbol.  
-			     * I can't think of a good way of recovering, 
-			     * so issue a fatal error.
-			     */
-
-			    token.code = ERROR_TOK;
-
-                            post_error_message(token, ZERO_LENGTH_SYMBOL_ERR,
-                                               null, true, true);
-                        }
-                        else
-                        {
-                            token.code = SYMBOL_TOK;
-                            token.aux = 0;
-
-			    if ( could_be_column )
-			    {
-				(token.aux) |= COLUMN_FLAG;
-			    }
-
-			    if ( could_be_nominal )
-			    {
-				(token.aux) |= NOMINAL_FLAG;
-			    }
-
-                            if ( could_be_pred )
-                            {
-                                (token.aux) |= PRED_FLAG;
-                            }
-                        }
-                    }
-                    else if ( isgraph(next_char) )
-                    {
-                        if ( ( next_char != '(' ) && ( next_char != ')' ) &&
-                             ( next_char != '"' ) && ( next_char != ',' ) &&
-                             ( next_char != '<' ) && ( next_char != '>' ) )
-                        {
-                            token.save_char_to_token(next_char);
-                        }
-                        else /* illegal char - issue warning & convert to '_' */
-                        {
-                            post_warning_message(token,
-                                    ILLEGAL_CHAR_IN_SYMBOL_WARN,
-                                    "The illegal character was: '" + next_char +
-                                    "'\n");
-                            token.save_char_to_token('_');
-                        }
-                    }
-                    else if ( next_char == '\r' )
-                    {
-                        done = true;
-                        token.code = ERROR_TOK;
-
-                        /**
-                         * new line in a symbol is probably caused by a failure
-                         * to terminate a symbol with a '|' character.  In this
-                         * case we are probably hosed so issue a fatal error.
-                         */
-
-                        post_error_message(token, NEW_LINE_IN_SYMBOL_ERR,
-                                           null, true, true);
-                    }
-                    else /* illegal character */
-                    {
-                        /* Convert it to a '_' and issue a warning. */
-                        token.save_char_to_token('_');
-                        post_warning_message(token,
-                                ILLEGAL_CHAR_IN_SYMBOL_WARN,
-                                "The illegal character was: '" + next_char +
-                                "' (HEX 0x" +
-                                Integer.toHexString(((int)next_char)) +
-                                ")\n");
-                    }
-
                     scanning_first_char = false;
 
                 } /* end while */
             }
+            else /* must be either a nominal, a predicate name, or a */
+            {    /* column variable name.                            */
+                could_be_column    = true;
+                could_be_nominal   = true;
+                could_be_pred      = true;
+                could_be_query_var = false;
+
+                // recall that syntacticlly, a query variable is simply a
+                // valid nominal that starts with a query variable.
+                if ( this.lookahead_char == '?' )
+                {
+                    could_be_query_var = true;
+                }
+                else
+                {
+                    could_be_query_var = false;
+                }
+
+                scanning_first_char = true;
+
+                while ( ( ! done ) &&
+                        ( ! this.end_of_file ) &&
+                        ( ! this.abort_scan ) )
+                {
+                    next_char = this.get_next_char();
+
+                    if ( escape )
+                    {
+                        escape = false;
+
+                        switch ( next_char )
+                        {
+                            case '\\':
+                            case '|':
+                            /**
+                             * no action required - we save the
+                             * character below
+                             */
+                            break;
+
+                        default:  /* warning - illegal escape sequence */
+                            /* issue a warning ... */
+                            post_warning_message(token,
+                                ILLEGAL_ESCAPE_SEQ_IN_SYMBOL_WARN,
+                                "The sequence was: '" + next_char +
+                                "'\n");
+                            /* ... and convert next_char to a '_' */
+                            next_char = '_';
+                            break;
+                    }
+
+                    /**
+                     * finally, save the character (possibly altered)
+                     * to the token
+                     */
+
+                    token.save_char_to_token(next_char);
+                }
+                else if ( next_char == '\\' )
+                {
+                    escape = true;
+                }
+                else if ( next_char == ' ' )
+                {
+                    if ( scanning_first_char ) /* leading white space */
+                    {
+                        /* issue warning and convert to '_' */
+
+                        post_warning_message(token,
+                                LEADING_WS_IN_SYMBOL_ERR,
+                                 null);
+                        next_char = '_';
+                    }
+                    else if ( this.lookahead_char == '|' ) /* trailing   */
+                    {                                      /* whitespace */
+                        /* issue warning and convert to '_' */
+
+                        post_warning_message(token,
+                                TRAILING_WS_IN_SYMBOL_ERR,
+                                 null);
+                        next_char = '_';
+                    }
+                    else /* internal whitespace */
+                    {
+                        could_be_pred = false;
+                    }
+
+                    token.save_char_to_token(next_char);
+                }
+                else if ( next_char == '|' )
+                {
+                    done = true;
+
+                    if ( scanning_first_char )
+                    {
+                        /**
+                         * we have encountered a zero length symbol.
+                         * I can't think of a good way of recovering,
+                         * so issue a fatal error.
+                         */
+
+                        token.code = ERROR_TOK;
+
+                        post_error_message(token, ZERO_LENGTH_SYMBOL_ERR,
+                                           null, true, true);
+                    }
+                    else
+                    {
+                        token.code = SYMBOL_TOK;
+                        token.aux = 0;
+
+                        if ( could_be_column )
+                        {
+                            (token.aux) |= COLUMN_FLAG;
+                        }
+
+                        if ( could_be_nominal )
+                        {
+                            (token.aux) |= NOMINAL_FLAG;
+
+                            if ( could_be_query_var )
+                            {
+                                (token.aux) |= QUERY_VAR_FLAG;
+                            }
+                        }
+
+                        if ( could_be_pred )
+                        {
+                            (token.aux) |= PRED_FLAG;
+                        }
+                    }
+                }
+                else if ( isgraph(next_char) )
+                {
+                    if ( ( next_char != '(' ) && ( next_char != ')' ) &&
+                         ( next_char != '"' ) && ( next_char != ',' ) &&
+                         ( next_char != '<' ) && ( next_char != '>' ) )
+                    {
+                        token.save_char_to_token(next_char);
+                    }
+                    else /* illegal char - issue warning & convert to '_' */
+                    {
+                        post_warning_message(token,
+                                ILLEGAL_CHAR_IN_SYMBOL_WARN,
+                                "The illegal character was: '" + next_char +
+                                "'\n");
+                        token.save_char_to_token('_');
+                    }
+                }
+                else if ( next_char == '\r' )
+                {
+                    done = true;
+                    token.code = ERROR_TOK;
+
+                    /**
+                     * new line in a symbol is probably caused by a failure
+                     * to terminate a symbol with a '|' character.  In this
+                     * case we are probably hosed so issue a fatal error.
+                     */
+
+                    post_error_message(token, NEW_LINE_IN_SYMBOL_ERR,
+                                       null, true, true);
+                }
+                else /* illegal character */
+                {
+                    /* Convert it to a '_' and issue a warning. */
+                    token.save_char_to_token('_');
+                    post_warning_message(token,
+                            ILLEGAL_CHAR_IN_SYMBOL_WARN,
+                            "The illegal character was: '" + next_char +
+                            "' (HEX 0x" +
+                            Integer.toHexString(((int)next_char)) +
+                            ")\n");
+                }
+
+                scanning_first_char = false;
+
+            } /* end while */
+        }
 
 	    if ( ! done )
 	    {
-		if ( this.end_of_file )
-		{
-		    token.code = EOF_TOK;
+            if ( this.end_of_file )
+            {
+                token.code = EOF_TOK;
 
                     post_error_message(token, UNEXPECTED_END_OF_FILE_ERR,
                            "EOF was encountered in a symbol.\n",
@@ -4517,7 +4556,7 @@ public class MacshapaODBReader
             }
         }
 
-	return;
+    	return;
 
     } /* MacshapaODBReader::read_symbol_token() */
 
@@ -8384,8 +8423,8 @@ public class MacshapaODBReader
                 {
                     value = parse_formal_arg_value(farg);
                 }
-                else if ( ((this.l0_tok).aux & 
-                           (PRED_FLAG | COLUMN_FLAG | NOMINAL_FLAG)) != 0 )
+                else if ( ( (this.l0_tok).aux &
+                            ( PRED_FLAG | COLUMN_FLAG | NOMINAL_FLAG ) ) != 0 )
                 {
                     value = parse_nominal_value(farg);
                 }
@@ -8481,18 +8520,18 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = "macshapa_odb_reader::parse_nominal_cell_value()";
-	final String overflow_mssg = 
-		"Overflow occured in a nominal cell value.\n";
-	boolean altered;
-        String value = "";
-        NominalDataValue ndv = null;
+        final String mName = "macshapa_odb_reader::parse_nominal_cell_value()";
+        final String overflow_mssg =
+            "Overflow occured in a nominal cell value.\n";
+        boolean altered;
+            String value = "";
+            NominalDataValue ndv = null;
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName + 
-		    "this.abort_parse TRUE on entry");
-	}
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse TRUE on entry");
+        }
         
         if ( farg == null )
         {
@@ -8511,14 +8550,14 @@ public class MacshapaODBReader
                                            "Supplied farg has invalid ID.");
         }
 	
-	/* try to parse the nominal cell value */
+        /* try to parse the nominal cell value */
 
-	switch ( (this.l0_tok).code )
-	{
-	    case SYMBOL_TOK:
-		if ( (((this.l0_tok).aux) & NOMINAL_FLAG) != 0 )
-		{
-		    altered = this.l0_tok.coerce_nominal_token_to_cell_nominal();
+        switch ( (this.l0_tok).code )
+        {
+            case SYMBOL_TOK:
+                if ( (((this.l0_tok).aux) & NOMINAL_FLAG) != 0 )
+                {
+                    altered = this.l0_tok.coerce_nominal_token_to_cell_nominal();
 
                     if ( ( ! this.abort_parse ) && ( altered ) )
                     {
@@ -8541,24 +8580,24 @@ public class MacshapaODBReader
                     }
 
                     value = new String("");
-		}
-		else /* not a nominal */
-		{
-		    /* This clause is unreachable at present.  However, if we 
-		     * change our definitions of nominals, pred names, column 
-		     * variable names, etc., this may change.
-		     */
+                }
+                else /* not a nominal */
+                {
+                    /* This clause is unreachable at present.  However, if we
+                     * change our definitions of nominals, pred names, column
+                     * variable names, etc., this may change.
+                     */
 
                     post_warning_message(this.l0_tok, S_VAR_CELL_VALUE_TYPE_MISMATCH_WARN,
                         "Will discard the value && leave the nominal " +
                         "cell undefined.\n");
                 }
 
-		if ( ! this.abort_parse )
-		{
-		    get_next_token();
-		}
-		break;
+                if ( ! this.abort_parse )
+                {
+                    get_next_token();
+                }
+                break;
 
             case STRING_TOK:
             case INT_TOK:
@@ -8574,11 +8613,11 @@ public class MacshapaODBReader
                         "Will discard the value && leave the nominal " +
                         "cell undefined.\n");
 
-		if ( ! this.abort_parse )
-		{
-		    get_next_token();
-		}
-		break;
+                if ( ! this.abort_parse )
+                {
+                    get_next_token();
+                }
+                break;
 
             case L_PAREN_TOK:
                 post_warning_message(this.l0_tok,
@@ -8586,11 +8625,11 @@ public class MacshapaODBReader
                         "The value is a list, which will be discarded. " +
                         "The nominal cell will be left undefined.\n");
 
-		if ( ! this.abort_parse )
-		{
-		    parse_arbitrary_list();
-		}
-		break;
+                if ( ! this.abort_parse )
+                {
+                    parse_arbitrary_list();
+                }
+                break;
 
             case R_PAREN_TOK:
                 post_warning_message(this.l0_tok, S_VAR_CELL_VALUE_MISSING_WARN,
@@ -8603,11 +8642,11 @@ public class MacshapaODBReader
                         "The value is an ill formed token.  " +
                         "The nominal cell will be left undefined.\n");
 
-		if ( ! this.abort_parse )
-		{
-		    get_next_token();
-		}
-		break;
+                if ( ! this.abort_parse )
+                {
+                    get_next_token();
+                }
+                break;
 
             case EOF_TOK:
                 post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
@@ -8615,12 +8654,12 @@ public class MacshapaODBReader
                            true, true);
                 break;
 
-	     default:
-		 throw new SystemErrorException(mName + 
-			 "Encountered unknown token type.");
-	         /* commented out to keep the compiler happy */
-		 // break;
-	}
+            default:
+                throw new SystemErrorException(mName +
+                        "Encountered unknown token type.");
+                /* commented out to keep the compiler happy */
+                // break;
+        }
         
         // range checking done in the lexer, so if we get this far, just
         // create the data value.  
@@ -8732,16 +8771,17 @@ public class MacshapaODBReader
                         "This clause should be unreachable.");
             }
         }
-        
-        value = this.l0_tok.str.toString();
-        
-        if ( ( replace_with_farg ) ||
-             ( ( farg.fargType != FormalArgument.FArgType.NOMINAL ) &&
-               ( farg.fargType != FormalArgument.FArgType.UNTYPED ) ) )
+
+        if ( ( ( ! this.in_query )
+               ||
+               ( ((this.l0_tok).aux & QUERY_VAR_FLAG) == 0 )
+             )
+             &&
+             ( farg.fargType != FormalArgument.FArgType.NOMINAL )
+             &&
+             ( farg.fargType != FormalArgument.FArgType.UNTYPED )
+           )
         {
-            dv = new UndefinedDataValue(this.db, 
-                                        farg.getID());
-            
             if ( ! replace_with_farg )
             {
                 /* type mismatch between formal argument and value.
@@ -8750,6 +8790,16 @@ public class MacshapaODBReader
                 post_warning_message(this.l0_tok,
                         FARG_ARG_TYPE_MISMATCH_WARN, null);
             }
+
+            replace_with_farg = true;
+        }
+        
+        value = this.l0_tok.str.toString();
+        
+        if ( replace_with_farg )
+        {
+            dv = new UndefinedDataValue(this.db, 
+                                        farg.getID());
         }
         else
         {
@@ -8757,7 +8807,7 @@ public class MacshapaODBReader
             // create the data value.  
             //
             // Note that in the OpenSHAPA version of this code, we will have
-            // to check to see if the formal argument is a subranged float,
+            // to check to see if the formal argument is a subranged,
             // and if so coerce the value to range if ncessary.
 
             dv = new NominalDataValue(this.db, farg.getID(), value);
@@ -8768,7 +8818,7 @@ public class MacshapaODBReader
             get_next_token();
         }
         
-	return(dv);
+    	return(dv);
 
     } /* MacshapaODBReader::parse_nominal_value() */
 
@@ -15939,39 +15989,40 @@ public class MacshapaODBReader
 	throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = "macshapa_odb_reader::parse_vocab_list()";
-	boolean done;
+        final String mName = "macshapa_odb_reader::parse_vocab_list()";
+        boolean done;
+        PredicateVocabElement pve = null;
 
-	if ( this.abort_parse )
-	{
-	    throw new SystemErrorException(mName + 
-		    "this.abort_parse TRUE on entry");
-	}
-	
-	if ( s_var_col_ID == DBIndex.INVALID_ID )
-	{
-	    throw new SystemErrorException(mName + 
-		    "s_var_col_ID is invalid on entry.");
-	}
-	
-	/* parse the vocab list */
-	
-	/* first parse the leading left parenthesis */
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse TRUE on entry");
+        }
 
-	if ( (this.l0_tok).code == L_PAREN_TOK )
-	{
-	    get_next_token();
-	}
-	else /* we shouldn't have been called unless the next token is a '(' */
-	{
-	    throw new SystemErrorException(mName + 
-		    "(this.l0_tok).code != L_PAREN_TOK.");
-	}
+        if ( s_var_col_ID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName +
+                "s_var_col_ID is invalid on entry.");
+        }
 
-	/* now read the vocabulary list */
-	if ( ! this.abort_parse )
-	{
-	    done = false;
+        /* parse the vocab list */
+
+        /* first parse the leading left parenthesis */
+
+        if ( (this.l0_tok).code == L_PAREN_TOK )
+        {
+            get_next_token();
+        }
+        else /* we shouldn't have been called unless the next token is a '(' */
+        {
+            throw new SystemErrorException(mName +
+                "(this.l0_tok).code != L_PAREN_TOK.");
+        }
+
+        /* now read the vocabulary list */
+        if ( ! this.abort_parse )
+        {
+            done = false;
 
             while ( ( ! this.abort_parse ) && ( ! done ) )
             {
@@ -16000,6 +16051,18 @@ public class MacshapaODBReader
                                     UNDEF_PRED_IN_VOCAB_LIST_WARN,
                                     null);
                             }
+                            else
+                            {
+                                pve = this.db.vl.getPredicateVocabElement(
+                                                this.l0_tok.str.toString());
+
+                                if ( pve.getSystem() )
+                                {
+                                    post_warning_message(this.l0_tok,
+                                        SYSTEM_PRED_IN_VOCAB_LIST_WARN,
+                                        null);
+                                }
+                            }
                         }
                         else if ( ((this.l0_tok).aux &
                                    (COLUMN_FLAG | NOMINAL_FLAG)) != 0 )
@@ -16015,27 +16078,27 @@ public class MacshapaODBReader
                                 "(this.l0_tok).aux appears to be corrupt.");
                         }
 
-			if ( ! this.abort_parse )
-			{
-			    get_next_token();
-			}
-			break;
+                        if ( ! this.abort_parse )
+                        {
+                            get_next_token();
+                        }
+                        break;
 
-		    case R_PAREN_TOK:
-			done = true;
-			get_next_token();
-			break;
+                    case R_PAREN_TOK:
+                        done = true;
+                        get_next_token();
+                        break;
 
                     case L_PAREN_TOK:
                         post_warning_message(this.l0_tok,
                                 NON_PRED_IN_VOCAB_WARN,
                                 "The item was a list.\n");
 
-			if ( ! this.abort_parse )
-			{
-			    parse_arbitrary_list();
-			}
-			break;
+                        if ( ! this.abort_parse )
+                        {
+                            parse_arbitrary_list();
+                        }
+                        break;
 
                     case BOOL_TOK:
                     case ERROR_TOK:
@@ -16051,28 +16114,29 @@ public class MacshapaODBReader
                                 NON_PRED_IN_VOCAB_WARN,
                                 "The item was an atom.\n");
 
-			if ( ! this.abort_parse )
-			{
-			    get_next_token();
-			}
-			break;
-
-                    case EOF_TOK:
-                        post_error_message(this.l0_tok, UNEXPECTED_END_OF_FILE_ERR,
-                                   "EOF in a vocabulary list.\r",
-                                   true, true);
+                        if ( ! this.abort_parse )
+                        {
+                            get_next_token();
+                        }
                         break;
 
-		    default:
-			throw new SystemErrorException(mName + 
-				"Encountered unknown token type.");
-                        /* commented out to keep the compiler happy */
-			// break;
-		 }
-	     }
-	}
+                    case EOF_TOK:
+                        post_error_message(this.l0_tok,
+                                UNEXPECTED_END_OF_FILE_ERR,
+                                "EOF in a vocabulary list.\r",
+                                true, true);
+                        break;
 
-	return;
+                    default:
+                    throw new SystemErrorException(mName +
+                        "Encountered unknown token type.");
+                        /* commented out to keep the compiler happy */
+                        // break;
+                }
+            }
+        }
+
+        return;
 
     } /* MacshapaODBReader::parse_vocab_list() */
 
@@ -16116,22 +16180,23 @@ public class MacshapaODBReader
         throws SystemErrorException,
                java.io.IOException
     {
-	final String mName = "macshapa_odb_reader::parse_query_list()";
-	final String overflow_mssg = "Overflow occured in a query.\n";
-	Boolean done;
-	Boolean have_query;
-	Boolean success;
+        final String mName = "macshapa_odb_reader::parse_query_list()";
+        final String overflow_mssg = "Overflow occured in a query.\n";
+        Boolean done;
+        Boolean have_query;
+        Boolean success;
         long cellID = DBIndex.INVALID_ID;
         Vector<DataValue> argList = null;
+        Predicate empty_pred = null;
         DataValue query_dv = null;
         Matrix query_matrix = null;
-	DataCell query_cell = null;
-	
-	if ( this.abort_parse )
-	{
+        DataCell query_cell = null;
+
+        if ( this.abort_parse )
+        {
             throw new SystemErrorException(mName + 
                     "this.abort_parse TRUE on entry");
-	}
+    	}
         else if ( ( query_col_ID == DBIndex.INVALID_ID ) ||
                   ( query_mve_ID == DBIndex.INVALID_ID ) )
         {
@@ -16151,15 +16216,15 @@ public class MacshapaODBReader
         {
             throw new SystemErrorException(mName + "farg has invalid ID");
         }
-	else /* parse the header section */
-	{
+        else /* parse the header section */
+        {
             /* first parse the leading left parenthesis */
 		
             if ( (this.l0_tok).code == L_PAREN_TOK )
             {
                 this.get_next_token();
             }
-	    else /* we shouldn't have been called unless the next token is a '(' */
+            else /* we shouldn't have been called unless the next token is a '(' */
             {
                 throw new SystemErrorException(mName + 
                         "(this.l0_tok).code isnt L_PAREN_TOK.");
@@ -16188,11 +16253,13 @@ public class MacshapaODBReader
                         have_query = true; /* at worst, we will insert an empty query */
 					
                         if ( (this.l1_tok).code == R_PAREN_TOK ) /* empty cell */
-			{
+                        {
                             /* construct empty query cell value */
+                            empty_pred = new Predicate(this.db);
+                            empty_pred.setQueryVarOK();
                             query_dv = new PredDataValue(this.db, 
                                                          farg.getID(), 
-                                                         new Predicate(this.db));
+                                                         empty_pred);
 	
                             if ( ! this.abort_parse )
                             {
@@ -16207,13 +16274,29 @@ public class MacshapaODBReader
                         else /* should be a predicate value */
                         {
                             query_dv = parse_pred_value(farg);
-			}
+
+                            // if parse_pred_value is fed a non-predicate,
+                            // it will return null.  Must allow for
+                            // that posibility by testing to see if query_dv
+                            // is null, and creating an empty predicate data
+                            // value if it is.
+                            if ( query_dv == null )
+                            {
+                                /* construct empty query cell value */
+                                empty_pred = new Predicate(this.db);
+                                empty_pred.setQueryVarOK();
+                                query_dv = new PredDataValue(this.db,
+                                                             farg.getID(),
+                                                             empty_pred);
+
+                            }
+                        }
                         break;
 	 				
                     case R_PAREN_TOK:
-                            done = true;
-                            this.get_next_token(); /* eat the closing parenthesis */
-                            break;
+                        done = true;
+                        this.get_next_token(); /* eat the closing parenthesis */
+                        break;
 
                     case FLOAT_TOK:
                     case INT_TOK:
@@ -16333,7 +16416,7 @@ public class MacshapaODBReader
         else if ( this.db.colNameInUse(QUERY_VAR_NAME) )
         {
             throw new SystemErrorException(mName + 
-                    "Query variable alread defined?!?");
+                    "Query variable already defined?!?");
         }
         else /* parse the header section */
         {
@@ -16363,7 +16446,8 @@ public class MacshapaODBReader
                         "query_mve insertion in vl failed?");
             }
                 
-            query_col = new DataColumn(this.db, QUERY_VAR_NAME, true, false, query_mve_ID);
+            query_col = new DataColumn(this.db, QUERY_VAR_NAME, true, false,
+                                       query_mve_ID);
         
             this.db.cl.addColumn(query_col);
         

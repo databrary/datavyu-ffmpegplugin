@@ -15,7 +15,7 @@
       WARNING   4 (Line 13:1): Illegal escape sequence detected in a string.  Sequence replaced with a '_'.
         The sequence was: \]
 
-((code = 6(STRING_TOK)) (aux = 112(TEXT_QSTRING_FLAG|QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str =  an illegal escape sequence follows: _) (line_number = 13) (line_index = 1))
+((code = 6(STRING_TOK)) (aux = 224(TEXT_QSTRING_FLAG|QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str =  an illegal escape sequence follows: _) (line_number = 13) (line_index = 1))
 
 00014  
 00015  ; This string contains a backspace
@@ -25,7 +25,7 @@
       WARNING   5 (Line 17:1): Illegal character detected in a string.  Character replaced with a '_'.
         The illegal character was:  (HEX 0x08)
 
-((code = 6(STRING_TOK)) (aux = 112(TEXT_QSTRING_FLAG|QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str =  the next character is a BS (0x08):_) (line_number = 17) (line_index = 1))
+((code = 6(STRING_TOK)) (aux = 224(TEXT_QSTRING_FLAG|QSTRING_FLAG|NONBLANK_FLAG)) (val = 0.0) (str =  the next character is a BS (0x08):_) (line_number = 17) (line_index = 1))
 
 00018  
 00019  ; finally, an unterminated string
