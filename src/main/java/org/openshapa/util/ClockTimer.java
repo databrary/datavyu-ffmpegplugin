@@ -207,6 +207,12 @@ public final class ClockTimer {
     private void tick(final float ms) {
         time += ms;
 
+        // BugzID:466 - Prevent rewind wrapping the clock past zero.
+        if (time <= 0) {
+            time = 0;
+            stopClock = true;
+        }
+
         if (stopClock) {
             stopClock = false;
             stopClock();
