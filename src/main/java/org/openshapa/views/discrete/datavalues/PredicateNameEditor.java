@@ -81,7 +81,6 @@ public final class PredicateNameEditor extends DataValueEditor {
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        //super.keyTyped(e);
         int pos = this.getCaretPosition();
 
         // The backspace key removes characters from behind the caret.
@@ -185,37 +184,9 @@ public final class PredicateNameEditor extends DataValueEditor {
 
             // Update database and arguments with latest model.
             updateDatabase();
-            rebuildArgEditors();
+
         } catch (SystemErrorException e) {
             logger.error("Unable to edit value", e);
         }
-    }
-
-    /**
-     * Setting the predicate causes a reset of the predicate database. Build the
-     * new arg editors and add to the editor tracker.
-     */
-    public void rebuildArgEditors() {
-        argsEditors.addAll(buildArgEditors());
-
-        if (argsEditors.size() > 0) {
-            matrixRootView.getEdTracker().addEditors(argsEditors);
-        }
-        matrixRootView.rebuildText();
-    }
-
-    /**
-     * Builds the argument editors for this cells predicate.
-     * @return Vector of the arg editors.
-     */
-    private Vector<EditorComponent> buildArgEditors() {
-        Vector<EditorComponent> eds = new Vector<EditorComponent>();
-        try {
-            eds = DataValueEditorFactory.buildPredicateArgs(matrixRootView,
-                                           getCell(), getMatrix(), getmIndex());
-        } catch (SystemErrorException ex) {
-            logger.error("Unable to build new predicate arg editors", ex);
-        }
-        return eds;
     }
 }

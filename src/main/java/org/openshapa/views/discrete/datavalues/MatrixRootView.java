@@ -10,6 +10,9 @@ import java.util.Vector;
 import javax.swing.JTextArea;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.db.FormalArgument.FArgType;
+import org.openshapa.db.PredDataValue;
+import org.openshapa.db.Predicate;
 import org.openshapa.db.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
@@ -34,6 +37,12 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     /** The current vocab used for this matrix root view. */
     private VocabElement ve;
 
+    /**
+     * The current number of predicate arguments used for this matrix root
+     * view... -1 If not a predicate.
+     */
+    private int numPredArgs;
+
     /** The logger for this class. */
     private static Logger logger = Logger.getLogger(MatrixRootView.class);
 
@@ -49,6 +58,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
                           final DataCell cell,
                           final Matrix matrix) {
         super();
+
         setLineWrap(true);
         setWrapStyleWord(true);
 
@@ -57,6 +67,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
         allEditors = new Vector<EditorComponent>();
         edTracker = new EditorTracker(this, allEditors);
         ve = null;
+        numPredArgs = -1;
 
         setMatrix(matrix);
 
@@ -77,6 +88,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * Sets the matrix that this MatrixRootView will represent.
+     *
      * @param m The Matrix to display.
      */
     public void setMatrix(final Matrix m) {
@@ -93,6 +105,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
                 // locally determine if the vocab element has changed and update
                 // the editors accordingly.
                 VocabElement newVE = m.getDB().getVocabElement(m.getMveID());
+                boolean hasPredChanged = hasPredicateVocabChanged(m);
 
                 // No editors exist yet - build some to begin with.
                 if (allEditors.size() == 0) {
@@ -102,7 +115,10 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
                 // Check to see if the vocab for the matrix has changed - if so
                 // clear the current editors and start afresh.
-                } else if (ve != null && !ve.equals(newVE)) {
+                } else if (ve != null && !ve.equals(newVE) || hasPredChanged) {
+                    if (hasPredChanged) {
+                        edPos = 0;
+                    }
                     allEditors.clear();
                     allEditors.addAll(DataValueEditorFactory
                                       .buildMatrix(this, parentCell, m));
@@ -127,6 +143,32 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     }
 
     /**
+     * Returns true if the vocab has changed for a predicate.
+     *
+     * @param m The matrix containing the predicate to alter.
+     *
+     * @return True if the predicate vocab has changed, false otherwise.
+     *
+     * @throws SystemErrorException If unable to determine if the predicate
+     * vocab has changed.
+     */
+    public boolean hasPredicateVocabChanged(final Matrix m)
+    throws SystemErrorException {
+        boolean result = false;
+
+        if (m.getNumArgs() == 1
+            && m.getArgCopy(0).getItsFargType() == FArgType.PREDICATE) {
+            PredDataValue pdv = (PredDataValue) m.getArgCopy(0);
+            Predicate p = pdv.getItsValue();
+
+            result = (pdv.isEmpty() || p.getNumArgs() != numPredArgs);
+            numPredArgs = p.getNumArgs();
+        }
+
+        return result;
+    }
+
+    /**
      * Recalculates and sets the text to display.
      */
     public void rebuildText() {
@@ -148,6 +190,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * The action to invoke if the focus is gained by this MatrixRootView.
+     *
      * @param fe The Focus Event that triggered this action.
      */
     public void focusGained(final FocusEvent fe) {
