@@ -533,9 +533,9 @@ public final class DataController
 
         createNewCell.setAction(actionMap.get("createCellAction")); // NOI18N
         createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
+        createNewCell.setText("");
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        createNewCell.setLabel("");
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
         createNewCell.setMinimumSize(new java.awt.Dimension(45, 90));
         createNewCell.setPreferredSize(new java.awt.Dimension(45, 90));
