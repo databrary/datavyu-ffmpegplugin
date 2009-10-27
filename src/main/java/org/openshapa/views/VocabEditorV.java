@@ -114,7 +114,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         this.getRootPane().setDefaultButton(okButton);
 
         // Hide all the broken stuff.
-        this.deleteButton.setVisible(false);
+        //this.deleteButton.setVisible(false);
         this.varyArgCheckBox.setVisible(false);
     }
 
@@ -370,8 +370,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
         try {
             for (VocabElementV view : veViewsToDeleteCompletely) {
-                //db.removePredVE(view.getModel().getID());
-                //this needs to be db.removeVocabElement()
+                db.removeVocabElement(view.getModel().getID());
                 verticalFrame.remove(view);
                 veViews.remove(view);
             }

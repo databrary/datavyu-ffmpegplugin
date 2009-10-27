@@ -72,7 +72,7 @@ public class Predicate extends DBElement
     protected long cellID = DBIndex.INVALID_ID;
 
     /** whether parameters can be query variables */
-    protected boolean queryVarOK = false;
+    private boolean queryVarOK = false;
 
 
 
@@ -481,6 +481,39 @@ public class Predicate extends DBElement
         return this.varLen;
 
     } /* Predicate::getVarLen() */
+
+
+    // getQueryVarOK()
+    /**
+     * Return the current value of the queryVarOK field.
+     *
+     *                                      -- 10/05/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public boolean getQueryVarOK()
+    {
+        return this.queryVarOK;
+    }
+
+    // setQueryVarOK()
+    /**
+     * Set the queryVarOK field to true.
+     *
+     *                                      -- 10/05/09
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+    public void setQueryVarOK()
+    {
+        this.queryVarOK = true;
+    }
 
 
     /*************************************************************************/

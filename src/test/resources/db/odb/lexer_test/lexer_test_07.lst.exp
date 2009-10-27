@@ -15,7 +15,7 @@
       WARNING   0 (Line 13:1): Illegal escape sequence detected in a symbol.  Sequence replaced with a '_'.
         The sequence was: \i
 
-((code = 3(SYMBOL_TOK)) (aux = 8(FORMAL_ARG_FLAG)) (val = 0.0) (str = <illegal_escape_seq:_>) (line_number = 13) (line_index = 1))
+((code = 3(SYMBOL_TOK)) (aux = 16(FORMAL_ARG_FLAG)) (val = 0.0) (str = <illegal_escape_seq:_>) (line_number = 13) (line_index = 1))
 
 00014  
 00015  ; These formal arguments contain a variety of illegal characters
@@ -29,7 +29,7 @@
       WARNING   1 (Line 17:1): Illegal character detected in a symbol.  Character replaced with a '_'.
         The illegal character was: '>'.
 
-((code = 3(SYMBOL_TOK)) (aux = 8(FORMAL_ARG_FLAG)) (val = 0.0) (str = <_to_many_brackets_>) (line_number = 17) (line_index = 1))
+((code = 3(SYMBOL_TOK)) (aux = 16(FORMAL_ARG_FLAG)) (val = 0.0) (str = <_to_many_brackets_>) (line_number = 17) (line_index = 1))
 
 
       WARNING   1 (Line 17:24): Illegal character detected in a symbol.  Character replaced with a '_'.
@@ -51,7 +51,7 @@
       WARNING   1 (Line 17:24): Illegal character detected in a symbol.  Character replaced with a '_'.
         The illegal character was: ' ' (HEX 0x20)
 
-((code = 3(SYMBOL_TOK)) (aux = 8(FORMAL_ARG_FLAG)) (val = 0.0) (str = <spaces_are_frobidden_in_formal_arguments>) (line_number = 17) (line_index = 24))
+((code = 3(SYMBOL_TOK)) (aux = 16(FORMAL_ARG_FLAG)) (val = 0.0) (str = <spaces_are_frobidden_in_formal_arguments>) (line_number = 17) (line_index = 24))
 
 00018  
 00019  |<()", are_all_forbidden_characters>|
@@ -75,7 +75,7 @@
       WARNING   1 (Line 19:1): Illegal character detected in a symbol.  Character replaced with a '_'.
         The illegal character was: ' ' (HEX 0x20)
 
-((code = 3(SYMBOL_TOK)) (aux = 8(FORMAL_ARG_FLAG)) (val = 0.0) (str = <_____are_all_forbidden_characters>) (line_number = 19) (line_index = 1))
+((code = 3(SYMBOL_TOK)) (aux = 16(FORMAL_ARG_FLAG)) (val = 0.0) (str = <_____are_all_forbidden_characters>) (line_number = 19) (line_index = 1))
 
 00020  
 00021  |<this_formal_argument_contains_a_BS_char:(hex_0x08)>|
@@ -91,7 +91,7 @@
       WARNING   1 (Line 21:1): Illegal character detected in a symbol.  Character replaced with a '_'.
         The illegal character was ')'
 
-((code = 3(SYMBOL_TOK)) (aux = 8(FORMAL_ARG_FLAG)) (val = 0.0) (str = <this_formal_argument_contains_a_BS_char:__hex_0x08_>) (line_number = 21) (line_index = 1))
+((code = 3(SYMBOL_TOK)) (aux = 16(FORMAL_ARG_FLAG)) (val = 0.0) (str = <this_formal_argument_contains_a_BS_char:__hex_0x08_>) (line_number = 21) (line_index = 1))
 
 00022  
 00023  ; this formal argument isn't terminated properly

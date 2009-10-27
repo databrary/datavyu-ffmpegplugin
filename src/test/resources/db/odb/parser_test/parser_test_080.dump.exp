@@ -49,6 +49,8 @@
             ( |svar 2|
               (
                 ( CELLS>
+                  (
+                  )
                 )
                 ( VOCAB> ( ) )
               )
@@ -56,6 +58,8 @@
             ( |svar 3|
               (
                 ( CELLS>
+                  (
+                  )
                 )
                 ( VOCAB> ( ) )
               )
@@ -63,6 +67,8 @@
             ( |svar 1|
               (
                 ( CELLS>
+                  (
+                  )
                 )
                 ( VOCAB> ( ) )
               )

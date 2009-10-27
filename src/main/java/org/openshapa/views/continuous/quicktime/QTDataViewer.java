@@ -79,8 +79,7 @@ public final class QTDataViewer extends JFrame
     //
 
     /**
-     *
-     * @return A JFrame for display purposes.
+     * @return The parent JFrame that this data viewer resides within.
      */
     public JFrame getParentJFrame() {
         return this;
@@ -102,20 +101,20 @@ public final class QTDataViewer extends JFrame
                                        StdQTConstants.movieTrackCharacteristic);
             visualMedia = visualTrack.getMedia();
 
-            fps =
-                    (float) visualMedia.getSampleCount()
-                    / visualMedia.getDuration() * visualMedia.getTimeScale();
+            fps = (float) visualMedia.getSampleCount()
+                  / visualMedia.getDuration() * visualMedia.getTimeScale();
 
             this.add(QTFactory.makeQTComponent(movie).asComponent());
-            // Set the size of the window to be the same as the incoming video.
-            this.setBounds(this.getX(), this.getY(),
-                           movie.getBox().getWidth(),
-                           movie.getBox().getHeight());
+
+            setName(this.getClass().getSimpleName() + videoFile.getName());
             this.pack();
             this.invalidate();
             this.setVisible(true);
 
-            setName(this.getClass().getSimpleName() + videoFile.getName());
+            // Set the size of the window to be the same as the incoming video.
+            this.setBounds(this.getX(), this.getY(),
+                           movie.getBox().getWidth(),
+                           movie.getBox().getHeight());
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
@@ -124,20 +123,23 @@ public final class QTDataViewer extends JFrame
     /**
      * @return The frames per second.
      */
-    public float getFrameRate() { return fps; }
+    public float getFrameRate() {
+        return fps;
+    }
 
     /**
      * @param rate The playback rate.
      */
-    public void setPlaybackSpeed(final float rate) { this.playRate = rate; }
+    public void setPlaybackSpeed(final float rate) {
+        this.playRate = rate;
+    }
 
     /**
-     * Plays the continous data stream at a regular 1x normal speed.
+     * Plays the continous data stream at the current playback rate..
      */
     public void play() {
         try {
             if (movie != null) {
-                this.setVisible(true);
                 movie.setRate(playRate);
             }
         } catch (QTException e) {
@@ -145,13 +147,12 @@ public final class QTDataViewer extends JFrame
         }
     }
 
-     /**
+    /**
      * Stops the playback of the continous data stream.
      */
     public void stop() {
         try {
             if (movie != null) {
-                this.setVisible(true);
                 movie.stop();
             }
         } catch (QTException e) {
@@ -165,9 +166,6 @@ public final class QTDataViewer extends JFrame
     public void seek(final long offset) {
         try {
             if (movie != null) {
-                this.setVisible(true);
-                //movie.stop();
-
                 double curTime = movie.getTime() / (float) movie.getTimeScale();
                 double seconds = offset * MILLI_TO_SECONDS;
 
@@ -189,9 +187,6 @@ public final class QTDataViewer extends JFrame
     public void seekTo(final long position) {
         try {
             if (movie != null) {
-                this.setVisible(true);
-                //movie.stop();
-
                 double seconds = position * MILLI_TO_SECONDS;
                 long qtime = (long) seconds * movie.getTimeScale();
 
@@ -205,8 +200,8 @@ public final class QTDataViewer extends JFrame
     }
 
     /**
-     *
      * @return Current time in milliseconds.
+     *
      * @throws QTException If error occurs accessing underlying implemenation.
      */
     public long getCurrentTime() throws QTException {

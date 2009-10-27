@@ -1,0 +1,290 @@
+; MacSHAPA Open Database
+( setf macshapa-db
+ '(
+    ( HEADER>
+      (
+        ( NAME> "parser_test.db" )
+        ( VERSION> 1 )
+        ( DEBUG-LEVEL> 2 )
+        ( MAX-ERRORS> 10 )
+        ( MAX-WARNINGS> 50 )
+      )
+    )
+    ( USER>
+      (
+        ( PREDICATE-DEFINITIONS>
+          (
+            ( |not_a_pred_name| ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+            ( |pred_2| ( ( VARIABLE-LENGTH> TRUE ) ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+            ( |pred_1| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) ) )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DECLARATIONS>
+          (
+            ( |an integer var|
+              (
+                ( TYPE> <<INTEGER>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |var len matrix|
+              (
+                ( TYPE> <<MATRIX>> )
+                ( VARIABLE-LENGTH> TRUE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
+                ( COLUMN-WIDTH> 225 )
+              )
+            )
+            ( |a text var|
+              (
+                ( TYPE> <<TEXT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |a float var|
+              (
+                ( TYPE> <<FLOAT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |a nominal var|
+              (
+                ( TYPE> <<NOMINAL>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |a predicate var|
+              (
+                ( TYPE> <<PREDICATE>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |fixed len matrix|
+              (
+                ( TYPE> <<MATRIX>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DEFINITIONS>
+          (
+            ( |an integer var|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| 10 )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<val>| 0 )
+                    )
+                  )
+                )
+              )
+            )
+            ( |var len matrix|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<arg1>| 1 )
+                      ( |<arg2>| 2.000000 )
+                    )
+                    (
+                      ( ONSET> 10 )
+                      ( OFFSET> 20 )
+                      ( |<arg1>| |a nominal| )
+                      ( |<arg2>| "a string" )
+                    )
+                    (
+                      ( ONSET> 20 )
+                      ( OFFSET> 30 )
+                      ( |<arg1>| ( |pred_2| |<arg1>| ) )
+                      ( |<arg2>| ( TIME> 120 ) )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<arg1>| |<arg1>| )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<arg1>| |<arg1>| )
+                    )
+                    (
+                      ( ONSET> 61 )
+                      ( OFFSET> 61 )
+                      ( |<arg1>| "first arg" )
+                      ( |<arg2>| "second arg" )
+                    )
+                  )
+                )
+                ( VOCAB> ( |pred_2| ) )
+              )
+            )
+            ( |a text var|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| "this is a text cell" )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<val>| "" )
+                    )
+                  )
+                )
+              )
+            )
+            ( |a float var|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| 10.000000 )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<val>| 0.000000 )
+                    )
+                  )
+                )
+              )
+            )
+            ( |a nominal var|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |this is nominal cell| )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<val>| |<val>| )
+                    )
+                  )
+                )
+              )
+            )
+            ( |a predicate var|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( |pred_1| ( TIME> 120 ) |a nominal| ) )
+                    )
+                    (
+                      ( ONSET> 10 )
+                      ( OFFSET> 20 )
+                      ( |<val>| ( |pred_1| "a string" |<arg2>| ) )
+                    )
+                    (
+                      ( ONSET> 20 )
+                      ( OFFSET> 30 )
+                      ( |<val>| ( |pred_1| 10 1.000000 ) )
+                    )
+                    (
+                      ( ONSET> 30 )
+                      ( OFFSET> 40 )
+                      ( |<val>| ( |pred_1| ( |pred_2| |<arg1>| ) |<arg2>| ) )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<val>| () )
+                    )
+                  )
+                )
+                ( VOCAB> ( |pred_1| |pred_2| ) )
+              )
+            )
+            ( |fixed len matrix|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<arg1>| 1 )
+                      ( |<arg2>| 2.000000 )
+                    )
+                    (
+                      ( ONSET> 10 )
+                      ( OFFSET> 20 )
+                      ( |<arg1>| |a nominal| )
+                      ( |<arg2>| "a string" )
+                    )
+                    (
+                      ( ONSET> 20 )
+                      ( OFFSET> 30 )
+                      ( |<arg1>| ( |pred_2| |<arg1>| ) )
+                      ( |<arg2>| ( TIME> 120 ) )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<arg1>| "first arg" )
+                      ( |<arg2>| "second arg" )
+                    )
+                  )
+                )
+                ( VOCAB> ( |pred_2| ) )
+              )
+            )
+          )
+        )
+      )
+    )
+    ( QUERY>
+      (
+      )
+    )
+    ( SYSTEM>
+      (
+        ( SHAPA-PANE-VARS>
+          (
+            |a text var|
+            |a nominal var|
+            |an integer var|
+            |a float var|
+            |a predicate var|
+            |fixed len matrix|
+            |var len matrix|
+          )
+        )
+      )
+    )
+  )
+)

@@ -1,0 +1,629 @@
+00001  ; MacSHAPA Open Database
+00002  ;
+00003  ; This is one of a series of test databases intended to test the partially
+00004  ; constructed parser.  Neither this nor any of its bretheren are a valid
+00005  ; macshapa databases.
+00006  ;
+00007  ( setf macshapa-db 
+00008   '( 
+00009      ( HEADER> 
+00010        ( 
+00011          ( VERSION> 1 ) 
+00012          ( NAME> "parser_test.db" )
+00013          ( DEBUG-LEVEL> 2 ) 
+00014          ( MAX-ERRORS> 20 )
+00015          ( MAX-WARNINGS> 50 )
+
+      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+00016        )
+00017      ) 
+00018      ( USER> 
+
+
+Current Header Settings:
+db.name = "parser_test.db"
+odb file format version = 1
+warning limit = 50
+error limit = 10
+debug level = 2
+
+00019        (
+00020          ( PREDICATE-DEFINITIONS> 
+00021            (
+00022              ( |pred_1| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg1>| |<arg2>| ) ) ) )
+00023              ( |pred_2| ( ( VARIABLE-LENGTH> TRUE )  ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+
+
+Predicate Definition:
+	name = "pred_1"
+	variable length = false
+	arg 0 = "<arg1>"
+	arg 1 = "<arg2>"
+
+00024              ( |not a pred name| ( ( VARIABLE-LENGTH> TRUE )  ( FORMAL-ARG-LIST> ( |<arg1>| ) ) ) )
+
+
+Predicate Definition:
+	name = "pred_2"
+	variable length = true
+	arg 0 = "<arg1>"
+
+
+      WARNING  37 (Line 24:15): Encountered a predicate definition in which the name of the predicate is not a valid predicate name.
+        Will coerce the name to a valid predicate name.
+
+00025            )
+00026          ) 
+
+
+Predicate Definition:
+	name = "not_a_pred_name"
+	variable length = true
+	arg 0 = "<arg1>"
+
+00027          ( SPREADSHEET-VARIABLE-DECLARATIONS> 
+00028            (
+00029              ( |a text var| 
+00030                ( 
+00031                  ( TYPE> <<TEXT>> ) 
+00032                  ( VARIABLE-LENGTH> FALSE )
+00033                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) ) 
+00034                  ( COLUMN-WIDTH> 200 ) 
+00035                ) 
+00036              )
+00037              ( |a nominal var| 
+
+
+Spreadsheet Variable Definition:
+	name = "a text var"
+	type = TEXT
+	variable length = false
+	column width = 200
+00038                ( 
+00039                  ( TYPE> <<NOMINAL>> ) 
+00040                  ( VARIABLE-LENGTH> FALSE )
+00041                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )  
+00042                  ( COLUMN-WIDTH> 200 ) 
+00043                ) 
+00044              )
+00045              ( |an integer var| 
+
+
+Spreadsheet Variable Definition:
+	name = "a nominal var"
+	type = NOMINAL
+	variable length = false
+	column width = 200
+00046                ( 
+00047                  ( TYPE> <<INTEGER>> ) 
+00048                  ( VARIABLE-LENGTH> FALSE )
+00049                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )  
+00050                  ( COLUMN-WIDTH> 200 ) 
+00051                ) 
+00052              )
+00053              ( |a float var| 
+
+
+Spreadsheet Variable Definition:
+	name = "an integer var"
+	type = INTEGER
+	variable length = false
+	column width = 200
+00054                ( 
+00055                  ( TYPE> <<FLOAT>> ) 
+00056                  ( VARIABLE-LENGTH> FALSE )
+00057                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )  
+00058                  ( COLUMN-WIDTH> 200 ) 
+00059                ) 
+00060              )
+00061              ( |a predicate var| 
+
+
+Spreadsheet Variable Definition:
+	name = "a float var"
+	type = FLOAT
+	variable length = false
+	column width = 200
+00062                ( 
+00063                  ( TYPE> <<PREDICATE>> ) 
+00064                  ( VARIABLE-LENGTH> FALSE )
+00065                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )  
+00066                  ( COLUMN-WIDTH> 200 ) 
+00067                ) 
+00068              )
+00069              ( |fixed len matrix| 
+
+
+Spreadsheet Variable Definition:
+	name = "a predicate var"
+	type = PREDICATE
+	variable length = false
+	column width = 200
+00070                ( 
+00071                  ( TYPE> <<MATRIX>> ) 
+00072                  ( VARIABLE-LENGTH> FALSE )
+00073                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )  
+00074                  ( COLUMN-WIDTH> 200 ) 
+00075                ) 
+00076              )
+00077              ( |var len matrix| 
+
+
+Spreadsheet Variable Definition:
+	name = "fixed len matrix"
+	type = MATRIX
+	variable length = false
+	column width = 200
+00078                ( 
+00079                  ( TYPE> <<MATRIX>> ) 
+00080                  ( VARIABLE-LENGTH> TRUE )
+00081                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )  
+00082                  ( COLUMN-WIDTH> 225 ) 
+00083                ) 
+00084              )
+00085            ) 
+00086          ) 
+
+
+Spreadsheet Variable Definition:
+	name = "var len matrix"
+	type = MATRIX
+	variable length = true
+	column width = 225
+00087          ( SPREADSHEET-VARIABLE-DEFINITIONS>
+00088           ( 
+00089              ( |a text var|
+00090                ( 
+00091                  ( CELLS>
+00092                    ( 
+00093                      (
+00094                        ( ONSET>  0 ) 
+00095                        ( OFFSET> 0 ) 
+00096                        ( |<val>| "this is a text cell") 
+00097                      )
+00098                      ( 
+00099                        ( ONSET>  60 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 1
+	onset = 00:00:00:000
+	offset = 00:00:00:000
+	value = this is a text cell
+00100                        ( OFFSET> 60 ) 
+00101                        ( |<val>| "") 
+00102                      )
+00103                    )
+00104                  )
+00105                )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 2
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = 
+00106              )
+00107              
+00108              ( |a nominal var|
+00109                (
+00110                  ( CELLS>
+00111                    (
+00112                      ( 
+00113                        ( ONSET> 0 ) 
+00114                        ( OFFSET> 0 ) 
+00115                        ( |<val>| |this is nominal cell| ) 
+00116                      )
+00117                      ( 
+00118                        ( ONSET> 60 )  
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 1
+	onset = 00:00:00:000
+	offset = 00:00:00:000
+	value = this is nominal cell
+00119                        ( OFFSET> 60 ) 
+00120                        ( |<val>| |<val>| ) 
+00121                      )
+00122                    )
+00123                  )
+00124                )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 2
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = 
+00125              )
+00126  
+00127              ( |an integer var|
+00128                (
+00129                  ( CELLS>
+00130                    (
+00131                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| 10 ) )
+00132                      ( 
+00133                        ( ONSET> 60 )  
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 1
+	onset = 00:00:00:000
+	offset = 00:00:00:000
+	value = 10
+00134                        ( OFFSET> 60 ) 
+00135                        ( |<val>| 0 ) 
+00136                      )
+00137                    )
+00138                  )
+00139                )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 2
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = 0
+00140              )
+00141  
+00142              ( |a float var|
+00143                (
+00144                  ( CELLS>
+00145                    (
+00146                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| 10.0 ) )
+00147                      ( 
+00148                        ( ONSET> 60 )  
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 1
+	onset = 00:00:00:000
+	offset = 00:00:00:000
+	value = 10.000000
+00149                        ( OFFSET> 60 ) 
+00150                        ( |<val>| 0.0 ) 
+00151                      )
+00152                    )
+00153                  )
+00154                )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 2
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = 0.000000
+00155              )
+00156  
+00157  
+00158              ( |fixed len matrix|
+00159                (
+00160                  ( CELLS>
+00161                    (
+00162                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
+00163                      ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 1
+	onset = 00:00:00:000
+	offset = 00:00:00:000
+	value = 1, 2.000000
+00164                      ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 2
+	onset = 00:00:00:010
+	offset = 00:00:00:020
+	value = a nominal, "a string"
+00165                      ( 
+00166                        ( ONSET> 60 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 3
+	onset = 00:00:00:020
+	offset = 00:00:00:030
+	value = pred_2(<arg1>), 00:00:02:000
+00167                        ( OFFSET> 60 ) 
+00168                        ( |<arg1>| |<arg1>| ) 
+00169                        ( |<arg2>| |<arg2>| ) 
+00170                      )
+00171                      ( 
+00172                        ( ONSET> 60 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 4
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = <arg1>, <arg2>
+00173                        ( OFFSET> 60 ) 
+00174                        ( |<arg1>| "first arg" ) 
+00175                        ( |<arg2>| "second arg" ) 
+00176                      )
+00177                      ( 
+00178                        ( ONSET> 61 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 5
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = "first arg", "second arg"
+00179                        ( OFFSET> 61 )
+00180                        ( |<arg1>| "first arg" ) 
+00181                        ( |<arg2>| "second arg" ) 
+00182                      )
+00183                      ( 
+00184                        ( ONSET> 62 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 6
+	onset = 00:00:01:001
+	offset = 00:00:01:001
+	value = "first arg", "second arg"
+00185                        ( OFFSET> 62 ) 
+00186                        ( |<arg1>| "first arg" ) 
+00187                        ( |<arg2>| "second arg" ) 
+00188                      )
+00189                      ( 
+00190                        ( ONSET> 63 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 7
+	onset = 00:00:01:002
+	offset = 00:00:01:002
+	value = "first arg", "second arg"
+00191                        ( OFFSET> 63 )
+00192                        ( |<arg1>| "first arg" ) 
+00193                        ( |<arg2>| "second arg" ) 
+00194                      )
+00195                    )
+00196                  )
+00197                  ( VOCAB> ( |pred_1| |pred_2| ) ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 8
+	onset = 00:00:01:003
+	offset = 00:00:01:003
+	value = "first arg", "second arg"
+00198                )
+00199              )
+00200              ( |var len matrix|
+00201                (
+00202                  ( CELLS>
+00203                    (
+00204                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<arg1>| 1 ) ( |<arg2>| 2.0 ) )
+00205                      ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<arg1>| |a nominal| ) ( |<arg2>| "a string" ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 1
+	onset = 00:00:00:000
+	offset = 00:00:00:000
+	value = 1, 2.000000
+00206                      ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<arg1>| ( |pred_2| |<arg1>| ) ) ( |<arg2>| ( TIME> 120 ) ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 2
+	onset = 00:00:00:010
+	offset = 00:00:00:020
+	value = a nominal, "a string"
+00207                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 3
+	onset = 00:00:00:020
+	offset = 00:00:00:030
+	value = pred_2(<arg1>), 00:00:02:000
+00208                      ( ( ONSET> 60 ) ( OFFSET> 60 ) ( |<arg1>| |<arg1>| ) ( |<arg2>| |<arg2>| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 4
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = <arg1>, <arg2>
+00209                      ( 
+00210                        ( ONSET> 61 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 5
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = <arg1>, <arg2>
+00211                        ( OFFSET> 61 ) 
+00212                        ( |<arg1>| "first arg" ) 
+00213                        ( |<arg2>| "second arg" ) 
+00214                      )
+00215                      ( 
+00216                        ( ONSET> 62 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 6
+	onset = 00:00:01:001
+	offset = 00:00:01:001
+	value = "first arg", "second arg"
+00217                        ( OFFSET> 62 ) 
+00218                        ( |<arg1>| "first arg" ) 
+00219                        ( |<arg2>| "second arg" ) 
+00220                      )
+00221                      ( 
+00222                        ( ONSET> 63 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 7
+	onset = 00:00:01:002
+	offset = 00:00:01:002
+	value = "first arg", "second arg"
+00223                        ( OFFSET> 63 ) 
+00224                        ( |<arg1>| "first arg" ) 
+00225                        ( |<arg2>| "second arg" ) 
+00226                      )
+00227                      ( 
+00228                        ( ONSET> 64 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 8
+	onset = 00:00:01:003
+	offset = 00:00:01:003
+	value = "first arg", "second arg"
+00229                        ( OFFSET> 64 ) 
+00230                        ( |<arg1>| "first arg" ) 
+00231                        ( |<arg2>| "second arg" ) 
+00232                      )
+00233                    )
+00234                  )
+00235                  ( VOCAB> ( |pred_1| |pred_2| ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 9
+	onset = 00:00:01:004
+	offset = 00:00:01:004
+	value = "first arg", "second arg"
+00236                )
+00237              )
+00238              
+00239              ( |a predicate var|
+00240                (
+00241                  ( CELLS>
+00242                    (
+00243                      ( ( ONSET>  0 ) ( OFFSET>  0 ) ( |<val>| ( |pred_1| ( TIME> 120 ) |a nominal| ) ) )
+00244                      ( ( ONSET> 10 ) ( OFFSET> 20 ) ( |<val>| ( |pred_1| "a string" |<arg2>| ) ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 1
+	onset = 00:00:00:000
+	offset = 00:00:00:000
+	value = pred_1(00:00:02:000, a nominal)
+00245                      ( ( ONSET> 20 ) ( OFFSET> 30 ) ( |<val>| ( |pred_1| 10 1.0 ) ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 2
+	onset = 00:00:00:010
+	offset = 00:00:00:020
+	value = pred_1("a string", <arg2>)
+00246                      ( ( ONSET> 30 ) ( OFFSET> 40 ) ( |<val>| ( |pred_1| ( |pred_2| |<arg1>| ) |<arg2>| ) ) )
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 3
+	onset = 00:00:00:020
+	offset = 00:00:00:030
+	value = pred_1(10, 1.000000)
+00247                      ( 
+00248                        ( ONSET> 60 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 4
+	onset = 00:00:00:030
+	offset = 00:00:00:040
+	value = pred_1(pred_2(<arg1>), <arg2>)
+00249                        ( OFFSET> 60 ) 
+00250                        ( |<val>| ( ) ) 
+00251                      )
+00252                      ( 
+00253                        ( ONSET> 61 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 5
+	onset = 00:00:01:000
+	offset = 00:00:01:000
+	value = ()
+00254                        ( OFFSET> 61 ) 
+00255                        ( |<val>| ( |pred_1| ( TIME> -1 ) ( TIME> 12960000 ) ) ) ; time stamp out of range
+
+      WARNING  63 (Line 255:52): Encountered a time that falls outside the range of values representable by MacSHAPA. The time will be forced to the nearest legal value.
+        The out of range value appeared in a TIME> attribute
+
+
+      WARNING  63 (Line 255:65): Encountered a time that falls outside the range of values representable by MacSHAPA. The time will be forced to the nearest legal value.
+        The out of range value appeared in a TIME> attribute
+
+00256                      )
+00257                      ( 
+00258                        ( ONSET> 62 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 6
+	onset = 00:00:01:001
+	offset = 00:00:01:001
+	value = pred_1(00:00:00:000, 59:59:59:059)
+00259                        ( OFFSET> 62 ) 
+00260                        ( |<val>| ( |pred_1| ( TIME>  ) ( TIME> ( |a| "random" |<list>| ) ) ) )
+
+      WARNING  14 (Line 260:53): Encountered a-list entry without a value.  A-list entries must be of the form '(' <tag> <value> ')'.
+        A TIME> attribute appears not to contain a value.  Default value used.
+
+
+      WARNING  22 (Line 260:63): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of a TIME> attribute must be an integer.  Default value used.
+
+00261                      )
+00262                      ( 
+00263                        ( ONSET> 63 ) 
+
+
+Spreadsheet Variable Cell Definition:
+	ord = 7
+	onset = 00:00:01:002
+	offset = 00:00:01:002
+	value = pred_1(00:00:00:000, 00:00:00:000)
+00264                        ( OFFSET> 63 ) 
+00265                        ( |<val>| ( |pred_1| ( TIME> setf ) ( TIME> 120.0 ) ) 
+
+      WARNING  22 (Line 265:52): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of a TIME> attribute must be an integer.  Default value used.
+
+
+      WARNING  22 (Line 265:67): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of a TIME> attribute must be an integer.  Default value used.
+
+00266                      )
+00267                      ( 
+00268                        ( ONSET> 64 ) 
+
+      WARNING  19 (Line 268:23): Encountered list that is not an a-list entry in an a-list.  The list will be read and discarded.
+        The list is located in a spreadsheet variable cell a-list.
+
+00269                        ( OFFSET> 64 ) 
+00270                        ( |<val>| ( |pred_1| ( TIME> TRUE ) ( TIME> ; 120 ) ) ; EOF before value
+00271  ;                    )
+00272  ;                  )
+00273  ;                )
+00274  ;                ( VOCAB> ( |pred_1| |pred_2| ) )
+00275  ;              )
+00276  ;            )
+00277              
+00278  ;          )
+00279  ;        )
+00280  ;      ) 
+00281  ;    ) 
+00282  ;    ( QUERY> 2 )
+00283  ;    ( SYSTEM> 3 )
+00284  ;  ) 
+00285  ;)
+
+      ERROR  4 (Line 285:0): Encountered end of file unexpectedly.
+        EOF encountered in an arbitrary list that was being discarded.
+
+Unable to continue parse -- Aborting...

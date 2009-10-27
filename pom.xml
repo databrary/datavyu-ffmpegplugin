@@ -17,6 +17,18 @@
   <!-- Credits for OpenSHAPA. -->
   <developers>
     <developer>
+      <id>clinton</id>
+      <name>Clinton Freeman</name>
+      <email>clinton.freeman@_no_spam_nicta.com.au</email>
+      <organization>NICTA</organization>
+      <organizationUrl>www.nicta.com.au</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+
+    <developer>
       <id>John</id>
       <name>John Mainzer</name>
       <email>jrm@_no_spam_phoenix.hdfgroup.uiuc.edu</email>
@@ -29,12 +41,24 @@
     <developer>
       <id>michael</id>
       <name>Michael Muthukrishna</name>
-      <email>michael.muthukrishna@_no_spam_gmail.com</email>
+      <email>michael.muthukrishna@_no_spam_nicta.com.au</email>
       <organization>NICTA</organization>
       <organizationUrl>www.nicta.com.au</organizationUrl>
       <roles>
         <role>Developer</role>
         <role>Tester</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+
+    <developer>
+      <id>phil</id>
+      <name>Phil Waller</name>
+      <email>philip.waller@_no_spam_nicta.com.au</email>
+      <organization>NICTA</organization>
+      <organizationUrl>www.nicta.com.au</organizationUrl>
+      <roles>
+        <role>Developer</role>
       </roles>
       <timezone>+10</timezone>
     </developer>
@@ -88,6 +112,12 @@
     <contributor>
       <name>Penny Sanderson</name>
       <email>Penny.Sanderson@_no_spam_nicta.com.au</email>
+      <timezone>+10</timezone>
+    </contributor>
+
+    <contributor>
+      <name>Samuel Hasenbosch</name>
+      <email>samuel.hasenbosch@_no_spam_nicta.com.au</email>
       <timezone>+10</timezone>
     </contributor>
 
@@ -300,6 +330,7 @@
 
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.3</version>
         <executions>
           <execution>
             <id>add-source</id>
