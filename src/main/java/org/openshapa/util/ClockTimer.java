@@ -213,8 +213,6 @@ public final class ClockTimer {
      * @param ms Milliseconds to advance clock.
      */
     private void tick(final double ms) {
-        //time += ms;
-
         long currentNano = System.nanoTime();
         time += rate * (currentNano - nanoTime) / NANO_IN_MILLI;
         nanoTime = currentNano;
