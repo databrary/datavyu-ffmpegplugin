@@ -1070,6 +1070,8 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 //
 //        vocElementsPanel.getUIComponents(VocabElement.class);
 //
+//        //VocabElement [] vocabElements = new
+//
 //        VocabElement oldVE = new VocabElement(((VocabElementV) (vocElementsPanel
 //            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
 //
@@ -1111,7 +1113,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 //     * @throws java.lang.Exception on any error
 //     */
 //    public void testNewPredicateReplaceVEName() throws Exception {
-//        //Preparation
+//        //Preparation 
 //        Window window = getMainWindow();
 //        MenuBar menuBar = window.getMenuBar();
 //
