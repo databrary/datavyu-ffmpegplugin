@@ -9,6 +9,7 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.uispec4j.Cell;
+import org.uispec4j.Column;
 import org.uispec4j.Key;
 import org.uispec4j.KeyItem;
 import org.uispec4j.MenuBar;
@@ -980,6 +981,81 @@ public final class UIVocabEditorTest extends UISpecTestCase {
             assertTrue(oldVEs[i].getValueText().equalsIgnoreCase(
                     finalVocElements[i].getValueText()));
         }
+    }
+
+    /** Test vocab editor creating new predicate and reverting w/o script.
+     * @throws java.lang.Exception on any error
+     */
+    public void testAddNewMatrix() throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new variables using script
+        String root = System.getProperty("testPath");
+        final File demoFile = new File(root + "/ui/demo_data.rb");
+        assertTrue(demoFile.exists());
+
+        WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile.getAbsolutePath()))
+                .process(new WindowHandler() {
+                    public Trigger process(Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+
+        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+
+        vocEdWindow.getButton("Add Matrix()").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        //Check that VE exists
+        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+
+        //Click Apply
+        vocEdWindow.getButton("Apply").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+
+        //Check that new matrix column has been created
+         Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
+                window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+
+        String varName = finalVocElements[finalVocElements.length - 1]
+                .getVEName();
+
+        Column matrixColumn = ss.getSpreadsheetColumn(varName);
+
+        assertNotNull(matrixColumn);
+
+        matrixColumn.requestFocus();
+
+        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+
+        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+
+        String argName = finalVocElements[finalVocElements.length - 1]
+                .getArgument(0);
+
+        assertTrue(cells.elementAt(0).getValueText().equalsIgnoreCase(
+                "<" + argName + ">"));
     }
 
 
