@@ -986,6 +986,108 @@ public final class UIVocabEditorTest extends UISpecTestCase {
     /** Test vocab editor creating new predicate and reverting w/o script.
      * @throws java.lang.Exception on any error
      */
+    public void testAddNewMatrixAndRevert1() throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+
+        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+
+        vocEdWindow.getButton("Add Matrix()").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        //Check that VE exists
+        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+
+        //Revert
+        vocEdWindow.getButton("Revert").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+
+        //Check that vocab element has been removed
+        assertTrue(oldVEs.length == finalVocElements.length);
+
+        int numElements = oldVEs.length;
+        for (int i = 0; i < numElements; i++) {
+            assertTrue(oldVEs[i].getValueText().equalsIgnoreCase(
+                    finalVocElements[i].getValueText()));
+        }
+    }
+
+     /** Test vocab editor creating new predicate and reverting w/o script.
+     * @throws java.lang.Exception on any error
+     */
+    public void testAddNewMatrixAndRevert2() throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new variables using script
+        String root = System.getProperty("testPath");
+        final File demoFile = new File(root + "/ui/demo_data.rb");
+        assertTrue(demoFile.exists());
+
+        WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile.getAbsolutePath()))
+                .process(new WindowHandler() {
+                    public Trigger process(Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+
+        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+
+        vocEdWindow.getButton("Add Matrix()").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        //Check that VE exists
+        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+
+        //Revert
+        vocEdWindow.getButton("Revert").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+
+        //Check that vocab element has been removed
+        assertTrue(oldVEs.length == finalVocElements.length);
+
+        int numElements = oldVEs.length;
+        for (int i = 0; i < numElements; i++) {
+            assertTrue(oldVEs[i].getValueText().equalsIgnoreCase(
+                    finalVocElements[i].getValueText()));
+        }
+    }
+
+    /** Test vocab editor creating new predicate and reverting w/o script.
+     * @throws java.lang.Exception on any error
+     */
     public void testAddNewMatrix() throws Exception {
         //Preparation
         Window window = getMainWindow();
