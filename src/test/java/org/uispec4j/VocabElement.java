@@ -9,7 +9,7 @@ import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.uispec4j.utils.KeyUtils;
 
 /**
- *
+ * A single Vocabulary Element from the Vocab Editor
  */
 public class VocabElement extends AbstractUIComponent {
 
@@ -27,7 +27,7 @@ public class VocabElement extends AbstractUIComponent {
     private VocabElementV ve;
 
     /**
-     * Spreadsheet constructor.
+     * VocabElement constructor.
      * @param vocabElementV actual VocabElementV class being adapted
      */
     public VocabElement(final VocabElementV vocabElementV) {
