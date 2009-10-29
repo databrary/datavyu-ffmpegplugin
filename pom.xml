@@ -4,7 +4,7 @@
   <groupId>org.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>0.93</version>
+  <version>0.94</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
