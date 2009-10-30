@@ -111,7 +111,6 @@ public class VocabElementV extends JPanel {
         deleteIcon.setPreferredSize(ICON_SIZE);
 
         veRootView = new VocabElementRootView(vocabElement, this);
-        veRootView.setFont(Configuration.getInstance().getSSDataFont());
 
         JPanel leftPanel = new JPanel();
         FlowLayout flayout = new FlowLayout(FlowLayout.LEFT, 0, 0);
