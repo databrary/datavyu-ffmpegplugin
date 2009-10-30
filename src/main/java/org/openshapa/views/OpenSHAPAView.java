@@ -31,12 +31,15 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 import org.openshapa.controllers.OpenDatabaseC;
 import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.Configuration;
 import org.openshapa.db.Cell;
+import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
 import org.openshapa.util.FileFilters.MODBFilter;
 
@@ -234,11 +237,12 @@ public final class OpenSHAPAView extends FrameView {
     }
 
     /**
-     * Action for removing columsn from the database.
+     * Action for removing columns from the database.
      */
     @Action
     public void deleteColumn() {
         Vector<DataColumn> colsToDelete = panel.getSelectedCols();
+        panel.deselectAll();
 
         try {
             for (DataColumn dc : colsToDelete) {
@@ -256,6 +260,23 @@ public final class OpenSHAPAView extends FrameView {
             }
         } catch (SystemErrorException e) {
             logger.error("Unable to delete columns.", e);
+        }
+    }
+
+    /**
+     * Action for removing cells from the database.
+     */
+    @Action
+    public void deleteCells() {
+        Vector<DataCell> cellsToDelete = panel.getSelectedCells();
+        panel.deselectAll();
+
+        try {
+            for (DataCell c : cellsToDelete) {
+                OpenSHAPA.getDatabase().removeCell(c.getID());
+            }
+        } catch (SystemErrorException e) {
+            logger.error("Unable to delete cells", e);
         }
     }
 
@@ -308,6 +329,7 @@ public final class OpenSHAPAView extends FrameView {
         newCellMenuItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
         deleteColumnMenuItem = new javax.swing.JMenuItem();
+        deleteCellMenuItem = new javax.swing.JMenuItem();
         jSeparator6 = new javax.swing.JSeparator();
         weakTemporalOrderMenuItem = new javax.swing.JCheckBoxMenuItem();
         strongTemporalOrderMenuItem = new javax.swing.JCheckBoxMenuItem();
@@ -430,8 +452,14 @@ public final class OpenSHAPAView extends FrameView {
         spreadsheetMenu.add(jSeparator3);
 
         deleteColumnMenuItem.setAction(actionMap.get("deleteColumn")); // NOI18N
+        deleteColumnMenuItem.setText(resourceMap.getString("deleteColumnMenuItemSingle.text")); // NOI18N
         deleteColumnMenuItem.setName("deleteColumnMenuItem"); // NOI18N
         spreadsheetMenu.add(deleteColumnMenuItem);
+
+        deleteCellMenuItem.setAction(actionMap.get("deleteCells")); // NOI18N
+        deleteCellMenuItem.setText(resourceMap.getString("deleteCellMenuItemSingle.text")); // NOI18N
+        deleteCellMenuItem.setName("deleteCellMenuItem"); // NOI18N
+        spreadsheetMenu.add(deleteCellMenuItem);
 
         jSeparator6.setName("jSeparator6"); // NOI18N
         spreadsheetMenu.add(jSeparator6);
@@ -645,7 +673,7 @@ public final class OpenSHAPAView extends FrameView {
      * @param evt The event that triggered this action.
      */
     private void zoomInMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInMenuItemActionPerformed
-            changeFontSize(ZOOM_INTERVAL);
+        changeFontSize(ZOOM_INTERVAL);
     }//GEN-LAST:event_zoomInMenuItemActionPerformed
 
     /**
@@ -653,7 +681,7 @@ public final class OpenSHAPAView extends FrameView {
      * @param evt
      */
     private void zoomOutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutMenuItemActionPerformed
-            changeFontSize(-ZOOM_INTERVAL);
+        changeFontSize(-ZOOM_INTERVAL);
     }//GEN-LAST:event_zoomOutMenuItemActionPerformed
 
     /**
@@ -674,10 +702,31 @@ public final class OpenSHAPAView extends FrameView {
      * @param evt The event that triggered this action.
      */
     private void spreadsheetMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_spreadsheetMenuMenuSelected
+
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                           .getContext().getResourceMap(OpenSHAPAView.class);
         if (panel.getSelectedCols().size() == 0) {
             this.deleteColumnMenuItem.setEnabled(false);
-        } else {
+        } else if (panel.getSelectedCols().size() == 1) {
+            deleteColumnMenuItem.setText(rMap
+                                 .getString("deleteColumnMenuItemSingle.text"));
             this.deleteColumnMenuItem.setEnabled(true);
+        } else {
+            deleteColumnMenuItem.setText(rMap
+                                 .getString("deleteColumnMenuItemPlural.text"));
+            this.deleteColumnMenuItem.setEnabled(true);
+        }
+
+        if (panel.getSelectedCells().size() == 0) {
+            this.deleteCellMenuItem.setEnabled(false);
+        } else if (panel.getSelectedCells().size() == 1) {
+            deleteCellMenuItem.setText(rMap
+                                   .getString("deleteCellMenuItemSingle.text"));
+            this.deleteCellMenuItem.setEnabled(true);
+        } else {
+            deleteCellMenuItem.setText(rMap
+                                   .getString("deleteCellMenuItemPlural.text"));
+            this.deleteCellMenuItem.setEnabled(true);
         }
     }//GEN-LAST:event_spreadsheetMenuMenuSelected
 
@@ -744,6 +793,7 @@ public final class OpenSHAPAView extends FrameView {
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem contentsMenuItem;
     private javax.swing.JMenu controllerMenu;
+    private javax.swing.JMenuItem deleteCellMenuItem;
     private javax.swing.JMenuItem deleteColumnMenuItem;
     private javax.swing.JMenuItem favScripts;
     private javax.swing.JMenu helpMenu;

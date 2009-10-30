@@ -297,7 +297,7 @@ public class SpreadsheetPanel extends JPanel
                 int numCells = col.getNumCells();
                 for (int j = 1; j <= numCells; j++) {
                     DataCell dc = (DataCell) col.getDB()
-                                            .getCell(col.getID(), j);
+                                                .getCell(col.getID(), j);
                     if (dc.getSelected()) {
                         selcells.add(dc);
                     }
