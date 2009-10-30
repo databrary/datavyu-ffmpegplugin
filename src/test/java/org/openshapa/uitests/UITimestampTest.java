@@ -36,6 +36,7 @@ public final class UITimestampTest extends UISpecTestCase {
 
 
     static {
+        UISpec4J.setWindowInterceptionTimeLimit(60000);
         UISpec4J.init();
     }
     /**
