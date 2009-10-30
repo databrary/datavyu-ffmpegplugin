@@ -35,7 +35,8 @@ public final class UIBug65Test extends UISpecTestCase {
     }
 
     static {
-        UISpec4J.setWindowInterceptionTimeLimit(120000);
+        UISpec4J.setWindowInterceptionTimeLimit(4000000);
+        UISpec4J.setAssertionTimeLimit(4000);
         UISpec4J.init();
     }
 
@@ -45,6 +46,7 @@ public final class UIBug65Test extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
     public void testColumnOrder() throws Exception {
+        System.err.println("Intercept" + UISpec4J.getWindowInterceptionTimeLimit());
         //Preparation
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
