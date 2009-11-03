@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <assembly>
-  <id>${buildNumber}</id>
+  <id>jar-${buildNumber}</id>
   <formats>
     <format>zip</format>
   </formats>

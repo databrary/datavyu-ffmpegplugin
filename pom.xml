@@ -252,7 +252,7 @@
           <!-- All mvn assembly:assembly first - so that the output directory
                for the DMG is first created, otherwise this line will do
                nothing. -->
-          <diskImageFile>${project.build.directory}/site/download/${project.build.finalName}-${buildNumber}.dmg</diskImageFile>
+          <diskImageFile>${project.build.directory}/site/download/${project.build.finalName}-OSX-${buildNumber}.dmg</diskImageFile>
         </configuration>
       </plugin>
 
