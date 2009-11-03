@@ -364,6 +364,9 @@
                  file="src/main/resources/org/openshapa/resources/OpenSHAPA.properties"
                  match="Application.build =(.*)"
                  replace="Application.build = b:${buildNumber}"/>
+
+                <!-- BugzID:304 - Create output directory for DMG. -->
+                <mkdir dir="${project.build.directory}/site/download/"/>
               </tasks>
             </configuration>
           </execution>
