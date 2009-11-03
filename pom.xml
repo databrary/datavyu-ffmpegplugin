@@ -300,7 +300,7 @@
           </execution>
         </executions>
         <configuration>
-          <format>{0,date,yyyyMMddHHmmss}</format>
+          <format>{0,date,yyyyMMddHH}</format>
           <items>
             <item>timestamp</item>
           </items>
@@ -367,6 +367,27 @@
 
                 <!-- BugzID:304 - Create output directory for DMG. -->
                 <mkdir dir="${project.build.directory}/site/download/"/>
+              </tasks>
+            </configuration>
+          </execution>
+          
+          <!-- Set the build number to some thing generic so we don't get
+               conflicts all the time. -->
+          <execution>
+            <id>clean-source</id>
+            <phase>prepare-package</phase>
+            <goals>
+                <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <taskdef
+                 name="replaceregexp"
+                 classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
+                <replaceregexp
+                 file="src/main/resources/org/openshapa/resources/OpenSHAPA.properties"
+                 match="Application.build =(.*)"
+                 replace="Application.build = b:none"/>
               </tasks>
             </configuration>
           </execution>
