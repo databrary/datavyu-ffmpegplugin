@@ -254,14 +254,6 @@
                nothing. -->
           <diskImageFile>${project.build.directory}/site/download/${project.build.finalName}-${buildNumber}.dmg</diskImageFile>
         </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>bundle</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
