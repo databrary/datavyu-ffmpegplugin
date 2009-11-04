@@ -746,6 +746,7 @@ public final class DataController
                     .parse(this.goBackTextField.getText())
                     .getTime()
                 );
+            playAction();
 
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
