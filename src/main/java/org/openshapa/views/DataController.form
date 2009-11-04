@@ -44,7 +44,6 @@
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
               <action class="org.openshapa.views.QTVideoController" id="syncCtrlAction" methodName="syncCtrlAction"/>
             </Property>
-            <Property name="enabled" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -66,7 +65,6 @@
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
               <action class="org.openshapa.views.QTVideoController" id="syncAction" methodName="syncAction"/>
             </Property>
-            <Property name="enabled" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -416,7 +414,7 @@
         <Component class="javax.swing.JTextField" name="goBackTextField">
           <Properties>
             <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="00:00:00:000"/>
+            <Property name="text" type="java.lang.String" value="00:00:05:000"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[80, 45]"/>
             </Property>
@@ -549,7 +547,6 @@
               <action class="org.openshapa.views.DataController" id="createCellAction" methodName="createCellAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="createNewCell.icon"/>
-            <Property name="text" type="java.lang.String" value=""/>
             <Property name="alignmentY" type="float" value="0.0"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
