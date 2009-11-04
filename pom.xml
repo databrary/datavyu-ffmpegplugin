@@ -166,7 +166,7 @@
     </site>
   </distributionManagement>
 
-  <!-- External repositories - where to find third-party dependancies. -->
+  <!-- External repositories - where to find third-party dependencies. -->
   <repositories>
     <repository>
       <id>central</id>
@@ -187,6 +187,7 @@
     </repository>
   </repositories>
 
+  <!-- External plugin repositories - where to find third-part dependencies. -->
   <pluginRepositories>
     <pluginRepository>
       <id>openshapa</id>
