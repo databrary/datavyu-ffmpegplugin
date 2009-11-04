@@ -357,6 +357,8 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.3</version>
         <executions>
+
+          <!-- Set the build number in the bundles file. -->
           <execution>
             <id>add-source</id>
             <phase>generate-sources</phase>
