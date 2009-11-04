@@ -726,10 +726,7 @@ public final class DataController
     @Action
     public void findAction() {
         try {
-            jumpTo(CLOCK_FORMAT
-                    .parse(this.findTextField.getText())
-                    .getTime()
-                );
+            jumpTo(CLOCK_FORMAT.parse(this.findTextField.getText()).getTime());
 
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
@@ -742,11 +739,10 @@ public final class DataController
     @Action
     public void goBackAction() {
         try {
-            jump(-CLOCK_FORMAT
-                    .parse(this.goBackTextField.getText())
-                    .getTime()
-                );
-            playAction();
+            long j = -CLOCK_FORMAT.parse(this.goBackTextField.getText())
+                                  .getTime();
+            jump(Math.min(j, 0));
+            playAt(PLAY_RATE);
 
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
@@ -758,13 +754,17 @@ public final class DataController
      * Action to invoke when the user clicks on the jog backwards button.
      */
     @Action
-    public void jogBackAction() { jump((long) (-ONE_SECOND / currentFPS)); }
+    public void jogBackAction() {
+        jump((long) (-ONE_SECOND / currentFPS));
+    }
 
     /**
      * Action to invoke when the user clicks on the jog forwards button.
      */
     @Action
-    public void jogForwardAction() { jump((long) (ONE_SECOND / currentFPS)); }
+    public void jogForwardAction() {
+        jump((long) (ONE_SECOND / currentFPS));
+    }
 
 
     //--------------------------------------------------------------------------
