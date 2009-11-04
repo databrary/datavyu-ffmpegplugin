@@ -185,8 +185,15 @@
       <url>http://repo1.maven.org/maven2</url>
       <layout>default</layout>
     </repository>
-
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>openshapa</id>
+      <url>http://openshapa.org/maven2</url>
+      <layout>default</layout>
+    </pluginRepository>
+  </pluginRepositories>
 
   <!-- Use an optimized build for releases. -->
   <profiles>
@@ -243,7 +250,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>osxappbundle-maven-plugin</artifactId>
-        <version>1.0-alpha-2</version>
+        <version>1.0-alpha-3</version>
         <configuration>
           <bundleName>OpenSHAPA</bundleName>
           <mainClass>org.openshapa.OpenSHAPA</mainClass>
