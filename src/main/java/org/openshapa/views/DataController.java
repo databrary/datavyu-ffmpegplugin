@@ -742,6 +742,8 @@ public final class DataController
             long j = -CLOCK_FORMAT.parse(this.goBackTextField.getText())
                                   .getTime();
             jump(Math.min(j, 0));
+
+            // BugzID:721 - After going back - start playing again.
             playAt(PLAY_RATE);
 
         } catch (ParseException e) {
