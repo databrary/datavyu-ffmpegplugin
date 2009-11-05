@@ -114,7 +114,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
         this.getRootPane().setDefaultButton(okButton);
 
         // Hide all the broken stuff.
-        //this.deleteButton.setVisible(false);
         this.varyArgCheckBox.setVisible(false);
     }
 
