@@ -244,7 +244,7 @@ public class DataControllerTest {
 
             instance.shuttleBackAction();
             assertEquals(
-                    ShuttleDirection.BACKWARDS,
+                    ShuttleDirection.UNDEFINED,
                     (ShuttleDirection) PrivateAccessor.getField(
                             instance, "shuttleDirection"
                         )
@@ -330,7 +330,7 @@ public class DataControllerTest {
 
             instance.shuttleForwardAction();
             assertEquals(
-                    ShuttleDirection.FORWARDS,
+                    ShuttleDirection.UNDEFINED,
                     (ShuttleDirection) PrivateAccessor.getField(
                             instance, "shuttleDirection"
                         )

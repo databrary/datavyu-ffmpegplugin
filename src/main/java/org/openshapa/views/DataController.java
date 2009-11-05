@@ -787,24 +787,28 @@ public final class DataController
      * @param direction The required direction of the shuttle.
      */
     private void shuttle(final ShuttleDirection direction) {
-        if (direction == shuttleDirection) {
-            ++shuttleRate;
-            if (SHUTTLE_RATES.length == shuttleRate) { --shuttleRate; }
+        float rate = SHUTTLE_RATES[shuttleRate];
+        if (ShuttleDirection.UNDEFINED == shuttleDirection) {
+            shuttleDirection = direction;
+            rate = SHUTTLE_RATES[0];
 
-        } else {
-            if (ShuttleDirection.UNDEFINED == shuttleDirection) {
-                shuttleRate = -1;
-            } else if (direction != shuttleDirection) {
-                --shuttleRate;
+        } else if (direction == shuttleDirection) {
+            if (shuttleRate < (SHUTTLE_RATES.length - 1)) {
+                rate = SHUTTLE_RATES[++shuttleRate];
             }
 
-            if (0 > shuttleRate) {
-                shuttleDirection = direction;
-                shuttleRate = 0;
+        } else {
+            if (shuttleRate > 0) {
+                rate = SHUTTLE_RATES[--shuttleRate];
+
+            // BugzID: 676 - Shuttle speed transitions between zero.
+            } else {
+                rate = 0;
+                shuttleDirection = ShuttleDirection.UNDEFINED;
             }
         }
 
-        shuttleAt(shuttleDirection.getParameter() * SHUTTLE_RATES[shuttleRate]);
+        shuttleAt(shuttleDirection.getParameter() * rate);
     }
 
     /**
