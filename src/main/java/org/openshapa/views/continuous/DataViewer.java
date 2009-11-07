@@ -51,14 +51,6 @@ public interface DataViewer {
     void setPlaybackSpeed(float rate);
 
     /**
-     * Move the playback postion forwards or backwards relative to current
-     * positon.
-     *
-     * @param offset The millisecond offset from current playback position.
-     */
-    void seek(long offset);
-
-    /**
      * Set the playback position to an absolute value.
      *
      * @param position The absolute millisecond playback position.

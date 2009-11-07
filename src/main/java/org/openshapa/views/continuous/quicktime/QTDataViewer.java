@@ -3,6 +3,7 @@ package org.openshapa.views.continuous.quicktime;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
+import org.openshapa.util.Constants;
 import org.openshapa.views.continuous.DataViewer;
 import quicktime.QTException;
 import quicktime.QTSession;
@@ -27,12 +28,6 @@ public final class QTDataViewer extends JFrame
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(QTDataViewer.class);
-
-    /** Conversion from seconds to milliseconds. */
-    private static final long SECONDS_TO_MILLI = 1000L;
-
-    /** Conversion from milliseconds to seconds. */
-    private static final double MILLI_TO_SECONDS = 1F / SECONDS_TO_MILLI;
 
     //--------------------------------------------------------------------------
     //
@@ -96,6 +91,10 @@ public final class QTDataViewer extends JFrame
             this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
+
+            // Set the time scale for our movie to milliseconds (i.e. 1000 ticks
+            // per second.
+            movie.setTimeScale(Constants.TICKS_PER_SECOND);
             visualTrack = movie.getIndTrackType(1,
                                        StdQTConstants.visualMediaCharacteristic,
                                        StdQTConstants.movieTrackCharacteristic);
@@ -160,37 +159,14 @@ public final class QTDataViewer extends JFrame
         }
     }
 
-   /**
-     * @param offset Millisecond offset from current position.
-     */
-    public void seek(final long offset) {
-        try {
-            if (movie != null) {
-                double curTime = movie.getTime() / (float) movie.getTimeScale();
-                double seconds = offset * MILLI_TO_SECONDS;
-
-                seconds = curTime + seconds;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
-                movie.setTime(time);
-                pack();
-            }
-        } catch (QTException e) {
-            logger.error("Unable to go back", e);
-        }
-    }
-
     /**
      * @param position Millisecond absolute position for track.
      */
     public void seekTo(final long position) {
         try {
             if (movie != null) {
-                double seconds = position * MILLI_TO_SECONDS;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
+                TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
+                                                 position);
                 movie.setTime(time);
                 pack();
             }
@@ -205,9 +181,7 @@ public final class QTDataViewer extends JFrame
      * @throws QTException If error occurs accessing underlying implemenation.
      */
     public long getCurrentTime() throws QTException {
-        double curTime = movie.getTime() / (double) movie.getTimeScale();
-        curTime = curTime * SECONDS_TO_MILLI;
-        return (long) curTime;
+        return movie.getTime();
     }
 
 
