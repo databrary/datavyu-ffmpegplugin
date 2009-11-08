@@ -109,6 +109,9 @@ public final class DataController
     /** The rate to use when resumed from pause. */
     private float pauseRate;
 
+    /** The time the last sync was performed. */
+    private long lastSync;
+
     /** Clock timer. */
     private ClockTimer clock = new ClockTimer();
 
@@ -132,6 +135,7 @@ public final class DataController
         setName(this.getClass().getSimpleName());
         viewers = new HashSet<DataViewer>();
         pauseRate = 0;
+        lastSync = 0;
     }
 
     //--------------------------------------------------------------------------
@@ -154,6 +158,14 @@ public final class DataController
      */
     public void clockTick(final long time) {
         setCurrentTime(time);
+
+        if (time - this.lastSync > 500) {
+            for (DataViewer viewer : viewers) {
+                viewer.seekTo(time);
+            }
+
+            lastSync = time;
+        }
     }
 
     /**
