@@ -281,6 +281,7 @@ public final class DataController
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(DataController.class, this);
         syncCtrlButton.setAction(actionMap.get("syncCtrlAction")); // NOI18N
+        syncCtrlButton.setEnabled(false);
         syncCtrlButton.setMaximumSize(new java.awt.Dimension(45, 45));
         syncCtrlButton.setMinimumSize(new java.awt.Dimension(45, 45));
         syncCtrlButton.setPreferredSize(new java.awt.Dimension(45, 45));
@@ -291,6 +292,7 @@ public final class DataController
         gridButtonPanel.add(syncCtrlButton, gridBagConstraints);
 
         syncButton.setAction(actionMap.get("syncAction")); // NOI18N
+        syncButton.setEnabled(false);
         syncButton.setMaximumSize(new java.awt.Dimension(45, 45));
         syncButton.setMinimumSize(new java.awt.Dimension(45, 45));
         syncButton.setPreferredSize(new java.awt.Dimension(45, 45));
@@ -543,6 +545,7 @@ public final class DataController
 
         createNewCell.setAction(actionMap.get("createCellAction")); // NOI18N
         createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
+        createNewCell.setText("");
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
