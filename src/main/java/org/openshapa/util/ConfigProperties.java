@@ -12,7 +12,7 @@ import java.io.Serializable;
 public final class ConfigProperties implements Serializable {
 
     /** The unique ID for this serial version. */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 3L;
 
     /** The spreadsheet data font. */
     private Font spreadsheetDataFont;
@@ -25,6 +25,9 @@ public final class ConfigProperties implements Serializable {
 
     /** The spreadsheet selection colour. */
     private Color spreadsheetSelectedColour;
+
+    /** The last location the user navigated too using a file chooser. */
+    private String lastChooserDirectory;
 
     /**
      * Default constructor.
@@ -94,5 +97,21 @@ public final class ConfigProperties implements Serializable {
      */
     public Color getSSSelectedColour() {
         return spreadsheetSelectedColour;
+    }
+
+    /**
+     * Sets the last chooser directory that the user nominated.
+     *
+     * @param location The last location the user nominated.
+     */
+    public void setLCDirectory(final String location) {
+        lastChooserDirectory = location;
+    }
+
+    /**
+     * @return The last chooser directory that the user nominated.
+     */
+    public String getLCDirectory() {
+        return lastChooserDirectory;
     }
 }

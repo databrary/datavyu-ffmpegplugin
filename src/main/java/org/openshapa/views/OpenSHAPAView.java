@@ -62,19 +62,19 @@ public final class OpenSHAPAView extends FrameView {
                                    .getCurrentKeyboardFocusManager();
 
         manager.addKeyEventDispatcher(new KeyEventDispatcher() {
-                /**
-                 * Dispatches the keystroke to the correct action.
-                 *
-                 * @param evt The event that triggered this action.
-                 *
-                 * @return true if the KeyboardFocusManager should take no
-                 * further action with regard to the KeyEvent; false otherwise.
-                 */
-                public boolean dispatchKeyEvent(KeyEvent evt) {
-                    // Pass the keyevent onto the keyswitchboard so that it can
-                    // route it to the correct action.
-                    return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
-                }
+            /**
+             * Dispatches the keystroke to the correct action.
+             *
+             * @param evt The event that triggered this action.
+             *
+             * @return true if the KeyboardFocusManager should take no
+             * further action with regard to the KeyEvent; false otherwise.
+             */
+            public boolean dispatchKeyEvent(KeyEvent evt) {
+                // Pass the keyevent onto the keyswitchboard so that it can
+                // route it to the correct action.
+                return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
+            }
         });
 
         // generated GUI builder code
@@ -146,7 +146,7 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void saveAs() {
-        JFileChooser jd = new JFileChooser();
+        OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
         jd.addChoosableFileFilter(new MODBFilter());
         jd.addChoosableFileFilter(new CSVFilter());
         int result = jd.showSaveDialog(this.getComponent());
@@ -162,10 +162,11 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void open() {
-        JFileChooser jd = new JFileChooser();
+        OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
         jd.addChoosableFileFilter(new MODBFilter());
         jd.addChoosableFileFilter(new CSVFilter());
+
         int result = jd.showOpenDialog(this.getComponent());
 
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -795,8 +796,6 @@ public final class OpenSHAPAView extends FrameView {
     /**
      * Creates a new menu item for running a named script.
      *
-     * @param text The text to display for the menu item for the supplied
-     * script.
      * @param f The file to run when menu item is selected.
      * @return The jmenuitem that can be added to a menu.
      */

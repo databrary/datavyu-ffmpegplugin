@@ -586,7 +586,7 @@ public final class DataController
      * @param evt The event that triggered this action.
      */
     private void openVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openVideoButtonActionPerformed
-        JFileChooser jd = new JFileChooser();
+        OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
         // Add file filters for each of the supported plugins.
         List<FileFilter> filters = PluginManager.getInstance()

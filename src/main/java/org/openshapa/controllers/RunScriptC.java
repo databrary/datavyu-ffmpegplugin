@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.util.FileFilters.RBFilter;
 import org.openshapa.views.ConsoleV;
+import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
@@ -32,7 +33,7 @@ public final class RunScriptC {
      * Constructs and invokes the runscript controller.
      */
     public RunScriptC() {
-        JFileChooser jd = new JFileChooser();
+        OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
         jd.addChoosableFileFilter(new RBFilter());
         int result = jd.showOpenDialog(OpenSHAPA.getApplication()
                                                 .getMainFrame());

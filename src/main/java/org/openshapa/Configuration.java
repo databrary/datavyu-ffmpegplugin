@@ -2,6 +2,7 @@ package org.openshapa;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.File;
 import java.io.IOException;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.LocalStorage;
@@ -97,6 +98,24 @@ public final class Configuration {
     }
 
     /**
+     * Sets and saves (to the config file) the last directory the user navigated
+     * too in a chooser.
+     *
+     * @param location The last location that the user navigated too.
+     */
+    public void setLCDirectory(final File location) {
+        this.properties.setLCDirectory(location.toString());
+        this.save();
+    }
+
+    /**
+     * @return The last directory the user navigated too in a file chooser.
+     */
+    public File getLCDirectory() {
+        return new File(this.properties.getLCDirectory());
+    }
+
+    /**
      * Default constructor.
      */
     private Configuration() {
@@ -120,6 +139,7 @@ public final class Configuration {
             properties.setSSBackgroundColour(DEFAULT_BACKGROUND);
             properties.setSSForegroundColour(DEFAULT_FOREGROUND);
             properties.setSSSelectedColour(DEFAULT_SELECTED);
+            properties.setLCDirectory(System.getProperty("user.home"));
             this.save();
         }
     }
