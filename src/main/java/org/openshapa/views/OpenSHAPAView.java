@@ -43,7 +43,6 @@ import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
 import org.openshapa.util.FileFilters.MODBFilter;
 
-
 /**
  * This application is a simple text editor. This class displays the main frame
  * of the application and provides much of the logic. This class is called by
@@ -108,6 +107,14 @@ public final class OpenSHAPAView extends FrameView {
         resetZoomMenuItem.setAccelerator(KeyStroke
                 .getKeyStroke(KeyEvent.VK_0, keyMask));
 
+        // Set the save accelerator to keyMask + 'S'
+        saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+                                                           keyMask));
+
+        // Set the open accelerator to keyMask + 'o';
+        openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+                                                           keyMask));
+
         this.panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
     }
@@ -118,6 +125,20 @@ public final class OpenSHAPAView extends FrameView {
     @Action
     public void showNewDatabaseForm() {
         new NewDatabaseC();
+    }
+
+    /**
+     * Action for saving the current database as a file.
+     */
+    @Action
+    public void save() {
+        // If the user has not saved before - invoke the saveAs() controller to
+        // force the user to nominate a destination file.
+        if (OpenSHAPA.getDatabase().getSourceFile() == null) {
+            saveAs();
+        } else {
+            new SaveDatabaseC(OpenSHAPA.getDatabase().getSourceFile());
+        }
     }
 
     /**
@@ -154,6 +175,7 @@ public final class OpenSHAPAView extends FrameView {
                 OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
                                                            .getMainView();
                 s.showSpreadsheet();
+
                 // TODO- BugzID:79 This needs to move above showSpreadsheet,
                 // when setTicks is fully implemented.
                 newDB.setTicks(Constants.TICKS_PER_SECOND);
@@ -318,6 +340,8 @@ public final class OpenSHAPAView extends FrameView {
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenuItem newMenuItem = new javax.swing.JMenuItem();
+        jSeparator7 = new javax.swing.JSeparator();
+        saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator fileMenuSeparator = new javax.swing.JSeparator();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
@@ -390,6 +414,13 @@ public final class OpenSHAPAView extends FrameView {
         newMenuItem.setAction(actionMap.get("showNewDatabaseForm")); // NOI18N
         newMenuItem.setName("newMenuItem"); // NOI18N
         fileMenu.add(newMenuItem);
+
+        jSeparator7.setName("jSeparator7"); // NOI18N
+        fileMenu.add(jSeparator7);
+
+        saveMenuItem.setAction(actionMap.get("save")); // NOI18N
+        saveMenuItem.setName("saveMenuItem"); // NOI18N
+        fileMenu.add(saveMenuItem);
 
         saveAsMenuItem.setAction(actionMap.get("saveAs")); // NOI18N
         saveAsMenuItem.setName("saveAsMenuItem"); // NOI18N
@@ -807,6 +838,7 @@ public final class OpenSHAPAView extends FrameView {
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JSeparator jSeparator7;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newCellMenuItem;
@@ -818,6 +850,7 @@ public final class OpenSHAPAView extends FrameView {
     private javax.swing.JMenu runRecentScriptMenu;
     private javax.swing.JMenuItem runScriptMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
+    private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenu scriptMenu;
     private javax.swing.JMenuItem showSpreadsheetMenuItem;
     private javax.swing.JMenu spreadsheetMenu;

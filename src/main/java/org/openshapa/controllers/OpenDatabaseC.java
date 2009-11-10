@@ -78,6 +78,7 @@ public final class OpenDatabaseC {
                 String dbName = sourceFile.getName();
                 dbName = dbName.substring(0, dbName.lastIndexOf('.'));
                 OpenSHAPA.getDatabase().setName(dbName);
+                OpenSHAPA.getDatabase().setSourceFile(sourceFile);
             }
 
             // Update the name of the window to include the name we just set
@@ -88,7 +89,7 @@ public final class OpenDatabaseC {
                                         .getResourceMap(OpenSHAPA.class);
 
             mainFrame.setTitle(rMap.getString("Application.title")
-                           + " - " + OpenSHAPA.getDatabase().getName());
+                               + " - " + sourceFile.getName());
 
         } catch (SystemErrorException se) {
             logger.error("Can't set db name to the name of the CSV file.", se);
