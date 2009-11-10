@@ -275,6 +275,8 @@ public final class OpenSHAPAView extends FrameView {
             for (DataCell c : cellsToDelete) {
                 OpenSHAPA.getDatabase().removeCell(c.getID());
             }
+            panel.revalidate();
+            panel.repaint();
         } catch (SystemErrorException e) {
             logger.error("Unable to delete cells", e);
         }
