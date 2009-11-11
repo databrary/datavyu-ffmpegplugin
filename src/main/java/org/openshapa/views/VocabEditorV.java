@@ -89,6 +89,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
                 VocabElementV matrixV = new VocabElementV(mve, this);
                 verticalFrame.add(matrixV);
                 veViews.add(matrixV);
+                numNewMats++;
             }
 
             Vector<PredicateVocabElement> predVEs = db.getPredVEs();
@@ -97,6 +98,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
                 VocabElementV predicateV = new VocabElementV(pve, this);
                 verticalFrame.add(predicateV);
                 veViews.add(predicateV);
+                numNewPreds++;
             }
         } catch (SystemErrorException e) {
             logger.error("Unable to populate current vocab list", e);
