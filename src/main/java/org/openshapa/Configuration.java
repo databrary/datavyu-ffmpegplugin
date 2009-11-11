@@ -138,7 +138,11 @@ public final class Configuration {
             properties.setSSDataFont(DEFAULT_FONT);
             properties.setSSBackgroundColour(DEFAULT_BACKGROUND);
             properties.setSSForegroundColour(DEFAULT_FOREGROUND);
-            properties.setSSSelectedColour(DEFAULT_SELECTED);
+            properties.setSSSelectedColour(DEFAULT_SELECTED);            
+            this.save();
+        }
+
+        if (properties.getLCDirectory() == null) {
             properties.setLCDirectory(System.getProperty("user.home"));
             this.save();
         }
