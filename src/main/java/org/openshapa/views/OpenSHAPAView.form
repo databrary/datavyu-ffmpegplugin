@@ -81,6 +81,19 @@
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
               </AuxValues>
             </MenuItem>
+            <MenuItem class="javax.swing.JSeparator" name="jSeparator7">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="jSeparator7" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="saveMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="org.openshapa.views.OpenSHAPAView" id="save" methodName="save"/>
+                </Property>
+                <Property name="name" type="java.lang.String" value="saveMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="saveAsMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
@@ -187,7 +200,17 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="org.openshapa.views.OpenSHAPAView" id="deleteColumn" methodName="deleteColumn"/>
                 </Property>
+                <Property name="text" type="java.lang.String" resourceKey="deleteColumnMenuItemSingle.text"/>
                 <Property name="name" type="java.lang.String" value="deleteColumnMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="deleteCellMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="org.openshapa.views.OpenSHAPAView" id="deleteCells" methodName="deleteCells"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="deleteCellMenuItemSingle.text"/>
+                <Property name="name" type="java.lang.String" value="deleteCellMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator6">

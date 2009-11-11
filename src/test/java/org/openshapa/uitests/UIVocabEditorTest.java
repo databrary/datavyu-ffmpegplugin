@@ -44,6 +44,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
     }
 
     static {
+        UISpec4J.setWindowInterceptionTimeLimit(4000000);
         UISpec4J.init();
     }
 

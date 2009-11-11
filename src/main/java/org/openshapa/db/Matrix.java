@@ -460,11 +460,19 @@ public class Matrix implements Cloneable {
             }
 
             while (i < (this.argList.size() - 1)) {
-                s += this.getArg(i).toEscapedString() + ", ";
+                // BugzID:722 - Only output values if not empty.
+                if (this.getArg(i).isEmpty()) {
+                    s += ",";
+                } else {
+                    s += this.getArg(i).toEscapedString() + ",";
+                }
                 i++;
             }
 
-            s += this.getArg(i).toEscapedString();
+            // BugzID:722 - Only output values if not empty.
+            if (!this.getArg(i).isEmpty()) {
+                s += this.getArg(i).toEscapedString();
+            }
         }
 
         return s;

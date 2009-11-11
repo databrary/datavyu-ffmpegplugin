@@ -44,6 +44,7 @@ public final class UIVariableListTest extends UISpecTestCase {
 
 
     static {
+        UISpec4J.setWindowInterceptionTimeLimit(120000);
         UISpec4J.init();
     }
 

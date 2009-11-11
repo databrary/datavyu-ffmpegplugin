@@ -46,12 +46,4 @@ public final class NoEditor extends EditorComponent {
     @Override
     public void focusGained(final FocusEvent fe) {
     }
-
-    /**
-     * Subclass overrides to handle focusLost events.
-     * @param fe FocusEvent details.
-     */
-    @Override
-    public void focusLost(final FocusEvent fe) {
-    }
 }

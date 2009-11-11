@@ -87,18 +87,4 @@ public class VocabElementEditorFactory {
 
         return eds;
     }
-
-    /**
-     * Reset the value of an Editor component.
-     * @param ed The editor component.
-     * @param ve The parent VocabElement the editor is in.
-     *//*
-    public static void resetValue(EditorComponent ed, VocabElement ve) {
-        if (ed.getClass() == VENameEditor.class) {
-            ((VENameEditor) ed).resetValue(ve);
-        } else if (ed.getClass() == FormalArgEditor.class) {
-            ((FormalArgEditor) ed).resetValue(ve);
-        }
-    }*/
-
 }

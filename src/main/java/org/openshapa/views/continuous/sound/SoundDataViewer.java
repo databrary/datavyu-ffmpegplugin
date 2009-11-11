@@ -122,30 +122,6 @@ implements DataViewer {
      */
     public void setPlaybackSpeed(final float rate) { this.playRate = rate; }
 
-   /**
-     * @param offset Millisecond offset from current position.
-     */
-    public void seek(final long offset) {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                //movie.stop();
-
-                double curTime = movie.getTime() / (float) movie.getTimeScale();
-                double seconds = offset * MILLI_TO_SECONDS;
-
-                seconds = curTime + seconds;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
-                movie.setTime(time);
-                pack();
-            }
-        } catch (QTException e) {
-            logger.error("Unable to go back", e);
-        }
-    }
-
     /**
      * @param position Millisecond absolute position for track.
      */
