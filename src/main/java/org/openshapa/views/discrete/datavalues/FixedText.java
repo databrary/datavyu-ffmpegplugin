@@ -39,8 +39,4 @@ public class FixedText extends EditorComponent {
     @Override
     public void focusGained(final FocusEvent fe) {
     }
-
-    @Override
-    public void focusLost(final FocusEvent fe) {
-    }
 }

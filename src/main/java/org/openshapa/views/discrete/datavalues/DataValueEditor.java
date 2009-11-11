@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues;
 
+import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
@@ -206,6 +207,7 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public void focusLost(final FocusEvent fe) {
+        super.focusLost(fe);
         if (!getText().equals(textOnFocus)) {
             updateDatabase();
         }

@@ -69,6 +69,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
     public void focusLost(final FocusEvent fe) {
         // BugzID:581 - Trim trailing spaces from nominal (apparently they are
         // not permitted.
+        super.focusLost(fe);
         try {
             if (!Database.IsValidNominal(this.getText())
                 && !this.getText().equals(this.getNullArg())) {

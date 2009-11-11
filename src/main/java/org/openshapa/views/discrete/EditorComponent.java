@@ -1,6 +1,5 @@
 package org.openshapa.views.discrete;
 
-import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -11,6 +10,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
+import org.openshapa.Configuration;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Matrix;
 
@@ -82,7 +82,13 @@ public abstract class EditorComponent implements ClipboardOwner {
      *
      * @param fe The FocusEvent that triggered this action.
      */
-    public abstract void focusLost(final FocusEvent fe);
+    public void focusLost(final FocusEvent fe) {
+        // BugzID:566 - Deselect anything on focus lost.
+        if (this.parentComp != null) {
+            this.parentComp.select(this.getCaretPosition(),
+                                   this.getCaretPosition());
+        }
+    }
 
     /**
      * Default Constructor.
@@ -104,6 +110,8 @@ public abstract class EditorComponent implements ClipboardOwner {
     public EditorComponent(final JTextComponent tc) {
         this();
         parentComp = tc;
+        parentComp.setBackground(Configuration.getInstance()
+                                              .getSSBackgroundColour());
     }
 
     /**
@@ -209,7 +217,7 @@ public abstract class EditorComponent implements ClipboardOwner {
     /**
      * @return The parent Swing component for this EditorComponent.
      */
-    public final Component getParentComponent() {
+    public final JTextComponent getParentComponent() {
         return this.parentComp;
     }
 

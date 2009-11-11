@@ -323,14 +323,6 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     }
 
     /**
-     * Action to take when focus is lost for this editor.
-     * @param fe Focus Event
-     */
-    @Override
-    public void focusLost(final FocusEvent fe) {
-    }
-
-    /**
      * Action to take by this editor when a key is released.
      * @param e KeyEvent
      */
