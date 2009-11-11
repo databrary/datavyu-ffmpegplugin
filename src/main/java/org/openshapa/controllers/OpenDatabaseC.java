@@ -299,7 +299,8 @@ public final class OpenDatabaseC {
             for (int i = 0; i < mve.getNumFormalArgs(); i++) {
                 FormalArgument ma = mve.getFormalArgCopy(i);
                 boolean emptyArg = false;
-                if (tokens[i + 2].charAt(0) == '<') {
+
+                if (tokens[i + 2].length() == 0) {
                     emptyArg = true;
                 }
                 tokens[i + 2] = tokens[i + 2].trim();
@@ -611,7 +612,11 @@ public final class OpenDatabaseC {
         public DataValue createValue(final String[] tokens)
         throws SystemErrorException {
             IntDataValue idv = new IntDataValue(getDatabase());
-            idv.setItsValue(tokens[DATA_INDEX]);
+
+            // BugzID:722 - Only populate the value if we have one from the file
+            if (tokens.length > DATA_INDEX) {
+                idv.setItsValue(tokens[DATA_INDEX]);
+            }
             return idv;
         }
     }
@@ -643,7 +648,11 @@ public final class OpenDatabaseC {
         public DataValue createValue(final String[] tokens)
         throws SystemErrorException {
             FloatDataValue fdv = new FloatDataValue(getDatabase());
-            fdv.setItsValue(tokens[DATA_INDEX]);
+
+            // BugzID:722 - Only populate the value if we have one from the file
+            if (tokens.length > DATA_INDEX) {
+                fdv.setItsValue(tokens[DATA_INDEX]);
+            }
             return fdv;
         }
     }
@@ -674,7 +683,11 @@ public final class OpenDatabaseC {
         public DataValue createValue(final String[] tokens)
         throws SystemErrorException {
             NominalDataValue ndv = new NominalDataValue(getDatabase());
-            ndv.setItsValue(tokens[DATA_INDEX]);
+
+            // BugzID:722 - Only populate the value if we have one from the file
+            if (tokens.length > DATA_INDEX) {
+                ndv.setItsValue(tokens[DATA_INDEX]);
+            }
             return ndv;
         }
     }
@@ -706,15 +719,18 @@ public final class OpenDatabaseC {
         throws SystemErrorException {
             TextStringDataValue tsdv = new TextStringDataValue(getDatabase());
 
-            String text = new String("");
-            for (int i = DATA_INDEX; i < tokens.length; i++) {
-                text = text.concat(tokens[i]);
+            // BugzID:722 - Only populate the value if we have one from the file
+            if (tokens.length > DATA_INDEX) {
+                String text = new String("");
+                for (int i = DATA_INDEX; i < tokens.length; i++) {
+                    text = text.concat(tokens[i]);
 
-                if (i < (tokens.length - 1)) {
-                    text = text.concat(",");
+                    if (i < (tokens.length - 1)) {
+                        text = text.concat(",");
+                    }
                 }
+                tsdv.setItsValue(text);
             }
-            tsdv.setItsValue(text);
 
             return tsdv;
         }
