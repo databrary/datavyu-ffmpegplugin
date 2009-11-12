@@ -202,6 +202,11 @@ public class Cell extends AbstractUIComponent {
         }
     }
 
+    /**
+     * Select all and type a key.
+     * @param element to put key into
+     * @param key to enter
+     */
     public final void selectAllAndTypeKey(final int element, final Key key) {
         requestFocus(element);
 
