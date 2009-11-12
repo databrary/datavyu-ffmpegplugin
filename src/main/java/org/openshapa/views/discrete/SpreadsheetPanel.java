@@ -12,11 +12,10 @@ import org.openshapa.controllers.NewVariableC;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.Vector;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
@@ -24,13 +23,17 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import org.openshapa.OpenSHAPA;
 
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
  * OpenSHAPA database as a spreadsheet.
  */
-public class SpreadsheetPanel extends JPanel
-    implements ExternalColumnListListener, ComponentListener, ActionListener{
+public final class SpreadsheetPanel extends JPanel
+    implements ExternalColumnListListener, ComponentListener {
 
     /**
      * Constructor.
@@ -87,12 +90,24 @@ public class SpreadsheetPanel extends JPanel
         // add a listener for window resize events
         scrollPane.addComponentListener(this);
 
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(SpreadsheetPanel.class);
+
         // Set up the add new variable button
-        newVar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.black));
-        newVar.setName("newVar");
-        newVar.setActionCommand("openNewVarMenu");
-        newVar.setSize(newVar.getWidth(), SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
-        newVar.addActionListener(this);
+        newVar.setBorder(BorderFactory
+                         .createMatteBorder(0, 0, 0, 1, Color.black));
+        newVar.setName(rMap.getString("add.name"));
+        newVar.setToolTipText(rMap.getString("add.tooltip"));
+
+        ActionMap aMap = Application.getInstance(OpenSHAPA.class)
+                                    .getContext()
+                                    .getActionMap(SpreadsheetPanel.class, this);
+        newVar.setAction(aMap.get("openNewVarMenu"));
+        newVar.setText(" + ");
+
+        newVar.setSize(newVar.getWidth(),
+                       SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
         headerView.add(newVar);
     }
 
@@ -121,7 +136,7 @@ public class SpreadsheetPanel extends JPanel
      */
     private void addColumn(final Database db, final long colID) {
         // make the SpreadsheetColumn
-        
+
         // Remove previous instance of newVar from the header.
         headerView.remove(newVar);
 
@@ -168,7 +183,7 @@ public class SpreadsheetPanel extends JPanel
     /**
      * Deselect all selected items in the Spreadsheet.
      */
-    public final void deselectAll() {
+    public void deselectAll() {
         cellSelector.deselectAll();
         colSelector.deselectAll();
     }
@@ -178,7 +193,7 @@ public class SpreadsheetPanel extends JPanel
      *
      * @param db Database to set
      */
-    public final void setDatabase(final Database db) {
+    public void setDatabase(final Database db) {
         // check if we need to deregister
         if ((database != null) && (database != db)) {
             try {
@@ -215,14 +230,14 @@ public class SpreadsheetPanel extends JPanel
     /**
      * @return Database this spreadsheet displays
      */
-    public final Database getDatabase() {
+    public Database getDatabase() {
         return (this.database);
     }
 
     /**
      * @return Selector handling the SpreadsheetCells.
      */
-    public final Selector getCellSelector() {
+    public Selector getCellSelector() {
         return cellSelector;
     }
 
@@ -234,10 +249,10 @@ public class SpreadsheetPanel extends JPanel
      * @param old_cov The column order vector prior to the deletion.
      * @param new_cov The column order vector after to the deletion.
      */
-    public final void colDeletion(final Database db,
-                                  final long colID,
-                                  final Vector<Long> old_cov,
-                                  final Vector<Long> new_cov) {
+    public void colDeletion(final Database db,
+                            final long colID,
+                            final Vector<Long> old_cov,
+                            final Vector<Long> new_cov) {
         deselectAll();
         removeColumn(colID);
         relayoutCells();
@@ -251,10 +266,10 @@ public class SpreadsheetPanel extends JPanel
      * @param old_cov The column order vector prior to the insertion.
      * @param new_cov The column order vector after to the insertion.
      */
-    public final void colInsertion(final Database db,
-                                   final long colID,
-                                   final Vector<Long> old_cov,
-                                   final Vector<Long> new_cov) {
+    public void colInsertion(final Database db,
+                             final long colID,
+                             final Vector<Long> old_cov,
+                             final Vector<Long> new_cov) {
         deselectAll();
         addColumn(db, colID);
     }
@@ -267,9 +282,9 @@ public class SpreadsheetPanel extends JPanel
      * @param old_cov The column order vector prior to the insertion.
      * @param new_cov The column order vector after to the insertion.
      */
-    public final void colOrderVectorEdited(final Database db,
-                                           final Vector<Long> old_cov,
-                                           final Vector<Long> new_cov) {
+    public void colOrderVectorEdited(final Database db,
+                                     final Vector<Long> old_cov,
+                                     final Vector<Long> new_cov) {
         // do nothing for now
         return;
     }
@@ -334,7 +349,7 @@ public class SpreadsheetPanel extends JPanel
      *
      * @param type SheetLayoutType to set.
      */
-    public final void setLayoutType(final SheetLayoutType type) {
+    public void setLayoutType(final SheetLayoutType type) {
         sheetLayout = SheetLayoutFactory.getLayout(type, columns);
         relayoutCells();
     }
@@ -344,7 +359,7 @@ public class SpreadsheetPanel extends JPanel
      *
      * @param e Component event.
      */
-    public void componentResized(ComponentEvent e) {
+    public void componentResized(final ComponentEvent e) {
         // resize the strut height to at least the size of the viewport.
         Dimension d = new Dimension(0,
                                    scrollPane.getViewportBorderBounds().height);
@@ -358,7 +373,7 @@ public class SpreadsheetPanel extends JPanel
      *
      * @param e Component event.
      */
-    public void componentHidden(ComponentEvent e) {
+    public void componentHidden(final ComponentEvent e) {
     }
 
     /**
@@ -366,7 +381,7 @@ public class SpreadsheetPanel extends JPanel
      *
      * @param e Component event.
      */
-    public void componentMoved(ComponentEvent e) {
+    public void componentMoved(final ComponentEvent e) {
     }
 
     /**
@@ -374,13 +389,16 @@ public class SpreadsheetPanel extends JPanel
      *
      * @param e Component event.
      */
-    public void componentShown(ComponentEvent e) {
+    public void componentShown(final ComponentEvent e) {
     }
 
-    public void actionPerformed(ActionEvent e) {
-        if ("openNewVarMenu".equals(e.getActionCommand())) {
-            new NewVariableC();
-        }
+    /**
+     * Method to invoke when the user clicks on the "+" icon in the spreadsheet
+     * header.
+     */
+    @Action
+    public void openNewVarMenu() {
+        new NewVariableC();
     }
 
     /** Scrollable view inserted into the JScrollPane. */
@@ -416,6 +434,6 @@ public class SpreadsheetPanel extends JPanel
     /** Default height for the viewport if no cells yet. */
     private static final int DEFAULT_HEIGHT = 50;
 
-    /** New variable button to be added to the column header panel */
-    private JButton newVar = new JButton(" + ");
+    /** New variable button to be added to the column header panel. */
+    private JButton newVar = new JButton();
 }
