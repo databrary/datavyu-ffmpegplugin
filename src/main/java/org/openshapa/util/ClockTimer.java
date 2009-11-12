@@ -163,8 +163,8 @@ public final class ClockTimer {
      */
     public void start() {
         if (isStopped) {
-            notifyStart();
             startClock();
+            notifyStart();
         }
     }
 

@@ -339,8 +339,8 @@ public final class OpenSHAPAView extends FrameView {
         jLabel1 = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
-        openMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenuItem newMenuItem = new javax.swing.JMenuItem();
+        openMenuItem = new javax.swing.JMenuItem();
         jSeparator7 = new javax.swing.JSeparator();
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
@@ -406,15 +406,15 @@ public final class OpenSHAPAView extends FrameView {
         fileMenu.setAction(actionMap.get("saveAs")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
 
+        newMenuItem.setAction(actionMap.get("showNewDatabaseForm")); // NOI18N
+        newMenuItem.setName("newMenuItem"); // NOI18N
+        fileMenu.add(newMenuItem);
+
         openMenuItem.setAction(actionMap.get("open")); // NOI18N
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openshapa/views/resources/OpenSHAPAView"); // NOI18N
         openMenuItem.setText(bundle.getString("file_open.text")); // NOI18N
         openMenuItem.setName(bundle.getString("file_open.text")); // NOI18N
         fileMenu.add(openMenuItem);
-
-        newMenuItem.setAction(actionMap.get("showNewDatabaseForm")); // NOI18N
-        newMenuItem.setName("newMenuItem"); // NOI18N
-        fileMenu.add(newMenuItem);
 
         jSeparator7.setName("jSeparator7"); // NOI18N
         fileMenu.add(jSeparator7);
