@@ -8,15 +8,19 @@ import org.openshapa.db.SystemErrorException;
 import org.openshapa.views.discrete.layouts.SheetLayout;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
+import org.openshapa.controllers.NewVariableC;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
@@ -26,7 +30,7 @@ import org.apache.log4j.Logger;
  * OpenSHAPA database as a spreadsheet.
  */
 public class SpreadsheetPanel extends JPanel
-    implements ExternalColumnListListener, ComponentListener {
+    implements ExternalColumnListListener, ComponentListener, ActionListener{
 
     /**
      * Constructor.
@@ -82,7 +86,17 @@ public class SpreadsheetPanel extends JPanel
 
         // add a listener for window resize events
         scrollPane.addComponentListener(this);
+
+        // Set up the add new variable button
+        newVar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.black));
+        newVar.setName("newVar");
+        newVar.setActionCommand("openNewVarMenu");
+        newVar.setSize(newVar.getWidth(), SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
+        newVar.addActionListener(this);
+        headerView.add(newVar);
     }
+
+
 
     /**
      * Populate from the database.
@@ -107,6 +121,10 @@ public class SpreadsheetPanel extends JPanel
      */
     private void addColumn(final Database db, final long colID) {
         // make the SpreadsheetColumn
+        
+        // Remove previous instance of newVar from the header.
+        headerView.remove(newVar);
+
         SpreadsheetColumn col = new SpreadsheetColumn(this,
                                                       db,
                                                       colID,
@@ -116,6 +134,8 @@ public class SpreadsheetPanel extends JPanel
         mainView.add(col.getDataPanel());
         // add the headerpanel to the scrollpane headerviewport
         headerView.add(col.getHeaderPanel());
+        // add the new variable '+' button to the header.
+        headerView.add(newVar);
 
         // and add it to our maintained ref collection
         columns.add(col);
@@ -357,6 +377,12 @@ public class SpreadsheetPanel extends JPanel
     public void componentShown(ComponentEvent e) {
     }
 
+    public void actionPerformed(ActionEvent e) {
+        if ("openNewVarMenu".equals(e.getActionCommand())) {
+            new NewVariableC();
+        }
+    }
+
     /** Scrollable view inserted into the JScrollPane. */
     private SpreadsheetView mainView;
 
@@ -389,4 +415,7 @@ public class SpreadsheetPanel extends JPanel
 
     /** Default height for the viewport if no cells yet. */
     private static final int DEFAULT_HEIGHT = 50;
+
+    /** New variable button to be added to the column header panel */
+    private JButton newVar = new JButton(" + ");
 }
