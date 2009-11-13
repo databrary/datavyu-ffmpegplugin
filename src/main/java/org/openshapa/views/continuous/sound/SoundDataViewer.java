@@ -4,12 +4,11 @@ import org.openshapa.views.continuous.*;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
+import org.openshapa.views.DataController;
 import quicktime.QTException;
 import quicktime.QTSession;
-import quicktime.app.view.QTFactory;
 import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
-import quicktime.std.StdQTConstants;
 import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
 import quicktime.std.movies.Track;
@@ -57,6 +56,9 @@ implements DataViewer {
 
     /** Frames per second. */
     private float fps;
+
+    /** Parent DataController. */
+    private DataController parent;
 
     /**
      * Constructor - creates new video viewer.
@@ -115,6 +117,10 @@ implements DataViewer {
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
+    }
+
+    public void setParentController(final DataController dataController) {
+        this.parent = dataController;
     }
 
     /**
@@ -385,10 +391,20 @@ implements DataViewer {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        this.parent.shutdown(this);
+    }//GEN-LAST:event_formWindowClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

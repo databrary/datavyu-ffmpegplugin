@@ -2,6 +2,7 @@ package org.openshapa.views.continuous;
 
 import java.io.File;
 import javax.swing.JFrame;
+import org.openshapa.views.DataController;
 
 /**
  * DataViewer interface.
@@ -21,6 +22,13 @@ public interface DataViewer {
      * @param dataFeed The new data feed for this viewer.
      */
     void setDataFeed(final File dataFeed);
+
+    /**
+     * Sets the parent data controller for this data viewer.
+     *
+     * @param dataController The parent controller.
+     */
+    void setParentController(final DataController dataController);
 
     /**
      * @return Frames per second.

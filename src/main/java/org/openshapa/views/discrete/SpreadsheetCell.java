@@ -117,8 +117,9 @@ implements ExternalDataCellListener, Selectable {
      * @param selector Selector to register the cell with.
      * @throws SystemErrorException if trouble with db calls
      */
-    public SpreadsheetCell(final Database cellDB, final Cell cell,
-                                                        final Selector selector)
+    public SpreadsheetCell(final Database cellDB,
+                           final Cell cell,
+                           final Selector selector)
     throws SystemErrorException {
         db = cellDB;
         cellID = cell.getID();

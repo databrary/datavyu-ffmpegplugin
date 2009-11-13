@@ -27,7 +27,7 @@ import org.openshapa.views.continuous.PluginManager;
  */
 public final class DataController
         extends OpenSHAPADialog
-        implements org.openshapa.util.ClockTimer.Listener {
+        implements org.openshapa.util.ClockTimer.ClockListener {
 
     //--------------------------------------------------------------------------
     // [static]
@@ -608,6 +608,7 @@ public final class DataController
             }
 
             viewer.setDataFeed(f);
+            viewer.setParentController(this);
             OpenSHAPA.getApplication().show(viewer.getParentJFrame());
 
             // adjust the overall frame rate.
@@ -840,7 +841,7 @@ public final class DataController
      */
     private void jump(final long step) {
         clock.stop();
-        clock.setRate(PLAY_RATE);
+        clock.setRate(0);
         clock.stepTime(step);
     }
 

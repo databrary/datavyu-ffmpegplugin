@@ -5,6 +5,7 @@ import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import org.openshapa.util.Constants;
+import org.openshapa.views.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import quicktime.QTException;
 import quicktime.QTSession;
@@ -48,6 +49,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
     /** Frames per second. */
     private float fps;
+
+    /** parent controller. */
+    private DataController parent;
 
     //--------------------------------------------------------------------------
     // [initialization]
@@ -131,6 +135,10 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         }
     }
 
+    public void setParentController(final DataController dataController) {
+        parent = dataController;
+    }
+
     /**
      * @return The frames per second.
      */
@@ -208,10 +216,25 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     * Action to invoke when the QTDataViewer window is closing (clean itself
+     * up -
+     * @param evt
+     */
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        this.parent.shutdown(this);
+    }//GEN-LAST:event_formWindowClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

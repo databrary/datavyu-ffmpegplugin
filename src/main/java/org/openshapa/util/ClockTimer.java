@@ -1,6 +1,3 @@
-/*
- */
-
 package org.openshapa.util;
 
 import java.util.HashSet;
@@ -9,7 +6,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- *
+ * ClockTime is a class which can be used as a time marshall to keep multiple
+ * objects in sync.
  */
 public final class ClockTimer {
 
@@ -34,7 +32,7 @@ public final class ClockTimer {
     /**
      * Listener interface for clock 'ticks'.
      */
-    public interface Listener {
+    public interface ClockListener {
 
         /**
          * @param time Current time in milliseconds
@@ -66,7 +64,7 @@ public final class ClockTimer {
     //
     //
 
-    /** */
+    /** Current time of the clock. */
     private double time;
 
     /** Used to calculate elapsed time. */
@@ -90,14 +88,11 @@ public final class ClockTimer {
     /** */
     private long stepTime;
 
-    /** Tick time (CLOCK_TICK * rate). */
-    private double tock = CLOCK_TICK;
-
     /** Update multiplier. */
     private float rate = 1F;
 
     /** */
-    private Set<Listener> clockListeners = new HashSet<Listener>();
+    private Set<ClockListener> clockListeners = new HashSet<ClockListener>();
 
 
     //--------------------------------------------------------------------------
@@ -147,7 +142,6 @@ public final class ClockTimer {
      */
     public void setRate(final float newRate) {
         rate = newRate;
-        tock = CLOCK_TICK * rate;
 
         if (isStopped) { notifyRate(); }
         else           { updateRate = true; }
@@ -200,7 +194,7 @@ public final class ClockTimer {
     /**
      * @param listener Listener requiring clockTick updates.
      */
-    public void registerListener(final Listener listener) {
+    public void registerListener(final ClockListener listener) {
         clockListeners.add(listener);
     }
 
@@ -209,10 +203,9 @@ public final class ClockTimer {
     //
 
     /**
-     *
-     * @param ms Milliseconds to advance clock.
+     * The "tick" of the clock - updates listeners of changes in time.
      */
-    private void tick(final double ms) {
+    private void tick() {
         long currentNano = System.nanoTime();
         time += rate * (currentNano - nanoTime) / NANO_IN_MILLI;
         nanoTime = currentNano;
@@ -254,12 +247,9 @@ public final class ClockTimer {
 
         clock = new Timer();
         clock.scheduleAtFixedRate(
-                new TimerTask() {
-                        @Override public void run() { tick(tock); }
-                    },
+                new TimerTask() { @Override public void run() { tick(); } },
                 CLOCK_DELAY,
-                CLOCK_TICK
-            );
+                CLOCK_TICK);
         isStopped = false;
     }
 
@@ -280,36 +270,34 @@ public final class ClockTimer {
      * Notify clock listeners of tick event.
      */
     private void notifyTick() {
-        for (Listener l : clockListeners) { l.clockTick((long) time); }
+        for (ClockListener l : clockListeners) { l.clockTick((long) time); }
     }
 
     /**
      * Notify clock listeners of rate update event.
      */
     private void notifyRate() {
-        for (Listener l : clockListeners) { l.clockRate(rate); }
+        for (ClockListener l : clockListeners) { l.clockRate(rate); }
     }
 
     /**
      * Notify clock listeners of start event.
      */
     private void notifyStart() {
-        for (Listener l : clockListeners) { l.clockStart((long) time); }
+        for (ClockListener l : clockListeners) { l.clockStart((long) time); }
     }
 
     /**
      * Notify clock listeners of stop event.
      */
     private void notifyStop() {
-        for (Listener l : clockListeners) { l.clockStop((long) time); }
+        for (ClockListener l : clockListeners) { l.clockStop((long) time); }
     }
 
     /**
      * Notify clock listeners of time step event.
      */
     private void notifyStep() {
-        for (Listener l : clockListeners) { l.clockStep((long) time); }
+        for (ClockListener l : clockListeners) { l.clockStep((long) time); }
     }
-
-    //--------------------------------------------------------------------------
 }

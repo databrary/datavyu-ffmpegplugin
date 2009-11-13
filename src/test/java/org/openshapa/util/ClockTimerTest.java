@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.openshapa.util.ClockTimer.Listener;
+import org.openshapa.util.ClockTimer.ClockListener;
 
 /**
  *
@@ -63,7 +63,7 @@ public class ClockTimerTest {
     @Test
     public void testTicks() throws InterruptedException {
         System.out.println("testing 'ticks'");
-        instance.registerListener(new ClockTimer.Listener() {
+        instance.registerListener(new ClockTimer.ClockListener() {
                 public void clockTick(long time) {
                     testTicksReport("", time);
                 }
@@ -219,7 +219,7 @@ public class ClockTimerTest {
     //@Test
     public void testRegisterListener() {
         System.out.println("registerListener");
-        Listener listener = null;
+        ClockListener listener = null;
         ClockTimer instance = new ClockTimer();
         instance.registerListener(listener);
         // TODO review the generated test code and remove the default call to fail.
