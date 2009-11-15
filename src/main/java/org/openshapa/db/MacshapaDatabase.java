@@ -75,6 +75,18 @@ public class MacshapaDatabase extends Database {
     public final static long MAX_INT = 10000;
     public final static long MIN_INT = -10000;
 
+    /**
+     * This constant has been to temporarily allow typed matrix and
+     * predicate formal arguments in a MacSHAPA data base.
+     *
+     * We will dis-allow typed matrix and predicate formal arguemnets
+     * again as soon as we get the Openshapa database up and running.
+     *
+     * However, for now, some of our users are demanding them.
+     */
+    public final static boolean TYPED_FORMAL_ARGUMENTS_ALLOWED  = true;
+
+
     /*************************************************************************/
     /***************************** Fields: ***********************************/
     /*************************************************************************/
@@ -233,8 +245,12 @@ public class MacshapaDatabase extends Database {
     public boolean predSubrangeSupported()          { return false; }
     @Override
     public boolean tickSizeAgjustmentSupported()    { return false; }
+
+    // TODO: Set this back to false ASAP -- it is a temporary compromise that
+    //       should be reversed as soon as we have the regular openshapa
+    //       database up and running.
     @Override
-    public boolean typedFormalArgsSupported()       { return false; }
+    public boolean typedFormalArgsSupported()       { return true; }
 
 
     /*************************************************************************/

@@ -61,16 +61,16 @@ public abstract class Database
 //            new java.util.Vector<DatabaseChangeListener>();
 
     /** Current database user UID */
-    int curUID = 0;
+    protected int curUID = 0;
 
     /** Index of all DBElements in the database */
-    DBIndex idx = null;
+    protected DBIndex idx = null;
 
     /** List of all vocab elements in the database */
-    VocabList vl = null;
+    protected VocabList vl = null;
 
     /** list of all columns in the database */
-    ColumnList cl = null;
+    protected ColumnList cl = null;
 
     /** Cascade Listeners */
     private CascadeListeners listeners = null;
