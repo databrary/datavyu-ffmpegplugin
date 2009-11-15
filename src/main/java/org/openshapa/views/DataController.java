@@ -706,6 +706,7 @@ public final class DataController
     @Action
     public void stopAction() {
         clock.stop();
+        shuttleRate = 0;
         shuttleDirection = ShuttleDirection.UNDEFINED;
     }
 
