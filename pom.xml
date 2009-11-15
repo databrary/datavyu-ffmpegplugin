@@ -4,11 +4,11 @@
   <groupId>org.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>0.93</version>
+  <version>0.94</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
-  <!-- Our organisation -->
+  <!-- Our organisation. -->
   <organization>
     <name>NICTA</name>
     <url>http://www.nicta.com.au</url>
@@ -166,7 +166,7 @@
     </site>
   </distributionManagement>
 
-  <!-- External repositories - where to find third-party dependancies. -->
+  <!-- External repositories - where to find third-party dependencies. -->
   <repositories>
     <repository>
       <id>central</id>
@@ -185,8 +185,16 @@
       <url>http://repo1.maven.org/maven2</url>
       <layout>default</layout>
     </repository>
-
   </repositories>
+
+  <!-- External plugin repositories - where to find third-part dependencies. -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>openshapa</id>
+      <url>http://openshapa.org/maven2</url>
+      <layout>default</layout>
+    </pluginRepository>
+  </pluginRepositories>
 
   <!-- Use an optimized build for releases. -->
   <profiles>
@@ -239,6 +247,23 @@
         </configuration>
       </plugin>
 
+      <!-- BugzID:304 - Generate an OSX style app bundle & disk image.-->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>osxappbundle-maven-plugin</artifactId>
+        <version>1.0-alpha-3</version>
+        <configuration>
+          <bundleName>OpenSHAPA</bundleName>
+          <mainClass>org.openshapa.OpenSHAPA</mainClass>
+          <jvmVersion>1.5+</jvmVersion>
+          <iconFile>${basedir}/src/main/resources/icons/OpenSHAPA.icns</iconFile>
+          <!-- All mvn assembly:assembly first - so that the output directory
+               for the DMG is first created, otherwise this line will do
+               nothing. -->
+          <diskImageFile>${project.build.directory}/site/download/${project.build.finalName}-OSX-${buildNumber}.dmg</diskImageFile>
+        </configuration>
+      </plugin>
+
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -283,7 +308,7 @@
           </execution>
         </executions>
         <configuration>
-          <format>{0,date,yyyyMMddHHmmss}</format>
+          <format>{0,date,yyyyMMddHH}</format>
           <items>
             <item>timestamp</item>
           </items>
@@ -332,6 +357,8 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.3</version>
         <executions>
+
+          <!-- Set the build number in the bundles file. -->
           <execution>
             <id>add-source</id>
             <phase>generate-sources</phase>
@@ -347,6 +374,30 @@
                  file="src/main/resources/org/openshapa/resources/OpenSHAPA.properties"
                  match="Application.build =(.*)"
                  replace="Application.build = b:${buildNumber}"/>
+
+                <!-- BugzID:304 - Create output directory for DMG. -->
+                <mkdir dir="${project.build.directory}/site/download/"/>
+              </tasks>
+            </configuration>
+          </execution>
+          
+          <!-- Set the build number to some thing generic so we don't get
+               conflicts all the time. -->
+          <execution>
+            <id>clean-source</id>
+            <phase>prepare-package</phase>
+            <goals>
+                <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <taskdef
+                 name="replaceregexp"
+                 classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
+                <replaceregexp
+                 file="src/main/resources/org/openshapa/resources/OpenSHAPA.properties"
+                 match="Application.build =(.*)"
+                 replace="Application.build = b:none"/>
               </tasks>
             </configuration>
           </execution>
@@ -456,6 +507,12 @@
       <groupId>org.openshapa</groupId>
       <artifactId>openhashtable</artifactId>
       <version>0.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.openshapa</groupId>
+      <artifactId>openshapa-lib</artifactId>
+      <version>0.0.1</version>
     </dependency>
 
   </dependencies>

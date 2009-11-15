@@ -33,6 +33,7 @@ public final class UINewDatabaseTest extends UISpecTestCase {
     }
 
     static {
+        UISpec4J.setWindowInterceptionTimeLimit(120000);
         UISpec4J.init();
     }
 

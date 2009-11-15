@@ -96,15 +96,6 @@ public final class FormalArgEditor extends EditorComponent {
     }
 
     /**
-     * Action to invoke when focus is lost.
-     *
-     * @param e The FocusEvent that triggered this action.
-     */
-    @Override
-    public void focusLost(final FocusEvent e) {
-    }
-
-    /**
      * The action to invoke when a key is typed.
      *
      * @param e The KeyEvent that triggered this action.

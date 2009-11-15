@@ -14,7 +14,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.DataController.ShuttleDirection;
+import org.openshapa.views.DataControllerV.ShuttleDirection;
 
 /**
  *
@@ -45,25 +45,25 @@ public class DataControllerTest {
     //
     
     /**
-     * Test of setCurrentLocation method, of class DataController.
+     * Test of setCurrentLocation method, of class DataControllerV.
      */
 ////    @Test
 //    public void testSetCurrentLocation() {
 //        System.out.println("setCurrentLocation");
 //        long milliseconds = 0L;
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.setCurrentLocation(milliseconds);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of getCurrentLocation method, of class DataController.
+//     * Test of getCurrentLocation method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testGetCurrentLocation() {
 //        System.out.println("getCurrentLocation");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        TimeStamp expResult = null;
 //        TimeStamp result = instance.getCurrentLocation();
 //        assertEquals(expResult, result);
@@ -72,13 +72,13 @@ public class DataControllerTest {
 //    }
 //
 //    /**
-//     * Test of shutdown method, of class DataController.
+//     * Test of shutdown method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testShutdown() {
 //        System.out.println("shutdown");
 //        DataViewer viewer = null;
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        boolean expResult = false;
 //        boolean result = instance.shutdown(viewer);
 //        assertEquals(expResult, result);
@@ -87,108 +87,108 @@ public class DataControllerTest {
 //    }
 //
 //    /**
-//     * Test of syncCtrlAction method, of class DataController.
+//     * Test of syncCtrlAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testSyncCtrlAction() {
 //        System.out.println("syncCtrlAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.syncCtrlAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of syncAction method, of class DataController.
+//     * Test of syncAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testSyncAction() {
 //        System.out.println("syncAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.syncAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of setCellOnsetAction method, of class DataController.
+//     * Test of setCellOnsetAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testSetCellOnsetAction() {
 //        System.out.println("setCellOnsetAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.setCellOnsetAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of setCellOffsetAction method, of class DataController.
+//     * Test of setCellOffsetAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testSetCellOffsetAction() {
 //        System.out.println("setCellOffsetAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.setCellOffsetAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of playAction method, of class DataController.
+//     * Test of playAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testPlayAction() {
 //        System.out.println("playAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.playAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of forwardAction method, of class DataController.
+//     * Test of forwardAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testForwardAction() {
 //        System.out.println("forwardAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.forwardAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of rewindAction method, of class DataController.
+//     * Test of rewindAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testRewindAction() {
 //        System.out.println("rewindAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.rewindAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of pauseAction method, of class DataController.
+//     * Test of pauseAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testPauseAction() {
 //        System.out.println("pauseAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.pauseAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of stopAction method, of class DataController.
+//     * Test of stopAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testStopAction() {
 //        System.out.println("stopAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.stopAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -199,7 +199,7 @@ public class DataControllerTest {
         System.out.println("shuttle funtionality");
         try {
             float[] srates = (float[]) PrivateAccessor.getField(
-                    DataController.class, "SHUTTLE_RATES"
+                    DataControllerV.class, "SHUTTLE_RATES"
                 );
 
             assertEquals(11, srates.length);
@@ -212,12 +212,12 @@ public class DataControllerTest {
         }
     }
     /**
-     * Test of shuttleForwardAction method, of class DataController.
+     * Test of shuttleForwardAction method, of class DataControllerV.
      */
     @Test
     public void testShuttleForwardAction() {
         System.out.println("shuttleForwardAction");
-        DataController instance = new DataController(null, true);
+        DataControllerV instance = new DataControllerV(null, true);
 
         try {
             assertEquals(
@@ -244,7 +244,7 @@ public class DataControllerTest {
 
             instance.shuttleBackAction();
             assertEquals(
-                    ShuttleDirection.BACKWARDS,
+                    ShuttleDirection.UNDEFINED,
                     (ShuttleDirection) PrivateAccessor.getField(
                             instance, "shuttleDirection"
                         )
@@ -298,12 +298,12 @@ public class DataControllerTest {
     }
 
     /**
-     * Test of shuttleBackAction method, of class DataController.
+     * Test of shuttleBackAction method, of class DataControllerV.
      */
     @Test
     public void testShuttleBackAction() {
         System.out.println("shuttleBackAction");
-        DataController instance = new DataController(null, true);
+        DataControllerV instance = new DataControllerV(null, true);
 
         try {
             assertEquals(
@@ -330,7 +330,7 @@ public class DataControllerTest {
 
             instance.shuttleForwardAction();
             assertEquals(
-                    ShuttleDirection.FORWARDS,
+                    ShuttleDirection.UNDEFINED,
                     (ShuttleDirection) PrivateAccessor.getField(
                             instance, "shuttleDirection"
                         )
@@ -390,84 +390,84 @@ public class DataControllerTest {
     }
 
 //    /**
-//     * Test of findAction method, of class DataController.
+//     * Test of findAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testFindAction() {
 //        System.out.println("findAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.findAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of goBackAction method, of class DataController.
+//     * Test of goBackAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testGoBackAction() {
 //        System.out.println("goBackAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.goBackAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of jogBackAction method, of class DataController.
+//     * Test of jogBackAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testJogBackAction() {
 //        System.out.println("jogBackAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.jogBackAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of jogForwardAction method, of class DataController.
+//     * Test of jogForwardAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testJogForwardAction() {
 //        System.out.println("jogForwardAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.jogForwardAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of createNewCellAction method, of class DataController.
+//     * Test of createNewCellAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testCreateNewCellAction() {
 //        System.out.println("createNewCellAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.createNewCellAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of setNewCellStopTime method, of class DataController.
+//     * Test of setNewCellStopTime method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testSetNewCellStopTime() {
 //        System.out.println("setNewCellStopTime");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.setNewCellStopTime();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
 //
 //    /**
-//     * Test of syncVideoAction method, of class DataController.
+//     * Test of syncVideoAction method, of class DataControllerV.
 //     */
 ////    @Test
 //    public void testSyncVideoAction() {
 //        System.out.println("syncVideoAction");
-//        DataController instance = null;
+//        DataControllerV instance = null;
 //        instance.syncVideoAction();
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");

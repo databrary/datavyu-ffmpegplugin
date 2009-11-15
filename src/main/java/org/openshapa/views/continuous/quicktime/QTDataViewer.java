@@ -1,14 +1,18 @@
 package org.openshapa.views.continuous.quicktime;
 
+import java.awt.Toolkit;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
+import org.openshapa.util.Constants;
+import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import quicktime.QTException;
 import quicktime.QTSession;
 import quicktime.app.view.QTFactory;
 import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
+import quicktime.qd.QDDimension;
 import quicktime.std.StdQTConstants;
 import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
@@ -18,8 +22,7 @@ import quicktime.std.movies.media.Media;
 /**
  * The viewer for a quicktime video file.
  */
-public final class QTDataViewer extends JFrame
-        implements DataViewer {
+public final class QTDataViewer extends JFrame implements DataViewer {
 
     //--------------------------------------------------------------------------
     //
@@ -27,12 +30,6 @@ public final class QTDataViewer extends JFrame
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(QTDataViewer.class);
-
-    /** Conversion from seconds to milliseconds. */
-    private static final long SECONDS_TO_MILLI = 1000L;
-
-    /** Conversion from milliseconds to seconds. */
-    private static final double MILLI_TO_SECONDS = 1F / SECONDS_TO_MILLI;
 
     //--------------------------------------------------------------------------
     //
@@ -52,6 +49,9 @@ public final class QTDataViewer extends JFrame
 
     /** Frames per second. */
     private float fps;
+
+    /** parent controller. */
+    private DataController parent;
 
     //--------------------------------------------------------------------------
     // [initialization]
@@ -96,9 +96,24 @@ public final class QTDataViewer extends JFrame
             this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
+
+            // Set the time scale for our movie to milliseconds (i.e. 1000 ticks
+            // per second.
+            movie.setTimeScale(Constants.TICKS_PER_SECOND);
             visualTrack = movie.getIndTrackType(1,
                                        StdQTConstants.visualMediaCharacteristic,
                                        StdQTConstants.movieTrackCharacteristic);
+
+            // Initialise the video to be no bigger than a quarter of the screen
+            int hScrnWidth = Toolkit.getDefaultToolkit()
+                                    .getScreenSize().width / 2;
+            if (movie.getBounds().getWidth() > hScrnWidth) {
+                float aspectRatio = movie.getBounds().getWidthF()
+                                    / movie.getBounds().getHeightF();
+                visualTrack.setSize(new QDDimension(hScrnWidth,
+                                                    hScrnWidth / aspectRatio));
+            }
+
             visualMedia = visualTrack.getMedia();
 
             fps = (float) visualMedia.getSampleCount()
@@ -106,7 +121,7 @@ public final class QTDataViewer extends JFrame
 
             this.add(QTFactory.makeQTComponent(movie).asComponent());
 
-            setName(this.getClass().getSimpleName() + videoFile.getName());
+            setName(getClass().getSimpleName() + "-" + videoFile.getName());
             this.pack();
             this.invalidate();
             this.setVisible(true);
@@ -118,6 +133,10 @@ public final class QTDataViewer extends JFrame
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
+    }
+
+    public void setParentController(final DataController dataController) {
+        parent = dataController;
     }
 
     /**
@@ -160,39 +179,15 @@ public final class QTDataViewer extends JFrame
         }
     }
 
-   /**
-     * @param offset Millisecond offset from current position.
-     */
-    public void seek(final long offset) {
-        try {
-            if (movie != null) {
-                double curTime = movie.getTime() / (float) movie.getTimeScale();
-                double seconds = offset * MILLI_TO_SECONDS;
-
-                seconds = curTime + seconds;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
-                movie.setTime(time);
-                pack();
-            }
-        } catch (QTException e) {
-            logger.error("Unable to go back", e);
-        }
-    }
-
     /**
      * @param position Millisecond absolute position for track.
      */
     public void seekTo(final long position) {
         try {
             if (movie != null) {
-                double seconds = position * MILLI_TO_SECONDS;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
+                TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
+                                                 position);
                 movie.setTime(time);
-                pack();
             }
         } catch (QTException e) {
             logger.error("Unable to find", e);
@@ -205,9 +200,7 @@ public final class QTDataViewer extends JFrame
      * @throws QTException If error occurs accessing underlying implemenation.
      */
     public long getCurrentTime() throws QTException {
-        double curTime = movie.getTime() / (double) movie.getTimeScale();
-        curTime = curTime * SECONDS_TO_MILLI;
-        return (long) curTime;
+        return movie.getTime();
     }
 
 
@@ -223,11 +216,25 @@ public final class QTDataViewer extends JFrame
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Action to invoke when the QTDataViewer window is closing (clean itself
+     * up -
+     * @param evt
+     */
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        this.parent.shutdown(this);
+    }//GEN-LAST:event_formWindowClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

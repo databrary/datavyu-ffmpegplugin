@@ -1,6 +1,7 @@
 package org.openshapa.uitests;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Vector;
 import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
@@ -8,6 +9,7 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.uispec4j.Cell;
+import org.uispec4j.Column;
 import org.uispec4j.Key;
 import org.uispec4j.KeyItem;
 import org.uispec4j.MenuBar;
@@ -42,12 +44,14 @@ public final class UIVocabEditorTest extends UISpecTestCase {
     }
 
     static {
+        UISpec4J.setWindowInterceptionTimeLimit(4000000);
         UISpec4J.init();
     }
 
     /** Test vocab editor is being populated.
      * @throws java.lang.Exception on any error
      */
+    @SuppressWarnings("empty-statement")
     public void testLoading() throws Exception {
         //Preparation
         Window window = getMainWindow();
@@ -61,8 +65,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
                 .getPanel("verticalFrame");
 
 
-        int numVocElements = vocElementsPanel.getUIComponents(
-                VocabElement.class).length;
+        int numVocElements = getVocabElements(vocElementsPanel).length;
 
         assertTrue(numVocElements == 0);
 
@@ -95,8 +98,8 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 
         vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
-        numVocElements = vocElementsPanel.getUIComponents(
-                VocabElement.class).length;
+
+        numVocElements = getVocabElements(vocElementsPanel).length;
         assertTrue(numVocElements == 2);
     }
 
@@ -117,8 +120,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
-            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
+        VocabElement ve = getVocabElements(vocElementsPanel)[0];
 
         String veName = ve.getVEName();
         vocEdWindow.getButton("OK").click();
@@ -163,8 +165,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
-            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
+        VocabElement ve = getVocabElements(vocElementsPanel)[0];
 
         String oldVEName = ve.getVEName();
 
@@ -216,8 +217,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
-            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
+        VocabElement ve = getVocabElements(vocElementsPanel)[0];
 
         String oldVEName = ve.getVEName();
 
@@ -271,8 +271,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
-            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
+        VocabElement ve = getVocabElements(vocElementsPanel)[0];
 
         String oldVEArgName = ve.getArgument(0);
 
@@ -328,8 +327,7 @@ public final class UIVocabEditorTest extends UISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
-            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
+        VocabElement ve = getVocabElements(vocElementsPanel)[0];
 
         String oldVEArgName = ve.getArgument(0);
 
@@ -429,12 +427,10 @@ public final class UIVocabEditorTest extends UISpecTestCase {
                 VocabElement.class).length;
 
         String [] originalData = new String[numVocElements];
-        Vector<VocabElement> vve = new Vector<VocabElement>();
+        Vector<VocabElement> vve = new Vector<VocabElement>(Arrays.asList(
+                getVocabElements(vocElementsPanel)));
         for (int i = 0; i < numVocElements; i++) {
-            vve.add(new VocabElement(((VocabElementV) (vocElementsPanel
-                    .getUIComponents(VocabElement.class)[i]
-                    .getAwtComponent()))));
-            originalData[i] = vve.lastElement().getValueText();
+            originalData[i] = vve.elementAt(i).getValueText();
         }
 
         // TEST 1: Make multiple addition changes
@@ -523,12 +519,10 @@ public final class UIVocabEditorTest extends UISpecTestCase {
                 VocabElement.class).length;
 
         String [] originalData = new String[numVocElements];
-        Vector<VocabElement> vve = new Vector<VocabElement>();
+        Vector<VocabElement> vve = new Vector<VocabElement>(Arrays.asList(
+                getVocabElements(vocElementsPanel)));
         for (int i = 0; i < numVocElements; i++) {
-            vve.add(new VocabElement(((VocabElementV) (vocElementsPanel
-                    .getUIComponents(VocabElement.class)[i]
-                    .getAwtComponent()))));
-            originalData[i] = vve.lastElement().getValueText();
+            originalData[i] = vve.elementAt(i).getValueText();
         }
 
         // TEST 2: Make single addition changes
@@ -665,12 +659,10 @@ public final class UIVocabEditorTest extends UISpecTestCase {
                 VocabElement.class).length;
 
         String [] originalData = new String[numVocElements];
-        Vector<VocabElement> vve = new Vector<VocabElement>();
+        Vector<VocabElement> vve = new Vector<VocabElement>(Arrays.asList(
+                getVocabElements(vocElementsPanel)));
         for (int i = 0; i < numVocElements; i++) {
-            vve.add(new VocabElement(((VocabElementV) (vocElementsPanel
-                    .getUIComponents(VocabElement.class)[i]
-                    .getAwtComponent()))));
-            originalData[i] = vve.lastElement().getValueText();
+            originalData[i] = vve.elementAt(i).getValueText();
         }
 
        // TEST 3a: Delete: delete key all
@@ -724,14 +716,14 @@ public final class UIVocabEditorTest extends UISpecTestCase {
             }
         }
         // Check that change occurred
-        for (int i = 0; i < vve.size(); i ++) {
+        for (int i = 0; i < vve.size(); i++) {
             assertFalse(vve.elementAt(i).getValueText()
                     .equals(originalData[i]));
         }
         // Revert change
         vocEdWindow.getButton("Revert").click();
         // Check that change has been reverted
-        for (int i = 0; i < vve.size(); i ++) {
+        for (int i = 0; i < vve.size(); i++) {
             assertTrue(vve.elementAt(i).getValueText()
                     .equals(originalData[i]));
         }
@@ -821,12 +813,10 @@ public final class UIVocabEditorTest extends UISpecTestCase {
                 VocabElement.class).length;
 
         String [] originalData = new String[numVocElements];
-        Vector<VocabElement> vve = new Vector<VocabElement>();
+        Vector<VocabElement> vve = new Vector<VocabElement>(Arrays.asList(
+                getVocabElements(vocElementsPanel)));
         for (int i = 0; i < numVocElements; i++) {
-            vve.add(new VocabElement(((VocabElementV) (vocElementsPanel
-                    .getUIComponents(VocabElement.class)[i]
-                    .getAwtComponent()))));
-            originalData[i] = vve.lastElement().getValueText();
+            originalData[i] = vve.elementAt(i).getValueText();
         }
 
         /*BugzID:636// TEST 3c: Delete: select all delete key
@@ -892,443 +882,286 @@ public final class UIVocabEditorTest extends UISpecTestCase {
         } */
     }
 
-    /**
-     * Test adding new variables manually.
+    /** Test vocab editor creating new predicate and reverting w/o script.
      * @throws java.lang.Exception on any error
      */
-//    public void testAddingVariablesManually() throws Exception {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//        String [] varNames = {"text", "predicate", "integer", "nominal",
-//        "matrix", "float"};
-//        String [] varTypes = {"TEXT", "PREDICATE", "INTEGER",
-//        "NOMINAL", "MATRIX", "FLOAT"};
-//
-//        // 1. Create a new variable, then check that the variable list
-//        // is populated with correct data.
-//        for (int i = 0; i < varNames.length; i++) {
-//            createNewVariable(varNames[i], varTypes[i]);
-//
-//            // 1a. Check that variable list is populated with correct data
-//            Window varListWindow = WindowInterceptor.run(menuBar.getMenu(
-//                    "Spreadsheet").getSubMenu("Variable List").triggerClick());
-//            Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-//                    window.getUIComponents(Spreadsheet.class)[0]
-//                    .getAwtComponent()));
-//            assertTrue(varListWindow.getTable().getRowCount() == ss.getColumns()
-//                    .size());
-//            for (int j = 0; j < ss.getColumns().size(); j++) {
-//                assertTrue(inTable(ss.getColumns().elementAt(j).getHeaderName(),
-//                        varListWindow.getTable(), 1));
-//                assertTrue(inTable(ss.getColumns().elementAt(j).getHeaderType(),
-//                        varListWindow.getTable(), 2));
-//            }
-//        }
-//    }
-//
-//    /**
-//     * Test removal with new database.
-//     * @throws java.lang.Exception on any error
-//     */
-//    public void testRemovalWithNewDatabase() throws Exception {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//
-//        // 1. Open and run script to populate database
-//        String root = System.getProperty("testPath");
-//        File demoFile = new File(root + "/ui/demo_data.rb");
-//        assertTrue(demoFile.exists());
-//
-//                WindowInterceptor
-//                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-//                    .triggerClick())
-//                .process(FileChooserHandler.init()
-//                    .assertIsOpenDialog()
-//                    .assertAcceptsFilesOnly()
-//                    .select(demoFile.getAbsolutePath()))
-//                .process(new WindowHandler() {
-//                    public Trigger process(Window console) {
-//                        return console.getButton("Close").triggerClick();
-//                    }
-//                })
-//                .run();
-//
-//
-//        // 1a. Check that variable list is populated
-//         Window varListWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Variable List").triggerClick());
-//         assertTrue(varListWindow.getTable().getRowCount() > 0);
-//
-//        // 2. Create new database
-//        WindowInterceptor
-//                .init(menuBar.getMenu("File").getSubMenu("New").triggerClick())
-//                .process(new WindowHandler() {
-//                    public Trigger process (Window newDBWindow) {
-//                        newDBWindow.getTextBox("nameField").setText("newDB");
-//                        return newDBWindow.getButton("Ok").triggerClick();
-//                    }
-//                 })
-//                 .run();
-//
-//        // 2b. Check that variable list is empty
-//        //BugzID:430
-//        //assertTrue(varListWindow.getTable().getRowCount() == 0);
-//                 varListWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Variable List").triggerClick());
-//         assertTrue(varListWindow.getTable().getRowCount() == 0);
-//    }
-//
-//    /**
-//     * Creates a new variable and checks that it has been created.
-//     * @param varName String for variable name
-//     * @param varType String for variable type
-//     * @param varRadio String for corresponding radio button for varType
-//     * @throws java.lang.Exception on any error
-//     */
-//    private void validateVariableType(final String varName,
-//            final String varType,
-//            final String varRadio) throws Exception {
-//        // 1. Retrieve the components
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//        // 2a. Create new variable,
-//        //open spreadsheet and check that it's there
-//        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-//        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-//        newVarWindow.getRadioButton(varRadio).click();
-//        assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
-//        newVarWindow.getButton("Ok").click();
-//        //check that correct column has been created
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-//                window.getUIComponents(Spreadsheet.class)[0]
-//                .getAwtComponent()));
-//        assertNotNull(ss.getSpreadsheetColumn(varName));
-//        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
-//                .equals(varName));
-//        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
-//                .equals(varType));
-//        //check that column has no cells
-//        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
-//    }
-//
-//    /**
-//     * Create a new variable.
-//     * @param varName String for the name of the variable
-//     * @param varType String for the variable type
-//     * @throws java.lang.Exception on any error
-//     */
-//    private void createNewVariable(final String varName,
-//            final String varType) throws Exception {
-//        String varRadio = varType.toLowerCase();
-//        // 1. Retrieve the components
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//        // 2a. Create new variable,
-//        //open spreadsheet and check that it's there
-//        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-//        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-//        newVarWindow.getRadioButton(varRadio).click();
-//        newVarWindow.getButton("Ok").click();
-//    }
-//
-//    /**
-//     * Checks if String is in a Table column.
-//     * @param item String to find
-//     * @param t Table to look in
-//     * @param column Column number
-//     * @return true if found, else false
-//     */
-//    private Boolean inTable(final String item, final Table t,
-//            final int column) {
-//        for (int i = 0; i < t.getRowCount(); i++) {
-//            if (item.equals(t.getContentAt(i, column))) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+    public void testAddNewPredicateAndRevert1() throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
 
-//    //CODE FOR ADDING AND REVERTING//
-//    /** Test vocab editor creating new predicate and reverting.
-//     * @throws java.lang.Exception on any error
-//     */
-//    public void testAddNewPredicateAndRevert() throws Exception {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//
-//        // 1. Create a new predicate
-//        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
-//
-//        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
-//                .getPanel("verticalFrame");
-//
-//        vocElementsPanel.getUIComponents(VocabElement.class);
-//
-//        VocabElement oldVE = new VocabElement(((VocabElementV) (vocElementsPanel
-//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
-//
-//        vocEdWindow.getButton("Add Predicate()").click();
-//
-//        VocabElement oldVE = new VocabElement(((VocabElementV) (vocElementsPanel
-//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
-//
-//        //Check that VE exists
-//        //Revert
-//        //Check that vocab element has been removed
-//
-//        vocEdWindow.getButton("OK").click();
-//
-//        // 2. Create new predicate variable and cell
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-//                window.getUIComponents(Spreadsheet.class)[0]
-//                .getAwtComponent()));
-//
-//        String varName = "predicate";
-//        createNewVariable(varName, varName.toUpperCase());
-//
-//        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-//
-//        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-//
-//        Cell c = cells.elementAt(0);
-//        TextBox t = c.getValue();
-//
-//        Vector<TextItem> vti = new Vector<TextItem>();
-//        vti.add(new StringItem(veName));
-//
-//        c.enterText(Cell.VALUE, vti);
-//
-//        assertTrue(t.getText().equalsIgnoreCase("predicate1(<arg0>)"));
-//    }
-//
-//    /** Test vocab editor creating new predicate and replacing VE name.
-//     * @throws java.lang.Exception on any error
-//     */
-//    public void testNewPredicateReplaceVEName() throws Exception {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//
-//        // 1. Create a new predicate
-//        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
-//
-//        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
-//                .getPanel("verticalFrame");
-//
-//        vocEdWindow.getButton("Add Predicate()").click();
-//
-//        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
-//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
-//
-//        String oldVEName = ve.getVEName();
-//
-//        Vector<TextItem> vti = new Vector<TextItem>();
-//
-//        vti.add(new StringItem("newName"));
-//        ve.replaceTextInName(vti);
-//
-//        String veName = ve.getVEName();
-//
-//        assertFalse(oldVEName.equals(veName));
-//
-//        vocEdWindow.getButton("OK").click();
-//
-//        // 2. Create new predicate variable and cell
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-//                window.getUIComponents(Spreadsheet.class)[0]
-//                .getAwtComponent()));
-//
-//        String varName = "predicate";
-//        createNewVariable(varName, varName.toUpperCase());
-//
-//        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-//
-//        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-//
-//        Cell c = cells.elementAt(0);
-//        TextBox t = c.getValue();
-//
-//        c.enterText(Cell.VALUE, vti);
-//
-//        assertTrue(t.getText().equalsIgnoreCase(veName + "(<arg0>)"));
-//    }
-//
-//    /** Test vocab editor creating new predicate and adding to VE name.
-//     * @throws java.lang.Exception on any error
-//     */
-//    public void testNewPredicateAddingVEName() throws Exception {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//
-//        // 1. Create a new predicate
-//        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
-//
-//        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
-//                .getPanel("verticalFrame");
-//
-//        vocEdWindow.getButton("Add Predicate()").click();
-//
-//        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
-//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
-//
-//        String oldVEName = ve.getVEName();
-//
-//        Vector<TextItem> vti = new Vector<TextItem>();
-//
-//        vti.add(new StringItem("newName"));
-//        ve.enterText(vti);
-//
-//        String veName = ve.getVEName();
-//
-//        assertFalse(oldVEName.equals(veName));
-//
-//        vocEdWindow.getButton("OK").click();
-//
-//        // 2. Create new predicate variable and cell
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-//                window.getUIComponents(Spreadsheet.class)[0]
-//                .getAwtComponent()));
-//
-//        String varName = "predicate";
-//        createNewVariable(varName, varName.toUpperCase());
-//
-//        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-//
-//        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-//
-//        Cell c = cells.elementAt(0);
-//        TextBox t = c.getValue();
-//
-//        vti.add(new StringItem("predicate1"));
-//
-//        c.enterText(Cell.VALUE, vti);
-//
-//        assertTrue(t.getText().equalsIgnoreCase(veName + "(<arg0>)"));
-//    }
-//
-//    /** Test vocab editor creating new predicate and adding VE argument.
-//     * @throws java.lang.Exception on any error
-//     */
-//    public void testNewPredicateAddingVEArgument() throws Exception {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//
-//        // 1. Create a new predicate
-//        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
-//
-//        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
-//                .getPanel("verticalFrame");
-//
-//        vocEdWindow.getButton("Add Predicate()").click();
-//
-//        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
-//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
-//
-//        String oldVEArgName = ve.getArgument(0);
-//
-//        Vector<TextItem> vti = new Vector<TextItem>();
-//
-//        vti.add(new StringItem("newName"));
-//        ve.enterTextInArg(0, vti);
-//
-//        String veArgName = ve.getArgument(0);
-//
-//        assertFalse(oldVEArgName.equals(veArgName));
-//
-//        vocEdWindow.getButton("OK").click();
-//
-//        // 2. Create new predicate variable and cell
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-//                window.getUIComponents(Spreadsheet.class)[0]
-//                .getAwtComponent()));
-//
-//        String varName = "predicate";
-//        createNewVariable(varName, varName.toUpperCase());
-//
-//        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-//
-//        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-//
-//        Cell c = cells.elementAt(0);
-//        TextBox t = c.getValue();
-//
-//        vti.clear();
-//        vti.add(new StringItem("predicate1"));
-//
-//        c.enterText(Cell.VALUE, vti);
-//
-//        assertTrue(t.getText().equalsIgnoreCase(
-//                "predicate1(<" + veArgName + ">)"));
-//    }
-//
-//    /** Test vocab editor creating new predicate and replacing VE argument.
-//     * @throws java.lang.Exception on any error
-//     */
-//    public void testNewPredicateReplaceVEArgument() throws Exception {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//
-//        // 1. Create a new predicate
-//        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
-//
-//        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
-//                .getPanel("verticalFrame");
-//
-//        vocEdWindow.getButton("Add Predicate()").click();
-//
-//        VocabElement ve = new VocabElement(((VocabElementV) (vocElementsPanel
-//            .getUIComponents(VocabElement.class)[0].getAwtComponent())));
-//
-//        String oldVEArgName = ve.getArgument(0);
-//
-//        Vector<TextItem> vti = new Vector<TextItem>();
-//
-//        vti.add(new StringItem("newName"));
-//        ve.replaceTextInArg(0, vti);
-//
-//        String veArgName = ve.getArgument(0);
-//
-//        assertFalse(oldVEArgName.equals(veArgName));
-//
-//        vocEdWindow.getButton("OK").click();
-//
-//        // 2. Create new predicate variable and cell
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-//                window.getUIComponents(Spreadsheet.class)[0]
-//                .getAwtComponent()));
-//
-//        String varName = "predicate";
-//        createNewVariable(varName, varName.toUpperCase());
-//
-//        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-//
-//        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-//
-//        Cell c = cells.elementAt(0);
-//        TextBox t = c.getValue();
-//
-//        vti.clear();
-//        vti.add(new StringItem("predicate1"));
-//
-//        c.enterText(Cell.VALUE, vti);
-//
-//        assertTrue(t.getText().equalsIgnoreCase(
-//                "predicate1(<" + veArgName + ">)"));
-//    }
-//
+        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+
+        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+
+        vocEdWindow.getButton("Add Predicate()").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        //Check that VE exists
+        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+
+        //Revert
+        vocEdWindow.getButton("Revert").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+
+        //Check that vocab element has been removed
+        assertTrue(oldVEs.length == finalVocElements.length);
+
+        int numElements = oldVEs.length;
+        for (int i = 0; i < numElements; i++) {
+            assertTrue(oldVEs[i].getValueText().equalsIgnoreCase(
+                    finalVocElements[i].getValueText()));
+        }
+    }
+
+     /** Test vocab editor creating new predicate and reverting w/o script.
+     * @throws java.lang.Exception on any error
+     */
+    public void testAddNewPredicateAndRevert2() throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new variables using script
+        String root = System.getProperty("testPath");
+        final File demoFile = new File(root + "/ui/demo_data.rb");
+        assertTrue(demoFile.exists());
+
+        WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile.getAbsolutePath()))
+                .process(new WindowHandler() {
+                    public Trigger process(Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+
+        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+
+        vocEdWindow.getButton("Add Predicate()").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        //Check that VE exists
+        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+
+        //Revert
+        vocEdWindow.getButton("Revert").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+
+        //Check that vocab element has been removed
+        assertTrue(oldVEs.length == finalVocElements.length);
+
+        int numElements = oldVEs.length;
+        for (int i = 0; i < numElements; i++) {
+            assertTrue(oldVEs[i].getValueText().equalsIgnoreCase(
+                    finalVocElements[i].getValueText()));
+        }
+    }
+
+    /** Test vocab editor creating new predicate and reverting w/o script.
+     * @throws java.lang.Exception on any error
+     */
+    public void testAddNewMatrixAndRevert1() throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+
+        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+
+        vocEdWindow.getButton("Add Matrix()").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        //Check that VE exists
+        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+
+        //Revert
+        vocEdWindow.getButton("Revert").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+
+        //Check that vocab element has been removed
+        assertTrue(oldVEs.length == finalVocElements.length);
+
+        int numElements = oldVEs.length;
+        for (int i = 0; i < numElements; i++) {
+            assertTrue(oldVEs[i].getValueText().equalsIgnoreCase(
+                    finalVocElements[i].getValueText()));
+        }
+    }
+
+     /** Test vocab editor creating new predicate and reverting w/o script.
+     * @throws java.lang.Exception on any error
+     */
+    public void testAddNewMatrixAndRevert2() throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new variables using script
+        String root = System.getProperty("testPath");
+        final File demoFile = new File(root + "/ui/demo_data.rb");
+        assertTrue(demoFile.exists());
+
+        WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile.getAbsolutePath()))
+                .process(new WindowHandler() {
+                    public Trigger process(Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+
+        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+
+        vocEdWindow.getButton("Add Matrix()").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        //Check that VE exists
+        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+
+        //Revert
+        vocEdWindow.getButton("Revert").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+
+        //Check that vocab element has been removed
+        assertTrue(oldVEs.length == finalVocElements.length);
+
+        int numElements = oldVEs.length;
+        for (int i = 0; i < numElements; i++) {
+            assertTrue(oldVEs[i].getValueText().equalsIgnoreCase(
+                    finalVocElements[i].getValueText()));
+        }
+    }
+
+    /** Test vocab editor creating new predicate and reverting w/o script.
+     * @throws java.lang.Exception on any error
+     */
+    public void testAddNewMatrix() throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        //1. Create new variables using script
+        String root = System.getProperty("testPath");
+        final File demoFile = new File(root + "/ui/demo_data.rb");
+        assertTrue(demoFile.exists());
+
+        WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile.getAbsolutePath()))
+                .process(new WindowHandler() {
+                    public Trigger process(Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+        Window vocEdWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("Vocab Editor").triggerClick());
+
+        Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+
+        vocEdWindow.getButton("Add Matrix()").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        //Check that VE exists
+        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+
+        //Click Apply
+        vocEdWindow.getButton("Apply").click();
+
+        vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
+                .getPanel("verticalFrame");
+
+        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+
+        //Check that new matrix column has been created
+         Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
+                window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+
+        String varName = finalVocElements[finalVocElements.length - 1]
+                .getVEName();
+
+        Column matrixColumn = ss.getSpreadsheetColumn(varName);
+
+        assertNotNull(matrixColumn);
+
+        matrixColumn.requestFocus();
+
+        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+
+        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+
+        String argName = finalVocElements[finalVocElements.length - 1]
+                .getArgument(0);
+
+        assertTrue(cells.elementAt(0).getValueText().equalsIgnoreCase(
+                "<" + argName + ">"));
+    }
+
+
     /**
      * Create a new variable.
      * @param varName String for the name of the variable
@@ -1347,5 +1180,23 @@ public final class UIVocabEditorTest extends UISpecTestCase {
         newVarWindow.getTextBox("nameField").insertText(varName, 0);
         newVarWindow.getRadioButton(varRadio).click();
         newVarWindow.getButton("Ok").click();
+    }
+
+     /**
+     * returns array of VocabElements from a Panel.
+     * @param panel Panel with vocabElements
+     * @return array of VocabElements
+     */
+    public final VocabElement[] getVocabElements(Panel panel) {
+
+        int numOfElements = panel.getUIComponents(VocabElement.class).length;
+
+        VocabElement [] veArray = new VocabElement[numOfElements];
+
+        for (int i = 0; i < numOfElements; i++) {
+            veArray[i] = new VocabElement((VocabElementV) (panel.
+                    getUIComponents(VocabElement.class)[i].getAwtComponent()));
+        }
+        return veArray;
     }
 }

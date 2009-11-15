@@ -19,22 +19,23 @@ import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
+import org.openshapa.util.ClockTimer.ClockListener;
+import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.PluginManager;
 
 /**
  * Quicktime video controller.
  */
-public final class DataController
-        extends OpenSHAPADialog
-        implements org.openshapa.util.ClockTimer.Listener {
+public final class DataControllerV extends OpenSHAPADialog
+implements ClockListener, DataController {
 
     //--------------------------------------------------------------------------
     // [static]
     //
 
     /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(DataController.class);
+    private static Logger logger = Logger.getLogger(DataControllerV.class);
 
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
@@ -109,6 +110,9 @@ public final class DataController
     /** The rate to use when resumed from pause. */
     private float pauseRate;
 
+    /** The time the last sync was performed. */
+    private long lastSync;
+
     /** Clock timer. */
     private ClockTimer clock = new ClockTimer();
 
@@ -118,12 +122,12 @@ public final class DataController
     //
 
     /**
-     * Constructor. Creates a new DataController.
+     * Constructor. Creates a new DataControllerV.
      *
      * @param parent The parent of this form.
      * @param modal Should the dialog be modal or not?
      */
-    public DataController(final java.awt.Frame parent, final boolean modal) {
+    public DataControllerV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
 
         clock.registerListener(this);
@@ -132,6 +136,7 @@ public final class DataController
         setName(this.getClass().getSimpleName());
         viewers = new HashSet<DataViewer>();
         pauseRate = 0;
+        lastSync = 0;
     }
 
     //--------------------------------------------------------------------------
@@ -154,6 +159,14 @@ public final class DataController
      */
     public void clockTick(final long time) {
         setCurrentTime(time);
+
+        if (time - this.lastSync > 500) {
+            for (DataViewer viewer : viewers) {
+                viewer.seekTo(time);
+            }
+
+            lastSync = time;
+        }
     }
 
     /**
@@ -259,7 +272,7 @@ public final class DataController
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataController.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
         setTitle(resourceMap.getString("title")); // NOI18N
         setName(""); // NOI18N
         setResizable(false);
@@ -267,9 +280,8 @@ public final class DataController
         gridButtonPanel.setBackground(new java.awt.Color(255, 255, 255));
         gridButtonPanel.setLayout(new java.awt.GridBagLayout());
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(DataController.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(DataControllerV.class, this);
         syncCtrlButton.setAction(actionMap.get("syncCtrlAction")); // NOI18N
-        syncCtrlButton.setEnabled(false);
         syncCtrlButton.setMaximumSize(new java.awt.Dimension(45, 45));
         syncCtrlButton.setMinimumSize(new java.awt.Dimension(45, 45));
         syncCtrlButton.setPreferredSize(new java.awt.Dimension(45, 45));
@@ -280,7 +292,6 @@ public final class DataController
         gridButtonPanel.add(syncCtrlButton, gridBagConstraints);
 
         syncButton.setAction(actionMap.get("syncAction")); // NOI18N
-        syncButton.setEnabled(false);
         syncButton.setMaximumSize(new java.awt.Dimension(45, 45));
         syncButton.setMinimumSize(new java.awt.Dimension(45, 45));
         syncButton.setPreferredSize(new java.awt.Dimension(45, 45));
@@ -458,7 +469,7 @@ public final class DataController
         gridButtonPanel.add(setNewCellOnsetButton, gridBagConstraints);
 
         goBackTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        goBackTextField.setText("00:00:00:000");
+        goBackTextField.setText("00:00:05:000");
         goBackTextField.setMaximumSize(new java.awt.Dimension(80, 45));
         goBackTextField.setMinimumSize(new java.awt.Dimension(80, 45));
         goBackTextField.setPreferredSize(new java.awt.Dimension(80, 45));
@@ -535,7 +546,6 @@ public final class DataController
         createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        createNewCell.setLabel("");
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
         createNewCell.setMinimumSize(new java.awt.Dimension(45, 90));
         createNewCell.setPreferredSize(new java.awt.Dimension(45, 90));
@@ -574,7 +584,7 @@ public final class DataController
      * @param evt The event that triggered this action.
      */
     private void openVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openVideoButtonActionPerformed
-        JFileChooser jd = new JFileChooser();
+        OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
         // Add file filters for each of the supported plugins.
         List<FileFilter> filters = PluginManager.getInstance()
@@ -596,6 +606,7 @@ public final class DataController
             }
 
             viewer.setDataFeed(f);
+            viewer.setParentController(this);
             OpenSHAPA.getApplication().show(viewer.getParentJFrame());
 
             // adjust the overall frame rate.
@@ -693,6 +704,7 @@ public final class DataController
     @Action
     public void stopAction() {
         clock.stop();
+        shuttleRate = 0;
         shuttleDirection = ShuttleDirection.UNDEFINED;
     }
 
@@ -729,10 +741,7 @@ public final class DataController
     @Action
     public void findAction() {
         try {
-            jumpTo(CLOCK_FORMAT
-                    .parse(this.findTextField.getText())
-                    .getTime()
-                );
+            jumpTo(CLOCK_FORMAT.parse(this.findTextField.getText()).getTime());
 
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
@@ -745,10 +754,12 @@ public final class DataController
     @Action
     public void goBackAction() {
         try {
-            jump(-CLOCK_FORMAT
-                    .parse(this.goBackTextField.getText())
-                    .getTime()
-                );
+            long j = -CLOCK_FORMAT.parse(this.goBackTextField.getText())
+                                  .getTime();
+            jump(Math.min(j, 0));
+
+            // BugzID:721 - After going back - start playing again.
+            playAt(PLAY_RATE);
 
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
@@ -760,13 +771,17 @@ public final class DataController
      * Action to invoke when the user clicks on the jog backwards button.
      */
     @Action
-    public void jogBackAction() { jump((long) (-ONE_SECOND / currentFPS)); }
+    public void jogBackAction() {
+        jump((long) (-ONE_SECOND / currentFPS));
+    }
 
     /**
      * Action to invoke when the user clicks on the jog forwards button.
      */
     @Action
-    public void jogForwardAction() { jump((long) (ONE_SECOND / currentFPS)); }
+    public void jogForwardAction() {
+        jump((long) (ONE_SECOND / currentFPS));
+    }
 
 
     //--------------------------------------------------------------------------
@@ -787,24 +802,28 @@ public final class DataController
      * @param direction The required direction of the shuttle.
      */
     private void shuttle(final ShuttleDirection direction) {
-        if (direction == shuttleDirection) {
-            ++shuttleRate;
-            if (SHUTTLE_RATES.length == shuttleRate) { --shuttleRate; }
+        float rate = SHUTTLE_RATES[shuttleRate];
+        if (ShuttleDirection.UNDEFINED == shuttleDirection) {
+            shuttleDirection = direction;
+            rate = SHUTTLE_RATES[0];
 
-        } else {
-            if (ShuttleDirection.UNDEFINED == shuttleDirection) {
-                shuttleRate = -1;
-            } else if (direction != shuttleDirection) {
-                --shuttleRate;
+        } else if (direction == shuttleDirection) {
+            if (shuttleRate < (SHUTTLE_RATES.length - 1)) {
+                rate = SHUTTLE_RATES[++shuttleRate];
             }
 
-            if (0 > shuttleRate) {
-                shuttleDirection = direction;
-                shuttleRate = 0;
+        } else {
+            if (shuttleRate > 0) {
+                rate = SHUTTLE_RATES[--shuttleRate];
+
+            // BugzID: 676 - Shuttle speed transitions between zero.
+            } else {
+                rate = 0;
+                shuttleDirection = ShuttleDirection.UNDEFINED;
             }
         }
 
-        shuttleAt(shuttleDirection.getParameter() * SHUTTLE_RATES[shuttleRate]);
+        shuttleAt(shuttleDirection.getParameter() * rate);
     }
 
     /**
@@ -821,7 +840,7 @@ public final class DataController
      */
     private void jump(final long step) {
         clock.stop();
-        clock.setRate(PLAY_RATE);
+        clock.setRate(0);
         clock.stepTime(step);
     }
 

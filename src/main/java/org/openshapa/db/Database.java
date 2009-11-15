@@ -7,9 +7,7 @@
 
 package org.openshapa.db;
 
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-import org.openshapa.OpenSHAPA;
+import java.io.File;
 
 /**
  * Abstract database class
@@ -74,6 +72,10 @@ public abstract class Database
 
     /** Cascade Listeners */
     private CascadeListeners listeners = null;
+
+    /** The source file for this database - if this database is not sourced from
+     *  a file - this is null. */
+    private File sourceFile = null;
 
 
     /*************************************************************************/
@@ -330,6 +332,26 @@ public abstract class Database
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
+
+    // getSourceFile()
+    /**
+     * @return The source file that this database is bound too - null if not
+     * bound to a file.
+     */
+    public File getSourceFile() {
+        return this.sourceFile;
+    }
+
+    // setSourceFile()
+    /**
+     * Sets the source file that this database is bound too - set to null if you
+     * want to remove the bind to a source file.
+     *
+     * @param The new sourceFile to bind this database too.
+     */
+    public void setSourceFile(final File newSource) {
+        this.sourceFile = newSource;
+    }
 
     // getCurUID()
     /**
