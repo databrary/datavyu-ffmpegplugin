@@ -5,7 +5,7 @@ import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import org.openshapa.util.Constants;
-import org.openshapa.views.DataController;
+import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import quicktime.QTException;
 import quicktime.QTSession;

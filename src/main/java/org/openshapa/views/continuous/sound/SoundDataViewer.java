@@ -4,7 +4,6 @@ import org.openshapa.views.continuous.*;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
-import org.openshapa.views.DataController;
 import quicktime.QTException;
 import quicktime.QTSession;
 import quicktime.io.OpenMovieFile;
@@ -57,7 +56,7 @@ implements DataViewer {
     /** Frames per second. */
     private float fps;
 
-    /** Parent DataController. */
+    /** Parent DataControllerV. */
     private DataController parent;
 
     /**

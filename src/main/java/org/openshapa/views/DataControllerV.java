@@ -19,22 +19,23 @@ import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
+import org.openshapa.util.ClockTimer.ClockListener;
+import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.PluginManager;
 
 /**
  * Quicktime video controller.
  */
-public final class DataController
-        extends OpenSHAPADialog
-        implements org.openshapa.util.ClockTimer.ClockListener {
+public final class DataControllerV extends OpenSHAPADialog
+implements ClockListener, DataController {
 
     //--------------------------------------------------------------------------
     // [static]
     //
 
     /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(DataController.class);
+    private static Logger logger = Logger.getLogger(DataControllerV.class);
 
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
@@ -121,12 +122,12 @@ public final class DataController
     //
 
     /**
-     * Constructor. Creates a new DataController.
+     * Constructor. Creates a new DataControllerV.
      *
      * @param parent The parent of this form.
      * @param modal Should the dialog be modal or not?
      */
-    public DataController(final java.awt.Frame parent, final boolean modal) {
+    public DataControllerV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
 
         clock.registerListener(this);
@@ -271,7 +272,7 @@ public final class DataController
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataController.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
         setTitle(resourceMap.getString("title")); // NOI18N
         setName(""); // NOI18N
         setResizable(false);
@@ -279,9 +280,8 @@ public final class DataController
         gridButtonPanel.setBackground(new java.awt.Color(255, 255, 255));
         gridButtonPanel.setLayout(new java.awt.GridBagLayout());
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(DataController.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(DataControllerV.class, this);
         syncCtrlButton.setAction(actionMap.get("syncCtrlAction")); // NOI18N
-        syncCtrlButton.setEnabled(false);
         syncCtrlButton.setMaximumSize(new java.awt.Dimension(45, 45));
         syncCtrlButton.setMinimumSize(new java.awt.Dimension(45, 45));
         syncCtrlButton.setPreferredSize(new java.awt.Dimension(45, 45));
@@ -292,7 +292,6 @@ public final class DataController
         gridButtonPanel.add(syncCtrlButton, gridBagConstraints);
 
         syncButton.setAction(actionMap.get("syncAction")); // NOI18N
-        syncButton.setEnabled(false);
         syncButton.setMaximumSize(new java.awt.Dimension(45, 45));
         syncButton.setMinimumSize(new java.awt.Dimension(45, 45));
         syncButton.setPreferredSize(new java.awt.Dimension(45, 45));
@@ -545,7 +544,6 @@ public final class DataController
 
         createNewCell.setAction(actionMap.get("createCellAction")); // NOI18N
         createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
-        createNewCell.setText("");
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));

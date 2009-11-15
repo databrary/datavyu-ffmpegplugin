@@ -509,6 +509,12 @@
       <version>0.1</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.openshapa</groupId>
+      <artifactId>openshapa-lib</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+
   </dependencies>
 </project>
 
