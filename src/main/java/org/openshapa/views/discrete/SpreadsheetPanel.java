@@ -111,8 +111,6 @@ public final class SpreadsheetPanel extends JPanel
         headerView.add(newVar);
     }
 
-
-
     /**
      * Populate from the database.
      */
