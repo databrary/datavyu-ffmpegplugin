@@ -43,6 +43,23 @@ public final class CreateNewCellC {
                                            .getComponent();
         model = OpenSHAPA.getDatabase();
 
+        // BugzID:758 - Before creating a new cell and setting onset. We need
+        // the last created cell and need to set the previous cells offset...
+        // But only if it is not 0.
+        try {
+            DataCell dc = (DataCell) model
+                                     .getCell(OpenSHAPA.getLastCreatedCellId());
+            TimeStamp ts = dc.getOffset();
+            if (ts.getTime() == 0) {
+                ts.setTime(milliseconds - 1);
+                dc.setOffset(ts);
+                model.replaceCell(dc);
+            }
+        } catch (SystemErrorException se) {
+            logger.error("Unable to set offset of previous cell", se);
+        }
+
+        // Create the new cell.
         this.createNewCell(milliseconds);
     }
 
