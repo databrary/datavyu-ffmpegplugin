@@ -115,6 +115,11 @@ public final class OpenSHAPAView extends FrameView {
         openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
                                                            keyMask));
 
+        // Set the new accelerator to keyMask + 'N';
+        newMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
+                                                            keyMask));
+
+
         this.panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
     }
@@ -339,7 +344,7 @@ public final class OpenSHAPAView extends FrameView {
         jLabel1 = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
-        javax.swing.JMenuItem newMenuItem = new javax.swing.JMenuItem();
+        newMenuItem = new javax.swing.JMenuItem();
         openMenuItem = new javax.swing.JMenuItem();
         jSeparator7 = new javax.swing.JSeparator();
         saveMenuItem = new javax.swing.JMenuItem();
@@ -407,11 +412,12 @@ public final class OpenSHAPAView extends FrameView {
         fileMenu.setName("fileMenu"); // NOI18N
 
         newMenuItem.setAction(actionMap.get("showNewDatabaseForm")); // NOI18N
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openshapa/views/resources/OpenSHAPAView"); // NOI18N
+        newMenuItem.setText(bundle.getString("file_open.text")); // NOI18N
         newMenuItem.setName("newMenuItem"); // NOI18N
         fileMenu.add(newMenuItem);
 
         openMenuItem.setAction(actionMap.get("open")); // NOI18N
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openshapa/views/resources/OpenSHAPAView"); // NOI18N
         openMenuItem.setText(bundle.getString("file_open.text")); // NOI18N
         openMenuItem.setName(bundle.getString("file_open.text")); // NOI18N
         fileMenu.add(openMenuItem);
@@ -841,6 +847,7 @@ public final class OpenSHAPAView extends FrameView {
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newCellMenuItem;
+    private javax.swing.JMenuItem newMenuItem;
     private javax.swing.JMenuItem newVariableMenuItem;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem qtControllerItem;
