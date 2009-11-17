@@ -124,6 +124,11 @@ public final class NominalDataValueEditor extends DataValueEditor {
             if (Database.IsValidNominal(this.getText())) {
                 ndv.setItsValue(this.getText());
                 updateDatabase();
+
+            // BugzID:668 - The user is reverting back to a 'placeholder' state.
+            } else if (this.getText().equals("")) {
+                ndv.clearValue();
+                updateDatabase();
             }
         } catch (SystemErrorException se) {
             logger.error("Unable to edit text string", se);
