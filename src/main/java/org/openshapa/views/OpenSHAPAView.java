@@ -413,7 +413,7 @@ public final class OpenSHAPAView extends FrameView {
 
         newMenuItem.setAction(actionMap.get("showNewDatabaseForm")); // NOI18N
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openshapa/views/resources/OpenSHAPAView"); // NOI18N
-        newMenuItem.setText(bundle.getString("file_open.text")); // NOI18N
+        newMenuItem.setText(bundle.getString("file_new.text")); // NOI18N
         newMenuItem.setName("newMenuItem"); // NOI18N
         fileMenu.add(newMenuItem);
 
