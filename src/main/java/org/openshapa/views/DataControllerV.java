@@ -385,7 +385,7 @@ implements ClockListener, DataController {
         pauseButton.setPreferredSize(new java.awt.Dimension(45, 45));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(pauseButton, gridBagConstraints);
 
@@ -429,7 +429,7 @@ implements ClockListener, DataController {
         stopButton.setPreferredSize(new java.awt.Dimension(45, 45));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(stopButton, gridBagConstraints);
 

@@ -83,7 +83,7 @@ public class ClockTimerTest {
         msStartTime = System.currentTimeMillis();
         nanoStartTime = System.nanoTime();
         instance.start();
-        Thread.sleep(60 * 1000 - 1); // seconds
+        Thread.sleep(10 * 1000 - 1); // seconds
         instance.stop();
         Thread.sleep(500); // seconds
 
