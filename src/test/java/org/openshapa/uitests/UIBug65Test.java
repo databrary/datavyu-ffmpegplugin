@@ -46,7 +46,6 @@ public final class UIBug65Test extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
     public void testColumnOrder() throws Exception {
-        System.err.println("Intercept" + UISpec4J.getWindowInterceptionTimeLimit());
         //Preparation
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
