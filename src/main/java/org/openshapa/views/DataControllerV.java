@@ -270,6 +270,7 @@ implements ClockListener, DataController {
         createNewCell = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        findOffsetField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
@@ -544,7 +545,6 @@ implements ClockListener, DataController {
 
         createNewCell.setAction(actionMap.get("createCellAction")); // NOI18N
         createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
-        createNewCell.setText(""); // NOI18N
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
@@ -573,6 +573,20 @@ implements ClockListener, DataController {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridButtonPanel.add(jLabel2, gridBagConstraints);
+
+        findOffsetField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        findOffsetField.setText("00:00:00:000");
+        findOffsetField.setToolTipText(resourceMap.getString("findOffsetField.toolTipText")); // NOI18N
+        findOffsetField.setEnabled(false);
+        findOffsetField.setMaximumSize(new java.awt.Dimension(80, 45));
+        findOffsetField.setMinimumSize(new java.awt.Dimension(80, 45));
+        findOffsetField.setPreferredSize(new java.awt.Dimension(80, 45));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(findOffsetField, gridBagConstraints);
 
         getContentPane().add(gridButtonPanel, java.awt.BorderLayout.CENTER);
 
@@ -723,12 +737,33 @@ implements ClockListener, DataController {
     }
 
     /**
+     * Populates the find offset time in the controller.
+     *
+     * @param milliseconds The time to use when populating the find field.
+     */
+    public void setFindOffsetField(final long milliseconds) {
+        this.findOffsetField.setText(CLOCK_FORMAT.format(milliseconds));
+    }
+
+    /**
      * Action to invoke when the user clicks on the find button.
      */
     @Action
     public void findAction() {
         try {
             jumpTo(CLOCK_FORMAT.parse(this.findTextField.getText()).getTime());
+
+        } catch (ParseException e) {
+            logger.error("unable to find within video", e);
+        }
+    }
+
+    /**
+     * Action to invoke when the user holds shift down.
+     */
+    public void findOffsetAction() {
+        try {
+            jumpTo(CLOCK_FORMAT.parse(this.findOffsetField.getText()).getTime());
 
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
@@ -883,6 +918,7 @@ implements ClockListener, DataController {
     private javax.swing.JButton createNewCell;
     private javax.swing.JButton createNewCellButton;
     private javax.swing.JButton findButton;
+    private javax.swing.JTextField findOffsetField;
     private javax.swing.JTextField findTextField;
     private javax.swing.JButton forwardButton;
     private javax.swing.JButton goBackButton;

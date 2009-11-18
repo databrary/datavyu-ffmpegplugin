@@ -143,7 +143,11 @@ implements KeyEventDispatcher {
                     dataController.goBackAction();
                 break;
             case KeyEvent.VK_ADD:
+                if (modifiers == KeyEvent.SHIFT_MASK) {
+                    dataController.findOffsetAction();
+                } else {
                     dataController.findAction();
+                }
                 break;
             case KeyEvent.VK_ENTER:
                 new CreateNewCellC();

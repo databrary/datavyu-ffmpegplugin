@@ -395,8 +395,10 @@ implements ExternalDataCellListener, Selectable {
                 // this cell just now.
                 OpenSHAPA.setLastCreatedColId(cell.getItsColID());
                 OpenSHAPA.setLastCreatedCellId(cell.getID());
-                OpenSHAPA.getDataController().setFindTime(dcell.getOnset()
-                                                               .getTime());
+                OpenSHAPA.getDataController()
+                         .setFindTime(dcell.getOnset().getTime());
+                OpenSHAPA.getDataController()
+                         .setFindOffsetField(dcell.getOffset().getTime());
             }
         } catch (SystemErrorException e) {
            logger.error("Failed clicking on SpreadsheetCell.", e);
