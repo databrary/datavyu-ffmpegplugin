@@ -118,7 +118,7 @@ implements KeyEventDispatcher {
             case KeyEvent.VK_NUMPAD4:
                 dataController.shuttleBackAction();
                 break;
-            case KeyEvent.VK_NUMPAD5:
+            case KeyEvent.VK_NUMPAD2:
                 dataController.pauseAction();
                 break;
             case KeyEvent.VK_NUMPAD6:
@@ -127,7 +127,7 @@ implements KeyEventDispatcher {
             case KeyEvent.VK_NUMPAD1:
                 dataController.jogBackAction();
                 break;
-            case KeyEvent.VK_NUMPAD2:
+            case KeyEvent.VK_NUMPAD5:
                 dataController.stopAction();
                 break;
             case KeyEvent.VK_NUMPAD3:

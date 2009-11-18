@@ -234,7 +234,7 @@
         <Component class="javax.swing.JButton" name="pauseButton">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-              <action class="org.openshapa.views.QTVideoController" id="pauseAction" methodName="pauseAction"/>
+              <action class="org.openshapa.views.DataControllerV" id="pauseAction" methodName="pauseAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="pauseButton.icon"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -322,7 +322,7 @@
         <Component class="javax.swing.JButton" name="stopButton">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-              <action class="org.openshapa.views.QTVideoController" id="stopAction" methodName="stopAction"/>
+              <action class="org.openshapa.views.DataControllerV" id="stopAction" methodName="stopAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="stopButton.icon"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
