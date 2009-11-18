@@ -1,10 +1,11 @@
 package org.openshapa.views.continuous.quicktime;
 
-import java.awt.Component;
+import java.awt.Toolkit;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import org.openshapa.util.Constants;
+import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import quicktime.QTException;
 import quicktime.QTSession;
@@ -12,10 +13,7 @@ import quicktime.app.view.QTFactory;
 import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
 import quicktime.qd.QDDimension;
-import quicktime.qd.QDRect;
-import quicktime.qd.Region;
 import quicktime.std.StdQTConstants;
-import quicktime.std.StdQTException;
 import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
 import quicktime.std.movies.Track;
@@ -24,8 +22,7 @@ import quicktime.std.movies.media.Media;
 /**
  * The viewer for a quicktime video file.
  */
-public final class QTDataViewer extends JFrame
-        implements DataViewer {
+public final class QTDataViewer extends JFrame implements DataViewer {
 
     //--------------------------------------------------------------------------
     //
@@ -50,11 +47,11 @@ public final class QTDataViewer extends JFrame
     /** Rate for playback. */
     private float playRate;
 
-    /** The visual component for the quicktime content. */
-    private Component qtComponent;
-
     /** Frames per second. */
     private float fps;
+
+    /** parent controller. */
+    private DataController parent;
 
     //--------------------------------------------------------------------------
     // [initialization]
@@ -99,7 +96,6 @@ public final class QTDataViewer extends JFrame
             this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
-            this.setName(this.getClass().getSimpleName() + videoFile.getName());
 
             // Set the time scale for our movie to milliseconds (i.e. 1000 ticks
             // per second.
@@ -107,14 +103,40 @@ public final class QTDataViewer extends JFrame
             visualTrack = movie.getIndTrackType(1,
                                        StdQTConstants.visualMediaCharacteristic,
                                        StdQTConstants.movieTrackCharacteristic);
+
+            // Initialise the video to be no bigger than a quarter of the screen
+            int hScrnWidth = Toolkit.getDefaultToolkit()
+                                    .getScreenSize().width / 2;
+            if (movie.getBounds().getWidth() > hScrnWidth) {
+                float aspectRatio = movie.getBounds().getWidthF()
+                                    / movie.getBounds().getHeightF();
+                visualTrack.setSize(new QDDimension(hScrnWidth,
+                                                    hScrnWidth / aspectRatio));
+            }
+
             visualMedia = visualTrack.getMedia();
 
             fps = (float) visualMedia.getSampleCount()
                   / visualMedia.getDuration() * visualMedia.getTimeScale();
 
+            this.add(QTFactory.makeQTComponent(movie).asComponent());
+
+            setName(getClass().getSimpleName() + "-" + videoFile.getName());
+            this.pack();
+            this.invalidate();
+            this.setVisible(true);
+
+            // Set the size of the window to be the same as the incoming video.
+            this.setBounds(this.getX(), this.getY(),
+                           movie.getBox().getWidth(),
+                           movie.getBox().getHeight());
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
+    }
+
+    public void setParentController(final DataController dataController) {
+        parent = dataController;
     }
 
     /**
@@ -166,7 +188,6 @@ public final class QTDataViewer extends JFrame
                 TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
                                                  position);
                 movie.setTime(time);
-                pack();
             }
         } catch (QTException e) {
             logger.error("Unable to find", e);
@@ -195,10 +216,11 @@ public final class QTDataViewer extends JFrame
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent evt) {
-                formComponentResized(evt);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
             }
         });
 
@@ -206,43 +228,13 @@ public final class QTDataViewer extends JFrame
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Action to invoke when the user resizes the component.
-     *
-     * @param evt The event that triggered this action.
+     * Action to invoke when the QTDataViewer window is closing (clean itself
+     * up -
+     * @param evt
      */
-    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-        try {
-            if (qtComponent != null) {
-                visualTrack.setSize(new QDDimension(qtComponent.getWidth(),
-                                                    qtComponent.getHeight()));
-            }
-
-            qtComponent = QTFactory.makeQTComponent(movie).asComponent();
-            qtComponent.setBounds(qtComponent.getX(),
-                                  qtComponent.getY(),
-                                  movie.getBox().getWidth(),
-                                  movie.getBox().getHeight());
-            this.add(qtComponent);
-
-            QDDimension d = visualTrack.getSize();
-            movie.setDisplayClipRgn(new Region(new QDRect(d.getWidth(),
-                                                          d.getHeight())));
-            movie.setClipRgn(new Region(new QDRect(d.getWidth(),
-                                                   d.getHeight())));
-            movie.setBox(new QDRect(d.getWidth(), d.getHeight()));
-            movie.setBounds(new QDRect(d.getWidth(), d.getHeight()));
-
-            this.pack();
-            this.invalidate();
-            this.setVisible(true);
-
-        } catch (StdQTException e) {
-            logger.error("Unable to resize video", e);
-        } catch (QTException e) {
-            logger.error("Unable to resize video", e);
-        }
-    }//GEN-LAST:event_formComponentResized
-
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        this.parent.shutdown(this);
+    }//GEN-LAST:event_formWindowClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

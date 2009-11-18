@@ -1,6 +1,3 @@
-/*
- */
-
 package org.openshapa.util;
 
 import java.util.HashSet;
@@ -9,7 +6,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- *
+ * ClockTime is a class which can be used as a time marshall to keep multiple
+ * objects in sync.
  */
 public final class ClockTimer {
 
@@ -34,7 +32,7 @@ public final class ClockTimer {
     /**
      * Listener interface for clock 'ticks'.
      */
-    public interface Listener {
+    public interface ClockListener {
 
         /**
          * @param time Current time in milliseconds
@@ -66,7 +64,7 @@ public final class ClockTimer {
     //
     //
 
-    /** */
+    /** Current time of the clock. */
     private double time;
 
     /** Used to calculate elapsed time. */
@@ -75,29 +73,17 @@ public final class ClockTimer {
     /** */
     private Timer clock;
 
-    /** */
-    private boolean stopClock;
-
-    /** */
-    private boolean updateRate;
-
-    /** */
+    /** Is the clock currently stopped? */
     private boolean isStopped;
 
-    /** */
-    private boolean absTime;
-
-    /** */
-    private long stepTime;
-
-    /** Tick time (CLOCK_TICK * rate). */
-    private double tock = CLOCK_TICK;
+    /** What was the state of the clock in the previous tick? */
+    private boolean oldIsStopped;
 
     /** Update multiplier. */
     private float rate = 1F;
 
-    /** */
-    private Set<Listener> clockListeners = new HashSet<Listener>();
+    /** The set of objects that listen to this clock. */
+    private Set<ClockListener> clockListeners = new HashSet<ClockListener>();
 
 
     //--------------------------------------------------------------------------
@@ -105,16 +91,24 @@ public final class ClockTimer {
     //
 
     /**
-     *
+     * Default constructor.
      */
     public ClockTimer() { this(0L); }
 
     /**
+     * Constructor.
+     *
      * @param initialTime Intial clock time.
      */
     public ClockTimer(final long initialTime) {
         time = initialTime;
         isStopped = true;
+        oldIsStopped = true;
+        clock = new Timer();
+        clock.scheduleAtFixedRate(
+                    new TimerTask() { @Override public void run() { tick(); } },
+                    CLOCK_DELAY,
+                    CLOCK_TICK);
     }
 
     //--------------------------------------------------------------------------
@@ -124,15 +118,12 @@ public final class ClockTimer {
     /**
      * @param newTime Millisecond time to set clock to.
      */
-    public void setTime(final long newTime) {
+    public synchronized void setTime(final long newTime) {
         if (isStopped) {
-            absTime = false;
-            stepTime = 0L;
             time = newTime;
+            time = Math.max(time, 0);
             notifyStep();
         } else {
-            absTime = true;
-            stepTime = newTime;
             stop();
         }
     }
@@ -140,54 +131,52 @@ public final class ClockTimer {
     /**
      * @return Current clock time.
      */
-    public long getTime() { return (long) time; }
+    public synchronized long getTime() { return (long) time; }
 
     /**
      * @param newRate Multiplier for CLOCK_TICK.
      */
-    public void setRate(final float newRate) {
+    public synchronized void setRate(final float newRate) {
         rate = newRate;
-        tock = CLOCK_TICK * rate;
-
-        if (isStopped) { notifyRate(); }
-        else           { updateRate = true; }
+        notifyRate();
     }
 
     /**
      * @return Current clock multipler.
      */
-    public float getRate() { return rate; }
+    public synchronized float getRate() {
+        return rate;
+    }
 
     /**
      * Initiate starting of clock.
      */
-    public void start() {
+    public synchronized void start() {
         if (isStopped) {
-            notifyStart();
-            startClock();
+            nanoTime = System.nanoTime();
+            isStopped = false;
         }
     }
 
     /**
      * Set flag to stop clock at next time update (boundary).
      */
-    public void stop() {
-        stopClock = true;
-        rate = 0;
-        notifyRate();
+    public synchronized void stop() {
+        if (!isStopped) {
+            isStopped = true;
+            setRate(0);
+        }
     }
 
     /**
      * @param ms Time step to apply to current time when clock stopped.
      */
-    public void stepTime(final long ms) {
-        if (0 == ms) { return; }
+    public synchronized void stepTime(final long ms) {
         if (isStopped) {
-            stepTime = 0L;
             time += ms;
+            time = Math.max(time, 0);
             notifyStep();
         } else {
-            stepTime = ms;
             stop();
         }
     }
@@ -195,12 +184,12 @@ public final class ClockTimer {
     /**
      * @return True if clock is stopped.
      */
-    public boolean isStopped() { return isStopped; }
+    public synchronized boolean isStopped() { return isStopped; }
 
     /**
      * @param listener Listener requiring clockTick updates.
      */
-    public void registerListener(final Listener listener) {
+    public synchronized void registerListener(final ClockListener listener) {
         clockListeners.add(listener);
     }
 
@@ -209,67 +198,34 @@ public final class ClockTimer {
     //
 
     /**
-     *
-     * @param ms Milliseconds to advance clock.
+     * The "tick" of the clock - updates listeners of changes in time.
      */
-    private void tick(final double ms) {
-        long currentNano = System.nanoTime();
-        time += rate * (currentNano - nanoTime) / NANO_IN_MILLI;
-        nanoTime = currentNano;
+    private synchronized void tick() {
+        if (!isStopped) {
+            long currentNano = System.nanoTime();
+            time += rate * (currentNano - nanoTime) / NANO_IN_MILLI;
+            nanoTime = currentNano;
 
-        // BugzID:466 - Prevent rewind wrapping the clock past zero.
-        if (time <= 0) {
-            time = 0;
-            stopClock = true;
-        }
-
-        if (stopClock) {
-            stopClock = false;
-            stopClock();
-            notifyStop();
-
-            if (absTime) {
-                setTime(stepTime);
-            } else {
-                stepTime(stepTime);
+            // BugzID:466 - Prevent rewind wrapping the clock past zero.
+            if (time <= 0) {
+                time = 0;
+                stop();
             }
 
-        } else if (updateRate) {
-            updateRate = false;
-            stopClock();
-            startClock();
-            notifyTick();
-            notifyRate();
-
-        } else {
             notifyTick();
         }
-    }
 
-    /**
-     * Start the clock.
-     */
-    private void startClock() {
-        nanoTime = System.nanoTime();
+        // Notify listeners if the clock has started or stopped since the last
+        // tick.
+        if (oldIsStopped != isStopped) {
+            if (isStopped) {
+                notifyStop();
+            } else {
+                notifyStart();
+            }
 
-        clock = new Timer();
-        clock.scheduleAtFixedRate(
-                new TimerTask() {
-                        @Override public void run() { tick(tock); }
-                    },
-                CLOCK_DELAY,
-                CLOCK_TICK
-            );
-        isStopped = false;
-    }
-
-    /**
-     * Stop the clock.
-     */
-    private void stopClock() {
-        clock.cancel();
-        clock = null;
-        isStopped = true;
+            oldIsStopped = isStopped;
+        }
     }
 
     //
@@ -280,36 +236,34 @@ public final class ClockTimer {
      * Notify clock listeners of tick event.
      */
     private void notifyTick() {
-        for (Listener l : clockListeners) { l.clockTick((long) time); }
+        for (ClockListener l : clockListeners) { l.clockTick((long) time); }
     }
 
     /**
      * Notify clock listeners of rate update event.
      */
     private void notifyRate() {
-        for (Listener l : clockListeners) { l.clockRate(rate); }
+        for (ClockListener l : clockListeners) { l.clockRate(rate); }
     }
 
     /**
      * Notify clock listeners of start event.
      */
     private void notifyStart() {
-        for (Listener l : clockListeners) { l.clockStart((long) time); }
+        for (ClockListener l : clockListeners) { l.clockStart((long) time); }
     }
 
     /**
      * Notify clock listeners of stop event.
      */
     private void notifyStop() {
-        for (Listener l : clockListeners) { l.clockStop((long) time); }
+        for (ClockListener l : clockListeners) { l.clockStop((long) time); }
     }
 
     /**
      * Notify clock listeners of time step event.
      */
     private void notifyStep() {
-        for (Listener l : clockListeners) { l.clockStep((long) time); }
+        for (ClockListener l : clockListeners) { l.clockStep((long) time); }
     }
-
-    //--------------------------------------------------------------------------
 }

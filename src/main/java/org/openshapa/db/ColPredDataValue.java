@@ -465,22 +465,98 @@ public final class ColPredDataValue extends DataValue {
                java.io.IOException
     {
         final String mName = "ColPredDataValue::toMODBFile()";
-        char ch;
+        DBElement dbe = null;
+        FormalArgument farg = null;
+        VocabElement ve = null;
+        MatrixVocabElement mve = null;
         StringBuilder tmp = new StringBuilder("");
-        int i;
 
         if ( output == null )
         {
             throw new SystemErrorException(mName + "output null on entry");
         }
 
-        if ( this.itsValue == null )
+        // In the context of MacSHAPA ODB files, column predicates are
+        // interchangeable with regular predicates, and empty predicates only
+        // appear as the values of cells in a predicate type -- where they are
+        // represented as "()".  At there are no typed formal arguments in
+        // MacSHAPA, an empty predicate or column predicate is simply replaced
+        // with the MacSHAPA equivalent of an undefined data value.
+        //
+        // Thus, since OpenSHAPA does not allow column predicates to appear
+        // as the values of predicate cells, and since there should be no
+        // column predicate formal arguments appearing in this context, we
+        // really should be able to just throw a system error exception if
+        // we ever see an empty column predicate data value.
+        //
+        // However, for a short time, we have been pressured into allowing
+        // typed formal arguments in predicate and MatrixVocabElemenst of
+        // type matrix -- which raises the possibility of undefined predicates
+        // appearing in these cases.
+        //
+        // Where such behaviour is allowed, we must handle it gracefully,
+        // replacing the undefined predicates with the formal argument name
+        // in MacSHAPA ODB files.
+        //
+        // Where such behaviour is not allowed, we must flag an error.
+        //
+        // This matter is complicated by the fact that empty column predicates
+        // can be represented two ways -- either by setting this.itsValue to
+        // null in the predicate vocab element, or by setting pveID to the
+        // invalid index in the target predicate.
+        //
+        // However, it is a bit simpler than the predicate data value case, as
+        // there are no "column predicate columns", and thus we always represent
+        // the empty column predicate with the name of the formal argument it
+        // is replacing.
+
+        if ( this.itsFargID == DBIndex.INVALID_ID )
         {
-            output.printf("() ", tmp.toString());
+            throw new SystemErrorException(mName +
+                                  "itsFargID == INVALID_ID");
+        }
+
+        dbe = this.getDB().idx.getElement(this.itsFargID);
+
+        if ( dbe == null )
+        {
+            throw new SystemErrorException(mName +
+                                           "itsFargID has no referent");
+        }
+
+        if ( ! ( dbe instanceof FormalArgument ) )
+        {
+            throw new SystemErrorException(mName + "itsFargID doesn't " +
+                                           "refer to a formal argument");
+        }
+
+        farg = (FormalArgument)dbe;
+
+        if ( ( farg.getFargType() != FormalArgument.FArgType.UNTYPED ) &&
+             ( farg.getFargType() != FormalArgument.FArgType.COL_PREDICATE ) )
+        {
+            throw new SystemErrorException(mName + "Encountered " +
+                    "argument / formal argument type mismatch");
+        }
+
+        // We can make this test here, since there are no column predicate
+        // columns in OpenSHAPA.  Needless to say, that will cease to be the
+        // case should we ever implement them.
+        if ( ( ! this.getDB().typedFormalArgsSupported() ) &&
+             ( farg.getFargType() != FormalArgument.FArgType.COL_PREDICATE ) )
+        {
+            throw new SystemErrorException(mName + "Encountered typed formal" +
+                    "argument in a matrix or column predicate in a database " +
+                    "in which typed formal arguments are not supported.");
+        }
+
+        if ( this.itsValue != null )
+        {
+            this.itsValue.toMODBFile(output, farg.getFargName());
         }
         else
         {
-            this.itsValue.toMODBFile(output);
+            output.printf("|%s| ", farg.getFargName());
         }
 
         return;

@@ -989,10 +989,20 @@ public class Predicate extends DBElement
      *
      * Changes:
      *
-     *    - None.
+     *    - Added the inPred argument to allow correct display of null
+     *      predicates in both the context of a cell and a predicate or
+     *      column predicate argument list.
+     *
+     *      This is necessary to allow databases with typed formal arguments
+     *      in predicates and matrix columns to be written to an ODB file in
+     *      such a fashion that the typing of formal arguments is lost
+     *      cleanly.
+     *                                                      11/3/09
      */
 
-    protected void toMODBFile(java.io.PrintStream output)
+    protected void toMODBFile(java.io.PrintStream output,
+                              boolean inPred,
+                              String fargName)
         throws SystemErrorException,
                java.io.IOException
     {
@@ -1007,11 +1017,12 @@ public class Predicate extends DBElement
             throw new SystemErrorException(mName + "output null on entry");
         }
 
-        if ( this.pveID == DBIndex.INVALID_ID )
+        if ( fargName == null )
         {
-            output.printf("() ");
+            throw new SystemErrorException(mName + "fargName null on entry.");
         }
-        else
+
+        if ( this.pveID != DBIndex.INVALID_ID )
         {
             if ( ( this.predName == null ) ||
                  ( this.predName.length() == 0 ) )
@@ -1083,6 +1094,17 @@ public class Predicate extends DBElement
 
             output.printf(") ");
 
+        }
+        else
+        {
+            if ( inPred )
+            {
+                output.printf("|%s| ", fargName);
+            }
+            else
+            {
+                output.print("() ");
+            }
         }
 
         return;

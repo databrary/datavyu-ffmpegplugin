@@ -7,7 +7,7 @@ import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.views.ListVariables;
 import org.openshapa.views.OpenSHAPAView;
-import org.openshapa.views.DataController;
+import org.openshapa.views.DataControllerV;
 import java.awt.KeyEventDispatcher;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -264,7 +264,7 @@ implements KeyEventDispatcher {
                            + " - " + OpenSHAPA.getDatabase().getName());
 
         // Create video controller.
-        dataController = new DataController(mainFrame, false);
+        dataController = new DataControllerV(mainFrame, false);
     }
 
     /**
@@ -311,7 +311,7 @@ implements KeyEventDispatcher {
      * @return The single data controller in use with this instance of
      * OpenSHAPA.
      */
-    public static DataController getDataController() {
+    public static DataControllerV getDataController() {
         return OpenSHAPA.getApplication().dataController;
     }
 
@@ -462,7 +462,7 @@ implements KeyEventDispatcher {
     private ListVariables listVarView;
 
     /** The view to use for the quick time video controller. */
-    private DataController dataController;
+    private DataControllerV dataController;
 
     /** The view to use when displaying information about OpenSHAPA. */
     private AboutV aboutWindow;

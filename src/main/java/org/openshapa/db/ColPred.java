@@ -946,7 +946,8 @@ implements InternalMatrixVocabElementListener {
      *    - None.
      */
 
-    protected void toMODBFile(java.io.PrintStream output)
+    protected void toMODBFile(java.io.PrintStream output,
+                              String fargName)
         throws SystemErrorException,
                java.io.IOException
     {
@@ -961,9 +962,14 @@ implements InternalMatrixVocabElementListener {
             throw new SystemErrorException(mName + "output null on entry");
         }
 
+        if ( fargName == null )
+        {
+            throw new SystemErrorException(mName + "fargName null on entry.");
+        }
+
         if ( this.mveID == DBIndex.INVALID_ID )
         {
-            output.printf("() ");
+            output.printf("|%s| ", fargName);
         }
         else
         {
