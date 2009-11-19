@@ -270,9 +270,7 @@ public final class UINewCellTest extends UISpecTestCase {
                          Key.LEFT, Key.LEFT}};
 
         String[] expectedTestOutput = {"-43.21019", "-43.289210", "2178.8", "7",
-        "-87", "589.138086"
-                /*BugzID612:Previous should actually be -589.138085*/,
-        "-589.138085"};
+        "-87", "589.138085", "-589.138085"};
 
 
         createNewVariable(varName, varRadio);
