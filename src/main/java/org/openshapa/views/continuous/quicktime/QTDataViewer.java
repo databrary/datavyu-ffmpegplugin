@@ -229,8 +229,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
     /**
      * Action to invoke when the QTDataViewer window is closing (clean itself
-     * up -
-     * @param evt
+     * up)
+     *
+     * @param evt The event that triggered this action.
      */
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         this.parent.shutdown(this);

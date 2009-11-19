@@ -52,6 +52,16 @@ implements ClockListener, DataController {
     /** Sequence of allowable shuttle rates. */
     private static final float[] SHUTTLE_RATES;
 
+    /**
+     * The threshold to use while synchronising viewers (augmented by rate).
+     */
+    private static final long SYNC_THRESH = 50;
+
+    /**
+     * How often to synchronise the viewers with the master clock.
+     */
+    private static final long SYNC_PULSE = 500;
+
     // Initialize SHUTTLE_RATES
     // values: [ (2^-5), ..., (2^0), ..., (2^5) ]
     static {
@@ -158,14 +168,24 @@ implements ClockListener, DataController {
      * @param time Current clock time in milliseconds.
      */
     public void clockTick(final long time) {
-        setCurrentTime(time);
+        try {
+            setCurrentTime(time);
+            long thresh = (long) (SYNC_THRESH * Math.abs(clock.getRate()));
 
-        if (time - this.lastSync > 500) {
-            for (DataViewer viewer : viewers) {
-                viewer.seekTo(time);
+            // Synchronise viewers only if we have exceded our pulse time.
+            if ((time - this.lastSync) > (SYNC_PULSE * clock.getRate())) {
+                for (DataViewer v : viewers) {
+
+                    // Only synchronise viewers if we have a noticable drift.
+                    if (Math.abs(v.getCurrentTime() - time) > thresh) {
+                        v.seekTo(time);
+                    }
+                }
+
+                lastSync = time;
             }
-
-            lastSync = time;
+        } catch (Exception e) {
+            logger.error("Unable to Sync viewers", e);
         }
     }
 
