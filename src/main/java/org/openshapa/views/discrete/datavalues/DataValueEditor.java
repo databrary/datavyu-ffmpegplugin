@@ -388,10 +388,10 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public final void select(final int startClick, final int endClick) {
-        if (!this.getModel().isEmpty()) {
-            super.select(startClick, endClick);
+        if (this.getModel().isEmpty()) {
+            this.selectAll();
         } else {
-            super.select(0, Integer.MAX_VALUE);
+            super.select(startClick, endClick);
         }
     }
 
