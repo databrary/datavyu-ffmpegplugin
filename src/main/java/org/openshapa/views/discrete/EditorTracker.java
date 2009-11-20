@@ -372,6 +372,12 @@ implements FocusListener, KeyListener, MouseListener {
      * @param me The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
+        me.consume();
+
+        // BugzID:629 - Prevent users from selecting place holders.
+        if (!currentEditor.canSubSelect()) {
+            currentEditor.selectAll();
+        }
     }
 
     /**
@@ -380,6 +386,12 @@ implements FocusListener, KeyListener, MouseListener {
      * @param me The mouse event that triggered this action.
      */
     public void mouseReleased(final MouseEvent me) {
+        me.consume();
+
+        // BugzID:629 - Prevent users from selecting place holders.
+        if (!currentEditor.canSubSelect()) {
+            currentEditor.selectAll();
+        }
     }
 
     /**
@@ -399,11 +411,13 @@ implements FocusListener, KeyListener, MouseListener {
             EditorComponent ed = findEditor(start);
             this.setEditor(ed, start, end);
         }
+
+        me.consume();
     }
 
     /**
      * The action to invoke when the mouse enters this component.
-     *
+     *tEdi
      * @param me The mouse event that triggered this action.
      */
     public void mouseEntered(final MouseEvent me) {

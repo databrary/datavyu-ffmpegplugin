@@ -91,6 +91,16 @@ public abstract class EditorComponent implements ClipboardOwner {
     }
 
     /**
+     * Determine if the editor tracker permits sub selections within the
+     * component.
+     *
+     * @return True if permitted to perform sub selection, false otherwise.
+     */
+    public boolean canSubSelect() {
+        return true;
+    }
+
+    /**
      * Default Constructor.
      */
     public EditorComponent() {
