@@ -135,6 +135,10 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         }
     }
 
+    /**
+     * Sets parent data controller.
+     * @param dataController The data controller to be set as parent.
+     */
     public void setParentController(final DataController dataController) {
         parent = dataController;
     }
@@ -197,7 +201,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /**
      * @return Current time in milliseconds.
      *
-     * @throws QTException If error occurs accessing underlying implemenation.
+     * @throws QTException If error occurs accessing underlying implementation.
      */
     public long getCurrentTime() throws QTException {
         return movie.getTime();

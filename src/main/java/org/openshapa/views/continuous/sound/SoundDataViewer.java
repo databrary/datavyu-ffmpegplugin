@@ -1,8 +1,5 @@
 package org.openshapa.views.continuous.sound;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,61 +18,47 @@ import quicktime.std.movies.Movie;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.AudioMediaHandler;
 import quicktime.std.movies.media.Media;
-import java.awt.*;
-import java.awt.event.*;
+
 
 /**
  * The viewer for an audio file.
  */
 public final class SoundDataViewer extends JFrame
-implements DataViewer {
+        implements DataViewer {
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SoundDataViewer.class);
-
     /** The quicktime movie this viewer is displaying. */
-    private Movie movie;
-
+    private Movie audio;
     /** The audio track for the above quicktime movie. */
     private Track audioTrack;
-
     /** The audio media for the above visual track. */
     private Media audioMedia;
-
     /** The media handler for the audio media. */
     private AudioMediaHandler audioMediaHandler;
-
-
     /** An instance of the class LevelMeter, which draws the meter bars for the
      * sound levels.
      */
     private LevelMeter meter;
-
     /** The number of milliseconds between each redraw of the LevelMeter canvas.
-     *  By default this is 50 milliseconds.
      */
-    private static final int REPAINTDELAY = 50;
-
-
-
-    /** Rate for playback. */
+    private static final int REPAINTDELAY = 20;
+    /** Time to restore after painting the display on a seek operation. */
     private float playRate;
-
     /** Frames per second. */
     private float fps;
-
     /** This is the timer for repainting the equaliser (LevelMeter). */
     private Timer t;
-
     /** parent controller. */
     private DataController parent;
+
 
     /**
      * Constructor - creates new audio viewer.
      */
     public SoundDataViewer() {
         try {
-            movie = null;
+            audio = null;
 
             // Initalise QTJava.
             QTSession.open();
@@ -89,7 +72,6 @@ implements DataViewer {
     //--------------------------------------------------------------------------
     // [interface] org.openshapa.views.continuous.DataViewer
     //
-
     /**
      * @return The parent JFrame that this data viewer resides within.
      */
@@ -107,35 +89,29 @@ implements DataViewer {
         try {
             this.setTitle(audioFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(audioFile));
-            movie = Movie.fromFile(omf);
+            audio = Movie.fromFile(omf);
 
             // Set the time scale for our movie to milliseconds (i.e. 1000 ticks
             // per second.
-            movie.setTimeScale(Constants.TICKS_PER_SECOND);
+            audio.setTimeScale(Constants.TICKS_PER_SECOND);
 
 
-            audioTrack = movie.getIndTrackType(1,
-                                       StdQTConstants.audioMediaCharacteristic,
-                                       StdQTConstants.movieTrackCharacteristic);
-
+            audioTrack = audio.getIndTrackType(1,
+                    StdQTConstants.audioMediaCharacteristic,
+                    StdQTConstants.movieTrackCharacteristic);
             audioMedia = audioTrack.getMedia();
 
 
-            /*
-
-            fps = (float) visualMedia.getSampleCount()
-                  / visualMedia.getDuration() * visualMedia.getTimeScale();
-
-            this.add(QTFactory.makeQTComponent(movie).asComponent());
-            */
-
+            // Calculate frames per second for the audio data.
+            fps = (float) audioMedia.getSampleCount() / audioMedia.getDuration()
+                    * audioMedia.getTimeScale();
 
 
             audioMediaHandler = (AudioMediaHandler) audioMedia.getHandler();
 
+            // Add the component that "renders" the audio.
             meter = new LevelMeter(audioMediaHandler);
-
-            add(meter, BorderLayout.SOUTH);
+            add(meter);
 
             /**
              * Handles the repainting of the LevelMeter class.
@@ -147,8 +123,8 @@ implements DataViewer {
                  */
                 public void run() {
                     try {
-                        if (movie.getRate() > 0) {
-                        meter.repaint();
+                        if (audio.getRate() > 0 && meter.isReady()) {
+                            meter.repaint();
                         }
                     } catch (QTException e) {
                         logger.error("Error finding playback speed", e);
@@ -165,7 +141,6 @@ implements DataViewer {
 
 
             setName(getClass().getSimpleName() + "-" + audioFile.getName());
-            this.pack();
             this.invalidate();
             this.setVisible(true);
 
@@ -202,8 +177,8 @@ implements DataViewer {
      */
     public void play() {
         try {
-            if (movie != null) {
-                movie.setRate(playRate);
+            if (audio != null) {
+                audio.setRate(playRate);
             }
         } catch (QTException e) {
             logger.error("Unable to play", e);
@@ -211,12 +186,12 @@ implements DataViewer {
     }
 
     /**
-     * Stops the playback of the continous data stream.
+     * Stops the playback of the continuous data stream.
      */
     public void stop() {
         try {
-            if (movie != null) {
-                movie.stop();
+            if (audio != null) {
+                audio.stop();
             }
         } catch (QTException e) {
             logger.error("Unable to stop", e);
@@ -228,23 +203,24 @@ implements DataViewer {
      */
     public void seekTo(final long position) {
         try {
-            if (movie != null) {
+            if (audio != null) {
                 TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
-                                                 position);
-                movie.setTime(time);
+                        position);
+                audio.setTime(time);
             }
         } catch (QTException e) {
             logger.error("Unable to find", e);
         }
     }
 
+
     /**
      * @return Current time in milliseconds.
      *
-     * @throws QTException If error occurs accessing underlying implemenation.
+     * @throws QTException If error occurs accessing underlying implementation.
      */
     public long getCurrentTime() throws QTException {
-        return movie.getTime();
+        return audio.getTime();
     }
 
     /** This method is called from within the constructor to
@@ -269,7 +245,6 @@ implements DataViewer {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         this.parent.shutdown(this);
     }//GEN-LAST:event_formWindowClosing
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }
