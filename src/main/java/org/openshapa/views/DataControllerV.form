@@ -543,7 +543,6 @@
               <action class="org.openshapa.views.DataController" id="createCellAction" methodName="createCellAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="createNewCell.icon"/>
-            <Property name="text" type="java.lang.String" value="" noResource="true"/>
             <Property name="alignmentY" type="float" value="0.0"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">

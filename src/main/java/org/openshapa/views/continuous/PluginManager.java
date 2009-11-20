@@ -48,7 +48,7 @@ public final class PluginManager {
 
             // The classloader references a jar - open the jar file up and
             // iterate through all the entries and add the entries that are
-           // concrete Plugins.
+            // concrete Plugins.
             if (resource == null) {
                 resource = loader.getResource("org/openshapa");
                 if (resource == null) {
@@ -177,10 +177,12 @@ public final class PluginManager {
      *
      * @return A valid data viewer for the supplied file.
      */
-    public DataViewer buildViewerFromFile(final File dataFile) {
+    public DataViewer buildViewerFromFile(final File dataFile, final FileFilter usedFilter) {
         for (Plugin p : this.availablePlugins) {
-            if (p.getFileFilter().accept(dataFile)) {
-                return p.getNewDataViewer();
+            if (usedFilter.equals(p.getFileFilter())) {
+                if (p.getFileFilter().accept(dataFile)) {
+                    return p.getNewDataViewer();
+                }
             }
         }
 

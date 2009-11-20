@@ -635,7 +635,7 @@ implements ClockListener, DataController {
 
             // Build the data viewer for the file.
             DataViewer viewer = PluginManager.getInstance()
-                                             .buildViewerFromFile(f);
+                                .buildViewerFromFile(f, jd.getFileFilter());
             if (viewer == null) {
                 logger.error("No DataViewer available.");
                 return;

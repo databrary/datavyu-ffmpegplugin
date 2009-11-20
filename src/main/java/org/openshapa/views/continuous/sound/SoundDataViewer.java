@@ -1,21 +1,31 @@
 package org.openshapa.views.continuous.sound;
 
-import org.openshapa.views.continuous.*;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
+import org.openshapa.util.Constants;
+import org.openshapa.views.continuous.DataController;
+import org.openshapa.views.continuous.DataViewer;
 import quicktime.QTException;
 import quicktime.QTSession;
 import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
+import quicktime.std.StdQTConstants;
 import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
 import quicktime.std.movies.Track;
+import quicktime.std.movies.media.AudioMediaHandler;
 import quicktime.std.movies.media.Media;
-import quicktime.std.movies.media.SampleTimeInfo;
+import java.awt.*;
+import java.awt.event.*;
 
 /**
- * The viewer for a quicktime video file.
+ * The viewer for an audio file.
  */
 public final class SoundDataViewer extends JFrame
 implements DataViewer {
@@ -26,29 +36,27 @@ implements DataViewer {
     /** The quicktime movie this viewer is displaying. */
     private Movie movie;
 
-    /** The visual track for the above quicktime movie. */
-    private Track visualTrack;
+    /** The audio track for the above quicktime movie. */
+    private Track audioTrack;
 
-    /** The visual media for the above visual track. */
-    private Media visualMedia;
+    /** The audio media for the above visual track. */
+    private Media audioMedia;
 
-    /** The "normal" playback speed. */
-    private static final float NORMAL_SPEED = 1.0f;
+    /** The media handler for the audio media. */
+    private AudioMediaHandler audioMediaHandler;
 
-    /** Fastforward playback speed. */
-    private static final float FFORWARD_SPEED = 32.0f;
 
-    /** Rewind playback speed. */
-    private static final float RWIND_SPEED = -32.0f;
+    /** An instance of the class LevelMeter, which draws the meter bars for the
+     * sound levels.
+     */
+    private LevelMeter meter;
 
-    /** conversion factor for converting milliseconds to seconds. */
-    private static final double MILLI_TO_SECONDS = 0.001;
+    /** The number of milliseconds between each redraw of the LevelMeter canvas.
+     *  By default this is 50 milliseconds.
+     */
+    private static final int REPAINTDELAY = 50;
 
-    /** conversion factor for converting seconds to milliseconds. */
-    private static final double SECONDS_TO_MILLI = 1000.0;
 
-    /** The current shuttle speed. */
-    private float shuttleSpeed;
 
     /** Rate for playback. */
     private float playRate;
@@ -56,36 +64,38 @@ implements DataViewer {
     /** Frames per second. */
     private float fps;
 
-    /** Parent DataControllerV. */
+    /** This is the timer for repainting the equaliser (LevelMeter). */
+    private Timer t;
+
+    /** parent controller. */
     private DataController parent;
 
     /**
-     * Constructor - creates new video viewer.
-     *
-     * @param controller The controller invoking actions on this continous
-     * data viewer.
+     * Constructor - creates new audio viewer.
      */
     public SoundDataViewer() {
         try {
             movie = null;
-            shuttleSpeed = 0.0f;
 
             // Initalise QTJava.
             QTSession.open();
+
         } catch (QTException e) {
-            logger.error("Unable to create QTVideoViewer", e);
+            logger.error("Unable to create SoundViewer", e);
         }
         initComponents();
     }
 
+    //--------------------------------------------------------------------------
+    // [interface] org.openshapa.views.continuous.DataViewer
+    //
+
+    /**
+     * @return The parent JFrame that this data viewer resides within.
+     */
     public JFrame getParentJFrame() {
         return this;
     }
-
-    /**
-     * @return The frames per second.
-     */
-    public float getFrameRate() { return fps; }
 
     /**
      * Method to open a video file for playback.
@@ -98,65 +108,105 @@ implements DataViewer {
             this.setTitle(audioFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(audioFile));
             movie = Movie.fromFile(omf);
-//            visualTrack = movie.getIndTrackType(1,
-//                                       StdQTConstants.visualMediaCharacteristic,
-//                                       StdQTConstants.movieTrackCharacteristic);
-//            visualMedia = visualTrack.getMedia();
 
-//            this.add(QTFactory.makeQTComponent(movie).asComponent());
-            // Set the size of the window to be the same as the incoming video.
-//            this.setBounds(this.getX(), this.getY(),
-//                           movie.getBox().getWidth(),
-//                           movie.getBox().getHeight());
-//            this.pack();
+            // Set the time scale for our movie to milliseconds (i.e. 1000 ticks
+            // per second.
+            movie.setTimeScale(Constants.TICKS_PER_SECOND);
+
+
+            audioTrack = movie.getIndTrackType(1,
+                                       StdQTConstants.audioMediaCharacteristic,
+                                       StdQTConstants.movieTrackCharacteristic);
+
+            audioMedia = audioTrack.getMedia();
+
+
+            /*
+
+            fps = (float) visualMedia.getSampleCount()
+                  / visualMedia.getDuration() * visualMedia.getTimeScale();
+
+            this.add(QTFactory.makeQTComponent(movie).asComponent());
+            */
+
+
+
+            audioMediaHandler = (AudioMediaHandler) audioMedia.getHandler();
+
+            meter = new LevelMeter(audioMediaHandler);
+
+            add(meter, BorderLayout.SOUTH);
+
+            /**
+             * Handles the repainting of the LevelMeter class.
+             */
+            class PaintTask extends TimerTask {
+
+                /**
+                 * This is the standard run method, and simply paints.
+                 */
+                public void run() {
+                    try {
+                        if (movie.getRate() > 0) {
+                        meter.repaint();
+                        }
+                    } catch (QTException e) {
+                        logger.error("Error finding playback speed", e);
+                    }
+
+                }
+            }
+
+            // set up repainting timer
+            t = new Timer();
+
+            t.schedule(new PaintTask(), 0, REPAINTDELAY);
+
+
+
+            setName(getClass().getSimpleName() + "-" + audioFile.getName());
+            this.pack();
             this.invalidate();
             this.setVisible(true);
 
-            setName(this.getClass().getSimpleName() + audioFile.getName());
+
         } catch (QTException e) {
-            logger.error("Unable to setVideoFile", e);
+            logger.error("Unable to set audioFile", e);
         }
     }
 
+    /**
+     * Sets the parent data controller.
+     * @param dataController This is the passed in data controller (parent).
+     */
     public void setParentController(final DataController dataController) {
-        this.parent = dataController;
+        parent = dataController;
+    }
+
+    /**
+     * @return The frames per second.
+     */
+    public float getFrameRate() {
+        return fps;
     }
 
     /**
      * @param rate The playback rate.
      */
-    public void setPlaybackSpeed(final float rate) { this.playRate = rate; }
-
-    /**
-     * @param position Millisecond absolute position for track.
-     */
-    public void seekTo(final long position) {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                //movie.stop();
-
-                double seconds = position * MILLI_TO_SECONDS;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
-                movie.setTime(time);
-                pack();
-            }
-        } catch (QTException e) {
-            logger.error("Unable to find", e);
-        }
+    public void setPlaybackSpeed(final float rate) {
+        this.playRate = rate;
     }
 
     /**
-     * Jogs the data stream backwards by a single unit (i.e. frame for movie)
+     * Plays the continous data stream at the current playback rate..
      */
-    public void jogBack() {
+    public void play() {
         try {
-            this.setVisible(true);
-            this.jog(-1);
+            if (movie != null) {
+                movie.setRate(playRate);
+            }
         } catch (QTException e) {
-            logger.error("Unable to jogBack", e);
+            logger.error("Unable to play", e);
         }
     }
 
@@ -166,8 +216,6 @@ implements DataViewer {
     public void stop() {
         try {
             if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
                 movie.stop();
             }
         } catch (QTException e) {
@@ -176,138 +224,14 @@ implements DataViewer {
     }
 
     /**
-     * Jogs the data stream forwards by a single unit (i.e. frame for movie).
+     * @param position Millisecond absolute position for track.
      */
-    public void jogForward() {
-        try {
-            this.setVisible(true);
-            this.jog(1);
-        } catch (QTException e) {
-            logger.error("Unable to jogForward", e);
-        }
-    }
-
-    /**
-     * Shuttles the video stream backwards by the current shuttle speed.
-     * Repetative calls to shuttleBack increases the speed at which we reverse.
-     */
-    public void shuttleBack() {
+    public void seekTo(final long position) {
         try {
             if (movie != null) {
-                this.setVisible(true);
-                if (shuttleSpeed == 0.0f) {
-                    shuttleSpeed = 1.0f / RWIND_SPEED;
-                } else {
-                    shuttleSpeed = shuttleSpeed * 2;
-                }
-                movie.setRate(shuttleSpeed);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to shuttleBack", e);
-        }
-    }
-
-    /**
-     * Pauses the playback of the continous data stream.
-     */
-    public void pause() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.stop();
-            }
-        } catch (QTException e) {
-            logger.error("pause", e);
-        }
-    }
-
-    /**
-     * Shuttles the video stream forwards by the current shuttle speed.
-     * Repetative calls to shuttleFoward increases the speed at which we fast
-     * forward.
-     */
-    public void shuttleForward() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                if (shuttleSpeed == 0.0f) {
-                    shuttleSpeed = 1.0f / FFORWARD_SPEED;
-                } else {
-                    shuttleSpeed = shuttleSpeed * 2;
-                }
-                movie.setRate(shuttleSpeed);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to shuttleForward", e);
-        }
-    }
-
-    /**
-     * Rewinds the continous data stream at a speed 32x normal.
-     */
-    public void rewind() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.setRate(RWIND_SPEED);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to rewind", e);
-        }
-    }
-
-    /**
-     * Plays the continous data stream at a regular 1x normal speed.
-     */
-    public void play() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.setRate(NORMAL_SPEED);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to play", e);
-        }
-    }
-
-    /**
-     * Fast forwards a continous data stream at a speed 32x normal.
-     */
-    public void forward() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.setRate(FFORWARD_SPEED);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to forward", e);
-        }
-    }
-
-    /**
-     * Find can be used to seek within a continous data stream - allowing the
-     * caller to jump to a specific time in the datastream.
-     *
-     * @param milliseconds The time within the continous data stream, specified
-     * in milliseconds from the start of the stream.
-     */
-    public void find(final long milliseconds) {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.stop();
-
-                double seconds = milliseconds * MILLI_TO_SECONDS;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
+                TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
+                                                 position);
                 movie.setTime(time);
-                pack();
             }
         } catch (QTException e) {
             logger.error("Unable to find", e);
@@ -315,71 +239,12 @@ implements DataViewer {
     }
 
     /**
-     * Go back by the specified number of milliseconds and continue playing the
-     * data stream.
+     * @return Current time in milliseconds.
      *
-     * @param milliseconds The number of milliseconds to jump back by.
+     * @throws QTException If error occurs accessing underlying implemenation.
      */
-    public void goBack(final long milliseconds) {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.stop();
-
-                double curTime = movie.getTime() / (float) movie.getTimeScale();
-                double seconds = milliseconds * MILLI_TO_SECONDS;
-
-                seconds = curTime - seconds;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
-                movie.setTime(time);
-                movie.start();
-                pack();
-            }
-        } catch (QTException e) {
-            logger.error("Unable to go back", e);
-        }
-    }
-
-    public void syncCtrl() {
-    }
-
-    public void sync() {
-    }
-
-    /**
-     * Jogs the movie by a specified number of frames.
-     *
-     * @param offset The number of frames to jog the movie by.
-     *
-     * @throws QTException If unable to jog the movie by the specified number
-     * of frames.
-     */
-    public void jog(final int offset) throws QTException {
-        if (movie != null) {
-            this.setVisible(true);
-            shuttleSpeed = 0.0f;
-            movie.stop();
-
-            // Get the current frame.
-            SampleTimeInfo sTime = visualMedia.timeToSampleNum(movie.getTime());
-
-            // Get the time of the next frame.
-            int t = visualMedia
-                    .sampleNumToMediaTime(sTime.sampleNum + offset).time;
-            TimeRecord time = new TimeRecord(movie.getTimeScale(), t);
-
-            // Advance the movie to the next frame.
-            movie.setTime(time);
-        }
-    }
-
     public long getCurrentTime() throws QTException {
-        double curTime = movie.getTime() / (double) movie.getTimeScale();
-        curTime = curTime * SECONDS_TO_MILLI;
-        return (long) curTime;
+        return movie.getTime();
     }
 
     /** This method is called from within the constructor to
