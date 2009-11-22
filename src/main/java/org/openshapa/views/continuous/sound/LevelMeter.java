@@ -15,10 +15,19 @@ import quicktime.std.movies.media.MediaEQSpectrumBands;
  */
 class LevelMeter extends Canvas {
 
-    /** Array of equaliser levels, as used by QT player. */
+    /** Array of equaliser tempLevels, as used by QT player. */
     private static final int[] EQLEVELS = {
-        200, 400, 800, 1600, 3200, 6400, 12800, 21000
+        200, 400, 800, 1600, 3200, 6400, 12800, 21000,
+        9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
     };
+
+   /**
+    * Desired number of frequency bands to be displayed- determined by width.
+    * Old frequency bands were 200, 400, 800, 1600, 3200, 6400, 12800, 21000,
+    * but these are only accurate for 8 bands. Actual frequencies are some
+    * other figures for more or fewer than 8 bands.
+    */
+    private int numBands = MAXBANDS;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(LevelMeter.class);
@@ -30,22 +39,31 @@ class LevelMeter extends Canvas {
     private static final int MINHEIGHT = 30;
 
     /** The maximum number of bars. */
-    static final int MAXBARS = 20;
+    private static final int MAXBARS = 40;
+
+    /** The maximum number of frequency bands that can be used. */
+    private static final int MAXBANDS = 20;
 
     /** The divisor used to normalise sound level bars. */
-    static final float BARDIV = 255.0F;
+    private static final float BARDIV = 255.0F;
 
     /** The colour cutoff for red colouring. */
-    static final int REDCUT = 18;
+    static final int REDCUT = (int) Math.floor(MAXBARS * 0.85);
 
     /** The colour cutoff for yellow colouring. */
-    static final int YELLOWCUT = 15;
+    static final int YELLOWCUT = (int) Math.floor(MAXBARS * 0.7);
 
     /** Duplicate of the SoundDataViewer variable. */
     private AudioMediaHandler audioMH;
 
     /** Internal boolean to track whether the canvas is ready to be drawn to. */
     private boolean isReady = false;
+
+    /** The recorded sound intensities. */
+    private int[] levels;
+
+    /** Determines whether or not new data needs to be loaded. */
+    private boolean needNew = true;
 
 
 
@@ -76,10 +94,11 @@ class LevelMeter extends Canvas {
      */
     public boolean isReady() {
         try {
-            int[] levels = audioMH.getSoundEqualizerBandLevels(EQLEVELS.length);
+            int[] tempLevels =
+                    audioMH.getSoundEqualizerBandLevels(EQLEVELS.length);
             int soundCheck = 0;
-            for (int i = 0; i < levels.length; i++) {
-                soundCheck += levels[i];
+            for (int i = 0; i < tempLevels.length; i++) {
+                soundCheck += tempLevels[i];
             }
             if (soundCheck <= THRESHOLD) {
                 isReady = false;
@@ -114,6 +133,14 @@ class LevelMeter extends Canvas {
     }
 
     /**
+     * Sets the needNew variable.
+     * @param b The new value for needNew.
+     */
+    public void setNeedNew(final boolean b) {
+        needNew = b;
+    }
+
+    /**
      * Refreshes the canvas with new equaliser data.
      * @param g The graphics to be painted.
      */
@@ -130,9 +157,10 @@ class LevelMeter extends Canvas {
 
         try {
             if (gHeight > MINHEIGHT) {
-                int[] levels = audioMH.getSoundEqualizerBandLevels(
+                if (needNew || levels == null) {
+                levels = audioMH.getSoundEqualizerBandLevels(
                                        EQLEVELS.length);
-
+                }
                 int maxHeight = gHeight - 1;
                 int barWidth = gWidth / levels.length;
                 int segInterval = gHeight / MAXBARS;
