@@ -122,12 +122,9 @@ public final class SoundDataViewer extends JFrame
                  * This is the standard run method, and simply paints.
                  */
                 public void run() {
-                    try {
-                        if (audio.getRate() > 0 && meter.isReady()) {
-                            meter.repaint();
-                        }
-                    } catch (QTException e) {
-                        logger.error("Error finding playback speed", e);
+                    if (meter.isReady()) {
+                        meter.setNeedNew((playRate != 0));
+                        meter.repaint();
                     }
 
                 }
