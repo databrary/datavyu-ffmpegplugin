@@ -50,7 +50,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
         assertTrue(demoFile.exists());
 
-        File testCSV = new File(root + "/ui/test.csv");
+        File testCSV = new File(root + "/ui/test-v2-out.csv");
         assertTrue(testCSV.exists());
 
         String tempFolder = System.getProperty("java.io.tmpdir");
@@ -93,18 +93,25 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
     }
 
     /**
-     * Test loading a database to a CSV file.
+     * Run a load test for specified input and expected output files.
      *
-     * @throws java.lang.Exception on any error
+     * @param inputFile The input CSV file to open before saving.
+     * @param expectedOutputFile The expected output of saving the above file.
+     *
+     * @throws Exception If unable to save file.
      */
-    public void testLoadingCSV() throws Exception {
+    public void testLoad(final String inputFile,
+                         final String expectedOutputFile) throws Exception {
         //Preparation
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
 
         String root = System.getProperty("testPath");
-        File testCSV = new File(root + "/ui/test.csv");
+        File testCSV = new File(root + inputFile);
         assertTrue(testCSV.exists());
+
+        File testOutputCSV = new File(root + expectedOutputFile);
+        assertTrue(testOutputCSV.exists());
 
         String tempFolder = System.getProperty("java.io.tmpdir");
         File savedCSV = new File(tempFolder + "/savedCSV.csv");
@@ -133,11 +140,27 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
                 .run();
 
         // 3. Check that CSV file is correct
-        // Please note: This assumes that saving was working on 05-Aug-2009
         File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
-        assertTrue(areFilesSame(testCSV, bug541SavedCSV));
+        assertTrue(areFilesSame(testOutputCSV, bug541SavedCSV));
     }
 
+    /**
+     * Test loading a database from a version 1 CSV file.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testLoadingCSVv1() throws Exception {
+        this.testLoad("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
+    }
+
+    /**
+     * Test loading a database from a version 2 CSV file.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testLoadingCSVv2() throws Exception {
+        this.testLoad("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
+    }
 
     /**
      * Checks if two text files are equal.

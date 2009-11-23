@@ -723,6 +723,60 @@ public class Predicate extends DBElement
 
     } /* Predicate::argListToDBString() */
 
+    /**
+     * Construct an escaped string containing the values of the arguments in the
+     * format: (value0, value1, ... value).
+     *                                          -- 8/23/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     */
+
+    protected String argListToEscapedString()
+        throws SystemErrorException
+    {
+        final String mName = "Predicate::argListToString(): ";
+        int i = 0;
+        int numArgs = 0;
+        String s;
+
+        if ( this.pveID == DBIndex.INVALID_ID )
+        {
+            s = "()";
+        }
+        else
+        {
+            if ( argList == null )
+            {
+                /* argList hasn't been instantiated yet -- scream and die */
+                throw new SystemErrorException(mName + "argList unitialized?!");
+            }
+
+            numArgs = this.argList.size();
+
+            if ( numArgs <= 0 )
+            {
+                throw new SystemErrorException(mName + "numArgs <= 0");
+            }
+
+            s = new String("(");
+
+            while ( i < (numArgs - 1) )
+            {
+                s += this.getArg(i).toEscapedString() + ",";
+                i++;
+            }
+
+            s += getArg(i).toEscapedString();
+
+            s += ")";
+        }
+
+        return s;
+
+    } /* Predicate::argListToEscapedString() */
 
     /**
      * argListToString()
@@ -1179,6 +1233,35 @@ public class Predicate extends DBElement
 
     } /* Pred::toMODBFile_update_local_vocab_list() */
 
+    /**
+     * toString()
+     *
+     * Returns a String representation of the Predicate for display.
+     *
+     * @return the string value.
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     */
+    public String toEscapedString()
+    {
+        String s;
+
+        try
+        {
+            s = this.predName + this.argListToEscapedString();
+        }
+
+        catch (SystemErrorException e)
+        {
+             s = "FAILED with SystemErrorException \"" + e.toString() + "\")";
+        }
+
+        return (s);
+
+    } /* Predicate::toString() */
 
     /**
      * toString()

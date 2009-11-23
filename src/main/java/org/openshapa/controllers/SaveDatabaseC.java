@@ -20,6 +20,7 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.db.FormalArgument;
 import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.MatrixVocabElement.MatrixType;
+import org.openshapa.db.PredicateVocabElement;
 import org.openshapa.util.FileFilters.MODBFilter;
 
 /**
@@ -124,8 +125,35 @@ public final class SaveDatabaseC {
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(outFile));
-            Vector<Long> colIds = db.getColOrderVector();
+            // Dump out an identifier for the version of file.
+            out.write("#2");
+            out.newLine();
 
+            // Dump out all the predicates held within the database.
+            Vector<PredicateVocabElement> predicates = db.getPredVEs();
+            if (predicates.size() > 0) {
+                int counter = 0;
+
+                for (PredicateVocabElement pve : predicates) {
+                    out.write(counter + ":" + pve.getName() + "-");
+                    for (int j = 0; j < pve.getNumFormalArgs(); j++) {
+                        FormalArgument fa = pve.getFormalArgCopy(j);
+                        String name = fa.getFargName()
+                                   .substring(1, fa.getFargName().length() - 1);
+                        out.write(name + "|" + fa.getFargType().toString());
+
+                        if (j < pve.getNumFormalArgs() - 1) {
+                            out.write(",");
+                        }
+                    }
+
+                    out.newLine();
+                    counter++;
+                }
+            }
+
+            // Dump out the data from all the columns.
+            Vector<Long> colIds = db.getColOrderVector();
             for (int i = 0; i < colIds.size(); i++) {
                 DataColumn dc = db.getDataColumn(colIds.get(i));
                 boolean isMatrix = false;
