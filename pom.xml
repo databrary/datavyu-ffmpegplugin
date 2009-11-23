@@ -500,7 +500,7 @@
     <dependency>
       <groupId>org.uispec4j</groupId>
       <artifactId>uispec4j</artifactId>
-      <version>v2.1-A</version>
+      <version>v2.1-B</version>
     </dependency>
 
     <dependency>
