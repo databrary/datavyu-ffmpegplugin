@@ -677,8 +677,8 @@ implements ClockListener, DataController {
     /**
      * @param show true to show the tracks layout, false otherwise.
      */
-    public void showTracksPanel(boolean show) {
-        if (true) {
+    public void showTracksPanel(final boolean show) {
+        if (show) {
             this.setSize(MIN_DIALOG_WIDTH + TRACKS_PANEL_WIDTH,
                     this.getHeight());
         } else {
