@@ -100,6 +100,9 @@ implements ClockListener, DataController {
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
+    private static final int MIN_DIALOG_WIDTH = 280;
+    private static final int TRACKS_PANEL_WIDTH = 600;
+
 
     //--------------------------------------------------------------------------
     //
@@ -291,6 +294,7 @@ implements ClockListener, DataController {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
+        tracksPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
@@ -565,7 +569,6 @@ implements ClockListener, DataController {
 
         createNewCell.setAction(actionMap.get("createCellAction")); // NOI18N
         createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
-        createNewCell.setText(""); // NOI18N
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
@@ -609,7 +612,8 @@ implements ClockListener, DataController {
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(findOffsetField, gridBagConstraints);
 
-        getContentPane().add(gridButtonPanel, java.awt.BorderLayout.CENTER);
+        getContentPane().add(gridButtonPanel, java.awt.BorderLayout.WEST);
+        getContentPane().add(tracksPanel, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -670,6 +674,17 @@ implements ClockListener, DataController {
         new SetSelectedCellStopTimeC(getCurrentTime());
     }
 
+    /**
+     * @param show true to show the tracks layout, false otherwise.
+     */
+    public void showTracksPanel(boolean show) {
+        if (true) {
+            this.setSize(MIN_DIALOG_WIDTH + TRACKS_PANEL_WIDTH,
+                    this.getHeight());
+        } else {
+            this.setSize(MIN_DIALOG_WIDTH, this.getHeight());
+        }
+    }
 
     //--------------------------------------------------------------------------
     // Playback actions
@@ -965,6 +980,7 @@ implements ClockListener, DataController {
     private javax.swing.JButton syncVideoButton;
     private javax.swing.JLabel timestampLabel;
     private javax.swing.JPanel topPanel;
+    private javax.swing.JPanel tracksPanel;
     // End of variables declaration//GEN-END:variables
 
 }

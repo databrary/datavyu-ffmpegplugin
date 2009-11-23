@@ -166,6 +166,8 @@ implements KeyEventDispatcher {
      */
     public void showQTVideoController() {
         OpenSHAPA.getApplication().show(dataController);
+        // FogBugz 777: Temporary hard coded value
+        dataController.showTracksPanel(true);
     }
 
     /**
