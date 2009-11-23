@@ -35,7 +35,7 @@ public final class SoundDataViewer extends JFrame
     /** The audio media for the above visual track. */
     private Media audioMedia;
     /** The media handler for the audio media. */
-    private AudioMediaHandler audioMediaHandler;
+    private AudioMediaHandler audioMH;
     /** An instance of the class LevelMeter, which draws the meter bars for the
      * sound levels.
      */
@@ -43,6 +43,8 @@ public final class SoundDataViewer extends JFrame
     /** The number of milliseconds between each redraw of the LevelMeter canvas.
      */
     private static final int REPAINTDELAY = 20;
+    /** The number of milliseconds to wait before checking whether to stop. */
+    private static final int LOOKDELAY = 5;
     /** Time to restore after painting the display on a seek operation. */
     private float playRate;
     /** Frames per second. */
@@ -51,6 +53,13 @@ public final class SoundDataViewer extends JFrame
     private Timer t;
     /** parent controller. */
     private DataController parent;
+    /** Time to stop at- used when seekTo is called. */
+    private long stopTime;
+    /** Whether we need to be looking for stops. */
+    private boolean looking = false;
+
+    /** Massive array with all the audio intensity data stored. */
+    private int[] audioData;
 
 
     /**
@@ -107,11 +116,82 @@ public final class SoundDataViewer extends JFrame
                     * audioMedia.getTimeScale();
 
 
-            audioMediaHandler = (AudioMediaHandler) audioMedia.getHandler();
+            audioMH = (AudioMediaHandler) audioMedia.getHandler();
 
             // Add the component that "renders" the audio.
-            meter = new LevelMeter(audioMediaHandler);
+            meter = new LevelMeter(audioMH);
             add(meter);
+
+            /** Preprocessing class. Grabs all the audio data at the start. */
+            class PreProcess implements Runnable {
+
+                private int numBands;
+                private int work = 0;
+                private int[] tempLevels;
+                private long oldTime = 0;
+                private int load = 0;
+
+                /** Constructor for the preprocessor.
+                 *  @param bands The number of frequency bands used.
+                 */
+                public PreProcess(final int bands) {
+                    numBands = bands;
+                    work = 1000*60*numBands;
+                    Thread thread = new Thread(this);
+                    thread.start();
+                }
+
+                /** Grabs all the data from the audio stream. */
+                public void run(){
+                    audioData = new int[work];
+
+                    try {
+                        audio.setRate(16F);
+                    } catch (QTException e) {
+                        logger.error("Can't set rate", e);
+                    }
+                    int i = 0;
+                    while (i < work - 1) {
+                        try {
+                            long atime = getCurrentTime();
+                            if (atime != oldTime) {
+                                oldTime = atime;
+                                
+                                while ((atime-1) * 20 != i) {
+                                    load++;
+                                    if ((atime-1) * 20 > i) {
+                                        TimeRecord fixtime = new TimeRecord(Constants.TICKS_PER_SECOND,
+                                                atime - 20);
+                                        audio.setTime(fixtime);
+                                    }
+                                    /*try {
+                                        if (load > 1000) {
+                                            System.out.println("High load.");
+                                            Thread.sleep(100);
+                                            load = 0;
+                                        }
+                                    } catch (InterruptedException e) {
+                                        logger.error("Interrupted", e);
+                                    }*/
+                                    atime = getCurrentTime();
+                                }
+                                tempLevels =
+                                audioMH.getSoundEqualizerBandLevels(numBands);
+                                for (int j = 0; j < numBands; j++) {
+                                    audioData[i] = tempLevels[j];
+                                    i++;
+                                }
+                                System.out.println("time = " + atime + ", i = " + i);
+                            }
+                        } catch (QTException e) {
+                            logger.error("Couldn't get levels", e);
+                        }
+                    }
+                    meter.setAudioData(audioData);
+                    System.out.println("Finished preprocessing audio.");
+                }
+
+            }
 
             /**
              * Handles the repainting of the LevelMeter class.
@@ -119,7 +199,7 @@ public final class SoundDataViewer extends JFrame
             class PaintTask extends TimerTask {
 
                 /**
-                 * This is the standard run method, and simply paints.
+                 * Paints the level meter if it has data to draw.
                  */
                 public void run() {
                     if (meter.isReady()) {
@@ -130,12 +210,36 @@ public final class SoundDataViewer extends JFrame
                 }
             }
 
+            /**
+             * Handles the repainting of the LevelMeter class.
+             */
+            class LookTask extends TimerTask {
+
+                /**
+                 * Checks whether or not we should stop the movie.
+                 */
+                public void run() {
+                    try {
+                        if (looking && (getCurrentTime() >= stopTime)) {
+                            stop();
+                            playRate = 0;
+                            looking = false;
+                            meter.setNeedNew(false);
+                        }
+                    } catch (QTException e) {
+                        logger.error("Couldn't get time", e);
+                    }
+                }
+            }
+
             // set up repainting timer
             t = new Timer();
 
             t.schedule(new PaintTask(), 0, REPAINTDELAY);
 
+            t.schedule(new LookTask(), 0, LOOKDELAY);
 
+            PreProcess p = new PreProcess(meter.getNumBands());
 
             setName(getClass().getSimpleName() + "-" + audioFile.getName());
             this.invalidate();
@@ -199,6 +303,26 @@ public final class SoundDataViewer extends JFrame
      * @param position Millisecond absolute position for track.
      */
     public void seekTo(final long position) {
+        try {
+            if (audio != null) {
+                stopTime = position;
+                TimeRecord prevtime = new TimeRecord(Constants.TICKS_PER_SECOND,
+                        position - 40);
+                audio.setTime(prevtime);
+                playRate = 1/32F;
+                play();
+                looking = true;
+
+            }
+        } catch (QTException e) {
+            logger.error("Unable to find", e);
+        }
+    }
+
+    /**
+     * @param position Millisecond absolute position for track.
+     */
+    public void sync(final long position) {
         try {
             if (audio != null) {
                 TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,

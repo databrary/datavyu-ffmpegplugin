@@ -65,6 +65,10 @@ class LevelMeter extends Canvas {
     /** Determines whether or not new data needs to be loaded. */
     private boolean needNew = true;
 
+    /** Massive array with all the audio intensity data stored. */
+    private int[] audioData;
+
+
 
 
     /**
@@ -86,6 +90,13 @@ class LevelMeter extends Canvas {
             audioMH.setSoundEqualizerBands(bands);
             audioMH.setSoundLevelMeteringEnabled(true);
         }
+    }
+
+    /** Returns the number of frequency bands for the equaliser.
+     *  @return The number of bands.
+     */
+    public int getNumBands() {
+        return numBands;
     }
 
     /**
@@ -111,6 +122,11 @@ class LevelMeter extends Canvas {
         }
 
         return isReady;
+    }
+
+    /** Sets the stored audioData to the passed in array. */
+    public void setAudioData(int[] ad) {
+        audioData = ad;
     }
 
     /**
@@ -148,6 +164,11 @@ class LevelMeter extends Canvas {
     public synchronized void paint(final Graphics g) {
         // Check pre-conditions. Check isReady, return.
         if (!isReady) {
+            return;
+        }
+
+        if (audioData == null) {
+            System.out.println("Can't paint yet.");
             return;
         }
 

@@ -159,7 +159,7 @@ implements ClockListener, DataController {
     public void clockStart(final long time) {
         setCurrentTime(time);
         for (DataViewer viewer : viewers) {
-            viewer.seekTo(time);
+            // viewer.seekTo(time);
             viewer.play();
         }
     }
@@ -178,7 +178,7 @@ implements ClockListener, DataController {
 
                     // Only synchronise viewers if we have a noticable drift.
                     if (Math.abs(v.getCurrentTime() - time) > thresh) {
-                        v.seekTo(time);
+                        v.sync(time);
                     }
                 }
 
@@ -196,7 +196,7 @@ implements ClockListener, DataController {
         setCurrentTime(time);
         for (DataViewer viewer : viewers) {
             viewer.stop();
-            viewer.seekTo(time);
+            // viewer.seekTo(time);
         }
     }
 
