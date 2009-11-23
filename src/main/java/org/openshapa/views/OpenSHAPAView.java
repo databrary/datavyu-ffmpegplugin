@@ -354,9 +354,9 @@ public final class OpenSHAPAView extends FrameView {
         spreadsheetMenu = new javax.swing.JMenu();
         showSpreadsheetMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
-        vocabEditorMenuItem = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         newVariableMenuItem = new javax.swing.JMenuItem();
+        vocabEditorMenuItem = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JSeparator();
         newCellMenuItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
@@ -449,12 +449,12 @@ public final class OpenSHAPAView extends FrameView {
         spreadsheetMenu.setAction(actionMap.get("showQTVideoController")); // NOI18N
         spreadsheetMenu.setName("spreadsheetMenu"); // NOI18N
         spreadsheetMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                spreadsheetMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                spreadsheetMenuMenuSelected(evt);
             }
         });
 
@@ -465,10 +465,6 @@ public final class OpenSHAPAView extends FrameView {
         jSeparator1.setName("jSeparator1"); // NOI18N
         spreadsheetMenu.add(jSeparator1);
 
-        vocabEditorMenuItem.setAction(actionMap.get("showVocabEditor")); // NOI18N
-        vocabEditorMenuItem.setName("vocabEditorMenuItem"); // NOI18N
-        spreadsheetMenu.add(vocabEditorMenuItem);
-
         jMenuItem1.setAction(actionMap.get("showNewVariableForm")); // NOI18N
         jMenuItem1.setName("jMenuItem1"); // NOI18N
         spreadsheetMenu.add(jMenuItem1);
@@ -476,6 +472,10 @@ public final class OpenSHAPAView extends FrameView {
         newVariableMenuItem.setAction(actionMap.get("showVariableList")); // NOI18N
         newVariableMenuItem.setName("newVariableMenuItem"); // NOI18N
         spreadsheetMenu.add(newVariableMenuItem);
+
+        vocabEditorMenuItem.setAction(actionMap.get("showVocabEditor")); // NOI18N
+        vocabEditorMenuItem.setName("vocabEditorMenuItem"); // NOI18N
+        spreadsheetMenu.add(vocabEditorMenuItem);
 
         jSeparator2.setName("jSeparator2"); // NOI18N
         spreadsheetMenu.add(jSeparator2);
@@ -563,12 +563,12 @@ public final class OpenSHAPAView extends FrameView {
 
         scriptMenu.setName("scriptMenu"); // NOI18N
         scriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                populateFavourites(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                populateFavourites(evt);
             }
         });
 
@@ -578,12 +578,12 @@ public final class OpenSHAPAView extends FrameView {
 
         runRecentScriptMenu.setName("runRecentScriptMenu"); // NOI18N
         runRecentScriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                populateRecentScripts(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                populateRecentScripts(evt);
             }
         });
 
@@ -620,15 +620,6 @@ public final class OpenSHAPAView extends FrameView {
 
         setMenuBar(menuBar);
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * The action to invoke when the user selects new cell from the menu.
-     *
-     * @param evt The event that fired this action.
-     */
-    private void newCellMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellMenuItemActionPerformed
-        new CreateNewCellC();
-}//GEN-LAST:event_newCellMenuItemActionPerformed
 
     /**
      * The action to invoke when the user selects 'strong temporal ordering'.
@@ -769,6 +760,15 @@ public final class OpenSHAPAView extends FrameView {
             this.deleteCellMenuItem.setEnabled(true);
         }
     }//GEN-LAST:event_spreadsheetMenuMenuSelected
+
+    /**
+     * The action to invoke when the user selects new cell from the menu.
+     *
+     * @param evt The event that fired this action.
+     */
+    private void newCellMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellMenuItemActionPerformed
+        new CreateNewCellC();
+}//GEN-LAST:event_newCellMenuItemActionPerformed
 
     /**
      * Changes the font size by adding sizeDif to the current size.  Then it
