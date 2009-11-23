@@ -136,7 +136,7 @@ public final class SoundDataViewer extends JFrame
                  */
                 public PreProcess(final int bands) {
                     numBands = bands;
-                    work = 1000*60*numBands;
+                    work = 1000*10*numBands;
                     Thread thread = new Thread(this);
                     thread.start();
                 }
@@ -146,7 +146,7 @@ public final class SoundDataViewer extends JFrame
                     audioData = new int[work];
 
                     try {
-                        audio.setRate(16F);
+                        audio.setRate(1F);
                     } catch (QTException e) {
                         logger.error("Can't set rate", e);
                     }
@@ -164,15 +164,6 @@ public final class SoundDataViewer extends JFrame
                                                 atime - 20);
                                         audio.setTime(fixtime);
                                     }
-                                    /*try {
-                                        if (load > 1000) {
-                                            System.out.println("High load.");
-                                            Thread.sleep(100);
-                                            load = 0;
-                                        }
-                                    } catch (InterruptedException e) {
-                                        logger.error("Interrupted", e);
-                                    }*/
                                     atime = getCurrentTime();
                                 }
                                 tempLevels =
@@ -188,7 +179,15 @@ public final class SoundDataViewer extends JFrame
                         }
                     }
                     meter.setAudioData(audioData);
-                    System.out.println("Finished preprocessing audio.");
+                    System.out.println("Finished preprocessing audio. Success = " + meter.isReady());
+                    try {
+                        audio.stop();
+                        audio.setRate(0F);
+                        audio.setTime(new TimeRecord(Constants.TICKS_PER_SECOND, 0));
+                    } catch (QTException e) {
+                        logger.error("Couldn't reset audio", e);
+                    }
+
                 }
 
             }
@@ -203,8 +202,13 @@ public final class SoundDataViewer extends JFrame
                  */
                 public void run() {
                     if (meter.isReady()) {
-                        meter.setNeedNew((playRate != 0));
+                        try {
+                        // meter.setNeedNew((playRate != 0));
+                        meter.setAudioTime(getCurrentTime());
                         meter.repaint();
+                        } catch (QTException e) {
+                            logger.error("Couldn't get time", e);
+                        }
                     }
 
                 }
@@ -237,7 +241,7 @@ public final class SoundDataViewer extends JFrame
 
             t.schedule(new PaintTask(), 0, REPAINTDELAY);
 
-            t.schedule(new LookTask(), 0, LOOKDELAY);
+            // t.schedule(new LookTask(), 0, LOOKDELAY);
 
             PreProcess p = new PreProcess(meter.getNumBands());
 
@@ -294,6 +298,9 @@ public final class SoundDataViewer extends JFrame
             if (audio != null) {
                 audio.stop();
             }
+            if (getCurrentTime() == 0) {
+                System.out.println("Indeed.");
+            }
         } catch (QTException e) {
             logger.error("Unable to stop", e);
         }
@@ -305,14 +312,9 @@ public final class SoundDataViewer extends JFrame
     public void seekTo(final long position) {
         try {
             if (audio != null) {
-                stopTime = position;
-                TimeRecord prevtime = new TimeRecord(Constants.TICKS_PER_SECOND,
-                        position - 40);
-                audio.setTime(prevtime);
-                playRate = 1/32F;
-                play();
-                looking = true;
-
+                TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
+                        position);
+                audio.setTime(time);
             }
         } catch (QTException e) {
             logger.error("Unable to find", e);

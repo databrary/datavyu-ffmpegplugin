@@ -178,7 +178,7 @@ implements ClockListener, DataController {
 
                     // Only synchronise viewers if we have a noticable drift.
                     if (Math.abs(v.getCurrentTime() - time) > thresh) {
-                        v.sync(time);
+                        v.seekTo(time);
                     }
                 }
 

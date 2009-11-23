@@ -56,9 +56,6 @@ class LevelMeter extends Canvas {
     /** Duplicate of the SoundDataViewer variable. */
     private AudioMediaHandler audioMH;
 
-    /** Internal boolean to track whether the canvas is ready to be drawn to. */
-    private boolean isReady = false;
-
     /** The recorded sound intensities. */
     private int[] levels;
 
@@ -67,6 +64,9 @@ class LevelMeter extends Canvas {
 
     /** Massive array with all the audio intensity data stored. */
     private int[] audioData;
+
+    /** Stores the current time of the audio file. */
+    private long audioTime = 0;
 
 
 
@@ -103,7 +103,7 @@ class LevelMeter extends Canvas {
      * Checks whether the canvas is ready to be painted to.
      * @return True if the canvas is ready, false otherwise.
      */
-    public boolean isReady() {
+    public boolean isReady() { /*
         try {
             int[] tempLevels =
                     audioMH.getSoundEqualizerBandLevels(EQLEVELS.length);
@@ -121,12 +121,22 @@ class LevelMeter extends Canvas {
             isReady = false;
         }
 
-        return isReady;
+        return isReady; */
+        return (audioData != null);
     }
 
-    /** Sets the stored audioData to the passed in array. */
-    public void setAudioData(int[] ad) {
+    /** Sets the stored audioData to the passed in array.
+     *  @param ad The audio data to pass in.
+     */
+    public void setAudioData(final int[] ad) {
         audioData = ad;
+    }
+
+    /** Sets the current time of the audio file.
+     *  @param newTime The audio file's time.
+     */
+    public void setAudioTime(final long newTime) {
+        audioTime = newTime;
     }
 
     /**
@@ -163,7 +173,8 @@ class LevelMeter extends Canvas {
     @Override
     public synchronized void paint(final Graphics g) {
         // Check pre-conditions. Check isReady, return.
-        if (!isReady) {
+        if (!isReady()) {
+            System.out.println("Wasn't ready to paint, amazingly");
             return;
         }
 
@@ -176,16 +187,22 @@ class LevelMeter extends Canvas {
         int gWidth = this.getWidth();
 
 
-        try {
+        //try {
             if (gHeight > MINHEIGHT) {
-                if (needNew || levels == null) {
-                levels = audioMH.getSoundEqualizerBandLevels(
-                                       EQLEVELS.length);
+                if (true || needNew || levels == null) {
+                levels = new int[numBands];
+                for (int i = 0; i < numBands; i++) {
+                        if (audioData.length > (((int)audioTime*numBands) + i)) {
+                            levels[i] = audioData[((int)audioTime*numBands) + i];
+                    }
                 }
+                /* levels = audioMH.getSoundEqualizerBandLevels(
+                                       EQLEVELS.length);
+                } */
                 int maxHeight = gHeight - 1;
-                int barWidth = gWidth / levels.length;
+                int barWidth = gWidth / numBands;
                 int segInterval = gHeight / MAXBARS;
-                for (int i = 0; i < levels.length; i++) {
+                for (int i = 0; i < numBands; i++) {
                     // calculate height of each set of boxes,
                     // proportional to level
                     float levPct = ((float) levels[i]) / BARDIV;
@@ -213,8 +230,8 @@ class LevelMeter extends Canvas {
                 }
                 dirtyCanvas = false;
             }
-        } catch (QTException qte) {
-            logger.error("Unable to render sound.", qte);
+        /*}  catch (QTException qte) {
+            logger.error("Unable to render sound.", qte); */
         }
     }
 }

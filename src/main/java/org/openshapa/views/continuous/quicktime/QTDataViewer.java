@@ -199,21 +199,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     }
 
     /**
-     * @param position Millisecond absolute position for track.
-     */
-    public void sync(final long position) {
-        try {
-            if (movie != null) {
-                TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
-                                                 position);
-                movie.setTime(time);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to find", e);
-        }
-    }
-
-    /**
      * @return Current time in milliseconds.
      *
      * @throws QTException If error occurs accessing underlying implementation.
