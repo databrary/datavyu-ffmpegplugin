@@ -152,14 +152,6 @@
                 <Property name="name" type="java.lang.String" value="jSeparator1" noResource="true"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="vocabEditorMenuItem">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="org.openshapa.views.OpenSHAPAView" id="showVocabEditor" methodName="showVocabEditor"/>
-                </Property>
-                <Property name="name" type="java.lang.String" value="vocabEditorMenuItem" noResource="true"/>
-              </Properties>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
@@ -174,6 +166,14 @@
                   <action class="org.openshapa.views.OpenSHAPAView" id="showVariableList" methodName="showVariableList"/>
                 </Property>
                 <Property name="name" type="java.lang.String" value="newVariableMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="vocabEditorMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="org.openshapa.views.OpenSHAPAView" id="showVocabEditor" methodName="showVocabEditor"/>
+                </Property>
+                <Property name="name" type="java.lang.String" value="vocabEditorMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator2">
