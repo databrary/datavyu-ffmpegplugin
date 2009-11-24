@@ -189,6 +189,15 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newCellMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="newCellLeftMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="newCellLeftMenuItemSingle.text"/>
+                <Property name="name" type="java.lang.String" value="newCellLeftMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newCellLeftMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator3">
               <Properties>
                 <Property name="name" type="java.lang.String" value="jSeparator3" noResource="true"/>
