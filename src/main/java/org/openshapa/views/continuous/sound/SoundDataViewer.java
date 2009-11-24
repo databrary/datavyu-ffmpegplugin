@@ -44,6 +44,9 @@ public final class SoundDataViewer extends JFrame
     private LevelMeter meter;
     /** The number of milliseconds between each redraw of the LevelMeter canvas.
      */
+    /** This is the preprocessing thread which generates teh audioData array. */
+    private PreProcess p;
+    /** The number of milliseconds to wait between painting operations. */
     private static final int REPAINTDELAY = 20;
     /** Constant value used to calculate percentages. */
     private static final int CENT = 100;
@@ -128,6 +131,12 @@ public final class SoundDataViewer extends JFrame
         /** Constructor for the preprocessor.
          *  @param bands The number of frequency bands used.
          */
+        private boolean terminate = false;
+
+        /**
+         * This is a separate thread which runs the preprocessing.
+         * @param bands The number of frequency bands to be used.
+         */
         public PreProcess(final int bands) {
             numBands = bands;
 
@@ -144,6 +153,13 @@ public final class SoundDataViewer extends JFrame
             }
             Thread thread = new Thread(this);
             thread.start();
+        }
+
+        /**
+         * Asks the thread to terminate.
+         */
+        public void die() {
+            terminate = true;
         }
 
         /** Grabs all the data from the audio stream. */
@@ -166,7 +182,7 @@ public final class SoundDataViewer extends JFrame
             }
             int i = 0;
             boolean success = true;
-            while (i < work - 1) {
+            while (i < (work - 1)) {
                 try {
                     long atime;
                     try {
@@ -219,6 +235,9 @@ public final class SoundDataViewer extends JFrame
                     i = work - 1;
                     pfix = "PREPROCESS FAILED!";
                     sfix = " ";
+                }
+                if (terminate) {
+                    return;
                 }
             }
             meter.setAudioData(audioData);
@@ -298,7 +317,7 @@ public final class SoundDataViewer extends JFrame
 
             t.schedule(new PaintTask(), 0, REPAINTDELAY);
 
-            PreProcess p = new PreProcess(meter.getNumBands());
+            p = new PreProcess(meter.getNumBands());
 
             setName(getClass().getSimpleName() + "-" + audioFile.getName());
             this.invalidate();
@@ -404,12 +423,16 @@ public final class SoundDataViewer extends JFrame
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
+            p.die();
+            Thread.sleep(1);
             audio.stop();
             audio.disposeQTObject();
             audio = null;
             t.cancel();
         } catch (QTException e) {
             logger.error("Couldn't kill file", e);
+        } catch (InterruptedException f) {
+            logger.error("Couldn't sleep", f);
         }
         this.parent.shutdown(this);
     }//GEN-LAST:event_formWindowClosing
