@@ -46,6 +46,7 @@ public final class SoundDataViewer extends JFrame
      */
     /** This is the preprocessing thread which generates teh audioData array. */
     private PreProcess p;
+    /** The number of milliseconds to wait between painting operations. */
     private static final int REPAINTDELAY = 20;
     /** Constant value used to calculate percentages. */
     private static final int CENT = 100;
@@ -131,6 +132,11 @@ public final class SoundDataViewer extends JFrame
          *  @param bands The number of frequency bands used.
          */
         private boolean terminate = false;
+
+        /**
+         * This is a separate thread which runs the preprocessing.
+         * @param bands The number of frequency bands to be used.
+         */
         public PreProcess(final int bands) {
             numBands = bands;
 
@@ -149,6 +155,9 @@ public final class SoundDataViewer extends JFrame
             thread.start();
         }
 
+        /**
+         * Asks the thread to terminate.
+         */
         public void die() {
             terminate = true;
         }
