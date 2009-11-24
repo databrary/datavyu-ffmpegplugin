@@ -44,9 +44,6 @@ class LevelMeter extends Canvas {
     /** The recorded sound intensities. */
     private int[] levels;
 
-    /** Determines whether or not new data needs to be loaded. */
-    private boolean needNew = true;
-
     /** Massive array with all the audio intensity data stored. */
     private int[] audioData;
 
@@ -100,14 +97,6 @@ class LevelMeter extends Canvas {
      */
     public synchronized boolean isDirty() {
         return dirtyCanvas;
-    }
-
-    /**
-     * Sets the needNew variable.
-     * @param b The new value for needNew.
-     */
-    public void setNeedNew(final boolean b) {
-        needNew = b;
     }
 
     /**
