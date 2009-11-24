@@ -71,10 +71,10 @@ public final class SoundDataViewer extends JFrame
     /** The preprocessing rate.
      * Of the entire playback time,
      * 1F takes 100% (safe but slow)
-     * 2F takes 83%
-     * 4F takes 70%
-     * 8F takes 73%
-     * 16F takes >> 100%
+     * 2F takes 83%         (appears to corrupt data ...
+     * 4F takes 70%         ...
+     * 8F takes 73%         ...
+     * 16F takes >> 100%    ...
      * 32F doesn't work at all.
      *
      * This quadratic effect (local maximum in performance at 4F) comes about
@@ -83,7 +83,7 @@ public final class SoundDataViewer extends JFrame
      * but at the cost of increasingly high fidelity loss at high preprocessing
      * rates.
      */
-    private static final float PREPROCESSRATE = 4F;
+    private static final float PREPROCESSRATE = 1F;
 
 
     /**
@@ -418,6 +418,14 @@ public final class SoundDataViewer extends JFrame
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            audio.stop();
+            audio.disposeQTObject();
+            audio = null;
+            t.cancel();
+        } catch (QTException e) {
+            logger.error("Couldn't kill file", e);
+        }
         this.parent.shutdown(this);
     }//GEN-LAST:event_formWindowClosing
     // Variables declaration - do not modify//GEN-BEGIN:variables
