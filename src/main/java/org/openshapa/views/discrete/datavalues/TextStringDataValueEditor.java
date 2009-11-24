@@ -98,7 +98,12 @@ public final class TextStringDataValueEditor extends DataValueEditor {
 
         // Push the character changes into the database.
         try {
-            tsdv.setItsValue(this.getText());
+            // BugzID:668 - The user is reverting back to a 'placeholder' state.
+            if (this.getText().equals("")) {
+                tsdv.clearValue();
+            } else {
+                tsdv.setItsValue(this.getText());
+            }
             updateDatabase();
         } catch (SystemErrorException se) {
             logger.error("Unable to edit text string", se);
