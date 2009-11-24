@@ -120,6 +120,13 @@ public final class OpenSHAPAView extends FrameView {
         newMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
                                                             keyMask));
 
+        // Set the new accelerator to keyMask + 'L';
+        newCellLeftMenuItem.setAccelerator(KeyStroke
+                                         .getKeyStroke(KeyEvent.VK_L, keyMask));
+
+        // Set the new accelerator to keyMask + 'R';
+        newCellRightMenuItem.setAccelerator(KeyStroke
+                                         .getKeyStroke(KeyEvent.VK_R, keyMask));
 
         this.panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
@@ -361,6 +368,7 @@ public final class OpenSHAPAView extends FrameView {
         jSeparator2 = new javax.swing.JSeparator();
         newCellMenuItem = new javax.swing.JMenuItem();
         newCellLeftMenuItem = new javax.swing.JMenuItem();
+        newCellRightMenuItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
         deleteColumnMenuItem = new javax.swing.JMenuItem();
         deleteCellMenuItem = new javax.swing.JMenuItem();
@@ -498,6 +506,15 @@ public final class OpenSHAPAView extends FrameView {
             }
         });
         spreadsheetMenu.add(newCellLeftMenuItem);
+
+        newCellRightMenuItem.setText(resourceMap.getString("newCellRightMenuItemSingle.text")); // NOI18N
+        newCellRightMenuItem.setName("newCellRightMenuItem"); // NOI18N
+        newCellRightMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newCellRightMenuItemActionPerformed(evt);
+            }
+        });
+        spreadsheetMenu.add(newCellRightMenuItem);
 
         jSeparator3.setName("jSeparator3"); // NOI18N
         spreadsheetMenu.add(jSeparator3);
@@ -778,9 +795,21 @@ public final class OpenSHAPAView extends FrameView {
                                   .getString("newCellLeftMenuItemSingle.text"));
             this.newCellLeftMenuItem.setEnabled(true);
         } else {
-                        this.newCellLeftMenuItem.setText(rMap
+            this.newCellLeftMenuItem.setText(rMap
                                   .getString("newCellLeftMenuItemPlural.text"));
             this.newCellLeftMenuItem.setEnabled(true);
+        }
+
+        if (panel.getAdjacentSelectedCells(ArrayDirection.RIGHT) == 0) {
+            this.newCellRightMenuItem.setEnabled(false);
+        } else if (panel.getAdjacentSelectedCells(ArrayDirection.RIGHT) == 1) {
+            this.newCellRightMenuItem.setText(rMap
+                                 .getString("newCellRightMenuItemSingle.text"));
+            this.newCellRightMenuItem.setEnabled(true);
+        } else {
+            this.newCellRightMenuItem.setText(rMap
+                                 .getString("newCellRightMenuItemPlural.text"));
+            this.newCellRightMenuItem.setEnabled(true);
         }
     }//GEN-LAST:event_spreadsheetMenuMenuSelected
 
@@ -802,6 +831,16 @@ public final class OpenSHAPAView extends FrameView {
     private void newCellLeftMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellLeftMenuItemActionPerformed
         new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.LEFT);
     }//GEN-LAST:event_newCellLeftMenuItemActionPerformed
+
+    /**
+     * The action to invoke when the user selects new cell to the right from the
+     * menu.
+     *
+     * @param evt The event that fired this action.
+     */
+    private void newCellRightMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellRightMenuItemActionPerformed
+        new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.RIGHT);
+    }//GEN-LAST:event_newCellRightMenuItemActionPerformed
 
     /**
      * Changes the font size by adding sizeDif to the current size.  Then it
@@ -881,6 +920,7 @@ public final class OpenSHAPAView extends FrameView {
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newCellLeftMenuItem;
     private javax.swing.JMenuItem newCellMenuItem;
+    private javax.swing.JMenuItem newCellRightMenuItem;
     private javax.swing.JMenuItem newMenuItem;
     private javax.swing.JMenuItem newVariableMenuItem;
     private javax.swing.JMenuItem openMenuItem;
