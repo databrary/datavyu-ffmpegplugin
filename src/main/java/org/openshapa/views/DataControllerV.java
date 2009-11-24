@@ -143,9 +143,7 @@ public final class DataControllerV extends OpenSHAPADialog
         pauseRate = 0;
         lastSync = 0;
 
-        if (TRACKS_PANEL_ENABLED) {
-            createTracksUI();
-        }
+        createTracksUI();
     }
 
     //--------------------------------------------------------------------------
@@ -571,6 +569,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         createNewCell.setAction(actionMap.get("createCellAction")); // NOI18N
         createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
+        createNewCell.setText(""); // NOI18N
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
@@ -789,6 +788,9 @@ public final class DataControllerV extends OpenSHAPADialog
         } else {
             this.setSize(MIN_DIALOG_WIDTH + 5, this.getHeight());
         }
+
+        this.openTracksPanelButton.setVisible(show);
+        this.closeTracksPanelButton.setVisible(show);
     }
 
     //--------------------------------------------------------------------------
