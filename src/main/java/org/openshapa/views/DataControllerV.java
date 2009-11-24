@@ -300,6 +300,8 @@ public final class DataControllerV extends OpenSHAPADialog
         setResizable(false);
 
         gridButtonPanel.setBackground(new java.awt.Color(255, 255, 255));
+        gridButtonPanel.setMinimumSize(new java.awt.Dimension(282, 274));
+        gridButtonPanel.setPreferredSize(new java.awt.Dimension(280, 295));
         gridButtonPanel.setLayout(new java.awt.GridBagLayout());
 
         syncCtrlButton.setEnabled(false);
@@ -566,7 +568,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         createNewCell.setAction(actionMap.get("createCellAction")); // NOI18N
         createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
-        createNewCell.setText(""); // NOI18N
+        createNewCell.setText("");
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
@@ -679,15 +681,7 @@ public final class DataControllerV extends OpenSHAPADialog
     }//GEN-LAST:event_openVideoButtonActionPerformed
 
     /**
-     * Closes the tracks panel
-     * @param evt
-     */
-    /**
-     * Opens the tracks panel
-     * @param evt
-     */
-    /**
-     * Creates the interface elements for the tracks panel
+     * Creates the interface elements for the tracks panel.
      */
     private void createTracksUI() {
         tracksGridPanel.setLayout(new BorderLayout());
@@ -760,12 +754,9 @@ public final class DataControllerV extends OpenSHAPADialog
             this.setSize(MIN_DIALOG_WIDTH + TRACKS_PANEL_WIDTH,
                     this.getHeight());
         } else {
-//            if (TRACKS_PANEL_ENABLED) {
-//                this.setSize(MIN_DIALOG_WIDTH + openTracksPanelButton.getWidth(), this.getHeight());
-//            } else {
-            this.setSize(MIN_DIALOG_WIDTH, this.getHeight());
-//            }
+            this.setSize(this.gridButtonPanel.getPreferredSize());
         }
+        this.tracksPanel.setVisible(show);
 
     }
 
