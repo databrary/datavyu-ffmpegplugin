@@ -1,5 +1,13 @@
 package org.openshapa.views;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.awt.LayoutManager;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -8,7 +16,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SimpleTimeZone;
+import javax.swing.Box;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
@@ -150,6 +162,11 @@ implements ClockListener, DataController {
         viewers = new HashSet<DataViewer>();
         pauseRate = 0;
         lastSync = 0;
+
+        createTracksUI();
+//        for (int i = 0; i < 100; i++) {
+//            addTrack("Label " + i);
+//        }
     }
 
     //--------------------------------------------------------------------------
@@ -295,6 +312,12 @@ implements ClockListener, DataController {
         jLabel2 = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
         tracksPanel = new javax.swing.JPanel();
+        closePanel = new javax.swing.JPanel();
+        closeTracksPanelButton = new javax.swing.JButton();
+        openPanel = new javax.swing.JPanel();
+        openTracksPanelButton = new javax.swing.JButton();
+        tracksGridPanel = new javax.swing.JPanel();
+        jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
@@ -613,7 +636,42 @@ implements ClockListener, DataController {
         gridButtonPanel.add(findOffsetField, gridBagConstraints);
 
         getContentPane().add(gridButtonPanel, java.awt.BorderLayout.WEST);
-        getContentPane().add(tracksPanel, java.awt.BorderLayout.CENTER);
+
+        tracksPanel.setLayout(new java.awt.BorderLayout());
+
+        closePanel.setLayout(new java.awt.BorderLayout());
+
+        closeTracksPanelButton.setLabel("<");
+        closeTracksPanelButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                closeTracksPanelButtonMouseClicked(evt);
+            }
+        });
+        closePanel.add(closeTracksPanelButton, java.awt.BorderLayout.CENTER);
+
+        tracksPanel.add(closePanel, java.awt.BorderLayout.LINE_END);
+
+        openPanel.setLayout(new java.awt.BorderLayout());
+
+        openTracksPanelButton.setText(">");
+        openTracksPanelButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                openTracksPanelButtonMouseClicked(evt);
+            }
+        });
+        openPanel.add(openTracksPanelButton, java.awt.BorderLayout.CENTER);
+
+        tracksPanel.add(openPanel, java.awt.BorderLayout.LINE_START);
+
+        tracksGridPanel.setMinimumSize(new java.awt.Dimension(0, 274));
+        tracksGridPanel.setLayout(new java.awt.GridLayout(0, 1));
+        tracksPanel.add(tracksGridPanel, java.awt.BorderLayout.CENTER);
+
+        getContentPane().add(tracksPanel, java.awt.BorderLayout.EAST);
+
+        jSeparator1.setForeground(new java.awt.Color(255, 255, 255));
+        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        getContentPane().add(jSeparator1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -655,8 +713,70 @@ implements ClockListener, DataController {
 
             // Add the QTDataViewer to the list of viewers we are controlling.
             this.viewers.add(viewer);
+
+            // Add the file to the tracks information panel
+            addTrack(f.getName());
         }
     }//GEN-LAST:event_openVideoButtonActionPerformed
+
+    /**
+     * Closes the tracks panel
+     * @param evt
+     */
+    private void closeTracksPanelButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeTracksPanelButtonMouseClicked
+        showTracksPanel(false);
+        closeTracksPanelButton.setEnabled(false);
+        openTracksPanelButton.setEnabled(true);
+    }//GEN-LAST:event_closeTracksPanelButtonMouseClicked
+
+    /**
+     * Opens the tracks panel
+     * @param evt
+     */
+    private void openTracksPanelButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openTracksPanelButtonMouseClicked
+        showTracksPanel(true);
+        openTracksPanelButton.setEnabled(false);
+        closeTracksPanelButton.setEnabled(true);
+    }//GEN-LAST:event_openTracksPanelButtonMouseClicked
+
+    /**
+     * Creates the interface elements for the tracks panel
+     */
+    private void createTracksUI() {
+        tracksGridPanel.setLayout(new BorderLayout());
+
+        tracksInfoPanel = new JPanel();
+        tracksInfoPanel.setLayout(new BorderLayout());
+        // The vbox is what will hold each track
+        Box vbox = Box.createVerticalBox();
+        tracksInfoPanel.add(vbox, BorderLayout.NORTH);
+
+        JScrollPane tracksScrollPane = new JScrollPane(tracksInfoPanel);
+        tracksScrollPane.setVerticalScrollBarPolicy(
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        tracksScrollPane.setHorizontalScrollBarPolicy(
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        Dimension tracksScrollPaneSize = new Dimension();
+        tracksScrollPaneSize.height = this.getHeight();
+        tracksScrollPaneSize.width = TRACKS_PANEL_WIDTH -
+                openTracksPanelButton.getWidth() -
+                closeTracksPanelButton.getWidth();
+        tracksScrollPane.setPreferredSize(tracksScrollPaneSize);
+
+        tracksGridPanel.add(tracksScrollPane, BorderLayout.CENTER);
+    }
+
+    /**
+     * Adds a track to the tracks panel
+     * @param name the name of the track to add
+     */
+    public void addTrack(String name) {
+        JLabel trackLabel = new JLabel(name);
+        // Component 0 is the vertical box added by createTracksUI
+        Box vbox = (Box)tracksInfoPanel.getComponent(0);
+        vbox.add(name, trackLabel);
+        vbox.revalidate();
+    }
 
     /**
      * Action to invoke when the user clicks the set cell onset button.
@@ -682,7 +802,10 @@ implements ClockListener, DataController {
             this.setSize(MIN_DIALOG_WIDTH + TRACKS_PANEL_WIDTH,
                     this.getHeight());
         } else {
-            this.setSize(MIN_DIALOG_WIDTH, this.getHeight());
+            this.setSize(MIN_DIALOG_WIDTH + 8, this.getHeight());
+//            this.setSize((int)(gridButtonPanel.getMinimumSize().getWidth()) +
+//                    openTracksPanelButton.getWidth(),
+//                    this.getHeight());
         }
     }
 
@@ -950,7 +1073,11 @@ implements ClockListener, DataController {
     public void syncVideoAction() {
     }
 
+    private javax.swing.JPanel tracksInfoPanel;
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel closePanel;
+    private javax.swing.JButton closeTracksPanelButton;
     private javax.swing.JButton createNewCell;
     private javax.swing.JButton createNewCellButton;
     private javax.swing.JButton findButton;
@@ -962,9 +1089,12 @@ implements ClockListener, DataController {
     private javax.swing.JPanel gridButtonPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton jogBackButton;
     private javax.swing.JButton jogForwardButton;
     private javax.swing.JLabel lblSpeed;
+    private javax.swing.JPanel openPanel;
+    private javax.swing.JButton openTracksPanelButton;
     private javax.swing.JButton openVideoButton;
     private javax.swing.JButton pauseButton;
     private javax.swing.JButton playButton;
@@ -980,6 +1110,7 @@ implements ClockListener, DataController {
     private javax.swing.JButton syncVideoButton;
     private javax.swing.JLabel timestampLabel;
     private javax.swing.JPanel topPanel;
+    private javax.swing.JPanel tracksGridPanel;
     private javax.swing.JPanel tracksPanel;
     // End of variables declaration//GEN-END:variables
 
