@@ -52,6 +52,30 @@
     </developer>
 
     <developer>
+      <id>doug</id>
+      <name>Douglas Teoh</name>
+      <email>douglas.teoh@_no_spam_nicta.com.au</email>
+      <organization>NICTA</organization>
+      <organizationUrl>www.nicta.com.au</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+
+    <developer>
+      <id>nicholas</id>
+      <name>Nicholas Allen</name>
+      <email>nicholas.allen@_no_spam_nicta.com.au</email>
+      <organization>NICTA</organization>
+      <organizationUrl>www.nicta.com.au</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+
+    <developer>
       <id>phil</id>
       <name>Phil Waller</name>
       <email>philip.waller@_no_spam_nicta.com.au</email>
@@ -500,7 +524,7 @@
     <dependency>
       <groupId>org.uispec4j</groupId>
       <artifactId>uispec4j</artifactId>
-      <version>v2.1-A</version>
+      <version>v2.1-B</version>
     </dependency>
 
     <dependency>

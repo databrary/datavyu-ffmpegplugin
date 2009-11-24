@@ -152,14 +152,6 @@
                 <Property name="name" type="java.lang.String" value="jSeparator1" noResource="true"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="vocabEditorMenuItem">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="org.openshapa.views.OpenSHAPAView" id="showVocabEditor" methodName="showVocabEditor"/>
-                </Property>
-                <Property name="name" type="java.lang.String" value="vocabEditorMenuItem" noResource="true"/>
-              </Properties>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
@@ -176,6 +168,14 @@
                 <Property name="name" type="java.lang.String" value="newVariableMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="vocabEditorMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="org.openshapa.views.OpenSHAPAView" id="showVocabEditor" methodName="showVocabEditor"/>
+                </Property>
+                <Property name="name" type="java.lang.String" value="vocabEditorMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator2">
               <Properties>
                 <Property name="name" type="java.lang.String" value="jSeparator2" noResource="true"/>
@@ -187,6 +187,24 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newCellMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="newCellLeftMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="newCellLeftMenuItemSingle.text"/>
+                <Property name="name" type="java.lang.String" value="newCellLeftMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newCellLeftMenuItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="newCellRightMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="newCellRightMenuItemSingle.text"/>
+                <Property name="name" type="java.lang.String" value="newCellRightMenuItem" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newCellRightMenuItemActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator3">

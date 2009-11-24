@@ -27,6 +27,9 @@ import org.openshapa.db.Matrix;
 import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.NominalDataValue;
 import org.openshapa.db.NominalFormalArg;
+import org.openshapa.db.PredDataValue;
+import org.openshapa.db.Predicate;
+import org.openshapa.db.PredicateVocabElement;
 import org.openshapa.db.QuoteStringDataValue;
 import org.openshapa.db.QuoteStringFormalArg;
 import org.openshapa.db.SystemErrorException;
@@ -34,6 +37,7 @@ import org.openshapa.db.TextStringDataValue;
 import org.openshapa.db.TimeStamp;
 import org.openshapa.db.UnTypedFormalArg;
 import org.openshapa.db.UndefinedDataValue;
+import org.openshapa.db.VocabElement;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
@@ -113,7 +117,7 @@ public final class OpenDatabaseC {
             FileReader sReader = new FileReader(sFile);
             BufferedReader sourceStream = new BufferedReader(sReader);
             PrintStream listStream = new PrintStream(new File("read_list.log"));
-            PrintStream errorStream = new PrintStream(new File ("error.log"));
+            PrintStream errorStream = new PrintStream(new File("error.log"));
 
             MacshapaODBReader modbr = new MacshapaODBReader(sourceStream,
                                                             listStream,
@@ -142,10 +146,25 @@ public final class OpenDatabaseC {
             BufferedReader csvFile = new BufferedReader(new FileReader(sFile));
 
             // Read each line of the CSV file.
-            String line = stripEscChars(csvFile.readLine());
+            String line = csvFile.readLine();
 
-            while (line != null) {
-                line = stripEscChars(parseVariable(csvFile, line, db));
+            // If we have a version identifier parse the file using the schema
+            // that matches that identifier.
+            if (line.equalsIgnoreCase("#2")) {
+
+                // Parse predicate definitions first.
+                line = parseDefinitions(csvFile, db);
+
+                while (line != null) {
+                    line = parseVariable(csvFile, line, db);
+                }
+
+            // Use the original schema to load the file - just variables, and no
+            // escape characters.
+            } else {
+                while (line != null) {
+                    line = parseVariable(csvFile, line, db);
+                }
             }
 
             csvFile.close();
@@ -159,7 +178,6 @@ public final class OpenDatabaseC {
             logger.error("Corrupted CSV file", e);
         }
     }
-
 
     /**
      * Strips escape characters from a line of text.
@@ -218,10 +236,11 @@ public final class OpenDatabaseC {
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
         // variable section.
-        String line = stripEscChars(csvFile.readLine());
+        String line = csvFile.readLine();
+
         while (line != null && Character.isDigit(line.charAt(0))) {
-            // Split the line into tokens using a comma delimiter.
-            String[] tokens = line.split(",");
+            // Split the line into tokens using '\,' '(' & ')' as delimiters.
+            String[] tokens = line.split("[,\\()]");
 
             // Create the data cell from line in the CSV file.
             DataCell cell = new DataCell(dc.getDB(),
@@ -233,7 +252,7 @@ public final class OpenDatabaseC {
             cell.setOffset(new TimeStamp(tokens[DATA_OFFSET]));
 
             // Empty predicate - just add the empty data cell.
-            if (tokens[DATA_INDEX].equals("()")) {
+            if (tokens.length == DATA_INDEX) {
                 // Add the populated cell to the database.
                 dc.getDB().appendCell(cell);
 
@@ -241,14 +260,105 @@ public final class OpenDatabaseC {
             // the vocab, and create it if it doesn't exist. Otherwise we just
             // plow ahead and add the predicate to the database.
             } else {
-                // Still need to parse predicate variables.
+                PredicateVocabElement pve = dc.getDB()
+                                              .getPredVE(tokens[DATA_INDEX]);
+
+                Predicate p = new Predicate(dc.getDB(), pve.getID(),
+                              parseFormalArgs(tokens, DATA_INDEX + 1, dc, pve));
+                PredDataValue pdv = new PredDataValue(dc.getDB());
+                pdv.setItsValue(p);
+
+                // Insert the datavalue in the cell.
+                long mveId = dc.getDB().getMatrixVE(dc.getItsMveID()).getID();
+                Matrix m = Matrix.Construct(dc.getDB(), mveId, pdv);
+                cell.setVal(m);
+
+                // Add the populated cell to the database.
+                dc.getDB().appendCell(cell);
             }
 
             // Get the next line in the file for reading.
-            line = stripEscChars(csvFile.readLine());
+            line = csvFile.readLine();
         }
 
         return line;
+    }
+
+    /**
+     * Method to create data values for the formal arguments of a vocab element.
+     *
+     * @param tokens The array of string tokens.
+     * @param startI The starting index to
+     * @param targetCol The target column for the parsed formal arguments.
+     * @param patternVE The pattern vocab element that the formal arguments must
+     * match when being parsed from a file.
+     *
+     * @return An array of data values that suitably matches the formal
+     * arguments of the pattern vocab element.
+     *
+     * @throws SystemErrorException If unable to create the data values from the
+     * supplied tokens.
+     */
+    private Vector<DataValue> parseFormalArgs(final String[] tokens,
+                                              final int startI,
+                                              final DataColumn targetCol,
+                                              final VocabElement patternVE)
+    throws SystemErrorException {
+        Vector<DataValue> arguments = new Vector<DataValue>();
+        Database db = targetCol.getDB();
+
+        for (int i = 0; i < patternVE.getNumFormalArgs(); i++) {
+            FormalArgument fa = patternVE.getFormalArgCopy(i);
+            boolean emptyArg = false;
+
+            if (tokens[startI + i].length() == 0) {
+                emptyArg = true;
+            }
+            tokens[startI + i] = tokens[startI + i].trim();
+
+            switch(fa.getFargType()) {
+                case TEXT:
+                case QUOTE_STRING:
+                    QuoteStringDataValue qsdv = new QuoteStringDataValue(db);
+                    if (!emptyArg) {
+                        // Strip quotes from quote string.
+                        int newL = tokens[startI + i].length() - 1;
+                        qsdv.setItsValue(tokens[startI + i].substring(1, newL));
+                    }
+                    arguments.add(qsdv);
+                    break;
+                case NOMINAL:
+                    NominalDataValue ndv = new NominalDataValue(db);
+                    if (!emptyArg) {
+                        ndv.setItsValue(tokens[startI + i]);
+                    }
+                    arguments.add(ndv);
+                    break;
+                case INTEGER:
+                    IntDataValue idv = new IntDataValue(db);
+                    if (!emptyArg) {
+                        idv.setItsValue(tokens[startI + i]);
+                    }
+                    arguments.add(idv);
+                    break;
+                case FLOAT:
+                    FloatDataValue fdv = new FloatDataValue(db);
+                    if (!emptyArg) {
+                        fdv.setItsValue(tokens[startI + i]);
+                    }
+                    arguments.add(fdv);
+                    break;
+                default:
+                    UndefinedDataValue udv = new UndefinedDataValue(db);
+                    if (!emptyArg) {
+                        udv.setItsValue(tokens[startI + i]);
+                    }
+                    arguments.add(udv);
+                    break;
+            }
+        }
+
+        return arguments;
     }
 
     /**
@@ -274,7 +384,8 @@ public final class OpenDatabaseC {
                                        final DataColumn dc,
                                        final MatrixVocabElement mve)
     throws IOException, SystemErrorException {
-        String line = stripEscChars(csvFile.readLine());
+        String line = csvFile.readLine();
+
         while (line != null && Character.isDigit(line.charAt(0))) {
             // Split the line into tokens using a comma delimiter.
             String[] tokens = line.split(",");
@@ -295,67 +406,16 @@ public final class OpenDatabaseC {
             int end = tokens.length - 1;
             tokens[end] = tokens[end].substring(0, tokens[end].length() - 1);
 
-            Vector<DataValue> arguments = new Vector<DataValue>();
-            for (int i = 0; i < mve.getNumFormalArgs(); i++) {
-                FormalArgument ma = mve.getFormalArgCopy(i);
-                boolean emptyArg = false;
-
-                if (tokens[i + 2].length() == 0) {
-                    emptyArg = true;
-                }
-                tokens[i + 2] = tokens[i + 2].trim();
-
-                switch(ma.getFargType()) {
-                    case TEXT:
-                    case QUOTE_STRING:
-                        QuoteStringDataValue qsdv =
-                                           new QuoteStringDataValue(dc.getDB());
-                        if (!emptyArg) {
-                            // Strip quotes from quote string.
-                            int newL = tokens[i + 2].length() - 1;
-                            qsdv.setItsValue(tokens[i + 2].substring(1, newL));
-                        }
-                        arguments.add(qsdv);
-                        break;
-                    case NOMINAL:
-                        NominalDataValue ndv = new NominalDataValue(dc.getDB());
-                        if (!emptyArg) {
-                            ndv.setItsValue(tokens[i + 2]);
-                        }
-                        arguments.add(ndv);
-                        break;
-                    case INTEGER:
-                        IntDataValue idv = new IntDataValue(dc.getDB());
-                        if (!emptyArg) {
-                            idv.setItsValue(tokens[i + 2]);
-                        }
-                        arguments.add(idv);
-                        break;
-                    case FLOAT:
-                        FloatDataValue fdv = new FloatDataValue(dc.getDB());
-                        if (!emptyArg) {
-                            fdv.setItsValue(tokens[i + 2]);
-                        }
-                        arguments.add(fdv);
-                        break;
-                    default:
-                        UndefinedDataValue udv =
-                                             new UndefinedDataValue(dc.getDB());
-                        if (!emptyArg) {
-                            udv.setItsValue(tokens[i + 2]);
-                        }
-                        arguments.add(udv);
-                        break;
-                }
-            }
-            Matrix m = new Matrix(dc.getDB(), mve.getID(), arguments);
+            Matrix m = new Matrix(dc.getDB(),
+                                  mve.getID(),
+                                  parseFormalArgs(tokens, DATA_INDEX, dc, mve));
             cell.setVal(m);
 
             // Add the populated cell to the database.
             dc.getDB().appendCell(cell);
 
             // Get the next line in the file for reading.
-            line = stripEscChars(csvFile.readLine());
+            line = csvFile.readLine();
         }
 
         return line;
@@ -385,7 +445,8 @@ public final class OpenDatabaseC {
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
         // variable section.
-        String line = stripEscChars(csvFile.readLine());
+        String line = csvFile.readLine();
+
         while (line != null && Character.isDigit(line.charAt(0))) {
 
             // Split the line into tokens using a comma delimiter.
@@ -410,10 +471,89 @@ public final class OpenDatabaseC {
             dc.getDB().appendCell(cell);
 
             // Get the next line in the file for reading.
-            line = stripEscChars(csvFile.readLine());
+            line = csvFile.readLine();
         }
 
         return line;
+    }
+
+    /**
+     * Parses the predicate definitions from the CSV file.
+     *
+     * @param csvFile The buffered reader containing the contents of the CSV
+     * file we are trying parse.
+     * @param db The destination database for the csv file.
+     *
+     * @return The next line to be parsed from the file.
+     *
+     * @throws IOException If unable to read from the csvFile.
+     * @throws SystemErrorException If unable to create the predicate vocab
+     * element to add to the database.
+     */
+    private String parseDefinitions(final BufferedReader csvFile,
+                                    final Database db)
+    throws IOException, SystemErrorException {
+
+        // Keep parsing lines and putting them in the newly formed nominal
+        // variable until we get to a line indicating the end of file or a new
+        // variable section.
+        String line = csvFile.readLine();
+        while (line != null && Character.isDigit(line.charAt(0))) {
+            // Parse arguments - for predicate vocab element.
+            String[] token = line.split("[:-]+");
+            PredicateVocabElement pve = new PredicateVocabElement(db, token[1]);
+            for (String arg : token[2].split(",")) {
+                pve.appendFormalArg(parseFormalArgument(arg, db));
+            }
+            db.addPredVE(pve);
+
+            // Get the next line in the file for reading.
+            line = csvFile.readLine();
+        }
+
+        return line;
+    }
+
+    /**
+     * Method to build a formal argument.
+     *
+     * @param content The string holding the formal argument content to be
+     * parsed.
+     * @param db The parent database for the formal argument.
+     *
+     * @return The formal argument.
+     *
+     * @throws SystemErrorException If unable to create a formal argument from
+     * the supplied content.
+     */
+    private FormalArgument parseFormalArgument(final String content,
+                                               final Database db)
+    throws SystemErrorException {
+        FormalArgument fa;
+        String[] formalArgument = content.split("\\|");
+
+        // Add text formal argument.
+        if (formalArgument[1].equalsIgnoreCase("quote_string")) {
+            fa = new QuoteStringFormalArg(db, "<" + formalArgument[0] + ">");
+
+        // Add nominal formal argument.
+        } else if (formalArgument[1].equalsIgnoreCase("nominal")) {
+            fa = new NominalFormalArg(db, "<" + formalArgument[0] + ">");
+
+        // Add integer formal argument.
+        } else if (formalArgument[1].equalsIgnoreCase("integer")) {
+            fa = new IntFormalArg(db, "<" + formalArgument[0] + ">");
+
+        // Add float formal argument.
+        } else if (formalArgument[1].equalsIgnoreCase("float")) {
+            fa = new FloatFormalArg(db, "<" + formalArgument[0] + ">");
+
+        // Not sure what it is - add undefined formal argument.
+        } else {
+            fa = new UnTypedFormalArg(db, "<" + formalArgument[0] + ">");
+        }
+
+        return fa;
     }
 
     /**
@@ -470,40 +610,16 @@ public final class OpenDatabaseC {
                    == MatrixVocabElement.MatrixType.MATRIX) {
             // Build vocab for matrix.
             String[] vocabString = tokens[1].split("-");
-            String[] vocabElems = vocabString[1].split(",");
+
+            // Get the vocab element for the matrix and clean it up to be
+            // populated with arguments from the CSV file.
             MatrixVocabElement mve = db.getMatrixVE(varName);
-            // delete default formal argument in column
             mve.deleteFormalArg(0);
 
             // For each of the formal arguments in the file - parse it and
             // create a formal argument in the matrix vocab element.
-            for (int i = 0; i < vocabElems.length; i++) {
-                FormalArgument fa;
-                String[] vocabElement = vocabElems[i].split("\\|");
-
-                // Add text formal argument.
-                if (vocabElement[1].equalsIgnoreCase("quote_string")) {
-                    fa = new QuoteStringFormalArg(db,
-                                                  "<" + vocabElement[0] + ">");
-
-                // Add nominal formal argument.
-                } else if (vocabElement[1].equalsIgnoreCase("nominal")) {
-                    fa = new NominalFormalArg(db, "<" + vocabElement[0] + ">");
-
-                // Add integer formal argument.
-                } else if (vocabElement[1].equalsIgnoreCase("integer")) {
-                    fa = new IntFormalArg(db, "<" + vocabElement[0] + ">");
-
-                // Add float formal argument.
-                } else if (vocabElement[1].equalsIgnoreCase("float")) {
-                    fa = new FloatFormalArg(db, "<" + vocabElement[0] + ">");
-
-                // Not sure what it is - add undefined formal argument.
-                } else {
-                    fa = new UnTypedFormalArg(db, "<" + vocabElement[0] + ">");
-                }
-
-                mve.appendFormalArg(fa);
+            for (String arg : vocabString[1].split(",")) {
+                mve.appendFormalArg(parseFormalArgument(arg, db));
             }
 
             db.replaceMatrixVE(mve);
@@ -686,7 +802,7 @@ public final class OpenDatabaseC {
 
             // BugzID:722 - Only populate the value if we have one from the file
             if (tokens.length > DATA_INDEX) {
-                ndv.setItsValue(tokens[DATA_INDEX]);
+                ndv.setItsValue(stripEscChars(tokens[DATA_INDEX]));
             }
             return ndv;
         }
@@ -729,7 +845,7 @@ public final class OpenDatabaseC {
                         text = text.concat(",");
                     }
                 }
-                tsdv.setItsValue(text);
+                tsdv.setItsValue(stripEscChars(text));
             }
 
             return tsdv;

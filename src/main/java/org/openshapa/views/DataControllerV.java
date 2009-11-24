@@ -1,5 +1,7 @@
 package org.openshapa.views;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -8,7 +10,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SimpleTimeZone;
+import javax.swing.Box;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
@@ -17,6 +23,7 @@ import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
+import org.openshapa.graphics.TimescalePainter;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
 import org.openshapa.util.ClockTimer.ClockListener;
@@ -28,35 +35,27 @@ import org.openshapa.views.continuous.PluginManager;
  * Quicktime video controller.
  */
 public final class DataControllerV extends OpenSHAPADialog
-implements ClockListener, DataController {
+        implements ClockListener, DataController {
 
     //--------------------------------------------------------------------------
     // [static]
     //
-
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(DataControllerV.class);
-
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
-
     /** Rate of playback for rewinding. */
     private static final float REWIND_RATE = -32F;
-
     /** Rate of normal playback. */
     private static final float PLAY_RATE = 1F;
-
     /** Rate of playback for fast forwarding. */
     private static final float FFORWARD_RATE = 32F;
-
     /** Sequence of allowable shuttle rates. */
     private static final float[] SHUTTLE_RATES;
-
     /**
      * The threshold to use while synchronising viewers (augmented by rate).
      */
     private static final long SYNC_THRESH = 50;
-
     /**
      * How often to synchronise the viewers with the master clock.
      */
@@ -80,17 +79,20 @@ implements ClockListener, DataController {
      * Enumeration of shuttle directions.
      */
     enum ShuttleDirection {
+
         BACKWARDS(-1),
         UNDEFINED(0),
         FORWARDS(1);
-
         private int parameter;
 
-        ShuttleDirection(final int p) { this.parameter = p; }
+        ShuttleDirection(final int p) {
+            this.parameter = p;
+        }
 
-        public int getParameter() { return parameter; }
+        public int getParameter() {
+            return parameter;
+        }
     }
-
     /** Format for representing time. */
     private static final DateFormat CLOCK_FORMAT;
 
@@ -99,38 +101,30 @@ implements ClockListener, DataController {
         CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
-
-
+    private static final int MIN_DIALOG_WIDTH = 283;
+    private static final int TRACKS_PANEL_WIDTH = 600;
+    private static final boolean TRACKS_PANEL_ENABLED = true;
     //--------------------------------------------------------------------------
     //
     //
-
     /** The list of viewers associated with this controller. */
     private Set<DataViewer> viewers;
-
     /** Stores the highest frame rate for all available viewers. */
     private float currentFPS = 1F;
-
     /** Shuttle status flag. */
     private ShuttleDirection shuttleDirection = ShuttleDirection.UNDEFINED;
-
     /** Index of current shuttle rate. */
     private int shuttleRate;
-
     /** The rate to use when resumed from pause. */
     private float pauseRate;
-
     /** The time the last sync was performed. */
     private long lastSync;
-
     /** Clock timer. */
     private ClockTimer clock = new ClockTimer();
-
 
     //--------------------------------------------------------------------------
     // [initialization]
     //
-
     /**
      * Constructor. Creates a new DataControllerV.
      *
@@ -147,12 +141,13 @@ implements ClockListener, DataController {
         viewers = new HashSet<DataViewer>();
         pauseRate = 0;
         lastSync = 0;
+
+        createTracksUI();
     }
 
     //--------------------------------------------------------------------------
     // [interface] org.openshapa.util.ClockTimer.Listener
     //
-
     /**
      * @param time Current clock time in milliseconds.
      */
@@ -218,13 +213,14 @@ implements ClockListener, DataController {
      */
     public void clockStep(final long time) {
         setCurrentTime(time);
-        for (DataViewer viewer : viewers) { viewer.seekTo(time); }
+        for (DataViewer viewer : viewers) {
+            viewer.seekTo(time);
+        }
     }
 
     //--------------------------------------------------------------------------
     //
     //
-
     /**
      * Set time location for data streams.
      *
@@ -291,6 +287,11 @@ implements ClockListener, DataController {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
+        tracksPanel = new javax.swing.JPanel();
+        closePanel = new javax.swing.JPanel();
+        openPanel = new javax.swing.JPanel();
+        tracksGridPanel = new javax.swing.JPanel();
+        jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
@@ -609,7 +610,25 @@ implements ClockListener, DataController {
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(findOffsetField, gridBagConstraints);
 
-        getContentPane().add(gridButtonPanel, java.awt.BorderLayout.CENTER);
+        getContentPane().add(gridButtonPanel, java.awt.BorderLayout.WEST);
+
+        tracksPanel.setLayout(new java.awt.BorderLayout());
+
+        closePanel.setLayout(new java.awt.BorderLayout());
+        tracksPanel.add(closePanel, java.awt.BorderLayout.LINE_END);
+
+        openPanel.setLayout(new java.awt.BorderLayout());
+        tracksPanel.add(openPanel, java.awt.BorderLayout.LINE_START);
+
+        tracksGridPanel.setMinimumSize(new java.awt.Dimension(0, 274));
+        tracksGridPanel.setLayout(new java.awt.GridLayout(0, 1));
+        tracksPanel.add(tracksGridPanel, java.awt.BorderLayout.CENTER);
+
+        getContentPane().add(tracksPanel, java.awt.BorderLayout.EAST);
+
+        jSeparator1.setForeground(new java.awt.Color(255, 255, 255));
+        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        getContentPane().add(jSeparator1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -623,8 +642,7 @@ implements ClockListener, DataController {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
         // Add file filters for each of the supported plugins.
-        List<FileFilter> filters = PluginManager.getInstance()
-                                                .getPluginFileFilters();
+        List<FileFilter> filters = PluginManager.getInstance().getPluginFileFilters();
         for (FileFilter f : filters) {
             jd.addChoosableFileFilter(f);
         }
@@ -634,8 +652,7 @@ implements ClockListener, DataController {
             File f = jd.getSelectedFile();
 
             // Build the data viewer for the file.
-            DataViewer viewer = PluginManager.getInstance()
-                                .buildViewerFromFile(f, jd.getFileFilter());
+            DataViewer viewer = PluginManager.getInstance().buildViewerFromFile(f, jd.getFileFilter());
             if (viewer == null) {
                 logger.error("No DataViewer available.");
                 return;
@@ -647,12 +664,77 @@ implements ClockListener, DataController {
 
             // adjust the overall frame rate.
             float fps = viewer.getFrameRate();
-            if (fps > currentFPS) { currentFPS = fps; }
+            if (fps > currentFPS) {
+                currentFPS = fps;
+            }
 
             // Add the QTDataViewer to the list of viewers we are controlling.
             this.viewers.add(viewer);
+
+            if (TRACKS_PANEL_ENABLED) {
+                // Add the file to the tracks information panel
+                addTrack(f.getName());
+            }
         }
     }//GEN-LAST:event_openVideoButtonActionPerformed
+
+    /**
+     * Closes the tracks panel
+     * @param evt
+     */
+    /**
+     * Opens the tracks panel
+     * @param evt
+     */
+    /**
+     * Creates the interface elements for the tracks panel
+     */
+    private void createTracksUI() {
+        tracksGridPanel.setLayout(new BorderLayout());
+
+        tracksInfoPanel = new JPanel();
+        tracksInfoPanel.setLayout(new BorderLayout());
+        // The vbox is what will hold each track
+        Box vbox = Box.createVerticalBox();
+        tracksInfoPanel.add(vbox, BorderLayout.NORTH);
+
+        JScrollPane tracksScrollPane = new JScrollPane(tracksInfoPanel);
+        tracksScrollPane.setVerticalScrollBarPolicy(
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        tracksScrollPane.setHorizontalScrollBarPolicy(
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        Dimension tracksScrollPaneSize = new Dimension();
+        tracksScrollPaneSize.height = this.getHeight();
+        tracksScrollPaneSize.width = TRACKS_PANEL_WIDTH;
+        tracksScrollPane.setPreferredSize(tracksScrollPaneSize);
+
+        tracksTimePanel = new JPanel();
+        tracksTimePanel.setLayout(new BorderLayout());
+
+        // Demonstrates how to configure the time scale for display
+        TimescalePainter scale = new TimescalePainter();
+        scale.setStart(25000);
+        scale.setEnd(60000);
+        scale.setIntervals(100);
+        scale.setMajor(15);
+
+        tracksTimePanel.add(scale);
+
+        tracksGridPanel.add(tracksTimePanel, BorderLayout.NORTH);
+        tracksGridPanel.add(tracksScrollPane, BorderLayout.CENTER);
+    }
+
+    /**
+     * Adds a track to the tracks panel
+     * @param name the name of the track to add
+     */
+    public void addTrack(String name) {
+        JLabel trackLabel = new JLabel(name);
+        // Component 0 is the vertical box added by createTracksUI
+        Box vbox = (Box) tracksInfoPanel.getComponent(0);
+        vbox.add(name, trackLabel);
+        vbox.revalidate();
+    }
 
     /**
      * Action to invoke when the user clicks the set cell onset button.
@@ -670,11 +752,26 @@ implements ClockListener, DataController {
         new SetSelectedCellStopTimeC(getCurrentTime());
     }
 
+    /**
+     * @param show true to show the tracks layout, false otherwise.
+     */
+    public void showTracksPanel(final boolean show) {
+        if (show) {
+            this.setSize(MIN_DIALOG_WIDTH + TRACKS_PANEL_WIDTH,
+                    this.getHeight());
+        } else {
+//            if (TRACKS_PANEL_ENABLED) {
+//                this.setSize(MIN_DIALOG_WIDTH + openTracksPanelButton.getWidth(), this.getHeight());
+//            } else {
+            this.setSize(MIN_DIALOG_WIDTH, this.getHeight());
+//            }
+        }
+
+    }
 
     //--------------------------------------------------------------------------
     // Playback actions
     //
-
     /**
      * Action to invoke when the user clicks on the play button.
      */
@@ -708,13 +805,11 @@ implements ClockListener, DataController {
         if (clock.isStopped()) {
             shuttleAt(pauseRate);
 
-        // Pause views - store current playback rate.
+            // Pause views - store current playback rate.
         } else {
             pauseRate = clock.getRate();
             clock.stop();
-            lblSpeed.setText("["
-                     + FloatUtils.doubleToFractionStr(new Double(pauseRate))
-                     + "]");
+            lblSpeed.setText("[" + FloatUtils.doubleToFractionStr(new Double(pauseRate)) + "]");
         }
     }
 
@@ -797,8 +892,7 @@ implements ClockListener, DataController {
     @Action
     public void goBackAction() {
         try {
-            long j = -CLOCK_FORMAT.parse(this.goBackTextField.getText())
-                                  .getTime();
+            long j = -CLOCK_FORMAT.parse(this.goBackTextField.getText()).getTime();
             jump(j);
 
             // BugzID:721 - After going back - start playing again.
@@ -808,7 +902,6 @@ implements ClockListener, DataController {
             logger.error("unable to find within video", e);
         }
     }
-
 
     /**
      * Action to invoke when the user clicks on the jog backwards button.
@@ -826,11 +919,9 @@ implements ClockListener, DataController {
         jump((long) (ONE_SECOND / currentFPS));
     }
 
-
     //--------------------------------------------------------------------------
     // [private] play back action helper functions
     //
-
     /**
      *
      * @param rate Rate of play.
@@ -859,7 +950,7 @@ implements ClockListener, DataController {
             if (shuttleRate > 0) {
                 rate = SHUTTLE_RATES[--shuttleRate];
 
-            // BugzID: 676 - Shuttle speed transitions between zero.
+                // BugzID: 676 - Shuttle speed transitions between zero.
             } else {
                 rate = 0;
                 shuttleDirection = ShuttleDirection.UNDEFINED;
@@ -899,11 +990,9 @@ implements ClockListener, DataController {
         clock.setTime(time);
     }
 
-
     //--------------------------------------------------------------------------
     //
     //
-
     /**
      * Action to invoke when the user clicks on the create new cell button.
      */
@@ -934,8 +1023,10 @@ implements ClockListener, DataController {
     @Action
     public void syncVideoAction() {
     }
-
+    private javax.swing.JPanel tracksInfoPanel;
+    private javax.swing.JPanel tracksTimePanel;
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel closePanel;
     private javax.swing.JButton createNewCell;
     private javax.swing.JButton createNewCellButton;
     private javax.swing.JButton findButton;
@@ -947,9 +1038,11 @@ implements ClockListener, DataController {
     private javax.swing.JPanel gridButtonPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton jogBackButton;
     private javax.swing.JButton jogForwardButton;
     private javax.swing.JLabel lblSpeed;
+    private javax.swing.JPanel openPanel;
     private javax.swing.JButton openVideoButton;
     private javax.swing.JButton pauseButton;
     private javax.swing.JButton playButton;
@@ -965,6 +1058,7 @@ implements ClockListener, DataController {
     private javax.swing.JButton syncVideoButton;
     private javax.swing.JLabel timestampLabel;
     private javax.swing.JPanel topPanel;
+    private javax.swing.JPanel tracksGridPanel;
+    private javax.swing.JPanel tracksPanel;
     // End of variables declaration//GEN-END:variables
-
 }

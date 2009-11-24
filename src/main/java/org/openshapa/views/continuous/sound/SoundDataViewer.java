@@ -373,21 +373,6 @@ public final class SoundDataViewer extends JFrame
         }
     }
 
-    /**
-     * @param position Millisecond absolute position for track.
-     */
-    public void sync(final long position) {
-        try {
-            if (audio != null) {
-                TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
-                        position);
-                audio.setTime(time);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to find", e);
-        }
-    }
-
 
     /**
      * @return Current time in milliseconds.
