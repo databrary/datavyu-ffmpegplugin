@@ -1,13 +1,7 @@
 package org.openshapa.views;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.LayoutManager;
-import java.awt.LayoutManager;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -40,35 +34,27 @@ import org.openshapa.views.continuous.PluginManager;
  * Quicktime video controller.
  */
 public final class DataControllerV extends OpenSHAPADialog
-implements ClockListener, DataController {
+        implements ClockListener, DataController {
 
     //--------------------------------------------------------------------------
     // [static]
     //
-
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(DataControllerV.class);
-
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
-
     /** Rate of playback for rewinding. */
     private static final float REWIND_RATE = -32F;
-
     /** Rate of normal playback. */
     private static final float PLAY_RATE = 1F;
-
     /** Rate of playback for fast forwarding. */
     private static final float FFORWARD_RATE = 32F;
-
     /** Sequence of allowable shuttle rates. */
     private static final float[] SHUTTLE_RATES;
-
     /**
      * The threshold to use while synchronising viewers (augmented by rate).
      */
     private static final long SYNC_THRESH = 50;
-
     /**
      * How often to synchronise the viewers with the master clock.
      */
@@ -92,17 +78,20 @@ implements ClockListener, DataController {
      * Enumeration of shuttle directions.
      */
     enum ShuttleDirection {
+
         BACKWARDS(-1),
         UNDEFINED(0),
         FORWARDS(1);
-
         private int parameter;
 
-        ShuttleDirection(final int p) { this.parameter = p; }
+        ShuttleDirection(final int p) {
+            this.parameter = p;
+        }
 
-        public int getParameter() { return parameter; }
+        public int getParameter() {
+            return parameter;
+        }
     }
-
     /** Format for representing time. */
     private static final DateFormat CLOCK_FORMAT;
 
@@ -112,40 +101,31 @@ implements ClockListener, DataController {
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
-    private static final int MIN_DIALOG_WIDTH = 280;
+    private static final int MIN_DIALOG_WIDTH = 283;
     private static final int TRACKS_PANEL_WIDTH = 600;
-
-
+    private static final boolean TRACKS_PANEL_ENABLED = false;
+    
     //--------------------------------------------------------------------------
     //
     //
-
     /** The list of viewers associated with this controller. */
     private Set<DataViewer> viewers;
-
     /** Stores the highest frame rate for all available viewers. */
     private float currentFPS = 1F;
-
     /** Shuttle status flag. */
     private ShuttleDirection shuttleDirection = ShuttleDirection.UNDEFINED;
-
     /** Index of current shuttle rate. */
     private int shuttleRate;
-
     /** The rate to use when resumed from pause. */
     private float pauseRate;
-
     /** The time the last sync was performed. */
     private long lastSync;
-
     /** Clock timer. */
     private ClockTimer clock = new ClockTimer();
-
 
     //--------------------------------------------------------------------------
     // [initialization]
     //
-
     /**
      * Constructor. Creates a new DataControllerV.
      *
@@ -163,16 +143,14 @@ implements ClockListener, DataController {
         pauseRate = 0;
         lastSync = 0;
 
-        createTracksUI();
-//        for (int i = 0; i < 100; i++) {
-//            addTrack("Label " + i);
-//        }
+        if (TRACKS_PANEL_ENABLED) {
+            createTracksUI();
+        }
     }
 
     //--------------------------------------------------------------------------
     // [interface] org.openshapa.util.ClockTimer.Listener
     //
-
     /**
      * @param time Current clock time in milliseconds.
      */
@@ -238,13 +216,14 @@ implements ClockListener, DataController {
      */
     public void clockStep(final long time) {
         setCurrentTime(time);
-        for (DataViewer viewer : viewers) { viewer.seekTo(time); }
+        for (DataViewer viewer : viewers) {
+            viewer.seekTo(time);
+        }
     }
 
     //--------------------------------------------------------------------------
     //
     //
-
     /**
      * Set time location for data streams.
      *
@@ -685,8 +664,7 @@ implements ClockListener, DataController {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
         // Add file filters for each of the supported plugins.
-        List<FileFilter> filters = PluginManager.getInstance()
-                                                .getPluginFileFilters();
+        List<FileFilter> filters = PluginManager.getInstance().getPluginFileFilters();
         for (FileFilter f : filters) {
             jd.addChoosableFileFilter(f);
         }
@@ -696,8 +674,7 @@ implements ClockListener, DataController {
             File f = jd.getSelectedFile();
 
             // Build the data viewer for the file.
-            DataViewer viewer = PluginManager.getInstance()
-                                .buildViewerFromFile(f, jd.getFileFilter());
+            DataViewer viewer = PluginManager.getInstance().buildViewerFromFile(f, jd.getFileFilter());
             if (viewer == null) {
                 logger.error("No DataViewer available.");
                 return;
@@ -709,13 +686,17 @@ implements ClockListener, DataController {
 
             // adjust the overall frame rate.
             float fps = viewer.getFrameRate();
-            if (fps > currentFPS) { currentFPS = fps; }
+            if (fps > currentFPS) {
+                currentFPS = fps;
+            }
 
             // Add the QTDataViewer to the list of viewers we are controlling.
             this.viewers.add(viewer);
 
-            // Add the file to the tracks information panel
-            addTrack(f.getName());
+            if (TRACKS_PANEL_ENABLED) {
+                // Add the file to the tracks information panel
+                addTrack(f.getName());
+            }
         }
     }//GEN-LAST:event_openVideoButtonActionPerformed
 
@@ -763,6 +744,10 @@ implements ClockListener, DataController {
                 closeTracksPanelButton.getWidth();
         tracksScrollPane.setPreferredSize(tracksScrollPaneSize);
 
+        tracksTimePanel = new JPanel();
+        tracksTimePanel.setLayout(new BorderLayout());
+
+        tracksGridPanel.add(tracksTimePanel, BorderLayout.NORTH);
         tracksGridPanel.add(tracksScrollPane, BorderLayout.CENTER);
     }
 
@@ -773,7 +758,7 @@ implements ClockListener, DataController {
     public void addTrack(String name) {
         JLabel trackLabel = new JLabel(name);
         // Component 0 is the vertical box added by createTracksUI
-        Box vbox = (Box)tracksInfoPanel.getComponent(0);
+        Box vbox = (Box) tracksInfoPanel.getComponent(0);
         vbox.add(name, trackLabel);
         vbox.revalidate();
     }
@@ -802,17 +787,13 @@ implements ClockListener, DataController {
             this.setSize(MIN_DIALOG_WIDTH + TRACKS_PANEL_WIDTH,
                     this.getHeight());
         } else {
-            this.setSize(MIN_DIALOG_WIDTH + 8, this.getHeight());
-//            this.setSize((int)(gridButtonPanel.getMinimumSize().getWidth()) +
-//                    openTracksPanelButton.getWidth(),
-//                    this.getHeight());
+            this.setSize(MIN_DIALOG_WIDTH + 5, this.getHeight());
         }
     }
 
     //--------------------------------------------------------------------------
     // Playback actions
     //
-
     /**
      * Action to invoke when the user clicks on the play button.
      */
@@ -846,13 +827,11 @@ implements ClockListener, DataController {
         if (clock.isStopped()) {
             shuttleAt(pauseRate);
 
-        // Pause views - store current playback rate.
+            // Pause views - store current playback rate.
         } else {
             pauseRate = clock.getRate();
             clock.stop();
-            lblSpeed.setText("["
-                     + FloatUtils.doubleToFractionStr(new Double(pauseRate))
-                     + "]");
+            lblSpeed.setText("[" + FloatUtils.doubleToFractionStr(new Double(pauseRate)) + "]");
         }
     }
 
@@ -935,8 +914,7 @@ implements ClockListener, DataController {
     @Action
     public void goBackAction() {
         try {
-            long j = -CLOCK_FORMAT.parse(this.goBackTextField.getText())
-                                  .getTime();
+            long j = -CLOCK_FORMAT.parse(this.goBackTextField.getText()).getTime();
             jump(j);
 
             // BugzID:721 - After going back - start playing again.
@@ -946,7 +924,6 @@ implements ClockListener, DataController {
             logger.error("unable to find within video", e);
         }
     }
-
 
     /**
      * Action to invoke when the user clicks on the jog backwards button.
@@ -964,11 +941,9 @@ implements ClockListener, DataController {
         jump((long) (ONE_SECOND / currentFPS));
     }
 
-
     //--------------------------------------------------------------------------
     // [private] play back action helper functions
     //
-
     /**
      *
      * @param rate Rate of play.
@@ -997,7 +972,7 @@ implements ClockListener, DataController {
             if (shuttleRate > 0) {
                 rate = SHUTTLE_RATES[--shuttleRate];
 
-            // BugzID: 676 - Shuttle speed transitions between zero.
+                // BugzID: 676 - Shuttle speed transitions between zero.
             } else {
                 rate = 0;
                 shuttleDirection = ShuttleDirection.UNDEFINED;
@@ -1037,11 +1012,9 @@ implements ClockListener, DataController {
         clock.setTime(time);
     }
 
-
     //--------------------------------------------------------------------------
     //
     //
-
     /**
      * Action to invoke when the user clicks on the create new cell button.
      */
@@ -1072,9 +1045,8 @@ implements ClockListener, DataController {
     @Action
     public void syncVideoAction() {
     }
-
     private javax.swing.JPanel tracksInfoPanel;
-
+    private javax.swing.JPanel tracksTimePanel;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel closePanel;
     private javax.swing.JButton closeTracksPanelButton;
@@ -1113,5 +1085,4 @@ implements ClockListener, DataController {
     private javax.swing.JPanel tracksGridPanel;
     private javax.swing.JPanel tracksPanel;
     // End of variables declaration//GEN-END:variables
-
 }
