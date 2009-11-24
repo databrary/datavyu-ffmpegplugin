@@ -1,7 +1,5 @@
 package org.openshapa.views;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -10,11 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SimpleTimeZone;
-import javax.swing.Box;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
@@ -23,7 +17,6 @@ import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
-import org.openshapa.graphics.TimescalePainter;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
 import org.openshapa.util.ClockTimer.ClockListener;
@@ -104,6 +97,9 @@ public final class DataControllerV extends OpenSHAPADialog
     private static final int MIN_DIALOG_WIDTH = 283;
     private static final int TRACKS_PANEL_WIDTH = 600;
     private static final boolean TRACKS_PANEL_ENABLED = true;
+
+    private TracksControllerV tracksControllerV;
+
     //--------------------------------------------------------------------------
     //
     //
@@ -142,7 +138,8 @@ public final class DataControllerV extends OpenSHAPADialog
         pauseRate = 0;
         lastSync = 0;
 
-        createTracksUI();
+        tracksControllerV = new TracksControllerV();
+        tracksPanel.add(tracksControllerV.getTracksPanel());
     }
 
     //--------------------------------------------------------------------------
@@ -288,10 +285,6 @@ public final class DataControllerV extends OpenSHAPADialog
         jLabel2 = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
         tracksPanel = new javax.swing.JPanel();
-        closePanel = new javax.swing.JPanel();
-        openPanel = new javax.swing.JPanel();
-        tracksGridPanel = new javax.swing.JPanel();
-        jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
@@ -566,7 +559,6 @@ public final class DataControllerV extends OpenSHAPADialog
 
         createNewCell.setAction(actionMap.get("createCellAction")); // NOI18N
         createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
-        createNewCell.setText(""); // NOI18N
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
@@ -610,25 +602,10 @@ public final class DataControllerV extends OpenSHAPADialog
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(findOffsetField, gridBagConstraints);
 
-        getContentPane().add(gridButtonPanel, java.awt.BorderLayout.WEST);
+        getContentPane().add(gridButtonPanel, java.awt.BorderLayout.CENTER);
 
-        tracksPanel.setLayout(new java.awt.BorderLayout());
-
-        closePanel.setLayout(new java.awt.BorderLayout());
-        tracksPanel.add(closePanel, java.awt.BorderLayout.LINE_END);
-
-        openPanel.setLayout(new java.awt.BorderLayout());
-        tracksPanel.add(openPanel, java.awt.BorderLayout.LINE_START);
-
-        tracksGridPanel.setMinimumSize(new java.awt.Dimension(0, 274));
-        tracksGridPanel.setLayout(new java.awt.GridLayout(0, 1));
-        tracksPanel.add(tracksGridPanel, java.awt.BorderLayout.CENTER);
-
+        tracksPanel.setPreferredSize(new java.awt.Dimension(600, 278));
         getContentPane().add(tracksPanel, java.awt.BorderLayout.EAST);
-
-        jSeparator1.setForeground(new java.awt.Color(255, 255, 255));
-        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
-        getContentPane().add(jSeparator1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -679,61 +656,11 @@ public final class DataControllerV extends OpenSHAPADialog
     }//GEN-LAST:event_openVideoButtonActionPerformed
 
     /**
-     * Closes the tracks panel
-     * @param evt
-     */
-    /**
-     * Opens the tracks panel
-     * @param evt
-     */
-    /**
-     * Creates the interface elements for the tracks panel
-     */
-    private void createTracksUI() {
-        tracksGridPanel.setLayout(new BorderLayout());
-
-        tracksInfoPanel = new JPanel();
-        tracksInfoPanel.setLayout(new BorderLayout());
-        // The vbox is what will hold each track
-        Box vbox = Box.createVerticalBox();
-        tracksInfoPanel.add(vbox, BorderLayout.NORTH);
-
-        JScrollPane tracksScrollPane = new JScrollPane(tracksInfoPanel);
-        tracksScrollPane.setVerticalScrollBarPolicy(
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        tracksScrollPane.setHorizontalScrollBarPolicy(
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        Dimension tracksScrollPaneSize = new Dimension();
-        tracksScrollPaneSize.height = this.getHeight();
-        tracksScrollPaneSize.width = TRACKS_PANEL_WIDTH;
-        tracksScrollPane.setPreferredSize(tracksScrollPaneSize);
-
-        tracksTimePanel = new JPanel();
-        tracksTimePanel.setLayout(new BorderLayout());
-
-        // Demonstrates how to configure the time scale for display
-        TimescalePainter scale = new TimescalePainter();
-        scale.setStart(25000);
-        scale.setEnd(60000);
-        scale.setIntervals(100);
-        scale.setMajor(15);
-
-        tracksTimePanel.add(scale);
-
-        tracksGridPanel.add(tracksTimePanel, BorderLayout.NORTH);
-        tracksGridPanel.add(tracksScrollPane, BorderLayout.CENTER);
-    }
-
-    /**
      * Adds a track to the tracks panel
      * @param name the name of the track to add
      */
     public void addTrack(String name) {
-        JLabel trackLabel = new JLabel(name);
-        // Component 0 is the vertical box added by createTracksUI
-        Box vbox = (Box) tracksInfoPanel.getComponent(0);
-        vbox.add(name, trackLabel);
-        vbox.revalidate();
+        tracksControllerV.addNewTrack(name);
     }
 
     /**
@@ -760,11 +687,7 @@ public final class DataControllerV extends OpenSHAPADialog
             this.setSize(MIN_DIALOG_WIDTH + TRACKS_PANEL_WIDTH,
                     this.getHeight());
         } else {
-//            if (TRACKS_PANEL_ENABLED) {
-//                this.setSize(MIN_DIALOG_WIDTH + openTracksPanelButton.getWidth(), this.getHeight());
-//            } else {
             this.setSize(MIN_DIALOG_WIDTH, this.getHeight());
-//            }
         }
 
     }
@@ -1023,10 +946,8 @@ public final class DataControllerV extends OpenSHAPADialog
     @Action
     public void syncVideoAction() {
     }
-    private javax.swing.JPanel tracksInfoPanel;
-    private javax.swing.JPanel tracksTimePanel;
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel closePanel;
     private javax.swing.JButton createNewCell;
     private javax.swing.JButton createNewCellButton;
     private javax.swing.JButton findButton;
@@ -1038,11 +959,9 @@ public final class DataControllerV extends OpenSHAPADialog
     private javax.swing.JPanel gridButtonPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton jogBackButton;
     private javax.swing.JButton jogForwardButton;
     private javax.swing.JLabel lblSpeed;
-    private javax.swing.JPanel openPanel;
     private javax.swing.JButton openVideoButton;
     private javax.swing.JButton pauseButton;
     private javax.swing.JButton playButton;
@@ -1058,7 +977,6 @@ public final class DataControllerV extends OpenSHAPADialog
     private javax.swing.JButton syncVideoButton;
     private javax.swing.JLabel timestampLabel;
     private javax.swing.JPanel topPanel;
-    private javax.swing.JPanel tracksGridPanel;
     private javax.swing.JPanel tracksPanel;
     // End of variables declaration//GEN-END:variables
 }
