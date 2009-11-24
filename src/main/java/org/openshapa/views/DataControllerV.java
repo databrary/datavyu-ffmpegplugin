@@ -23,6 +23,7 @@ import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
+import org.openshapa.graphics.TimescalePainter;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
 import org.openshapa.util.ClockTimer.ClockListener;
@@ -100,11 +101,9 @@ public final class DataControllerV extends OpenSHAPADialog
         CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
-
     private static final int MIN_DIALOG_WIDTH = 283;
     private static final int TRACKS_PANEL_WIDTH = 600;
-    private static final boolean TRACKS_PANEL_ENABLED = false;
-    
+    private static final boolean TRACKS_PANEL_ENABLED = true;
     //--------------------------------------------------------------------------
     //
     //
@@ -290,9 +289,7 @@ public final class DataControllerV extends OpenSHAPADialog
         findOffsetField = new javax.swing.JTextField();
         tracksPanel = new javax.swing.JPanel();
         closePanel = new javax.swing.JPanel();
-        closeTracksPanelButton = new javax.swing.JButton();
         openPanel = new javax.swing.JPanel();
-        openTracksPanelButton = new javax.swing.JButton();
         tracksGridPanel = new javax.swing.JPanel();
         jSeparator1 = new javax.swing.JSeparator();
 
@@ -618,27 +615,9 @@ public final class DataControllerV extends OpenSHAPADialog
         tracksPanel.setLayout(new java.awt.BorderLayout());
 
         closePanel.setLayout(new java.awt.BorderLayout());
-
-        closeTracksPanelButton.setLabel("<");
-        closeTracksPanelButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                closeTracksPanelButtonMouseClicked(evt);
-            }
-        });
-        closePanel.add(closeTracksPanelButton, java.awt.BorderLayout.CENTER);
-
         tracksPanel.add(closePanel, java.awt.BorderLayout.LINE_END);
 
         openPanel.setLayout(new java.awt.BorderLayout());
-
-        openTracksPanelButton.setText(">");
-        openTracksPanelButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                openTracksPanelButtonMouseClicked(evt);
-            }
-        });
-        openPanel.add(openTracksPanelButton, java.awt.BorderLayout.CENTER);
-
         tracksPanel.add(openPanel, java.awt.BorderLayout.LINE_START);
 
         tracksGridPanel.setMinimumSize(new java.awt.Dimension(0, 274));
@@ -703,22 +682,10 @@ public final class DataControllerV extends OpenSHAPADialog
      * Closes the tracks panel
      * @param evt
      */
-    private void closeTracksPanelButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_closeTracksPanelButtonMouseClicked
-        showTracksPanel(false);
-        closeTracksPanelButton.setEnabled(false);
-        openTracksPanelButton.setEnabled(true);
-    }//GEN-LAST:event_closeTracksPanelButtonMouseClicked
-
     /**
      * Opens the tracks panel
      * @param evt
      */
-    private void openTracksPanelButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openTracksPanelButtonMouseClicked
-        showTracksPanel(true);
-        openTracksPanelButton.setEnabled(false);
-        closeTracksPanelButton.setEnabled(true);
-    }//GEN-LAST:event_openTracksPanelButtonMouseClicked
-
     /**
      * Creates the interface elements for the tracks panel
      */
@@ -738,13 +705,20 @@ public final class DataControllerV extends OpenSHAPADialog
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         Dimension tracksScrollPaneSize = new Dimension();
         tracksScrollPaneSize.height = this.getHeight();
-        tracksScrollPaneSize.width = TRACKS_PANEL_WIDTH -
-                openTracksPanelButton.getWidth() -
-                closeTracksPanelButton.getWidth();
+        tracksScrollPaneSize.width = TRACKS_PANEL_WIDTH;
         tracksScrollPane.setPreferredSize(tracksScrollPaneSize);
 
         tracksTimePanel = new JPanel();
         tracksTimePanel.setLayout(new BorderLayout());
+
+        // Demonstrates how to configure the time scale for display
+        TimescalePainter scale = new TimescalePainter();
+        scale.setStart(25000);
+        scale.setEnd(60000);
+        scale.setIntervals(100);
+        scale.setMajor(15);
+
+        tracksTimePanel.add(scale);
 
         tracksGridPanel.add(tracksTimePanel, BorderLayout.NORTH);
         tracksGridPanel.add(tracksScrollPane, BorderLayout.CENTER);
@@ -786,11 +760,13 @@ public final class DataControllerV extends OpenSHAPADialog
             this.setSize(MIN_DIALOG_WIDTH + TRACKS_PANEL_WIDTH,
                     this.getHeight());
         } else {
-            this.setSize(MIN_DIALOG_WIDTH + 5, this.getHeight());
+//            if (TRACKS_PANEL_ENABLED) {
+//                this.setSize(MIN_DIALOG_WIDTH + openTracksPanelButton.getWidth(), this.getHeight());
+//            } else {
+            this.setSize(MIN_DIALOG_WIDTH, this.getHeight());
+//            }
         }
 
-        this.openTracksPanelButton.setVisible(show);
-        this.closeTracksPanelButton.setVisible(show);
     }
 
     //--------------------------------------------------------------------------
@@ -1051,7 +1027,6 @@ public final class DataControllerV extends OpenSHAPADialog
     private javax.swing.JPanel tracksTimePanel;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel closePanel;
-    private javax.swing.JButton closeTracksPanelButton;
     private javax.swing.JButton createNewCell;
     private javax.swing.JButton createNewCellButton;
     private javax.swing.JButton findButton;
@@ -1068,7 +1043,6 @@ public final class DataControllerV extends OpenSHAPADialog
     private javax.swing.JButton jogForwardButton;
     private javax.swing.JLabel lblSpeed;
     private javax.swing.JPanel openPanel;
-    private javax.swing.JButton openTracksPanelButton;
     private javax.swing.JButton openVideoButton;
     private javax.swing.JButton pauseButton;
     private javax.swing.JButton playButton;
