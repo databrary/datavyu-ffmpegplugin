@@ -2,9 +2,11 @@ package org.openshapa.views.continuous;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
+import org.jdesktop.application.LocalStorage;
+import org.openshapa.OpenSHAPA;
 
 /**
  * This class manages and wrangles all the viewer plugins currently availble to
@@ -108,6 +112,47 @@ public final class PluginManager {
                 }
             }
 
+
+            // We have scaned the OpenSHAPA classpath - but we should also look
+            // in the "plugins" directory for jar files that correctly conform
+            // to the OpenSHAPA plugin interface.
+            LocalStorage ls = OpenSHAPA.getApplication()
+                                       .getContext().getLocalStorage();
+            File pluginDir = new File(ls.getDirectory().toString()
+                                      + "/plugins");
+            // Unable to find plugin directory or any entries within the plugin
+            // directory - don't bother attempting to add more plugins to
+            // OpenSHAPA.
+            if (pluginDir == null || pluginDir.list() == null) {
+                return;
+            }
+
+            // For each of the files in the plugin directory - check to see if
+            // they confirm to the plugin interface.
+            for (String file : pluginDir.list()) {
+                File f = new File(pluginDir.getAbsolutePath() + "/" + file);
+                if (file == null) {
+                    throw new ClassNotFoundException("Null file");
+
+                // File is a jar file - crack it open and look for plugins!
+                } else if (file.endsWith(".jar")) {
+                    this.injectPlugin(f);
+                    JarFile jar = new JarFile(f);
+
+                    // For each file in the jar file check to see if it could be
+                    // a plugin.
+                    Enumeration<JarEntry> entries = jar.entries();
+                    while (entries.hasMoreElements()) {
+                        String name = entries.nextElement().getName();
+
+                        // Found a class file - attempt to add it as a plugin.
+                        if (name.endsWith(".class")) {
+                            addPlugin(name);
+                        }
+                    }
+                }
+            }
+
         // Whoops - something went bad. Chuck a spaz.
         } catch (ClassNotFoundException e) {
             logger.error("Unable to build Plugin", e);
@@ -115,6 +160,28 @@ public final class PluginManager {
             logger.error("Unable to load jar file", ie);
         } catch (URISyntaxException se) {
             logger.error("Unable to build path to jar file", se);
+        }
+    }
+
+    /**
+     * Injects A plugin into the classpath.
+     *
+     * @param f The jar file to inject into the classpath.
+     *
+     * @throws IOException If unable to inject the plugin into the class path.
+     */
+    private void injectPlugin(final File f) throws IOException {
+        URLClassLoader sysLoader = (URLClassLoader) ClassLoader
+                                                    .getSystemClassLoader();
+        Class sysclass = URLClassLoader.class;
+
+        try {
+            Class[] parameters = new Class[]{URL.class};
+            Method method = sysclass.getDeclaredMethod("addURL", parameters);
+            method.setAccessible(true);
+            method.invoke(sysLoader, new Object[] {f.toURL()});
+        } catch (Throwable t) {
+            logger.error("Unable to inject class into class path.", t);
         }
     }
 
@@ -174,10 +241,12 @@ public final class PluginManager {
      * file type (i.e. many viewers may support CSV files.)
      *
      * @param dataFile The dataFile that you wish to create a viewer for.
+     * @param usedFilter The file filter that was used to select dataFile.
      *
      * @return A valid data viewer for the supplied file.
      */
-    public DataViewer buildViewerFromFile(final File dataFile, final FileFilter usedFilter) {
+    public DataViewer buildViewerFromFile(final File dataFile,
+                                          final FileFilter usedFilter) {
         for (Plugin p : this.availablePlugins) {
             if (usedFilter.equals(p.getFileFilter())) {
                 if (p.getFileFilter().accept(dataFile)) {
