@@ -100,6 +100,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             // Set the time scale for our movie to milliseconds (i.e. 1000 ticks
             // per second.
             movie.setTimeScale(Constants.TICKS_PER_SECOND);
+
             visualTrack = movie.getIndTrackType(1,
                                        StdQTConstants.visualMediaCharacteristic,
                                        StdQTConstants.movieTrackCharacteristic);
@@ -238,6 +239,13 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * @param evt The event that triggered this action.
      */
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            //removeAll();
+            movie.stop();
+            //movie.disposeQTObject();
+        } catch (QTException e) {
+            logger.error("Couldn't kill", e);
+        }
         this.parent.shutdown(this);
     }//GEN-LAST:event_formWindowClosing
 

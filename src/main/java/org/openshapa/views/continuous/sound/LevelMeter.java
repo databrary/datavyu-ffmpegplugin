@@ -137,7 +137,8 @@ class LevelMeter extends Canvas {
                         j -= segInterval) {
 
                         int red = barCount * CMAX / MAXBARS;
-                        int green = (MAXBARS - barCount) * CMAX / MAXBARS;
+                        int green = Math.max(0,
+                           (MAXBARS - barCount) * CMAX / MAXBARS);
 
                         g.setColor(new Color(red, green, 0));
 
