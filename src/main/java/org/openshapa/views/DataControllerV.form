@@ -30,6 +30,12 @@
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="ff" green="ff" red="ff" type="rgb"/>
         </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[282, 274]"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[280, 295]"/>
+        </Property>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
@@ -543,6 +549,7 @@
               <action class="org.openshapa.views.DataController" id="createCellAction" methodName="createCellAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="createNewCell.icon"/>
+            <Property name="text" type="java.lang.String" resourceKey="createNewCell.text"/>
             <Property name="alignmentY" type="float" value="0.0"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">

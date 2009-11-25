@@ -293,6 +293,8 @@ public final class DataControllerV extends OpenSHAPADialog
         setResizable(false);
 
         gridButtonPanel.setBackground(new java.awt.Color(255, 255, 255));
+        gridButtonPanel.setMinimumSize(new java.awt.Dimension(282, 274));
+        gridButtonPanel.setPreferredSize(new java.awt.Dimension(280, 295));
         gridButtonPanel.setLayout(new java.awt.GridBagLayout());
 
         syncCtrlButton.setEnabled(false);
@@ -559,6 +561,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         createNewCell.setAction(actionMap.get("createCellAction")); // NOI18N
         createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
+        createNewCell.setText(resourceMap.getString("createNewCell.text")); // NOI18N
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
@@ -690,6 +693,7 @@ public final class DataControllerV extends OpenSHAPADialog
             this.setSize(MIN_DIALOG_WIDTH, this.getHeight());
         }
 
+        this.tracksPanel.setVisible(show);
     }
 
     //--------------------------------------------------------------------------
