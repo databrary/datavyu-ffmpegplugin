@@ -1,5 +1,6 @@
 package org.openshapa.graphics;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -19,26 +20,6 @@ public class TimescalePainter extends Component {
     private long end;
     // The number of intervals to paint on the scale
     private int intervals;
-    // How often do we have a major interval
-    private int major;
-
-    /**
-     * @return frequency at which a major interval is printed, i.e. a value of 5
-     * means every 5th interval is a major interval.
-     */
-    public int getMajor() {
-        return major;
-    }
-
-    /**
-     * @param major how often to print a major interval, i.e. if major = 5, then
-     * every 5th interval is a major interval and timing information will also
-     * be printed.
-     */
-    public void setMajor(int major) {
-        assert(major > 0);
-        this.major = major;
-    }
 
     /**
      * @return the total number of intervals printed on the panel.
@@ -51,7 +32,7 @@ public class TimescalePainter extends Component {
      * @param intervals the total number of intervals to print on the panel.
      */
     public void setIntervals(int intervals) {
-        assert(intervals > 0);
+        assert(intervals >= 3);
         this.intervals = intervals;
     }
 
@@ -63,8 +44,7 @@ public class TimescalePainter extends Component {
         clockFormat = new SimpleDateFormat("HH:mm:ss:SSS");
         clockFormat.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
         // Default draw scales
-        intervals = 100;
-        major = 10;
+        intervals = 20;
     }
 
     /**
@@ -97,43 +77,60 @@ public class TimescalePainter extends Component {
         this.start = start;
     }
 
+    @Override
     public Dimension getPreferredSize() {
-        return new Dimension(this.WIDTH, 50);
+        return new Dimension(TimescalePainter.WIDTH, 50);
     }
 
     /**
      * This method paints the timing scale.
      * @param g
      */
+    @Override
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         Dimension size = getSize();
 
-        // Used for calculating string dimensions
+        // Used for calculating string dimensions and offsets
         FontMetrics fm = g.getFontMetrics();
+        final int ascent = fm.getAscent();
+
+        // Major intervals occur every so often
+        String strMax = clockFormat.format(end);
+        int majorWidth = 2 * fm.stringWidth(strMax);
+
+        // How many major intervals will there be
+        final int major = (int)Math.floor((1D * size.width) / (1D * majorWidth));
+
+        // Usable width - this is where the start to end is
+        final int usableWidth = major * majorWidth;
 
         // Pixel width between intervals
-        final int intervalWidth = size.width / intervals;
+        final float intervalWidth = (majorWidth * 1F) / (intervals - 2F);
 
          // How many time units is an interval
-        final long interval = (end - start) / intervals;
+        final float interval = (end - start) / (usableWidth / intervalWidth);
 
-        for (int x = 0; x <= size.width; x += intervalWidth) {
-            // Is this a major interval
-            if (x%(intervalWidth*major) == 0) {
-                g2d.drawLine(x, 0, x, 20);
-                // What time does this interval represent
-                long time = start + interval*(x/intervalWidth);
-                String strTime = clockFormat.format(time);
-                int strX = x - (fm.stringWidth(strTime)/2);
-                // Don't print if the string will be outside of the panel bounds
-                if ((strX > 0) &&
-                        ((x + (fm.stringWidth(strTime)/2)) < size.width)) {
-                    g.drawString(strTime, strX, 35);
-                }
-            } else {
-                g2d.drawLine(x, 0, x, 10);
+        // Interval printing and labelling
+        for (float x = 0; x <= size.width; x += majorWidth) {                
+            g2d.drawLine((int)x, 0, (int)x, 25);
+            g2d.drawLine((int)x+1, 0, (int)x+1, 25);
+
+            // What time does this interval represent
+            float time = start + interval*(x/intervalWidth);
+            String strTime = clockFormat.format(time);
+            // Don't print if the string will be outside of the panel bounds
+            if ((x + fm.stringWidth(strTime) + 3) < size.width) {
+                g.drawString(strTime, (int)x+3, 35 - ascent);
             }
+        }
+
+        /* Draw the minor intervals separately because mixing minor and major
+         * intervals with floating point precision means some major intervals
+         * do not get drawn.
+         */
+        for (float x = 0; x <= size.width; x += intervalWidth) {
+             g2d.drawLine(Math.round(x), 0, Math.round(x), 10);
         }
     }
     
