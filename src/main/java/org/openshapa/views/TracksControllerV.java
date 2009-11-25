@@ -8,11 +8,14 @@ package org.openshapa.views;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import org.openshapa.graphics.TimescalePainter;
 
 /**
@@ -31,8 +34,19 @@ public class TracksControllerV {
     private JPanel tracksTimePanel;
     // Panel that holds the menu controls
     private JPanel tracksMenuPanel;
+    // Component that is responsible for rendering the time scale
+    private TimescalePainter scale;
+
+    private int zoomSetting = 1;
+
+    private long maxEnd;
+    private long minStart;
 
     public TracksControllerV() {
+        // Defaults
+        maxEnd = 60000;
+        minStart = 0;
+
         // Set up the tracks information panel
         tracksInfoPanel = new JPanel();
         tracksInfoPanel.setLayout(new BorderLayout());
@@ -54,17 +68,15 @@ public class TracksControllerV {
         tracksTimePanel.setLayout(new BorderLayout());
 
         // Demonstrates how to configure the time scale for display
-        TimescalePainter scale = new TimescalePainter();
-        scale.setStart(25000);
-        scale.setEnd(60000);
-        scale.setIntervals(100);
-        scale.setMajor(15);
+        scale = new TimescalePainter();
+        scale.setStart(minStart);
+        scale.setEnd(maxEnd);
 
         tracksTimePanel.add(scale);
 
         // Set up the menu panel
         tracksMenuPanel = new JPanel();
-        tracksMenuPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        tracksMenuPanel.setLayout(new BorderLayout());
 
         JButton lockButton = new JButton("Lock");
         JButton bookmarkButton = new JButton("Add Bookmark");
@@ -74,9 +86,35 @@ public class TracksControllerV {
         bookmarkButton.setEnabled(false);
         snapButton.setEnabled(false);
 
-        tracksMenuPanel.add(lockButton);
-        tracksMenuPanel.add(bookmarkButton);
-        tracksMenuPanel.add(snapButton);
+        JButton zoomInButton = new JButton("+");
+        zoomInButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                zoomIn(e);
+            }
+        });
+
+        JButton zoomOutButton = new JButton("-");
+        zoomOutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                zoomOut(e);
+            }
+        });
+
+        JPanel leftAlignedButtonsPanel = new JPanel();
+        leftAlignedButtonsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        leftAlignedButtonsPanel.add(lockButton);
+        leftAlignedButtonsPanel.add(bookmarkButton);
+        leftAlignedButtonsPanel.add(snapButton);
+
+        JPanel rightAlignedButtonsPanel = new JPanel();
+        rightAlignedButtonsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
+        rightAlignedButtonsPanel.add(zoomInButton);
+        rightAlignedButtonsPanel.add(zoomOutButton);
+
+        tracksMenuPanel.add(leftAlignedButtonsPanel, BorderLayout.WEST);
+        tracksMenuPanel.add(rightAlignedButtonsPanel, BorderLayout.EAST);
 
         // Set up the root panel
         tracksPanel = new JPanel();
@@ -103,5 +141,57 @@ public class TracksControllerV {
         box.add(trackLabel);
         box.revalidate();
     }
+
+    public void zoomIn(ActionEvent evt) {
+        zoomSetting = zoomSetting * 2;
+        if (zoomSetting > 32) {
+            zoomSetting = 32;
+            return;
+        }
+
+        long range = maxEnd - minStart;
+        long newStart = scale.getStart() + (range / (2*zoomSetting));
+        long newEnd = newStart + (range / zoomSetting);
+
+        int newIntervals = scale.getIntervals() - 4;
+        if (newIntervals < 4) {
+            newIntervals = 4;
+        }
+
+        scale.setStart(newStart);
+        scale.setEnd(newEnd);
+        scale.setIntervals(newIntervals);
+
+        scale.repaint();
+    }
+
+    public void zoomOut(ActionEvent evt) {
+        zoomSetting = zoomSetting / 2;
+        if (zoomSetting < 1) {
+            zoomSetting = 1;
+            return;
+        }
+        
+        long range = maxEnd - minStart;
+        long newStart = scale.getStart() + (range / (2*zoomSetting));
+        long newEnd = newStart + (range / zoomSetting);
+        
+        if (zoomSetting == 1) {
+            newStart = minStart;
+            newEnd = maxEnd;
+        }
+        
+        int newIntervals = scale.getIntervals() + 4;
+        if (newIntervals > 20) {
+            newIntervals = 20;
+        }
+
+        scale.setStart(newStart);
+        scale.setEnd(newEnd);
+        scale.setIntervals(newIntervals);
+
+        scale.repaint();
+    }
+    
 
 }
