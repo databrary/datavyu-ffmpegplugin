@@ -50,6 +50,9 @@ class LevelMeter extends Canvas {
     /** Stores the current time of the audio file. */
     private long audioTime = 0;
 
+    /** The maximum value a red, green or blue value can take. */
+    private static final int CMAX = 255;
+
 
     /** Returns the number of frequency bands for the equaliser.
      *  @return The number of bands.
@@ -131,15 +134,13 @@ class LevelMeter extends Canvas {
                     // draw the bar as set of 0-MAXBARS rectangles
                     int barCount = 0;
                     for (int j = maxHeight; j > (maxHeight - barHeight);
-                            j -= segInterval) {
+                        j -= segInterval) {
 
-                        g.setColor(Color.green);
-                        if (barCount > YELLOWCUT) {
-                            g.setColor(Color.yellow);
-                        }
-                        if (barCount > REDCUT) {
-                            g.setColor(Color.red);
-                        }
+                        int red = barCount * CMAX / MAXBARS;
+                        int green = (MAXBARS - barCount) * CMAX / MAXBARS;
+
+                        g.setColor(new Color(red, green, 0));
+
                         g.fillRect(i * barWidth,
                                 j - segInterval,
                                 barWidth - 1,
