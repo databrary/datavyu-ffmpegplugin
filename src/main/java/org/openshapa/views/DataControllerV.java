@@ -189,6 +189,7 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void clockStop(final long time) {
         setCurrentTime(time);
+        shuttleRate = 0;
         for (DataViewer viewer : viewers) {
             viewer.stop();
             // viewer.seekTo(time);

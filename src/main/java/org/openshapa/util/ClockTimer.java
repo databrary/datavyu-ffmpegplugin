@@ -164,6 +164,7 @@ public final class ClockTimer {
     public synchronized void stop() {
         if (!isStopped) {
             isStopped = true;
+            rate = 0;
             setRate(0);
         }
     }
@@ -207,9 +208,10 @@ public final class ClockTimer {
             nanoTime = currentNano;
 
             // BugzID:466 - Prevent rewind wrapping the clock past zero.
-            if (time <= 0) {
+            if (time < 0) {
                 time = 0;
                 stop();
+                notifyStop();
             }
 
             notifyTick();
