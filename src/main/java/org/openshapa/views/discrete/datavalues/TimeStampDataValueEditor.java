@@ -157,6 +157,18 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     @Override
     public void keyPressed(final KeyEvent e) {
         switch (e.getKeyCode()) {
+            // BugzID:708 - Force the Home key to behave correctly on OSX 10.4
+            case KeyEvent.VK_HOME:
+                this.setCaretPosition(0);
+                e.consume();
+                break;
+
+            // BugzID:708 - Force the End key to behave correctly on OSX 10.4
+            case KeyEvent.VK_END:
+                this.setCaretPosition(this.getText().length());
+                e.consume();
+                break;
+
             case KeyEvent.VK_BACK_SPACE:
             case KeyEvent.VK_DELETE:
                 // Ignore - handled when the key is typed.
