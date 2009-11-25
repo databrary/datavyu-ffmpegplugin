@@ -112,7 +112,6 @@ public final class PluginManager {
                 }
             }
 
-
             // We have scaned the OpenSHAPA classpath - but we should also look
             // in the "plugins" directory for jar files that correctly conform
             // to the OpenSHAPA plugin interface.
