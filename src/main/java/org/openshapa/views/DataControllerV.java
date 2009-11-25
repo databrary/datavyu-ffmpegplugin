@@ -176,7 +176,6 @@ public final class DataControllerV extends OpenSHAPADialog
                         v.seekTo(time);
                     }
                 }
-
                 lastSync = time;
             }
         } catch (Exception e) {

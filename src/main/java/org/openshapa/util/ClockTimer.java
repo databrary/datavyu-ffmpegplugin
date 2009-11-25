@@ -164,7 +164,6 @@ public final class ClockTimer {
     public synchronized void stop() {
         if (!isStopped) {
             isStopped = true;
-            rate = 0;
             setRate(0);
         }
     }
@@ -211,7 +210,6 @@ public final class ClockTimer {
             if (time < 0) {
                 time = 0;
                 stop();
-                notifyStop();
             }
 
             notifyTick();

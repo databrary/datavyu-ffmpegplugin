@@ -213,7 +213,6 @@ public final class SoundDataViewer extends JFrame
                             }
                             throw new Exception("Bad sound level");
                         }
-
                         for (int j = 0; j < numBands; j++) {
                             audioData[i] = tempLevels[j];
                             i++;
