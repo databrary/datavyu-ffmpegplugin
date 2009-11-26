@@ -26,6 +26,11 @@ public class TimescalePainter extends Component {
     // Pad the time scale from the right by this amount
     private int paddingRight;
 
+    private float intervalTime;
+    private float intervalWidth;
+
+    private int majorWidth;
+
     /**
      * @return the total number of intervals printed on the panel.
      */
@@ -100,6 +105,14 @@ public class TimescalePainter extends Component {
         this.paddingRight = paddingRight;
     }
 
+    public float getIntervalTime() {
+        return intervalTime;
+    }
+
+    public float getIntervalWidth() {
+        return intervalWidth;
+    }
+
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(TimescalePainter.WIDTH, 35);
@@ -120,7 +133,7 @@ public class TimescalePainter extends Component {
 
         // Major intervals occur every so often
         String strMax = clockFormat.format(end);
-        int majorWidth = 2 * fm.stringWidth(strMax);
+        majorWidth = 2 * fm.stringWidth(strMax);
 
         final int effectiveWidth = size.width - paddingLeft - paddingRight;
 
@@ -131,10 +144,10 @@ public class TimescalePainter extends Component {
         final int usableWidth = major * majorWidth;
 
         // Pixel width between intervals
-        final float intervalWidth = (majorWidth * 1F) / (intervals - 2F);
+        intervalWidth = (majorWidth * 1F) / (intervals - 2F);
 
          // How many time units is an interval
-        final float interval = (end - start) / (usableWidth / intervalWidth);
+        intervalTime = (end - start) / (usableWidth / intervalWidth);
 
         // Interval printing and labelling
         for (float x = 0; x <= effectiveWidth; x += majorWidth) {
@@ -142,7 +155,7 @@ public class TimescalePainter extends Component {
             g2d.drawLine((int)x + 1 + paddingLeft, 0, (int)x + 1 + paddingLeft, 25);
 
             // What time does this interval represent
-            float time = start + interval*(x/intervalWidth);
+            float time = start + intervalTime*(x/intervalWidth);
             String strTime = clockFormat.format(time);
             // Don't print if the string will be outside of the panel bounds
             if ((x + paddingLeft + fm.stringWidth(strTime) + 3) < (size.width - paddingRight)) {

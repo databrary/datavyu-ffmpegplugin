@@ -8,12 +8,13 @@ package org.openshapa.views;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -42,6 +43,8 @@ public class TracksControllerV {
     private long maxEnd;
     private long minStart;
 
+    private List<TrackPainter> trackPainterList;
+
     public TracksControllerV() {
         // Set default scale values
         maxEnd = 60000;
@@ -65,14 +68,16 @@ public class TracksControllerV {
         JButton zoomInButton = new JButton("( + )");
         zoomInButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                zoomIn(e);
+                zoomInScale(e);
+                zoomTracks(e);
             }
         });
 
         JButton zoomOutButton = new JButton("( - )");
         zoomOutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                zoomOut(e);
+                zoomOutScale(e);
+                zoomTracks(e);
             }
         });
 
@@ -163,9 +168,7 @@ public class TracksControllerV {
             tracksPanel.add(tracksScrollPane, c);
         }
         
-//        for (int i = 0; i < 50; i++) {
-//            addNewTrack("Track " + i);
-//        }
+        trackPainterList = new ArrayList<TrackPainter>();
     }
 
     public JPanel getTracksPanel() {
@@ -203,7 +206,18 @@ public class TracksControllerV {
             size.width = 665;
             trackPainter.setPreferredSize(size);
         }
-        
+        trackPainter.setStart(0);
+        trackPainter.setEnd(30000);
+        trackPainter.setOffset(6000);
+        trackPainter.setIntervalTime(scale.getIntervalTime());
+//        System.out.println("Initial add interval time: " + scale.getIntervalTime());
+        trackPainter.setIntervalWidth(scale.getIntervalWidth());
+//        System.out.println("Initial add interval width: " + scale.getIntervalWidth());
+        trackPainter.setZoomWindowStart(scale.getStart());
+        trackPainter.setZoomWindowEnd(scale.getEnd());
+
+        trackPainterList.add(trackPainter);
+
         carriagePanel.add(trackPainter, BorderLayout.PAGE_START);
 
         {
@@ -211,16 +225,18 @@ public class TracksControllerV {
             size.height = 70;
             size.width = 667;
             carriagePanel.setPreferredSize(size);
-
+            
             GridBagConstraints c = new GridBagConstraints();
             c.gridx = 1;
             c.gridy = newRow;
             c.insets = new Insets(0,0,1,0);
             tracksInfoPanel.add(carriagePanel, c);
         }
+
+        tracksInfoPanel.validate();
     }
 
-    public void zoomIn(ActionEvent evt) {
+    public void zoomInScale(ActionEvent evt) {
         zoomSetting = zoomSetting * 2;
         if (zoomSetting > 32) {
             zoomSetting = 32;
@@ -243,7 +259,7 @@ public class TracksControllerV {
         scale.repaint();
     }
 
-    public void zoomOut(ActionEvent evt) {
+    public void zoomOutScale(ActionEvent evt) {
         zoomSetting = zoomSetting / 2;
         if (zoomSetting < 1) {
             zoomSetting = 1;
@@ -270,6 +286,21 @@ public class TracksControllerV {
 
         scale.repaint();
     }
-    
+
+    public void zoomTracks(ActionEvent evt) {
+        for (TrackPainter tp : trackPainterList) {
+            tp.setIntervalTime(scale.getIntervalTime());
+//            System.out.println("Interval time: " + scale.getIntervalTime());
+            tp.setIntervalWidth(scale.getIntervalWidth());
+//            System.out.println("Interval width: " + scale.getIntervalWidth());
+            tp.setZoomWindowStart(scale.getStart());
+//            System.out.println("Scale start: " + scale.getStart());
+            tp.setZoomWindowEnd(scale.getEnd());
+//            System.out.println("Scale end: " + scale.getEnd());
+            tp.repaint();
+        }
+
+        tracksInfoPanel.validate();
+    }
 
 }
