@@ -674,6 +674,8 @@ public final class UINewCellTest extends UISpecTestCase {
                     + ", <float2>)";
         }
 
+//        runMatrixTest(varName, floatTestInput, expectedFloat2TestOutput,
+//                "<float2>");
         runMatrixTest(varName, floatTestInput, expectedFloat2TestOutput,
                 "<float2>");
 
@@ -814,15 +816,19 @@ public final class UINewCellTest extends UISpecTestCase {
      * @param value1 first cell value
      * @param value2 second cell value
      */
-    private void assertTrueEqualValues(final String value1, final String value2)
-    {
-        try {
-            //Handle doubles
-            assertTrue(FloatUtils.closeEnough(Double.parseDouble(value1),
-                    Double.parseDouble(value2)));
-        } catch (NumberFormatException nfe) {
-            //Handle other variable types
+    private void assertTrueEqualValues(final String value1, final String value2) {
+        if ((value1.startsWith("<") && value1.endsWith(">")) ||
+                (value2.startsWith("<") && value2.endsWith(">"))) {
             assertTrue(value1.equalsIgnoreCase(value2));
+        } else {
+            try {
+                //Handle doubles
+                assertTrue(FloatUtils.closeEnough(Double.parseDouble(value1),
+                        Double.parseDouble(value2)));
+            } catch (NumberFormatException nfe) {
+                //Handle other variable types
+                assertTrue(value1.equalsIgnoreCase(value2));
+            }
         }
     }
 
@@ -967,7 +973,8 @@ public final class UINewCellTest extends UISpecTestCase {
             Cell c = cells.elementAt(i);
             TextBox t = c.getValue();
             c.enterMatrixText(testInput[i]);
-            int numOfArgs = getNumberofArgFromMatrix(varName);
+            int numOfArgs = getNumberofArgFromMatrix(t.getText());
+            //int numOfArgs = getNumberofArgFromMatrix(varName);
             String [] actualValues = getArgsFromMatrix(t.getText());
             String [] expectedValues = getArgsFromMatrix(expectedTestOutput[i]);
             for (int j = 0; j < numOfArgs; j++) {
@@ -988,7 +995,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String[][] matricisedInput = new String [testInput.length][2];
         for (int i = 0; i < testInput.length; i++) {
             matricisedInput[i][0] = testInput[i];
-            matricisedInput[i][1] = customBlank;
+            matricisedInput[i][1] = "";
         }
         runMatrixTest(varName, matricisedInput, expectedTestOutput);
     }
@@ -1068,7 +1075,7 @@ public final class UINewCellTest extends UISpecTestCase {
       */
      private int getNumberofArgFromMatrix(final String matrixCellValue) {
          String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 2);
+                 matrixCellValue.length() - 1);
 
          String [] tokens = argList.split(", ");
 
@@ -1082,7 +1089,7 @@ public final class UINewCellTest extends UISpecTestCase {
       */
      private String [] getArgsFromMatrix(final String matrixCellValue) {
          String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 2);
+                 matrixCellValue.length() - 1);
 
          String [] tokens = argList.split(", ");
 

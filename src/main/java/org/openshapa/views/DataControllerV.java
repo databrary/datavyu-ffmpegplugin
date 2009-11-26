@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -94,8 +95,7 @@ public final class DataControllerV extends OpenSHAPADialog
         CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
-    private static final int MIN_DIALOG_WIDTH = 283;
-    private static final int TRACKS_PANEL_WIDTH = 600;
+
     private static final boolean TRACKS_PANEL_ENABLED = true;
 
     private TracksControllerV tracksControllerV;
@@ -605,9 +605,10 @@ public final class DataControllerV extends OpenSHAPADialog
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(findOffsetField, gridBagConstraints);
 
-        getContentPane().add(gridButtonPanel, java.awt.BorderLayout.CENTER);
+        getContentPane().add(gridButtonPanel, java.awt.BorderLayout.WEST);
 
-        tracksPanel.setPreferredSize(new java.awt.Dimension(600, 278));
+        tracksPanel.setBackground(new java.awt.Color(255, 255, 255));
+        tracksPanel.setPreferredSize(new java.awt.Dimension(800, 278));
         getContentPane().add(tracksPanel, java.awt.BorderLayout.EAST);
 
         pack();
@@ -687,12 +688,12 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void showTracksPanel(final boolean show) {
         if (show) {
-            this.setSize(MIN_DIALOG_WIDTH + TRACKS_PANEL_WIDTH,
-                    this.getHeight());
+            this.setSize(gridButtonPanel.getWidth() + tracksPanel.getWidth(),
+                    328);
         } else {
-            this.setSize(MIN_DIALOG_WIDTH, this.getHeight());
+            this.setSize(285, 328);
         }
-
+        
         this.tracksPanel.setVisible(show);
     }
 
