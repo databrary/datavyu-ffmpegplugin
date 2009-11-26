@@ -20,6 +20,11 @@ public class TimescalePainter extends Component {
     private long end;
     // The number of intervals to paint on the scale
     private int intervals;
+    // Pad the time scale from the left by this amount
+    private int paddingLeft;
+
+    // Pad the time scale from the right by this amount
+    private int paddingRight;
 
     /**
      * @return the total number of intervals printed on the panel.
@@ -45,6 +50,8 @@ public class TimescalePainter extends Component {
         clockFormat.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
         // Default draw scales
         intervals = 20;
+        paddingLeft = 101;
+        paddingRight = 20;
     }
 
     /**
@@ -77,9 +84,25 @@ public class TimescalePainter extends Component {
         this.start = start;
     }
 
+        public int getPaddingLeft() {
+        return paddingLeft;
+    }
+
+    public void setPaddingLeft(int paddingLeft) {
+        this.paddingLeft = paddingLeft;
+    }
+
+    public int getPaddingRight() {
+        return paddingRight;
+    }
+
+    public void setPaddingRight(int paddingRight) {
+        this.paddingRight = paddingRight;
+    }
+
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(TimescalePainter.WIDTH, 50);
+        return new Dimension(TimescalePainter.WIDTH, 35);
     }
 
     /**
@@ -99,8 +122,10 @@ public class TimescalePainter extends Component {
         String strMax = clockFormat.format(end);
         int majorWidth = 2 * fm.stringWidth(strMax);
 
+        final int effectiveWidth = size.width - paddingLeft - paddingRight;
+
         // How many major intervals will there be
-        final int major = (int)Math.floor((1D * size.width) / (1D * majorWidth));
+        final int major = (int)Math.floor((1D * effectiveWidth) / (1D * majorWidth));
 
         // Usable width - this is where the start to end is
         final int usableWidth = major * majorWidth;
@@ -112,16 +137,16 @@ public class TimescalePainter extends Component {
         final float interval = (end - start) / (usableWidth / intervalWidth);
 
         // Interval printing and labelling
-        for (float x = 0; x <= size.width; x += majorWidth) {                
-            g2d.drawLine((int)x, 0, (int)x, 25);
-            g2d.drawLine((int)x+1, 0, (int)x+1, 25);
+        for (float x = 0; x <= effectiveWidth; x += majorWidth) {
+            g2d.drawLine((int)x + paddingLeft, 0, (int)x + paddingLeft, 25);
+            g2d.drawLine((int)x + 1 + paddingLeft, 0, (int)x + 1 + paddingLeft, 25);
 
             // What time does this interval represent
             float time = start + interval*(x/intervalWidth);
             String strTime = clockFormat.format(time);
             // Don't print if the string will be outside of the panel bounds
-            if ((x + fm.stringWidth(strTime) + 3) < size.width) {
-                g.drawString(strTime, (int)x+3, 35 - ascent);
+            if ((x + paddingLeft + fm.stringWidth(strTime) + 3) < (size.width - paddingRight)) {
+                g.drawString(strTime, (int)x + 3 + paddingLeft, 35 - ascent);
             }
         }
 
@@ -129,9 +154,14 @@ public class TimescalePainter extends Component {
          * intervals with floating point precision means some major intervals
          * do not get drawn.
          */
-        for (float x = 0; x <= size.width; x += intervalWidth) {
-             g2d.drawLine(Math.round(x), 0, Math.round(x), 10);
+        for (float x = 0; x <= effectiveWidth; x += intervalWidth) {
+             g2d.drawLine(Math.round(x + paddingLeft), 0, Math.round(x + paddingLeft), 10);
         }
+
+        // Draw the padding
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, paddingLeft, size.height);
+        g.fillRect(size.width - paddingRight, 0, paddingRight, size.height);
     }
     
 }
