@@ -74,8 +74,10 @@ public final class SoundDataViewer extends JFrame
     private static final int JUMPFIX = 20;
     /** Massive array with all the audio intensity data stored. */
     private int[] audioData;
-    /** Maximum filesize in milliseconds that will be preprocessed. */
-    private static final int MAXFILESIZE = 6 /* <-secs */ * 1000 / SCALING;
+    /** Maximum filesize in milliseconds that will be preprocessed.
+     * For some reason, it is now unsafe to make this as high as 120, although
+     * with the advent of the preprocessing window this shouldn't matter. */
+    private static final int MAXFILESIZE = 40 /* <-secs */ * 1000 / SCALING;
     /** Previous window title. */
     private String wTitle;
     /** Prefix attached to preprocessing window title information. */
@@ -254,8 +256,9 @@ public final class SoundDataViewer extends JFrame
                 error.setVisible(true);
                 error.add(failMsg);
                 superDesk.add(error);
-                finishedPreprocess = true;
                 return;
+            } finally {
+                finishedPreprocess = true;
             }
 
             if (terminate) {
@@ -291,7 +294,7 @@ public final class SoundDataViewer extends JFrame
             }
             superDesk.setSize(oldWidth, oldHeight);
             setSize(oldWidth, oldHeight);
-            
+
         }
 
     }
