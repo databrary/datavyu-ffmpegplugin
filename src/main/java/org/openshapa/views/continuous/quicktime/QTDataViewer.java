@@ -99,6 +99,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public void setDataFeed(final File videoFile) {
 
         try {
+            logger.error("Opening movie");
             this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
@@ -129,16 +130,14 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             this.add(QTFactory.makeQTComponent(movie).asComponent());
 
             setName(getClass().getSimpleName() + "-" + videoFile.getName());
-            this.invalidate();
-            setSize(WIN_X, WIN_Y); // Force this size since quicktime breaks for
-                                  // small frame sizes.
-            setResizable(false);
+            this.pack();
             this.setVisible(true);
 
             // Set the size of the window to be the same as the incoming video.
             this.setBounds(this.getX(), this.getY(),
                            movie.getBox().getWidth(),
                            movie.getBox().getHeight());
+            logger.error("movie open:" + fps);
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
