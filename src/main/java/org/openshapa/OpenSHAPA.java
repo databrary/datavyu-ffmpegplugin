@@ -17,6 +17,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
 import java.util.LinkedList;
+import java.util.Properties;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -24,6 +25,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.LocalStorage;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
@@ -233,6 +235,25 @@ implements KeyEventDispatcher {
     @Override
     protected void startup() {
         try {
+            // Configure logger - and start logging things.
+            Properties logProps = new Properties();
+            logProps.setProperty("log4j.rootLogger",
+                                 "DEBUG, A1");
+            logProps.setProperty("log4j.appender.A1",
+                                 "org.apache.log4j.FileAppender");
+            LocalStorage ls = OpenSHAPA.getApplication()
+                                       .getContext().getLocalStorage();
+            String logPath = ls.getDirectory().toString() + File.separator
+                             + "OpenSHAPA.log";
+            logProps.setProperty("log4j.appender.A1.file", logPath);
+
+            logProps.setProperty("log4j.appender.A1.layout",
+                                 "org.apache.log4j.PatternLayout");
+            logProps.setProperty("log4j.appender.A1.layout.ConversionPattern",
+                                 "%-4r [%t] %-5p %c %x - %m%n");
+            PropertyConfigurator.configure(logProps);
+            logger.info("Starting OpenSHAPA.");
+
             // Initalise DB
             db = new MacshapaDatabase();
 
@@ -420,10 +441,6 @@ implements KeyEventDispatcher {
      * @param args The command line arguments passed to OpenSHAPA.
      */
     public static void main(String[] args) {
-        // Configure logger - and start logging things.
-        PropertyConfigurator.configure("log4j.properties");
-        logger.info("Starting OpenSHAPA.");
-
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
             try {
