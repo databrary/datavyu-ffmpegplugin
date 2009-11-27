@@ -227,9 +227,7 @@ public class TracksControllerV {
         trackPainter.setEnd(30000);
         trackPainter.setOffset(6000);
         trackPainter.setIntervalTime(scale.getIntervalTime());
-//        System.out.println("Initial add interval time: " + scale.getIntervalTime());
         trackPainter.setIntervalWidth(scale.getIntervalWidth());
-//        System.out.println("Initial add interval width: " + scale.getIntervalWidth());
         trackPainter.setZoomWindowStart(scale.getStart());
         trackPainter.setZoomWindowEnd(scale.getEnd());
 
@@ -250,7 +248,7 @@ public class TracksControllerV {
             tracksInfoPanel.add(carriagePanel, c);
         }
 
-        tracksInfoPanel.validate();
+        tracksPanel.validate();
     }
 
     public void zoomInScale(ActionEvent evt) {
