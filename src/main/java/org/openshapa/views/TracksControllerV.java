@@ -35,12 +35,20 @@ public class TracksControllerV {
     private JPanel tracksInfoPanel;
     // Component that is responsible for rendering the time scale
     private TimescalePainter scale;
-
+    // Scroll pane that holds track information
     private JScrollPane tracksScrollPane;
 
+    /* Zoomed into the display by how much.
+     * Values should only be 1, 2, 4, 8, 16, 32
+     */
     private int zoomSetting = 1;
-
+    /**
+     * The value of the longest video's time length in milliseconds
+     */
     private long maxEnd;
+    /**
+     * The value of the earliest video's start time in milliseconds
+     */
     private long minStart;
 
     private List<TrackPainter> trackPainterList;
@@ -128,8 +136,15 @@ public class TracksControllerV {
 
         // Add the timescale
         scale = new TimescalePainter();
-        scale.setStart(minStart);
-        scale.setEnd(maxEnd);
+
+        {
+            Dimension size = new Dimension();
+            size.setSize(785, 35);
+            scale.setSize(size);
+            scale.setPreferredSize(size);
+        }
+
+        scale.setConstraints(minStart, maxEnd, zoomIntervals(1));
 
         {
             GridBagConstraints c = new GridBagConstraints();
@@ -167,7 +182,9 @@ public class TracksControllerV {
             c.gridwidth = 4;
             tracksPanel.add(tracksScrollPane, c);
         }
-        
+
+        tracksPanel.validate();
+
         trackPainterList = new ArrayList<TrackPainter>();
     }
 
@@ -223,7 +240,7 @@ public class TracksControllerV {
         {
             Dimension size = new Dimension();
             size.height = 70;
-            size.width = 667;
+            size.width = 668;
             carriagePanel.setPreferredSize(size);
             
             GridBagConstraints c = new GridBagConstraints();
@@ -240,22 +257,17 @@ public class TracksControllerV {
         zoomSetting = zoomSetting * 2;
         if (zoomSetting > 32) {
             zoomSetting = 32;
-            return;
         }
 
         long range = maxEnd - minStart;
-        long newStart = scale.getStart() + (range / (2*zoomSetting));
-        long newEnd = newStart + (range / zoomSetting);
+        long mid = range / 2;
+        long newStart = mid - (range / zoomSetting / 2);
+        long newEnd = mid + (range / zoomSetting / 2);
+        
+        scale.setConstraints(newStart, newEnd, zoomIntervals(zoomSetting));
 
-        int newIntervals = scale.getIntervals() - 4;
-        if (newIntervals < 4) {
-            newIntervals = 4;
-        }
-
-        scale.setStart(newStart);
-        scale.setEnd(newEnd);
-        scale.setIntervals(newIntervals);
-
+//        this.tracksPanel.invalidate();
+//        this.tracksPanel.repaint();
         scale.repaint();
     }
 
@@ -263,27 +275,22 @@ public class TracksControllerV {
         zoomSetting = zoomSetting / 2;
         if (zoomSetting < 1) {
             zoomSetting = 1;
-            return;
         }
-        
+
         long range = maxEnd - minStart;
-        long newStart = scale.getStart() + (range / (2*zoomSetting));
-        long newEnd = newStart + (range / zoomSetting);
+        long mid = range / 2;
+        long newStart = mid - (range / zoomSetting / 2);
+        long newEnd = mid + (range / zoomSetting / 2);
         
         if (zoomSetting == 1) {
             newStart = minStart;
             newEnd = maxEnd;
         }
-        
-        int newIntervals = scale.getIntervals() + 4;
-        if (newIntervals > 20) {
-            newIntervals = 20;
-        }
 
-        scale.setStart(newStart);
-        scale.setEnd(newEnd);
-        scale.setIntervals(newIntervals);
+        scale.setConstraints(newStart, newEnd, zoomIntervals(zoomSetting));
 
+//        this.tracksPanel.invalidate();
+//        this.tracksPanel.repaint();
         scale.repaint();
     }
 
@@ -301,6 +308,26 @@ public class TracksControllerV {
         }
 
         tracksInfoPanel.validate();
+    }
+
+    /**
+     * @param zoomValue supports 1x, 2x, 4x, 8x, 16x, 32x
+     * @return the amount of intervals to show given a zoom value
+     */
+    private int zoomIntervals(final int zoomValue) {
+        assert(zoomValue >= 1);
+        assert(zoomValue <= 32);
+        if (zoomValue <= 2) {
+            return 20;
+        }
+        if (zoomValue <= 8) {
+            return 10;
+        }
+        if (zoomValue <= 32) {
+            return 5;
+        }
+        // Default amount of zoom intervals
+        return 20;
     }
 
 }

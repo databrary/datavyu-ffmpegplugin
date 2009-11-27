@@ -90,51 +90,64 @@ public class TrackPainter extends Component {
         g.fillRect(0, 0, size.width, size.height);
 
         // Calculate effective start and end points for the carriage
-        long effectiveStart;
-        long effectiveEnd;
-        int effectiveXOffset;
+//        long effectiveStart;
+//        long effectiveEnd;
+        float effectiveXOffset;
+        /* Calculating carriage width by deleting offsets and remainders because
+         * using the displayed scale's measurements will sometimes result in a
+         * carriage with a visually inaccurate representation (gap from the
+         * displayed end of the carriage to the carriage holder's border)
+         */
+        float carriageWidth = size.width;
 
         if (start + offset >= zoomWindowStart) {
-            effectiveStart = start + offset;
-            effectiveXOffset = (int)((offset*1F / intervalTime) * intervalWidth);
+//            effectiveStart = start + offset;
+            effectiveXOffset = ((offset*1F / intervalTime) * intervalWidth);
+            carriageWidth -= effectiveXOffset;
         } else {
-            effectiveStart = zoomWindowStart;
+//            effectiveStart = zoomWindowStart;
             effectiveXOffset = 0;
         }
 
         if (end + offset <= zoomWindowEnd) {
-            effectiveEnd = end + offset;
+//            effectiveEnd = end + offset;
+            carriageWidth -= (zoomWindowEnd - (end + offset)) / intervalTime * intervalWidth;
         } else {
-            effectiveEnd = zoomWindowEnd;
+//            effectiveEnd = zoomWindowEnd;
         }
 
         int carriageHeight = (int)(size.getHeight() * 8D / 10D);
-        int carriageWidth = (int)(((effectiveEnd - effectiveStart)*1F /
-                intervalTime) * intervalWidth);
+//        float carriageWidth = (((effectiveEnd - effectiveStart)*1F) / intervalTime) * intervalWidth;
         int carriageYOffset = (int)(size.getHeight() / 10D);
 
         // Paint the carriage
         g.setColor(new Color(130,190,255)); // Light blue
-        g.fillRect(effectiveXOffset, carriageYOffset, carriageWidth, carriageHeight);
+        g.fillRect(Math.round(effectiveXOffset), carriageYOffset, Math.round(carriageWidth), carriageHeight);
 
         // Paint the carriage top and bottom outline
         g.setColor(Color.BLUE);
-        g.drawLine(effectiveXOffset, carriageYOffset,
-                effectiveXOffset + carriageWidth - 1, carriageYOffset);
-        g.drawLine(effectiveXOffset, carriageYOffset + carriageHeight,
-                effectiveXOffset + carriageWidth - 1,
+        g.drawLine(Math.round(effectiveXOffset),
+                carriageYOffset,
+                Math.round(effectiveXOffset + carriageWidth - 1),
+                carriageYOffset);
+        g.drawLine(Math.round(effectiveXOffset),
+                carriageYOffset + carriageHeight,
+                Math.round(effectiveXOffset + carriageWidth - 1),
                 carriageYOffset + carriageHeight);
 
         // Determine if the left outline should be painted
         if (start + offset >= zoomWindowStart) {
-            g.drawLine(effectiveXOffset, carriageYOffset, effectiveXOffset,
+            g.drawLine(Math.round(effectiveXOffset), 
+                    carriageYOffset,
+                    Math.round(effectiveXOffset),
                     carriageYOffset + carriageHeight);
         }
 
         // Determine if the right outline should be painted
         if (end + offset <= zoomWindowEnd) {
-            g.drawLine(effectiveXOffset + carriageWidth - 1, carriageYOffset,
-                    effectiveXOffset + carriageWidth - 1, 
+            g.drawLine(Math.round(effectiveXOffset + carriageWidth - 1),
+                    carriageYOffset,
+                    Math.round(effectiveXOffset + carriageWidth - 1),
                     carriageYOffset + carriageHeight);
         }
 
