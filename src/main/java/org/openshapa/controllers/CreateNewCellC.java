@@ -107,13 +107,15 @@ public final class CreateNewCellC {
         // the last created cell and need to set the previous cells offset...
         // But only if it is not 0.
         try {
-            DataCell dc = (DataCell) model
+            if (OpenSHAPA.getLastCreatedCellId() != 0) {
+                DataCell dc = (DataCell) model
                                      .getCell(OpenSHAPA.getLastCreatedCellId());
-            TimeStamp ts = dc.getOffset();
-            if (ts.getTime() == 0) {
-                ts.setTime(milliseconds - 1);
-                dc.setOffset(ts);
-                model.replaceCell(dc);
+                TimeStamp ts = dc.getOffset();
+                if (ts.getTime() == 0) {
+                    ts.setTime(milliseconds - 1);
+                    dc.setOffset(ts);
+                    model.replaceCell(dc);
+                }
             }
 
             // Create the new cell.
