@@ -201,13 +201,7 @@ public final class SoundDataViewer extends JFrame
                 int i = 0;
                 int check = 0;
                 while (i < (work - 1)) {
-                    long atime;
-                    //try {
-                        atime = getCurrentPreprocessTime();
-                    //} catch (QTException e) {
-                    //    logger.error("Couldn't get time", e);
-                    //    atime = 0;
-                    //}
+                    long atime = getCurrentPreprocessTime();
                     if (atime != oldTime) { // We have a new timecode
                         oldTime = atime;
                         while ((atime - 1) * numBands != i) {
