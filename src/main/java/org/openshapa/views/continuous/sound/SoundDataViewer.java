@@ -53,8 +53,9 @@ public final class SoundDataViewer extends JFrame
     /** An instance of the class LevelMeter, which draws the meter bars for the
      * sound levels. */
     private LevelMeter meter;
-    /** The number of milliseconds between each redraw of the LevelMeter canvas.
-     */
+    /** The scaling factor for audio preprocessing; samples are taken after
+     * this many milliseconds have passed. */
+    private static final int SCALING = 2;
     /** This is the preprocessing thread which generates the audioData array. */
     private PreProcess preThread;
     /** The number of milliseconds to wait between painting operations. */
@@ -74,7 +75,7 @@ public final class SoundDataViewer extends JFrame
     /** Massive array with all the audio intensity data stored. */
     private int[] audioData;
     /** Maximum filesize in milliseconds that will be preprocessed. */
-    private static final int MAXFILESIZE = 6 /* <-secs */ * 1000;
+    private static final int MAXFILESIZE = 6 /* <-secs */ * 1000 / SCALING;
     /** Previous window title. */
     private String wTitle;
     /** Prefix attached to preprocessing window title information. */
@@ -164,7 +165,7 @@ public final class SoundDataViewer extends JFrame
             numBands = bands;
 
             try {
-                if (paudio.getDuration() < MAXFILESIZE) {
+                if ((paudio.getDuration() / SCALING) < MAXFILESIZE) {
                     work = paudio.getDuration() * numBands;
                 } else {
                     pfix = ""; // The file was bigger than our threshold.
@@ -206,7 +207,8 @@ public final class SoundDataViewer extends JFrame
                         oldTime = atime;
                         while ((atime - 1) * numBands != i) {
                             // If we fell out of sync...
-                            long fixedJ = Math.max(1, atime - JUMPFIX);
+                            long fixedJ = Math.max(1, (atime * SCALING)
+                                    - JUMPFIX);
                             if ((atime - 1) * numBands > i) {
                                 // Rewind if we went too far,
                                 TimeRecord fixtime = new TimeRecord(
@@ -252,6 +254,7 @@ public final class SoundDataViewer extends JFrame
                 error.setVisible(true);
                 error.add(failMsg);
                 superDesk.add(error);
+                finishedPreprocess = true;
                 return;
             }
 
@@ -283,10 +286,12 @@ public final class SoundDataViewer extends JFrame
                 Thread.sleep(VIDEO_DRAW_DELAY);
             } catch (InterruptedException ex) {
                 logger.error("Couldn't sleep", ex);
+            } finally {
+                finishedPreprocess = true;
             }
             superDesk.setSize(oldWidth, oldHeight);
             setSize(oldWidth, oldHeight);
-            finishedPreprocess = true;
+            
         }
 
     }
@@ -470,7 +475,7 @@ public final class SoundDataViewer extends JFrame
      */
     public void seekTo(final long position) {
         try {
-            if (audio != null && finishedPreprocess) {
+            if (audio != null) {
                 TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
                         position);
                 audio.setTime(time);
@@ -487,7 +492,7 @@ public final class SoundDataViewer extends JFrame
      * @throws QTException If error occurs accessing underlying implementation.
      */
     public long getCurrentTime() throws QTException {
-        return audio.getTime();
+        return audio.getTime() / SCALING;
     }
 
     /**
@@ -496,7 +501,7 @@ public final class SoundDataViewer extends JFrame
      * @throws QTException If error occurs accessing underlying implementation.
      */
     public long getCurrentPreprocessTime() throws QTException {
-        return paudio.getTime();
+        return paudio.getTime() / SCALING;
     }
 
 
