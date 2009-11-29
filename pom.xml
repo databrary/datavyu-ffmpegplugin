@@ -281,6 +281,10 @@
           <mainClass>org.openshapa.OpenSHAPA</mainClass>
           <jvmVersion>1.5+</jvmVersion>
           <iconFile>${basedir}/src/main/resources/icons/OpenSHAPA.icns</iconFile>
+
+          <!-- BugzID:750 - Force dmg build to run in a 32-bit JVM -->
+          <dictionaryFile>${basedir}/Info.plist</dictionaryFile>
+
           <!-- All mvn assembly:assembly first - so that the output directory
                for the DMG is first created, otherwise this line will do
                nothing. -->
@@ -309,7 +313,7 @@
 
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-		<configuration>
+          <configuration>
             <archive>
                 <manifest>
                     <mainClass>org.openshapa.OpenSHAPA</mainClass>

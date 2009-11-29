@@ -188,7 +188,7 @@ public final class DataControllerV extends OpenSHAPADialog
         shuttleRate = 0;
         for (DataViewer viewer : viewers) {
             viewer.stop();
-            // viewer.seekTo(time);
+            viewer.seekTo(time);
         }
     }
 
@@ -660,10 +660,11 @@ public final class DataControllerV extends OpenSHAPADialog
     }//GEN-LAST:event_openVideoButtonActionPerformed
 
     /**
-     * Adds a track to the tracks panel
+     * Adds a track to the tracks panel.
+     *
      * @param name the name of the track to add
      */
-    public void addTrack(String name) {
+    public void addTrack(final String name) {
         tracksControllerV.addNewTrack(name);
     }
 

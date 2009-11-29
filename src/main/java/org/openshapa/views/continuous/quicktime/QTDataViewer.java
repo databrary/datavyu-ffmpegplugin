@@ -71,13 +71,11 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
             // Initalise QTJava.
             QTSession.open();
-
-        } catch (QTException e) {
+        } catch (Throwable e) {
             logger.error("Unable to create QTVideoViewer", e);
         }
         initComponents();
     }
-
 
     //--------------------------------------------------------------------------
     // [interface] org.openshapa.views.continuous.DataViewer
@@ -129,10 +127,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             this.add(QTFactory.makeQTComponent(movie).asComponent());
 
             setName(getClass().getSimpleName() + "-" + videoFile.getName());
-            this.invalidate();
-            setSize(WIN_X, WIN_Y); // Force this size since quicktime breaks for
-                                  // small frame sizes.
-            setResizable(false);
+            this.pack();
             this.setVisible(true);
 
             // Set the size of the window to be the same as the incoming video.

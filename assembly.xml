@@ -5,13 +5,6 @@
     <format>zip</format>
   </formats>
 
-  <!-- Include configuration for log4j. -->
-  <files>
-    <file>
-      <source>log4j.properties</source>
-    </file>
-  </files>
-
   <!-- Include the samples directory. -->
   <fileSets>
     <fileSet>
