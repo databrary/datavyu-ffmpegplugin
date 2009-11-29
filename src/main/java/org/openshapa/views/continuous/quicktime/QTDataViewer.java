@@ -99,7 +99,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public void setDataFeed(final File videoFile) {
 
         try {
-            logger.error("Opening movie");
             this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
@@ -137,7 +136,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             this.setBounds(this.getX(), this.getY(),
                            movie.getBox().getWidth(),
                            movie.getBox().getHeight());
-            logger.error("movie open:" + fps);
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }

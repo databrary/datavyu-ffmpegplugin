@@ -310,7 +310,7 @@
 
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-		<configuration>
+          <configuration>
             <archive>
                 <manifest>
                     <mainClass>org.openshapa.OpenSHAPA</mainClass>
