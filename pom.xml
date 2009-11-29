@@ -280,7 +280,8 @@
           <bundleName>OpenSHAPA</bundleName>
           <mainClass>org.openshapa.OpenSHAPA</mainClass>
           <jvmVersion>1.5+</jvmVersion>
-          <iconFile>${basedir}/src/main/resources/icons/OpenSHAPA.icns</iconFile>      
+          <iconFile>${basedir}/src/main/resources/icons/OpenSHAPA.icns</iconFile>
+          <dictionaryFile>${basedir}/Info.plist</dictionaryFile>
 
           <!-- All mvn assembly:assembly first - so that the output directory
                for the DMG is first created, otherwise this line will do

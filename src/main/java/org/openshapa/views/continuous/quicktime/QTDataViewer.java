@@ -71,13 +71,11 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
             // Initalise QTJava.
             QTSession.open();
-
-        } catch (QTException e) {
+        } catch (Throwable e) {
             logger.error("Unable to create QTVideoViewer", e);
         }
         initComponents();
     }
-
 
     //--------------------------------------------------------------------------
     // [interface] org.openshapa.views.continuous.DataViewer
