@@ -26,6 +26,10 @@ import org.openshapa.OpenSHAPA;
  */
 public final class PluginManager {
 
+    /** The default plugin to present to the user when loading data. */
+    private static final String DEFAULT_PLUGIN =
+                            "org.openshapa.views.continuous.quicktime.QTPlugin";
+
     /**
      * @return The single instance of the PluginManager object in OpenSHAPA.
      */
@@ -208,7 +212,13 @@ public final class PluginManager {
                 for (Class c : implInterfaces) {
                     if (c.equals(plugin)) {
                         Plugin p = (Plugin) testClass.newInstance();
-                        this.availablePlugins.add(p);
+
+                        // BugzID:749 - Force movie filter to be default filter.
+                        if (cName.equalsIgnoreCase(DEFAULT_PLUGIN)) {
+                            this.availablePlugins.add(p);
+                        } else {
+                            this.availablePlugins.add(0, p);
+                        }
                         break;
                     }
                 }
