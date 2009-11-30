@@ -60,7 +60,7 @@ public class ClockTimerTest {
     // [Tests]
     //
 
-    @Test
+//    @Test
     public void testTicks() throws InterruptedException {
         System.out.println("testing 'ticks'");
         instance.registerListener(new ClockTimer.ClockListener() {
