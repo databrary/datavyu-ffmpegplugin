@@ -1,6 +1,5 @@
 package org.openshapa.views;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -151,7 +150,7 @@ public final class DataControllerV extends OpenSHAPADialog
     public void clockStart(final long time) {
         setCurrentTime(time);
         for (DataViewer viewer : viewers) {
-            // viewer.seekTo(time);
+            viewer.seekTo(time);
             viewer.play();
         }
     }
@@ -624,31 +623,33 @@ public final class DataControllerV extends OpenSHAPADialog
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
         // Add file filters for each of the supported plugins.
-        List<FileFilter> filters = PluginManager.getInstance().getPluginFileFilters();
-        for (FileFilter f : filters) {
+        for (
+                FileFilter f
+                : PluginManager.getInstance().getPluginFileFilters()
+        ) {
             jd.addChoosableFileFilter(f);
         }
-        int result = jd.showOpenDialog(this);
-
-        if (result == JFileChooser.APPROVE_OPTION) {
+        if (JFileChooser.APPROVE_OPTION == jd.showOpenDialog(this)) {
             File f = jd.getSelectedFile();
+            FileFilter ff = jd.getFileFilter();
 
-            // Build the data viewer for the file.
-            DataViewer viewer = PluginManager.getInstance().buildViewerFromFile(f, jd.getFileFilter());
-            if (viewer == null) {
-                logger.error("No DataViewer available.");
-                return;
+            for (
+                    DataViewer viewer :
+                    PluginManager.getInstance().buildDataViewers(ff, f)
+            ) {
+                this.addDataViewer(viewer);
             }
 
             viewer.setDataFeed(f);
             viewer.setParentController(this);
-            OpenSHAPA.getApplication().show(viewer.getParentJFrame());
+            //OpenSHAPA.getApplication().show(viewer.getParentJFrame());
 
             // adjust the overall frame rate.
             float fps = viewer.getFrameRate();
             if (fps > currentFPS) {
                 currentFPS = fps;
             }
+            OpenSHAPA.getApplication().show(viewer.getParentJFrame());
 
             // Add the QTDataViewer to the list of viewers we are controlling.
             this.viewers.add(viewer);
@@ -739,7 +740,9 @@ public final class DataControllerV extends OpenSHAPADialog
         } else {
             pauseRate = clock.getRate();
             clock.stop();
-            lblSpeed.setText("[" + FloatUtils.doubleToFractionStr(new Double(pauseRate)) + "]");
+            lblSpeed.setText("["
+                     + FloatUtils.doubleToFractionStr(new Double(pauseRate))
+                     + "]");
         }
     }
 

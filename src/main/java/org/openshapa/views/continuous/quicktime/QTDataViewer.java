@@ -18,6 +18,7 @@ import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * The viewer for a quicktime video file.
@@ -80,6 +81,12 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     //--------------------------------------------------------------------------
     // [interface] org.openshapa.views.continuous.DataViewer
     //
+
+    public long getDuration() { throw new NotImplementedException(); }
+    public long getOffset() { throw new NotImplementedException(); }
+    public void setOffset(final long offset) { 
+        throw new NotImplementedException(); 
+    }
 
     /**
      * @return The parent JFrame that this data viewer resides within.
