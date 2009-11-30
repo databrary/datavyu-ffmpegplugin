@@ -71,6 +71,9 @@ public final class DataControllerV extends OpenSHAPADialog
         }
     }
 
+    /** Determines whether or not Shift is being held. */
+    private boolean shiftMask = false;
+
     /**
      * Enumeration of shuttle directions.
      */
@@ -140,7 +143,7 @@ public final class DataControllerV extends OpenSHAPADialog
     public DataControllerV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
 
-        
+
 
 
         clock.registerListener(this);
@@ -153,6 +156,12 @@ public final class DataControllerV extends OpenSHAPADialog
 
         tracksControllerV = new TracksControllerV();
         tracksPanel.add(tracksControllerV.getTracksPanel());
+    }
+
+    /** Tells the Data Controller if shift is being held or not.
+     * @param shift True for shift held; false otherwise. */
+    public void setShiftMask(final boolean shift) {
+        shiftMask = shift;
     }
 
     //--------------------------------------------------------------------------
@@ -250,10 +259,6 @@ public final class DataControllerV extends OpenSHAPADialog
         return clock.getTime();
     }
 
-    /** Checks whether or not the DataController is in focus. */
-    public boolean isInFocus() {
-        return hasFocus();
-    }
 
     /**
      * Remove the specifed viewer form the controller.
@@ -957,11 +962,15 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action
     public void findAction() {
-        try {
-            jumpTo(CLOCK_FORMAT.parse(this.findTextField.getText()).getTime());
-
-        } catch (ParseException e) {
-            logger.error("unable to find within video", e);
+        if (shiftMask) {
+            findOffsetAction();
+        } else {
+            try {
+                jumpTo(CLOCK_FORMAT.parse(
+                        this.findTextField.getText()).getTime());
+            } catch (ParseException e) {
+                logger.error("unable to find within video", e);
+            }
         }
     }
 
@@ -971,7 +980,6 @@ public final class DataControllerV extends OpenSHAPADialog
     public void findOffsetAction() {
         try {
            jumpTo(CLOCK_FORMAT.parse(this.findOffsetField.getText()).getTime());
-
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
         }

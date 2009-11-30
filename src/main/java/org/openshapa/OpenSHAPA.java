@@ -44,7 +44,7 @@ implements KeyEventDispatcher {
      * @param evt The event that triggered this action.
      *
      * @return true if the KeyboardFocusManager should take no further action
-     * with regard to the KeyEvent; false  otherwise
+     * with regard to the KeyEvent; false otherwise
      */
     public boolean dispatchKeyEvent(final KeyEvent evt) {
         /**
@@ -79,6 +79,15 @@ implements KeyEventDispatcher {
                 default:
                     break;
             }
+        }
+
+        // BugzID:784 - Shift key is passed to Data Controller.
+        if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
+                if (evt.getID() == KeyEvent.KEY_PRESSED) {
+                    dataController.setShiftMask(true);
+                } else {
+                    dataController.setShiftMask(false);
+                }
         }
 
         /**
