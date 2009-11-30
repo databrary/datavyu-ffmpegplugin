@@ -638,7 +638,7 @@ public final class DataControllerV extends OpenSHAPADialog
         }
     }//GEN-LAST:event_openVideoButtonActionPerformed
 
-    private void addDataViewer(final DataViewer viewer) {
+    private void addDataViewer(final DataViewer viewer, final File f) {
         viewer.setParentController(this);
 
         // Add the QTDataViewer to the list of viewers we are controlling.
