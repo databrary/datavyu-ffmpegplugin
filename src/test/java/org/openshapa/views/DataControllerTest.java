@@ -233,7 +233,6 @@ public class DataControllerTest {
                     (Integer) PrivateAccessor.getField(instance, "shuttleRate")
                 );
             instance.shuttleForwardAction();
-            Thread.sleep(5);
             assertEquals(
                     ShuttleDirection.FORWARDS,
                     (ShuttleDirection) PrivateAccessor.getField(
