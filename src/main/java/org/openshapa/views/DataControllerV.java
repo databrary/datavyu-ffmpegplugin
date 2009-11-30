@@ -1090,9 +1090,9 @@ public final class DataControllerV extends OpenSHAPADialog
     public void jogForwardAction() {
         int mul = 1;
         if (shiftMask) {
-            mul = 5;
+            mul = SHIFTJOG;
             if (ctrlMask) {
-                mul = 10;
+                mul = CTRLSHIFTJOG;
             }
         }
         jump((long) ((mul * ONE_SECOND) / currentFPS));
