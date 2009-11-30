@@ -102,7 +102,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/set-cell-onset selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/set-cell-onset-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -128,7 +128,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/set-cell-offset selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/set-cell-offset-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -154,7 +154,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/rewind selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/rewind-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -180,7 +180,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/play selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/play-selected.png"/>
             </Property>
             <Property name="requestFocusEnabled" type="boolean" value="false"/>
           </Properties>
@@ -207,7 +207,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/fast-forward selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/fast-forward-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -233,7 +233,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/go-back selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/go-back-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -259,7 +259,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/shuttle-backward selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/shuttle-backward-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -285,7 +285,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/pause selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/pause-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -311,7 +311,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/shuttle-forward selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/shuttle-forward-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -337,7 +337,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/find selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/find-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -363,7 +363,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/jog-backward selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/jog-backward-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -389,7 +389,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/stop selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/stop-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -415,7 +415,7 @@
               <Dimension value="[90, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/create-new-cell-and-set-onset selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/create-new-cell-and-set-onset-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -441,7 +441,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/jog-forward selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/jog-forward-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -467,7 +467,7 @@
               <Dimension value="[45, 45]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/set-new-cell-offset selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/set-new-cell-offset-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -628,7 +628,7 @@
               <Dimension value="[45, 90]"/>
             </Property>
             <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/icons/DataController/eng/create-new-cell selected.png"/>
+              <Image iconType="3" name="/icons/DataController/eng/create-new-cell-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
