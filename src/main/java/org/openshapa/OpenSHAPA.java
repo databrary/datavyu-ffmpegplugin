@@ -102,64 +102,64 @@ implements KeyEventDispatcher {
 
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_DIVIDE:
-                dataController.setCellOnsetAction();
+                dataController.pressSetCellOnset();
                 break;
             case KeyEvent.VK_ASTERISK:
             case KeyEvent.VK_MULTIPLY:
-                dataController.setCellOffsetAction();
+                dataController.pressSetCellOffset();
                 break;
             case KeyEvent.VK_NUMPAD7:
-                dataController.rewindAction();
+                dataController.pressRewind();
                 break;
             case KeyEvent.VK_NUMPAD8:
-                dataController.playAction();
+                dataController.pressPlay();
                 break;
             case KeyEvent.VK_NUMPAD9:
-                dataController.forwardAction();
+                dataController.pressForward();
                 break;
             case KeyEvent.VK_NUMPAD4:
-                dataController.shuttleBackAction();
+                dataController.pressShuttleBack();
                 break;
             case KeyEvent.VK_NUMPAD2:
-                dataController.pauseAction();
+                dataController.pressPause();
                 break;
             case KeyEvent.VK_NUMPAD6:
-                dataController.shuttleForwardAction();
+                dataController.pressShuttleForward();
                 break;
             case KeyEvent.VK_NUMPAD1:
-                dataController.jogBackAction();
+                dataController.pressJogBack();
                 break;
             case KeyEvent.VK_NUMPAD5:
-                dataController.stopAction();
+                dataController.pressStop();
                 break;
             case KeyEvent.VK_NUMPAD3:
-                dataController.jogForwardAction();
+                dataController.pressJogForward();
                 break;
             case KeyEvent.VK_NUMPAD0:
-                dataController.createNewCellAction();
+                dataController.pressCreateNewCellSettingOffset();
                 break;
             case KeyEvent.VK_DECIMAL:
-                dataController.setNewCellStopTime();
+                dataController.pressSetNewCellOnset();
                 break;
             case KeyEvent.VK_SUBTRACT:
-                    dataController.goBackAction();
+                dataController.pressGoBack();
                 break;
             case KeyEvent.VK_ADD:
                 if (modifiers == KeyEvent.SHIFT_MASK) {
+                    dataController.pressFind();
                     dataController.findOffsetAction();
                 } else {
-                    dataController.findAction();
+                    dataController.pressFind();
                 }
                 break;
             case KeyEvent.VK_ENTER:
-                new CreateNewCellC();
+                dataController.pressCreateNewCell();
                 break;
             default:
                 // Do nothing with the key.
                 result = false;
                 break;
         }
-
         return result;
     }
 
