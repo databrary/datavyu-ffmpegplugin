@@ -207,7 +207,10 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void clockStop(final long time) {
         setCurrentTime(time);
+        /*
         shuttleRate = 0;
+        pauseRate = 1;
+        shuttleDirection = ShuttleDirection.UNDEFINED;*/
         for (DataViewer viewer : viewers) {
             viewer.stop();
             viewer.seekTo(time);
@@ -931,7 +934,8 @@ public final class DataControllerV extends OpenSHAPADialog
         // BugzID:794 - Previously ignored pauseRate if paused
         if (clock.isStopped()) {
             shuttleRate = findShuttleIndex(pauseRate);
-            shuttleAt(pauseRate);
+            shuttle(ShuttleDirection.FORWARDS);
+            // shuttle(ShuttleDirection.BACKWARDS); This makes tests fail.
         } else {
             shuttle(ShuttleDirection.FORWARDS);
         }
@@ -945,7 +949,8 @@ public final class DataControllerV extends OpenSHAPADialog
         // BugzID:794 - Previously ignored pauseRate if paused
         if (clock.isStopped()) {
             shuttleRate = findShuttleIndex(pauseRate);
-            shuttleAt(pauseRate);
+            shuttle(ShuttleDirection.BACKWARDS);
+            // shuttle(ShuttleDirection.FORWARDS); This makes tests fail.
         } else {
             shuttle(ShuttleDirection.BACKWARDS);
         }
@@ -1058,6 +1063,8 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void playAt(final float rate) {
         shuttleDirection = ShuttleDirection.UNDEFINED;
+        shuttleRate = 0;
+        pauseRate = 0;
         shuttleAt(rate);
     }
 
