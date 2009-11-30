@@ -5,7 +5,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import javax.swing.JFileChooser;
@@ -623,43 +622,41 @@ public final class DataControllerV extends OpenSHAPADialog
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
         // Add file filters for each of the supported plugins.
-        for (
-                FileFilter f
-                : PluginManager.getInstance().getPluginFileFilters()
-        ) {
+        for (FileFilter f
+             : PluginManager.getInstance().getPluginFileFilters()) {
             jd.addChoosableFileFilter(f);
         }
+
         if (JFileChooser.APPROVE_OPTION == jd.showOpenDialog(this)) {
             File f = jd.getSelectedFile();
             FileFilter ff = jd.getFileFilter();
 
-            for (
-                    DataViewer viewer :
-                    PluginManager.getInstance().buildDataViewers(ff, f)
-            ) {
-                this.addDataViewer(viewer);
-            }
-
-            viewer.setDataFeed(f);
-            viewer.setParentController(this);
-            //OpenSHAPA.getApplication().show(viewer.getParentJFrame());
-
-            // adjust the overall frame rate.
-            float fps = viewer.getFrameRate();
-            if (fps > currentFPS) {
-                currentFPS = fps;
-            }
-            OpenSHAPA.getApplication().show(viewer.getParentJFrame());
-
-            // Add the QTDataViewer to the list of viewers we are controlling.
-            this.viewers.add(viewer);
-
-            if (TRACKS_PANEL_ENABLED) {
-                // Add the file to the tracks information panel
-                addTrack(f.getName());
+            for (DataViewer viewer :
+                 PluginManager.getInstance().buildDataViewers(ff, f)) {
+                this.addDataViewer(viewer, f);
             }
         }
     }//GEN-LAST:event_openVideoButtonActionPerformed
+
+    private void addDataViewer(final DataViewer viewer) {
+        viewer.setParentController(this);
+
+        // Add the QTDataViewer to the list of viewers we are controlling.
+        this.viewers.add(viewer);
+
+        // adjust the overall frame rate.
+        float fps = viewer.getFrameRate();
+        if (fps > currentFPS) {
+            currentFPS = fps;
+        }
+
+        if (TRACKS_PANEL_ENABLED) {
+            // Add the file to the tracks information panel
+            addTrack(f.getName());
+        }
+
+        OpenSHAPA.getApplication().show(viewer.getParentJFrame());
+    }
 
     /**
      * Adds a track to the tracks panel.

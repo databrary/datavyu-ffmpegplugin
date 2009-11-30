@@ -22,16 +22,11 @@ import quicktime.std.movies.Movie;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.AudioMediaHandler;
 import quicktime.std.movies.media.Media;
-<<<<<<< HEAD
 import quicktime.std.movies.media.MediaEQSpectrumBands;
 
 import quicktime.app.view.QTFactory;
-
-
-=======
-import quicktime.std.movies.media.SampleTimeInfo;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
->>>>>>> BugzID:136 - implementation of openSHAPA project file with multiple viewers and offsets.
+
 
 /**
  * The viewer for an audio file.
@@ -138,21 +133,19 @@ public final class SoundDataViewer extends JFrame
         initComponents();
     }
 
-<<<<<<< HEAD
+
     //--------------------------------------------------------------------------
     // [interface] org.openshapa.views.continuous.DataViewer
     //
     /**
      * @return The parent JFrame that this data viewer resides within.
      */
-=======
     public long getDuration() { throw new NotImplementedException(); }
     public long getOffset() { throw new NotImplementedException(); }
     public void setOffset(final long offset) {
         throw new NotImplementedException();
     }
 
->>>>>>> BugzID:136 - implementation of openSHAPA project file with multiple viewers and offsets.
     public JFrame getParentJFrame() {
         return this;
     }

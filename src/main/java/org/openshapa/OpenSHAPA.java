@@ -169,7 +169,7 @@ implements KeyEventDispatcher {
     public void showQTVideoController() {
         OpenSHAPA.getApplication().show(dataController);
         // FogBugz 777: Temporary hard coded value
-        dataController.showTracksPanel(false); // Before commit - just hide the
+        dataController.showTracksPanel(true); // Before commit - just hide the
                                                // track panel till its a bit
                                                // further along.
     }

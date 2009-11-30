@@ -1,6 +1,8 @@
 package org.openshapa.views.continuous;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -9,10 +11,13 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.LocalStorage;
@@ -251,7 +256,7 @@ public final class PluginManager {
             method.setAccessible(true);
             method.invoke(sysLoader, new Object[] {f.toURL()});
         } catch (Throwable t) {
-            logger.error("Unable to inject class into class path.", t);
+            LOGGER.error("Unable to inject class into class path.", t);
         }
     }
 
@@ -265,9 +270,8 @@ public final class PluginManager {
      */
     private void addPlugin(final String className) {
         try {
-            String cName = className.substring(0,
-                                        className.length() - ".class".length());
-            cName = cName.replace('/', '.');
+            String cName = className.replaceAll("\\.class$", "")
+                                    .replace('/', '.');
 
             // Ignore UI tests - when they load they mess everything up (the
             // uispec4j interceptor kicks in and the UI stops working.
@@ -277,25 +281,20 @@ public final class PluginManager {
                 Class testClass = Class.forName(cName);
                 Class[] implInterfaces = testClass.getInterfaces();
                 for (Class c : implInterfaces) {
-                    if (c.equals(plugin)) {
+                    if (PLUGIN_CLASS.isAssignableFrom(testClass)) {
                         Plugin p = (Plugin) testClass.newInstance();
+                        plugins.put(p.getFileFilter(), p);
 
-                        // BugzID:749 - Force movie filter to be default filter.
-                        if (cName.equalsIgnoreCase(DEFAULT_PLUGIN)) {
-                            this.availablePlugins.add(p);
-                        } else {
-                            this.availablePlugins.add(0, p);
-                        }
                         break;
                     }
                 }
              }
         } catch (InstantiationException e) {
-            logger.error("Unable to instantiate plugin", e);
+            LOGGER.error("Unable to instantiate plugin", e);
         } catch (IllegalAccessException e) {
-            logger.error("Unable to instantiate plugin", e);
+            LOGGER.error("Unable to instantiate plugin", e);
         } catch (ClassNotFoundException e) {
-            logger.error("Unable to find plugin.", e);
+            LOGGER.error("Unable to find plugin.", e);
         }
     }
 
@@ -304,9 +303,6 @@ public final class PluginManager {
      */
     public Iterable<FileFilter> getPluginFileFilters() {
         return plugins.keySet();
-    }
-
-        return result;
     }
 
     /**
@@ -318,10 +314,8 @@ public final class PluginManager {
      * @param f data stream file
      * @return initialized data viewers
      */
-    public Iterable<DataViewer> buildDataViewers(
-            final FileFilter ff,
-            final File f
-    ) {
+    public Iterable<DataViewer> buildDataViewers(final FileFilter ff,
+                                                 final File f) {
         List<DataViewer> dvs = new ArrayList<DataViewer>();
         if (DEFAULT_FILE_FILTER == ff) {
             ProjectDescriptor pd = new ProjectDescriptor();
@@ -329,9 +323,7 @@ public final class PluginManager {
             try {
                 pd.process(new FileReader(f));
             } catch (FileNotFoundException ex) {
-                java.util.logging.Logger
-                        .getLogger(PluginManager.class.getName())
-                        .log(Level.SEVERE, f.getAbsolutePath(), ex);
+                LOGGER.error("Unable to build viewer", ex);
             }
 
             for (ProjectDescriptor.Entry pde : pd.getEntries()) {
@@ -339,13 +331,9 @@ public final class PluginManager {
                 try {
                     plugin = (Plugin) pde.plugin.newInstance();
                 } catch (InstantiationException ex) {
-                    java.util.logging.Logger.getLogger(
-                            PluginManager.class.getName())
-                                    .log(Level.SEVERE, null, ex);
+                    LOGGER.error("Unable to build plugin instance", ex);
                 } catch (IllegalAccessException ex) {
-                    java.util.logging.Logger.getLogger(
-                            PluginManager.class.getName())
-                                    .log(Level.SEVERE, null, ex);
+                    LOGGER.error("Unable to access plugin", ex);
                 }
                 DataViewer dataViewer = plugin.getNewDataViewer();
                 dataViewer.setDataFeed(pde.file);
