@@ -74,6 +74,15 @@ public final class DataControllerV extends OpenSHAPADialog
     /** Determines whether or not Shift is being held. */
     private boolean shiftMask = false;
 
+    /** Determines whether or not Control is being held. */
+    private boolean ctrlMask = false;
+
+    /** The jump multiplier for shift-jogging. */
+    private static final int SHIFTJOG = 5;
+
+    /** The jump multiplier for ctrl-shift-jogging. */
+    private static final int CTRLSHIFTJOG = 10;
+
     /**
      * Enumeration of shuttle directions.
      */
@@ -162,6 +171,12 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param shift True for shift held; false otherwise. */
     public void setShiftMask(final boolean shift) {
         shiftMask = shift;
+    }
+
+    /** Tells the Data Controller if ctrl is being held or not.
+     * @param ctrl True for ctrl held; false otherwise. */
+    public void setCtrlMask(final boolean ctrl) {
+        ctrlMask = ctrl;
     }
 
     //--------------------------------------------------------------------------
@@ -1058,7 +1073,14 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action
     public void jogBackAction() {
-        jump((long) (-ONE_SECOND / currentFPS));
+        int mul = 1;
+        if (shiftMask) {
+            mul = SHIFTJOG;
+            if (ctrlMask) {
+                mul = CTRLSHIFTJOG;
+            }
+        }
+        jump((long) (mul * (-ONE_SECOND) / currentFPS));
     }
 
     /**
@@ -1066,7 +1088,14 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action
     public void jogForwardAction() {
-        jump((long) (ONE_SECOND / currentFPS));
+        int mul = 1;
+        if (shiftMask) {
+            mul = 5;
+            if (ctrlMask) {
+                mul = 10;
+            }
+        }
+        jump((long) ((mul * ONE_SECOND) / currentFPS));
     }
 
     //--------------------------------------------------------------------------

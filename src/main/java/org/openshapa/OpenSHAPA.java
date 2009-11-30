@@ -90,6 +90,15 @@ implements KeyEventDispatcher {
                 }
         }
 
+        // BugzID:736 - Control key is passed to Data Controller.
+        if (evt.getKeyCode() == KeyEvent.VK_CONTROL) {
+                if (evt.getID() == KeyEvent.KEY_PRESSED) {
+                    dataController.setCtrlMask(true);
+                } else {
+                    dataController.setCtrlMask(false);
+                }
+        }
+
         /**
          * The following cases handle numpad keystrokes.
          */
