@@ -207,10 +207,6 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void clockStop(final long time) {
         setCurrentTime(time);
-        /*
-        shuttleRate = 0;
-        pauseRate = 1;
-        shuttleDirection = ShuttleDirection.UNDEFINED;*/
         for (DataViewer viewer : viewers) {
             viewer.stop();
             viewer.seekTo(time);
@@ -931,28 +927,47 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action
     public void shuttleForwardAction() {
-        // BugzID:794 - Previously ignored pauseRate if paused
-        if (clock.isStopped()) {
-            shuttleRate = findShuttleIndex(pauseRate);
+        if (clock.getTime() <= 0 && (shuttleRate != 0
+                || shuttleDirection != shuttleDirection.UNDEFINED)) {
+            shuttleRate = 0;
+            pauseRate = 0;
+            shuttleDirection = ShuttleDirection.UNDEFINED;
             shuttle(ShuttleDirection.FORWARDS);
-            // shuttle(ShuttleDirection.BACKWARDS); This makes tests fail.
         } else {
-            shuttle(ShuttleDirection.FORWARDS);
+            // BugzID:794 - Previously ignored pauseRate if paused
+            if (clock.isStopped()) {
+                shuttleRate = findShuttleIndex(pauseRate);
+                shuttle(ShuttleDirection.FORWARDS);
+                // shuttle(ShuttleDirection.BACKWARDS);
+                // This makes current tests fail, but may be the desired
+                // functionality.
+            } else {
+                shuttle(ShuttleDirection.FORWARDS);
+            }
         }
     }
 
     /**
-     * Action to inovke when the user clicks on the shuttle back button.
+     * Action to invoke when the user clicks on the shuttle back button.
      */
     @Action
     public void shuttleBackAction() {
-        // BugzID:794 - Previously ignored pauseRate if paused
-        if (clock.isStopped()) {
-            shuttleRate = findShuttleIndex(pauseRate);
-            shuttle(ShuttleDirection.BACKWARDS);
-            // shuttle(ShuttleDirection.FORWARDS); This makes tests fail.
+        if (clock.getTime() <= 0 && (shuttleRate != 0
+                || shuttleDirection != shuttleDirection.UNDEFINED)) {
+            shuttleRate = 0;
+            pauseRate = 0;
+            shuttleDirection = ShuttleDirection.UNDEFINED;
         } else {
-            shuttle(ShuttleDirection.BACKWARDS);
+        // BugzID:794 - Previously ignored pauseRate if paused
+            if (clock.isStopped()) {
+                shuttleRate = findShuttleIndex(pauseRate);
+                shuttle(ShuttleDirection.BACKWARDS);
+                // shuttle(ShuttleDirection.FORWARDS);
+                // This makes current tests fail, but may be the desired
+                // functionality.
+            } else {
+                shuttle(ShuttleDirection.BACKWARDS);
+            }
         }
     }
 
