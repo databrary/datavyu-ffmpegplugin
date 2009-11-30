@@ -928,7 +928,13 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action
     public void shuttleForwardAction() {
-        shuttle(ShuttleDirection.FORWARDS);
+        // BugzID:794 - Previously ignored pauseRate if paused
+        if (clock.isStopped()) {
+            shuttleRate = findShuttleIndex(pauseRate);
+            shuttleAt(pauseRate);
+        } else {
+            shuttle(ShuttleDirection.FORWARDS);
+        }
     }
 
     /**
@@ -936,7 +942,31 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action
     public void shuttleBackAction() {
-        shuttle(ShuttleDirection.BACKWARDS);
+        // BugzID:794 - Previously ignored pauseRate if paused
+        if (clock.isStopped()) {
+            shuttleRate = findShuttleIndex(pauseRate);
+            shuttleAt(pauseRate);
+        } else {
+            shuttle(ShuttleDirection.BACKWARDS);
+        }
+    }
+
+    /**
+     * Searches the shuttle rates array for the given rate, and returns the
+     * index.
+     * @param pRate The rate to search for.
+     * @return The index of the rate, or -1 if not found.
+     */
+    private int findShuttleIndex(final float pRate) {
+        if (pRate == 0) {
+            return 0;
+        }
+        for (int i = 0; i < SHUTTLE_RATES.length; i++) {
+            if (SHUTTLE_RATES[i] == pRate || SHUTTLE_RATES[i] == pRate * (-1)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
