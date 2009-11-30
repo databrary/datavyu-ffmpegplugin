@@ -26,6 +26,9 @@ public final class ConfigProperties implements Serializable {
     /** The spreadsheet selection colour. */
     private Color spreadsheetSelectedColour;
 
+    /** The spreadsheet selection colour. */
+    private Color spreadsheetOverlapColour;
+
     /** The last location the user navigated too using a file chooser. */
     private String lastChooserDirectory;
 
@@ -97,6 +100,22 @@ public final class ConfigProperties implements Serializable {
      */
     public Color getSSSelectedColour() {
         return spreadsheetSelectedColour;
+    }
+
+    /**
+     * Sets the spreadsheet overlap colour.
+     *
+     * @param newColour The new colour to use for spreadsheet overlaps.
+     */
+    public void setSSOverlapColour(final Color newColour) {
+        spreadsheetOverlapColour = newColour;
+    }
+
+    /**
+     * @return The spreadsheet overlap colour.
+     */
+    public Color getSSOverlapColour() {
+        return spreadsheetOverlapColour;
     }
 
     /**

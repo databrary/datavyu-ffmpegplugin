@@ -104,7 +104,8 @@ implements ExternalDataCellListener, Selectable {
         BorderFactory.createCompoundBorder(
                 BorderFactory.createCompoundBorder(
                     BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK),
-                    BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLUE)),
+                    BorderFactory.createMatteBorder(0, 0, 3, 0,
+                    Configuration.getInstance().getSSOverlapColour())),
                 BorderFactory.createEmptyBorder(0, 3, 1, 2));
 
     /** Logger for this class. */
