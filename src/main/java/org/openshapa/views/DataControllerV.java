@@ -238,6 +238,7 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void setCurrentTime(final long milliseconds) {
         timestampLabel.setText(CLOCK_FORMAT.format(milliseconds));
+        tracksControllerV.setCurrentTime(milliseconds);
     }
 
     /**

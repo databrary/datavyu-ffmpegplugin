@@ -516,9 +516,24 @@ public abstract class EditorComponent implements ClipboardOwner {
             }
         }
 
+        // BugzID:747 - If all we have is preserved chars clear everything.
+        String newValue = cValue.toString();
+        boolean foundNonPreserved = false;
+        for (int i = 0; i < newValue.length(); i++) {
+            if (!isPreserved(newValue.charAt(i))) {
+                foundNonPreserved = true;
+                break;
+            }
+        }
+
         // Set the text for this data value to the new string.
-        this.setText(cValue.toString());
-        this.setCaretPosition(start);
+        if (foundNonPreserved) {
+            this.setText(newValue);
+            this.setCaretPosition(start);
+        } else {
+            this.setText("");
+            this.setCaretPosition(0);
+        }
     }
 
     /**
