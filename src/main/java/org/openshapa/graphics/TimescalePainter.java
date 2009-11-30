@@ -1,6 +1,5 @@
 package org.openshapa.graphics;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -84,7 +83,11 @@ public class TimescalePainter extends Component {
     public float getIntervalWidth() {
         return intervalWidth;
     }
-    
+
+    public int getEffectiveWidth() {
+        return effectiveWidth;
+    }
+
     /**
      * This method paints the timing scale.
      * @param g

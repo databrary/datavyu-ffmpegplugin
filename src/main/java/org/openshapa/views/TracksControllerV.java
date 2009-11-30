@@ -16,11 +16,12 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import org.openshapa.graphics.NeedlePainter;
 import org.openshapa.graphics.TimescalePainter;
 import org.openshapa.graphics.TrackPainter;
 
@@ -37,6 +38,10 @@ public class TracksControllerV {
     private TimescalePainter scale;
     // Scroll pane that holds track information
     private JScrollPane tracksScrollPane;
+    // Component responsible for painting the timing needle
+    private NeedlePainter needle;
+
+    private JLayeredPane layeredPane;
 
     /* Zoomed into the display by how much.
      * Values should only be 1, 2, 4, 8, 16, 32
@@ -58,11 +63,14 @@ public class TracksControllerV {
         maxEnd = 60000;
         minStart = 0;
 
+        layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(new Dimension(800, 295));
+        layeredPane.setSize(layeredPane.getPreferredSize());
+
         // Set up the root panel
         tracksPanel = new JPanel();
         tracksPanel.setLayout(new GridBagLayout());
         tracksPanel.setBackground(Color.WHITE);
-        
 
         // Menu buttons
         JButton lockButton = new JButton("Lock");
@@ -89,77 +97,54 @@ public class TracksControllerV {
             }
         });
 
-        /* These constraints are re-scoped as re-using may cause problems if
-         * values are not reset.
-         */
-        {
-            // Adding lock button
-            GridBagConstraints c = new GridBagConstraints();
-            c.gridx = 0;
-            c.gridy = 0;
-            c.insets = new Insets(2,2,2,2);
-            tracksPanel.add(lockButton, c);
-        }
+        
+        final int pad = 3;
+        int xOffset = pad * 3;
 
-        {
-            // Adding bookmark button
-            GridBagConstraints c = new GridBagConstraints();
-            c.gridx = 1;
-            c.gridy = 0;
-            c.insets = new Insets(2,2,2,2);
-            tracksPanel.add(bookmarkButton, c);
-        }
+        lockButton.setSize(lockButton.getPreferredSize());
+        lockButton.setLocation(xOffset, 0);
+        layeredPane.add(lockButton, new Integer(0));
+        xOffset += lockButton.getSize().width + pad;
 
-        {
-            // Adding snap button
-            GridBagConstraints c = new GridBagConstraints();
-            c.gridx = 2;
-            c.gridy = 0;
-            c.insets = new Insets(2,2,2,2);
-            tracksPanel.add(snapButton, c);
-        }
+        bookmarkButton.setSize(bookmarkButton.getPreferredSize());
+        bookmarkButton.setLocation(xOffset, 0);
+        layeredPane.add(bookmarkButton, new Integer(0));
+        xOffset += bookmarkButton.getSize().width + pad;
 
-        {
-            // Adding the zoom in and out button
-            GridBagConstraints c = new GridBagConstraints();
-            c.gridx = 3;
-            c.gridy = 0;
-            c.insets = new Insets(2,2,2,2);
-            c.anchor = GridBagConstraints.LINE_END;
+        snapButton.setSize(snapButton.getPreferredSize());
+        snapButton.setLocation(xOffset, 0);
+        layeredPane.add(snapButton, new Integer(0));
 
-            Box hbox = Box.createHorizontalBox();
-            hbox.add(zoomInButton);
-            hbox.add(zoomOutButton);
+        zoomOutButton.setSize(zoomOutButton.getPreferredSize());
+        xOffset = layeredPane.getSize().width - (pad + pad + zoomOutButton.getSize().width);
+        zoomOutButton.setLocation(xOffset, 0);
+        layeredPane.add(zoomOutButton, new Integer(0));
 
-            tracksPanel.add(hbox, c);
-        }
+        zoomInButton.setSize(zoomInButton.getPreferredSize());
+        xOffset -= (pad + zoomInButton.getSize().width);
+        zoomInButton.setLocation(xOffset, 0);
+        layeredPane.add(zoomInButton, new Integer(0));
+
+        int yOffset = lockButton.getSize().height + pad;
 
         // Add the timescale
         scale = new TimescalePainter();
-
         {
             Dimension size = new Dimension();
             size.setSize(785, 35);
             scale.setSize(size);
             scale.setPreferredSize(size);
+            scale.setConstraints(minStart, maxEnd, zoomIntervals(1));
+            scale.setLocation(10, yOffset);
         }
+        layeredPane.add(scale, new Integer(0));
 
-        scale.setConstraints(minStart, maxEnd, zoomIntervals(1));
+        yOffset += pad + scale.getSize().height;
 
-        {
-            GridBagConstraints c = new GridBagConstraints();
-            c.gridx = 0;
-            c.gridy = 1;
-            c.gridwidth = 4;
-            c.fill = GridBagConstraints.HORIZONTAL;
-            tracksPanel.add(scale, c);
-        }
-        
         // Add the scroll pane
 
         tracksInfoPanel = new JPanel();
         tracksInfoPanel.setLayout(new GridBagLayout());
-
         tracksScrollPane = new JScrollPane(tracksInfoPanel);
         tracksScrollPane.setVerticalScrollBarPolicy(
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -169,29 +154,53 @@ public class TracksControllerV {
 
         // Set an explicit size of the scroll pane
         {
-            tracksScrollPane.getVerticalScrollBar().getWidth();
             Dimension size = new Dimension();
             size.setSize(785, 227);
+            tracksScrollPane.setSize(size);
             tracksScrollPane.setPreferredSize(size);
+            tracksScrollPane.setLocation(10, yOffset);
         }
+        layeredPane.add(tracksScrollPane, new Integer(0));
+
+        needle = new NeedlePainter();
+        {
+            Dimension size = new Dimension();
+            size.setSize(765, 274);
+            needle.setSize(size);
+            needle.setPreferredSize(size);
+            needle.setLocation(10, 0);
+            needle.setPadding(lockButton.getSize().height + pad, 101);
+            needle.setWindowStart(0);
+            needle.setWindowEnd(60000);
+            needle.setIntervalTime(scale.getIntervalTime());
+            needle.setIntervalWidth(scale.getIntervalWidth());
+        }
+        layeredPane.add(needle, new Integer(10));
 
         {
             GridBagConstraints c = new GridBagConstraints();
             c.gridx = 0;
-            c.gridy = 2;
-            c.gridwidth = 4;
-            tracksPanel.add(tracksScrollPane, c);
+            c.gridy = 0;
+            c.gridwidth = 1;
+            tracksPanel.add(layeredPane, c);
         }
-
+        
         tracksPanel.validate();
 
         trackPainterList = new ArrayList<TrackPainter>();
     }
 
+    /**
+     * @return the panel containing the tracks interface.
+     */
     public JPanel getTracksPanel() {
         return tracksPanel;
     }
 
+    /**
+     * Add a new track to the interface.
+     * @param trackName name of the track
+     */
     public void addNewTrack(String trackName) {
         JLabel trackLabel = new JLabel(trackName);
 
@@ -234,11 +243,10 @@ public class TracksControllerV {
         trackPainterList.add(trackPainter);
 
         carriagePanel.add(trackPainter, BorderLayout.PAGE_START);
-
         {
             Dimension size = new Dimension();
             size.height = 70;
-            size.width = 668;
+            size.width = 665;
             carriagePanel.setPreferredSize(size);
             
             GridBagConstraints c = new GridBagConstraints();
@@ -251,6 +259,16 @@ public class TracksControllerV {
         tracksPanel.validate();
     }
 
+    public void setCurrentTime(long time) {
+        needle.setCurrentTime(time);
+        needle.repaint();
+    }
+
+    /**
+     * Zooms into the displayed scale and re-adjusts the timing needle
+     * accordingly.
+     * @param evt
+     */
     public void zoomInScale(ActionEvent evt) {
         zoomSetting = zoomSetting * 2;
         if (zoomSetting > 32) {
@@ -264,11 +282,20 @@ public class TracksControllerV {
         
         scale.setConstraints(newStart, newEnd, zoomIntervals(zoomSetting));
 
-//        this.tracksPanel.invalidate();
-//        this.tracksPanel.repaint();
+        needle.setWindowStart(newStart);
+        needle.setWindowEnd(newEnd);
+        needle.setIntervalTime(scale.getIntervalTime());
+        needle.setIntervalWidth(scale.getIntervalWidth());
+
         scale.repaint();
+        needle.repaint();
     }
 
+    /**
+     * Zooms out of the displayed scale and re-adjusts the timing needle 
+     * accordingly.
+     * @param evt
+     */
     public void zoomOutScale(ActionEvent evt) {
         zoomSetting = zoomSetting / 2;
         if (zoomSetting < 1) {
@@ -287,21 +314,25 @@ public class TracksControllerV {
 
         scale.setConstraints(newStart, newEnd, zoomIntervals(zoomSetting));
 
-//        this.tracksPanel.invalidate();
-//        this.tracksPanel.repaint();
+        needle.setWindowStart(newStart);
+        needle.setWindowEnd(newEnd);
+        needle.setIntervalTime(scale.getIntervalTime());
+        needle.setIntervalWidth(scale.getIntervalWidth());
+        
         scale.repaint();
+        needle.repaint();
     }
 
+    /**
+     * Update the track display after a zoom.
+     * @param evt
+     */
     public void zoomTracks(ActionEvent evt) {
         for (TrackPainter tp : trackPainterList) {
             tp.setIntervalTime(scale.getIntervalTime());
-//            System.out.println("Interval time: " + scale.getIntervalTime());
             tp.setIntervalWidth(scale.getIntervalWidth());
-//            System.out.println("Interval width: " + scale.getIntervalWidth());
             tp.setZoomWindowStart(scale.getStart());
-//            System.out.println("Scale start: " + scale.getStart());
             tp.setZoomWindowEnd(scale.getEnd());
-//            System.out.println("Scale end: " + scale.getEnd());
             tp.repaint();
         }
 
