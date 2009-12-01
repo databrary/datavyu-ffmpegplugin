@@ -931,7 +931,7 @@ public final class DataControllerV extends OpenSHAPADialog
         clock.stop();
         clock.setRate(0);
         shuttleRate = 0;
-        pauseRate = 1;
+        pauseRate = 0;
         shuttleDirection = ShuttleDirection.UNDEFINED;
     }
 
@@ -1076,9 +1076,9 @@ public final class DataControllerV extends OpenSHAPADialog
         int mul = 1;
         if (shiftMask) {
             mul = SHIFTJOG;
-            if (ctrlMask) {
-                mul = CTRLSHIFTJOG;
-            }
+        }
+        if (ctrlMask) {
+            mul = CTRLSHIFTJOG;
         }
         jump((long) (mul * (-ONE_SECOND) / currentFPS));
     }
@@ -1091,9 +1091,9 @@ public final class DataControllerV extends OpenSHAPADialog
         int mul = 1;
         if (shiftMask) {
             mul = SHIFTJOG;
-            if (ctrlMask) {
-                mul = CTRLSHIFTJOG;
-            }
+        }
+        if (ctrlMask) {
+            mul = CTRLSHIFTJOG;
         }
         jump((long) ((mul * ONE_SECOND) / currentFPS));
     }
@@ -1157,7 +1157,7 @@ public final class DataControllerV extends OpenSHAPADialog
         clock.stop();
         clock.setRate(0);
         shuttleRate = 0;
-        pauseRate = 1;
+        pauseRate = 0;
         shuttleDirection = ShuttleDirection.UNDEFINED;
         clock.stepTime(step);
     }
