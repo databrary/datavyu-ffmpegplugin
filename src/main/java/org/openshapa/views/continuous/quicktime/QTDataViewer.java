@@ -66,6 +66,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** How many frames to check when correcting the FPS. */
     private static final int CORRECTIONFRAMES = 5;
 
+    /** The playback offset of the movie in milliseconds. */
+    private long offset;
+
 
     //--------------------------------------------------------------------------
     // [initialization]
