@@ -188,7 +188,6 @@ public final class DataControllerV extends OpenSHAPADialog
     public void clockStart(final long time) {
         setCurrentTime(time);
         for (DataViewer viewer : viewers) {
-            // viewer.seekTo(time);
             viewer.play();
         }
     }
