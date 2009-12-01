@@ -45,10 +45,8 @@ import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.FileFilters.MODBFilter;
 
 /**
- * This application is a simple text editor. This class displays the main frame
- * of the application and provides much of the logic. This class is called by
- * the main application class, DocumentEditorApp. For an overview of the
- * application see the comments for the DocumentEditorApp class.
+ * The main FrameView, representing the interface for OpenSHAPA the user will
+ * initially see.
  */
 public final class OpenSHAPAView extends FrameView {
 

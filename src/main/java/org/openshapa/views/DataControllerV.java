@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import javax.swing.JButton;
@@ -58,8 +59,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
     // Initialize SHUTTLE_RATES
     // values: [ (2^-5), ..., (2^0), ..., (2^5) ]
+
+    /** The max power used for playback rates; i.e. 2^POWER = max. */
+    private static final int POWER = 5;
+
     static {
-        int POWER = 5;
         SHUTTLE_RATES = new float[2 * POWER + 1];
         float value = 1;
         SHUTTLE_RATES[POWER] = value;
@@ -70,20 +74,40 @@ public final class DataControllerV extends OpenSHAPADialog
         }
     }
 
+    /** Determines whether or not Shift is being held. */
+    private boolean shiftMask = false;
+
+    /** Determines whether or not Control is being held. */
+    private boolean ctrlMask = false;
+
+    /** The jump multiplier for shift-jogging. */
+    private static final int SHIFTJOG = 5;
+
+    /** The jump multiplier for ctrl-shift-jogging. */
+    private static final int CTRLSHIFTJOG = 10;
+
     /**
      * Enumeration of shuttle directions.
      */
     enum ShuttleDirection {
-
+        /** The backwards playrate. */
         BACKWARDS(-1),
+        /** Playrate for undefined shuttle speeds. */
         UNDEFINED(0),
+        /** The playrate for forwards (normal) playrate. */
         FORWARDS(1);
+        /** Stores the shuttle direction. */
         private int parameter;
 
+        /** Sets the shuttle direction.
+         *  @param p The new shuttle direction.
+         */
         ShuttleDirection(final int p) {
             this.parameter = p;
         }
 
+
+        /** @return The shuttle direction. */
         public int getParameter() {
             return parameter;
         }
@@ -142,7 +166,19 @@ public final class DataControllerV extends OpenSHAPADialog
         tracksControllerV = new TracksControllerV();
         tracksPanel.add(tracksControllerV.getTracksPanel());
 
-        this.showTracksPanel(false);
+	this.showTracksPanel(false);
+    }
+
+    /** Tells the Data Controller if shift is being held or not.
+     * @param shift True for shift held; false otherwise. */
+    public void setShiftMask(final boolean shift) {
+        shiftMask = shift;
+    }
+
+    /** Tells the Data Controller if ctrl is being held or not.
+     * @param ctrl True for ctrl held; false otherwise. */
+    public void setCtrlMask(final boolean ctrl) {
+        ctrlMask = ctrl;
     }
 
     //--------------------------------------------------------------------------
@@ -154,7 +190,6 @@ public final class DataControllerV extends OpenSHAPADialog
     public void clockStart(final long time) {
         setCurrentTime(time);
         for (DataViewer viewer : viewers) {
-            viewer.seekTo(time);
             viewer.play();
         }
     }
@@ -188,7 +223,6 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void clockStop(final long time) {
         setCurrentTime(time);
-        shuttleRate = 0;
         for (DataViewer viewer : viewers) {
             viewer.stop();
             viewer.seekTo(time);
@@ -274,9 +308,9 @@ public final class DataControllerV extends OpenSHAPADialog
         findButton = new javax.swing.JButton();
         jogBackButton = new javax.swing.JButton();
         stopButton = new javax.swing.JButton();
-        createNewCellButton = new javax.swing.JButton();
+        createNewCellSettingOffset = new javax.swing.JButton();
         jogForwardButton = new javax.swing.JButton();
-        setNewCellOnsetButton = new javax.swing.JButton();
+        setNewCellOffsetButton = new javax.swing.JButton();
         goBackTextField = new javax.swing.JTextField();
         findTextField = new javax.swing.JTextField();
         syncVideoButton = new javax.swing.JButton();
@@ -303,6 +337,7 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.setLayout(new java.awt.GridBagLayout());
 
         syncCtrlButton.setEnabled(false);
+        syncCtrlButton.setFocusPainted(false);
         syncCtrlButton.setMaximumSize(new java.awt.Dimension(45, 45));
         syncCtrlButton.setMinimumSize(new java.awt.Dimension(45, 45));
         syncCtrlButton.setPreferredSize(new java.awt.Dimension(45, 45));
@@ -313,6 +348,7 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(syncCtrlButton, gridBagConstraints);
 
         syncButton.setEnabled(false);
+        syncButton.setFocusPainted(false);
         syncButton.setMaximumSize(new java.awt.Dimension(45, 45));
         syncButton.setMinimumSize(new java.awt.Dimension(45, 45));
         syncButton.setPreferredSize(new java.awt.Dimension(45, 45));
@@ -325,9 +361,11 @@ public final class DataControllerV extends OpenSHAPADialog
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(DataControllerV.class, this);
         setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction")); // NOI18N
         setCellOnsetButton.setIcon(resourceMap.getIcon("setCellOnsetButton.icon")); // NOI18N
+        setCellOnsetButton.setFocusPainted(false);
         setCellOnsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
         setCellOnsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
         setCellOnsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        setCellOnsetButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/set-cell-onset-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
@@ -336,9 +374,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
         setCellOffsetButton.setAction(actionMap.get("setCellOffsetAction")); // NOI18N
         setCellOffsetButton.setIcon(resourceMap.getIcon("setCellOffsetButton.icon")); // NOI18N
+        setCellOffsetButton.setFocusPainted(false);
         setCellOffsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
         setCellOffsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
         setCellOffsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        setCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/set-cell-offset-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
@@ -347,9 +387,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
         rewindButton.setAction(actionMap.get("rewindAction")); // NOI18N
         rewindButton.setIcon(resourceMap.getIcon("rewindButton.icon")); // NOI18N
+        rewindButton.setFocusPainted(false);
         rewindButton.setMaximumSize(new java.awt.Dimension(45, 45));
         rewindButton.setMinimumSize(new java.awt.Dimension(45, 45));
         rewindButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        rewindButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/rewind-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -358,9 +400,12 @@ public final class DataControllerV extends OpenSHAPADialog
 
         playButton.setAction(actionMap.get("playAction")); // NOI18N
         playButton.setIcon(resourceMap.getIcon("playButton.icon")); // NOI18N
+        playButton.setFocusPainted(false);
         playButton.setMaximumSize(new java.awt.Dimension(45, 45));
         playButton.setMinimumSize(new java.awt.Dimension(45, 45));
         playButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        playButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/play-selected.png"))); // NOI18N
+        playButton.setRequestFocusEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -369,9 +414,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
         forwardButton.setAction(actionMap.get("forwardAction")); // NOI18N
         forwardButton.setIcon(resourceMap.getIcon("forwardButton.icon")); // NOI18N
+        forwardButton.setFocusPainted(false);
         forwardButton.setMaximumSize(new java.awt.Dimension(45, 45));
         forwardButton.setMinimumSize(new java.awt.Dimension(45, 45));
         forwardButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        forwardButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/fast-forward-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
@@ -380,9 +427,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
         goBackButton.setAction(actionMap.get("goBackAction")); // NOI18N
         goBackButton.setIcon(resourceMap.getIcon("goBackButton.icon")); // NOI18N
+        goBackButton.setFocusPainted(false);
         goBackButton.setMaximumSize(new java.awt.Dimension(45, 45));
         goBackButton.setMinimumSize(new java.awt.Dimension(45, 45));
         goBackButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        goBackButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/go-back-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
@@ -391,9 +440,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
         shuttleBackButton.setAction(actionMap.get("shuttleBackAction")); // NOI18N
         shuttleBackButton.setIcon(resourceMap.getIcon("shuttleBackButton.icon")); // NOI18N
+        shuttleBackButton.setFocusPainted(false);
         shuttleBackButton.setMaximumSize(new java.awt.Dimension(45, 45));
         shuttleBackButton.setMinimumSize(new java.awt.Dimension(45, 45));
         shuttleBackButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        shuttleBackButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/shuttle-backward-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -402,9 +453,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
         pauseButton.setAction(actionMap.get("pauseAction")); // NOI18N
         pauseButton.setIcon(resourceMap.getIcon("pauseButton.icon")); // NOI18N
+        pauseButton.setFocusPainted(false);
         pauseButton.setMaximumSize(new java.awt.Dimension(45, 45));
         pauseButton.setMinimumSize(new java.awt.Dimension(45, 45));
         pauseButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        pauseButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/pause-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -413,9 +466,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
         shuttleForwardButton.setAction(actionMap.get("shuttleForwardAction")); // NOI18N
         shuttleForwardButton.setIcon(resourceMap.getIcon("shuttleForwardButton.icon")); // NOI18N
+        shuttleForwardButton.setFocusPainted(false);
         shuttleForwardButton.setMaximumSize(new java.awt.Dimension(45, 45));
         shuttleForwardButton.setMinimumSize(new java.awt.Dimension(45, 45));
         shuttleForwardButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        shuttleForwardButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/shuttle-forward-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
@@ -424,9 +479,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
         findButton.setAction(actionMap.get("findAction")); // NOI18N
         findButton.setIcon(resourceMap.getIcon("findButton.icon")); // NOI18N
+        findButton.setFocusPainted(false);
         findButton.setMaximumSize(new java.awt.Dimension(45, 45));
         findButton.setMinimumSize(new java.awt.Dimension(45, 45));
         findButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        findButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/find-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
@@ -435,9 +492,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
         jogBackButton.setAction(actionMap.get("jogBackAction")); // NOI18N
         jogBackButton.setIcon(resourceMap.getIcon("jogBackButton.icon")); // NOI18N
+        jogBackButton.setFocusPainted(false);
         jogBackButton.setMaximumSize(new java.awt.Dimension(45, 45));
         jogBackButton.setMinimumSize(new java.awt.Dimension(45, 45));
         jogBackButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        jogBackButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/jog-backward-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -446,49 +505,57 @@ public final class DataControllerV extends OpenSHAPADialog
 
         stopButton.setAction(actionMap.get("stopAction")); // NOI18N
         stopButton.setIcon(resourceMap.getIcon("stopButton.icon")); // NOI18N
+        stopButton.setFocusPainted(false);
         stopButton.setMaximumSize(new java.awt.Dimension(45, 45));
         stopButton.setMinimumSize(new java.awt.Dimension(45, 45));
         stopButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        stopButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/stop-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(stopButton, gridBagConstraints);
 
-        createNewCellButton.setAction(actionMap.get("createNewCellAction")); // NOI18N
-        createNewCellButton.setIcon(resourceMap.getIcon("createNewCellButton.icon")); // NOI18N
-        createNewCellButton.setMaximumSize(new java.awt.Dimension(90, 45));
-        createNewCellButton.setMinimumSize(new java.awt.Dimension(90, 45));
-        createNewCellButton.setPreferredSize(new java.awt.Dimension(90, 45));
+        createNewCellSettingOffset.setAction(actionMap.get("createNewCellAction")); // NOI18N
+        createNewCellSettingOffset.setIcon(resourceMap.getIcon("createNewCellButton.icon")); // NOI18N
+        createNewCellSettingOffset.setFocusPainted(false);
+        createNewCellSettingOffset.setMaximumSize(new java.awt.Dimension(90, 45));
+        createNewCellSettingOffset.setMinimumSize(new java.awt.Dimension(90, 45));
+        createNewCellSettingOffset.setPreferredSize(new java.awt.Dimension(90, 45));
+        createNewCellSettingOffset.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/create-new-cell-and-set-onset-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-        gridButtonPanel.add(createNewCellButton, gridBagConstraints);
+        gridButtonPanel.add(createNewCellSettingOffset, gridBagConstraints);
 
         jogForwardButton.setAction(actionMap.get("jogForwardAction")); // NOI18N
         jogForwardButton.setIcon(resourceMap.getIcon("jogForwardButton.icon")); // NOI18N
+        jogForwardButton.setFocusPainted(false);
         jogForwardButton.setMaximumSize(new java.awt.Dimension(45, 45));
         jogForwardButton.setMinimumSize(new java.awt.Dimension(45, 45));
         jogForwardButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        jogForwardButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/jog-forward-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(jogForwardButton, gridBagConstraints);
 
-        setNewCellOnsetButton.setAction(actionMap.get("setNewCellStopTime")); // NOI18N
-        setNewCellOnsetButton.setIcon(resourceMap.getIcon("setNewCellOnsetButton.icon")); // NOI18N
-        setNewCellOnsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
-        setNewCellOnsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
-        setNewCellOnsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        setNewCellOffsetButton.setAction(actionMap.get("setNewCellStopTime")); // NOI18N
+        setNewCellOffsetButton.setIcon(resourceMap.getIcon("setNewCellOnsetButton.icon")); // NOI18N
+        setNewCellOffsetButton.setFocusPainted(false);
+        setNewCellOffsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
+        setNewCellOffsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        setNewCellOffsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
+        setNewCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/set-new-cell-offset-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-        gridButtonPanel.add(setNewCellOnsetButton, gridBagConstraints);
+        gridButtonPanel.add(setNewCellOffsetButton, gridBagConstraints);
 
         goBackTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         goBackTextField.setText("00:00:05:000");
@@ -515,6 +582,7 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(findTextField, gridBagConstraints);
 
         syncVideoButton.setEnabled(false);
+        syncVideoButton.setFocusPainted(false);
         syncVideoButton.setMaximumSize(new java.awt.Dimension(80, 45));
         syncVideoButton.setMinimumSize(new java.awt.Dimension(80, 45));
         syncVideoButton.setPreferredSize(new java.awt.Dimension(80, 45));
@@ -526,6 +594,7 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(syncVideoButton, gridBagConstraints);
 
         openVideoButton.setText(resourceMap.getString("openVideoButton.text")); // NOI18N
+        openVideoButton.setFocusPainted(false);
         openVideoButton.setMaximumSize(new java.awt.Dimension(90, 25));
         openVideoButton.setMinimumSize(new java.awt.Dimension(90, 25));
         openVideoButton.setPreferredSize(new java.awt.Dimension(90, 25));
@@ -568,10 +637,12 @@ public final class DataControllerV extends OpenSHAPADialog
         createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon")); // NOI18N
         createNewCell.setText(resourceMap.getString("createNewCell.text")); // NOI18N
         createNewCell.setAlignmentY(0.0F);
+        createNewCell.setFocusPainted(false);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
         createNewCell.setMinimumSize(new java.awt.Dimension(45, 90));
         createNewCell.setPreferredSize(new java.awt.Dimension(45, 90));
+        createNewCell.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/create-new-cell-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 4;
@@ -735,6 +806,106 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     //--------------------------------------------------------------------------
+    // Simulated clicks (for numpad calls)
+    //
+
+    /** Simulates play button clicked. */
+    public void pressPlay() {
+        playButton.doClick();
+    }
+
+    /** Simulates forward button clicked. */
+    public void pressForward() {
+        forwardButton.doClick();
+    }
+
+    /** Simulates rewind button clicked. */
+    public void pressRewind() {
+        rewindButton.doClick();
+    }
+
+    /** Simulates pause button clicked. */
+    public void pressPause() {
+        pauseButton.doClick();
+    }
+
+    /** Simulates stop button clicked. */
+    public void pressStop() {
+        stopButton.doClick();
+    }
+
+    /** Simulates shuttle forward button clicked. */
+    public void pressShuttleForward() {
+        shuttleForwardButton.doClick();
+    }
+
+    /** Simulates shuttle back button clicked. */
+    public void pressShuttleBack() {
+        shuttleBackButton.doClick();
+    }
+
+    /** Simulates find button clicked. */
+    public void pressFind() {
+        findButton.doClick();
+    }
+
+    /** Simulates set cell onset button clicked. */
+    public void pressSetCellOnset() {
+        setCellOnsetButton.doClick();
+    }
+
+    /** Simulates set cell offset button clicked. */
+    public void pressSetCellOffset() {
+        setCellOffsetButton.doClick();
+    }
+
+    /** Simulates set new cell onset button clicked. */
+    public void pressSetNewCellOnset() {
+        setNewCellOffsetButton.doClick();
+    }
+
+    /** Simulates jog forward button clicked. */
+    public void pressJogForward() {
+        jogForwardButton.doClick();
+    }
+
+    /** Simulates jog back button clicked. */
+    public void pressJogBack() {
+        jogBackButton.doClick();
+    }
+
+    /** Simulates go back button clicked. */
+    public void pressGoBack() {
+        goBackButton.doClick();
+    }
+
+    /** Simulates create new cell button clicked. */
+    public void pressCreateNewCell() {
+        createNewCell.doClick();
+    }
+
+    /** Simulates create new cell setting offset button clicked. */
+    public void pressCreateNewCellSettingOffset() {
+        createNewCellSettingOffset.doClick();
+    }
+
+    /** Simulates sync button clicked. */
+    public void pressSyncButton() {
+        syncButton.doClick();
+    }
+
+    /** Simulates sync button clicked. */
+    public void pressSyncCtrlButton() {
+        syncCtrlButton.doClick();
+    }
+
+    /** Simulates sync button clicked. */
+    public void pressSyncVideoButton() {
+        syncVideoButton.doClick();
+    }
+
+
+    //--------------------------------------------------------------------------
     // Playback actions
     //
     /**
@@ -788,7 +959,7 @@ public final class DataControllerV extends OpenSHAPADialog
         clock.stop();
         clock.setRate(0);
         shuttleRate = 0;
-        pauseRate = 1;
+        pauseRate = 0;
         shuttleDirection = ShuttleDirection.UNDEFINED;
     }
 
@@ -799,15 +970,66 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action
     public void shuttleForwardAction() {
-        shuttle(ShuttleDirection.FORWARDS);
+        if (clock.getTime() <= 0 && (shuttleRate != 0
+                || shuttleDirection != shuttleDirection.UNDEFINED)) {
+            shuttleRate = 0;
+            pauseRate = 0;
+            shuttleDirection = ShuttleDirection.UNDEFINED;
+            shuttle(ShuttleDirection.FORWARDS);
+        } else {
+            // BugzID:794 - Previously ignored pauseRate if paused
+            if (clock.isStopped()) {
+                shuttleRate = findShuttleIndex(pauseRate);
+                shuttle(ShuttleDirection.FORWARDS);
+                // shuttle(ShuttleDirection.BACKWARDS);
+                // This makes current tests fail, but may be the desired
+                // functionality.
+            } else {
+                shuttle(ShuttleDirection.FORWARDS);
+            }
+        }
     }
 
     /**
-     * Action to inovke when the user clicks on the shuttle back button.
+     * Action to invoke when the user clicks on the shuttle back button.
      */
     @Action
     public void shuttleBackAction() {
-        shuttle(ShuttleDirection.BACKWARDS);
+        if (clock.getTime() <= 0 && (shuttleRate != 0
+                || shuttleDirection != shuttleDirection.UNDEFINED)) {
+            shuttleRate = 0;
+            pauseRate = 0;
+            shuttleDirection = ShuttleDirection.UNDEFINED;
+        } else {
+        // BugzID:794 - Previously ignored pauseRate if paused
+            if (clock.isStopped()) {
+                shuttleRate = findShuttleIndex(pauseRate);
+                shuttle(ShuttleDirection.BACKWARDS);
+                // shuttle(ShuttleDirection.FORWARDS);
+                // This makes current tests fail, but may be the desired
+                // functionality.
+            } else {
+                shuttle(ShuttleDirection.BACKWARDS);
+            }
+        }
+    }
+
+    /**
+     * Searches the shuttle rates array for the given rate, and returns the
+     * index.
+     * @param pRate The rate to search for.
+     * @return The index of the rate, or -1 if not found.
+     */
+    private int findShuttleIndex(final float pRate) {
+        if (pRate == 0) {
+            return 0;
+        }
+        for (int i = 0; i < SHUTTLE_RATES.length; i++) {
+            if (SHUTTLE_RATES[i] == pRate || SHUTTLE_RATES[i] == pRate * (-1)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
@@ -833,11 +1055,15 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action
     public void findAction() {
-        try {
-            jumpTo(CLOCK_FORMAT.parse(this.findTextField.getText()).getTime());
-
-        } catch (ParseException e) {
-            logger.error("unable to find within video", e);
+        if (shiftMask) {
+            findOffsetAction();
+        } else {
+            try {
+                jumpTo(CLOCK_FORMAT.parse(
+                        this.findTextField.getText()).getTime());
+            } catch (ParseException e) {
+                logger.error("unable to find within video", e);
+            }
         }
     }
 
@@ -846,8 +1072,7 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void findOffsetAction() {
         try {
-            jumpTo(CLOCK_FORMAT.parse(this.findOffsetField.getText()).getTime());
-
+           jumpTo(CLOCK_FORMAT.parse(this.findOffsetField.getText()).getTime());
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
         }
@@ -875,7 +1100,14 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action
     public void jogBackAction() {
-        jump((long) (-ONE_SECOND / currentFPS));
+        int mul = 1;
+        if (shiftMask) {
+            mul = SHIFTJOG;
+        }
+        if (ctrlMask) {
+            mul = CTRLSHIFTJOG;
+        }
+        jump((long) (mul * (-ONE_SECOND) / currentFPS));
     }
 
     /**
@@ -883,7 +1115,14 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action
     public void jogForwardAction() {
-        jump((long) (ONE_SECOND / currentFPS));
+        int mul = 1;
+        if (shiftMask) {
+            mul = SHIFTJOG;
+        }
+        if (ctrlMask) {
+            mul = CTRLSHIFTJOG;
+        }
+        jump((long) ((mul * ONE_SECOND) / currentFPS));
     }
 
     //--------------------------------------------------------------------------
@@ -895,6 +1134,8 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void playAt(final float rate) {
         shuttleDirection = ShuttleDirection.UNDEFINED;
+        shuttleRate = 0;
+        pauseRate = 0;
         shuttleAt(rate);
     }
 
@@ -943,7 +1184,7 @@ public final class DataControllerV extends OpenSHAPADialog
         clock.stop();
         clock.setRate(0);
         shuttleRate = 0;
-        pauseRate = 1;
+        pauseRate = 0;
         shuttleDirection = ShuttleDirection.UNDEFINED;
         clock.stepTime(step);
     }
@@ -993,7 +1234,7 @@ public final class DataControllerV extends OpenSHAPADialog
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton createNewCell;
-    private javax.swing.JButton createNewCellButton;
+    private javax.swing.JButton createNewCellSettingOffset;
     private javax.swing.JButton findButton;
     private javax.swing.JTextField findOffsetField;
     private javax.swing.JTextField findTextField;
@@ -1012,7 +1253,7 @@ public final class DataControllerV extends OpenSHAPADialog
     private javax.swing.JButton rewindButton;
     private javax.swing.JButton setCellOffsetButton;
     private javax.swing.JButton setCellOnsetButton;
-    private javax.swing.JButton setNewCellOnsetButton;
+    private javax.swing.JButton setNewCellOffsetButton;
     private javax.swing.JButton showTracksButton;
     private javax.swing.JButton shuttleBackButton;
     private javax.swing.JButton shuttleForwardButton;

@@ -48,6 +48,7 @@
         <Component class="javax.swing.JButton" name="syncCtrlButton">
           <Properties>
             <Property name="enabled" type="boolean" value="false"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -67,6 +68,7 @@
         <Component class="javax.swing.JButton" name="syncButton">
           <Properties>
             <Property name="enabled" type="boolean" value="false"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -89,6 +91,7 @@
               <action class="org.openshapa.views.QTVideoController" id="setCellOnsetAction" methodName="setCellOnsetAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="setCellOnsetButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -97,6 +100,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/set-cell-onset-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -111,6 +117,7 @@
               <action class="org.openshapa.views.QTVideoController" id="setCellOffsetAction" methodName="setCellOffsetAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="setCellOffsetButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -119,6 +126,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/set-cell-offset-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -133,6 +143,7 @@
               <action class="org.openshapa.views.QTVideoController" id="rewindAction" methodName="rewindAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="rewindButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -141,6 +152,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/rewind-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -155,6 +169,7 @@
               <action class="org.openshapa.views.QTVideoController" id="playAction" methodName="playAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="playButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -164,6 +179,10 @@
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/play-selected.png"/>
+            </Property>
+            <Property name="requestFocusEnabled" type="boolean" value="false"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -177,6 +196,7 @@
               <action class="org.openshapa.views.QTVideoController" id="forwardAction" methodName="forwardAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="forwardButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -185,6 +205,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/fast-forward-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -199,6 +222,7 @@
               <action class="org.openshapa.views.QTVideoController" id="goBackAction" methodName="goBackAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="goBackButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -207,6 +231,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/go-back-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -221,6 +248,7 @@
               <action class="org.openshapa.views.QTVideoController" id="shuttleBackAction" methodName="shuttleBackAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="shuttleBackButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -229,6 +257,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/shuttle-backward-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -243,6 +274,7 @@
               <action class="org.openshapa.views.DataControllerV" id="pauseAction" methodName="pauseAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="pauseButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -251,6 +283,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/pause-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -265,6 +300,7 @@
               <action class="org.openshapa.views.QTVideoController" id="shuttleForwardAction" methodName="shuttleForwardAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="shuttleForwardButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -273,6 +309,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/shuttle-forward-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -287,6 +326,7 @@
               <action class="org.openshapa.views.QTVideoController" id="findAction" methodName="findAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="findButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -295,6 +335,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/find-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -309,6 +352,7 @@
               <action class="org.openshapa.views.QTVideoController" id="jogBackAction" methodName="jogBackAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="jogBackButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -317,6 +361,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/jog-backward-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -331,6 +378,7 @@
               <action class="org.openshapa.views.DataControllerV" id="stopAction" methodName="stopAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="stopButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -339,6 +387,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/stop-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -347,12 +398,13 @@
             </Constraint>
           </Constraints>
         </Component>
-        <Component class="javax.swing.JButton" name="createNewCellButton">
+        <Component class="javax.swing.JButton" name="createNewCellSettingOffset">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
               <action class="org.openshapa.views.QTVideoController" id="createNewCellAction" methodName="createNewCellAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="createNewCellButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[90, 45]"/>
             </Property>
@@ -361,6 +413,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[90, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/create-new-cell-and-set-onset-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -375,6 +430,7 @@
               <action class="org.openshapa.views.QTVideoController" id="jogForwardAction" methodName="jogForwardAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="jogForwardButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -383,6 +439,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/jog-forward-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -391,12 +450,13 @@
             </Constraint>
           </Constraints>
         </Component>
-        <Component class="javax.swing.JButton" name="setNewCellOnsetButton">
+        <Component class="javax.swing.JButton" name="setNewCellOffsetButton">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
               <action class="org.openshapa.views.QTVideoController" id="setNewCellStopTime" methodName="setNewCellStopTime"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="setNewCellOnsetButton.icon"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
             </Property>
@@ -405,6 +465,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 45]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/set-new-cell-offset-selected.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -456,6 +519,7 @@
         <Component class="javax.swing.JButton" name="syncVideoButton">
           <Properties>
             <Property name="enabled" type="boolean" value="false"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[80, 45]"/>
             </Property>
@@ -475,6 +539,7 @@
         <Component class="javax.swing.JButton" name="openVideoButton">
           <Properties>
             <Property name="text" type="java.lang.String" resourceKey="openVideoButton.text"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[90, 25]"/>
             </Property>
@@ -551,6 +616,7 @@
             <Property name="icon" type="javax.swing.Icon" resourceKey="createNewCell.icon"/>
             <Property name="text" type="java.lang.String" resourceKey="createNewCell.text"/>
             <Property name="alignmentY" type="float" value="0.0"/>
+            <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 90]"/>
@@ -560,6 +626,9 @@
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[45, 90]"/>
+            </Property>
+            <Property name="pressedIcon" type="javax.swing.Icon" noResource="true" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/icons/DataController/eng/create-new-cell-selected.png"/>
             </Property>
           </Properties>
           <Constraints>

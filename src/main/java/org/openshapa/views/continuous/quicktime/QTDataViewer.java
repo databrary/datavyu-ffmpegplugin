@@ -17,6 +17,7 @@ import quicktime.std.StdQTConstants;
 import quicktime.std.StdQTException;
 import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
+import quicktime.std.movies.TimeInfo;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 
@@ -59,8 +60,12 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** The fixed window height. */
     private static final int WIN_Y = 400;
 
-    /** Playback offset */
-    private long offset;
+    /** How many milliseconds in a second? */
+    private static final int MILLI = 1000;
+
+    /** How many frames to check when correcting the FPS. */
+    private static final int CORRECTIONFRAMES = 5;
+
 
     //--------------------------------------------------------------------------
     // [initialization]
@@ -131,7 +136,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public void setDataFeed(final File videoFile) {
 
         try {
-
             this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
@@ -158,7 +162,11 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
             fps = (float) visualMedia.getSampleCount()
                   / visualMedia.getDuration() * visualMedia.getTimeScale();
-            //logger.error("Calculated framerate:" + fps);
+
+            if (visualMedia.getSampleCount() == 1.0
+                    || visualMedia.getSampleCount() == 1) {
+                fps = correctFPS();
+            }
 
             this.add(QTFactory.makeQTComponent(movie).asComponent());
 
@@ -176,6 +184,35 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     }
 
     /**
+     * If there was a problem getting the fps, we use this method to fix it.
+     * The first few frames (number of which is specified by CORRECTIONFRAMES)
+     * are inspected, with the delay between each measured; the two frames with
+     * the smallest delay between them are assumed to represent the fps of the
+     * entire movie.
+     * @return The best fps found in the first few frames.
+     */
+    private float correctFPS() {
+        float minFrameLength = MILLI; // Set this to one second, as the "worst"
+        float curFrameLen = 0;
+        int curTime = 0;
+        for (int i = 0; i < CORRECTIONFRAMES; i++) {
+            try {
+                TimeInfo timeObj = visualTrack.getNextInterestingTime(
+                    StdQTConstants.nextTimeStep, curTime, 1);
+                float candidateFrameLen = timeObj.time - curFrameLen;
+                curFrameLen = timeObj.time;
+                curTime += curFrameLen;
+                if (candidateFrameLen < minFrameLength) {
+                    minFrameLength = candidateFrameLen;
+                }
+            } catch (QTException e) {
+                logger.error("Error getting time", e);
+            }
+        }
+        return MILLI / minFrameLength;
+    }
+
+    /**
      * Sets parent data controller.
      * @param dataController The data controller to be set as parent.
      */
@@ -187,7 +224,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * @return The frames per second.
      */
     public float getFrameRate() {
-        //logger.error("Getting frame rate: " + fps);
         return fps;
     }
 
