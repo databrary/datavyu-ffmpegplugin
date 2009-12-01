@@ -7,10 +7,13 @@ import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SimpleTimeZone;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
@@ -94,7 +97,7 @@ public final class DataControllerV extends OpenSHAPADialog
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
-    private static final boolean TRACKS_PANEL_ENABLED = true;
+    private boolean tracksPanelEnabled = false;
 
     private TracksControllerV tracksControllerV;
 
@@ -138,6 +141,8 @@ public final class DataControllerV extends OpenSHAPADialog
 
         tracksControllerV = new TracksControllerV();
         tracksPanel.add(tracksControllerV.getTracksPanel());
+
+        this.showTracksPanel(false);
     }
 
     //--------------------------------------------------------------------------
@@ -283,6 +288,7 @@ public final class DataControllerV extends OpenSHAPADialog
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
+        showTracksButton = new javax.swing.JButton();
         tracksPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -604,6 +610,24 @@ public final class DataControllerV extends OpenSHAPADialog
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(findOffsetField, gridBagConstraints);
 
+        showTracksButton.setIcon(resourceMap.getIcon("showTracksButton.show.icon")); // NOI18N
+        showTracksButton.setMaximumSize(new java.awt.Dimension(73, 45));
+        showTracksButton.setMinimumSize(new java.awt.Dimension(73, 45));
+        showTracksButton.setPreferredSize(new java.awt.Dimension(73, 45));
+        showTracksButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showTracksButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(showTracksButton, gridBagConstraints);
+        showTracksButton.getAccessibleContext().setAccessibleName("Show Tracks");
+
         getContentPane().add(gridButtonPanel, java.awt.BorderLayout.WEST);
 
         tracksPanel.setBackground(new java.awt.Color(255, 255, 255));
@@ -638,24 +662,37 @@ public final class DataControllerV extends OpenSHAPADialog
         }
     }//GEN-LAST:event_openVideoButtonActionPerformed
 
-    private void addDataViewer(final DataViewer viewer, final File f) {
-        viewer.setParentController(this);
+    private void showTracksButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showTracksButtonActionPerformed
+        assert(evt.getSource() instanceof JButton);
+        JButton button = (JButton)evt.getSource();
+        ResourceMap resourceMap = Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
+        if (tracksPanelEnabled) {
+            // Panel is being displayed, hide it
+            button.setIcon(resourceMap.getIcon("showTracksButton.show.icon"));
+        } else {
+            // Panel is hidden, show it
+            button.setIcon(resourceMap.getIcon("showTracksButton.hide.icon"));
+        }
+        tracksPanelEnabled = !tracksPanelEnabled;
+        showTracksPanel(tracksPanelEnabled);
+    }//GEN-LAST:event_showTracksButtonActionPerformed
 
+    private void addDataViewer(final DataViewer viewer, final File f) {
         // Add the QTDataViewer to the list of viewers we are controlling.
         this.viewers.add(viewer);
+        viewer.setParentController(this);
+        OpenSHAPA.getApplication().show(viewer.getParentJFrame());
 
-        // adjust the overall frame rate.
+        // adjust the overall frame rate.                
         float fps = viewer.getFrameRate();
         if (fps > currentFPS) {
             currentFPS = fps;
         }
 
-        if (TRACKS_PANEL_ENABLED) {
+        if (tracksPanelEnabled) {
             // Add the file to the tracks information panel
-            addTrack(f.getName());
+            addTrack(f.getName(), viewer.getDuration(), viewer.getOffset());
         }
-
-        OpenSHAPA.getApplication().show(viewer.getParentJFrame());
     }
 
     /**
@@ -663,8 +700,8 @@ public final class DataControllerV extends OpenSHAPADialog
      *
      * @param name the name of the track to add
      */
-    public void addTrack(final String name) {
-        tracksControllerV.addNewTrack(name);
+    public void addTrack(final String name, final long duration, final long offset) {
+        tracksControllerV.addNewTrack(name, duration, offset);
     }
 
     /**
@@ -693,8 +730,8 @@ public final class DataControllerV extends OpenSHAPADialog
         } else {
             this.setSize(285, 328);
         }
-        
         this.tracksPanel.setVisible(show);
+        this.validate();
     }
 
     //--------------------------------------------------------------------------
@@ -976,6 +1013,7 @@ public final class DataControllerV extends OpenSHAPADialog
     private javax.swing.JButton setCellOffsetButton;
     private javax.swing.JButton setCellOnsetButton;
     private javax.swing.JButton setNewCellOnsetButton;
+    private javax.swing.JButton showTracksButton;
     private javax.swing.JButton shuttleBackButton;
     private javax.swing.JButton shuttleForwardButton;
     private javax.swing.JButton stopButton;

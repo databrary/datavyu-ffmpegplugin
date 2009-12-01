@@ -35,7 +35,7 @@ public final class PluginManager {
     //
     //
 
- /** The default plugin to present to the user when loading data. */
+    /** The default plugin to present to the user when loading data. */
     private static final String DEFAULT_PLUGIN =
                             "org.openshapa.views.continuous.quicktime.QTPlugin";
 
@@ -59,6 +59,7 @@ public final class PluginManager {
     //
 
     /** The Default File Filter. */
+    /*
     private static final FileFilter DEFAULT_FILE_FILTER = new FileFilter() {
         @Override
         public boolean accept(File f) {
@@ -70,14 +71,14 @@ public final class PluginManager {
         public String getDescription() { return DFF_DESCRIPTION; }
     };
 
-    /** Default File Filter Description. */
+    /// Default File Filter Description.
     private static final String DFF_DESCRIPTION
             = "OpenSHAPA project files (*.openshapa)";
 
-    /** Default File Filter File Type Pattern. */
+    /** Default File Filter File Type Pattern. 
     private static final Pattern DFF_FILETYPE
             = Pattern.compile("^.*\\.openshapa$", Pattern.CASE_INSENSITIVE);
-
+*/
 
     //
     // WARNING: instance must be last static !!!
@@ -98,7 +99,8 @@ public final class PluginManager {
     /** */
     private Map<FileFilter, Plugin> plugins = new HashMap<FileFilter, Plugin>();
     {
-        plugins.put(DEFAULT_FILE_FILTER, null);
+        // Commented out because *.openshapa
+//        plugins.put(DEFAULT_FILE_FILTER, null);
     }
 
 
@@ -285,6 +287,7 @@ public final class PluginManager {
                         Plugin p = (Plugin) testClass.newInstance();
                         plugins.put(p.getFileFilter(), p);
 
+
                         break;
                     }
                 }
@@ -317,7 +320,7 @@ public final class PluginManager {
     public Iterable<DataViewer> buildDataViewers(final FileFilter ff,
                                                  final File f) {
         List<DataViewer> dvs = new ArrayList<DataViewer>();
-        if (DEFAULT_FILE_FILTER == ff) {
+/*        if (DEFAULT_FILE_FILTER == ff) {
             ProjectDescriptor pd = new ProjectDescriptor();
             pd.setBasePath(f.getParent());
             try {
@@ -339,12 +342,12 @@ public final class PluginManager {
                 dataViewer.setDataFeed(pde.file);
                 dvs.add(dataViewer);
             }
-        } else {
+        } else {*/
             Plugin plugin = plugins.get(ff);
             DataViewer dataViewer = plugin.getNewDataViewer();
             dataViewer.setDataFeed(f);
             dvs.add(dataViewer);
-        }
+        //}
         return dvs;
     }
 }

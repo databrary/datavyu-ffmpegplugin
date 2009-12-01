@@ -77,9 +77,9 @@ public class TracksControllerV {
         JButton bookmarkButton = new JButton("Add Bookmark");
         JButton snapButton = new JButton("Snap");
 
-        lockButton.setEnabled(false);
-        bookmarkButton.setEnabled(false);
-        snapButton.setEnabled(false);
+        lockButton.setVisible(false);
+        bookmarkButton.setVisible(false);
+        snapButton.setVisible(false);
 
         JButton zoomInButton = new JButton("( + )");
         zoomInButton.addActionListener(new ActionListener() {
@@ -170,8 +170,8 @@ public class TracksControllerV {
             needle.setPreferredSize(size);
             needle.setLocation(10, 0);
             needle.setPadding(lockButton.getSize().height + pad, 101);
-            needle.setWindowStart(0);
-            needle.setWindowEnd(60000);
+            needle.setWindowStart(minStart);
+            needle.setWindowEnd(maxEnd);
             needle.setIntervalTime(scale.getIntervalTime());
             needle.setIntervalWidth(scale.getIntervalWidth());
         }
@@ -200,12 +200,23 @@ public class TracksControllerV {
     /**
      * Add a new track to the interface.
      * @param trackName name of the track
+     * @param duration the total duration of the track in milliseconds
+     * @param offset the amount of playback offset in milliseconds
      */
-    public void addNewTrack(String trackName) {
+    public void addNewTrack(String trackName, long duration, long offset) {
+        // Check if the scale needs to be updated.
+        if (duration + offset > maxEnd) {
+            maxEnd = duration + offset;
+            rescale();
+        }
+
+        // Creates the label used to identify the track
         JLabel trackLabel = new JLabel(trackName);
 
+        // Find out the new row to insert the track to
         int newRow = tracksInfoPanel.getComponentCount();
 
+        // Create the header panel
         JPanel infoPanel = new JPanel();
         infoPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
         {
@@ -221,6 +232,7 @@ public class TracksControllerV {
             tracksInfoPanel.add(infoPanel, c);
         }
 
+        // Create the carriage panel
         JPanel carriagePanel = new JPanel();
         carriagePanel.setLayout(new BorderLayout());
         carriagePanel.setBorder(BorderFactory.createMatteBorder(2, 0, 2, 2, Color.BLACK));
@@ -232,14 +244,20 @@ public class TracksControllerV {
             size.width = 665;
             trackPainter.setPreferredSize(size);
         }
-        trackPainter.setStart(0);
-        trackPainter.setEnd(30000);
-        trackPainter.setOffset(6000);
-        trackPainter.setIntervalTime(scale.getIntervalTime());
-        trackPainter.setIntervalWidth(scale.getIntervalWidth());
-        trackPainter.setZoomWindowStart(scale.getStart());
-        trackPainter.setZoomWindowEnd(scale.getEnd());
 
+        if (duration == -1) {
+            // Case where the track duration could not be determined
+            trackPainter.setError(true);
+        } else {
+            trackPainter.setStart(0);
+            trackPainter.setEnd(duration);
+            trackPainter.setOffset(offset);
+            trackPainter.setIntervalTime(scale.getIntervalTime());
+            trackPainter.setIntervalWidth(scale.getIntervalWidth());
+            trackPainter.setZoomWindowStart(scale.getStart());
+            trackPainter.setZoomWindowEnd(scale.getEnd());
+        }
+        
         trackPainterList.add(trackPainter);
 
         carriagePanel.add(trackPainter, BorderLayout.PAGE_START);
@@ -255,6 +273,8 @@ public class TracksControllerV {
             c.insets = new Insets(0,0,1,0);
             tracksInfoPanel.add(carriagePanel, c);
         }
+
+        zoomTracks(null);
 
         tracksPanel.validate();
     }
@@ -275,18 +295,8 @@ public class TracksControllerV {
             zoomSetting = 32;
         }
 
-        long range = maxEnd - minStart;
-        long mid = range / 2;
-        long newStart = mid - (range / zoomSetting / 2);
-        long newEnd = mid + (range / zoomSetting / 2);
+        rescale();
         
-        scale.setConstraints(newStart, newEnd, zoomIntervals(zoomSetting));
-
-        needle.setWindowStart(newStart);
-        needle.setWindowEnd(newEnd);
-        needle.setIntervalTime(scale.getIntervalTime());
-        needle.setIntervalWidth(scale.getIntervalWidth());
-
         scale.repaint();
         needle.repaint();
     }
@@ -302,22 +312,7 @@ public class TracksControllerV {
             zoomSetting = 1;
         }
 
-        long range = maxEnd - minStart;
-        long mid = range / 2;
-        long newStart = mid - (range / zoomSetting / 2);
-        long newEnd = mid + (range / zoomSetting / 2);
-        
-        if (zoomSetting == 1) {
-            newStart = minStart;
-            newEnd = maxEnd;
-        }
-
-        scale.setConstraints(newStart, newEnd, zoomIntervals(zoomSetting));
-
-        needle.setWindowStart(newStart);
-        needle.setWindowEnd(newEnd);
-        needle.setIntervalTime(scale.getIntervalTime());
-        needle.setIntervalWidth(scale.getIntervalWidth());
+        rescale();
         
         scale.repaint();
         needle.repaint();
@@ -357,6 +352,29 @@ public class TracksControllerV {
         }
         // Default amount of zoom intervals
         return 20;
+    }
+
+    /**
+     * Recalculates timing scale and needle constraints based on the minimum
+     * track start time, longest track time, and current zoom setting.
+     */
+    private void rescale() {
+        long range = maxEnd - minStart;
+        long mid = range / 2;
+        long newStart = mid - (range / zoomSetting / 2);
+        long newEnd = mid + (range / zoomSetting / 2);
+
+        if (zoomSetting == 1) {
+            newStart = minStart;
+            newEnd = maxEnd;
+        }
+
+        scale.setConstraints(newStart, newEnd, zoomIntervals(zoomSetting));
+
+        needle.setWindowStart(newStart);
+        needle.setWindowEnd(newEnd);
+        needle.setIntervalTime(scale.getIntervalTime());
+        needle.setIntervalWidth(scale.getIntervalWidth());
     }
 
 }

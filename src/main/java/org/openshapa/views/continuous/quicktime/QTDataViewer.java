@@ -14,11 +14,11 @@ import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
 import quicktime.qd.QDDimension;
 import quicktime.std.StdQTConstants;
+import quicktime.std.StdQTException;
 import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * The viewer for a quicktime video file.
@@ -59,6 +59,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** The fixed window height. */
     private static final int WIN_Y = 400;
 
+    /** Playback offset */
+    private long offset;
+
     //--------------------------------------------------------------------------
     // [initialization]
     //
@@ -69,7 +72,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public QTDataViewer() {
         try {
             movie = null;
-
+            offset = 0;
             // Initalise QTJava.
             QTSession.open();
         } catch (Throwable e) {
@@ -82,10 +85,34 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     // [interface] org.openshapa.views.continuous.DataViewer
     //
 
-    public long getDuration() { throw new NotImplementedException(); }
-    public long getOffset() { throw new NotImplementedException(); }
-    public void setOffset(final long offset) { 
-        throw new NotImplementedException(); 
+    /**
+     * @return The duration of the movie in milliseconds. If -1 is returned, the
+     * movie's duration cannot be determined.
+     */
+    public long getDuration() {
+        try {
+            if (movie != null) {
+                return Constants.TICKS_PER_SECOND * movie.getDuration() / movie.getTimeScale();
+            }
+        } catch (StdQTException ex) {
+            logger.error("Unable to determine QT movie duration", ex);
+        }
+        return -1;
+    }
+
+    /**
+     * @return The playback offset of the movie in milliseconds.
+     */
+    public long getOffset() {
+        return offset;
+    }
+
+    /**
+     * @param offset The playback offset of the movie in milliseconds.
+     */
+    public void setOffset(final long offset) {
+        assert(offset >= 0);
+        this.offset = offset;
     }
 
     /**
@@ -104,6 +131,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public void setDataFeed(final File videoFile) {
 
         try {
+
             this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
@@ -130,17 +158,18 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
             fps = (float) visualMedia.getSampleCount()
                   / visualMedia.getDuration() * visualMedia.getTimeScale();
+            //logger.error("Calculated framerate:" + fps);
 
             this.add(QTFactory.makeQTComponent(movie).asComponent());
 
             setName(getClass().getSimpleName() + "-" + videoFile.getName());
             this.pack();
-            this.setVisible(true);
 
             // Set the size of the window to be the same as the incoming video.
             this.setBounds(this.getX(), this.getY(),
                            movie.getBox().getWidth(),
                            movie.getBox().getHeight());
+
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
@@ -158,6 +187,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * @return The frames per second.
      */
     public float getFrameRate() {
+        //logger.error("Getting frame rate: " + fps);
         return fps;
     }
 

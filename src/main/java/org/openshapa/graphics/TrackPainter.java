@@ -3,6 +3,7 @@ package org.openshapa.graphics;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 
 /**
@@ -24,6 +25,26 @@ public class TrackPainter extends Component {
     private long zoomWindowStart;
     // The end time of the zoomed window
     private long zoomWindowEnd;
+    // Is there an error with track information
+    private boolean error;
+
+    public TrackPainter() {
+        super();
+        error = false;
+    }
+
+    public boolean isError() {
+        return error;
+    }
+
+    /**
+     * @param error Set to true if there is an error with trying to determine
+     * any aspect of track information. If true, the carriage will not be
+     * painted and an error message will be printed in place.
+     */
+    public void setError(boolean error) {
+        this.error = error;
+    }
 
     public float getIntervalTime() {
         return intervalTime;
@@ -88,6 +109,18 @@ public class TrackPainter extends Component {
         // Paints the background
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, size.width, size.height);
+
+
+        // If there is an error with track information, don't paint the carriage
+        if (error) {
+            g.setColor(Color.red);
+            FontMetrics fm = g.getFontMetrics();
+            String errorMessage = "Track timing information could not be calculated.";
+            int width = fm.stringWidth(errorMessage);
+            g.drawString(errorMessage, (size.width / 2) - (width / 2),
+                    (size.height / 2) - (fm.getAscent() / 2));
+            return;
+        }
 
         // Calculate effective start and end points for the carriage
 //        long effectiveStart;
