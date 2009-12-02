@@ -208,7 +208,7 @@
       <id>maven</id>
       <url>http://repo1.maven.org/maven2</url>
       <layout>default</layout>
-    </repository>
+    </repository>    
   </repositories>
 
   <!-- External plugin repositories - where to find third-part dependencies. -->
@@ -222,6 +222,20 @@
 
   <!-- Use an optimized build for releases. -->
   <profiles>
+    <profile>
+        <id>win-package</id>
+        <properties>
+            <assembly-config>assembly-win.xml</assembly-config>
+        </properties>
+    </profile>
+
+    <profile>
+        <id>jar-package</id>
+        <properties>
+            <assembly-config>assembly-jar.xml</assembly-config>
+        </properties>
+    </profile>
+
     <profile>
       <id>release</id>
       <build>
@@ -296,7 +310,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>assembly.xml</descriptor>
+            <descriptor>${assembly-config}</descriptor>
           </descriptors>
           <outputDirectory>target/site/download</outputDirectory>
         </configuration>
@@ -311,6 +325,7 @@
         </configuration>
       </plugin>
 
+      <!-- Creates the JAR -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
           <configuration>
@@ -446,10 +461,62 @@
           </configuration>
       </plugin>
 
+      <!-- BugzID:305 - Windows Application Bundle -->
+      <plugin>
+        <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+          <artifactId>launch4j-plugin</artifactId>
+          <version>1.0.0.3</version>
+          <executions>
+            <execution>
+              <id>launch4j</id>
+              <goals>
+                <goal>launch4j</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <headerType>gui</headerType>
+            <outfile>${basedir}/target/${project.build.finalName}.exe</outfile>
+            <jar>${basedir}/target/${project.build.finalName}.jar</jar>
+            <icon>${basedir}/src/main/resources/icons/OpenSHAPA.ico</icon>
+            <splash>
+              <file>${basedir}/src/main/resources/icons/splash.bmp</file>
+              <waitForWindow>true</waitForWindow>
+              <timeout>60</timeout>
+              <timeoutErr>true</timeoutErr>
+            </splash>
+            <jre>
+              <minVersion>1.5.0</minVersion>
+            </jre>
+            <classPath>
+              <mainClass>org.openshapa.OpenSHAPA</mainClass>
+                <preCp>junit-4.3.jar</preCp>
+                <preCp>junit-addons-1.4.jar</preCp>
+                <preCp>xercesImpl-2.6.2.jar</preCp>
+                <preCp>xmlParserAPIs-2.6.2.jar</preCp>
+                <preCp>script-api-1.1.jar</preCp>
+                <preCp>jruby-engine-1.1.6.jar</preCp>
+                <preCp>jruby-complete-1.3.1.jar</preCp>
+                <preCp>log4j-1.2.14.jar</preCp>
+                <preCp>swing-layout-1.0.3.jar</preCp>
+                <preCp>appframework-1.0.3.jar</preCp>
+                <preCp>swing-worker-1.1.jar</preCp>
+                <preCp>QTJava-7.jar</preCp>
+                <preCp>uispec4j-v2.1-B.jar</preCp>
+                <preCp>asm-3.1.jar</preCp>
+                <preCp>openhashtable-0.1.jar</preCp>
+                <preCp>openshapa-lib-0.0.2.jar</preCp>
+                <preCp>snakeyaml-1.4.jar</preCp>
+            </classPath>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
-  <!-- Third party dependancies. -->
+  <!-- Third party dependencies. MAKE SURE YOU ADD ABOVE AS WELL - otherwise\
+       dependencies will not get "linked" to the windows exe classpath
+       correctly.
+  -->
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -548,7 +615,9 @@
       <artifactId>snakeyaml</artifactId>
       <version>1.4</version>
     </dependency>
-
   </dependencies>
+  
 </project>
+
+
 
