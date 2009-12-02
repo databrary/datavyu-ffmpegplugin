@@ -297,17 +297,12 @@ implements KeyEventDispatcher {
         view = new OpenSHAPAView(this);
         show(view);
 
-        // BugzID:449 - Update the name of the window to include the default
-        // name of the database.
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap = OpenSHAPA.getApplication()
-                                    .getContext()
-                                    .getResourceMap(OpenSHAPA.class);
-        mainFrame.setTitle(rMap.getString("Application.title")
-                           + " - " + OpenSHAPA.getDatabase().getName());
+        updateTitle();
+
 
         // Create video controller.
-        dataController = new DataControllerV(mainFrame, false);
+        dataController = new DataControllerV(OpenSHAPA.getApplication().
+                getMainFrame(), false);
     }
 
     /**
@@ -316,8 +311,18 @@ implements KeyEventDispatcher {
      * builder, so this additional configuration is not needed.
      */
     @Override
-    protected void configureWindow(java.awt.Window root) {
+    protected void configureWindow(final java.awt.Window root) {
     }
+
+    /**
+     * Asks the main frame to update its title.
+     */
+    public void updateTitle() {
+        if (view != null) {
+            view.updateTitle();
+        }
+    }
+
 
     /**
      * A convenient static getter for the application instance.

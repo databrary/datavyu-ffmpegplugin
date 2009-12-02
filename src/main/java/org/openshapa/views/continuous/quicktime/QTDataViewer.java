@@ -176,6 +176,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             setName(getClass().getSimpleName() + "-" + videoFile.getName());
             this.pack();
 
+            // Prevent initial white frame for video on OSX.
+            this.setVisible(true);
+
             // Set the size of the window to be the same as the incoming video.
             this.setBounds(this.getX(), this.getY(),
                            movie.getBox().getWidth(),

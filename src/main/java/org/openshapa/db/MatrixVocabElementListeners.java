@@ -9,6 +9,8 @@
 
 package org.openshapa.db;
 
+import org.openshapa.OpenSHAPA;
+
 /**
  * Class MatrixVocabElementListeners
  *
@@ -430,6 +432,9 @@ public class MatrixVocabElementListeners extends VocabElementListeners
             throw new SystemErrorException(mName + "no changes?!?");
         }
 
+        // The database has been modified!
+        db.modifyDatabase();
+
         for ( Long id : this.ils )
         {
             dbe = this.db.idx.getElement(id); // throws system error on failure
@@ -492,6 +497,10 @@ public class MatrixVocabElementListeners extends VocabElementListeners
             "MatrixVocabElementListeners::notifyInternalListenersOfDeletion()";
         DBElement dbe;
         InternalMatrixVocabElementListener il;
+
+        // The database has been modified!
+        db.modifyDatabase();
+
 
         for ( Long id : this.ils )
         {
