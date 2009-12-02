@@ -1,6 +1,8 @@
 package org.openshapa.views.continuous;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -9,10 +11,13 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.LocalStorage;
@@ -26,31 +31,100 @@ import org.openshapa.OpenSHAPA;
  */
 public final class PluginManager {
 
+    //--------------------------------------------------------------------------
+    //
+    //
+
     /** The default plugin to present to the user when loading data. */
     private static final String DEFAULT_PLUGIN =
                             "org.openshapa.views.continuous.quicktime.QTPlugin";
 
+    /** Logger for this class. */
+    private static final Logger LOGGER = Logger.getLogger(PluginManager.class);
+
+    /** A reference to the interface that plugins must override. */
+    private static final Class PLUGIN_CLASS;
+    static {
+        try {
+            PLUGIN_CLASS
+                    = Class.forName("org.openshapa.views.continuous.Plugin");
+        } catch (ClassNotFoundException ex) {
+            LOGGER.fatal("Unable to initialize Plugin Class", ex);
+            throw new RuntimeException(ex);
+        }
+    }
+
+    //
+    // Default File Filter Settings
+    //
+
+    /** The Default File Filter. */
+    /*
+    private static final FileFilter DEFAULT_FILE_FILTER = new FileFilter() {
+        @Override
+        public boolean accept(File f) {
+            return
+                    f.isDirectory()
+                    || DFF_FILETYPE.matcher(f.getName()).matches();
+        }
+        @Override
+        public String getDescription() { return DFF_DESCRIPTION; }
+    };
+
+    /// Default File Filter Description.
+    private static final String DFF_DESCRIPTION
+            = "OpenSHAPA project files (*.openshapa)";
+
+    /** Default File Filter File Type Pattern. 
+    private static final Pattern DFF_FILETYPE
+            = Pattern.compile("^.*\\.openshapa$", Pattern.CASE_INSENSITIVE);
+*/
+
+    //
+    // WARNING: instance must be last static !!!
+    //
+    
+    /** The single instance of the PluginManager for OpenSHAPA. */
+    private static final PluginManager INSTANCE = new PluginManager();
+
+
+    //--------------------------------------------------------------------------
+    //
+    //
+
+// @todo: remove
+//    /** The list of supported file types. */
+//    private List<Plugin> availablePlugins = new ArrayList<Plugin>();
+
+    /** */
+    private Map<FileFilter, Plugin> plugins = new HashMap<FileFilter, Plugin>();
+    {
+        // Commented out because *.openshapa
+//        plugins.put(DEFAULT_FILE_FILTER, null);
+    }
+
+
+    //--------------------------------------------------------------------------
+    //
+    //
+
     /**
      * @return The single instance of the PluginManager object in OpenSHAPA.
      */
-    public static PluginManager getInstance() {
-        if (instance == null) {
-            instance = new PluginManager();
-        }
-
-        return instance;
-    }
+    public static PluginManager getInstance() { return INSTANCE; }
 
     /**
      * Default constructor.
+     *
+     * Searches for valid plugins ... currently scans the classpath looking for
+     * classes that implement the plugin interface.
      */
     private PluginManager() {
-        // Search for valid plugins... Current scans the classpath looking for
-        // classes that implement the plugin interface.
-        try {
-            this.availablePlugins = new ArrayList<Plugin>();
-            plugin = Class.forName("org.openshapa.views.continuous.Plugin");
+        initialize();
+    }
 
+    private void initialize() {
+        try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             URL resource = loader.getResource("");
 
@@ -158,11 +232,11 @@ public final class PluginManager {
 
         // Whoops - something went bad. Chuck a spaz.
         } catch (ClassNotFoundException e) {
-            logger.error("Unable to build Plugin", e);
+            LOGGER.error("Unable to build Plugin", e);
         } catch (IOException ie) {
-            logger.error("Unable to load jar file", ie);
+            LOGGER.error("Unable to load jar file", ie);
         } catch (URISyntaxException se) {
-            logger.error("Unable to build path to jar file", se);
+            LOGGER.error("Unable to build path to jar file", se);
         }
     }
 
@@ -184,7 +258,7 @@ public final class PluginManager {
             method.setAccessible(true);
             method.invoke(sysLoader, new Object[] {f.toURL()});
         } catch (Throwable t) {
-            logger.error("Unable to inject class into class path.", t);
+            LOGGER.error("Unable to inject class into class path.", t);
         }
     }
 
@@ -198,9 +272,8 @@ public final class PluginManager {
      */
     private void addPlugin(final String className) {
         try {
-            String cName = className.substring(0,
-                                        className.length() - ".class".length());
-            cName = cName.replace('/', '.');
+            String cName = className.replaceAll("\\.class$", "")
+                                    .replace('/', '.');
 
             // Ignore UI tests - when they load they mess everything up (the
             // uispec4j interceptor kicks in and the UI stops working.
@@ -210,38 +283,29 @@ public final class PluginManager {
                 Class testClass = Class.forName(cName);
                 Class[] implInterfaces = testClass.getInterfaces();
                 for (Class c : implInterfaces) {
-                    if (c.equals(plugin)) {
+                    if (PLUGIN_CLASS.isAssignableFrom(testClass)) {
                         Plugin p = (Plugin) testClass.newInstance();
+                        plugins.put(p.getFileFilter(), p);
 
-                        // BugzID:749 - Force movie filter to be default filter.
-                        if (cName.equalsIgnoreCase(DEFAULT_PLUGIN)) {
-                            this.availablePlugins.add(p);
-                        } else {
-                            this.availablePlugins.add(0, p);
-                        }
+
                         break;
                     }
                 }
              }
         } catch (InstantiationException e) {
-            logger.error("Unable to instantiate plugin", e);
+            LOGGER.error("Unable to instantiate plugin", e);
         } catch (IllegalAccessException e) {
-            logger.error("Unable to instantiate plugin", e);
+            LOGGER.error("Unable to instantiate plugin", e);
         } catch (ClassNotFoundException e) {
-            logger.error("Unable to find plugin.", e);
+            LOGGER.error("Unable to find plugin.", e);
         }
     }
 
     /**
      * @return A list of all the filefilters representing viewer plugins.
      */
-    public List<FileFilter> getPluginFileFilters() {
-        List<FileFilter> result = new ArrayList<FileFilter>();
-        for (Plugin p : this.availablePlugins) {
-            result.add(p.getFileFilter());
-        }
-
-        return result;
+    public Iterable<FileFilter> getPluginFileFilters() {
+        return plugins.keySet();
     }
 
     /**
@@ -249,34 +313,41 @@ public final class PluginManager {
      * prompt the user to clarify, if multiple viewers are availble for a single
      * file type (i.e. many viewers may support CSV files.)
      *
-     * @param dataFile The dataFile that you wish to create a viewer for.
-     * @param usedFilter The file filter that was used to select dataFile.
-     *
-     * @return A valid data viewer for the supplied file.
+     * @param ff file filter used to identify plugin type
+     * @param f data stream file
+     * @return initialized data viewers
      */
-    public DataViewer buildViewerFromFile(final File dataFile,
-                                          final FileFilter usedFilter) {
-        for (Plugin p : this.availablePlugins) {
-            if (usedFilter.equals(p.getFileFilter())) {
-                if (p.getFileFilter().accept(dataFile)) {
-                    return p.getNewDataViewer();
-                }
+    public Iterable<DataViewer> buildDataViewers(final FileFilter ff,
+                                                 final File f) {
+        List<DataViewer> dvs = new ArrayList<DataViewer>();
+/*        if (DEFAULT_FILE_FILTER == ff) {
+            ProjectDescriptor pd = new ProjectDescriptor();
+            pd.setBasePath(f.getParent());
+            try {
+                pd.process(new FileReader(f));
+            } catch (FileNotFoundException ex) {
+                LOGGER.error("Unable to build viewer", ex);
             }
-        }
 
-        // Ah-oh - no appropriate viewer found :(
-        return null;
+            for (ProjectDescriptor.Entry pde : pd.getEntries()) {
+                Plugin plugin = null;
+                try {
+                    plugin = (Plugin) pde.plugin.newInstance();
+                } catch (InstantiationException ex) {
+                    LOGGER.error("Unable to build plugin instance", ex);
+                } catch (IllegalAccessException ex) {
+                    LOGGER.error("Unable to access plugin", ex);
+                }
+                DataViewer dataViewer = plugin.getNewDataViewer();
+                dataViewer.setDataFeed(pde.file);
+                dvs.add(dataViewer);
+            }
+        } else {*/
+            Plugin plugin = plugins.get(ff);
+            DataViewer dataViewer = plugin.getNewDataViewer();
+            dataViewer.setDataFeed(f);
+            dvs.add(dataViewer);
+        //}
+        return dvs;
     }
-
-    /** The single instance of the PluginManager for OpenSHAPA. */
-    private static PluginManager instance = null;
-
-    /** A reference to the interface that plugins must override. */
-    private Class plugin;
-
-    /** The list of supported file types. */
-    private List<Plugin> availablePlugins;
-
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(PluginManager.class);
 }

@@ -8,10 +8,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SimpleTimeZone;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
@@ -118,7 +121,7 @@ public final class DataControllerV extends OpenSHAPADialog
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
-    private static final boolean TRACKS_PANEL_ENABLED = true;
+    private boolean tracksPanelEnabled = false;
 
     private TracksControllerV tracksControllerV;
 
@@ -152,9 +155,6 @@ public final class DataControllerV extends OpenSHAPADialog
     public DataControllerV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
 
-
-
-
         clock.registerListener(this);
 
         initComponents();
@@ -165,6 +165,8 @@ public final class DataControllerV extends OpenSHAPADialog
 
         tracksControllerV = new TracksControllerV();
         tracksPanel.add(tracksControllerV.getTracksPanel());
+
+	this.showTracksPanel(false);
     }
 
     /** Tells the Data Controller if shift is being held or not.
@@ -272,7 +274,6 @@ public final class DataControllerV extends OpenSHAPADialog
         return clock.getTime();
     }
 
-
     /**
      * Remove the specifed viewer form the controller.
      *
@@ -321,6 +322,7 @@ public final class DataControllerV extends OpenSHAPADialog
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
+        showTracksButton = new javax.swing.JButton();
         tracksPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -679,6 +681,24 @@ public final class DataControllerV extends OpenSHAPADialog
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(findOffsetField, gridBagConstraints);
 
+        showTracksButton.setIcon(resourceMap.getIcon("showTracksButton.show.icon")); // NOI18N
+        showTracksButton.setMaximumSize(new java.awt.Dimension(73, 45));
+        showTracksButton.setMinimumSize(new java.awt.Dimension(73, 45));
+        showTracksButton.setPreferredSize(new java.awt.Dimension(73, 45));
+        showTracksButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showTracksButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridButtonPanel.add(showTracksButton, gridBagConstraints);
+        showTracksButton.getAccessibleContext().setAccessibleName("Show Tracks");
+
         getContentPane().add(gridButtonPanel, java.awt.BorderLayout.WEST);
 
         tracksPanel.setBackground(new java.awt.Color(255, 255, 255));
@@ -697,51 +717,62 @@ public final class DataControllerV extends OpenSHAPADialog
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
         // Add file filters for each of the supported plugins.
-        List<FileFilter> filters =
-                PluginManager.getInstance().getPluginFileFilters();
-        for (FileFilter f : filters) {
+        for (FileFilter f
+             : PluginManager.getInstance().getPluginFileFilters()) {
             jd.addChoosableFileFilter(f);
         }
-        int result = jd.showOpenDialog(this);
 
-        if (result == JFileChooser.APPROVE_OPTION) {
+        if (JFileChooser.APPROVE_OPTION == jd.showOpenDialog(this)) {
             File f = jd.getSelectedFile();
+            FileFilter ff = jd.getFileFilter();
 
-            // Build the data viewer for the file.
-            DataViewer viewer = PluginManager.getInstance().buildViewerFromFile(
-                    f, jd.getFileFilter());
-            if (viewer == null) {
-                logger.error("No DataViewer available.");
-                return;
-            }
-
-            viewer.setDataFeed(f);
-            viewer.setParentController(this);
-            OpenSHAPA.getApplication().show(viewer.getParentJFrame());
-
-            // adjust the overall frame rate.
-            float fps = viewer.getFrameRate();
-            if (fps > currentFPS) {
-                currentFPS = fps;
-            }
-
-            // Add the QTDataViewer to the list of viewers we are controlling.
-            this.viewers.add(viewer);
-
-            if (TRACKS_PANEL_ENABLED) {
-                // Add the file to the tracks information panel
-                addTrack(f.getName());
+            for (DataViewer viewer :
+                 PluginManager.getInstance().buildDataViewers(ff, f)) {
+                this.addDataViewer(viewer, f);
             }
         }
     }//GEN-LAST:event_openVideoButtonActionPerformed
+
+    private void showTracksButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showTracksButtonActionPerformed
+        assert(evt.getSource() instanceof JButton);
+        JButton button = (JButton)evt.getSource();
+        ResourceMap resourceMap = Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
+        if (tracksPanelEnabled) {
+            // Panel is being displayed, hide it
+            button.setIcon(resourceMap.getIcon("showTracksButton.show.icon"));
+        } else {
+            // Panel is hidden, show it
+            button.setIcon(resourceMap.getIcon("showTracksButton.hide.icon"));
+        }
+        tracksPanelEnabled = !tracksPanelEnabled;
+        showTracksPanel(tracksPanelEnabled);
+    }//GEN-LAST:event_showTracksButtonActionPerformed
+
+    private void addDataViewer(final DataViewer viewer, final File f) {
+        // Add the QTDataViewer to the list of viewers we are controlling.
+        this.viewers.add(viewer);
+        viewer.setParentController(this);
+        OpenSHAPA.getApplication().show(viewer.getParentJFrame());
+
+        // adjust the overall frame rate.                
+        float fps = viewer.getFrameRate();
+        if (fps > currentFPS) {
+            currentFPS = fps;
+        }
+
+        if (tracksPanelEnabled) {
+            // Add the file to the tracks information panel
+            addTrack(f.getName(), viewer.getDuration(), viewer.getOffset());
+        }
+    }
 
     /**
      * Adds a track to the tracks panel.
      *
      * @param name the name of the track to add
      */
-    public void addTrack(final String name) {
-        tracksControllerV.addNewTrack(name);
+    public void addTrack(final String name, final long duration, final long offset) {
+        tracksControllerV.addNewTrack(name, duration, offset);
     }
 
     /**
@@ -770,8 +801,8 @@ public final class DataControllerV extends OpenSHAPADialog
         } else {
             this.setSize(285, 328);
         }
-        
         this.tracksPanel.setVisible(show);
+        this.validate();
     }
 
     //--------------------------------------------------------------------------
@@ -880,12 +911,9 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Action to invoke when the user clicks on the play button.
      */
-
-
     @Action
     public void playAction() {
         playAt(PLAY_RATE);
-
     }
 
     /**
@@ -918,7 +946,8 @@ public final class DataControllerV extends OpenSHAPADialog
             pauseRate = clock.getRate();
             clock.stop();
             lblSpeed.setText("["
-                 + FloatUtils.doubleToFractionStr(new Double(pauseRate)) + "]");
+                     + FloatUtils.doubleToFractionStr(new Double(pauseRate))
+                     + "]");
         }
     }
 
@@ -1055,8 +1084,7 @@ public final class DataControllerV extends OpenSHAPADialog
     @Action
     public void goBackAction() {
         try {
-            long j =
-                 -CLOCK_FORMAT.parse(this.goBackTextField.getText()).getTime();
+            long j = -CLOCK_FORMAT.parse(this.goBackTextField.getText()).getTime();
             jump(j);
 
             // BugzID:721 - After going back - start playing again.
@@ -1226,6 +1254,7 @@ public final class DataControllerV extends OpenSHAPADialog
     private javax.swing.JButton setCellOffsetButton;
     private javax.swing.JButton setCellOnsetButton;
     private javax.swing.JButton setNewCellOffsetButton;
+    private javax.swing.JButton showTracksButton;
     private javax.swing.JButton shuttleBackButton;
     private javax.swing.JButton shuttleForwardButton;
     private javax.swing.JButton stopButton;

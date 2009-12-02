@@ -1,24 +1,20 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
  */
 
 package org.openshapa.util;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import junitx.util.PrivateAccessor;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.openshapa.util.ClockTimer.ClockListener;
+
+import static org.junit.Assert.*;
 
 /**
  *
- * @author pwaller
  */
 public class ClockTimerTest {
 
@@ -60,7 +56,7 @@ public class ClockTimerTest {
     // [Tests]
     //
 
-    @Test
+//    @Test
     public void testTicks() throws InterruptedException {
         System.out.println("testing 'ticks'");
         instance.registerListener(new ClockTimer.ClockListener() {
@@ -165,13 +161,19 @@ public class ClockTimerTest {
     /**
      * Test of start method, of class ClockTimer.
      */
-    //@Test
+    @Test
     public void testStart() {
-        System.out.println("start");
-        ClockTimer instance = new ClockTimer();
+        System.out.println("start|stop|isStopped");
+        assertTrue(instance.isStopped());
         instance.start();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertFalse(instance.isStopped());
+        instance.stop();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            fail("Problem sleeping!");
+        }
+        assertTrue(instance.isStopped());
     }
 
     /**

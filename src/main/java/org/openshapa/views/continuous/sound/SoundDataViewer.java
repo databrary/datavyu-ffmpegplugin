@@ -25,7 +25,7 @@ import quicktime.std.movies.media.Media;
 import quicktime.std.movies.media.MediaEQSpectrumBands;
 
 import quicktime.app.view.QTFactory;
-
+import quicktime.std.StdQTException;
 
 
 /**
@@ -116,6 +116,8 @@ public final class SoundDataViewer extends JFrame
     /** The preprocessing rate. */
     private static final float PREPROCESSRATE = 1F;
 
+    /** Playback offset */
+    private long offset;
 
     /**
      * Constructor - creates new audio viewer.
@@ -123,7 +125,7 @@ public final class SoundDataViewer extends JFrame
     public SoundDataViewer() {
         try {
             audio = null;
-
+            offset = 0;
             // Initalise QTJava.
             QTSession.open();
 
@@ -133,12 +135,44 @@ public final class SoundDataViewer extends JFrame
         initComponents();
     }
 
+
     //--------------------------------------------------------------------------
     // [interface] org.openshapa.views.continuous.DataViewer
     //
     /**
      * @return The parent JFrame that this data viewer resides within.
      */
+
+    /**
+     * @return The duration of the audio in milliseconds. If -1 is returned, the
+     * audio's duration cannot be determined.
+     */
+    public long getDuration() {
+        try {
+            if (audio != null) {
+                return Constants.TICKS_PER_SECOND * audio.getDuration() / audio.getTimeScale();
+            }
+        } catch (StdQTException ex) {
+            logger.error("Unable to determine QT audio duration", ex);
+        }
+        return -1;
+    }
+
+    /**
+     * @return The playback offset of the audio in milliseconds.
+     */
+    public long getOffset() {
+        return offset;
+    }
+
+    /**
+     * @param offset The playback offset of the audio in milliseconds.
+     */
+    public void setOffset(final long offset) {
+        assert(offset >= 0);
+        this.offset = offset;
+    }
+
     public JFrame getParentJFrame() {
         return this;
     }

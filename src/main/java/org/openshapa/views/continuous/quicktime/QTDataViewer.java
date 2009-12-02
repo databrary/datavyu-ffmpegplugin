@@ -14,6 +14,7 @@ import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
 import quicktime.qd.QDDimension;
 import quicktime.std.StdQTConstants;
+import quicktime.std.StdQTException;
 import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
 import quicktime.std.movies.TimeInfo;
@@ -65,6 +66,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** How many frames to check when correcting the FPS. */
     private static final int CORRECTIONFRAMES = 5;
 
+    /** The playback offset of the movie in milliseconds. */
+    private long offset;
+
 
     //--------------------------------------------------------------------------
     // [initialization]
@@ -76,7 +80,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public QTDataViewer() {
         try {
             movie = null;
-
+            offset = 0;
             // Initalise QTJava.
             QTSession.open();
         } catch (Throwable e) {
@@ -88,6 +92,36 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     //--------------------------------------------------------------------------
     // [interface] org.openshapa.views.continuous.DataViewer
     //
+
+    /**
+     * @return The duration of the movie in milliseconds. If -1 is returned, the
+     * movie's duration cannot be determined.
+     */
+    public long getDuration() {
+        try {
+            if (movie != null) {
+                return Constants.TICKS_PER_SECOND * movie.getDuration() / movie.getTimeScale();
+            }
+        } catch (StdQTException ex) {
+            logger.error("Unable to determine QT movie duration", ex);
+        }
+        return -1;
+    }
+
+    /**
+     * @return The playback offset of the movie in milliseconds.
+     */
+    public long getOffset() {
+        return offset;
+    }
+
+    /**
+     * @param offset The playback offset of the movie in milliseconds.
+     */
+    public void setOffset(final long offset) {
+        assert(offset >= 0);
+        this.offset = offset;
+    }
 
     /**
      * @return The parent JFrame that this data viewer resides within.
@@ -141,12 +175,15 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
             setName(getClass().getSimpleName() + "-" + videoFile.getName());
             this.pack();
+
+            // Prevent initial white frame for video on OSX.
             this.setVisible(true);
 
             // Set the size of the window to be the same as the incoming video.
             this.setBounds(this.getX(), this.getY(),
                            movie.getBox().getWidth(),
                            movie.getBox().getHeight());
+
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
