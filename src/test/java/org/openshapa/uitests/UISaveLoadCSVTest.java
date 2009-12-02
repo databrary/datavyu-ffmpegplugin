@@ -41,9 +41,6 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      *
      * @throws java.lang.Exception on any error
      */
-    
-    /* Failing on clover instrumented builds: See bugzid:842
-
     public void testSavingCSV() throws Exception {
         //Preparation
         Window window = getMainWindow();
@@ -93,7 +90,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         // Please note: This assumes that saving was working on 05-Aug-2009
         File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
         assertTrue(areFilesSame(testCSV, bug541SavedCSV));
-    }*/
+    }
 
     /**
      * Run a load test for specified input and expected output files.
