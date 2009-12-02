@@ -345,6 +345,10 @@ public class DataColumnListeners extends Listeners
                 "DataColumnListeners::notifyListenersOfCellDeletion()";
         ExternalDataColumnListener el;
 
+
+        // The database has been modified!
+        db.modifyDatabase();
+
         // No internal listeners for now.
 
 
@@ -386,6 +390,10 @@ public class DataColumnListeners extends Listeners
         final String mName =
                 "DataColumnListeners::notifyListenersOfCellInsertion()";
         ExternalDataColumnListener el;
+
+
+        // The database has been modified!
+        db.modifyDatabase();
 
         // No internal listeners for now.
 
@@ -431,8 +439,20 @@ public class DataColumnListeners extends Listeners
 
         if ( this.changeNoted )
         {
+
+            boolean nonTrivial = (
+                    this.nameChanged ||
+                    this.hiddenChanged ||
+                    this.readOnlyChanged ||
+                    this.varLenChanged);
+
+            if(nonTrivial) {
+                // The database has been modified!
+                db.modifyDatabase();
+            } nonTrivial = false;
+
             // first, notify the internal listeners... none at present, so
-            // nothint to do here.
+            // nothing to do here.
 
 
             // then notify the external listeners...
@@ -499,6 +519,10 @@ public class DataColumnListeners extends Listeners
     {
         final String mName = "DataColumnListeners::notifyListenersOfDeletion()";
         ExternalDataColumnListener el;
+
+
+        // The database has been modified!
+        db.modifyDatabase();
 
         // first, notify the intenal listeners... none at present
 

@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.Vector;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
@@ -41,6 +42,7 @@ import org.openshapa.Configuration;
 import org.openshapa.db.Cell;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
+import org.openshapa.db.Database;
 import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.FileFilters.MODBFilter;
 
@@ -55,7 +57,7 @@ public final class OpenSHAPAView extends FrameView {
      *
      * @param app The SingleFrameApplication that invoked this main FrameView.
      */
-    public OpenSHAPAView(SingleFrameApplication app) {
+    public OpenSHAPAView(final SingleFrameApplication app) {
         super(app);
         KeyboardFocusManager manager = KeyboardFocusManager
                                    .getCurrentKeyboardFocusManager();
@@ -69,7 +71,7 @@ public final class OpenSHAPAView extends FrameView {
              * @return true if the KeyboardFocusManager should take no
              * further action with regard to the KeyEvent; false otherwise.
              */
-            public boolean dispatchKeyEvent(KeyEvent evt) {
+            public boolean dispatchKeyEvent(final KeyEvent evt) {
                 // Pass the keyevent onto the keyswitchboard so that it can
                 // route it to the correct action.
                 return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
@@ -129,6 +131,40 @@ public final class OpenSHAPAView extends FrameView {
         this.panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
     }
+
+    /**
+     * Update the title of the application.
+     */
+    public void updateTitle() {
+        // BugzID:449 - Update the name of the window to include the default
+        // name of the database.
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = OpenSHAPA.getApplication()
+                                    .getContext()
+                                    .getResourceMap(OpenSHAPA.class);
+        String postFix = "";
+        Database db = OpenSHAPA.getDatabase();
+
+        if (db.getHasChanged()) {
+            postFix = "*";
+        }
+        File dbFile = db.getSourceFile();
+
+        if (dbFile != null) {
+            String fName = dbFile.getName();
+            mainFrame.setTitle(rMap.getString("Application.title")
+                               + " - "
+                               + fName
+                               + postFix);
+        } else {
+            mainFrame.setTitle(rMap.getString("Application.title")
+                               + " - "
+                               + "Database1"
+                               + postFix);
+        }
+    }
+
+
 
     /**
      * Action for creating a new database.
@@ -953,4 +989,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /** The spreadsheet panel for this view. */
     private SpreadsheetPanel panel;
+
+    
+
 }

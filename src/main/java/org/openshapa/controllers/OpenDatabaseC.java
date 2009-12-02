@@ -78,22 +78,18 @@ public final class OpenDatabaseC {
         // BugzID:449 - Set filename in spreadsheet window and database if the
         // database name is undefined.
         try {
-            if (OpenSHAPA.getDatabase().getName().equals("Undefined")) {
+            Database db = OpenSHAPA.getDatabase();
+
+            if (db.getName().equals("Undefined")) {
                 String dbName = sourceFile.getName();
                 dbName = dbName.substring(0, dbName.lastIndexOf('.'));
-                OpenSHAPA.getDatabase().setName(dbName);
-                OpenSHAPA.getDatabase().setSourceFile(sourceFile);
+                db.setName(dbName);
+                db.setSourceFile(sourceFile);
             }
 
-            // Update the name of the window to include the name we just set
-            // in the database.
-            JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-            ResourceMap rMap = OpenSHAPA.getApplication()
-                                        .getContext()
-                                        .getResourceMap(OpenSHAPA.class);
-
-            mainFrame.setTitle(rMap.getString("Application.title")
-                               + " - " + sourceFile.getName());
+            // Calling this will erase the "modified" variable and update
+            // the title, not actuall save the database.
+            db.saveDatabase();
 
         } catch (SystemErrorException se) {
             logger.error("Can't set db name to the name of the CSV file.", se);

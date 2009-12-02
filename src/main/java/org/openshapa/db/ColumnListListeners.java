@@ -103,6 +103,10 @@ public class ColumnListListeners extends Listeners
                 "ColumnListListeners::notifyListenersOfColDeletion()";
         ExternalColumnListListener el;
 
+
+        // The database has been modified!
+        db.modifyDatabase();
+
         // No internal listeners for now.
 
 
@@ -148,6 +152,10 @@ public class ColumnListListeners extends Listeners
                 "ColumnListListeners::notifyListenersOfColInsertion()";
         ExternalColumnListListener el;
 
+        // The database has been modified!
+        db.modifyDatabase();
+
+
         // No internal listeners for now.
 
 
@@ -192,6 +200,12 @@ public class ColumnListListeners extends Listeners
         final String mName =
                 "ColumnListListeners::notifyListenersOfColOrderVectorEdit()";
         ExternalColumnListListener el;
+
+        // The database has been modified!
+        db.modifyDatabase();
+        
+
+
 
         // No internal listeners for now.
 

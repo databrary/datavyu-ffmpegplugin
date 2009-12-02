@@ -68,6 +68,9 @@ public class VocabListListeners extends Listeners
         final String mName = "VLChangeListeners::notifyListenersOfVEDeletion()";
         ExternalVocabListListener el;
 
+        // The database has been modified!
+        db.modifyDatabase();
+
         // No internal listeners for now.
 
 
@@ -112,6 +115,9 @@ public class VocabListListeners extends Listeners
         final String mName = "VLChangeListeners::notifyListenersOfInsertion()";
         ExternalVocabListListener el;
 
+        // The database has been modified!
+        db.modifyDatabase();
+
         // No internal listeners for now.
 
 
@@ -136,7 +142,7 @@ public class VocabListListeners extends Listeners
     /**
      * Deregister an external listener.
      *
-     * @param el The extenral listener to deregister from the list of listeners.
+     * @param el The external listener to deregister from the list of listeners.
      *
      * Changes:
      * <ul>
