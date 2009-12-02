@@ -8,6 +8,7 @@
 package org.openshapa.db;
 
 import java.io.File;
+import org.openshapa.OpenSHAPA;
 
 /**
  * Abstract database class
@@ -36,46 +37,50 @@ public abstract class Database
     /***************************** Fields: ***********************************/
     /*************************************************************************/
 
-    /** Database name */
-    String name = "Undefined";
+    /** Database name. */
+    protected String name = "Undefined";
 
-    /** Database description */
-    String description = null;
+    /** Database description. */
+    protected String description = null;
 
-    /** Start time flag */
+    /** Start time flag. */
     protected boolean useStartTime = false;
 
-    /** Start time value */
-    long startTime = DEFAULT_START_TIME;
+    /** Start time value. */
+    protected long startTime = DEFAULT_START_TIME;
 
-    /** Ticks per second */
-    int tps = DEFAULT_TPS;
+    /** Ticks per second. */
+    protected int tps = DEFAULT_TPS;
 
-    /** Whether we are keeping all columns sorted by time automatically */
+    /** Whether we are keeping all columns sorted by time automatically. */
     protected boolean temporalOrdering = false;
 
 //    /** Database change listeners */
 //    java.util.Vector<DatabaseChangeListener> changeListeners =
 //            new java.util.Vector<DatabaseChangeListener>();
 
-    /** Current database user UID */
+    /** Current database user UID. */
     protected int curUID = 0;
 
-    /** Index of all DBElements in the database */
+    /** Index of all DBElements in the database. */
     protected DBIndex idx = null;
 
-    /** List of all vocab elements in the database */
+    /** List of all vocab elements in the database. */
     protected VocabList vl = null;
 
-    /** list of all columns in the database */
+    /** list of all columns in the database. */
     protected ColumnList cl = null;
 
-    /** Cascade Listeners */
+    /** Cascade Listeners. */
     private CascadeListeners listeners = null;
 
     /** The source file for this database - if this database is not sourced from
      *  a file - this is null. */
     private File sourceFile = null;
+
+    /** Boolean which keeps track of whether edits have occurred since
+     *  the database was last saved. */
+    private boolean hasChanged = false;
 
 
     /*************************************************************************/
@@ -4551,5 +4556,24 @@ public abstract class Database
         return true;
 
     } /* Database::IsValidQuoteString() */
+
+    /**
+     * @return Whether the database has changed since our last edit.
+     */
+    public boolean getHasChanged() {
+        return hasChanged;
+    }
+
+    /** Updates hasChanged to true. */
+    public void modifyDatabase() {
+        hasChanged = true;
+        OpenSHAPA.getApplication().updateTitle();
+    }
+
+    /** Updates hasChanged to false. */
+    public void saveDatabase() {
+        hasChanged = false;
+        OpenSHAPA.getApplication().updateTitle();
+    }
 
 } /* class Database */

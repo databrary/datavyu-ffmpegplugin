@@ -1,6 +1,7 @@
 package org.openshapa.db;
 
 import java.util.Vector;
+import org.openshapa.OpenSHAPA;
 
 /**
  * A VocabElementListeners is used to manage the mechanics registering and
@@ -666,6 +667,10 @@ public class VocabElementListeners extends Listeners {
     {
         if ( this.changeNoted )
         {
+
+            // The database has been modified!
+            db.modifyDatabase();
+
             // first, notify the intenal listeners...
             this.notifyInternalListenersOfChange();
 
@@ -772,6 +777,9 @@ public class VocabElementListeners extends Listeners {
         throws SystemErrorException
     {
         final String mName = "VEChangeListeners::notifyListenersOfDeletion()";
+
+        // The database has been modified!
+        db.modifyDatabase();
 
         // first, notify the intenal listeners...
         this.notifyInternalListenersOfDeletion();
