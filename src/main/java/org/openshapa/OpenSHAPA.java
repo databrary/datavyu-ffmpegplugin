@@ -1,6 +1,6 @@
 package org.openshapa;
 
-import org.openshapa.controllers.CreateNewCellC;
+import org.jdesktop.application.Application.ExitListener;
 import org.openshapa.db.LogicErrorException;
 import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
+import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.Properties;
 import javax.swing.JFrame;
@@ -29,7 +30,7 @@ import org.jdesktop.application.LocalStorage;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
-import org.openshapa.util.AboutHandler;
+import org.openshapa.util.MacHandler;
 import org.openshapa.views.AboutV;
 
 /**
@@ -216,7 +217,7 @@ implements KeyEventDispatcher {
      *
      * @param e The LogicErrorException to present to the user.
      */
-    public void showWarningDialog(LogicErrorException e) {
+    public void showWarningDialog(final LogicErrorException e) {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
@@ -244,11 +245,50 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * User quits- check for save needed. Note that this can be used even in
+     * situations when the application is not truly "quitting", but just the
+     * database information is being lost (e.g. on an "open" or "new"
+     * instruction). In all interpretations, "true" indicates that all unsaved
+     * changes are to be discarded.
+     * @return True for quit, false otherwise.
+     */
+    public boolean safeQuit() {
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(OpenSHAPA.class);
+        if (db.getHasChanged()) {
+            UIManager.put("OptionPane.cancelButtonText", "OK");
+            UIManager.put("OptionPane.okButtonText", "Cancel");
+
+            int sel =
+            JOptionPane.showConfirmDialog(mainFrame,
+                                      rMap.getString("ConfirmDialog.message"),
+                                      rMap.getString("ConfirmDialog.title"),
+                                      JOptionPane.OK_CANCEL_OPTION,
+                                      JOptionPane.QUESTION_MESSAGE);
+
+
+            UIManager.put("OptionPane.cancelButtonText", "Cancel");
+            UIManager.put("OptionPane.okButtonText", "OK");
+
+            // Note that this is actually "OK_OPTION", since we flipped
+            // the buttons with UI manager.
+            return (sel == JOptionPane.CANCEL_OPTION);
+
+        } else {
+            return true;
+        }
+    }
+
+
+    /**
      * At startup create and show the main frame of the application.
      */
     @Override
     protected void startup() {
         try {
+
             // Configure logger - and start logging things.
             Properties logProps = new Properties();
             logProps.setProperty("log4j.rootLogger",
@@ -297,18 +337,24 @@ implements KeyEventDispatcher {
         view = new OpenSHAPAView(this);
         show(view);
 
-        updateTitle();
+        // Simply clears the "unsaved" status, does not actually save.
+        db.saveDatabase();
 
+        getApplication().addExitListener(new ExitListenerImpl());
 
         // Create video controller.
         dataController = new DataControllerV(OpenSHAPA.getApplication().
                 getMainFrame(), false);
+
+        
+
     }
 
     /**
      * This method is to initialize the specified window by injecting resources.
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
+     * @param root The parent window.
      */
     @Override
     protected void configureWindow(final java.awt.Window root) {
@@ -369,7 +415,7 @@ implements KeyEventDispatcher {
      *
      * @param newDB The new database to use for this instance of OpenSHAPA.
      */
-    public static void setDatabase(MacshapaDatabase newDB) {
+    public static void setDatabase(final MacshapaDatabase newDB) {
         OpenSHAPA.getApplication().db = newDB;
     }
 
@@ -415,7 +461,7 @@ implements KeyEventDispatcher {
     /**
      * Sets the list of scripts that were last executed.
      *
-     * @param list
+     * @param list List of scripts.
      */
     public static void setLastScriptsExecuted(final LinkedList<File> list) {
         OpenSHAPA.getApplication().lastScriptsExecuted = list;
@@ -436,7 +482,7 @@ implements KeyEventDispatcher {
     }
 
     /** All the supported platforms that OpenSHAPA runs on. */
-    public enum Platform {MAC, WINDOWS, UNKNOWN};
+    public enum Platform { MAC, WINDOWS, UNKNOWN };
 
     /**
      * @return The platform that OpenSHAPA is running on.
@@ -459,14 +505,17 @@ implements KeyEventDispatcher {
      *
      * @param args The command line arguments passed to OpenSHAPA.
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
             try {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
-                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "OpenSHAPA");
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                new AboutHandler();
+                System.setProperty(
+                        "com.apple.mrj.application.apple.menu.about.name",
+                        "OpenSHAPA");
+                UIManager.setLookAndFeel(
+                        UIManager.getSystemLookAndFeelClassName());
+                new MacHandler();
             } catch (ClassNotFoundException cnfe) {
                 logger.error("Unable to start OpenSHAPA", cnfe);
             } catch (InstantiationException ie) {
@@ -520,4 +569,30 @@ implements KeyEventDispatcher {
      * It actually get initialized in startup().
      */
     private OpenSHAPAView view;
+
+    /**
+     * Handles exit requests.
+     */
+    private class ExitListenerImpl implements ExitListener {
+
+        /**
+         * Default constructor.
+         */
+        public ExitListenerImpl() {
+        }
+
+        /** Calls safeQuit to check if we can exit.
+         *  @param arg0 The event generating the quit call.
+         *  @return True if the application can quit, false otherwise.
+         */
+        public boolean canExit(final EventObject arg0) {
+            return safeQuit();
+        }
+
+        /** Cleanup would occur here, but we choose to do nothing for now.
+         *  @param arg0 The event generating the quit call.
+         */
+        public void willExit(final EventObject arg0) {
+        }
+    }
 }

@@ -158,7 +158,7 @@ public final class UIVariableListTest extends UISpecTestCase {
                     .assertAcceptsFilesOnly()
                     .select(demoFile.getAbsolutePath()))
                 .process(new WindowHandler() {
-                    public Trigger process(Window console) {                       
+                    public Trigger process(final Window console) {
                         return console.getButton("Close").triggerClick();
                     }
                 })
@@ -170,16 +170,27 @@ public final class UIVariableListTest extends UISpecTestCase {
                 "Spreadsheet").getSubMenu("Variable List").triggerClick());
          assertTrue(varListWindow.getTable().getRowCount() > 0);
 
-        // 2. Create new database
+        // 2. Create new database (and discard unsaved changes)
         WindowInterceptor
-                .init(menuBar.getMenu("File").getSubMenu("New").triggerClick())
-                .process(new WindowHandler() {
-                    public Trigger process (Window newDBWindow) {
-                        newDBWindow.getTextBox("nameField").setText("newDB");
-                        return newDBWindow.getButton("Ok").triggerClick();
-                    }
-                 })
-                 .run();
+            .init(menuBar.getMenu("File").getSubMenu("New").triggerClick())
+            .process(new WindowHandler() {
+                public Trigger process(final Window changesDialog) {
+
+                     WindowInterceptor
+                    .init(changesDialog.getButton("Ok").triggerClick())
+                    .process(new WindowHandler() {
+                        public Trigger process(final Window newDBWindow) {
+                            newDBWindow.
+                                    getTextBox("nameField").setText("newDB");
+                            return newDBWindow.getButton("Ok").triggerClick();
+                        }
+                     }).run();
+
+                return changesDialog.getButton("Ok").triggerClick();
+
+                }
+             })
+             .run();
 
         // 2b. Check that variable list is empty
         //BugzID:430

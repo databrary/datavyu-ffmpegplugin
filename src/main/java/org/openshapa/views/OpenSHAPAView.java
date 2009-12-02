@@ -20,6 +20,8 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -130,6 +132,7 @@ public final class OpenSHAPAView extends FrameView {
 
         this.panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
         this.setComponent(panel);
+
     }
 
     /**
@@ -156,6 +159,11 @@ public final class OpenSHAPAView extends FrameView {
                                + " - "
                                + fName
                                + postFix);
+        } else if (db.getName() != null) {
+            mainFrame.setTitle(rMap.getString("Application.title")
+                               + " - "
+                               + db.getName()
+                               + postFix);
         } else {
             mainFrame.setTitle(rMap.getString("Application.title")
                                + " - "
@@ -171,7 +179,9 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void showNewDatabaseForm() {
-        new NewDatabaseC();
+        if (OpenSHAPA.getApplication().safeQuit()) {
+            new NewDatabaseC();
+        }
     }
 
     /**
@@ -209,29 +219,33 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void open() {
-        OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
-        jd.addChoosableFileFilter(new MODBFilter());
-        jd.addChoosableFileFilter(new CSVFilter());
+        if (OpenSHAPA.getApplication().safeQuit()) {
 
-        int result = jd.showOpenDialog(this.getComponent());
+            OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
-        if (result == JFileChooser.APPROVE_OPTION) {
-            try {
-                MacshapaDatabase newDB = new MacshapaDatabase();
-                OpenSHAPA.setDatabase(newDB);
-                OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
-                                                           .getMainView();
-                s.showSpreadsheet();
+            jd.addChoosableFileFilter(new MODBFilter());
+            jd.addChoosableFileFilter(new CSVFilter());
 
-                // TODO- BugzID:79 This needs to move above showSpreadsheet,
-                // when setTicks is fully implemented.
-                newDB.setTicks(Constants.TICKS_PER_SECOND);
-            } catch (SystemErrorException se) {
-                logger.error("Unable to create new database on open", se);
+            int result = jd.showOpenDialog(this.getComponent());
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                try {
+                    MacshapaDatabase newDB = new MacshapaDatabase();
+                    OpenSHAPA.setDatabase(newDB);
+                    OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
+                                                               .getMainView();
+                    s.showSpreadsheet();
+
+                    // TODO- BugzID:79 This needs to move above showSpreadsheet,
+                    // when setTicks is fully implemented.
+                    newDB.setTicks(Constants.TICKS_PER_SECOND);
+                } catch (SystemErrorException se) {
+                    logger.error("Unable to create new database on open", se);
+                }
+
+                new OpenDatabaseC(jd.getSelectedFile());
             }
-
-            new OpenDatabaseC(jd.getSelectedFile());
         }
     }
 
@@ -374,6 +388,16 @@ public final class OpenSHAPAView extends FrameView {
         }
     }
 
+    /**
+     * Checks if changes should be discarded, if so (or no changes) then quits.
+     */
+    @Action
+    public void safeQuit() {
+        if (OpenSHAPA.getApplication().safeQuit()) {
+            System.exit(0);
+        }
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -482,7 +506,7 @@ public final class OpenSHAPAView extends FrameView {
             fileMenu.add(fileMenuSeparator);
         }
 
-        exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
+        exitMenuItem.setAction(actionMap.get("safeQuit")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
         if (OpenSHAPA.getPlatform() != Platform.MAC) {
             fileMenu.add(exitMenuItem);
