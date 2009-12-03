@@ -263,8 +263,8 @@ implements KeyEventDispatcher {
 
             int sel =
             JOptionPane.showConfirmDialog(mainFrame,
-                                      rMap.getString("ConfirmDialog.message"),
-                                      rMap.getString("ConfirmDialog.title"),
+                                      rMap.getString("UnsavedDialog.message"),
+                                      rMap.getString("UnsavedDialog.title"),
                                       JOptionPane.OK_CANCEL_OPTION,
                                       JOptionPane.QUESTION_MESSAGE);
 
@@ -279,6 +279,37 @@ implements KeyEventDispatcher {
         } else {
             return true;
         }
+    }
+
+    /**
+     * If the user is trying to save over an existing file, prompt them whether
+     * they they wish to continue.
+     * @return True for overwrite, false otherwise.
+     */
+    public boolean overwriteExisting() {
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(OpenSHAPA.class);
+
+        UIManager.put("OptionPane.cancelButtonText", "Overwrite");
+        UIManager.put("OptionPane.okButtonText", "Cancel");
+
+        int sel =
+        JOptionPane.showConfirmDialog(mainFrame,
+                                  rMap.getString("OverwriteDialog.message"),
+                                  rMap.getString("OverwriteDialog.title"),
+                                  JOptionPane.OK_CANCEL_OPTION,
+                                  JOptionPane.QUESTION_MESSAGE);
+
+
+        UIManager.put("OptionPane.cancelButtonText", "Cancel");
+        UIManager.put("OptionPane.okButtonText", "OK");
+
+        // Note that this is actually "OK_OPTION", since we flipped
+        // the buttons with UI manager.
+        return (sel == JOptionPane.CANCEL_OPTION);
+
     }
 
 
@@ -346,7 +377,7 @@ implements KeyEventDispatcher {
         dataController = new DataControllerV(OpenSHAPA.getApplication().
                 getMainFrame(), false);
 
-        
+
 
     }
 

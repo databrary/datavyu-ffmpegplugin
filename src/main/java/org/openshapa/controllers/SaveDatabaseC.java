@@ -36,6 +36,8 @@ public final class SaveDatabaseC {
      * @param destinationFile The destination to use when saving the c
      */
     public SaveDatabaseC(final File destinationFile) {
+        // We bypass any overwrite checks here.
+
         String outputFile = destinationFile.getName().toLowerCase();
         String extension = outputFile.substring(outputFile.lastIndexOf('.'),
                                                 outputFile.length());
@@ -45,6 +47,7 @@ public final class SaveDatabaseC {
         } else if (extension.equals(".odb")) {
             saveAsMacSHAPADB(destinationFile.toString());
         }
+
     }
 
     /**
@@ -58,43 +61,53 @@ public final class SaveDatabaseC {
 
         String outputFile = destinationFile.toLowerCase();
 
-
         if (fileFilter.getClass() == CSVFilter.class) {
-            // BugzID:541 - Don't append ".csv" if the path already contains it.
+            // BugzID:541 - Don't append ".csv" unless needed.
             if (!outputFile.contains(".csv")) {
                 outputFile = destinationFile.concat(".csv");
             }
-            saveAsCSV(outputFile);
 
         } else if (fileFilter.getClass() == MODBFilter.class) {
             // Don't append ".db" if the path already contains it.
             if (!outputFile.contains(".odb")) {
                 outputFile = destinationFile.concat(".odb");
             }
-
-            saveAsMacSHAPADB(outputFile);
         }
 
         File outFile = new File(outputFile);
-        // BugzID:449 - Set filename in spreadsheet window and database to
-        // be the same as the file specified.
-        try {
-            String dbName;
-            if (outFile.getName().lastIndexOf('.') != -1) {
-                dbName = outFile.getName().substring(0, outFile.getName()
-                                                           .lastIndexOf('.'));
-            } else {
-                dbName = outFile.getName();
+
+        // Check for existence; if so, confirm overwrite.
+        if ((outFile.exists()
+                && OpenSHAPA.getApplication().overwriteExisting())
+                || !outFile.exists()) {
+
+            if (fileFilter.getClass() == CSVFilter.class) {
+                saveAsCSV(outputFile);
+
+            } else if (fileFilter.getClass() == MODBFilter.class) {
+                saveAsMacSHAPADB(outputFile);
             }
-            OpenSHAPA.getDatabase().setName(dbName);
-            OpenSHAPA.getDatabase().setSourceFile(outFile);
 
-            // Update the name of the window to include the name we just
-            // set in the database.
-            OpenSHAPA.getApplication().updateTitle();
+            // BugzID:449 - Set filename in spreadsheet window and database to
+            // be the same as the file specified.
+            try {
+                String dbName;
+                if (outFile.getName().lastIndexOf('.') != -1) {
+                    dbName = outFile.getName().substring(0, outFile.getName()
+                                                             .lastIndexOf('.'));
+                } else {
+                    dbName = outFile.getName();
+                }
+                OpenSHAPA.getDatabase().setName(dbName);
+                OpenSHAPA.getDatabase().setSourceFile(outFile);
 
-        } catch (SystemErrorException se) {
-            logger.error("Can't set db name to specified file.", se);
+                // Update the name of the window to include the name we just
+                // set in the database.
+                OpenSHAPA.getApplication().updateTitle();
+
+            } catch (SystemErrorException se) {
+                logger.error("Can't set db name to specified file.", se);
+            }
         }
     }
 
@@ -104,6 +117,7 @@ public final class SaveDatabaseC {
      * @param outFile The path of the file to use when writing to disk.
      */
     public void saveAsMacSHAPADB(final String outFile) {
+
         try {
             PrintStream outStream = new PrintStream(outFile);
             OpenSHAPA.getDatabase().toMODBFile(outStream, "\r");
