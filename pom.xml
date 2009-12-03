@@ -514,9 +514,16 @@
     </plugins>
   </build>
 
-  <!-- Third party dependencies. MAKE SURE YOU ADD ABOVE AS WELL - otherwise\
-       dependencies will not get "linked" to the windows exe classpath
-       correctly.
+  <!--
+
+      Third party dependencies.
+
+       =========================================================================
+       MAKE SURE YOU ALSO EDIT:
+       =========================================================================
+         * Above list as well - so that the windows build works correctly.
+         * Info.plist - so that the OSX build works correctly.
+
   -->
   <dependencies>
     <dependency>
