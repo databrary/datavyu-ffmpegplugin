@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+  <id>WIN-${buildNumber}</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+
+  <!-- Include the samples directory. -->
+  <fileSets>
+    <fileSet>
+      <directory>src/main/samples/</directory>
+      <outputDirectory>samples</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/favourites/</directory>
+      <outputDirectory>favourites</outputDirectory>
+    </fileSet>
+  </fileSets>
+
+  <files>
+    <file>
+      <source>${project.basedir}/target/${project.build.finalName}.exe</source>
+      <outputDirectory>/</outputDirectory>
+   </file>
+  </files>
+
+  <binaries>
+    <dependencySets>
+      <dependencySet>
+          <includes/>
+          <excludes>
+              <exclude>org.openshapa:openshapa</exclude>
+          </excludes>
+      </dependencySet>
+    </dependencySets>
+  </binaries>
+</assembly>
