@@ -108,7 +108,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
                          final String expectedOutputFile) throws Exception {
         //Preparation
         Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
+        final MenuBar menuBar = window.getMenuBar();
 
         String root = System.getProperty("testPath");
         File testCSV = new File(root + inputFile);
@@ -118,9 +118,14 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         assertTrue(testOutputCSV.exists());
 
         String tempFolder = System.getProperty("java.io.tmpdir");
-        File savedCSV = new File(tempFolder + "/savedCSV.csv");
+        final File savedCSV = new File(tempFolder + "/savedCSV.csv");
         savedCSV.deleteOnExit();
         // The file already exists - created in the last test.
+
+        // For lack of a better option, we delete the existing file so that
+        // we don't get the overwrite dialog.
+        savedCSV.delete();
+
 
         // 1. Load CSV file
         WindowInterceptor
@@ -135,8 +140,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
 
         // 2. Save contents as a seperate CSV file.
         WindowInterceptor
-                .init(menuBar.getMenu("File").getSubMenu("Save As...")
-                    .triggerClick())
+                .init(menuBar.getMenu("File").getSubMenu("Save As...").triggerClick())
                 .process(FileChooserHandler.init()
                     .assertIsSaveDialog()
                     .assertAcceptsFilesOnly()
@@ -153,6 +157,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      *
      * @throws java.lang.Exception on any error
      */
+    
     public void testLoadingCSVv1() throws Exception {
         this.testLoad("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
     }
@@ -162,6 +167,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      *
      * @throws java.lang.Exception on any error
      */
+    
     public void testLoadingCSVv2() throws Exception {
         this.testLoad("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
     }
@@ -196,5 +202,56 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         }
 
         return true;
+    }
+
+
+
+
+
+
+
+    public void testLoadX(final String inputFile,
+                         final String expectedOutputFile) throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        final MenuBar menuBar = window.getMenuBar();
+
+        String root = System.getProperty("testPath");
+        File testCSV = new File(root + inputFile);
+        assertTrue(testCSV.exists());
+
+        File testOutputCSV = new File(root + expectedOutputFile);
+        assertTrue(testOutputCSV.exists());
+
+        String tempFolder = System.getProperty("java.io.tmpdir");
+        final File savedCSV = new File(tempFolder + "/savedCSV.csv");
+        savedCSV.deleteOnExit();
+        // The file already exists - created in the last test.
+
+        // 1. Load CSV file
+        WindowInterceptor
+                .init(menuBar.getMenu("File").getSubMenu("Open...")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsOpenDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(testCSV))
+                .run();
+
+
+        // 2. Save contents as a seperate CSV file.
+
+        WindowInterceptor
+                .init(menuBar.getMenu("File").getSubMenu("Save As...").triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsSaveDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(savedCSV))
+                .run();
+
+
+        // 3. Check that CSV file is correct
+        File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
+        assertTrue(areFilesSame(testOutputCSV, bug541SavedCSV));
     }
 }

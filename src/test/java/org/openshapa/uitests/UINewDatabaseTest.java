@@ -78,7 +78,7 @@ public final class UINewDatabaseTest extends UISpecTestCase {
                 public Trigger process(final Window changesDialog) {
 
                      WindowInterceptor
-                    .init(changesDialog.getButton("Ok").triggerClick())
+                    .init(changesDialog.getButton("OK").triggerClick())
                     .process(new WindowHandler() {
                         public Trigger process(final Window newDBWindow) {
                             newDBWindow.
@@ -87,7 +87,7 @@ public final class UINewDatabaseTest extends UISpecTestCase {
                         }
                      }).run();
 
-                return changesDialog.getButton("Ok").triggerClick();
+                return changesDialog.getButton("OK").triggerClick();
 
                 }
              })
