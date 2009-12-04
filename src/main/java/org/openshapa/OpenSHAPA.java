@@ -258,23 +258,37 @@ implements KeyEventDispatcher {
                                       .getContext()
                                       .getResourceMap(OpenSHAPA.class);
         if (db.getHasChanged()) {
-            UIManager.put("OptionPane.cancelButtonText", "OK");
-            UIManager.put("OptionPane.okButtonText", "Cancel");
+
+            String defaultOpt = "Cancel";
+            String altOpt = "OK";
+
+            String [] a = new String[2];
+
+            if (getPlatform() == Platform.MAC) {
+                a[0] = defaultOpt; // This has int value 0 if selected
+                a[1] = altOpt; // This has int value 1 if selected.
+            } else {
+                a[1] = defaultOpt; // This has int value 1 if selected
+                a[0] = altOpt; // This has int value 0 if selected.
+            }
 
             int sel =
-            JOptionPane.showConfirmDialog(mainFrame,
-                                      rMap.getString("UnsavedDialog.message"),
-                                      rMap.getString("UnsavedDialog.title"),
-                                      JOptionPane.OK_CANCEL_OPTION,
-                                      JOptionPane.QUESTION_MESSAGE);
 
+            JOptionPane.showOptionDialog(mainFrame,
+                    rMap.getString("UnsavedDialog.message"),
+                    rMap.getString("UnsavedDialog.title"),
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    a,
+                    defaultOpt);
 
-            UIManager.put("OptionPane.cancelButtonText", "Cancel");
-            UIManager.put("OptionPane.okButtonText", "OK");
-
-            // Note that this is actually "OK_OPTION", since we flipped
-            // the buttons with UI manager.
-            return (sel == JOptionPane.CANCEL_OPTION);
+            // Button depends on platform now.
+            if (getPlatform() == Platform.MAC) {
+                return (sel == 1);
+            } else {
+                return (sel == 0);
+            }
 
         } else {
             return true;
@@ -291,25 +305,36 @@ implements KeyEventDispatcher {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(OpenSHAPA.class);
+        String defaultOpt = "Cancel";
+        String altOpt = "Overwrite";
 
-        UIManager.put("OptionPane.cancelButtonText", "Overwrite");
-        UIManager.put("OptionPane.okButtonText", "Cancel");
+        String [] a = new String[2];
+
+        if (getPlatform() == Platform.MAC) {
+            a[0] = defaultOpt; // This has int value 0 if selected
+            a[1] = altOpt; // This has int value 1 if selected.
+        } else {
+            a[1] = defaultOpt; // This has int value 1 if selected
+            a[0] = altOpt; // This has int value 0 if selected.
+        }
 
         int sel =
-        JOptionPane.showConfirmDialog(mainFrame,
-                                  rMap.getString("OverwriteDialog.message"),
-                                  rMap.getString("OverwriteDialog.title"),
-                                  JOptionPane.OK_CANCEL_OPTION,
-                                  JOptionPane.QUESTION_MESSAGE);
 
+        JOptionPane.showOptionDialog(mainFrame,
+                rMap.getString("OverwriteDialog.message"),
+                rMap.getString("OverwriteDialog.title"),
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                a,
+                defaultOpt);
 
-        UIManager.put("OptionPane.cancelButtonText", "Cancel");
-        UIManager.put("OptionPane.okButtonText", "OK");
-
-        // Note that this is actually "OK_OPTION", since we flipped
-        // the buttons with UI manager.
-        return (sel == JOptionPane.CANCEL_OPTION);
-
+        // Button depends on platform now.
+        if (getPlatform() == Platform.MAC) {
+            return (sel == 1);
+        } else {
+            return (sel == 0);
+        }
     }
 
 
