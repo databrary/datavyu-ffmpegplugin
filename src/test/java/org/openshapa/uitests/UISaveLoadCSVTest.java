@@ -12,6 +12,7 @@ import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
+import org.uispec4j.interception.BasicHandler;
 import org.uispec4j.interception.FileChooserHandler;
 import org.uispec4j.interception.WindowHandler;
 
@@ -119,13 +120,8 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
 
         String tempFolder = System.getProperty("java.io.tmpdir");
         final File savedCSV = new File(tempFolder + "/savedCSV.csv");
-        savedCSV.deleteOnExit();
+        //savedCSV.deleteOnExit();
         // The file already exists - created in the last test.
-
-        // For lack of a better option, we delete the existing file so that
-        // we don't get the overwrite dialog.
-        savedCSV.delete();
-
 
         // 1. Load CSV file
         WindowInterceptor
@@ -145,6 +141,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
                     .assertIsSaveDialog()
                     .assertAcceptsFilesOnly()
                     .select(savedCSV))
+                .process(BasicHandler.init().triggerButtonClick("Overwrite"))
                 .run();
 
         // 3. Check that CSV file is correct
@@ -202,56 +199,5 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         }
 
         return true;
-    }
-
-
-
-
-
-
-
-    public void testLoadX(final String inputFile,
-                         final String expectedOutputFile) throws Exception {
-        //Preparation
-        Window window = getMainWindow();
-        final MenuBar menuBar = window.getMenuBar();
-
-        String root = System.getProperty("testPath");
-        File testCSV = new File(root + inputFile);
-        assertTrue(testCSV.exists());
-
-        File testOutputCSV = new File(root + expectedOutputFile);
-        assertTrue(testOutputCSV.exists());
-
-        String tempFolder = System.getProperty("java.io.tmpdir");
-        final File savedCSV = new File(tempFolder + "/savedCSV.csv");
-        savedCSV.deleteOnExit();
-        // The file already exists - created in the last test.
-
-        // 1. Load CSV file
-        WindowInterceptor
-                .init(menuBar.getMenu("File").getSubMenu("Open...")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(testCSV))
-                .run();
-
-
-        // 2. Save contents as a seperate CSV file.
-
-        WindowInterceptor
-                .init(menuBar.getMenu("File").getSubMenu("Save As...").triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsSaveDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(savedCSV))
-                .run();
-
-
-        // 3. Check that CSV file is correct
-        File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
-        assertTrue(areFilesSame(testOutputCSV, bug541SavedCSV));
-    }
+    }   
 }

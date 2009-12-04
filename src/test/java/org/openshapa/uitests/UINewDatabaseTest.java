@@ -12,6 +12,7 @@ import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
+import org.uispec4j.interception.BasicHandler;
 import org.uispec4j.interception.FileChooserHandler;
 import org.uispec4j.interception.WindowHandler;
 
@@ -74,24 +75,17 @@ public final class UINewDatabaseTest extends UISpecTestCase {
 
         WindowInterceptor
             .init(menuBar.getMenu("File").getSubMenu("New").triggerClick())
+            .process(BasicHandler.init()
+                    .triggerButtonClick("OK"))
             .process(new WindowHandler() {
-                public Trigger process(final Window changesDialog) {
-
-                     WindowInterceptor
-                    .init(changesDialog.getButton("OK").triggerClick())
-                    .process(new WindowHandler() {
-                        public Trigger process(final Window newDBWindow) {
-                            newDBWindow.
-                                    getTextBox("nameField").setText("newDB");
-                            return newDBWindow.getButton("Ok").triggerClick();
-                        }
-                     }).run();
-
-                return changesDialog.getButton("OK").triggerClick();
-
+                public Trigger process(final Window newDBWindow) {
+                    newDBWindow.
+                            getTextBox("nameField").setText("newDB");
+                    return newDBWindow.getButton("Ok").triggerClick();
                 }
              })
-             .run();
+            .run();
+
 
 
         // 2a. Check that all data is cleared
