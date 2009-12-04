@@ -135,7 +135,8 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
 
 
         // 2. Save contents as a seperate CSV file.
-        WindowInterceptor
+        if (savedCSV.exists()) {
+            WindowInterceptor
                 .init(menuBar.getMenu("File").getSubMenu("Save As...").triggerClick())
                 .process(FileChooserHandler.init()
                     .assertIsSaveDialog()
@@ -143,6 +144,15 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
                     .select(savedCSV))
                 .process(BasicHandler.init().triggerButtonClick("Overwrite"))
                 .run();
+        } else {
+            WindowInterceptor
+                .init(menuBar.getMenu("File").getSubMenu("Save As...").triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsSaveDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(savedCSV))
+                .run();
+        }
 
         // 3. Check that CSV file is correct
         File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
