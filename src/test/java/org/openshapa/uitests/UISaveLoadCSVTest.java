@@ -157,6 +157,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         // 3. Check that CSV file is correct
         File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
         assertTrue(areFilesSame(testOutputCSV, bug541SavedCSV));
+        window.dispose();
     }
 
     /**
