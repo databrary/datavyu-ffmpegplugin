@@ -245,7 +245,13 @@ public final class CreateNewCellC {
         if (!newcelladded) {
             // else go with Situation 4: Video controller requested
             // - create in the same column as the last created cell or
-            // the last focussed cell.
+            // the last focused cell.
+
+            // BugzID:779 - Check for presence of columns, else return
+            if (model.getDataColumns().size() == 0) {
+                return;
+            }
+
             if (OpenSHAPA.getLastCreatedColId() == 0) {
                 OpenSHAPA.setLastCreatedColId(model.getDataColumns()
                                                    .get(0)
