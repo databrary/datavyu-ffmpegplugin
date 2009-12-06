@@ -98,6 +98,8 @@ public final class PluginManager {
 
     /** */
     private Map<FileFilter, Plugin> plugins = new HashMap<FileFilter, Plugin>();
+
+    private Map<String, Plugin> pluginLookup = new HashMap<String, Plugin>();
     {
         // Commented out because *.openshapa
 //        plugins.put(DEFAULT_FILE_FILTER, null);
@@ -286,7 +288,7 @@ public final class PluginManager {
                     if (PLUGIN_CLASS.isAssignableFrom(testClass)) {
                         Plugin p = (Plugin) testClass.newInstance();
                         plugins.put(p.getFileFilter(), p);
-
+                        pluginLookup.put(p.getNewDataViewer().getClass().getName(), p);
 
                         break;
                     }
@@ -306,6 +308,19 @@ public final class PluginManager {
      */
     public Iterable<FileFilter> getPluginFileFilters() {
         return plugins.keySet();
+    }
+
+    /**
+     * @param dataViewer The fully-qualified class name of the data viewer
+     * implementation
+     * @param f The file to use as a data feed to the data viewer
+     * @return Initialized data viewer
+     */
+    public DataViewer buildDataViewer(final String dataViewer, final File f) {
+        Plugin p = this.pluginLookup.get(dataViewer);
+        DataViewer result = p.getNewDataViewer();
+        result.setDataFeed(f);
+        return result;
     }
 
     /**

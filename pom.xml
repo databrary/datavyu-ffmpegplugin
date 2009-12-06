@@ -507,7 +507,7 @@
                 <preCp>asm-3.1.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
                 <preCp>openshapa-lib-0.0.2.jar</preCp>
-                <preCp>snakeyaml-1.4.jar</preCp>
+                <preCp>snakeyaml-1.5.jar</preCp>
             </classPath>
         </configuration>
       </plugin>
@@ -615,13 +615,13 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.2</version>
+      <version>0.0.3</version>
     </dependency>
 
     <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
-      <version>1.4</version>
+      <version>1.5</version>
     </dependency>
   </dependencies>
   

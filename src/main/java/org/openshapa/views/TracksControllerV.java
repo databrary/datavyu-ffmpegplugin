@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.openshapa.views;
 
 import java.awt.BorderLayout;
@@ -14,7 +9,9 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -40,10 +37,10 @@ public class TracksControllerV {
     private JScrollPane tracksScrollPane;
     // Component responsible for painting the timing needle
     private NeedlePainter needle;
-
+    // This layered pane holds the needle painter
     private JLayeredPane layeredPane;
 
-    /* Zoomed into the display by how much.
+    /** Zoomed into the display by how much.
      * Values should only be 1, 2, 4, 8, 16, 32
      */
     private int zoomSetting = 1;
@@ -55,8 +52,14 @@ public class TracksControllerV {
      * The value of the earliest video's start time in milliseconds
      */
     private long minStart;
-
-    private List<TrackPainter> trackPainterList;
+    /**
+     * The next track insertion row
+     */
+    private int nextRow = 0;
+    /**
+     * 
+     */
+    private Map<String, Track> trackPainterMap;
 
     public TracksControllerV() {
         // Set default scale values
@@ -187,7 +190,7 @@ public class TracksControllerV {
         
         tracksPanel.validate();
 
-        trackPainterList = new ArrayList<TrackPainter>();
+        trackPainterMap = new HashMap<String,Track>();
     }
 
     /**
@@ -203,7 +206,8 @@ public class TracksControllerV {
      * @param duration the total duration of the track in milliseconds
      * @param offset the amount of playback offset in milliseconds
      */
-    public void addNewTrack(String trackName, long duration, long offset) {
+    public void addNewTrack(String mediaPath, String trackName, long duration,
+            long offset) {
         // Check if the scale needs to be updated.
         if (duration + offset > maxEnd) {
             maxEnd = duration + offset;
@@ -214,7 +218,7 @@ public class TracksControllerV {
         JLabel trackLabel = new JLabel(trackName);
 
         // Find out the new row to insert the track to
-        int newRow = tracksInfoPanel.getComponentCount();
+        int newRow = nextRow++;
 
         // Create the header panel
         JPanel infoPanel = new JPanel();
@@ -258,8 +262,6 @@ public class TracksControllerV {
             trackPainter.setZoomWindowEnd(scale.getEnd());
         }
         
-        trackPainterList.add(trackPainter);
-
         carriagePanel.add(trackPainter, BorderLayout.PAGE_START);
         {
             Dimension size = new Dimension();
@@ -276,9 +278,20 @@ public class TracksControllerV {
 
         zoomTracks(null);
 
+        // Record this track's information
+        Track track = new Track();
+        track.trackPainter = trackPainter;
+        track.infoPanel = infoPanel;
+        track.carriagePanel = carriagePanel;
+
+        trackPainterMap.put(mediaPath, track);
+
         tracksPanel.validate();
     }
 
+    /**
+     * @param time Set the current time to use.
+     */
     public void setCurrentTime(long time) {
         needle.setCurrentTime(time);
         needle.repaint();
@@ -323,15 +336,52 @@ public class TracksControllerV {
      * @param evt
      */
     public void zoomTracks(ActionEvent evt) {
-        for (TrackPainter tp : trackPainterList) {
+        Iterable<Track> tracks = trackPainterMap.values();
+        for (Track track : tracks) {
+            TrackPainter tp = track.trackPainter;
             tp.setIntervalTime(scale.getIntervalTime());
             tp.setIntervalWidth(scale.getIntervalWidth());
             tp.setZoomWindowStart(scale.getStart());
             tp.setZoomWindowEnd(scale.getEnd());
             tp.repaint();
         }
-
         tracksInfoPanel.validate();
+    }
+
+    /**
+     * Remove a track from our tracks panel.
+     * @param mediaPath the path to the media file
+     */
+    public void removeTrack(final String mediaPath) {
+        Track removedTrack = trackPainterMap.remove(mediaPath);
+        if (removedTrack == null) {
+            return;
+        }
+        // Remove the track from the panel.
+        tracksInfoPanel.remove(removedTrack.carriagePanel);
+        tracksInfoPanel.remove(removedTrack.infoPanel);
+        // Recalculate max zoom window
+        Iterable<Track> tracks = trackPainterMap.values();
+        maxEnd = 0;
+        for (Track track : tracks) {
+            TrackPainter tp = track.trackPainter;
+            long length = tp.getEnd() + tp.getOffset();
+            if (length > maxEnd) {
+                maxEnd = length;
+            }
+        }
+        // If there are no more tracks, reset.
+        if (maxEnd == 0) {
+            maxEnd = 60000;
+            zoomSetting = 1;
+        }
+        // Update zoom window scale
+        rescale();
+        // Update zoomed tracks
+        zoomTracks(null);
+        // Update tracks panel display
+        tracksPanel.invalidate();
+        tracksPanel.repaint();
     }
 
     /**
@@ -375,6 +425,15 @@ public class TracksControllerV {
         needle.setWindowEnd(newEnd);
         needle.setIntervalTime(scale.getIntervalTime());
         needle.setIntervalWidth(scale.getIntervalWidth());
+    }
+
+    /**
+     * Inner class used for tracks panel management.
+     */
+    private class Track {
+        public JPanel infoPanel;
+        public JPanel carriagePanel;
+        public TrackPainter trackPainter;
     }
 
 }

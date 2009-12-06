@@ -5,7 +5,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import javax.swing.JButton;
@@ -20,6 +19,7 @@ import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
+import org.openshapa.project.Project;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
 import org.openshapa.util.ClockTimer.ClockListener;
@@ -275,12 +275,17 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     /**
-     * Remove the specifed viewer form the controller.
+     * Remove the specifed viewer from the controller.
      *
      * @param viewer The viewer to shutdown.
      * @return True if the controller contained this viewer.
      */
     public boolean shutdown(final DataViewer viewer) {
+        // Remove the data viewer from the project
+        OpenSHAPA.getProject().removeViewerSetting(
+                viewer.getDataFeed().getAbsolutePath());
+        // Remove the data viewer from the tracks panel
+        tracksControllerV.removeTrack(viewer.getDataFeed().getAbsolutePath());
         return viewers.remove(viewer);
     }
 
@@ -727,7 +732,7 @@ public final class DataControllerV extends OpenSHAPADialog
             FileFilter ff = jd.getFileFilter();
 
             for (DataViewer viewer :
-                 PluginManager.getInstance().buildDataViewers(ff, f)) {
+                PluginManager.getInstance().buildDataViewers(ff, f)) {
                 this.addDataViewer(viewer, f);
             }
         }
@@ -736,7 +741,9 @@ public final class DataControllerV extends OpenSHAPADialog
     private void showTracksButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showTracksButtonActionPerformed
         assert(evt.getSource() instanceof JButton);
         JButton button = (JButton)evt.getSource();
-        ResourceMap resourceMap = Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
+        ResourceMap resourceMap = Application.getInstance(
+                org.openshapa.OpenSHAPA.class).getContext().getResourceMap(
+                DataControllerV.class);
         if (tracksPanelEnabled) {
             // Panel is being displayed, hide it
             button.setIcon(resourceMap.getIcon("showTracksButton.show.icon"));
@@ -760,9 +767,13 @@ public final class DataControllerV extends OpenSHAPADialog
             currentFPS = fps;
         }
 
+        addDataViewerToProject(viewer.getClass().getName(),
+                f.getAbsolutePath(), viewer.getOffset());
+
         if (tracksPanelEnabled) {
             // Add the file to the tracks information panel
-            addTrack(f.getName(), viewer.getDuration(), viewer.getOffset());
+            addTrack(f.getAbsolutePath(), f.getName(), viewer.getDuration(),
+                    viewer.getOffset());
         }
     }
 
@@ -771,8 +782,28 @@ public final class DataControllerV extends OpenSHAPADialog
      *
      * @param name the name of the track to add
      */
-    public void addTrack(final String name, final long duration, final long offset) {
-        tracksControllerV.addNewTrack(name, duration, offset);
+    public void addTrack(final String mediaPath, final String name,
+            final long duration, final long offset) {
+        tracksControllerV.addNewTrack(mediaPath, name, duration, offset);
+    }
+
+    public void addDataViewerToProject(final String pluginName,
+            final String filePath, final long offset) {
+        Project project = OpenSHAPA.getProject();
+        project.addViewerSetting(pluginName, filePath, offset);
+        OpenSHAPA.getApplication().updateTitle();
+    }
+
+    public void addViewer(final DataViewer viewer) {
+        this.viewers.add(viewer);
+        viewer.setParentController(this);
+        OpenSHAPA.getApplication().show(viewer.getParentJFrame());
+
+        // adjust the overall frame rate.
+        float fps = viewer.getFrameRate();
+        if (fps > currentFPS) {
+            currentFPS = fps;
+        }
     }
 
     /**

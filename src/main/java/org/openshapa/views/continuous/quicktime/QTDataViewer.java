@@ -70,6 +70,8 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     private long offset;
 
 
+    private File videoFile;
+
     //--------------------------------------------------------------------------
     // [initialization]
     //
@@ -137,7 +139,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * the user.
      */
     public void setDataFeed(final File videoFile) {
-
+        this.videoFile = videoFile;
         try {
             this.setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
@@ -187,6 +189,13 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
+    }
+
+    /**
+     * @return The file used to display this data feed.
+     */
+    public File getDataFeed() {
+        return videoFile;
     }
 
     /**

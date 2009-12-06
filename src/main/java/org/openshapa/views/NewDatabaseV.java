@@ -173,6 +173,7 @@ public final class NewDatabaseV extends OpenSHAPADialog {
             OpenSHAPA.setDatabase(model);
             OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
                                                        .getMainView();
+
             s.showSpreadsheet();
 
             // Update the name of the window to include the name we just

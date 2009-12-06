@@ -119,6 +119,8 @@ public final class SoundDataViewer extends JFrame
     /** Playback offset */
     private long offset;
 
+    private File audioFile;
+
     /**
      * Constructor - creates new audio viewer.
      */
@@ -361,6 +363,7 @@ public final class SoundDataViewer extends JFrame
      * the user.
      */
     public void setDataFeed(final File audioFile) {
+        this.audioFile = audioFile;
         try {
             setSize(WIN_X, WIN_Y);
             /* Set resizable false here to avoid nasty QuickTime movie frames
@@ -457,6 +460,13 @@ public final class SoundDataViewer extends JFrame
         } catch (QTException e) {
             logger.error("Unable to set audioFile", e);
         }
+    }
+
+    /**
+     * @return The file used to display this data feed.
+     */
+    public File getDataFeed() {
+        return audioFile;
     }
 
     /**

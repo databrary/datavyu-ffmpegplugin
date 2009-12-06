@@ -1,5 +1,6 @@
 package org.openshapa;
 
+import org.openshapa.controllers.CreateNewCellC;
 import org.jdesktop.application.Application.ExitListener;
 import org.openshapa.db.LogicErrorException;
 import org.openshapa.db.MacshapaDatabase;
@@ -30,6 +31,7 @@ import org.jdesktop.application.LocalStorage;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
+import org.openshapa.project.Project;
 import org.openshapa.util.MacHandler;
 import org.openshapa.views.AboutV;
 
@@ -364,6 +366,9 @@ implements KeyEventDispatcher {
             PropertyConfigurator.configure(logProps);
             logger.info("Starting OpenSHAPA.");
 
+            // Make a new project
+            project = new Project();
+
             // Initalise DB
             db = new MacshapaDatabase();
 
@@ -392,6 +397,8 @@ implements KeyEventDispatcher {
         // Make view the new view so we can keep track of it for hotkeys.
         view = new OpenSHAPAView(this);
         show(view);
+
+	updateTitle();
 
         // Simply clears the "unsaved" status, does not actually save.
         db.saveDatabase();
@@ -452,6 +459,26 @@ implements KeyEventDispatcher {
      */
     public static MacshapaDatabase getDatabase() {
         return OpenSHAPA.getApplication().db;
+    }
+
+    /**
+     * Gets the single instance project associated with the currently running
+     * with OpenSHAPA.
+     *
+     * @return The single project in use with this instance of OpenSHAPA
+     */
+    public static Project getProject() {
+        return OpenSHAPA.getApplication().project;
+    }
+
+    /**
+     * Sets the single instance project associated with the currently running
+     * with OpenSHAPA.
+     * 
+     * @param project The new project instance to use
+     */
+    public static void setProject(Project project) {
+        OpenSHAPA.getApplication().project = project;
     }
 
     /**
@@ -625,6 +652,9 @@ implements KeyEventDispatcher {
      * It actually get initialized in startup().
      */
     private OpenSHAPAView view;
+
+    /** The current project file. */
+    private Project project;
 
     /**
      * Handles exit requests.
