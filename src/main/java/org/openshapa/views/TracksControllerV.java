@@ -384,6 +384,16 @@ public class TracksControllerV {
         tracksPanel.repaint();
     }
 
+    public void removeAll() {
+        tracksInfoPanel.removeAll();
+        maxEnd = 60000;
+        zoomSetting = 1;
+        rescale();
+        zoomTracks(null);
+        tracksPanel.invalidate();
+        tracksPanel.repaint();
+    }
+
     /**
      * @param zoomValue supports 1x, 2x, 4x, 8x, 16x, 32x
      * @return the amount of intervals to show given a zoom value

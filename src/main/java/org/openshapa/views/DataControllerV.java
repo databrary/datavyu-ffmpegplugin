@@ -252,6 +252,11 @@ public final class DataControllerV extends OpenSHAPADialog
         }
     }
 
+    public void dispose() {
+        tracksControllerV.removeAll();
+        super.dispose();
+    }
+
     //--------------------------------------------------------------------------
     //
     //

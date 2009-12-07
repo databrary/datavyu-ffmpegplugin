@@ -59,7 +59,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="newMenuItem">
               <Properties>
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="org.openshapa.views.OpenSHAPAView" id="showNewDatabaseForm" methodName="showNewDatabaseForm"/>
+                  <action class="org.openshapa.views.OpenSHAPAView" id="showNewProjectForm" methodName="showNewProjectForm"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="org/openshapa/views/resources/OpenSHAPAView.properties" key="file_new.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
