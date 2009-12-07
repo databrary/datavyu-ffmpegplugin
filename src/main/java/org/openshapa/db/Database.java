@@ -4566,8 +4566,10 @@ public abstract class Database
 
     /** Updates hasChanged to true. */
     public void modifyDatabase() {
-        hasChanged = true;
-        OpenSHAPA.getApplication().updateTitle();
+        if (OpenSHAPA.getApplication().getCanSetUnsaved()) {
+            hasChanged = true;
+            OpenSHAPA.getApplication().updateTitle();
+        }
     }
 
     /** Updates hasChanged to false. */

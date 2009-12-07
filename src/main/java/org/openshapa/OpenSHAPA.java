@@ -400,8 +400,8 @@ implements KeyEventDispatcher {
 
 	updateTitle();
 
-        // Simply clears the "unsaved" status, does not actually save.
-        db.saveDatabase();
+        // Allow changes to the database to propagate up and signify db modified
+        canSetUnsaved = true;
 
         getApplication().addExitListener(new ExitListenerImpl());
 
@@ -432,6 +432,10 @@ implements KeyEventDispatcher {
         }
     }
 
+    /** @return canSetUnsaved */
+    public boolean getCanSetUnsaved() {
+        return canSetUnsaved;
+    }
 
     /**
      * A convenient static getter for the application instance.
@@ -645,6 +649,9 @@ implements KeyEventDispatcher {
 
     /** Tracks if a NumPad key has been pressed. */
     private boolean numKeyDown = false;
+
+    /** Tracks whether or not databases are allowed to set unsaved status. */
+    private boolean canSetUnsaved = false;
 
     /**
      * Constant variable for the OpenSHAPA main panel.  This is so we
