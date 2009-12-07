@@ -6,7 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.project.OpenSHAPAProjectConstructor;
 import org.openshapa.project.Project;
+import org.yaml.snakeyaml.Loader;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -24,7 +26,7 @@ public class OpenProjectC {
      * @return true of the file was opened and loaded, false otherwise.
      */
     public boolean open(final String inFile) {
-        Yaml yaml = new Yaml();
+        Yaml yaml = new Yaml(new Loader(new OpenSHAPAProjectConstructor()));
         try {
             BufferedReader in = new BufferedReader(new FileReader(inFile));
             Object o = yaml.load(in);
@@ -32,6 +34,7 @@ public class OpenProjectC {
             // Make sure the de-serialised object is a project file
             if (!(o instanceof Project)) {
                 logger.error("Not an OpenSHAPA project file");
+                return false;
             }
 
             Project project = (Project)o;
@@ -47,7 +50,7 @@ public class OpenProjectC {
     }
 
     public boolean open(final File inFile) {
-        Yaml yaml = new Yaml();
+        Yaml yaml = new Yaml(new Loader(new OpenSHAPAProjectConstructor()));
         try {
             BufferedReader in = new BufferedReader(new FileReader(inFile));
             Object o = yaml.load(in);
@@ -55,6 +58,7 @@ public class OpenProjectC {
             // Make sure the de-serialised object is a project file
             if (!(o instanceof Project)) {
                 logger.error("Not an OpenSHAPA project file");
+                return false;
             }
 
             Project project = (Project)o;

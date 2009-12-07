@@ -8,6 +8,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.project.Project;
+import org.openshapa.project.OpenSHAPAProjectRepresenter;
+import org.yaml.snakeyaml.Dumper;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.representer.Representer;
@@ -23,9 +26,9 @@ public class SaveProjectC {
     public void save(final String outFile) {
         Project project = OpenSHAPA.getProject();
 
-//        Dumper dumper = new Dumper(new SHAPARepresenter(), new DumperOptions());
-//        Yaml yaml = new Yaml(dumper);
-        Yaml yaml = new Yaml();
+        Dumper dumper = new Dumper(new OpenSHAPAProjectRepresenter(), new DumperOptions());
+        Yaml yaml = new Yaml(dumper);
+//        Yaml yaml = new Yaml();
 
         String fileName = outFile;
         if (! fileName.endsWith(".openshapa")) {
@@ -41,26 +44,26 @@ public class SaveProjectC {
         }
     }
 
-    private class SHAPARepresenter extends Representer {
-        @Override
-        protected Set<Property> getProperties(Class<? extends Object> type)
-                throws IntrospectionException {
-            Set<Property> set = super.getProperties(type);
-            if (type.equals(Project.class)) {
-                for (Property prop : set) {
-                    if (prop.getName().equals("mediaViewerSettings")) {
-                        set.remove(prop);
-                    }
-                    if (prop.getName().equals("mediaFiles")) {
-                        set.remove(prop);
-                    }
-                    if (prop.getName().equals("changed")) {
-                        set.remove(prop);
-                    }
-                }
-            }
-            return set;
-        }
-    }
+//    private class SHAPARepresenter extends Representer {
+//        @Override
+//        protected Set<Property> getProperties(Class<? extends Object> type)
+//                throws IntrospectionException {
+//            Set<Property> set = super.getProperties(type);
+//            if (type.equals(Project.class)) {
+//                for (Property prop : set) {
+//                    if (prop.getName().equals("mediaViewerSettings")) {
+//                        set.remove(prop);
+//                    }
+//                    if (prop.getName().equals("mediaFiles")) {
+//                        set.remove(prop);
+//                    }
+//                    if (prop.getName().equals("changed")) {
+//                        set.remove(prop);
+//                    }
+//                }
+//            }
+//            return set;
+//        }
+//    }
 
 }

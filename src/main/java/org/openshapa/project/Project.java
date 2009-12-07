@@ -10,6 +10,8 @@ import org.openshapa.OpenSHAPA;
  */
 public class Project {
 
+    /** Project specification version */
+    public static final int VERSION = 1;
     /** name of this project */
     private String projectName;
     /** directory the database is stored */
@@ -88,26 +90,6 @@ public class Project {
      */
     public Iterable<String> getMediaFiles() {
         return viewerSettings.keySet();
-    }
-
-    /**
-     * This method is only here because of an inheritance bug with SnakeYAML.
-     * It does nothing by design.
-     * @param mediaFiles
-     */
-    @SuppressWarnings("empty-statement")
-    public void setMediaFiles(Iterable<String> mediaFiles) {
-        ;
-    }
-
-    /**
-     * This method is only here because of an inheritance bug with SnakeYAML.
-     * It does nothing by design.
-     * @param viewerSettings
-     */
-    @SuppressWarnings("empty-statement")
-    public void setMediaViewerSettings(Iterable<ViewerSetting> viewerSettings) {
-        ;
     }
 
     /**

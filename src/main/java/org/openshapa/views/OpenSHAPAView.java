@@ -18,6 +18,8 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -52,6 +54,7 @@ import org.openshapa.project.ViewerSetting;
 import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
+import org.openshapa.util.FileUtils;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.PluginManager;
 
@@ -148,59 +151,59 @@ public final class OpenSHAPAView extends FrameView {
     public void updateTitle() {
         // BugzID:449 - Update the name of the window to include the default
         // name of the database.
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap = OpenSHAPA.getApplication()
-                                    .getContext()
-                                    .getResourceMap(OpenSHAPA.class);
-        String postFix = "";
-        Database db = OpenSHAPA.getDatabase();
-
-        if (db.getHasChanged()) {
-            postFix = "*";
-        }
-        File dbFile = db.getSourceFile();
-
-        if (dbFile != null) {
-            String fName = dbFile.getName();
-            mainFrame.setTitle(rMap.getString("Application.title")
-                               + " - "
-                               + fName
-                               + postFix);
-        } else if (db.getName() != null) {
-            mainFrame.setTitle(rMap.getString("Application.title")
-                               + " - "
-                               + db.getName()
-                               + postFix);
-        } else {
-            mainFrame.setTitle(rMap.getString("Application.title")
-                               + " - "
-                               + "Database1"
-                               + postFix);
-        }
-        // Show the project name instead of database.
 //        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
 //        ResourceMap rMap = OpenSHAPA.getApplication()
 //                                    .getContext()
 //                                    .getResourceMap(OpenSHAPA.class);
 //        String postFix = "";
-//        Project project = OpenSHAPA.getProject();
+//        Database db = OpenSHAPA.getDatabase();
 //
-//        if (project.isChanged()) {
+//        if (db.getHasChanged()) {
 //            postFix = "*";
 //        }
+//        File dbFile = db.getSourceFile();
 //
-//        String projectName = project.getProjectName();
-//        if (projectName != null) {
+//        if (dbFile != null) {
+//            String fName = dbFile.getName();
 //            mainFrame.setTitle(rMap.getString("Application.title")
 //                               + " - "
-//                               + projectName
+//                               + fName
+//                               + postFix);
+//        } else if (db.getName() != null) {
+//            mainFrame.setTitle(rMap.getString("Application.title")
+//                               + " - "
+//                               + db.getName()
 //                               + postFix);
 //        } else {
 //            mainFrame.setTitle(rMap.getString("Application.title")
 //                               + " - "
-//                               + "Project1"
+//                               + "Database1"
 //                               + postFix);
 //        }
+        // Show the project name instead of database.
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = OpenSHAPA.getApplication()
+                                    .getContext()
+                                    .getResourceMap(OpenSHAPA.class);
+        String postFix = "";
+        Project project = OpenSHAPA.getProject();
+
+        if (project.isChanged()) {
+            postFix = "*";
+        }
+
+        String projectName = project.getProjectName();
+        if (projectName != null) {
+            mainFrame.setTitle(rMap.getString("Application.title")
+                               + " - "
+                               + projectName
+                               + postFix);
+        } else {
+            mainFrame.setTitle(rMap.getString("Application.title")
+                               + " - "
+                               + "Project1"
+                               + postFix);
+        }
     }
 
 
@@ -223,20 +226,20 @@ public final class OpenSHAPAView extends FrameView {
         // If the user has not saved before - invoke the saveAs() controller to
         // force the user to nominate a destination file.
         
-//        if (OpenSHAPA.getProject().getProjectName() == null) {
-//            saveAs();
-//        } else {
-//            new SaveDatabaseC(OpenSHAPA.getDatabase().getSourceFile());
-//            new SaveProjectC().save(OpenSHAPA.getProject().getProjectName());
-//            OpenSHAPA.getApplication().updateTitle();
-//        }
-
-        // ORIGINAL CODE:
-        if (OpenSHAPA.getDatabase().getSourceFile() == null) {
+        if (OpenSHAPA.getProject().getProjectName() == null) {
             saveAs();
         } else {
             new SaveDatabaseC(OpenSHAPA.getDatabase().getSourceFile());
+            new SaveProjectC().save(OpenSHAPA.getProject().getProjectName());
+            OpenSHAPA.getApplication().updateTitle();
         }
+
+        // ORIGINAL CODE:
+//        if (OpenSHAPA.getDatabase().getSourceFile() == null) {
+//            saveAs();
+//        } else {
+//            new SaveDatabaseC(OpenSHAPA.getDatabase().getSourceFile());
+//        }
     }
 
     /**
@@ -245,34 +248,50 @@ public final class OpenSHAPAView extends FrameView {
     @Action
     public void saveAs() {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
-//        jd.addChoosableFileFilter(new SHAPAFilter());
-//
-//        int result = jd.showSaveDialog(this.getComponent());
-//
-//        if (result == JFileChooser.APPROVE_OPTION) {
-//            // Save the database first
-//            new SaveDatabaseC(jd.getSelectedFile().toString(), new CSVFilter());
-//            Project project = OpenSHAPA.getProject();
-//            project.setProjectName(jd.getSelectedFile().getName());
-//            project.setDatabaseFile(project.getProjectName() + ".csv");
-//            // Build the directory path we are in and save it
-//            String dir = jd.getSelectedFile().getAbsolutePath();
-//            int match = dir.lastIndexOf(project.getProjectName());
-//            dir = dir.substring(0, match);
-//            project.setDatabaseDir(dir);
-//            // Save the project, we have all the info.
-//            new SaveProjectC().save(jd.getSelectedFile().toString());
-//        }
-
-        // ORIGINAL CODE:
+        
         jd.addChoosableFileFilter(new MODBFilter());
         jd.addChoosableFileFilter(new CSVFilter());
+        jd.addChoosableFileFilter(new SHAPAFilter());
+
         int result = jd.showSaveDialog(this.getComponent());
 
-        FileFilter ff = jd.getFileFilter();
         if (result == JFileChooser.APPROVE_OPTION) {
-            new SaveDatabaseC(jd.getSelectedFile().toString(), ff);
+            FileFilter filter = jd.getFileFilter();
+            // Save as a project
+            if (filter instanceof SHAPAFilter) {
+                // Save the database first
+                String projectName = FileUtils.getFilenameNoExtension(
+                        jd.getSelectedFile().getName());
+                new SaveDatabaseC(FileUtils.getFilenameNoExtension(
+                        jd.getSelectedFile().getAbsolutePath()) + ".csv",
+                        new CSVFilter());
+                Project project = OpenSHAPA.getProject();
+                project.setProjectName(projectName);
+                project.setDatabaseFile(projectName + ".csv");
+
+                // Build the directory path we are in and save it to the project
+                String dir = jd.getSelectedFile().getAbsolutePath();
+                int match = dir.lastIndexOf(project.getProjectName());
+                dir = dir.substring(0, match);
+                project.setDatabaseDir(dir);
+
+                // Save the project, we have all the info.
+                new SaveProjectC().save(jd.getSelectedFile().toString());
+            // Save as a database
+            } else {
+                new SaveDatabaseC(jd.getSelectedFile().toString(), filter);
+            }
         }
+
+        // ORIGINAL CODE:
+//        jd.addChoosableFileFilter(new MODBFilter());
+//        jd.addChoosableFileFilter(new CSVFilter());
+//        int result = jd.showSaveDialog(this.getComponent());
+//
+//        FileFilter ff = jd.getFileFilter();
+//        if (result == JFileChooser.APPROVE_OPTION) {
+//            new SaveDatabaseC(jd.getSelectedFile().toString(), ff);
+//        }
     }
 
     /**
@@ -280,91 +299,57 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void open() {
-
-//        jd.addChoosableFileFilter(new SHAPAFilter());
-//
-//        int result = jd.showOpenDialog(this.getComponent());
-//
-//        if (result == JFileChooser.APPROVE_OPTION) {
-//            Project newProject = new Project();
-//            OpenSHAPA.setProject(newProject);
-//
-//            try {
-//                MacshapaDatabase newDB = new MacshapaDatabase();
-//                OpenSHAPA.setDatabase(newDB);
-//                OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
-//                                                           .getMainView();
-//                s.showSpreadsheet();
-//
-//                newDB.setTicks(Constants.TICKS_PER_SECOND);
-//            } catch (SystemErrorException ex) {
-//                logger.error("Unable to create new database on open", ex);
-//            }
-//
-//            OpenProjectC opc = new OpenProjectC();
-//            if (opc.open(jd.getSelectedFile())) {
-//                // Successfully loaded the project file
-//                Project openedProject = OpenSHAPA.getProject();
-//
-//                // Load the database
-//                new OpenDatabaseC(
-//                        new File(openedProject.getDatabaseDir(),
-//                                 openedProject.getDatabaseFile())
-//                                 );
-//
-//
-//                PluginManager pm = PluginManager.getInstance();
-//                DataControllerV dataController = OpenSHAPA.getDataController();
-//
-//                // Load the plugins required for each media file
-//                Iterable<ViewerSetting> viewerSettings =
-//                        openedProject.getMediaViewerSettings();
-//                for (ViewerSetting setting : viewerSettings) {
-//                    File file = new File(setting.getFilePath());
-//
-//                    DataViewer viewer =
-//                            pm.buildDataViewer(setting.getPluginName(), file);
-//                    viewer.setOffset(setting.getOffset());
-//                    dataController.addViewer(viewer);
-//                    dataController.addTrack(file.getAbsolutePath(),
-//                            file.getName(), viewer.getDuration(),
-//                            viewer.getOffset());
-//                }
-//
-//                // Show the data controller
-//                OpenSHAPA.getApplication().showQTVideoController();
-//            }
-//        }
-
-        // ORIGINAL CODE:
-
         if (OpenSHAPA.getApplication().safeQuit()) {
 
             OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
             jd.addChoosableFileFilter(new MODBFilter());
             jd.addChoosableFileFilter(new CSVFilter());
+            jd.addChoosableFileFilter(new SHAPAFilter());
 
             int result = jd.showOpenDialog(this.getComponent());
 
             if (result == JFileChooser.APPROVE_OPTION) {
-                try {
-                    MacshapaDatabase newDB = new MacshapaDatabase();
-                    OpenSHAPA.setDatabase(newDB);
-                    OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
-                                                               .getMainView();
-                    s.showSpreadsheet();
+                FileFilter filter = jd.getFileFilter();
 
-                    // TODO- BugzID:79 This needs to move above showSpreadsheet,
-                    // when setTicks is fully implemented.
-                    newDB.setTicks(Constants.TICKS_PER_SECOND);
-                } catch (SystemErrorException se) {
-                    logger.error("Unable to create new database on open", se);
+                // Opening a project file
+                if (filter instanceof SHAPAFilter) {
+                    openProject(jd);
+                // Opening a database file
+                } else {
+                    openDatabase(jd);
                 }
-
-                new OpenDatabaseC(jd.getSelectedFile());
             }
         }
+        // ORIGINAL CODE:
+
+//        if (OpenSHAPA.getApplication().safeQuit()) {
+//
+//            OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
+//
+//            jd.addChoosableFileFilter(new MODBFilter());
+//            jd.addChoosableFileFilter(new CSVFilter());
+//
+//            int result = jd.showOpenDialog(this.getComponent());
+//
+//            if (result == JFileChooser.APPROVE_OPTION) {
+//                try {
+//                    MacshapaDatabase newDB = new MacshapaDatabase();
+//                    OpenSHAPA.setDatabase(newDB);
+//                    OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
+//                                                               .getMainView();
+//                    s.showSpreadsheet();
+//
+//                    // TODO- BugzID:79 This needs to move above showSpreadsheet,
+//                    // when setTicks is fully implemented.
+//                    newDB.setTicks(Constants.TICKS_PER_SECOND);
+//                } catch (SystemErrorException se) {
+//                    logger.error("Unable to create new database on open", se);
+//                }
+//
+//                new OpenDatabaseC(jd.getSelectedFile());
+//            }
+//        }
     }
 
     /**
@@ -484,6 +469,81 @@ public final class OpenSHAPAView extends FrameView {
         }
     }
 
+    private void openDatabase(final OpenSHAPAFileChooser jd) {
+        try {
+            MacshapaDatabase newDB = new MacshapaDatabase();
+            OpenSHAPA.setDatabase(newDB);
+            OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
+            s.showSpreadsheet();
+            // TODO- BugzID:79 This needs to move above showSpreadsheet,
+            // when setTicks is fully implemented.
+            newDB.setTicks(Constants.TICKS_PER_SECOND);
+        } catch (SystemErrorException se) {
+            logger.error("Unable to create new database on open", se);
+        }
+        new OpenDatabaseC(jd.getSelectedFile());
+
+        // Make a project containing this database.
+        Project newProject = new Project();
+        OpenSHAPA.setProject(newProject);
+
+        String dir = jd.getSelectedFile().getAbsolutePath();
+        int match = dir.lastIndexOf(jd.getSelectedFile().getName());
+        dir = dir.substring(0, match);
+        newProject.setDatabaseDir(dir);
+        newProject.setDatabaseFile(jd.getSelectedFile().getName());
+        newProject.setProjectName(OpenSHAPA.getDatabase().getName());
+    }
+
+    private void openProject(final OpenSHAPAFileChooser jd) {
+        Project newProject = new Project();
+        OpenSHAPA.setProject(newProject);
+
+        try {
+            MacshapaDatabase newDB = new MacshapaDatabase();
+            OpenSHAPA.setDatabase(newDB);
+            OpenSHAPAView s =
+                    (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
+            s.showSpreadsheet();
+            newDB.setTicks(Constants.TICKS_PER_SECOND);
+        } catch (SystemErrorException ex) {
+            logger.error("Unable to create new database on open", ex);
+        }
+
+        OpenProjectC opc = new OpenProjectC();
+
+        if (opc.open(jd.getSelectedFile())) {
+            // Successfully loaded the project file
+            Project openedProject = OpenSHAPA.getProject();
+
+            // Load the database
+            new OpenDatabaseC(
+                    new File(
+                            openedProject.getDatabaseDir(),
+                            openedProject.getDatabaseFile()));
+
+            // Use the plugin manager to load up the data viewers
+            PluginManager pm = PluginManager.getInstance();
+            DataControllerV dataController = OpenSHAPA.getDataController();
+
+            // Load the plugins required for each media file
+            Iterable<ViewerSetting> viewerSettings =
+                    openedProject.getMediaViewerSettings();
+            for (ViewerSetting setting : viewerSettings) {
+                File file = new File(setting.getFilePath());
+                DataViewer viewer =
+                        pm.buildDataViewer(setting.getPluginName(), file);
+                viewer.setOffset(setting.getOffset());
+                dataController.addViewer(viewer);
+                dataController.addTrack(file.getAbsolutePath(), file.getName(),
+                        viewer.getDuration(), viewer.getOffset());
+            }
+
+            // Show the data controller
+            OpenSHAPA.getApplication().showQTVideoController();
+        }
+    }
+
     /**
      * Set the SheetLayoutType for the spreadsheet.
      */
@@ -534,7 +594,7 @@ public final class OpenSHAPAView extends FrameView {
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator fileMenuSeparator = new javax.swing.JSeparator();
-        javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
+        exitMenuItem = new javax.swing.JMenuItem();
         spreadsheetMenu = new javax.swing.JMenu();
         showSpreadsheetMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
@@ -1078,6 +1138,7 @@ public final class OpenSHAPAView extends FrameView {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem contentsMenuItem;
+    private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu controllerMenu;
     private javax.swing.JMenuItem deleteCellMenuItem;
     private javax.swing.JMenuItem deleteColumnMenuItem;

@@ -286,6 +286,7 @@ public final class DataControllerV extends OpenSHAPADialog
                 viewer.getDataFeed().getAbsolutePath());
         // Remove the data viewer from the tracks panel
         tracksControllerV.removeTrack(viewer.getDataFeed().getAbsolutePath());
+        OpenSHAPA.getApplication().updateTitle();
         return viewers.remove(viewer);
     }
 

@@ -259,42 +259,83 @@ implements KeyEventDispatcher {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(OpenSHAPA.class);
-        if (db.getHasChanged()) {
 
-            String defaultOpt = "Cancel";
-            String altOpt = "OK";
+        if (project.isChanged() || db.getHasChanged()) {
 
-            String [] a = new String[2];
+            String cancel = "Cancel";
+            String ok = "OK";
+
+            String[] options = new String[2];
 
             if (getPlatform() == Platform.MAC) {
-                a[0] = defaultOpt; // This has int value 0 if selected
-                a[1] = altOpt; // This has int value 1 if selected.
+                options[0] = cancel;
+                options[1] = ok;
             } else {
-                a[1] = defaultOpt; // This has int value 1 if selected
-                a[0] = altOpt; // This has int value 0 if selected.
+                options[0] = ok;
+                options[1] = cancel;
             }
 
-            int sel =
-
-            JOptionPane.showOptionDialog(mainFrame,
+            int selection = JOptionPane.showOptionDialog(
+                    mainFrame,
                     rMap.getString("UnsavedDialog.message"),
                     rMap.getString("UnsavedDialog.title"),
                     JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
-                    a,
-                    defaultOpt);
+                    options,
+                    cancel);
 
-            // Button depends on platform now.
-            if (getPlatform() == Platform.MAC) {
-                return (sel == 1);
-            } else {
-                return (sel == 0);
-            }
+            // Button behaviour is platform dependent.
+            return getPlatform() == Platform.MAC 
+                    ? selection == 1
+                    : selection == 0;
 
         } else {
+            // Project hasn't been changed.
             return true;
         }
+
+        // ORIGINAL CODE:
+//        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+//        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+//                                      .getContext()
+//                                      .getResourceMap(OpenSHAPA.class);
+//        if (db.getHasChanged()) {
+//
+//            String defaultOpt = "Cancel";
+//            String altOpt = "OK";
+//
+//            String [] a = new String[2];
+//
+//            if (getPlatform() == Platform.MAC) {
+//                a[0] = defaultOpt; // This has int value 0 if selected
+//                a[1] = altOpt; // This has int value 1 if selected.
+//            } else {
+//                a[1] = defaultOpt; // This has int value 1 if selected
+//                a[0] = altOpt; // This has int value 0 if selected.
+//            }
+//
+//            int sel =
+//
+//            JOptionPane.showOptionDialog(mainFrame,
+//                    rMap.getString("UnsavedDialog.message"),
+//                    rMap.getString("UnsavedDialog.title"),
+//                    JOptionPane.OK_CANCEL_OPTION,
+//                    JOptionPane.QUESTION_MESSAGE,
+//                    null,
+//                    a,
+//                    defaultOpt);
+//
+//            // Button depends on platform now.
+//            if (getPlatform() == Platform.MAC) {
+//                return (sel == 1);
+//            } else {
+//                return (sel == 0);
+//            }
+//
+//        } else {
+//            return true;
+//        }
     }
 
     /**
