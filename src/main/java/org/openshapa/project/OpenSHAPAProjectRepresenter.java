@@ -17,7 +17,7 @@ public class OpenSHAPAProjectRepresenter extends Representer {
     }
 
     /**
-     * Used to represent the Project class
+     * Used to represent the Project class.
      */
     private class RepresentProject implements Represent {
 
@@ -31,11 +31,10 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             map.put("viewerSettings", project.getViewerSettings());
             return representMapping("!project", map, Boolean.FALSE);
         }
-        
     }
 
     /**
-     * Used to represent the ViewerSetting class
+     * Used to represent the ViewerSetting class.
      */
     private class RepresentViewerSetting implements Represent {
 
@@ -47,7 +46,6 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             map.put("offset", viewerSetting.getOffset());
             return representMapping("!vs", map, Boolean.FALSE);
         }
-        
     }
 
 }
