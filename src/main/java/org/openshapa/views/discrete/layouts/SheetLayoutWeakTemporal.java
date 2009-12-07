@@ -135,6 +135,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 virtOffset = curr.getOffsetTicks();
                 if (next != null && next.getOnsetTicks() < virtOffset) {
                     virtOffset = next.getOnsetTicks();
+                    curr.setOverlapBorder(true);
                 }
                 if (curr.getOnsetTicks() > virtOffset) {
                     virtOffset = curr.getOnsetTicks();

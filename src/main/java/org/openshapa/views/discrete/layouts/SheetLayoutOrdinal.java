@@ -39,6 +39,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
         for (SpreadsheetCell cell : col.getCells()) {
             cell.setOnsetvGap(0);
             cell.setLayoutPreferredHeight(0);
+            cell.setOverlapBorder(false);
         }
     }
 }
