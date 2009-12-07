@@ -721,10 +721,10 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void openVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openVideoButtonActionPerformed
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
+        PluginManager pm = PluginManager.getInstance();
 
         // Add file filters for each of the supported plugins.
-        for (FileFilter f
-             : PluginManager.getInstance().getPluginFileFilters()) {
+        for (FileFilter f : pm.getPluginFileFilters()) {
             jd.addChoosableFileFilter(f);
         }
 
@@ -732,8 +732,7 @@ public final class DataControllerV extends OpenSHAPADialog
             File f = jd.getSelectedFile();
             FileFilter ff = jd.getFileFilter();
 
-            for (DataViewer viewer :
-                PluginManager.getInstance().buildDataViewers(ff, f)) {
+            for (DataViewer viewer : pm.buildDataViewers(ff, f)) {
                 this.addDataViewer(viewer, f);
             }
         }
@@ -762,7 +761,7 @@ public final class DataControllerV extends OpenSHAPADialog
         viewer.setParentController(this);
         OpenSHAPA.getApplication().show(viewer.getParentJFrame());
 
-        // adjust the overall frame rate.                
+        // adjust the overall frame rate.
         float fps = viewer.getFrameRate();
         if (fps > currentFPS) {
             currentFPS = fps;

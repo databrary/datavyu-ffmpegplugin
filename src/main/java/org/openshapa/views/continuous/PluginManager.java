@@ -1,8 +1,6 @@
 package org.openshapa.views.continuous;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -17,7 +15,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.regex.Pattern;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.LocalStorage;
@@ -36,8 +33,8 @@ public final class PluginManager {
     //
 
     /** The default plugin to present to the user when loading data. */
-    private static final String DEFAULT_PLUGIN =
-                            "org.openshapa.views.continuous.quicktime.QTPlugin";
+    private static final String DEFAULT_VIEW =
+                        "org.openshapa.views.continuous.quicktime.QTDataViewer";
 
     /** Logger for this class. */
     private static final Logger LOGGER = Logger.getLogger(PluginManager.class);
@@ -55,35 +52,9 @@ public final class PluginManager {
     }
 
     //
-    // Default File Filter Settings
-    //
-
-    /** The Default File Filter. */
-    /*
-    private static final FileFilter DEFAULT_FILE_FILTER = new FileFilter() {
-        @Override
-        public boolean accept(File f) {
-            return
-                    f.isDirectory()
-                    || DFF_FILETYPE.matcher(f.getName()).matches();
-        }
-        @Override
-        public String getDescription() { return DFF_DESCRIPTION; }
-    };
-
-    /// Default File Filter Description.
-    private static final String DFF_DESCRIPTION
-            = "OpenSHAPA project files (*.openshapa)";
-
-    /** Default File Filter File Type Pattern. 
-    private static final Pattern DFF_FILETYPE
-            = Pattern.compile("^.*\\.openshapa$", Pattern.CASE_INSENSITIVE);
-*/
-
-    //
     // WARNING: instance must be last static !!!
     //
-    
+
     /** The single instance of the PluginManager for OpenSHAPA. */
     private static final PluginManager INSTANCE = new PluginManager();
 
@@ -92,18 +63,11 @@ public final class PluginManager {
     //
     //
 
-// @todo: remove
-//    /** The list of supported file types. */
-//    private List<Plugin> availablePlugins = new ArrayList<Plugin>();
-
-    /** */
+    /** The list of plugins associated with file filter. */
     private Map<FileFilter, Plugin> plugins = new HashMap<FileFilter, Plugin>();
 
-    private Map<String, Plugin> pluginLookup = new HashMap<String, Plugin>();
-    {
-        // Commented out because *.openshapa
-//        plugins.put(DEFAULT_FILE_FILTER, null);
-    }
+    /** The list of plugins associated with data viewer class name. */
+    private Map<String, Plugin> viewLookup = new HashMap<String, Plugin>();
 
 
     //--------------------------------------------------------------------------
@@ -125,6 +89,10 @@ public final class PluginManager {
         initialize();
     }
 
+    /**
+     * Initalizes the plugin manager by searching for valid plugins to insert
+     * into the manager.
+     */
     private void initialize() {
         try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -232,7 +200,7 @@ public final class PluginManager {
                 }
             }
 
-        // Whoops - something went bad. Chuck a spaz.
+        // Whoops, something went bad. Chuck a spaz.
         } catch (ClassNotFoundException e) {
             LOGGER.error("Unable to build Plugin", e);
         } catch (IOException ie) {
@@ -288,7 +256,8 @@ public final class PluginManager {
                     if (PLUGIN_CLASS.isAssignableFrom(testClass)) {
                         Plugin p = (Plugin) testClass.newInstance();
                         plugins.put(p.getFileFilter(), p);
-                        pluginLookup.put(p.getNewDataViewer().getClass().getName(), p);
+                        viewLookup.put(p.getNewDataViewer().getClass()
+                                        .getName(), p);
 
                         break;
                     }
@@ -306,8 +275,21 @@ public final class PluginManager {
     /**
      * @return A list of all the filefilters representing viewer plugins.
      */
-    public Iterable<FileFilter> getPluginFileFilters() {
-        return plugins.keySet();
+    public List<FileFilter> getPluginFileFilters() {
+        // Sort the file filters to create a default filter.
+        List<FileFilter> result = new ArrayList<FileFilter>();
+        FileFilter defaultFilter = viewLookup.get(DEFAULT_VIEW).getFileFilter();
+
+        for (FileFilter f : plugins.keySet()) {
+            // BugzID:749 - force movie filter to be default filter.
+            if (f.equals(defaultFilter)) {
+                result.add(f);
+            } else {
+                result.add(0, f);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -317,7 +299,7 @@ public final class PluginManager {
      * @return Initialized data viewer
      */
     public DataViewer buildDataViewer(final String dataViewer, final File f) {
-        Plugin p = this.pluginLookup.get(dataViewer);
+        Plugin p = this.viewLookup.get(dataViewer);
         DataViewer result = p.getNewDataViewer();
         result.setDataFeed(f);
         return result;
@@ -335,34 +317,11 @@ public final class PluginManager {
     public Iterable<DataViewer> buildDataViewers(final FileFilter ff,
                                                  final File f) {
         List<DataViewer> dvs = new ArrayList<DataViewer>();
-/*        if (DEFAULT_FILE_FILTER == ff) {
-            ProjectDescriptor pd = new ProjectDescriptor();
-            pd.setBasePath(f.getParent());
-            try {
-                pd.process(new FileReader(f));
-            } catch (FileNotFoundException ex) {
-                LOGGER.error("Unable to build viewer", ex);
-            }
+        Plugin plugin = plugins.get(ff);
+        DataViewer dataViewer = plugin.getNewDataViewer();
+        dataViewer.setDataFeed(f);
+        dvs.add(dataViewer);
 
-            for (ProjectDescriptor.Entry pde : pd.getEntries()) {
-                Plugin plugin = null;
-                try {
-                    plugin = (Plugin) pde.plugin.newInstance();
-                } catch (InstantiationException ex) {
-                    LOGGER.error("Unable to build plugin instance", ex);
-                } catch (IllegalAccessException ex) {
-                    LOGGER.error("Unable to access plugin", ex);
-                }
-                DataViewer dataViewer = plugin.getNewDataViewer();
-                dataViewer.setDataFeed(pde.file);
-                dvs.add(dataViewer);
-            }
-        } else {*/
-            Plugin plugin = plugins.get(ff);
-            DataViewer dataViewer = plugin.getNewDataViewer();
-            dataViewer.setDataFeed(f);
-            dvs.add(dataViewer);
-        //}
         return dvs;
     }
 }
