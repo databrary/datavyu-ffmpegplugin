@@ -26,6 +26,7 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             Map<String, Object> map = new TreeMap<String, Object>();
             map.put("version", Project.VERSION);
             map.put("name", project.getProjectName());
+            map.put("description", project.getProjectDescription());
             map.put("dbDir", project.getDatabaseDir());
             map.put("dbFile", project.getDatabaseFile());
             map.put("viewerSettings", project.getViewerSettings());

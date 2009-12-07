@@ -11,6 +11,7 @@ import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.DataControllerV;
 import java.awt.KeyEventDispatcher;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,8 @@ import java.io.PrintWriter;
 import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.Stack;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -386,6 +389,7 @@ implements KeyEventDispatcher {
      */
     @Override
     protected void startup() {
+        windows = new Stack<Window>();
         try {
 
             // Configure logger - and start logging things.
@@ -658,6 +662,24 @@ implements KeyEventDispatcher {
         launch(OpenSHAPA.class, args);
     }
 
+    public void show(JDialog dialog) {
+        windows.push(dialog);
+        super.show(dialog);
+    }
+
+    public void show(JFrame frame) {
+        windows.push(frame);
+        super.show(frame);
+    }
+
+    public void closeOpenedWindows() {
+        while (! windows.empty()) {
+            Window window = windows.pop();
+            window.setVisible(false);
+            window.dispose();
+        }
+    }
+
     /** The logger for OpenSHAPA. */
     private static Logger logger = Logger.getLogger(OpenSHAPA.class);
 
@@ -703,6 +725,8 @@ implements KeyEventDispatcher {
 
     /** The current project file. */
     private Project project;
+    /** Opened windows */
+    private Stack<Window> windows;
 
     /**
      * Handles exit requests.

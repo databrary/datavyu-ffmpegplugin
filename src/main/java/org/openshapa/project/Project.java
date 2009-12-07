@@ -14,6 +14,8 @@ public class Project {
     public static final int VERSION = 1;
     /** name of this project */
     private String projectName;
+    /** Project description */
+    private String projectDescription;
     /** directory the database is stored */
     private String databaseDir;
     /** database file name */
@@ -102,6 +104,14 @@ public class Project {
 
     public Map<String, ViewerSetting> getViewerSettings() {
         return viewerSettings;
+    }
+
+    public String getProjectDescription() {
+        return projectDescription;
+    }
+
+    public void setProjectDescription(String projectDescription) {
+        this.projectDescription = projectDescription;
     }
 
     /**

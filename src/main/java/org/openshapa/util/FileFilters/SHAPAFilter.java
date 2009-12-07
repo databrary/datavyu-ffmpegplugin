@@ -11,12 +11,12 @@ public class SHAPAFilter extends FileFilter {
 
     @Override
     public boolean accept(File f) {
-        return (f.getName().endsWith(".openshapa") || f.isDirectory());
+        return (f.getName().endsWith(".shapa") || f.isDirectory());
     }
 
     @Override
     public String getDescription() {
-        return "OpenSHAPA project files";
+        return "OpenSHAPA project files (*.shapa)";
     }
     
 }

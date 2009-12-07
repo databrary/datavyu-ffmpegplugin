@@ -26,6 +26,7 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             Map values = constructMapping(mnode);
             Project project = new Project();
             project.setProjectName((String)values.get("name"));
+            project.setProjectDescription((String)values.get("description"));
             project.setDatabaseDir((String)values.get("dbDir"));
             project.setDatabaseFile((String)values.get("dbFile"));
             project.setViewerSettings((Map)values.get("viewerSettings"));
