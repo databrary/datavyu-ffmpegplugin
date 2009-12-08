@@ -5,14 +5,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -39,6 +38,12 @@ public class TracksControllerV {
     private NeedlePainter needle;
     // This layered pane holds the needle painter
     private JLayeredPane layeredPane;
+    // This box holds the header and carriage box
+    private Box tracksInfoBox;
+    // This box holds the header
+    private Box headerBox;
+    // This box holds the carriage
+    private Box carriageBox;
 
     /** Zoomed into the display by how much.
      * Values should only be 1, 2, 4, 8, 16, 32
@@ -53,11 +58,8 @@ public class TracksControllerV {
      */
     private long minStart;
     /**
-     * The next track insertion row
-     */
-    private int nextRow = 0;
-    /**
-     * 
+     * Holds each component used to paint a carriage
+     * Key: Track name
      */
     private Map<String, Track> trackPainterMap;
 
@@ -146,8 +148,15 @@ public class TracksControllerV {
 
         // Add the scroll pane
 
+        tracksInfoBox = Box.createHorizontalBox();
+        headerBox = Box.createVerticalBox();
+        carriageBox = Box.createVerticalBox();
+        tracksInfoBox.add(headerBox);
+        tracksInfoBox.add(carriageBox);
+
         tracksInfoPanel = new JPanel();
-        tracksInfoPanel.setLayout(new GridBagLayout());
+        tracksInfoPanel.setLayout(new BoxLayout(tracksInfoPanel, BoxLayout.Y_AXIS));
+        tracksInfoPanel.add(tracksInfoBox);
         tracksScrollPane = new JScrollPane(tracksInfoPanel);
         tracksScrollPane.setVerticalScrollBarPolicy(
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -217,9 +226,6 @@ public class TracksControllerV {
         // Creates the label used to identify the track
         JLabel trackLabel = new JLabel(trackName);
 
-        // Find out the new row to insert the track to
-        int newRow = nextRow++;
-
         // Create the header panel
         JPanel infoPanel = new JPanel();
         infoPanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
@@ -227,13 +233,14 @@ public class TracksControllerV {
             Dimension size = new Dimension();
             size.height = 70;
             size.width = 100;
+            infoPanel.setMinimumSize(size);
+            infoPanel.setMaximumSize(size);
+            infoPanel.setSize(size);
             infoPanel.setPreferredSize(size);
             infoPanel.add(trackLabel);
-            
-            GridBagConstraints c = new GridBagConstraints();
-            c.gridx = 0;
-            c.gridy = newRow;
-            tracksInfoPanel.add(infoPanel, c);
+
+            headerBox.add(infoPanel);
+            headerBox.add(Box.createVerticalStrut(2));
         }
 
         // Create the carriage panel
@@ -267,13 +274,13 @@ public class TracksControllerV {
             Dimension size = new Dimension();
             size.height = 70;
             size.width = 665;
+            carriagePanel.setMinimumSize(size);
+            carriagePanel.setMaximumSize(size);
+            carriagePanel.setSize(size);
             carriagePanel.setPreferredSize(size);
             
-            GridBagConstraints c = new GridBagConstraints();
-            c.gridx = 1;
-            c.gridy = newRow;
-            c.insets = new Insets(0,0,1,0);
-            tracksInfoPanel.add(carriagePanel, c);
+            carriageBox.add(carriagePanel);
+            carriageBox.add(Box.createVerticalStrut(2));
         }
 
         zoomTracks(null);
@@ -345,7 +352,7 @@ public class TracksControllerV {
             tp.setZoomWindowEnd(scale.getEnd());
             tp.repaint();
         }
-        tracksInfoPanel.validate();
+        tracksInfoBox.validate();
     }
 
     /**
@@ -358,8 +365,9 @@ public class TracksControllerV {
             return;
         }
         // Remove the track from the panel.
-        tracksInfoPanel.remove(removedTrack.carriagePanel);
-        tracksInfoPanel.remove(removedTrack.infoPanel);
+        headerBox.remove(removedTrack.infoPanel);
+        carriageBox.remove(removedTrack.carriagePanel);
+
         // Recalculate max zoom window
         Iterable<Track> tracks = trackPainterMap.values();
         maxEnd = 0;
@@ -385,7 +393,8 @@ public class TracksControllerV {
     }
 
     public void removeAll() {
-        tracksInfoPanel.removeAll();
+        headerBox.removeAll();
+        carriageBox.removeAll();
         maxEnd = 60000;
         zoomSetting = 1;
         rescale();
