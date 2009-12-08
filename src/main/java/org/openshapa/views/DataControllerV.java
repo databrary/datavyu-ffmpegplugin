@@ -761,25 +761,14 @@ public final class DataControllerV extends OpenSHAPADialog
     }//GEN-LAST:event_showTracksButtonActionPerformed
 
     private void addDataViewer(final DataViewer viewer, final File f) {
-        // Add the QTDataViewer to the list of viewers we are controlling.
-        this.viewers.add(viewer);
-        viewer.setParentController(this);
-        OpenSHAPA.getApplication().show(viewer.getParentJFrame());
-
-        // adjust the overall frame rate.
-        float fps = viewer.getFrameRate();
-        if (fps > currentFPS) {
-            currentFPS = fps;
-        }
+        addViewer(viewer);
 
         addDataViewerToProject(viewer.getClass().getName(),
                 f.getAbsolutePath(), viewer.getOffset());
 
-        if (tracksPanelEnabled) {
-            // Add the file to the tracks information panel
-            addTrack(f.getAbsolutePath(), f.getName(), viewer.getDuration(),
+        // Add the file to the tracks information panel
+        addTrack(f.getAbsolutePath(), f.getName(), viewer.getDuration(),
                     viewer.getOffset());
-        }
     }
 
     /**
@@ -800,6 +789,7 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     public void addViewer(final DataViewer viewer) {
+        // Add the QTDataViewer to the list of viewers we are controlling.
         this.viewers.add(viewer);
         viewer.setParentController(this);
         OpenSHAPA.getApplication().show(viewer.getParentJFrame());
@@ -838,6 +828,7 @@ public final class DataControllerV extends OpenSHAPADialog
             this.setSize(285, 328);
         }
         this.tracksPanel.setVisible(show);
+        this.tracksPanel.repaint();
         this.validate();
     }
 

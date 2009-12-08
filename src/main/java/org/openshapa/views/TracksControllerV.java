@@ -246,7 +246,7 @@ public class TracksControllerV {
         // Create the carriage panel
         JPanel carriagePanel = new JPanel();
         carriagePanel.setLayout(new BorderLayout());
-        carriagePanel.setBorder(BorderFactory.createMatteBorder(2, 0, 2, 2, Color.BLACK));
+        carriagePanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
 
         TrackPainter trackPainter = new TrackPainter();
         {
