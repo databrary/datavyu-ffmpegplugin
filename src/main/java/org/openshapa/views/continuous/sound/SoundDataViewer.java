@@ -138,6 +138,7 @@ public final class SoundDataViewer extends JFrame
         try {
             audio = null;
             offset = 0;
+            playing = false;
             // Initalise QTJava.
             QTSession.open();
 
@@ -531,6 +532,7 @@ public final class SoundDataViewer extends JFrame
         try {
             if (audio != null && finishedPreprocess) {
                 audio.setRate(playRate);
+                playing = true;
             }
         } catch (QTException e) {
             logger.error("Unable to play", e);
@@ -544,6 +546,7 @@ public final class SoundDataViewer extends JFrame
         try {
             if (audio != null && finishedPreprocess) {
                 audio.stop();
+                playing = false;
             }
         } catch (QTException e) {
             logger.error("Unable to stop", e);
