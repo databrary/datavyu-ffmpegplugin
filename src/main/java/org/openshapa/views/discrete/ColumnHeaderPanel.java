@@ -12,7 +12,7 @@ import org.openshapa.Configuration;
  * ColumnHeaderPanel displays the column variable name.
  * Public for use by UISpec4J
  */
-public class ColumnHeaderPanel extends JLabel
+public final class ColumnHeaderPanel extends JLabel
 implements Selectable, MouseListener {
 
     /** Selected state. */
@@ -116,7 +116,7 @@ implements Selectable, MouseListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public final void mouseClicked(final MouseEvent me) {
+    public void mouseClicked(final MouseEvent me) {
 
     }
 }
