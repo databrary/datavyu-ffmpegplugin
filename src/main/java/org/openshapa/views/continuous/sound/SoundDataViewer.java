@@ -119,6 +119,8 @@ public final class SoundDataViewer extends JFrame
     /** Playback offset */
     private long offset;
 
+    private boolean playing;
+
     private File audioFile;
 
     /**
@@ -499,6 +501,7 @@ public final class SoundDataViewer extends JFrame
         try {
             if (audio != null && finishedPreprocess) {
                 audio.setRate(playRate);
+                playing = true;
             }
         } catch (QTException e) {
             logger.error("Unable to play", e);
@@ -512,10 +515,18 @@ public final class SoundDataViewer extends JFrame
         try {
             if (audio != null && finishedPreprocess) {
                 audio.stop();
+                playing = false;
             }
         } catch (QTException e) {
             logger.error("Unable to stop", e);
         }
+    }
+
+    /**
+     * @return Is this dataviewer playing the data feed.
+     */
+    public boolean isPlaying() {
+        return playing;
     }
 
     /**

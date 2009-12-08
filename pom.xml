@@ -506,7 +506,7 @@
                 <preCp>uispec4j-v2.1-B.jar</preCp>
                 <preCp>asm-3.1.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
-                <preCp>openshapa-lib-0.0.2.jar</preCp>
+                <preCp>openshapa-lib-0.0.4.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
             </classPath>
         </configuration>
@@ -615,7 +615,7 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.3</version>
+      <version>0.0.4</version>
     </dependency>
 
     <dependency>

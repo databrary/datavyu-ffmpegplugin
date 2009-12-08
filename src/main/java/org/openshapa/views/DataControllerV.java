@@ -194,9 +194,9 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void clockStart(final long time) {
         setCurrentTime(time);
-        for (DataViewer viewer : viewers) {
-            viewer.play();
-        }
+//        for (DataViewer viewer : viewers) {
+//            viewer.play();
+//        }
     }
 
     /**
@@ -220,9 +220,17 @@ public final class DataControllerV extends OpenSHAPADialog
                 }
 
                 for (DataViewer v : viewers) {
+                    /* Use offsets to determine if the video file should start
+                     * playing.
+                     */
+                    if (time >= v.getOffset() && !v.isPlaying()) {
+                        v.seekTo(time - v.getOffset());
+                        v.play();
+                    }
+
                     // Only synchronise viewers if we have a noticable drift.
                     if (Math.abs(v.getCurrentTime() - time) > thresh) {
-                        v.seekTo(time);
+                        v.seekTo(time - v.getOffset());
                     }
                 }
             }
@@ -239,7 +247,7 @@ public final class DataControllerV extends OpenSHAPADialog
         setCurrentTime(time);
         for (DataViewer viewer : viewers) {
             viewer.stop();
-            viewer.seekTo(time);
+            viewer.seekTo(time - viewer.getOffset());
         }
     }
 
@@ -262,10 +270,11 @@ public final class DataControllerV extends OpenSHAPADialog
     public void clockStep(final long time) {
         setCurrentTime(time);
         for (DataViewer viewer : viewers) {
-            viewer.seekTo(time);
+            viewer.seekTo(time - viewer.getOffset());
         }
     }
 
+    @Override
     public void dispose() {
         tracksControllerV.removeAll();
         super.dispose();
@@ -792,10 +801,6 @@ public final class DataControllerV extends OpenSHAPADialog
     private void addDataViewer(final DataViewer viewer, final File f) {
         addViewer(viewer);
 
-        if (viewer.getOffset() + viewer.getDuration() > maxDuration) {
-            maxDuration = viewer.getOffset() + viewer.getDuration();
-        }
-
         addDataViewerToProject(viewer.getClass().getName(),
                 f.getAbsolutePath(), viewer.getOffset());
 
@@ -831,6 +836,10 @@ public final class DataControllerV extends OpenSHAPADialog
         float fps = viewer.getFrameRate();
         if (fps > currentFPS) {
             currentFPS = fps;
+        }
+
+        if (viewer.getOffset() + viewer.getDuration() > maxDuration) {
+            maxDuration = viewer.getOffset() + viewer.getDuration();
         }
     }
 
