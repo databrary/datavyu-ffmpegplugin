@@ -551,6 +551,13 @@ public final class SoundDataViewer extends JFrame
     }
 
     /**
+     * @return Is this dataviewer playing the data feed.
+     */
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    /**
      * @param position Millisecond absolute position for track.
      */
     public void seekTo(final long position) {
