@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import javax.swing.JButton;
@@ -142,6 +143,8 @@ public final class DataControllerV extends OpenSHAPADialog
     private long lastSync;
     /** Clock timer. */
     private ClockTimer clock = new ClockTimer();
+    /** The maximum duration out of all data being played */
+    private long maxDuration;
 
     //--------------------------------------------------------------------------
     // [initialization]
@@ -162,6 +165,8 @@ public final class DataControllerV extends OpenSHAPADialog
         viewers = new HashSet<DataViewer>();
         pauseRate = 0;
         lastSync = 0;
+
+        maxDuration = 0;
 
         tracksControllerV = new TracksControllerV();
         tracksPanel.add(tracksControllerV.getTracksPanel());
@@ -204,15 +209,24 @@ public final class DataControllerV extends OpenSHAPADialog
 
             // Synchronise viewers only if we have exceded our pulse time.
             if ((time - this.lastSync) > (SYNC_PULSE * clock.getRate())) {
-                for (DataViewer v : viewers) {
+                lastSync = time;
 
+                // BugzID:756 - don't play video once past the max duration.
+                if (time >= maxDuration && clock.getRate() >= 0) {
+                    clock.stop();
+                    clock.setTime(maxDuration);
+                    clockStop(maxDuration);
+                    return;
+                }
+
+                for (DataViewer v : viewers) {
                     // Only synchronise viewers if we have a noticable drift.
                     if (Math.abs(v.getCurrentTime() - time) > thresh) {
                         v.seekTo(time);
                     }
                 }
-                lastSync = time;
             }
+
         } catch (Exception e) {
             logger.error("Unable to Sync viewers", e);
         }
@@ -286,13 +300,28 @@ public final class DataControllerV extends OpenSHAPADialog
      * @return True if the controller contained this viewer.
      */
     public boolean shutdown(final DataViewer viewer) {
-        // Remove the data viewer from the project
-        OpenSHAPA.getProject().removeViewerSetting(
-                viewer.getDataFeed().getAbsolutePath());
-        // Remove the data viewer from the tracks panel
-        tracksControllerV.removeTrack(viewer.getDataFeed().getAbsolutePath());
-        OpenSHAPA.getApplication().updateTitle();
-        return viewers.remove(viewer);
+        boolean result = viewers.remove(viewer);
+        if (result) {
+            // Recalculate the maximum playback duration.
+            maxDuration = 0;
+            Iterator<DataViewer> it = viewers.iterator();
+            while (it.hasNext()) {
+                DataViewer dv = it.next();
+                if (dv.getDuration() + dv.getOffset() > maxDuration) {
+                    maxDuration = dv.getDuration() + dv.getOffset();
+                }
+            }
+
+            // Remove the data viewer from the project
+            OpenSHAPA.getProject().removeViewerSetting(
+                    viewer.getDataFeed().getAbsolutePath());
+            // Remove the data viewer from the tracks panel
+            tracksControllerV.removeTrack(
+                    viewer.getDataFeed().getAbsolutePath());
+            OpenSHAPA.getApplication().updateTitle();
+        }
+
+        return result;
     }
 
     /** This method is called from within the constructor to
@@ -762,6 +791,10 @@ public final class DataControllerV extends OpenSHAPADialog
 
     private void addDataViewer(final DataViewer viewer, final File f) {
         addViewer(viewer);
+
+        if (viewer.getOffset() + viewer.getDuration() > maxDuration) {
+            maxDuration = viewer.getOffset() + viewer.getDuration();
+        }
 
         addDataViewerToProject(viewer.getClass().getName(),
                 f.getAbsolutePath(), viewer.getOffset());
