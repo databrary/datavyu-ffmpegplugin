@@ -289,7 +289,7 @@ implements KeyEventDispatcher {
                     cancel);
 
             // Button behaviour is platform dependent.
-            return getPlatform() == Platform.MAC 
+            return getPlatform() == Platform.MAC
                     ? selection == 1
                     : selection == 0;
 
@@ -443,7 +443,16 @@ implements KeyEventDispatcher {
         view = new OpenSHAPAView(this);
         show(view);
 
-	updateTitle();
+        // BugzID:435 - Correct size if a small size is detected.
+        int width = (int) getMainFrame().getSize().getWidth();
+        int height = (int) getMainFrame().getSize().getHeight();
+        if ((width < INITMINX) || (height < INITMINY)) {
+            int x = Math.max(width, INITMINX);
+            int y = Math.max(height, INITMINY);
+            getMainFrame().setSize(x, y);
+        }
+
+        updateTitle();
 
         // Allow changes to the database to propagate up and signify db modified
         canSetUnsaved = true;
@@ -453,7 +462,6 @@ implements KeyEventDispatcher {
         // Create video controller.
         dataController = new DataControllerV(OpenSHAPA.getApplication().
                 getMainFrame(), false);
-
 
 
     }
@@ -523,7 +531,7 @@ implements KeyEventDispatcher {
     /**
      * Sets the single instance project associated with the currently running
      * with OpenSHAPA.
-     * 
+     *
      * @param project The new project instance to use
      */
     public static void setProject(Project project) {
@@ -715,6 +723,12 @@ implements KeyEventDispatcher {
 
     /** Tracks whether or not databases are allowed to set unsaved status. */
     private boolean canSetUnsaved = false;
+
+    /** The desired minimum initial width. */
+    private static final int INITMINX = 600;
+
+    /** The desired minimum initial height. */
+    private static final int INITMINY = 700;
 
     /**
      * Constant variable for the OpenSHAPA main panel.  This is so we
