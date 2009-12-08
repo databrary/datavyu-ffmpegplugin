@@ -35,7 +35,7 @@ class LevelMeter extends Canvas {
      * Note that a band is a column of bars representing the intensity of a
      * certain frequency range.
      */
-    private static final int MAXBANDS = 20;
+    private static final int MAXBANDS = 8;
 
     /** The divisor used to normalise sound level bars. */
     private static final float BARDIV = 255.0F;

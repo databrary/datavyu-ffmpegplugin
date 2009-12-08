@@ -53,13 +53,13 @@ public final class SoundDataViewer extends JFrame
     /** An instance of the class LevelMeter, which draws the meter bars for the
      * sound levels. */
     private LevelMeter meter;
-    /** The scaling factor for audio preprocessing; samples are taken after
-     * this many milliseconds have passed. */
-    private static final int SCALING = 2;
+    /** The scaling factor for audio preprocessing; # of samples is divided by
+     *  this factor. */
+    private static final int SCALING = 1;
     /** This is the preprocessing thread which generates the audioData array. */
     private PreProcess preThread;
     /** The number of milliseconds to wait between painting operations. */
-    private static final int REPAINTDELAY = 20;
+    private static final int REPAINTDELAY = 100;
     /** Constant value used to calculate percentages. */
     private static final int CENT = 100;
     /** Time to natural after painting the display on a seek operation. */
@@ -71,7 +71,7 @@ public final class SoundDataViewer extends JFrame
     /** parent controller. */
     private DataController parent;
     /** Number of millis to jump back upon losing sync during preprocessing. */
-    private static final int JUMPFIX = 20;
+    private static final int JUMPFIX = 1000;
     /** Massive array with all the audio intensity data stored. */
     private int[] audioData;
     /** Maximum filesize in milliseconds that will be preprocessed.
@@ -102,12 +102,20 @@ public final class SoundDataViewer extends JFrame
     private static final int EXTRA_SIZE = 300;
     /** The offset used to hide the movie. */
     private static final int HIDDEN_OFFSET = 200;
+    /** The threshold in millis for the movie to be considered out of sync. */
+    private static final int SYNCTHRESH = 100;
     /** The fixed window width. */
     private static final int WIN_X = 400;
     /** The fixed window height. */
     private static final int WIN_Y = 400;
     /** The error window height. */
     private static final int ERROR_HEIGHT = 200;
+    /** The number of times the delay sequence should be called; this allows
+     * the preprocessing movie to start playing. */
+    private static final int DELAYTICKS = 3;
+    /** This is the number of delay calls that we make each tick; higher values
+     * result in a longer initial delay to wait for the movie. */
+    private static final int DELAYVAL = 1000000;
     /** Determines whether or not preprocessing has finished successfully. */
     private boolean finishedPreprocess = false;
     /** Records whether or not we have opened a movie. */
@@ -116,9 +124,10 @@ public final class SoundDataViewer extends JFrame
     /** The preprocessing rate. */
     private static final float PREPROCESSRATE = 1F;
 
-    /** Playback offset */
+    /** Playback offset. */
     private long offset;
 
+    /** The file opened by the viewer. */
     private File audioFile;
 
     /**
@@ -152,10 +161,27 @@ public final class SoundDataViewer extends JFrame
     public long getDuration() {
         try {
             if (audio != null) {
-                return Constants.TICKS_PER_SECOND * audio.getDuration() / audio.getTimeScale();
+                return Constants.TICKS_PER_SECOND
+                        * audio.getDuration() / audio.getTimeScale();
             }
         } catch (StdQTException ex) {
             logger.error("Unable to determine QT audio duration", ex);
+        }
+        return -1;
+    }
+
+    /**
+     * @return The duration of the audio in milliseconds. If -1 is returned, the
+     * audio's duration cannot be determined.
+     */
+    public long getPreDuration() {
+        try {
+            if (paudio != null) {
+                return Constants.TICKS_PER_SECOND
+                        * paudio.getDuration() / paudio.getTimeScale();
+            }
+        } catch (StdQTException ex) {
+            logger.error("Unable to determine QT paudio duration", ex);
         }
         return -1;
     }
@@ -168,13 +194,14 @@ public final class SoundDataViewer extends JFrame
     }
 
     /**
-     * @param offset The playback offset of the audio in milliseconds.
+     * @param newOffset The playback offset of the audio in milliseconds.
      */
-    public void setOffset(final long offset) {
-        assert(offset >= 0);
-        this.offset = offset;
+    public void setOffset(final long newOffset) {
+        assert (newOffset >= 0);
+        offset = newOffset;
     }
 
+    /** @return This frame. */
     public JFrame getParentJFrame() {
         return this;
     }
@@ -201,17 +228,11 @@ public final class SoundDataViewer extends JFrame
          */
         public PreProcess(final int bands) {
             numBands = bands;
-
-            try {
-                if ((paudio.getDuration() / SCALING) < MAXFILESIZE) {
-                    work = paudio.getDuration() * numBands;
-                } else {
-                    pfix = ""; // The file was bigger than our threshold.
-                    work = MAXFILESIZE * numBands;
-                }
-
-            } catch (QTException e) {
-                logger.error("Couldn't get duration", e);
+            if ((getPreDuration() / SCALING) < MAXFILESIZE) {
+                work = (int) (getPreDuration() / SCALING) * numBands;
+            } else {
+                pfix = ""; // The file was bigger than our threshold.
+                work = MAXFILESIZE * numBands;
             }
         }
 
@@ -224,6 +245,7 @@ public final class SoundDataViewer extends JFrame
 
         /** Grabs all the data from the audio stream. */
         public void run() {
+            int check = 0;
             try {
                 wTitle = getTitle();
                 audioData = new int[work];
@@ -237,13 +259,15 @@ public final class SoundDataViewer extends JFrame
                 volume = paudio.getVolume();
                 paudio.setVolume(0F);
                 paudio.setRate(PREPROCESSRATE);
+
                 int i = 0;
-                int check = 0;
+                int delayTicks = DELAYTICKS;
                 while (i < (work - 1)) {
                     long atime = getCurrentPreprocessTime();
                     if (atime != oldTime) { // We have a new timecode
                         oldTime = atime;
-                        while ((atime - 1) * numBands != i) {
+                        while ((atime - 1) * numBands > (i + SYNCTHRESH)
+                                || (atime - 1) * numBands < (i - SYNCTHRESH)) {
                             // If we fell out of sync...
                             long fixedJ = Math.max(1, (atime * SCALING)
                                     - JUMPFIX);
@@ -254,6 +278,12 @@ public final class SoundDataViewer extends JFrame
                                 paudio.setTime(fixtime);
                             }
                             atime = getCurrentPreprocessTime();
+                            if (delayTicks > 0) {
+                                delayTicks--;
+                                for (int waste = 0; waste < DELAYVAL; waste++) {
+                                    Math.random();
+                                }
+                            }
                             // Else keep waiting until the movie catches up.
                         }
                         tempLevels =
@@ -262,9 +292,9 @@ public final class SoundDataViewer extends JFrame
                     if (tempLevels != null) {
                         for (int j = 0; j < numBands; j++) {
                             audioData[i] = tempLevels[j];
-                            if (tempLevels[j] != 0) {
-                                check++;
-                            }
+                           if (tempLevels[j] != 0) {
+                               check++;
+                           }
                             i++;
                         }
                     }
@@ -346,7 +376,7 @@ public final class SoundDataViewer extends JFrame
         public synchronized void run() {
             if (meter.isReady()) {
                 try {
-                meter.setAudioTime(getCurrentTime());
+                meter.setAudioTime(getCurrentTime() / SCALING);
                 meter.repaint();
                 } catch (QTException e) {
                     logger.error("Couldn't get time", e);
@@ -359,11 +389,11 @@ public final class SoundDataViewer extends JFrame
     /**
      * Method to open a video file for playback.
      *
-     * @param audioFile The audio file that this viewer is going to display to
+     * @param newAudioFile The audio file the viewer is going to display to
      * the user.
      */
-    public void setDataFeed(final File audioFile) {
-        this.audioFile = audioFile;
+    public void setDataFeed(final File newAudioFile) {
+        audioFile = newAudioFile;
         try {
             setSize(WIN_X, WIN_Y);
             /* Set resizable false here to avoid nasty QuickTime movie frames
@@ -371,10 +401,12 @@ public final class SoundDataViewer extends JFrame
             possible, but most are messy. */
             setResizable(false);
             this.setTitle(audioFile.getName());
-            OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(audioFile));
-            audio = Movie.fromFile(omf);
             QTFilter movieTest = new QTFilter();
             isMovie = movieTest.accept(audioFile);
+
+            OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(audioFile));
+            audio = Movie.fromFile(omf);
+
 
             /* Set the time scale for the movie to milliseconds (i.e. 1000 ticks
             per second. */
@@ -522,7 +554,7 @@ public final class SoundDataViewer extends JFrame
      */
     public void seekTo(final long position) {
         try {
-            if (audio != null) {
+            if (audio != null && finishedPreprocess) {
                 TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
                         position);
                 audio.setTime(time);
@@ -539,7 +571,7 @@ public final class SoundDataViewer extends JFrame
      * @throws QTException If error occurs accessing underlying implementation.
      */
     public long getCurrentTime() throws QTException {
-        return audio.getTime() / SCALING;
+        return audio.getTime();
     }
 
     /**
