@@ -102,7 +102,8 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public long getDuration() {
         try {
             if (movie != null) {
-                return Constants.TICKS_PER_SECOND * movie.getDuration() / movie.getTimeScale();
+                return (long)Constants.TICKS_PER_SECOND *
+                        (long)movie.getDuration() / (long)movie.getTimeScale();
             }
         } catch (StdQTException ex) {
             logger.error("Unable to determine QT movie duration", ex);
