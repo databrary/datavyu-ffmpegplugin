@@ -127,7 +127,8 @@ public final class SoundDataViewer extends JFrame
     /** Playback offset. */
     private long offset;
 
-    /** The file opened by the viewer. */
+    private boolean playing;
+
     private File audioFile;
 
     /**
@@ -161,8 +162,8 @@ public final class SoundDataViewer extends JFrame
     public long getDuration() {
         try {
             if (audio != null) {
-                return Constants.TICKS_PER_SECOND
-                        * audio.getDuration() / audio.getTimeScale();
+                return (long)Constants.TICKS_PER_SECOND *
+                        (long)audio.getDuration() / (long)audio.getTimeScale();
             }
         } catch (StdQTException ex) {
             logger.error("Unable to determine QT audio duration", ex);

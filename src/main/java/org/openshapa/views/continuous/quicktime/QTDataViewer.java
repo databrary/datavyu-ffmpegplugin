@@ -69,6 +69,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** The playback offset of the movie in milliseconds. */
     private long offset;
 
+    private boolean playing;
 
     private File videoFile;
 
@@ -83,6 +84,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         try {
             movie = null;
             offset = 0;
+            playing = false;
             // Initalise QTJava.
             QTSession.open();
         } catch (Throwable e) {
@@ -102,7 +104,8 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public long getDuration() {
         try {
             if (movie != null) {
-                return Constants.TICKS_PER_SECOND * movie.getDuration() / movie.getTimeScale();
+                return (long)Constants.TICKS_PER_SECOND *
+                        (long)movie.getDuration() / (long)movie.getTimeScale();
             }
         } catch (StdQTException ex) {
             logger.error("Unable to determine QT movie duration", ex);
@@ -256,6 +259,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         try {
             if (movie != null) {
                 movie.setRate(playRate);
+                playing = true;
             }
         } catch (QTException e) {
             logger.error("Unable to play", e);
@@ -269,10 +273,18 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         try {
             if (movie != null) {
                 movie.stop();
+                playing = false;
             }
         } catch (QTException e) {
             logger.error("Unable to stop", e);
         }
+    }
+
+    /**
+     * @return Is this dataviewer playing the data feed.
+     */
+    public boolean isPlaying() {
+        return playing;
     }
 
     /**

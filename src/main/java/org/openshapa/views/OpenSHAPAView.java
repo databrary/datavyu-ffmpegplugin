@@ -261,7 +261,7 @@ public final class OpenSHAPAView extends FrameView {
     @Action
     public void saveAs() {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
-        
+
         jd.addChoosableFileFilter(new MODBFilter());
         jd.addChoosableFileFilter(new CSVFilter());
         jd.addChoosableFileFilter(new SHAPAFilter());
