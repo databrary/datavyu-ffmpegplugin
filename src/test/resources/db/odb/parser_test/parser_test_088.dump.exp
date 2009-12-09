@@ -20,22 +20,6 @@
         )
         ( SPREADSHEET-VARIABLE-DECLARATIONS>
           (
-            ( |fixed len matrix|
-              (
-                ( TYPE> <<MATRIX>> )
-                ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
-                ( COLUMN-WIDTH> 200 )
-              )
-            )
-            ( |an integer var|
-              (
-                ( TYPE> <<INTEGER>> )
-                ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
-                ( COLUMN-WIDTH> 200 )
-              )
-            )
             ( |var len matrix|
               (
                 ( TYPE> <<MATRIX>> )
@@ -76,27 +60,26 @@
                 ( COLUMN-WIDTH> 200 )
               )
             )
-          )
-        )
-        ( SPREADSHEET-VARIABLE-DEFINITIONS>
-          (
             ( |fixed len matrix|
               (
-                ( CELLS>
-                  (
-                  )
-                )
-                ( VOCAB> ( ) )
+                ( TYPE> <<MATRIX>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| ) )
+                ( COLUMN-WIDTH> 200 )
               )
             )
             ( |an integer var|
               (
-                ( CELLS>
-                  (
-                  )
-                )
+                ( TYPE> <<INTEGER>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
               )
             )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DEFINITIONS>
+          (
             ( |var len matrix|
               (
                 ( CELLS>
@@ -137,6 +120,23 @@
                   )
                 )
                 ( VOCAB> ( ) )
+              )
+            )
+            ( |fixed len matrix|
+              (
+                ( CELLS>
+                  (
+                  )
+                )
+                ( VOCAB> ( ) )
+              )
+            )
+            ( |an integer var|
+              (
+                ( CELLS>
+                  (
+                  )
+                )
               )
             )
           )

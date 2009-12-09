@@ -155,6 +155,11 @@ public class UnTypedFormalArg
             retVal = new TimeStampDataValue(this.getDB(), this.getID(),
                     ((TimeStampDataValue)salvage).getItsValue());
         }
+        else if ( ( salvage instanceof QueryVarDataValue ) )
+        {
+            retVal = new QueryVarDataValue(this.getDB(), this.getID(),
+                    ((QueryVarDataValue)salvage).getItsValue());
+        }
         else if ( salvage instanceof QuoteStringDataValue )
         {
             retVal = new QuoteStringDataValue(this.getDB(), this.getID(),

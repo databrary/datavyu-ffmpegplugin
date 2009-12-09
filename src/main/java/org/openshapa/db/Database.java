@@ -2684,6 +2684,8 @@ public abstract class Database
     /*                                                                       */
     /*************************************************************************/
 
+    // TODO: Add code enforcing these flags.
+    
     public boolean floatSubrangeSupported()         { return true; }
     public boolean integerSubrangeSupported()       { return true; }
     public boolean nominalSubrangeSupported()       { return true; }
@@ -2691,6 +2693,7 @@ public abstract class Database
     public boolean readOnly()                       { return false; }
     public boolean tickSizeAgjustmentSupported()    { return true; }
     public boolean typedFormalArgsSupported()       { return true; }
+    public boolean queryVariablesSupported()        { return false; }
 
 
     /*************************************************************************/
@@ -4258,6 +4261,107 @@ public abstract class Database
         return true;
 
     } /* Database::IsValidPredName() */
+
+
+    // IsValidQueryVar()
+    /**
+     * Test to see if a string contains a valid query variable name.
+     * Return true if it does, and false if it doesn't.
+     *
+     * For now, we will use the old MacSHAPA definition of a query variable,
+     * which is simply a nominal of length 2 or greater, that begins with a
+     * '?':
+     *
+     *  <graphic_char> --> ASCII codes 0x21 - 0x7E
+     *
+     *  <nominal_char> -->
+     *      ( ( <graphic_char> - ( '(' | ')' | '<' | '>' | ',' | '"' ) ) | ' '
+     *
+     *	<non_ws_nominal_char> --> <nominal_char> - ' '
+     *
+     *	<query_variable> -->'?' (<nominal_char>)* <non_ws_nominal_char>
+     *
+     * Eventually we will have to extend this definition to make full use of
+     * Unicode, but that can wait for now.
+     *                                           -- 11/28/09
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     */
+
+    public static boolean IsValidQueryVar(Object obj)
+        throws SystemErrorException
+    {
+
+        final String mName = "Database::IsValidQueryVar(): ";
+        int len;
+
+
+        if ( obj == null )
+        {
+            throw new SystemErrorException(mName + "obj null on entry.");
+        }
+        else if ( ! ( obj instanceof String ) )
+        {
+            return false;
+        }
+
+        String s = (String)obj;
+
+        len = s.length();
+
+        if ( len < 2 ) {
+
+            // s is too short to be a valid query variable
+            return false;
+
+        } else if ( ( s.charAt(0) != '?' ) ||
+                    ( Character.isSpaceChar(s.charAt(len - 1)) ) ) {
+
+            // s either doesn't start with a question mark, or ends with
+            // white space, and thus is not a valid query variable.
+            return false;
+
+        } else {
+
+            char ch;
+            int i;
+
+            for ( i = 0; i < len; i++ ) {
+
+                ch = s.charAt(i);
+
+                if ( ! ( ( ch == ' ' )
+                         ||
+                         ( ( IsGraphicalChar(ch) )
+                           &&
+                           ( ch != '(' )
+                           &&
+                           ( ch != ')' )
+                           &&
+                           ( ch != '<' )
+                           &&
+                           ( ch != '>' )
+                           &&
+                           ( ch != ',' )
+                           &&
+                           ( ch != '"' )
+                         )
+                       )
+                   ) {
+
+                    // s contains a character that can't appear in a
+                    // nominal.
+                    return false;
+                }
+            }
+        }
+
+        return true;
+
+    } /* Database::IsValidQueryVar() */
 
 
     // IsValidSVarName()

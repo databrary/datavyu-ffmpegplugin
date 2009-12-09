@@ -4478,7 +4478,8 @@ public class MacshapaODBReader
                         {
                             (token.aux) |= NOMINAL_FLAG;
 
-                            if ( could_be_query_var )
+                            if ( ( could_be_query_var ) &&
+                                 ( token.str.length() >= 2 ) )
                             {
                                 (token.aux) |= QUERY_VAR_FLAG;
                             }
@@ -4540,9 +4541,9 @@ public class MacshapaODBReader
 
 	    if ( ! done )
 	    {
-            if ( this.end_of_file )
-            {
-                token.code = EOF_TOK;
+                if ( this.end_of_file )
+                {
+                    token.code = EOF_TOK;
 
                     post_error_message(token, UNEXPECTED_END_OF_FILE_ERR,
                            "EOF was encountered in a symbol.\n",
@@ -10144,6 +10145,107 @@ public class MacshapaODBReader
 	return;
 
     } /* MacshapaODBReader::parse_preds_list_attribute() */
+
+
+    /*************************************************************************
+     *
+     * parse_query_var_value()
+     *
+     * This method parses a query variable value in the context of a predicate
+     * or column predicate argument.  It should only be called when parsing
+     * the query section.
+     *
+     * Syntactically, a query variable is simply a nominal that is at least
+     * two characters long and begins with a '?'.
+     *
+     * This method differs from parse_nominal_value primarily in the management
+     * of type conflicts between query variables and the target formal argument.
+     *
+     * While a nominal can only be assigned to a formal argument of nominal or
+     * undefined type, a query variable can be assigned to a formal argument of
+     * any type.
+     *
+     * Thus, in this context, type conflicts are not possible.
+     *
+     *                                                     - 11/29/09
+     *
+     * Parameters:
+     *
+     *	  - farg:  Reference to a copy of the formal argument we
+     *          are going to create a data value for.    This function is
+     *          called to parse a query variable in the context of a column
+     *          predicate or predicate argument, so the farg may be of any type.
+     *
+     * Returns:  Void.
+     *
+     * Changes:
+     *
+     *  - None.
+     *
+     *************************************************************************/
+
+    private DataValue parse_query_var_value(FormalArgument farg)
+        throws SystemErrorException,
+               java.io.IOException
+    {
+        final String mName = "macshapa_odb_reader::parse_query_var_value()";
+        String value = null;
+        DataValue dv = null;
+
+
+        if ( this.abort_parse )
+        {
+            throw new SystemErrorException(mName +
+                "this.abort_parse true on entry");
+        }
+
+        if ( farg == null )
+        {
+            throw new SystemErrorException(mName + "farg null on entry");
+        }
+
+        if ( farg.getID() == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName +
+                                           "Supplied farg has invalid ID.");
+        }
+
+        /* we must only be called if the next token is a SYMBOL_TOK with the
+         * formal arg flag not set -- scream and die if it is not.
+         */
+        if ( ( (this.l0_tok).code != SYMBOL_TOK ) ||
+             ( ((this.l0_tok).aux & FORMAL_ARG_FLAG) != 0 ) )
+        {
+            throw new SystemErrorException(mName + "(this.l0_tok).code != " +
+                    "SYMBOL_TOK or ((this.l0_tok).aux & FORMAL_ARG_FLAG) != 0");
+        }
+
+        /* we must only be called if the QUERY_VAR_FLAG is set. */
+        if ( ((this.l0_tok).aux & QUERY_VAR_FLAG) == 0 )
+        {
+            throw new SystemErrorException(mName +
+                    "((this.l0_tok).aux & QUERY_VAR_FLAG) == 0");
+        }
+
+        /* we should only be called in a query. */
+        if ( ! this.in_query )
+        {
+            throw new SystemErrorException(mName + "this.in_query is false?!?");
+        }
+
+        value = this.l0_tok.str.toString();
+
+
+        dv = new QueryVarDataValue(this.db, farg.getID(), value);
+
+        if ( ! this.abort_parse ) /* consume the token */
+        {
+            get_next_token();
+        }
+
+    	return(dv);
+
+    } /* MacshapaODBReader::parse_query_var_value() */
 
 
     /*************************************************************************
@@ -24656,7 +24758,10 @@ public class MacshapaODBReader
      *
      * Changes:
      *
-     *    - None.
+     *    - Added code to call parse_query_var_value() when this.in_query is 
+     *      true, and the query var flag is set on a symbol token.
+     *
+     *                                                  11/29/09
      *
      **************************************************************************/
 
@@ -24875,6 +24980,11 @@ public class MacshapaODBReader
                         if ( ((this.l0_tok).aux & FORMAL_ARG_FLAG) != 0 )
                         {
                             next_arg = parse_formal_arg_value(next_farg);
+                        }
+                        else if ( ( this.in_query ) &&
+                                  ( ((this.l0_tok).aux & QUERY_VAR_FLAG) != 0 ) )
+                        {
+                            next_arg = parse_query_var_value(next_farg);
                         }
                         else if ( ((this.l0_tok).aux & 
                                    (PRED_FLAG | COLUMN_FLAG | NOMINAL_FLAG)) != 0 )
@@ -25259,7 +25369,10 @@ public class MacshapaODBReader
      *
      * Changes:
      *
-     *    - None.
+     *    - Added code to call parse_query_var_value() for a symbol token when
+     *      this.in_query is true and the query var flag is set.
+     *
+     *                                              JRM -- 11/29/09
      *
      **************************************************************************/
 
@@ -25269,6 +25382,7 @@ public class MacshapaODBReader
     {
         final String mName = "macshapa_odb_reader::parse_pred_value()";
         final String overflow_mssg = "Overflow occured in a predicate value.\n";
+        boolean argPresent = false;
         boolean done;
         boolean varLen = false;
         int arg_num = 0;
@@ -25437,16 +25551,19 @@ public class MacshapaODBReader
                              ( (this.l1_tok).aux == TIME_LABEL ) )
                         {
                             next_arg = parse_time_stamp(next_farg);
+                            argPresent = true;
                         }
                         else if ( next_farg.getFargType() ==
                                   FormalArgument.FArgType.COL_PREDICATE )
                         {
                             next_arg = parse_col_pred_value(next_farg);
+                            argPresent = true;
                         }
                         else if ( next_farg.getFargType() ==
                                   FormalArgument.FArgType.PREDICATE )
                         {
                             next_arg = parse_pred_value(next_farg);
+                            argPresent = true;
                         }
                         else if ( ( (this.l1_tok).code == SYMBOL_TOK ) &&
                                   ( ((this.l1_tok).aux & COLUMN_FLAG) != 0 ) &&
@@ -25454,34 +25571,47 @@ public class MacshapaODBReader
                                         this.l1_tok.str.toString()) ) )
                         {
                             next_arg = parse_col_pred_value(next_farg);
+                            argPresent = true;
                         }
                         else
                         {
                             next_arg = parse_pred_value(next_farg);
+                            argPresent = true;
                         }
                         break;
 
                     case FLOAT_TOK:
                         next_arg = parse_float_value(next_farg);
+                        argPresent = true;
                         break;
                         
                     case INT_TOK:
                         next_arg = parse_integer_value(next_farg);
+                        argPresent = true;
                         break;
 
                     case STRING_TOK:
                         next_arg = parse_quote_string_value(next_farg);
+                        argPresent = true;
                         break;
 
                     case SYMBOL_TOK:
                         if ( ((this.l0_tok).aux & FORMAL_ARG_FLAG) != 0 )
                         {
                             next_arg = parse_formal_arg_value(next_farg);
+                            argPresent = true;
+                        }
+                        else if ( ( this.in_query ) &&
+                                  ( ((this.l0_tok).aux & QUERY_VAR_FLAG) != 0 ) )
+                        {
+                            next_arg = parse_query_var_value(next_farg);
+                            argPresent = true;
                         }
                         else if ( ((this.l0_tok).aux & 
                                    (PRED_FLAG | COLUMN_FLAG | NOMINAL_FLAG)) != 0 )
                         {
                             next_arg = parse_nominal_value(next_farg);
+                            argPresent = true;
                         }
                         else /* in theory, this can't happen */
                         {
@@ -25646,7 +25776,7 @@ public class MacshapaODBReader
                      * its arguments, or variable length and missing all
                      * arguments, issue a warning message.
                      */
-                    if ( ( ! varLen ) || ( arg_num == 0 ) )
+                    if ( ( ! varLen ) || ( ! argPresent ) )
                     {
                         post_warning_message(this.l0_tok,
                                 REQ_ARGS_MISSING_FROM_PRED_VAL_WARN,

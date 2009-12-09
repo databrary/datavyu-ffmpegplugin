@@ -258,7 +258,7 @@ implements FocusListener, KeyListener, MouseListener {
      *
      * @param e The KeyEvent that triggered this action.
      */
-    public void keyTyped(final KeyEvent e) {
+    public void keyTyped(KeyEvent e) {
         currentEditor.keyTyped(e);
     }
 
@@ -267,7 +267,7 @@ implements FocusListener, KeyListener, MouseListener {
      *
      * @param e The KeyEvent that triggered this action.
      */
-    public void keyPressed(final KeyEvent e) {
+    public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
 
             case KeyEvent.VK_BACK_SPACE:

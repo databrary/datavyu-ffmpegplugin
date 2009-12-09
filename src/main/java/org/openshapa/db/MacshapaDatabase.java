@@ -251,6 +251,8 @@ public class MacshapaDatabase extends Database {
     //       database up and running.
     @Override
     public boolean typedFormalArgsSupported()       { return true; }
+    @Override
+    public boolean queryVariablesSupported()        { return true; }
 
 
     /*************************************************************************/
@@ -616,6 +618,7 @@ public class MacshapaDatabase extends Database {
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1, arg2);
+
         pve.setVarLen(vLen);
 
         if ( system )
@@ -644,6 +647,7 @@ public class MacshapaDatabase extends Database {
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1, arg2, arg3);
+
         pve.setVarLen(vLen);
 
         if ( system )
@@ -673,6 +677,7 @@ public class MacshapaDatabase extends Database {
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1, arg2, arg3, arg4);
+
         pve.setVarLen(vLen);
 
         if ( system )
@@ -703,6 +708,7 @@ public class MacshapaDatabase extends Database {
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1, arg2, arg3, arg4, arg5);
+
         pve.setVarLen(vLen);
 
         if ( system )
@@ -769,6 +775,8 @@ public class MacshapaDatabase extends Database {
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+
+        pve.setVarLen(vLen);
 
         if ( system )
         {
@@ -1035,6 +1043,7 @@ public class MacshapaDatabase extends Database {
         /* data predicates */
         defineSystemPVE("times", "<x>", "<y>", false);
         defineSystemPVE("divide", "<x>", "<y>", false);
+        defineSystemPVE("plus", "<x>", "<y>", false);
         defineSystemPVE("minus", "<x>", "<y>", false);
         defineSystemPVE("clear", "<void>", false);
         defineSystemPVE("max", "<x>", "<y>", false);
@@ -1256,6 +1265,12 @@ public class MacshapaDatabase extends Database {
      * Write the contents of the query section of a MacSHAPA ODB file to
      * the supplied stream.
      *
+     * Note that while the queries are simply stored in an instance of
+     * DataColumn, the format in which the are displayed in a MacSHAPA
+     * ODB database is different from that of a normal column.  Hence we
+     * handle most of the printing of the queries in this function, instead
+     * of passing it down to the column list as we do with regular columns.
+     *
      * The newLine parameter exists to assist debugging.  While MacSHAPA
      * ODB files must always use '\r' as the new line character, in our
      * internal test code, it is frequently useful to use '\n' instead.
@@ -1274,6 +1289,12 @@ public class MacshapaDatabase extends Database {
                java.io.IOException
     {
         final String mName = "MacshapaDatabase::toMODBFile_querySection()";
+        DataCell cell;
+        DataValue dv = null;
+        PredDataValue pdv = null;
+        DataColumn qdc = null;
+        int i;
+        int numQueries = 0;
 
         if ( output == null )
         {
@@ -1290,12 +1311,62 @@ public class MacshapaDatabase extends Database {
             throw new SystemErrorException(mName + "indent null on entry");
         }
 
+        // test to see if the query column exists.  If it does, get a reference
+        // to it and prepare to dump its contents.
+        if ( this.cl.inColumnList(QUERY_VAR_NAME) )
+        {
+            qdc = (DataColumn)this.cl.getColumn(QUERY_VAR_NAME);
+
+            if ( qdc.getItsMveType() != MatrixVocabElement.MatrixType.PREDICATE )
+            {
+                throw new SystemErrorException(mName +
+                        "query column not a predicate column?!?");
+            }
+
+            numQueries = qdc.getNumCells();
+        }
+
         output.printf("%s( QUERY>%s", indent, newLine);
 
 
         output.printf("%s  (%s", indent, newLine);
 
         // dump queries here
+        if ( qdc != null ) // we have queries to dump
+        {
+            for ( i = 0; i < numQueries; i++ )
+            {
+                // This is the actual cell in the database -- must be careful not
+                // to modify it in any way.
+                cell = qdc.getCell(i + 1);
+
+                if ( cell == null )
+                {
+                    throw new SystemErrorException(mName + "qdc.getCell(" + i +
+                                                   " + 1) returned null?!?");
+                }
+
+                if ( cell.val.getNumArgs() != 1 )
+                {
+                    throw new SystemErrorException(mName +
+                                                   "cell.val.getNumArgs() != 1");
+                }
+
+                dv = cell.val.getArg(0);
+
+                if ( ! ( dv instanceof PredDataValue ) )
+                {
+                    throw new SystemErrorException(mName +
+                                                   "dv not a pred data val?!?");
+                }
+
+                pdv = (PredDataValue)dv;
+
+                output.printf("%s    ", indent);
+                pdv.toMODBFile(output);
+                output.printf("%s", newLine);
+            }
+        }
 
         output.printf("%s  )%s", indent, newLine);
 

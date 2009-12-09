@@ -1373,15 +1373,13 @@ implements InternalMatrixVocabElementListener {
                     {
                         cdv = new ColPredDataValue((ColPredDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1404,15 +1402,13 @@ implements InternalMatrixVocabElementListener {
                     {
                         cdv = new FloatDataValue((FloatDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1433,15 +1429,13 @@ implements InternalMatrixVocabElementListener {
                     {
                         cdv = new IntDataValue((IntDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1461,6 +1455,10 @@ implements InternalMatrixVocabElementListener {
                     if ( dv instanceof NominalDataValue )
                     {
                         cdv = new NominalDataValue((NominalDataValue)dv);
+                    }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
                     }
                     else if ( dv instanceof UndefinedDataValue )
                     {
@@ -1485,15 +1483,13 @@ implements InternalMatrixVocabElementListener {
                     {
                         cdv = new PredDataValue((PredDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1514,15 +1510,13 @@ implements InternalMatrixVocabElementListener {
                     {
                         cdv = new TimeStampDataValue((TimeStampDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1543,15 +1537,13 @@ implements InternalMatrixVocabElementListener {
                     {
                         cdv = new QuoteStringDataValue((QuoteStringDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1573,15 +1565,13 @@ implements InternalMatrixVocabElementListener {
                     {
                         cdv = new TextStringDataValue((TextStringDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1622,6 +1612,10 @@ implements InternalMatrixVocabElementListener {
                     else if ( dv instanceof TimeStampDataValue )
                     {
                         cdv = new TimeStampDataValue((TimeStampDataValue)dv);
+                    }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
                     }
                     else if ( dv instanceof QuoteStringDataValue )
                     {
@@ -1684,6 +1678,7 @@ implements InternalMatrixVocabElementListener {
 
     } /* ColPred::ColPred::copyArgList(srcArgList, clearID) */
 
+
     /**
      * If the ColPred is defined (i.e. this.mveID is not DBIndex.INVALID_ID,
      * deregister the ColPred with its matrix vocab element as an internal
@@ -1710,7 +1705,8 @@ implements InternalMatrixVocabElementListener {
                                      long cascadeMveID,
                                      boolean cascadePveDel,
                                      long cascadePveID)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "ColPred::deregisterWithMve(): ";
         DBElement dbe = null;
         MatrixVocabElement mve = null;
@@ -1767,7 +1763,8 @@ implements InternalMatrixVocabElementListener {
 
         return;
 
-    }
+    } /* ColPred::deregisterWithMVE() */
+
 
     /**
      * Gets the datavalue for a specified argument.
@@ -1783,7 +1780,9 @@ implements InternalMatrixVocabElementListener {
      *
      * @date 2007/08/23
      */
-    protected DataValue getArg(int n) throws SystemErrorException {
+    protected DataValue getArg(int n) 
+        throws SystemErrorException
+    {
         final String mName = "ColPred::getArg(): ";
         int numArgs;
         DataValue arg = null;
@@ -1822,6 +1821,7 @@ implements InternalMatrixVocabElementListener {
                      ( arg instanceof NominalDataValue ) ||
                      ( arg instanceof PredDataValue ) ||
                      ( arg instanceof TimeStampDataValue ) ||
+                     ( arg instanceof QueryVarDataValue ) ||
                      ( arg instanceof QuoteStringDataValue ) ||
                      ( arg instanceof TextStringDataValue ) ||
                      ( arg instanceof UndefinedDataValue ) ) )
@@ -1832,7 +1832,8 @@ implements InternalMatrixVocabElementListener {
 
         return arg;
 
-    }
+    } /* ColPred::getArg() */
+
 
     /**
      * Gets a copy of a datavalue of the specified arguments.
@@ -1845,7 +1846,9 @@ implements InternalMatrixVocabElementListener {
      * @throws org.openshapa.db.SystemErrorException If unable to get a copy of
      * the nominated argument.
      */
-    public DataValue getArgCopy(int n) throws SystemErrorException {
+    public DataValue getArgCopy(int n) 
+        throws SystemErrorException
+    {
         final String mName = "ColPred::getArgCopy(): ";
         DataValue arg = null;
         DataValue argCopy = null;
@@ -1863,8 +1866,10 @@ implements InternalMatrixVocabElementListener {
 
         return argCopy;
 
-    }
+    } /* ColPred::getArgCopy() */
 
+
+    // getNumArgs()
     /**
      * @return The number of arguments used in this ColPred.
      *
@@ -1873,7 +1878,9 @@ implements InternalMatrixVocabElementListener {
      *
      * @date 2008/08/11
      */
-    public int getNumArgs() throws SystemErrorException {
+    public int getNumArgs() 
+        throws SystemErrorException
+    {
         final String mName = "ColPred::getNumArgs(): ";
         int numArgs = 0;
 
@@ -1895,8 +1902,11 @@ implements InternalMatrixVocabElementListener {
 
         return numArgs;
 
-    }
+    } /* colPred::getNumArgs() */
 
+
+
+    // registerWithMve()
     /**
      * If the column predicate is defined (i.e. this.itsMveID is not
      * DBIndex.INVALID_ID, register the column predicate with the matrix
@@ -1971,7 +1981,8 @@ implements InternalMatrixVocabElementListener {
 
         return;
 
-    }
+    } /* ColPred::registerWithMve() */
+
 
     /**
      * Replace the n-th argument with the supplied data value.
@@ -1985,7 +1996,8 @@ implements InternalMatrixVocabElementListener {
      * @date 2008/08/23
      */
     public void replaceArg(int n, DataValue newArg)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "Predicate::replaceArg(n, newArg): ";
         int i;
         int numArgs;
@@ -2063,7 +2075,8 @@ implements InternalMatrixVocabElementListener {
 
         return;
 
-    }
+    } /* ColPred::replaceArg() */
+
 
     // updateForMVEDefChange()
     /**
@@ -3308,11 +3321,8 @@ implements InternalMatrixVocabElementListener {
                 cpfa = (ColPredFormalArg)fa;
 
                 if ( ! ( ( arg instanceof ColPredDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3342,11 +3352,8 @@ implements InternalMatrixVocabElementListener {
                 ffa = (FloatFormalArg)fa;
 
                 if ( ! ( ( arg instanceof FloatDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3390,11 +3397,8 @@ implements InternalMatrixVocabElementListener {
                 ifa = (IntFormalArg)fa;
 
                 if ( ! ( ( arg instanceof IntDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3438,12 +3442,13 @@ implements InternalMatrixVocabElementListener {
                 nfa = (NominalFormalArg)fa;
 
                 if ( ! ( ( arg instanceof NominalDataValue ) ||
+                         ( arg instanceof QueryVarDataValue ) ||
                          ( arg instanceof UndefinedDataValue )
                        )
                    )
                 {
                     throw new SystemErrorException(mName + "Arg " +
-                            "type mismatch: nominaal DV, or " +
+                            "type mismatch: nominal DV, query var DV, or " +
                             "undefined DV expected.");
                 }
 
@@ -3460,9 +3465,7 @@ implements InternalMatrixVocabElementListener {
                     if ( ( ndv.getSubRange() ) &&
                          ( ndv.getItsValue() != null ) )
                     {
-                        if ( ( ! nfa.approved(ndv.getItsValue()) ) &&
-                             ( ( ! this.queryVarOK ) ||
-                               ( ! ndv.isQueryVar() ) ) )
+                        if ( ! nfa.approved(ndv.getItsValue()) ) 
                         {
                             throw new SystemErrorException(mName +
                                 "ndv.getItsValue() out of range.");
@@ -3475,11 +3478,8 @@ implements InternalMatrixVocabElementListener {
                 pfa = (PredFormalArg)fa;
 
                 if ( ! ( ( arg instanceof PredDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3523,11 +3523,8 @@ implements InternalMatrixVocabElementListener {
                 tsfa = (TimeStampFormalArg)fa;
 
                 if ( ! ( ( arg instanceof TimeStampDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3569,11 +3566,8 @@ implements InternalMatrixVocabElementListener {
 
             case QUOTE_STRING:
                 if ( ! ( ( arg instanceof QuoteStringDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3594,11 +3588,8 @@ implements InternalMatrixVocabElementListener {
 
             case TEXT:
                 if ( ! ( ( arg instanceof TextStringDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3621,6 +3612,7 @@ implements InternalMatrixVocabElementListener {
                               ( arg instanceof NominalDataValue ) ||
                               ( arg instanceof PredDataValue ) ||
                               ( arg instanceof TimeStampDataValue ) ||
+                              ( arg instanceof QueryVarDataValue ) ||
                               ( arg instanceof QuoteStringDataValue ) ||
                               ( arg instanceof UndefinedDataValue ) ) )
                 {
@@ -3987,11 +3979,8 @@ implements InternalMatrixVocabElementListener {
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof ColPredDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue )
                          )
                      )
                    )
@@ -4011,11 +4000,8 @@ implements InternalMatrixVocabElementListener {
                 }
 
                 if ( ! ( ( newArg instanceof ColPredDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -4081,11 +4067,8 @@ implements InternalMatrixVocabElementListener {
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof FloatDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) 
                          )
                        )
                    )
@@ -4105,11 +4088,8 @@ implements InternalMatrixVocabElementListener {
                 }
 
                 if ( ! ( ( newArg instanceof FloatDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -4156,11 +4136,8 @@ implements InternalMatrixVocabElementListener {
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof IntDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) 
                          )
                        )
                    )
@@ -4180,11 +4157,8 @@ implements InternalMatrixVocabElementListener {
                 }
 
                 if ( ! ( ( newArg instanceof IntDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -4231,23 +4205,25 @@ implements InternalMatrixVocabElementListener {
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof NominalDataValue ) ||
-                         ( oldArg instanceof UndefinedDataValue )
-                       )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue )
+                         )
                      )
                    )
                 {
                     throw new SystemErrorException(mName + "Old arg " +
-                            "type mismatch: nominal DV, or " +
+                            "type mismatch: nominal DV, query var DV, or " +
                             "undefined DV expected.");
                 }
 
                 if ( ! ( ( newArg instanceof NominalDataValue ) ||
+                         ( newArg instanceof QueryVarDataValue ) ||
                          ( newArg instanceof UndefinedDataValue )
                        )
                    )
                 {
                     throw new SystemErrorException(mName + "New arg " +
-                            "type mismatch: nominaal DV, or " +
+                            "type mismatch: nominaal DV, query var DV, or " +
                             "undefined DV expected.");
                 }
 
@@ -4264,9 +4240,7 @@ implements InternalMatrixVocabElementListener {
                     if ( ( new_ndv.getSubRange() ) &&
                          ( new_ndv.getItsValue() != null ) )
                     {
-                        if ( ( ! nfa.approved(new_ndv.getItsValue()) ) &&
-                             ( ( ! this.queryVarOK ) ||
-                               ( ! new_ndv.isQueryVar() ) ) )
+                        if ( ! nfa.approved(new_ndv.getItsValue()) ) 
                         {
                             throw new SystemErrorException(mName +
                                 "new_ndv.getItsValue() out of range.");
@@ -4280,11 +4254,8 @@ implements InternalMatrixVocabElementListener {
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof PredDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) 
                        )
                      )
                    )
@@ -4304,11 +4275,8 @@ implements InternalMatrixVocabElementListener {
                 }
 
                 if ( ! ( ( newArg instanceof PredDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -4391,11 +4359,8 @@ implements InternalMatrixVocabElementListener {
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof TimeStampDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) 
                          )
                        )
                    )
@@ -4415,11 +4380,8 @@ implements InternalMatrixVocabElementListener {
                 }
 
                 if ( ! ( ( newArg instanceof TimeStampDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue )
                        )
                    )
                 {
@@ -4471,11 +4433,8 @@ implements InternalMatrixVocabElementListener {
             case QUOTE_STRING:
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof QuoteStringDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) 
                          )
                      )
                    )
@@ -4495,11 +4454,8 @@ implements InternalMatrixVocabElementListener {
                 }
 
                 if ( ! ( ( newArg instanceof QuoteStringDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue )
                        )
                    )
                 {
@@ -4528,11 +4484,8 @@ implements InternalMatrixVocabElementListener {
             case TEXT:
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof TextStringDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue )
                          )
                      )
                    )
@@ -4552,11 +4505,8 @@ implements InternalMatrixVocabElementListener {
                 }
 
                 if ( ! ( ( newArg instanceof TextStringDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue )
                        )
                    )
                 {
@@ -4597,6 +4547,7 @@ implements InternalMatrixVocabElementListener {
                               ( newArg instanceof NominalDataValue ) ||
                               ( newArg instanceof PredDataValue ) ||
                               ( newArg instanceof TimeStampDataValue ) ||
+                              ( newArg instanceof QueryVarDataValue ) ||
                               ( newArg instanceof QuoteStringDataValue ) ||
                               ( newArg instanceof UndefinedDataValue ) ) )
                 {
