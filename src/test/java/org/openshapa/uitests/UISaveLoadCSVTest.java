@@ -91,7 +91,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         // 3. Check that CSV file is correct
         // Please note: This assumes that saving was working on 05-Aug-2009
         File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
-        assertTrue(areFilesSame(testCSV, bug541SavedCSV));
+        assertTrue(FileTester.areFilesSame(testCSV, bug541SavedCSV));
     }*/
 
     /**
@@ -152,8 +152,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         }
 
         // 3. Check that CSV file is correct
-        File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
-        assertTrue(FileTester.areFilesSame(testOutputCSV, bug541SavedCSV));
+        assertTrue(FileTester.areFilesSame(testOutputCSV, savedCSV));
         window.dispose();
     }
 
@@ -177,5 +176,4 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         this.testLoad("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
     }
 
-    
 }

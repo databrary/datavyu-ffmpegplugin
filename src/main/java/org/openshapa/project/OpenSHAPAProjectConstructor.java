@@ -48,7 +48,7 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             vs.setFilePath((String)values.get("feed"));
             vs.setPluginName((String)values.get("plugin"));
             // WARNING: SnakeYAML refuses to parse this as a Long.
-            vs.setOffset((Integer)values.get("offset"));
+            vs.setOffset(Long.parseLong((String)values.get("offset")));
             return vs;
         }
         

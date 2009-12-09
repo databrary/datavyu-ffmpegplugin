@@ -20,14 +20,6 @@
         )
         ( SPREADSHEET-VARIABLE-DECLARATIONS>
           (
-            ( |really a matrix|
-              (
-                ( TYPE> <<MATRIX>> )
-                ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val1>| |<val2>| ) )
-                ( COLUMN-WIDTH> 125 )
-              )
-            )
             ( |fixed len matrix|
               (
                 ( TYPE> <<MATRIX>> )
@@ -52,19 +44,18 @@
                 ( COLUMN-WIDTH> 125 )
               )
             )
+            ( |really a matrix|
+              (
+                ( TYPE> <<MATRIX>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val1>| |<val2>| ) )
+                ( COLUMN-WIDTH> 125 )
+              )
+            )
           )
         )
         ( SPREADSHEET-VARIABLE-DEFINITIONS>
           (
-            ( |really a matrix|
-              (
-                ( CELLS>
-                  (
-                  )
-                )
-                ( VOCAB> ( ) )
-              )
-            )
             ( |fixed len matrix|
               (
                 ( CELLS>
@@ -88,6 +79,15 @@
                   (
                   )
                 )
+              )
+            )
+            ( |really a matrix|
+              (
+                ( CELLS>
+                  (
+                  )
+                )
+                ( VOCAB> ( ) )
               )
             )
           )

@@ -18,14 +18,6 @@
         )
         ( SPREADSHEET-VARIABLE-DECLARATIONS>
           (
-            ( |svar 4|
-              (
-                ( TYPE> <<INTEGER>> )
-                ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
-                ( COLUMN-WIDTH> 200 )
-              )
-            )
             ( |svar 2|
               (
                 ( TYPE> <<INTEGER>> )
@@ -58,18 +50,18 @@
                 ( COLUMN-WIDTH> 125 )
               )
             )
+            ( |svar 4|
+              (
+                ( TYPE> <<INTEGER>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
           )
         )
         ( SPREADSHEET-VARIABLE-DEFINITIONS>
           (
-            ( |svar 4|
-              (
-                ( CELLS>
-                  (
-                  )
-                )
-              )
-            )
             ( |svar 2|
               (
                 ( CELLS>
@@ -95,6 +87,14 @@
               )
             )
             ( |svar 1|
+              (
+                ( CELLS>
+                  (
+                  )
+                )
+              )
+            )
+            ( |svar 4|
               (
                 ( CELLS>
                   (

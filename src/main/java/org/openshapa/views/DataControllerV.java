@@ -20,6 +20,9 @@ import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
+import org.openshapa.event.TracksControllerEvent;
+import org.openshapa.event.TracksControllerListener;
+import org.openshapa.graphics.event.NeedleEvent;
 import org.openshapa.project.Project;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
@@ -32,7 +35,7 @@ import org.openshapa.views.continuous.PluginManager;
  * Quicktime video controller.
  */
 public final class DataControllerV extends OpenSHAPADialog
-        implements ClockListener, DataController {
+        implements ClockListener, TracksControllerListener, DataController {
 
     //--------------------------------------------------------------------------
     // [static]
@@ -170,6 +173,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         tracksControllerV = new TracksControllerV();
         tracksPanel.add(tracksControllerV.getTracksPanel());
+        tracksControllerV.addTracksControllerListener(this);
 
 	this.showTracksPanel(false);
     }
@@ -872,6 +876,14 @@ public final class DataControllerV extends OpenSHAPADialog
         this.tracksPanel.setVisible(show);
         this.tracksPanel.repaint();
         this.validate();
+    }
+
+    public void tracksControllerChanged(TracksControllerEvent e) {
+        NeedleEvent needleEvent = e.getNeedleEvent();
+        this.clockStop(needleEvent.getTime());
+        this.clockStep(needleEvent.getTime());
+        this.setCurrentTime(needleEvent.getTime());
+        clock.setTime(needleEvent.getTime());
     }
 
     //--------------------------------------------------------------------------

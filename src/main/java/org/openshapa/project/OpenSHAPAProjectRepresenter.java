@@ -44,7 +44,7 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             Map<String, Object> map = new TreeMap<String, Object>();
             map.put("feed", viewerSetting.getFilePath());
             map.put("plugin", viewerSetting.getPluginName());
-            map.put("offset", viewerSetting.getOffset());
+            map.put("offset", new Long(viewerSetting.getOffset()).toString());
             return representMapping("!vs", map, Boolean.FALSE);
         }
     }

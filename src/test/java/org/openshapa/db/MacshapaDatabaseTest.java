@@ -236,72 +236,73 @@ public class MacshapaDatabaseTest {
                         "purposes of demonstrating the API.) " +
           "((VocabList) " +
             "(vl_contents: " +
-              "(previnstbt(<base-var>, <predecessor-var>), " +
-               "cmean(<val>), " +
-               "cmax(<val>), " +
-               "previnstbo(<base-var>, <predecessor-var>), " +
-               "cmin(<val>), " +
+              "(previnstbo(<base-var>, <predecessor-var>), " +
+               "cmean(<val>), cmax(<val>), " +
                "nextt(<base-var>, <successor-var>), " +
+               "cmin(<val>), " +
+               "nexto(<base-var>, <successor-var>), " +
                "deselect(<var>), " +
                "select(<var>), " +
-               "nexto(<base-var>, <successor-var>), " +
-               "delete(<var>), " +
                "nextinstt(<base-var>, <successor-var>), " +
+               "delete(<var>), " +
+               "nextinsto(<base-var>, <successor-var>), " +
                "modify(<var>), " +
                "sum(<addend>), " +
-               "nextinsto(<base-var>, <successor-var>), " +
-               "insert(<var>), " +
                "nextinstbt(<base-var>, <successor-var>), " +
-               "count(<form>), " +
+               "insert(<var>), " +
                "nextinstbo(<base-var>, <successor-var>), " +
+               "count(<form>), " +
                "during3(<base-var>, <contemporary-var>), " +
-               "print(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "during2(<base-var>, <contemporary-var>), " +
-               "isempty(<arg>), " +
+               "print(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "during1(<base-var>, <contemporary-var>), " +
+               "isempty(<arg>), " +
                "ispred(<arg>), " +
+               "beforet(<base-var>, <predecessor-var>, <min-time>, <max-time>), " +
                "istext(<arg>), " +
                "isqstring(<arg>), " +
-               "beforet(<base-var>, <predecessor-var>, <min-time>, <max-time>), " +
                "isnominal(<arg>), " +
-               "isfloat(<arg>), " +
                "beforeo(<base-var>, <predecessor-var>, <min-ord>, <max-ord>), " +
-               "istime(<arg>), isinteger(<arg>), " +
-               "selected(<var>), " +
+               "isfloat(<arg>), " +
+               "istime(<arg>), " +
                "aftert(<base-var>, <successor-var>, <min-time>, <max-time>), " +
-               "substring(<substr>, <string>), " +
+               "isinteger(<arg>), " +
+               "selected(<var>), " +
                "aftero(<base-var>, <successor-var>, <min-ord>, <max-ord>), " +
-               "ne(<x>, <y>), " +
+               "substring(<substr>, <string>), " +
                "rem(<x>, <y>), " +
-               "eq(<x>, <y>), " +
+               "ne(<x>, <y>), " +
                "mod(<x>, <y>), " +
-               "ge(<x>, <y>), " +
+               "eq(<x>, <y>), " +
                "abs(<x>), " +
-               "le(<x>, <y>), " +
+               "ge(<x>, <y>), " +
                "atan(<x>), " +
                "acos(<x>), " +
-               "gt(<x>, <y>), " +
+               "le(<x>, <y>), " +
                "asin(<x>), " +
-               "lt(<x>, <y>), " +
+               "gt(<x>, <y>), " +
                "tan(<x>), " +
                "cos(<x>), " +
-               "assign(<query-var>, <val>), " +
+               "lt(<x>, <y>), " +
                "sin(<x>), " +
-               "not(<arg1>), " +
+               "assign(<query-var>, <val>), " +
                "concatq(<str1>, <str2>), " +
-               "concat(<str1>, <str2>), " +
-               "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+               "not(<arg1>), " +
+               "concat(<str1>, " +
+               "<str2>), " +
                "min(<x>, <y>), " +
+               "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "max(<x>, <y>), " +
                "prevt(<base-var>, <predecessor-var>), " +
                "clear(<void>), " +
                "prevo(<base-var>, <predecessor-var>), " +
-               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "minus(<x>, <y>), " +
                "previnstt(<base-var>, <predecessor-var>), " +
-               "query(<condition>, <action>), " +
-               "divide(<x>, <y>), " +
+               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+               "plus(<x>, <y>), " +
                "previnsto(<base-var>, <predecessor-var>), " +
+               "query(<condition>, <action>), divide(<x>, <y>), " +
+               "previnstbt(<base-var>, <predecessor-var>), " +
                "rule(<condition>, <action>), " +
                "times(<x>, <y>)))) " +
           "((ColumnList) (cl_contents: ())))";
@@ -314,11 +315,11 @@ public class MacshapaDatabaseTest {
         // marked as system.
         String expectedString1 =
         "(API test 1 " +
-          "(Description: This is a test MacSHAPA database created for purposes of demonstrating the API.) " +
+          "(Description: This is a test MacSHAPA database created for " +
+                        "purposes of demonstrating the API.) " +
           "((VocabList) " +
             "(vl_contents: " +
-              "(previnstbt(<base-var>, <predecessor-var>), " +
-               "previnstbo(<base-var>, <predecessor-var>), " +
+              "(previnstbo(<base-var>, <predecessor-var>), " +
                "nextt(<base-var>, <successor-var>), " +
                "nexto(<base-var>, <successor-var>), " +
                "nextinstt(<base-var>, <successor-var>), " +
@@ -347,6 +348,7 @@ public class MacshapaDatabaseTest {
                "max(<x>, <y>), " +
                "clear(<void>), " +
                "minus(<x>, <y>), " +
+               "plus(<x>, <y>), " +
                "divide(<x>, <y>), " +
                "times(<x>, <y>), " +
                "cmean(<val>), " +
@@ -373,28 +375,30 @@ public class MacshapaDatabaseTest {
                "ne(<x>, <y>), " +
                "eq(<x>, <y>), " +
                "ge(<x>, <y>), " +
+               "text data column(<val>), " +
                "le(<x>, <y>), " +
-               "text data column(<val>), " +    // this is a matrix vocab element
-               "gt(<x>, <y>), lt(<x>, <y>), " +
-               "nominal data column(<val>), " + // this is a matrix vocab element
+               "gt(<x>, <y>), " +
+               "nominal data column(<val>), " +
+               "lt(<x>, <y>), " +
                "assign(<query-var>, <val>), " +
                "not(<arg1>), " +
-               "int data column(<val>), " +     // this is a matrix vocab element
+               "int data column(<val>), " +
                "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
-               "float data column(<val>), " +   // this is a matrix vocab element
+               "float data column(<val>), " +
                "prevt(<base-var>, <predecessor-var>), " +
-               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevo(<base-var>, <predecessor-var>), " +
-               "query(<condition>, <action>), " +
+               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "previnstt(<base-var>, <predecessor-var>), " +
+               "query(<condition>, <action>), " +
+               "previnsto(<base-var>, <predecessor-var>), " +
                "rule(<condition>, <action>), " +
-               "previnsto(<base-var>, <predecessor-var>)))) " +
+               "previnstbt(<base-var>, <predecessor-var>)))) " +
           "((ColumnList) " +
             "(cl_contents: " +
-              "((text data column, ()), " +
-               "(int data column, ()), " +
+              "((int data column, ()), " +
                "(nominal data column, ()), " +
-               "(float data column, ())))))";
+               "(float data column, ()), " +
+               "(text data column, ())))))";
         // This is the database after we have changed the names of the new
         // columns.  We also marked some of the collumns as hidden, but this
         // doesn't show in db.toString(), and we really don't want to mess
@@ -405,84 +409,85 @@ public class MacshapaDatabaseTest {
           "(Description: This is a test MacSHAPA database created for purposes of demonstrating the API.) " +
           "((VocabList) " +
             "(vl_contents: " +
-              "(previnstbt(<base-var>, <predecessor-var>), " +
-               "previnstbo(<base-var>, <predecessor-var>), " +
-               "nextt(<base-var>, <successor-var>), " +
-               "nexto(<base-var>, <successor-var>), " +
-               "nextinstt(<base-var>, <successor-var>), " +
-               "nextinsto(<base-var>, <successor-var>), " +
-               "nextinstbt(<base-var>, <successor-var>), " +
-               "nextinstbo(<base-var>, <successor-var>), " +
-               "during3(<base-var>, <contemporary-var>), " +
-               "during2(<base-var>, <contemporary-var>), " +
-               "during1(<base-var>, <contemporary-var>), " +
-               "beforet(<base-var>, <predecessor-var>, <min-time>, <max-time>), " +
-               "beforeo(<base-var>, <predecessor-var>, <min-ord>, <max-ord>), " +
-               "aftert(<base-var>, <successor-var>, <min-time>, <max-time>), " +
-               "aftero(<base-var>, <successor-var>, <min-ord>, <max-ord>), " +
-               "rem(<x>, <y>), " +
-               "mod(<x>, <y>), " +
-               "abs(<x>), " +
-               "atan(<x>), " +
-               "acos(<x>), " +
-               "asin(<x>), " +
-               "tan(<x>), " +
-               "cos(<x>), " +
-               "sin(<x>), " +
-               "concatq(<str1>, <str2>), " +
-               "concat(<str1>, <str2>), " +
-               "min(<x>, <y>), " +
-               "max(<x>, <y>), " +
-               "clear(<void>), " +
-               "minus(<x>, <y>), " +
-               "divide(<x>, <y>), " +
-               "times(<x>, <y>), " +
-               "cmean(<val>), " +
-               "cmax(<val>), " +
-               "cmin(<val>), " +
-               "deselect(<var>), " +
-               "select(<var>), " +
-               "delete(<var>), " +
-               "modify(<var>), " +
-               "sum(<addend>), " +
-               "insert(<var>), " +
-               "count(<form>), " +
-               "print(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
-               "isempty(<arg>), " +
-               "ispred(<arg>), " +
-               "istext(<arg>), " +
-               "isqstring(<arg>), " +
-               "isnominal(<arg>), " +
-               "isfloat(<arg>), " +
-               "istime(<arg>), " +
-               "isinteger(<arg>), " +
-               "selected(<var>), " +
-               "substring(<substr>, <string>), " +
-               "ne(<x>, <y>), " +
-               "eq(<x>, <y>), " +
-               "ge(<x>, <y>), " +
-               "le(<x>, <y>), " +
-               "text_data_column(<val>), " +    // this is a matrix vocab element
-               "gt(<x>, <y>), lt(<x>, <y>), " +
-               "nominal_data_column(<val>), " + // this is a matrix vocab element
-               "assign(<query-var>, <val>), " +
-               "not(<arg1>), " +
-               "int_data_column(<val>), " +     // this is a matrix vocab element
-               "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
-               "float_data_column(<val>), " +   // this is a matrix vocab element
-               "prevt(<base-var>, <predecessor-var>), " +
-               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
-               "prevo(<base-var>, <predecessor-var>), " +
-               "query(<condition>, <action>), " +
-               "previnstt(<base-var>, <predecessor-var>), " +
-               "rule(<condition>, <action>), " +
-               "previnsto(<base-var>, <predecessor-var>)))) " +
+              "(previnstbo(<base-var>, <predecessor-var>), " +
+              "nextt(<base-var>, <successor-var>), " +
+              "nexto(<base-var>, <successor-var>), " +
+              "nextinstt(<base-var>, <successor-var>), " +
+              "nextinsto(<base-var>, <successor-var>), " +
+              "nextinstbt(<base-var>, <successor-var>), " +
+              "nextinstbo(<base-var>, <successor-var>), " +
+              "during3(<base-var>, <contemporary-var>), " +
+              "during2(<base-var>, <contemporary-var>), " +
+              "during1(<base-var>, <contemporary-var>), " +
+              "beforet(<base-var>, <predecessor-var>, <min-time>, <max-time>), " +
+              "beforeo(<base-var>, <predecessor-var>, <min-ord>, <max-ord>), " +
+              "aftert(<base-var>, <successor-var>, <min-time>, <max-time>), " +
+              "aftero(<base-var>, <successor-var>, <min-ord>, <max-ord>), " +
+              "rem(<x>, <y>), " +
+              "mod(<x>, <y>), " +
+              "abs(<x>), " +
+              "atan(<x>), " +
+              "acos(<x>), " +
+              "asin(<x>), " +
+              "tan(<x>), " +
+              "cos(<x>), " +
+              "sin(<x>), " +
+              "concatq(<str1>, <str2>), " +
+              "concat(<str1>, <str2>), " +
+              "min(<x>, <y>), " +
+              "max(<x>, <y>), " +
+              "clear(<void>), " +
+              "minus(<x>, <y>), " +
+              "plus(<x>, <y>), " +
+              "divide(<x>, <y>), " +
+              "times(<x>, <y>), " +
+              "cmean(<val>), " +
+              "cmax(<val>), " +
+              "cmin(<val>), " +
+              "deselect(<var>), " +
+              "select(<var>), " +
+              "delete(<var>), " +
+              "modify(<var>), " +
+              "sum(<addend>), " +
+              "insert(<var>), " +
+              "count(<form>), " +
+              "print(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+              "isempty(<arg>), " +
+              "ispred(<arg>), " +
+              "istext(<arg>), " +
+              "isqstring(<arg>), " +
+              "isnominal(<arg>), " +
+              "isfloat(<arg>), " +
+              "istime(<arg>), " +
+              "isinteger(<arg>), " +
+              "selected(<var>), " +
+              "substring(<substr>, <string>), ne(<x>, <y>), " +
+              "eq(<x>, <y>), " +
+              "ge(<x>, <y>), " +
+              "text_data_column(<val>), " +
+              "le(<x>, <y>), " +
+              "gt(<x>, <y>), " +
+              "nominal_data_column(<val>), " +
+              "lt(<x>, <y>), " +
+              "assign(<query-var>, <val>), " +
+              "not(<arg1>), " +
+              "int_data_column(<val>), " +
+              "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+              "float_data_column(<val>), " +
+              "prevt(<base-var>, <predecessor-var>), " +
+              "prevo(<base-var>, <predecessor-var>), " +
+              "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+              "previnstt(<base-var>, <predecessor-var>), " +
+              "query(<condition>, <action>), " +
+              "previnsto(<base-var>, <predecessor-var>), " +
+              "rule(<condition>, <action>), " +
+              "previnstbt(<base-var>, <predecessor-var>)))) " +
           "((ColumnList) " +
             "(cl_contents: " +
-              "((text_data_column, ()), " +
-               "(int_data_column, ()), " +
+              "((int_data_column, ()), " +
                "(nominal_data_column, ()), " +
-               "(float_data_column, ())))))";
+               "(float_data_column, ()), " +
+               "(text_data_column, ())))))";
         // This is a toString() dump of fdc after we have added three cells
         // with temporal ording off.
         // Note that a toString dump of just a data column is not available
@@ -575,109 +580,11 @@ public class MacshapaDatabaseTest {
         // This is a toString dump of the database before column deletions
         String expectedString12 =
         "(API test 1 " +
-          "(Description: This is a test MacSHAPA database created for purposes of demonstrating the API.) " +
+          "(Description: This is a test MacSHAPA database created for " +
+                        "purposes of demonstrating the API.) " +
           "((VocabList) " +
             "(vl_contents: " +
-              "(previnstbt(<base-var>, <predecessor-var>), " +
-               "previnstbo(<base-var>, <predecessor-var>), " +
-               "nextt(<base-var>, <successor-var>), " +
-               "nexto(<base-var>, <successor-var>), " +
-               "nextinstt(<base-var>, <successor-var>), " +
-               "nextinsto(<base-var>, <successor-var>), " +
-               "nextinstbt(<base-var>, <successor-var>), " +
-               "nextinstbo(<base-var>, <successor-var>), " +
-               "during3(<base-var>, <contemporary-var>), " +
-               "during2(<base-var>, <contemporary-var>), " +
-               "during1(<base-var>, <contemporary-var>), " +
-               "beforet(<base-var>, <predecessor-var>, <min-time>, <max-time>), " +
-               "beforeo(<base-var>, <predecessor-var>, <min-ord>, <max-ord>), " +
-               "aftert(<base-var>, <successor-var>, <min-time>, <max-time>), " +
-               "aftero(<base-var>, <successor-var>, <min-ord>, <max-ord>), " +
-               "rem(<x>, <y>), " +
-               "mod(<x>, <y>), " +
-               "abs(<x>), " +
-               "atan(<x>), " +
-               "acos(<x>), " +
-               "asin(<x>), " +
-               "tan(<x>), " +
-               "cos(<x>), " +
-               "sin(<x>), " +
-               "concatq(<str1>, <str2>), " +
-               "concat(<str1>, <str2>), min(<x>, <y>), " +
-               "max(<x>, <y>), " +
-               "clear(<void>), " +
-               "minus(<x>, <y>), " +
-               "divide(<x>, <y>), " +
-               "times(<x>, <y>), " +
-               "cmean(<val>), " +
-               "cmax(<val>), " +
-               "cmin(<val>), " +
-               "deselect(<var>), " +
-               "select(<var>), " +
-               "delete(<var>), " +
-               "modify(<var>), " +
-               "sum(<addend>), " +
-               "insert(<var>), " +
-               "count(<form>), " +
-               "print(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
-               "isempty(<arg>), " +
-               "ispred(<arg>), " +
-               "istext(<arg>), " +
-               "isqstring(<arg>), " +
-               "isnominal(<arg>), " +
-               "isfloat(<arg>), " +
-               "istime(<arg>), " +
-               "isinteger(<arg>), " +
-               "selected(<var>), " +
-               "substring(<substr>, <string>), " +
-               "ne(<x>, <y>), " +
-               "eq(<x>, <y>), " +
-               "ge(<x>, <y>), " +
-               "le(<x>, <y>), " +
-               "text_data_column(<val>), " +
-               "gt(<x>, <y>), " +
-               "lt(<x>, <y>), " +
-               "nominal_data_column(<val>), " +
-               "assign(<query-var>, <val>), " +
-               "not(<arg1>), " +
-               "int_data_column(<val>), " +
-               "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
-               "float_data_column(<val>), " +
-               "prevt(<base-var>, <predecessor-var>), " +
-               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
-               "prevo(<base-var>, <predecessor-var>), " +
-               "query(<condition>, <action>), " +
-               "previnstt(<base-var>, <predecessor-var>), " +
-               "rule(<condition>, <action>), " +
-               "previnsto(<base-var>, <predecessor-var>)))) " +
-          "((ColumnList) " +
-            "(cl_contents: " +
-              "((text_data_column, ()), " +
-                "(int_data_column, ()), " +
-                "(nominal_data_column, ()), " +
-                "(float_data_column, " +
-                  "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
-                   "(2, 00:00:01:000, 00:00:02:000, (1.000000)), " +
-                   "(3, 00:00:03:000, 00:00:04:000, (3.000000)), " +
-                   "(4, 00:00:04:000, 00:00:05:000, (4.000000)), " +
-                   "(5, 00:00:10:000, 00:00:11:000, (9.000000)), " +
-                   "(6, 00:00:11:000, 00:00:12:000, (10.000000))))))))";
-        // this is a toString dump of the vector returned by db.getColumns()
-        // before any column deletions.
-        String expectedString13 =
-                "[(text_data_column, ()), " +
-                 "(int_data_column, ()), " +
-                 "(nominal_data_column, ()), " +
-                 "(float_data_column, ())]";
-        // this is a toString dump of the database after the deletion of
-        // two columns -- fdc and ndc.
-        String expectedString14 =
-        "(API test 1 " +
-          "(Description: This is a test MacSHAPA database created for purposes of demonstrating the API.) " +
-          "((VocabList) " +
-            "(vl_contents: " +
-              "(previnstbt(<base-var>, <predecessor-var>), " +
-               "previnstbo(<base-var>, <predecessor-var>), " +
+              "(previnstbo(<base-var>, <predecessor-var>), " +
                "nextt(<base-var>, <successor-var>), " +
                "nexto(<base-var>, <successor-var>), " +
                "nextinstt(<base-var>, <successor-var>), " +
@@ -706,6 +613,7 @@ public class MacshapaDatabaseTest {
                "max(<x>, <y>), " +
                "clear(<void>), " +
                "minus(<x>, <y>), " +
+               "plus(<x>, <y>), " +
                "divide(<x>, <y>), " +
                "times(<x>, <y>), " +
                "cmean(<val>), " +
@@ -732,8 +640,108 @@ public class MacshapaDatabaseTest {
                "ne(<x>, <y>), " +
                "eq(<x>, <y>), " +
                "ge(<x>, <y>), " +
-               "le(<x>, <y>), " +
+               "text_data_column(<val>), le(<x>, <y>), " +
+               "gt(<x>, <y>), " +
+               "nominal_data_column(<val>), " +
+               "lt(<x>, <y>), " +
+               "assign(<query-var>, <val>), " +
+               "not(<arg1>), " +
+               "int_data_column(<val>), " +
+               "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+               "float_data_column(<val>), " +
+               "prevt(<base-var>, <predecessor-var>), " +
+               "prevo(<base-var>, <predecessor-var>), " +
+               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+               "previnstt(<base-var>, <predecessor-var>), " +
+               "query(<condition>, <action>), " +
+               "previnsto(<base-var>, <predecessor-var>), " +
+               "rule(<condition>, <action>), " +
+               "previnstbt(<base-var>, <predecessor-var>)))) " +
+          "((ColumnList) " +
+            "(cl_contents: " +
+              "((int_data_column, ()), " +
+               "(nominal_data_column, ()), " +
+               "(float_data_column, " +
+                 "((1, 00:00:00:000, 00:00:01:000, (0.000000)), " +
+                  "(2, 00:00:01:000, 00:00:02:000, (1.000000)), " +
+                  "(3, 00:00:03:000, 00:00:04:000, (3.000000)), " +
+                  "(4, 00:00:04:000, 00:00:05:000, (4.000000)), " +
+                  "(5, 00:00:10:000, 00:00:11:000, (9.000000)), " +
+                  "(6, 00:00:11:000, 00:00:12:000, (10.000000)))), " +
+               "(text_data_column, ())))))";
+        // this is a toString dump of the vector returned by db.getColumns()
+        // before any column deletions.
+        String expectedString13 =
+                "[(int_data_column, ()), " +
+                 "(nominal_data_column, ()), " +
+                 "(float_data_column, ()), " +
+                 "(text_data_column, ())]";
+        // this is a toString dump of the database after the deletion of
+        // two columns -- fdc and ndc.
+        String expectedString14 =
+        "(API test 1 " +
+          "(Description: This is a test MacSHAPA database created for " +
+                         "purposes of demonstrating the API.) " +
+          "((VocabList) " +
+            "(vl_contents: " +
+              "(previnstbo(<base-var>, <predecessor-var>), " +
+               "nextt(<base-var>, <successor-var>), " +
+               "nexto(<base-var>, <successor-var>), " +
+               "nextinstt(<base-var>, <successor-var>), " +
+               "nextinsto(<base-var>, <successor-var>), " +
+               "nextinstbt(<base-var>, <successor-var>), " +
+               "nextinstbo(<base-var>, <successor-var>), " +
+               "during3(<base-var>, <contemporary-var>), " +
+               "during2(<base-var>, <contemporary-var>), " +
+               "during1(<base-var>, <contemporary-var>), " +
+               "beforet(<base-var>, <predecessor-var>, <min-time>, <max-time>), " +
+               "beforeo(<base-var>, <predecessor-var>, <min-ord>, <max-ord>), " +
+               "aftert(<base-var>, <successor-var>, <min-time>, <max-time>), " +
+               "aftero(<base-var>, <successor-var>, <min-ord>, <max-ord>), " +
+               "rem(<x>, <y>), " +
+               "mod(<x>, <y>), " +
+               "abs(<x>), " +
+               "atan(<x>), " +
+               "acos(<x>), " +
+               "asin(<x>), " +
+               "tan(<x>), " +
+               "cos(<x>), " +
+               "sin(<x>), " +
+               "concatq(<str1>, <str2>), " +
+               "concat(<str1>, <str2>), " +
+               "min(<x>, <y>), " +
+               "max(<x>, <y>), " +
+               "clear(<void>), " +
+               "minus(<x>, <y>), " +
+               "plus(<x>, <y>), " +
+               "divide(<x>, <y>), " +
+               "times(<x>, <y>), " +
+               "cmean(<val>), " +
+               "cmax(<val>), " +
+               "cmin(<val>), " +
+               "deselect(<var>), " +
+               "select(<var>), " +
+               "delete(<var>), " +
+               "modify(<var>), " +
+               "sum(<addend>), " +
+               "insert(<var>), " +
+               "count(<form>), " +
+               "print(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+               "isempty(<arg>), " +
+               "ispred(<arg>), " +
+               "istext(<arg>), " +
+               "isqstring(<arg>), " +
+               "isnominal(<arg>), " +
+               "isfloat(<arg>), " +
+               "istime(<arg>), " +
+               "isinteger(<arg>), " +
+               "selected(<var>), " +
+               "substring(<substr>, <string>), " +
+               "ne(<x>, <y>), " +
+               "eq(<x>, <y>), " +
+               "ge(<x>, <y>), " +
                "text_data_column(<val>), " +
+               "le(<x>, <y>), " +
                "gt(<x>, <y>), " +
                "lt(<x>, <y>), " +
                "assign(<query-var>, <val>), " +
@@ -741,19 +749,22 @@ public class MacshapaDatabaseTest {
                "int_data_column(<val>), " +
                "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevt(<base-var>, <predecessor-var>), " +
-               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevo(<base-var>, <predecessor-var>), " +
+               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
+               "previnstt(<base-var>, " +
+               "<predecessor-var>), " +
                "query(<condition>, <action>), " +
-               "previnstt(<base-var>, <predecessor-var>), " +
+               "previnsto(<base-var>, <predecessor-var>), " +
                "rule(<condition>, <action>), " +
-               "previnsto(<base-var>, <predecessor-var>)))) " +
+               "previnstbt(<base-var>, <predecessor-var>)))) " +
           "((ColumnList) " +
             "(cl_contents: " +
-              "((text_data_column, ()), " +
-               "(int_data_column, ())))))";
+              "((int_data_column, ()), " +
+               "(text_data_column, ())))))";
         // this is a toString dump of the vector returned by db.getColumns()
         // after the deletion of two columns -- fdc and ndc.
-        String expectedString15 = "[(text_data_column, ()), (int_data_column, ())]";
+        String expectedString15 =
+                "[(int_data_column, ()), (text_data_column, ())]";
         // this is a toString dump of the database after the adding the fdc2
         // column and appending several cells to tdc.
         String expectedString16 =
@@ -761,8 +772,7 @@ public class MacshapaDatabaseTest {
           "(Description: This is a test MacSHAPA database created for purposes of demonstrating the API.) " +
           "((VocabList) " +
             "(vl_contents: " +
-              "(previnstbt(<base-var>, <predecessor-var>), " +
-               "previnstbo(<base-var>, <predecessor-var>), " +
+              "(previnstbo(<base-var>, <predecessor-var>), " +
                "nextt(<base-var>, <successor-var>), " +
                "nexto(<base-var>, <successor-var>), " +
                "nextinstt(<base-var>, <successor-var>), " +
@@ -791,6 +801,7 @@ public class MacshapaDatabaseTest {
                "max(<x>, <y>), " +
                "clear(<void>), " +
                "minus(<x>, <y>), " +
+               "plus(<x>, <y>), " +
                "divide(<x>, <y>), " +
                "times(<x>, <y>), " +
                "cmean(<val>), " +
@@ -803,9 +814,9 @@ public class MacshapaDatabaseTest {
                "sum(<addend>), " +
                "insert(<var>), " +
                "count(<form>), " +
+               "float_data_col_2(<val>), " +
                "print(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "isempty(<arg>), " +
-               "float_data_col_2(<val>), " +
                "ispred(<arg>), " +
                "istext(<arg>), " +
                "isqstring(<arg>), " +
@@ -818,8 +829,8 @@ public class MacshapaDatabaseTest {
                "ne(<x>, <y>), " +
                "eq(<x>, <y>), " +
                "ge(<x>, <y>), " +
-               "le(<x>, <y>), " +
                "text_data_column(<val>), " +
+               "le(<x>, <y>), " +
                "gt(<x>, <y>), " +
                "lt(<x>, <y>), " +
                "assign(<query-var>, <val>), " +
@@ -827,33 +838,34 @@ public class MacshapaDatabaseTest {
                "int_data_column(<val>), " +
                "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevt(<base-var>, <predecessor-var>), " +
-               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevo(<base-var>, <predecessor-var>), " +
-               "query(<condition>, <action>), " +
+               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "previnstt(<base-var>, <predecessor-var>), " +
+               "query(<condition>, <action>), " +
+               "previnsto(<base-var>, <predecessor-var>), " +
                "rule(<condition>, <action>), " +
-               "previnsto(<base-var>, <predecessor-var>)))) " +
+               "previnstbt(<base-var>, <predecessor-var>)))) " +
           "((ColumnList) " +
             "(cl_contents: " +
-              "((text_data_column, " +
-                "((1, 00:00:03:000, 00:00:04:000, (three)), " +
-                 "(2, 00:00:02:000, 00:00:03:000, (two)), " +
-                 "(3, 00:00:01:000, 00:00:02:000, (one)))), " +
-               "(float_data_col_2, ()), " +
-               "(int_data_column, ())))))";
+              "((int_data_column, ()), " +
+               "(text_data_column, " +
+                 "((1, 00:00:03:000, 00:00:04:000, (three)), " +
+                  "(2, 00:00:02:000, 00:00:03:000, (two)), " +
+                  "(3, 00:00:01:000, 00:00:02:000, (one)))), " +
+               "(float_data_col_2, ())))))";
         // this is a toString() dump of the vector returned by db.getColumns()
         // after the insertion of fdc2.
         String expectedString17 =
-                "[(text_data_column, ()), " +
-                 "(float_data_col_2, ()), " +
-                 "(int_data_column, ())]";
+                "[(int_data_column, ()), " +
+                 "(text_data_column, ()), " +
+                 "(float_data_col_2, ())]";
         String expectedString18 =
         "(API test 1 " +
-          "(Description: This is a test MacSHAPA database created for purposes of demonstrating the API.) " +
+          "(Description: This is a test MacSHAPA database created for " +
+                        "purposes of demonstrating the API.) " +
           "((VocabList) " +
             "(vl_contents: " +
-              "(previnstbt(<base-var>, <predecessor-var>), " +
-               "previnstbo(<base-var>, <predecessor-var>), " +
+              "(previnstbo(<base-var>, <predecessor-var>), " +
                "nextt(<base-var>, <successor-var>), " +
                "nexto(<base-var>, <successor-var>), " +
                "nextinstt(<base-var>, <successor-var>), " +
@@ -882,6 +894,7 @@ public class MacshapaDatabaseTest {
                "max(<x>, <y>), " +
                "clear(<void>), " +
                "minus(<x>, <y>), " +
+               "plus(<x>, <y>), " +
                "divide(<x>, <y>), " +
                "times(<x>, <y>), " +
                "cmean(<val>), " +
@@ -915,12 +928,13 @@ public class MacshapaDatabaseTest {
                "not(<arg1>), " +
                "and(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevt(<base-var>, <predecessor-var>), " +
-               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "prevo(<base-var>, <predecessor-var>), " +
-               "query(<condition>, <action>), " +
+               "or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>), " +
                "previnstt(<base-var>, <predecessor-var>), " +
+               "query(<condition>, <action>), " +
+               "previnsto(<base-var>, <predecessor-var>), " +
                "rule(<condition>, <action>), " +
-               "previnsto(<base-var>, <predecessor-var>)))) " +
+               "previnstbt(<base-var>, <predecessor-var>)))) " +
           "((ColumnList) (cl_contents: ())))";
         String testStringA = null;
         String testStringB = null;
