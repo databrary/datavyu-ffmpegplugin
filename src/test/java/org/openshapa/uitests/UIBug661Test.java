@@ -50,14 +50,16 @@ public final class UIBug661Test extends UISpecTestCase {
         // 2. Open file in new location
         if (currDirectory == null) {
             WindowInterceptor
-                    .init(menuBar.getMenu("File").getSubMenu("Open...").triggerClick())
+                    .init(menuBar.getMenu("File").getSubMenu("Open...")
+                    .triggerClick())
                     .process(FileChooserHandler.init()
                         .assertIsOpenDialog()
                         .select(openCSV))
                     .run();
         } else {
             WindowInterceptor
-                    .init(menuBar.getMenu("File").getSubMenu("Open...").triggerClick())
+                    .init(menuBar.getMenu("File").getSubMenu("Open...")
+                    .triggerClick())
                     .process(FileChooserHandler.init()
                         .assertIsOpenDialog()
                         .assertCurrentDirEquals(currDirectory)
@@ -68,7 +70,7 @@ public final class UIBug661Test extends UISpecTestCase {
     }
 
     /**
-     * Tests open dialog location
+     * Tests open dialog location.
      * @throws Exception on any error
      */
     public void testOpenDialogLocation() throws Exception {
