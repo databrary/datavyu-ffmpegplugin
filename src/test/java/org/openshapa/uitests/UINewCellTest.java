@@ -75,7 +75,7 @@ public final class UINewCellTest extends UISpecTestCase {
             "!289(", "178.&", "0~~~)",
             "If x?7 then. x? 2 ", "589.138085638", "000389.5",
             "-0.1", "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34",
-            /*"-123"*/};
+            "-123"};
 
     static {
       UISpec4J.setWindowInterceptionTimeLimit(120000);
@@ -224,7 +224,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] expectedTestOutput = {"1.9", "-43.21", "289", "178", "0",
         "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-        "-23.34", "0.34", "12.34"};
+        "-23.34", "0.34", "12.34", "-123"};
 
         createNewVariable(varName, varRadio);
 
@@ -241,7 +241,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] expectedTestOutput = {"1.9", "-43.21", "289", "178", "0",
         "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-        "-23.34", "0.34", "12.34"};
+        "-23.34", "0.34", "12.34", "-123"};
 
         pasteTest(varName, varRadio, floatTestInput, expectedTestOutput);
     }
@@ -404,7 +404,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String [] expectedFloatTestOutput = {"1.9", "-43.21", "289", "178", "0",
         "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-        "-23.34", "0.34", "12.34"};
+        "-23.34", "0.34", "12.34", "-123"};
 
         runStandardTest(varName, floatTestInput,
                 expectedFloatTestOutput, "<float>");
@@ -664,7 +664,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] expectedFloat2TestOutput = {"1.9", "-43.21", "289", "178", "0",
         "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-        "-23.34", "0.34", "12.34"};
+        "-23.34", "0.34", "12.34", "-123"};
 
         int numOfTests = floatTestInput.length;
 
@@ -685,7 +685,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String [] expectedInt2bTempOutput = {"1.9", "-43.21", "289", "178", "0",
         "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-        "-23.34", "0.34", "12.34"};
+        "-23.34", "0.34", "12.34", "-123"};
 
         String [][] expectedInt2bTestOutput =
                 new String [expectedFloat2TestOutput.length]
