@@ -38,7 +38,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
     }
 
     /**
-     * Test saving a database to a CSV file.
+     * Test saving a database to a CSV file with Save As.
      *
      * @throws java.lang.Exception on any error
      */
@@ -46,7 +46,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
 
     Comment test see BugzID:842 for details.
 
-    public void testSavingCSV() throws Exception {
+    public void testSaveAsCSV() throws Exception {
         //Preparation
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
@@ -98,6 +98,68 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
     }*/
 
     /**
+     * Test saving a database to a CSV file with Save.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveCSV() throws Exception {
+        //TODO: Should be modified for other file types once they're ready
+        //Preparation
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
+        assertTrue(demoFile.exists());
+
+        File testCSV = new File(root + "/ui/test-v2-out.csv");
+        assertTrue(testCSV.exists());
+
+        String tempFolder = System.getProperty("java.io.tmpdir");
+        File savedCSV = new File(tempFolder + "/savedCSV.csv");
+        savedCSV.deleteOnExit();
+        if (savedCSV.exists()) {
+            savedCSV.delete();
+        }
+        assertFalse(savedCSV.exists());
+
+        //1. Click save on empty project. Expecting it to act like Save As
+        WindowInterceptor
+                .init(menuBar.getMenu("File").getSubMenu("Save")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsSaveDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(savedCSV))
+                .run();
+
+
+        // 2. Open and run script to populate database
+        WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsOpenDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile))
+                .process(new WindowHandler() {
+                    public Trigger process(Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+        // 2. Save CSV file. Not expecting anything except a save
+        menuBar.getMenu("File").getSubMenu("Save").click();
+
+        // 3. Check that CSV file is correct
+        assertTrue(areFilesSame(testCSV, savedCSV));
+
+        //Close window
+        window.dispose();
+    }
+
+    /**
      * Run a load test for specified input and expected output files.
      *
      * @param inputFile The input CSV file to open before saving.
@@ -137,7 +199,8 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         // 2. Save contents as a seperate CSV file.
         if (savedCSV.exists()) {
             WindowInterceptor
-                .init(menuBar.getMenu("File").getSubMenu("Save As...").triggerClick())
+                .init(menuBar.getMenu("File").getSubMenu("Save As...")
+                .triggerClick())
                 .process(FileChooserHandler.init()
                     .assertIsSaveDialog()
                     .assertAcceptsFilesOnly()
@@ -146,7 +209,8 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
                 .run();
         } else {
             WindowInterceptor
-                .init(menuBar.getMenu("File").getSubMenu("Save As...").triggerClick())
+                .init(menuBar.getMenu("File").getSubMenu("Save As...")
+                .triggerClick())
                 .process(FileChooserHandler.init()
                     .assertIsSaveDialog()
                     .assertAcceptsFilesOnly()
@@ -155,8 +219,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         }
 
         // 3. Check that CSV file is correct
-        File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
-        assertTrue(areFilesSame(testOutputCSV, bug541SavedCSV));
+        assertTrue(areFilesSame(testOutputCSV, savedCSV));
         window.dispose();
     }
 
@@ -165,7 +228,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      *
      * @throws java.lang.Exception on any error
      */
-    
+
     public void testLoadingCSVv1() throws Exception {
         this.testLoad("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
     }
@@ -175,7 +238,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      *
      * @throws java.lang.Exception on any error
      */
-    
+
     public void testLoadingCSVv2() throws Exception {
         this.testLoad("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
     }
@@ -210,5 +273,5 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         }
 
         return true;
-    }   
+    }
 }
