@@ -27,6 +27,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.util.ArrayDirection;
 
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
@@ -110,8 +111,6 @@ public final class SpreadsheetPanel extends JPanel
                        SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
         headerView.add(newVar);
     }
-
-
 
     /**
      * Populate from the database.
@@ -316,6 +315,48 @@ public final class SpreadsheetPanel extends JPanel
            logger.error("Unable to set new cell stop time.", e);
         }
         return selcols;
+    }
+
+    /**
+     * @param dir The direction in which to search for adjacent cells (left or
+     * right).
+     *
+     * @return An indication of the columns adjacent of the current cell
+     * selection,
+     * 0 = no columns to the left of the current cell selection.
+     * 1 = one column to the left of the current cell selection.
+     * 2 = many columns to the left of the current cell selection.
+     */
+    public int getAdjacentSelectedCells(final ArrayDirection dir) {
+        int result = 0;
+
+        try {
+            Vector <DataCell> selectedCells = this.getSelectedCells();
+            Vector <Long> columnOrder = database.getColOrderVector();
+
+            // For each of the selected cells search to see if we have a column
+            // to the left.
+            for (DataCell cell : selectedCells) {
+                for (int i = 0; i < columnOrder.size(); i++) {
+                    if (columnOrder.get(i) == cell.getItsColID()) {
+                        // We have at least one column to the left of the cells.
+                        if ((i + dir.getModifier()) >= 0
+                            && (i + dir.getModifier()) < columnOrder.size()) {
+                            result++;
+                        }
+
+                        // We have many columns to the left of the cells - end.
+                        if (result == 2) {
+                            return result;
+                        }
+                    }
+                }
+            }
+        } catch (SystemErrorException e) {
+            logger.error("Unable to find columns to left of selection", e);
+        }
+
+        return result;
     }
 
     /**

@@ -105,13 +105,11 @@ public final class VocabEditorV extends OpenSHAPADialog {
         }
 
         // Add a pad cell to fill out the bottom of the vertical frame.
-        // verticalFrame.add(new JPanel());
         JPanel holdPanel = new JPanel();
         holdPanel.setBackground(Color.white);
         holdPanel.setLayout(new BorderLayout());
         holdPanel.add(verticalFrame, BorderLayout.NORTH);
         currentVocabList.setViewportView(holdPanel);
-        // jPanel1.add(verticalFrame, BorderLayout.NORTH);
         updateDialogState();
         this.getRootPane().setDefaultButton(okButton);
 
@@ -166,7 +164,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public void addVocabElement(VocabElement ve) throws SystemErrorException {
         // The database dictates that vocab elements must have a single argument
         // add a default to get started.
-        ve.appendFormalArg(new IntFormalArg(db, "<arg0>"));
+        ve.appendFormalArg(new NominalFormalArg(db, "<arg0>"));
 
         VocabElementV vev = new VocabElementV(ve, this);
         vev.setHasChanged(true);
@@ -334,41 +332,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void applyChanges() {
-
-        /* OLD apply:
-        try {
-            for (VocabElementV view : veViewsToDeleteCompletely) {
-                db.removeVE(view.getModel().getID());
-                verticalFrame.remove(view);
-                veViews.remove(view);
-            }
-
-            for (VocabElementV vev : veViews) {
-                if (vev.hasChanged()) {
-
-                    VocabElement ve = vev.getModel();
-                    if (ve.getID() == DBIndex.INVALID_ID) {
-                        VocabList.isValidElement(db.getVocabList(), ve);
-                        long id = db.addVocabElement(ve);
-                        vev.setModel(db.getVocabElement(id));
-
-                    } else {
-                        db.replaceVocabElement(ve);
-                    }
-                    vev.setHasChanged(false);
-                }
-            }
-
-            veViewsToDeleteCompletely.clear();
-            updateDialogState();
-
-        } catch (SystemErrorException e) {
-            logger.error("Unable to apply vocab changes", e);
-        } catch (LogicErrorException le) {
-            OpenSHAPA.getApplication().showWarningDialog(le);
-        }
-        */
-
         try {
             for (VocabElementV view : veViewsToDeleteCompletely) {
                 db.removeVocabElement(view.getModel().getID());
@@ -639,7 +602,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         getContentPane().add(addArgButton, gridBagConstraints);
 
-        argTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Text", "Nominal", "Integer", "Float" }));
+        argTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Nominal", "Text", "Integer", "Float" }));
         argTypeComboBox.setToolTipText(bundle.getString("argTypeComboBox.tip")); // NOI18N
         argTypeComboBox.setEnabled(false);
         argTypeComboBox.setName("argTypeComboBox"); // NOI18N

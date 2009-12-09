@@ -382,16 +382,27 @@ public abstract class DataValueEditor extends EditorComponent {
     }
 
     /**
+     * Determine if the editor tracker permits sub selections within the
+     * component.
+     *
+     * @return True if permitted to perform sub selection, false otherwise.
+     */
+    @Override
+    public boolean canSubSelect() {
+        return (!this.getModel().isEmpty());
+    }
+
+    /**
      * Override selection to catch if the value is null.
      * @param startClick Start character of the selection.
      * @param endClick End character of the selection.
      */
     @Override
     public final void select(final int startClick, final int endClick) {
-        if (!this.getModel().isEmpty()) {
-            super.select(startClick, endClick);
+        if (this.getModel().isEmpty()) {
+            this.selectAll();
         } else {
-            super.select(0, Integer.MAX_VALUE);
+            super.select(startClick, endClick);
         }
     }
 

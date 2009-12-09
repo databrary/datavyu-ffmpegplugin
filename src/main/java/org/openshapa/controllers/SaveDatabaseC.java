@@ -13,13 +13,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Vector;
-import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
-import org.jdesktop.application.ResourceMap;
+import org.openshapa.db.Database;
 import org.openshapa.db.FormalArgument;
 import org.openshapa.db.MatrixVocabElement;
 import org.openshapa.db.MatrixVocabElement.MatrixType;
+import org.openshapa.db.PredicateVocabElement;
 import org.openshapa.util.FileFilters.MODBFilter;
 
 /**
@@ -36,6 +36,8 @@ public final class SaveDatabaseC {
      * @param destinationFile The destination to use when saving the c
      */
     public SaveDatabaseC(final File destinationFile) {
+        // We bypass any overwrite checks here.
+
         String outputFile = destinationFile.getName().toLowerCase();
         String extension = outputFile.substring(outputFile.lastIndexOf('.'),
                                                 outputFile.length());
@@ -45,6 +47,7 @@ public final class SaveDatabaseC {
         } else if (extension.equals(".odb")) {
             saveAsMacSHAPADB(destinationFile.toString());
         }
+
     }
 
     /**
@@ -57,41 +60,54 @@ public final class SaveDatabaseC {
                          final FileFilter fileFilter) {
 
         String outputFile = destinationFile.toLowerCase();
-        File outFile = new File(outputFile);
 
         if (fileFilter.getClass() == CSVFilter.class) {
-            // BugzID:541 - Don't append ".csv" if the path already contains it.
+            // BugzID:541 - Don't append ".csv" unless needed.
             if (!outputFile.contains(".csv")) {
                 outputFile = destinationFile.concat(".csv");
             }
-            saveAsCSV(outputFile);
 
         } else if (fileFilter.getClass() == MODBFilter.class) {
             // Don't append ".db" if the path already contains it.
             if (!outputFile.contains(".odb")) {
                 outputFile = destinationFile.concat(".odb");
             }
-
-            saveAsMacSHAPADB(outputFile);
         }
 
-        // BugzID:449 - Set filename in spreadsheet window and database to
-        // be the same as the file specified.
-        try {
-            String dbName = outFile.getName().substring(0, outFile.getName()
-                                                           .lastIndexOf('.'));
-            OpenSHAPA.getDatabase().setName(dbName);
-            OpenSHAPA.getDatabase().setSourceFile(outFile);
+        File outFile = new File(outputFile);
 
-            // Update the name of the window to include the name we just
-            // set in the database.
-            JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-            ResourceMap rMap = OpenSHAPA.getApplication().getContext()
-                                        .getResourceMap(OpenSHAPA.class);
-            mainFrame.setTitle(rMap.getString("Application.title")
-                               + " - " + outFile.getName());
-        } catch (SystemErrorException se) {
-            logger.error("Can't set db name to specified file.", se);
+        // Check for existence; if so, confirm overwrite.
+        if ((outFile.exists()
+                && OpenSHAPA.getApplication().overwriteExisting())
+                || !outFile.exists()) {
+
+            if (fileFilter.getClass() == CSVFilter.class) {
+                saveAsCSV(outputFile);
+
+            } else if (fileFilter.getClass() == MODBFilter.class) {
+                saveAsMacSHAPADB(outputFile);
+            }
+
+            // BugzID:449 - Set filename in spreadsheet window and database to
+            // be the same as the file specified.
+            try {
+                String dbName;
+                if (outFile.getName().lastIndexOf('.') != -1) {
+                    dbName = outFile.getName().substring(0, outFile.getName()
+                                                             .lastIndexOf('.'));
+                } else {
+                    dbName = outFile.getName();
+                }
+                OpenSHAPA.getDatabase().setName(dbName);
+                OpenSHAPA.getDatabase().setSourceFile(outFile);
+
+                // Update the name of the window to include the name we just
+                // set in the database.
+                OpenSHAPA.getApplication().updateTitle();
+
+            } catch (SystemErrorException se) {
+                logger.error("Can't set db name to specified file.", se);
+            }
         }
     }
 
@@ -101,10 +117,17 @@ public final class SaveDatabaseC {
      * @param outFile The path of the file to use when writing to disk.
      */
     public void saveAsMacSHAPADB(final String outFile) {
+
         try {
             PrintStream outStream = new PrintStream(outFile);
             OpenSHAPA.getDatabase().toMODBFile(outStream, "\r");
             outStream.close();
+
+            Database db = OpenSHAPA.getDatabase();
+
+            // BugzID:743 - Here we update the GUI to indicate successful save
+            db.saveDatabase();
+
         } catch (FileNotFoundException e) {
             logger.error("Can't write macshapa db file '" + outFile + "'", e);
         } catch (SystemErrorException e) {
@@ -124,8 +147,35 @@ public final class SaveDatabaseC {
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(outFile));
-            Vector<Long> colIds = db.getColOrderVector();
+            // Dump out an identifier for the version of file.
+            out.write("#2");
+            out.newLine();
 
+            // Dump out all the predicates held within the database.
+            Vector<PredicateVocabElement> predicates = db.getPredVEs();
+            if (predicates.size() > 0) {
+                int counter = 0;
+
+                for (PredicateVocabElement pve : predicates) {
+                    out.write(counter + ":" + pve.getName() + "-");
+                    for (int j = 0; j < pve.getNumFormalArgs(); j++) {
+                        FormalArgument fa = pve.getFormalArgCopy(j);
+                        String name = fa.getFargName()
+                                   .substring(1, fa.getFargName().length() - 1);
+                        out.write(name + "|" + fa.getFargType().toString());
+
+                        if (j < pve.getNumFormalArgs() - 1) {
+                            out.write(",");
+                        }
+                    }
+
+                    out.newLine();
+                    counter++;
+                }
+            }
+
+            // Dump out the data from all the columns.
+            Vector<Long> colIds = db.getColOrderVector();
             for (int i = 0; i < colIds.size(); i++) {
                 DataColumn dc = db.getDataColumn(colIds.get(i));
                 boolean isMatrix = false;
@@ -166,6 +216,9 @@ public final class SaveDatabaseC {
                 }
             }
             out.close();
+
+            // BugzID:743 - Here we update the GUI to indicate successful save
+            db.saveDatabase();
 
         } catch (IOException e) {
             logger.error("unable to save database as CSV file", e);

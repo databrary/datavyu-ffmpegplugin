@@ -91,6 +91,16 @@ public abstract class EditorComponent implements ClipboardOwner {
     }
 
     /**
+     * Determine if the editor tracker permits sub selections within the
+     * component.
+     *
+     * @return True if permitted to perform sub selection, false otherwise.
+     */
+    public boolean canSubSelect() {
+        return true;
+    }
+
+    /**
      * Default Constructor.
      */
     public EditorComponent() {
@@ -308,8 +318,7 @@ public abstract class EditorComponent implements ClipboardOwner {
 
             int end = Math.max(startPos, endClick);
             end = Math.min(startPos + editorText.length(), end);
-            parentComp.setCaretPosition(start);
-            parentComp.moveCaretPosition(end);
+            parentComp.select(start, end);
         }
     }
 
@@ -507,9 +516,24 @@ public abstract class EditorComponent implements ClipboardOwner {
             }
         }
 
+        // BugzID:747 - If all we have is preserved chars clear everything.
+        String newValue = cValue.toString();
+        boolean foundNonPreserved = false;
+        for (int i = 0; i < newValue.length(); i++) {
+            if (!isPreserved(newValue.charAt(i))) {
+                foundNonPreserved = true;
+                break;
+            }
+        }
+
         // Set the text for this data value to the new string.
-        this.setText(cValue.toString());
-        this.setCaretPosition(start);
+        if (foundNonPreserved) {
+            this.setText(newValue);
+            this.setCaretPosition(start);
+        } else {
+            this.setText("");
+            this.setCaretPosition(0);
+        }
     }
 
     /**

@@ -29,8 +29,6 @@ implements FocusListener, KeyListener, MouseListener {
     private int preCharCount;
     /** Number of characters after the current editor. */
     private int postCharCount;
-    /** Is the mouse down? */
-    private boolean mouseDown = false;
     /** NoEditor used when there is no sensible current editor. */
     private static final EditorComponent NO_EDITOR = new NoEditor();
     /** Track the key up and down to avoid problem with key repeat. */
@@ -221,14 +219,12 @@ implements FocusListener, KeyListener, MouseListener {
      * @param fe The FocusEvent that triggered this action.
      */
     public void focusGained(final FocusEvent fe) {
-        if (!mouseDown) {
-            if (currentEditor.equals(NO_EDITOR)) {
-                setEditor(findEditor(0), 0, 0);
-            } else {
-                setEditor(currentEditor,
-                          currentEditor.getCaretPosition(),
-                          currentEditor.getCaretPosition());
-            }
+        if (currentEditor.equals(NO_EDITOR)) {
+            setEditor(findEditor(0), 0, 0);
+        } else {
+            setEditor(currentEditor,
+                      currentEditor.getCaretPosition(),
+                      currentEditor.getCaretPosition());
         }
     }
 
@@ -376,7 +372,12 @@ implements FocusListener, KeyListener, MouseListener {
      * @param me The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
-        mouseDown = true;
+        me.consume();
+
+        // BugzID:629 - Prevent users from selecting place holders.
+        if (!currentEditor.canSubSelect()) {
+            currentEditor.selectAll();
+        }
     }
 
     /**
@@ -385,11 +386,12 @@ implements FocusListener, KeyListener, MouseListener {
      * @param me The mouse event that triggered this action.
      */
     public void mouseReleased(final MouseEvent me) {
-        mouseDown = false;
-        int start = textArea.getCaret().getMark();
-        int end = textArea.getCaret().getDot();
-        EditorComponent ed = findEditor(start);
-        this.setEditor(ed, start, end);
+        me.consume();
+
+        // BugzID:629 - Prevent users from selecting place holders.
+        if (!currentEditor.canSubSelect()) {
+            currentEditor.selectAll();
+        }
     }
 
     /**
@@ -402,12 +404,20 @@ implements FocusListener, KeyListener, MouseListener {
             // Triple click selects all text (feature of JTextArea).
             // detect and override behaviour
             currentEditor.selectAll();
+
+        } else {
+            int start = textArea.getCaret().getMark();
+            int end = textArea.getCaret().getDot();
+            EditorComponent ed = findEditor(start);
+            this.setEditor(ed, start, end);
         }
+
+        me.consume();
     }
 
     /**
      * The action to invoke when the mouse enters this component.
-     *
+     *tEdi
      * @param me The mouse event that triggered this action.
      */
     public void mouseEntered(final MouseEvent me) {

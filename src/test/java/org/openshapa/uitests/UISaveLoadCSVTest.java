@@ -12,6 +12,7 @@ import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
+import org.uispec4j.interception.BasicHandler;
 import org.uispec4j.interception.FileChooserHandler;
 import org.uispec4j.interception.WindowHandler;
 
@@ -37,11 +38,15 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
     }
 
     /**
-     * Test saving a database to a CSV file.
+     * Test saving a database to a CSV file with Save As.
      *
      * @throws java.lang.Exception on any error
      */
-    public void testSavingCSV() throws Exception {
+    /*
+
+    Comment test see BugzID:842 for details.
+
+    public void testSaveAsCSV() throws Exception {
         //Preparation
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
@@ -50,7 +55,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
         assertTrue(demoFile.exists());
 
-        File testCSV = new File(root + "/ui/test.csv");
+        File testCSV = new File(root + "/ui/test-v2-out.csv");
         assertTrue(testCSV.exists());
 
         String tempFolder = System.getProperty("java.io.tmpdir");
@@ -90,25 +95,94 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         // Please note: This assumes that saving was working on 05-Aug-2009
         File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
         assertTrue(areFilesSame(testCSV, bug541SavedCSV));
-    }
+    }*/
 
     /**
-     * Test loading a database to a CSV file.
+     * Test saving a database to a CSV file with Save.
      *
      * @throws java.lang.Exception on any error
      */
-    public void testLoadingCSV() throws Exception {
+    public void testSaveCSV() throws Exception {
+        //TODO: Should be modified for other file types once they're ready
         //Preparation
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
 
         String root = System.getProperty("testPath");
-        File testCSV = new File(root + "/ui/test.csv");
+        File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
+        assertTrue(demoFile.exists());
+
+        File testCSV = new File(root + "/ui/test-v2-out.csv");
         assertTrue(testCSV.exists());
 
         String tempFolder = System.getProperty("java.io.tmpdir");
         File savedCSV = new File(tempFolder + "/savedCSV.csv");
         savedCSV.deleteOnExit();
+        if (savedCSV.exists()) {
+            savedCSV.delete();
+        }
+        assertFalse(savedCSV.exists());
+
+        //1. Click save on empty project. Expecting it to act like Save As
+        WindowInterceptor
+                .init(menuBar.getMenu("File").getSubMenu("Save")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsSaveDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(savedCSV))
+                .run();
+
+
+        // 2. Open and run script to populate database
+        WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsOpenDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile))
+                .process(new WindowHandler() {
+                    public Trigger process(Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+        // 2. Save CSV file. Not expecting anything except a save
+        menuBar.getMenu("File").getSubMenu("Save").click();
+
+        // 3. Check that CSV file is correct
+        assertTrue(areFilesSame(testCSV, savedCSV));
+
+        //Close window
+        window.dispose();
+    }
+
+    /**
+     * Run a load test for specified input and expected output files.
+     *
+     * @param inputFile The input CSV file to open before saving.
+     * @param expectedOutputFile The expected output of saving the above file.
+     *
+     * @throws Exception If unable to save file.
+     */
+    public void testLoad(final String inputFile,
+                         final String expectedOutputFile) throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        final MenuBar menuBar = window.getMenuBar();
+
+        String root = System.getProperty("testPath");
+        File testCSV = new File(root + inputFile);
+        assertTrue(testCSV.exists());
+
+        File testOutputCSV = new File(root + expectedOutputFile);
+        assertTrue(testOutputCSV.exists());
+
+        String tempFolder = System.getProperty("java.io.tmpdir");
+        final File savedCSV = new File(tempFolder + "/savedCSV.csv");
+        //savedCSV.deleteOnExit();
         // The file already exists - created in the last test.
 
         // 1. Load CSV file
@@ -123,21 +197,51 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
 
 
         // 2. Save contents as a seperate CSV file.
-        WindowInterceptor
+        if (savedCSV.exists()) {
+            WindowInterceptor
                 .init(menuBar.getMenu("File").getSubMenu("Save As...")
-                    .triggerClick())
+                .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsSaveDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(savedCSV))
+                .process(BasicHandler.init().triggerButtonClick("Overwrite"))
+                .run();
+        } else {
+            WindowInterceptor
+                .init(menuBar.getMenu("File").getSubMenu("Save As...")
+                .triggerClick())
                 .process(FileChooserHandler.init()
                     .assertIsSaveDialog()
                     .assertAcceptsFilesOnly()
                     .select(savedCSV))
                 .run();
+        }
 
         // 3. Check that CSV file is correct
-        // Please note: This assumes that saving was working on 05-Aug-2009
-        File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
-        assertTrue(areFilesSame(testCSV, bug541SavedCSV));
+        assertTrue(areFilesSame(testOutputCSV, savedCSV));
+        window.dispose();
     }
 
+    /**
+     * Test loading a database from a version 1 CSV file.
+     *
+     * @throws java.lang.Exception on any error
+     */
+
+    public void testLoadingCSVv1() throws Exception {
+        this.testLoad("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
+    }
+
+    /**
+     * Test loading a database from a version 2 CSV file.
+     *
+     * @throws java.lang.Exception on any error
+     */
+
+    public void testLoadingCSVv2() throws Exception {
+        this.testLoad("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
+    }
 
     /**
      * Checks if two text files are equal.

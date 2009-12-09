@@ -75,7 +75,7 @@ public final class UINewCellTest extends UISpecTestCase {
             "!289(", "178.&", "0~~~)",
             "If x?7 then. x? 2 ", "589.138085638", "000389.5",
             "-0.1", "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34",
-            /*"-123"*/};
+            "-123"};
 
     static {
       UISpec4J.setWindowInterceptionTimeLimit(120000);
@@ -224,7 +224,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] expectedTestOutput = {"1.9", "-43.21", "289", "178", "0",
         "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-        "-23.34", "0.34", "12.34"};
+        "-23.34", "0.34", "12.34", "-123"};
 
         createNewVariable(varName, varRadio);
 
@@ -241,7 +241,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] expectedTestOutput = {"1.9", "-43.21", "289", "178", "0",
         "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-        "-23.34", "0.34", "12.34"};
+        "-23.34", "0.34", "12.34", "-123"};
 
         pasteTest(varName, varRadio, floatTestInput, expectedTestOutput);
     }
@@ -270,9 +270,7 @@ public final class UINewCellTest extends UISpecTestCase {
                          Key.LEFT, Key.LEFT}};
 
         String[] expectedTestOutput = {"-43.21019", "-43.289210", "2178.8", "7",
-        "-87", "589.138086"
-                /*BugzID612:Previous should actually be -589.138085*/,
-        "-589.138085"};
+        "-87", "589.138085", "-589.138085"};
 
 
         createNewVariable(varName, varRadio);
@@ -406,7 +404,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String [] expectedFloatTestOutput = {"1.9", "-43.21", "289", "178", "0",
         "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-        "-23.34", "0.34", "12.34"};
+        "-23.34", "0.34", "12.34", "-123"};
 
         runStandardTest(varName, floatTestInput,
                 expectedFloatTestOutput, "<float>");
@@ -666,7 +664,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String[] expectedFloat2TestOutput = {"1.9", "-43.21", "289", "178", "0",
         "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-        "-23.34", "0.34", "12.34"};
+        "-23.34", "0.34", "12.34", "-123"};
 
         int numOfTests = floatTestInput.length;
 
@@ -676,6 +674,8 @@ public final class UINewCellTest extends UISpecTestCase {
                     + ", <float2>)";
         }
 
+//        runMatrixTest(varName, floatTestInput, expectedFloat2TestOutput,
+//                "<float2>");
         runMatrixTest(varName, floatTestInput, expectedFloat2TestOutput,
                 "<float2>");
 
@@ -685,7 +685,7 @@ public final class UINewCellTest extends UISpecTestCase {
 
         String [] expectedInt2bTempOutput = {"1.9", "-43.21", "289", "178", "0",
         "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-        "-23.34", "0.34", "12.34"};
+        "-23.34", "0.34", "12.34", "-123"};
 
         String [][] expectedInt2bTestOutput =
                 new String [expectedFloat2TestOutput.length]
@@ -816,15 +816,19 @@ public final class UINewCellTest extends UISpecTestCase {
      * @param value1 first cell value
      * @param value2 second cell value
      */
-    private void assertTrueEqualValues(final String value1, final String value2)
-    {
-        try {
-            //Handle doubles
-            assertTrue(FloatUtils.closeEnough(Double.parseDouble(value1),
-                    Double.parseDouble(value2)));
-        } catch (NumberFormatException nfe) {
-            //Handle other variable types
+    private void assertTrueEqualValues(final String value1, final String value2) {
+        if ((value1.startsWith("<") && value1.endsWith(">")) ||
+                (value2.startsWith("<") && value2.endsWith(">"))) {
             assertTrue(value1.equalsIgnoreCase(value2));
+        } else {
+            try {
+                //Handle doubles
+                assertTrue(FloatUtils.closeEnough(Double.parseDouble(value1),
+                        Double.parseDouble(value2)));
+            } catch (NumberFormatException nfe) {
+                //Handle other variable types
+                assertTrue(value1.equalsIgnoreCase(value2));
+            }
         }
     }
 
@@ -969,7 +973,8 @@ public final class UINewCellTest extends UISpecTestCase {
             Cell c = cells.elementAt(i);
             TextBox t = c.getValue();
             c.enterMatrixText(testInput[i]);
-            int numOfArgs = getNumberofArgFromMatrix(varName);
+            int numOfArgs = getNumberofArgFromMatrix(t.getText());
+            //int numOfArgs = getNumberofArgFromMatrix(varName);
             String [] actualValues = getArgsFromMatrix(t.getText());
             String [] expectedValues = getArgsFromMatrix(expectedTestOutput[i]);
             for (int j = 0; j < numOfArgs; j++) {
@@ -990,7 +995,7 @@ public final class UINewCellTest extends UISpecTestCase {
         String[][] matricisedInput = new String [testInput.length][2];
         for (int i = 0; i < testInput.length; i++) {
             matricisedInput[i][0] = testInput[i];
-            matricisedInput[i][1] = customBlank;
+            matricisedInput[i][1] = "";
         }
         runMatrixTest(varName, matricisedInput, expectedTestOutput);
     }
@@ -1070,7 +1075,7 @@ public final class UINewCellTest extends UISpecTestCase {
       */
      private int getNumberofArgFromMatrix(final String matrixCellValue) {
          String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 2);
+                 matrixCellValue.length() - 1);
 
          String [] tokens = argList.split(", ");
 
@@ -1084,7 +1089,7 @@ public final class UINewCellTest extends UISpecTestCase {
       */
      private String [] getArgsFromMatrix(final String matrixCellValue) {
          String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 2);
+                 matrixCellValue.length() - 1);
 
          String [] tokens = argList.split(", ");
 

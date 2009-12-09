@@ -1,272 +1,538 @@
 package org.openshapa.views.continuous.sound;
 
-import org.openshapa.views.continuous.*;
+import java.awt.Component;
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
+import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import org.apache.log4j.Logger;
+import org.openshapa.util.Constants;
+import org.openshapa.views.continuous.DataController;
+import org.openshapa.views.continuous.DataViewer;
+import org.openshapa.views.continuous.quicktime.QTFilter;
 import quicktime.QTException;
 import quicktime.QTSession;
 import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
+import quicktime.std.StdQTConstants;
 import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
 import quicktime.std.movies.Track;
+import quicktime.std.movies.media.AudioMediaHandler;
 import quicktime.std.movies.media.Media;
-import quicktime.std.movies.media.SampleTimeInfo;
+import quicktime.std.movies.media.MediaEQSpectrumBands;
+
+import quicktime.app.view.QTFactory;
+import quicktime.std.StdQTException;
+
 
 /**
- * The viewer for a quicktime video file.
+ * The viewer for an audio file.
  */
 public final class SoundDataViewer extends JFrame
-implements DataViewer {
+        implements DataViewer {
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SoundDataViewer.class);
-
     /** The quicktime movie this viewer is displaying. */
-    private Movie movie;
-
-    /** The visual track for the above quicktime movie. */
-    private Track visualTrack;
-
-    /** The visual media for the above visual track. */
-    private Media visualMedia;
-
-    /** The "normal" playback speed. */
-    private static final float NORMAL_SPEED = 1.0f;
-
-    /** Fastforward playback speed. */
-    private static final float FFORWARD_SPEED = 32.0f;
-
-    /** Rewind playback speed. */
-    private static final float RWIND_SPEED = -32.0f;
-
-    /** conversion factor for converting milliseconds to seconds. */
-    private static final double MILLI_TO_SECONDS = 0.001;
-
-    /** conversion factor for converting seconds to milliseconds. */
-    private static final double SECONDS_TO_MILLI = 1000.0;
-
-    /** The current shuttle speed. */
-    private float shuttleSpeed;
-
-    /** Rate for playback. */
+    private Movie audio;
+    /** The audio track for the above quicktime movie. */
+    private Track audioTrack;
+    /** The audio media for the above audio track. */
+    private Media audioMedia;
+    /** Preprocessing audio file. */
+    private Movie paudio;
+    /** Preprocessing audio track. */
+    private Track paudioTrack;
+    /** Preprocessing audio media. */
+    private Media paudioMedia;
+    /** Preprocessing media handler. */
+    private AudioMediaHandler paudioMH;
+    /** An instance of the class LevelMeter, which draws the meter bars for the
+     * sound levels. */
+    private LevelMeter meter;
+    /** The scaling factor for audio preprocessing; # of samples is divided by
+     *  this factor. */
+    private static final int SCALING = 1;
+    /** This is the preprocessing thread which generates the audioData array. */
+    private PreProcess preThread;
+    /** The number of milliseconds to wait between painting operations. */
+    private static final int REPAINTDELAY = 100;
+    /** Constant value used to calculate percentages. */
+    private static final int CENT = 100;
+    /** Time to natural after painting the display on a seek operation. */
     private float playRate;
-
     /** Frames per second. */
     private float fps;
-
-    /** Parent DataControllerV. */
+    /** This is the timer for repainting the equaliser (LevelMeter). */
+    private Timer t;
+    /** parent controller. */
     private DataController parent;
+    /** Number of millis to jump back upon losing sync during preprocessing. */
+    private static final int JUMPFIX = 1000;
+    /** Massive array with all the audio intensity data stored. */
+    private int[] audioData;
+    /** Maximum filesize in milliseconds that will be preprocessed.
+     * For some reason, it is now unsafe to make this as high as 120, although
+     * with the advent of the preprocessing window this shouldn't matter. */
+    private static final int MAXFILESIZE = 40 /* <-secs */ * 1000 / SCALING;
+    /** Previous window title. */
+    private String wTitle;
+    /** Prefix attached to preprocessing window title information. */
+    private String pfix = "";
+    /** Suffix for preprocessing window title information. */
+    private String sfix = "Finished preprocessing. ";
+    /** The component holding the movie being played. */
+    private Component comp;
+    /** The component holding the preprocess duplicate of the movie. */
+    private Component preComp;
+    /** A collection of internal frames, used to hide the movie. */
+    private JDesktopPane superDesk;
+    /** The frame holding the movie component. */
+    private MyInternalFrame movieFrame;
+    /** The frame holding the preprocess component. */
+    private MyInternalFrame preFrame;
+    /** The frame holding the equaliser. */
+    private MyInternalFrame equalFrame;
+    /** The time in milliseconds to wait for the video to draw. */
+    private static final int VIDEO_DRAW_DELAY = 100;
+    /** The amount of extra window size to give the window to hide the movie. */
+    private static final int EXTRA_SIZE = 300;
+    /** The offset used to hide the movie. */
+    private static final int HIDDEN_OFFSET = 200;
+    /** The threshold in millis for the movie to be considered out of sync. */
+    private static final int SYNCTHRESH = 100;
+    /** The fixed window width. */
+    private static final int WIN_X = 400;
+    /** The fixed window height. */
+    private static final int WIN_Y = 400;
+    /** The error window height. */
+    private static final int ERROR_HEIGHT = 200;
+    /** The number of times the delay sequence should be called; this allows
+     * the preprocessing movie to start playing. */
+    private static final int DELAYTICKS = 3;
+    /** This is the number of delay calls that we make each tick; higher values
+     * result in a longer initial delay to wait for the movie. */
+    private static final int DELAYVAL = 1000000;
+    /** Determines whether or not preprocessing has finished successfully. */
+    private boolean finishedPreprocess = false;
+    /** Records whether or not we have opened a movie. */
+    private boolean isMovie;
+
+    /** The preprocessing rate. */
+    private static final float PREPROCESSRATE = 1F;
+
+    /** Playback offset. */
+    private long offset;
+
+    private boolean playing;
+
+    private File audioFile;
 
     /**
-     * Constructor - creates new video viewer.
-     *
-     * @param controller The controller invoking actions on this continous
-     * data viewer.
+     * Constructor - creates new audio viewer.
      */
     public SoundDataViewer() {
         try {
-            movie = null;
-            shuttleSpeed = 0.0f;
-
+            audio = null;
+            offset = 0;
+            playing = false;
             // Initalise QTJava.
             QTSession.open();
+
         } catch (QTException e) {
-            logger.error("Unable to create QTVideoViewer", e);
+            logger.error("Unable to create SoundViewer", e);
         }
         initComponents();
     }
 
+
+    //--------------------------------------------------------------------------
+    // [interface] org.openshapa.views.continuous.DataViewer
+    //
+    /**
+     * @return The parent JFrame that this data viewer resides within.
+     */
+
+    /**
+     * @return The duration of the audio in milliseconds. If -1 is returned, the
+     * audio's duration cannot be determined.
+     */
+    public long getDuration() {
+        try {
+            if (audio != null) {
+                return (long)Constants.TICKS_PER_SECOND *
+                        (long)audio.getDuration() / (long)audio.getTimeScale();
+            }
+        } catch (StdQTException ex) {
+            logger.error("Unable to determine QT audio duration", ex);
+        }
+        return -1;
+    }
+
+    /**
+     * @return The duration of the audio in milliseconds. If -1 is returned, the
+     * audio's duration cannot be determined.
+     */
+    public long getPreDuration() {
+        try {
+            if (paudio != null) {
+                return Constants.TICKS_PER_SECOND
+                        * paudio.getDuration() / paudio.getTimeScale();
+            }
+        } catch (StdQTException ex) {
+            logger.error("Unable to determine QT paudio duration", ex);
+        }
+        return -1;
+    }
+
+    /**
+     * @return The playback offset of the audio in milliseconds.
+     */
+    public long getOffset() {
+        return offset;
+    }
+
+    /**
+     * @param newOffset The playback offset of the audio in milliseconds.
+     */
+    public void setOffset(final long newOffset) {
+        assert (newOffset >= 0);
+        offset = newOffset;
+    }
+
+    /** @return This frame. */
     public JFrame getParentJFrame() {
         return this;
+    }
+
+    /** Preprocessing class. Grabs all the audio data at the start. */
+    class PreProcess implements Runnable {
+
+        /** The number of frequency bands used. */
+        private int numBands;
+        /** The amount of milliseconds audio processing left to do. */
+        private int work = 0;
+        /** A temporary array populated with the intensity data. */
+        private int[] tempLevels;
+        /** The time recorded on the last loop call. */
+        private long oldTime = 0;
+        /** Stores the previous volume level. */
+        private float volume;
+        /** Ask preprocess to die. */
+        private boolean terminate = false;
+
+        /**
+         * This is a separate thread which runs the preprocessing.
+         * @param bands The number of frequency bands to be used.
+         */
+        public PreProcess(final int bands) {
+            numBands = bands;
+            if ((getPreDuration() / SCALING) < MAXFILESIZE) {
+                work = (int) (getPreDuration() / SCALING) * numBands;
+            } else {
+                pfix = ""; // The file was bigger than our threshold.
+                work = MAXFILESIZE * numBands;
+            }
+        }
+
+        /**
+         * Asks the preprocessing thread to terminate.
+         */
+        public void die() {
+            terminate = true;
+        }
+
+        /** Grabs all the data from the audio stream. */
+        public void run() {
+            int check = 0;
+            try {
+                wTitle = getTitle();
+                audioData = new int[work];
+                MediaEQSpectrumBands bands =
+                    new MediaEQSpectrumBands(numBands);
+                for (int i = 0; i < numBands; i++) {
+                    bands.setFrequency(i, 0); // Not actually zero!
+                    paudioMH.setSoundEqualizerBands(bands);
+                    paudioMH.setSoundLevelMeteringEnabled(true);
+                }
+                volume = paudio.getVolume();
+                paudio.setVolume(0F);
+                paudio.setRate(PREPROCESSRATE);
+
+                int i = 0;
+                int delayTicks = DELAYTICKS;
+                while (i < (work - 1)) {
+                    long atime = getCurrentPreprocessTime();
+                    if (atime != oldTime) { // We have a new timecode
+                        oldTime = atime;
+                        while ((atime - 1) * numBands > (i + SYNCTHRESH)
+                                || (atime - 1) * numBands < (i - SYNCTHRESH)) {
+                            // If we fell out of sync...
+                            long fixedJ = Math.max(1, (atime * SCALING)
+                                    - JUMPFIX);
+                            if ((atime - 1) * numBands > i) {
+                                // Rewind if we went too far,
+                                TimeRecord fixtime = new TimeRecord(
+                                        Constants.TICKS_PER_SECOND, fixedJ);
+                                paudio.setTime(fixtime);
+                            }
+                            atime = getCurrentPreprocessTime();
+                            if (delayTicks > 0) {
+                                delayTicks--;
+                                for (int waste = 0; waste < DELAYVAL; waste++) {
+                                    Math.random();
+                                }
+                            }
+                            // Else keep waiting until the movie catches up.
+                        }
+                        tempLevels =
+                        paudioMH.getSoundEqualizerBandLevels(numBands);
+                    }
+                    if (tempLevels != null) {
+                        for (int j = 0; j < numBands; j++) {
+                            audioData[i] = tempLevels[j];
+                           if (tempLevels[j] != 0) {
+                               check++;
+                           }
+                            i++;
+                        }
+                    }
+                    if (i == numBands && isMovie) {
+                        setSize(WIN_X + 1, WIN_Y);
+                        setSize(WIN_X, WIN_Y);
+                    }
+
+                    setTitle(pfix + "Preprocessing... " + i * CENT / work + "% "
+                             + wTitle);
+                }
+            } catch (Exception f) {
+                logger.error(f.toString(), f);
+                movieFrame.dispose();
+                preFrame.dispose();
+                superDesk.removeAll();
+                pfix = "PREPROCESS FAILED! ";
+                sfix = " ";
+                setTitle(pfix + wTitle);
+                JLabel failMsg =
+                    new JLabel(" Couldn't get sound intensity data."
+                    + " Try converting to .mov first.");
+                setSize(WIN_X, ERROR_HEIGHT);
+                MyInternalFrame error = new MyInternalFrame(1);
+                error.setVisible(true);
+                error.add(failMsg);
+                superDesk.add(error);
+                return;
+            } finally {
+                finishedPreprocess = true;
+            }
+
+            if (terminate) {
+                return;
+            }
+            // Sound level could be checked here.
+            meter.setAudioData(audioData);
+            setTitle(pfix + sfix + wTitle);
+            try {
+                paudio.stop();
+                paudio.setRate(0F);
+                paudio.setVolume(volume);
+                paudio.setTime(new
+                        TimeRecord(Constants.TICKS_PER_SECOND, 0));
+            } catch (QTException e) {
+                logger.error("Couldn't reset audio", e);
+            }
+            int oldWidth = getWidth();
+            int oldHeight = getHeight();
+            superDesk.setSize(oldWidth + EXTRA_SIZE,
+                    oldHeight + EXTRA_SIZE);
+            preFrame.shove(oldWidth + HIDDEN_OFFSET,
+                    oldHeight + HIDDEN_OFFSET);
+            movieFrame.shove(oldWidth + HIDDEN_OFFSET,
+                    oldHeight + HIDDEN_OFFSET);
+            setSize(oldWidth + EXTRA_SIZE, oldHeight + EXTRA_SIZE);
+            try {
+                Thread.sleep(VIDEO_DRAW_DELAY);
+            } catch (InterruptedException ex) {
+                logger.error("Couldn't sleep", ex);
+            } finally {
+                finishedPreprocess = true;
+            }
+            superDesk.setSize(oldWidth, oldHeight);
+            setSize(oldWidth, oldHeight);
+
+        }
+
+    }
+
+    /**
+     * Handles the repainting of the LevelMeter class.
+     */
+    class PaintTask extends TimerTask {
+
+        /**
+         * Paints the level meter if it has data to draw.
+         */
+        public synchronized void run() {
+            if (meter.isReady()) {
+                try {
+                meter.setAudioTime(getCurrentTime() / SCALING);
+                meter.repaint();
+                } catch (QTException e) {
+                    logger.error("Couldn't get time", e);
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Method to open a video file for playback.
+     *
+     * @param newAudioFile The audio file the viewer is going to display to
+     * the user.
+     */
+    public void setDataFeed(final File newAudioFile) {
+        audioFile = newAudioFile;
+        try {
+            setSize(WIN_X, WIN_Y);
+            /* Set resizable false here to avoid nasty QuickTime movie frames
+            being drawn when the user resizes the window. Other workarounds
+            possible, but most are messy. */
+            setResizable(false);
+            this.setTitle(audioFile.getName());
+            QTFilter movieTest = new QTFilter();
+            isMovie = movieTest.accept(audioFile);
+
+            OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(audioFile));
+            audio = Movie.fromFile(omf);
+
+
+            /* Set the time scale for the movie to milliseconds (i.e. 1000 ticks
+            per second. */
+            audio.setTimeScale(Constants.TICKS_PER_SECOND);
+
+
+            audioTrack = audio.getIndTrackType(1,
+                    StdQTConstants.audioMediaCharacteristic,
+                    StdQTConstants.movieTrackCharacteristic);
+            audioMedia = audioTrack.getMedia();
+
+
+            // Calculate frames per second for the audio data.
+            fps = (float) audioMedia.getSampleCount() / audioMedia.getDuration()
+                    * audioMedia.getTimeScale();
+
+            /* Additional movie, used for preprocessing independently of the
+            playback movie. */
+            OpenMovieFile omf2 = OpenMovieFile.asRead(new QTFile(audioFile));
+            paudio = Movie.fromFile(omf2);
+
+            paudio.setTimeScale(Constants.TICKS_PER_SECOND);
+
+
+            paudioTrack = paudio.getIndTrackType(1,
+                    StdQTConstants.audioMediaCharacteristic,
+                    StdQTConstants.movieTrackCharacteristic);
+            paudioMedia = paudioTrack.getMedia();
+
+            paudioMH = (AudioMediaHandler) paudioMedia.getHandler();
+
+
+            // Add the component that "renders" the audio.
+            meter = new LevelMeter();
+
+            /* The JDesktopPane is used here as a workaround for hiding the
+            movie. QuickTime is clever enough to not allow audio to be played
+            if it believes it is not being drawn, so we use this JDesktopPane
+            to dupe QuickTime into thinking it is visible, allowing us to play
+            and preprocess the audio from the movie. */
+            superDesk = new JDesktopPane();
+            setContentPane(superDesk);
+
+
+            movieFrame = new MyInternalFrame(true, getSize());
+            movieFrame.setVisible(true);
+
+            preFrame = new MyInternalFrame(true, getSize());
+            preFrame.setVisible(true);
+
+
+            equalFrame = new MyInternalFrame();
+            equalFrame.setVisible(true);
+            equalFrame.add(meter);
+
+            superDesk.add(preFrame);
+            superDesk.add(movieFrame);
+            superDesk.add(equalFrame);
+
+            comp = QTFactory.makeQTComponent(audio).asComponent();
+            movieFrame.add(comp);
+
+
+            preComp = QTFactory.makeQTComponent(paudio).asComponent();
+            preFrame.add(preComp);
+
+            // set up repainting timer
+            t = new Timer();
+
+            t.schedule(new PaintTask(), 0, REPAINTDELAY);
+
+            preThread = new PreProcess(meter.getNumBands());
+
+            Thread thread = new Thread(preThread);
+            thread.start();
+
+            setName(getClass().getSimpleName() + "-" + audioFile.getName());
+
+            invalidate();
+
+            this.setVisible(true);
+
+        } catch (QTException e) {
+            logger.error("Unable to set audioFile", e);
+        }
+    }
+
+    /**
+     * @return The file used to display this data feed.
+     */
+    public File getDataFeed() {
+        return audioFile;
+    }
+
+    /**
+     * Sets the parent data controller.
+     * @param dataController This is the passed in data controller (parent).
+     */
+    public void setParentController(final DataController dataController) {
+        parent = dataController;
     }
 
     /**
      * @return The frames per second.
      */
-    public float getFrameRate() { return fps; }
-
-    /**
-     * Method to open a video file for playback.
-     *
-     * @param audioFile The audio file that this viewer is going to display to
-     * the user.
-     */
-    public void setDataFeed(final File audioFile) {
-        try {
-            this.setTitle(audioFile.getName());
-            OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(audioFile));
-            movie = Movie.fromFile(omf);
-//            visualTrack = movie.getIndTrackType(1,
-//                                       StdQTConstants.visualMediaCharacteristic,
-//                                       StdQTConstants.movieTrackCharacteristic);
-//            visualMedia = visualTrack.getMedia();
-
-//            this.add(QTFactory.makeQTComponent(movie).asComponent());
-            // Set the size of the window to be the same as the incoming video.
-//            this.setBounds(this.getX(), this.getY(),
-//                           movie.getBox().getWidth(),
-//                           movie.getBox().getHeight());
-//            this.pack();
-            this.invalidate();
-            this.setVisible(true);
-
-            setName(this.getClass().getSimpleName() + audioFile.getName());
-        } catch (QTException e) {
-            logger.error("Unable to setVideoFile", e);
-        }
-    }
-
-    public void setParentController(final DataController dataController) {
-        this.parent = dataController;
+    public float getFrameRate() {
+        return fps;
     }
 
     /**
      * @param rate The playback rate.
      */
-    public void setPlaybackSpeed(final float rate) { this.playRate = rate; }
-
-    /**
-     * @param position Millisecond absolute position for track.
-     */
-    public void seekTo(final long position) {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                //movie.stop();
-
-                double seconds = position * MILLI_TO_SECONDS;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
-                movie.setTime(time);
-                pack();
-            }
-        } catch (QTException e) {
-            logger.error("Unable to find", e);
-        }
+    public void setPlaybackSpeed(final float rate) {
+        this.playRate = rate;
     }
 
     /**
-     * Jogs the data stream backwards by a single unit (i.e. frame for movie)
-     */
-    public void jogBack() {
-        try {
-            this.setVisible(true);
-            this.jog(-1);
-        } catch (QTException e) {
-            logger.error("Unable to jogBack", e);
-        }
-    }
-
-    /**
-     * Stops the playback of the continous data stream.
-     */
-    public void stop() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.stop();
-            }
-        } catch (QTException e) {
-            logger.error("Unable to stop", e);
-        }
-    }
-
-    /**
-     * Jogs the data stream forwards by a single unit (i.e. frame for movie).
-     */
-    public void jogForward() {
-        try {
-            this.setVisible(true);
-            this.jog(1);
-        } catch (QTException e) {
-            logger.error("Unable to jogForward", e);
-        }
-    }
-
-    /**
-     * Shuttles the video stream backwards by the current shuttle speed.
-     * Repetative calls to shuttleBack increases the speed at which we reverse.
-     */
-    public void shuttleBack() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                if (shuttleSpeed == 0.0f) {
-                    shuttleSpeed = 1.0f / RWIND_SPEED;
-                } else {
-                    shuttleSpeed = shuttleSpeed * 2;
-                }
-                movie.setRate(shuttleSpeed);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to shuttleBack", e);
-        }
-    }
-
-    /**
-     * Pauses the playback of the continous data stream.
-     */
-    public void pause() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.stop();
-            }
-        } catch (QTException e) {
-            logger.error("pause", e);
-        }
-    }
-
-    /**
-     * Shuttles the video stream forwards by the current shuttle speed.
-     * Repetative calls to shuttleFoward increases the speed at which we fast
-     * forward.
-     */
-    public void shuttleForward() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                if (shuttleSpeed == 0.0f) {
-                    shuttleSpeed = 1.0f / FFORWARD_SPEED;
-                } else {
-                    shuttleSpeed = shuttleSpeed * 2;
-                }
-                movie.setRate(shuttleSpeed);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to shuttleForward", e);
-        }
-    }
-
-    /**
-     * Rewinds the continous data stream at a speed 32x normal.
-     */
-    public void rewind() {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.setRate(RWIND_SPEED);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to rewind", e);
-        }
-    }
-
-    /**
-     * Plays the continous data stream at a regular 1x normal speed.
+     * Plays the continous data stream at the current playback rate..
      */
     public void play() {
         try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.setRate(NORMAL_SPEED);
+            if (audio != null && finishedPreprocess) {
+                audio.setRate(playRate);
+                playing = true;
             }
         } catch (QTException e) {
             logger.error("Unable to play", e);
@@ -274,113 +540,60 @@ implements DataViewer {
     }
 
     /**
-     * Fast forwards a continous data stream at a speed 32x normal.
+     * Stops the playback of the continuous data stream.
      */
-    public void forward() {
+    public void stop() {
         try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.setRate(FFORWARD_SPEED);
+            if (audio != null && finishedPreprocess) {
+                audio.stop();
+                playing = false;
             }
         } catch (QTException e) {
-            logger.error("Unable to forward", e);
+            logger.error("Unable to stop", e);
         }
     }
 
     /**
-     * Find can be used to seek within a continous data stream - allowing the
-     * caller to jump to a specific time in the datastream.
-     *
-     * @param milliseconds The time within the continous data stream, specified
-     * in milliseconds from the start of the stream.
+     * @return Is this dataviewer playing the data feed.
      */
-    public void find(final long milliseconds) {
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    /**
+     * @param position Millisecond absolute position for track.
+     */
+    public void seekTo(final long position) {
         try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.stop();
-
-                double seconds = milliseconds * MILLI_TO_SECONDS;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
-                movie.setTime(time);
-                pack();
+            if (audio != null && finishedPreprocess) {
+                TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
+                        position);
+                audio.setTime(time);
             }
         } catch (QTException e) {
             logger.error("Unable to find", e);
         }
     }
 
-    /**
-     * Go back by the specified number of milliseconds and continue playing the
-     * data stream.
-     *
-     * @param milliseconds The number of milliseconds to jump back by.
-     */
-    public void goBack(final long milliseconds) {
-        try {
-            if (movie != null) {
-                this.setVisible(true);
-                shuttleSpeed = 0.0f;
-                movie.stop();
-
-                double curTime = movie.getTime() / (float) movie.getTimeScale();
-                double seconds = milliseconds * MILLI_TO_SECONDS;
-
-                seconds = curTime - seconds;
-                long qtime = (long) seconds * movie.getTimeScale();
-
-                TimeRecord time = new TimeRecord(movie.getTimeScale(), qtime);
-                movie.setTime(time);
-                movie.start();
-                pack();
-            }
-        } catch (QTException e) {
-            logger.error("Unable to go back", e);
-        }
-    }
-
-    public void syncCtrl() {
-    }
-
-    public void sync() {
-    }
 
     /**
-     * Jogs the movie by a specified number of frames.
+     * @return Current time in milliseconds.
      *
-     * @param offset The number of frames to jog the movie by.
-     *
-     * @throws QTException If unable to jog the movie by the specified number
-     * of frames.
+     * @throws QTException If error occurs accessing underlying implementation.
      */
-    public void jog(final int offset) throws QTException {
-        if (movie != null) {
-            this.setVisible(true);
-            shuttleSpeed = 0.0f;
-            movie.stop();
-
-            // Get the current frame.
-            SampleTimeInfo sTime = visualMedia.timeToSampleNum(movie.getTime());
-
-            // Get the time of the next frame.
-            int t = visualMedia
-                    .sampleNumToMediaTime(sTime.sampleNum + offset).time;
-            TimeRecord time = new TimeRecord(movie.getTimeScale(), t);
-
-            // Advance the movie to the next frame.
-            movie.setTime(time);
-        }
-    }
-
     public long getCurrentTime() throws QTException {
-        double curTime = movie.getTime() / (double) movie.getTimeScale();
-        curTime = curTime * SECONDS_TO_MILLI;
-        return (long) curTime;
+        return audio.getTime();
     }
+
+    /**
+     * @return Current preprocess time in milliseconds.
+     *
+     * @throws QTException If error occurs accessing underlying implementation.
+     */
+    public long getCurrentPreprocessTime() throws QTException {
+        return paudio.getTime() / SCALING;
+    }
+
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -398,13 +611,25 @@ implements DataViewer {
             }
         });
 
-        pack();
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        setBounds((screenSize.width-500)/2, (screenSize.height-500)/2, 500, 500);
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+
+        try {
+            preThread.die();
+            audio.stop();
+            paudio.stop();
+            removeAll();
+            t.cancel();
+        } catch (QTException e) {
+            logger.error("Couldn't kill file", e);
+        }
+        movieFrame.dispose();
+        preFrame.dispose();
         this.parent.shutdown(this);
     }//GEN-LAST:event_formWindowClosing
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 }

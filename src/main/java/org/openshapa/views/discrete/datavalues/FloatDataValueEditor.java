@@ -192,6 +192,13 @@ public final class FloatDataValueEditor extends DataValueEditor {
             StringBuffer currentValue = new StringBuffer(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
 
+            // BugzID:612 - Truncate last value if too long so we don't round
+            // precision.
+            if ((currentValue.toString().length()
+             - currentValue.toString().indexOf('.') > MAX_DECIMAL_PLACES + 1)) {
+                currentValue.deleteCharAt(currentValue.toString().length() - 1);
+            }
+
             // Dealing with someone who has just entered in - remove trailing 0
             // between the caret and decimal place.
             if (getText().equals(NEGATIVE_ZERO) && getCaretPosition() == 1) {
@@ -210,6 +217,8 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 pos = pos + 1;
             }
             this.setText(nText);
+
+
             this.setCaretPosition(pos);
             fdv.setItsValue(buildValue(currentValue.toString()));
             e.consume();

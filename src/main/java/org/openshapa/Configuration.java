@@ -14,6 +14,33 @@ import org.openshapa.util.ConfigProperties;
  */
 public final class Configuration {
 
+    /** The configuration properties. */
+    private ConfigProperties properties;
+
+    /** The name of the configuration file. */
+    private static final String CONFIG_FILE = "settings.xml";
+
+    /** The single instance of the configuration object for OpenSHAPA. */
+    private static Configuration instance = null;
+
+    /** The default font to be used by OpenSHAPA. */
+    private static final Font DEFAULT_FONT = new Font("Arial", Font.PLAIN, 14);
+
+    /** The default spreadsheet background colour. */
+    private static final Color DEFAULT_BACKGROUND = Color.WHITE;
+
+    /** The default spreadsheet foreground colour. */
+    private static final Color DEFAULT_FOREGROUND = Color.BLACK;
+
+    /** The default spreadsheet selected colour. */
+    private static final Color DEFAULT_SELECTED = new Color(176, 197, 227);
+
+    /** The default spreadsheet overlap colour. */
+    private static final Color DEFAULT_OVERLAP = Color.RED;
+
+    /** The logger for this class. */
+    private static Logger logger = Logger.getLogger(Configuration.class);
+
     /**
      * @return The single instance of the Configuration object in OpenSHAPA.
      */
@@ -98,6 +125,24 @@ public final class Configuration {
     }
 
     /**
+     * Sets and saves (to the config file) the overlap colour of the
+     * spreadsheet.
+     *
+     * @param colour The new colour to use for spreadsheet overlaps.
+     */
+    public void setSSOverlapColour(final Color colour) {
+        this.properties.setSSOverlapColour(colour);
+        this.save();
+    }
+
+    /**
+     * @return The overlap colour of the spreadsheet.
+     */
+    public Color getSSOverlapColour() {
+        return this.properties.getSSOverlapColour();
+    }
+
+    /**
      * Sets and saves (to the config file) the last directory the user navigated
      * too in a chooser.
      *
@@ -138,12 +183,20 @@ public final class Configuration {
             properties.setSSDataFont(DEFAULT_FONT);
             properties.setSSBackgroundColour(DEFAULT_BACKGROUND);
             properties.setSSForegroundColour(DEFAULT_FOREGROUND);
-            properties.setSSSelectedColour(DEFAULT_SELECTED);            
+            properties.setSSSelectedColour(DEFAULT_SELECTED);
+            properties.setSSOverlapColour(DEFAULT_OVERLAP);
             this.save();
         }
 
         if (properties.getLCDirectory() == null) {
             properties.setLCDirectory(System.getProperty("user.home"));
+            this.save();
+        }
+
+        if (properties.getSSOverlapColour() == null) {
+            // Assume that user wants their selected colour overridden too.
+            properties.setSSSelectedColour(DEFAULT_SELECTED);
+            properties.setSSOverlapColour(DEFAULT_OVERLAP);
             this.save();
         }
     }
@@ -165,27 +218,5 @@ public final class Configuration {
         }
     }
 
-    /** The configuration properties. */
-    private ConfigProperties properties;
 
-    /** The name of the configuration file. */
-    private static final String CONFIG_FILE = "settings.xml";
-
-    /** The single instance of the configuration object for OpenSHAPA. */
-    private static Configuration instance = null;
-
-    /** The default font to be used by OpenSHAPA. */
-    private static final Font DEFAULT_FONT = new Font("Arial", Font.PLAIN, 14);
-
-    /** The default spreadsheet background colour. */
-    private static final Color DEFAULT_BACKGROUND = Color.WHITE;
-
-    /** The default spreadsheet foreground colour. */
-    private static final Color DEFAULT_FOREGROUND = Color.BLACK;
-
-    /** The default spreadsheet selected colour. */
-    private static final Color DEFAULT_SELECTED = Color.PINK;
-
-    /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(Configuration.class);
 }

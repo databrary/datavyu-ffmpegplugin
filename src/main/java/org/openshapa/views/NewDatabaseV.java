@@ -173,17 +173,12 @@ public final class NewDatabaseV extends OpenSHAPADialog {
             OpenSHAPA.setDatabase(model);
             OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
                                                        .getMainView();
+
             s.showSpreadsheet();
 
-            // Update the name of the window to include the name of the new
-            // database.
-            JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-            ResourceMap rMap = OpenSHAPA.getApplication()
-                                        .getContext()
-                                        .getResourceMap(OpenSHAPA.class);
-
-            mainFrame.setTitle(rMap.getString("Application.title")
-                               + " - " + this.getDatabaseName());
+            // Update the name of the window to include the name we just
+            // set in the database.
+            OpenSHAPA.getApplication().updateTitle();
 
             this.dispose();
             this.finalize();

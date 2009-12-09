@@ -1,6 +1,7 @@
 package org.openshapa;
 
 import org.openshapa.controllers.CreateNewCellC;
+import org.jdesktop.application.Application.ExitListener;
 import org.openshapa.db.LogicErrorException;
 import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
@@ -10,13 +11,18 @@ import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.DataControllerV;
 import java.awt.KeyEventDispatcher;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
+import java.util.EventObject;
 import java.util.LinkedList;
+import java.util.Properties;
+import java.util.Stack;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -24,10 +30,12 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.LocalStorage;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
-import org.openshapa.util.AboutHandler;
+import org.openshapa.project.Project;
+import org.openshapa.util.MacHandler;
 import org.openshapa.views.AboutV;
 
 /**
@@ -42,7 +50,7 @@ implements KeyEventDispatcher {
      * @param evt The event that triggered this action.
      *
      * @return true if the KeyboardFocusManager should take no further action
-     * with regard to the KeyEvent; false  otherwise
+     * with regard to the KeyEvent; false otherwise
      */
     public boolean dispatchKeyEvent(final KeyEvent evt) {
         /**
@@ -79,6 +87,24 @@ implements KeyEventDispatcher {
             }
         }
 
+        // BugzID:784 - Shift key is passed to Data Controller.
+        if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
+                if (evt.getID() == KeyEvent.KEY_PRESSED) {
+                    dataController.setShiftMask(true);
+                } else {
+                    dataController.setShiftMask(false);
+                }
+        }
+
+        // BugzID:736 - Control key is passed to Data Controller.
+        if (evt.getKeyCode() == KeyEvent.VK_CONTROL) {
+                if (evt.getID() == KeyEvent.KEY_PRESSED) {
+                    dataController.setCtrlMask(true);
+                } else {
+                    dataController.setCtrlMask(false);
+                }
+        }
+
         /**
          * The following cases handle numpad keystrokes.
          */
@@ -100,60 +126,64 @@ implements KeyEventDispatcher {
 
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_DIVIDE:
-                dataController.setCellOnsetAction();
+                dataController.pressSetCellOnset();
                 break;
             case KeyEvent.VK_ASTERISK:
             case KeyEvent.VK_MULTIPLY:
-                dataController.setCellOffsetAction();
+                dataController.pressSetCellOffset();
                 break;
             case KeyEvent.VK_NUMPAD7:
-                dataController.rewindAction();
+                dataController.pressRewind();
                 break;
             case KeyEvent.VK_NUMPAD8:
-                dataController.playAction();
+                dataController.pressPlay();
                 break;
             case KeyEvent.VK_NUMPAD9:
-                dataController.forwardAction();
+                dataController.pressForward();
                 break;
             case KeyEvent.VK_NUMPAD4:
-                dataController.shuttleBackAction();
-                break;
-            case KeyEvent.VK_NUMPAD5:
-                dataController.pauseAction();
-                break;
-            case KeyEvent.VK_NUMPAD6:
-                dataController.shuttleForwardAction();
-                break;
-            case KeyEvent.VK_NUMPAD1:
-                dataController.jogBackAction();
+                dataController.pressShuttleBack();
                 break;
             case KeyEvent.VK_NUMPAD2:
-                dataController.stopAction();
+                dataController.pressPause();
+                break;
+            case KeyEvent.VK_NUMPAD6:
+                dataController.pressShuttleForward();
+                break;
+            case KeyEvent.VK_NUMPAD1:
+                dataController.pressJogBack();
+                break;
+            case KeyEvent.VK_NUMPAD5:
+                dataController.pressStop();
                 break;
             case KeyEvent.VK_NUMPAD3:
-                dataController.jogForwardAction();
+                dataController.pressJogForward();
                 break;
             case KeyEvent.VK_NUMPAD0:
-                dataController.createNewCellAction();
+                dataController.pressCreateNewCellSettingOffset();
                 break;
             case KeyEvent.VK_DECIMAL:
-                dataController.setNewCellStopTime();
+                dataController.pressSetNewCellOnset();
                 break;
             case KeyEvent.VK_SUBTRACT:
-                    dataController.goBackAction();
+                dataController.pressGoBack();
                 break;
             case KeyEvent.VK_ADD:
-                    dataController.findAction();
+                if (modifiers == KeyEvent.SHIFT_MASK) {
+                    dataController.pressFind();
+                    dataController.findOffsetAction();
+                } else {
+                    dataController.pressFind();
+                }
                 break;
             case KeyEvent.VK_ENTER:
-                new CreateNewCellC();
+                dataController.pressCreateNewCell();
                 break;
             default:
                 // Do nothing with the key.
                 result = false;
                 break;
         }
-
         return result;
     }
 
@@ -192,7 +222,7 @@ implements KeyEventDispatcher {
      *
      * @param e The LogicErrorException to present to the user.
      */
-    public void showWarningDialog(LogicErrorException e) {
+    public void showWarningDialog(final LogicErrorException e) {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
@@ -220,11 +250,170 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * User quits- check for save needed. Note that this can be used even in
+     * situations when the application is not truly "quitting", but just the
+     * database information is being lost (e.g. on an "open" or "new"
+     * instruction). In all interpretations, "true" indicates that all unsaved
+     * changes are to be discarded.
+     * @return True for quit, false otherwise.
+     */
+    public boolean safeQuit() {
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(OpenSHAPA.class);
+
+        if (project.isChanged() || db.getHasChanged()) {
+
+            String cancel = "Cancel";
+            String ok = "OK";
+
+            String[] options = new String[2];
+
+            if (getPlatform() == Platform.MAC) {
+                options[0] = cancel;
+                options[1] = ok;
+            } else {
+                options[0] = ok;
+                options[1] = cancel;
+            }
+
+            int selection = JOptionPane.showOptionDialog(
+                    mainFrame,
+                    rMap.getString("UnsavedDialog.message"),
+                    rMap.getString("UnsavedDialog.title"),
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    cancel);
+
+            // Button behaviour is platform dependent.
+            return getPlatform() == Platform.MAC
+                    ? selection == 1
+                    : selection == 0;
+
+        } else {
+            // Project hasn't been changed.
+            return true;
+        }
+
+        // ORIGINAL CODE:
+//        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+//        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+//                                      .getContext()
+//                                      .getResourceMap(OpenSHAPA.class);
+//        if (db.getHasChanged()) {
+//
+//            String defaultOpt = "Cancel";
+//            String altOpt = "OK";
+//
+//            String [] a = new String[2];
+//
+//            if (getPlatform() == Platform.MAC) {
+//                a[0] = defaultOpt; // This has int value 0 if selected
+//                a[1] = altOpt; // This has int value 1 if selected.
+//            } else {
+//                a[1] = defaultOpt; // This has int value 1 if selected
+//                a[0] = altOpt; // This has int value 0 if selected.
+//            }
+//
+//            int sel =
+//
+//            JOptionPane.showOptionDialog(mainFrame,
+//                    rMap.getString("UnsavedDialog.message"),
+//                    rMap.getString("UnsavedDialog.title"),
+//                    JOptionPane.OK_CANCEL_OPTION,
+//                    JOptionPane.QUESTION_MESSAGE,
+//                    null,
+//                    a,
+//                    defaultOpt);
+//
+//            // Button depends on platform now.
+//            if (getPlatform() == Platform.MAC) {
+//                return (sel == 1);
+//            } else {
+//                return (sel == 0);
+//            }
+//
+//        } else {
+//            return true;
+//        }
+    }
+
+    /**
+     * If the user is trying to save over an existing file, prompt them whether
+     * they they wish to continue.
+     * @return True for overwrite, false otherwise.
+     */
+    public boolean overwriteExisting() {
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(OpenSHAPA.class);
+        String defaultOpt = "Cancel";
+        String altOpt = "Overwrite";
+
+        String [] a = new String[2];
+
+        if (getPlatform() == Platform.MAC) {
+            a[0] = defaultOpt; // This has int value 0 if selected
+            a[1] = altOpt; // This has int value 1 if selected.
+        } else {
+            a[1] = defaultOpt; // This has int value 1 if selected
+            a[0] = altOpt; // This has int value 0 if selected.
+        }
+
+        int sel =
+
+        JOptionPane.showOptionDialog(mainFrame,
+                rMap.getString("OverwriteDialog.message"),
+                rMap.getString("OverwriteDialog.title"),
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                a,
+                defaultOpt);
+
+        // Button depends on platform now.
+        if (getPlatform() == Platform.MAC) {
+            return (sel == 1);
+        } else {
+            return (sel == 0);
+        }
+    }
+
+
+    /**
      * At startup create and show the main frame of the application.
      */
     @Override
     protected void startup() {
+        windows = new Stack<Window>();
         try {
+
+            // Configure logger - and start logging things.
+            Properties logProps = new Properties();
+            logProps.setProperty("log4j.rootLogger",
+                                 "DEBUG, A1");
+            logProps.setProperty("log4j.appender.A1",
+                                 "org.apache.log4j.FileAppender");
+            LocalStorage ls = OpenSHAPA.getApplication()
+                                       .getContext().getLocalStorage();
+            String logPath = ls.getDirectory().toString() + File.separator
+                             + "OpenSHAPA.log";
+            logProps.setProperty("log4j.appender.A1.file", logPath);
+
+            logProps.setProperty("log4j.appender.A1.layout",
+                                 "org.apache.log4j.PatternLayout");
+            logProps.setProperty("log4j.appender.A1.layout.ConversionPattern",
+                                 "%-4r [%t] %-5p %c %x - %m%n");
+            PropertyConfigurator.configure(logProps);
+            logger.info("Starting OpenSHAPA.");
+
+            // Make a new project
+            project = new Project();
+
             // Initalise DB
             db = new MacshapaDatabase();
 
@@ -254,26 +443,51 @@ implements KeyEventDispatcher {
         view = new OpenSHAPAView(this);
         show(view);
 
-        // BugzID:449 - Update the name of the window to include the default
-        // name of the database.
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap = OpenSHAPA.getApplication()
-                                    .getContext()
-                                    .getResourceMap(OpenSHAPA.class);
-        mainFrame.setTitle(rMap.getString("Application.title")
-                           + " - " + OpenSHAPA.getDatabase().getName());
+        // BugzID:435 - Correct size if a small size is detected.
+        int width = (int) getMainFrame().getSize().getWidth();
+        int height = (int) getMainFrame().getSize().getHeight();
+        if ((width < INITMINX) || (height < INITMINY)) {
+            int x = Math.max(width, INITMINX);
+            int y = Math.max(height, INITMINY);
+            getMainFrame().setSize(x, y);
+        }
+
+        updateTitle();
+
+        // Allow changes to the database to propagate up and signify db modified
+        canSetUnsaved = true;
+
+        getApplication().addExitListener(new ExitListenerImpl());
 
         // Create video controller.
-        dataController = new DataControllerV(mainFrame, false);
+        dataController = new DataControllerV(OpenSHAPA.getApplication().
+                getMainFrame(), false);
+
+
     }
 
     /**
      * This method is to initialize the specified window by injecting resources.
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
+     * @param root The parent window.
      */
     @Override
-    protected void configureWindow(java.awt.Window root) {
+    protected void configureWindow(final java.awt.Window root) {
+    }
+
+    /**
+     * Asks the main frame to update its title.
+     */
+    public void updateTitle() {
+        if (view != null) {
+            view.updateTitle();
+        }
+    }
+
+    /** @return canSetUnsaved */
+    public boolean getCanSetUnsaved() {
+        return canSetUnsaved;
     }
 
     /**
@@ -305,6 +519,26 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * Gets the single instance project associated with the currently running
+     * with OpenSHAPA.
+     *
+     * @return The single project in use with this instance of OpenSHAPA
+     */
+    public static Project getProject() {
+        return OpenSHAPA.getApplication().project;
+    }
+
+    /**
+     * Sets the single instance project associated with the currently running
+     * with OpenSHAPA.
+     *
+     * @param project The new project instance to use
+     */
+    public static void setProject(Project project) {
+        OpenSHAPA.getApplication().project = project;
+    }
+
+    /**
      * Gets the single instance of the data controller that is currently used
      * with OpenSHAPA.
      *
@@ -321,7 +555,7 @@ implements KeyEventDispatcher {
      *
      * @param newDB The new database to use for this instance of OpenSHAPA.
      */
-    public static void setDatabase(MacshapaDatabase newDB) {
+    public static void setDatabase(final MacshapaDatabase newDB) {
         OpenSHAPA.getApplication().db = newDB;
     }
 
@@ -367,7 +601,7 @@ implements KeyEventDispatcher {
     /**
      * Sets the list of scripts that were last executed.
      *
-     * @param list
+     * @param list List of scripts.
      */
     public static void setLastScriptsExecuted(final LinkedList<File> list) {
         OpenSHAPA.getApplication().lastScriptsExecuted = list;
@@ -388,7 +622,7 @@ implements KeyEventDispatcher {
     }
 
     /** All the supported platforms that OpenSHAPA runs on. */
-    public enum Platform {MAC, WINDOWS, UNKNOWN};
+    public enum Platform { MAC, WINDOWS, UNKNOWN };
 
     /**
      * @return The platform that OpenSHAPA is running on.
@@ -411,18 +645,17 @@ implements KeyEventDispatcher {
      *
      * @param args The command line arguments passed to OpenSHAPA.
      */
-    public static void main(String[] args) {
-        // Configure logger - and start logging things.
-        PropertyConfigurator.configure("log4j.properties");
-        logger.info("Starting OpenSHAPA.");
-
+    public static void main(final String[] args) {
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
             try {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
-                System.setProperty("com.apple.mrj.application.apple.menu.about.name", "OpenSHAPA");
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                new AboutHandler();
+                System.setProperty(
+                        "com.apple.mrj.application.apple.menu.about.name",
+                        "OpenSHAPA");
+                UIManager.setLookAndFeel(
+                        UIManager.getSystemLookAndFeelClassName());
+                new MacHandler();
             } catch (ClassNotFoundException cnfe) {
                 logger.error("Unable to start OpenSHAPA", cnfe);
             } catch (InstantiationException ie) {
@@ -435,6 +668,24 @@ implements KeyEventDispatcher {
         }
 
         launch(OpenSHAPA.class, args);
+    }
+
+    public void show(JDialog dialog) {
+        windows.push(dialog);
+        super.show(dialog);
+    }
+
+    public void show(JFrame frame) {
+        windows.push(frame);
+        super.show(frame);
+    }
+
+    public void closeOpenedWindows() {
+        while (! windows.empty()) {
+            Window window = windows.pop();
+            window.setVisible(false);
+            window.dispose();
+        }
     }
 
     /** The logger for OpenSHAPA. */
@@ -470,10 +721,50 @@ implements KeyEventDispatcher {
     /** Tracks if a NumPad key has been pressed. */
     private boolean numKeyDown = false;
 
+    /** Tracks whether or not databases are allowed to set unsaved status. */
+    private boolean canSetUnsaved = false;
+
+    /** The desired minimum initial width. */
+    private static final int INITMINX = 600;
+
+    /** The desired minimum initial height. */
+    private static final int INITMINY = 700;
+
     /**
      * Constant variable for the OpenSHAPA main panel.  This is so we
      * can send keyboard shortcuts to it while the QTController is in focus.
      * It actually get initialized in startup().
      */
     private OpenSHAPAView view;
+
+    /** The current project file. */
+    private Project project;
+    /** Opened windows */
+    private Stack<Window> windows;
+
+    /**
+     * Handles exit requests.
+     */
+    private class ExitListenerImpl implements ExitListener {
+
+        /**
+         * Default constructor.
+         */
+        public ExitListenerImpl() {
+        }
+
+        /** Calls safeQuit to check if we can exit.
+         *  @param arg0 The event generating the quit call.
+         *  @return True if the application can quit, false otherwise.
+         */
+        public boolean canExit(final EventObject arg0) {
+            return safeQuit();
+        }
+
+        /** Cleanup would occur here, but we choose to do nothing for now.
+         *  @param arg0 The event generating the quit call.
+         */
+        public void willExit(final EventObject arg0) {
+        }
+    }
 }

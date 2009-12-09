@@ -12,6 +12,7 @@ import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
+import org.uispec4j.interception.BasicHandler;
 import org.uispec4j.interception.FileChooserHandler;
 import org.uispec4j.interception.WindowHandler;
 
@@ -70,16 +71,22 @@ public final class UINewDatabaseTest extends UISpecTestCase {
               (window.getUIComponents(Spreadsheet.class)[0].getAwtComponent()));
         assertTrue(ss.getColumns().size() > 0);
 
-        // 2. Create new database
+        // 2. Create new database (and discard unsaved changes)
+
         WindowInterceptor
-                .init(menuBar.getMenu("File").getSubMenu("New").triggerClick())
-                .process(new WindowHandler() {
-                    public Trigger process (Window newDBWindow) {
-                        newDBWindow.getTextBox("nameField").setText("newDB");
-                        return newDBWindow.getButton("Ok").triggerClick();
-                    }
-                 })
-                 .run();
+            .init(menuBar.getMenu("File").getSubMenu("New").triggerClick())
+            .process(BasicHandler.init()
+                    .triggerButtonClick("OK"))
+            .process(new WindowHandler() {
+                public Trigger process(final Window newDBWindow) {
+                    newDBWindow.
+                            getTextBox("nameField").setText("newDB");
+                    return newDBWindow.getButton("Ok").triggerClick();
+                }
+             })
+            .run();
+
+
 
         // 2a. Check that all data is cleared
         Spreadsheet ss2 = new Spreadsheet((SpreadsheetPanel)

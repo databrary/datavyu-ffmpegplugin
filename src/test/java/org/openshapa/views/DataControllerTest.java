@@ -220,6 +220,8 @@ public class DataControllerTest {
         DataControllerV instance = new DataControllerV(null, true);
 
         try {
+            PrivateAccessor.setField(PrivateAccessor.getField(
+                            instance, "clock"), "time", 100);
             assertEquals(
                     ShuttleDirection.UNDEFINED,
                     (ShuttleDirection) PrivateAccessor.getField(
@@ -253,7 +255,6 @@ public class DataControllerTest {
                     0,
                     (Integer) PrivateAccessor.getField(instance, "shuttleRate")
                 );
-
 
             instance.shuttleForwardAction();
             instance.shuttleForwardAction();
@@ -306,6 +307,8 @@ public class DataControllerTest {
         DataControllerV instance = new DataControllerV(null, true);
 
         try {
+            PrivateAccessor.setField(PrivateAccessor.getField(
+                            instance, "clock"), "time", 100);
             assertEquals(
                     ShuttleDirection.UNDEFINED,
                     (ShuttleDirection) PrivateAccessor.getField(

@@ -550,14 +550,17 @@ public final class PredDataValue extends DataValue
         }
     }
 
+    /**
+     * @return The Predicate Data Value as an escaped string suitable for output
+     * to a CSV file.
+     */
     public String toEscapedString() {
         if (this.itsValue == null) {
             return("()");
         } else {
-            return StringUtils.escapeCSV(this.itsValue.toString());
+            return this.itsValue.toEscapedString();
         }
     }
-
 
     /**
      * toDBString()

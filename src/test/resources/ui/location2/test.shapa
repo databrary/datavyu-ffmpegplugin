@@ -1,0 +1,7 @@
+!project
+dbDir: C:\Development\openshapa\src\test\resources\ui\location2\
+dbFile: test.csv
+description: null
+name: test
+version: 1
+viewerSettings: {}

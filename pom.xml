@@ -4,7 +4,7 @@
   <groupId>org.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>0.94</version>
+  <version>1.00</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
@@ -47,6 +47,30 @@
       <roles>
         <role>Developer</role>
         <role>Tester</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+
+    <developer>
+      <id>doug</id>
+      <name>Douglas Teoh</name>
+      <email>douglas.teoh@_no_spam_nicta.com.au</email>
+      <organization>NICTA</organization>
+      <organizationUrl>www.nicta.com.au</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+
+    <developer>
+      <id>nicholas</id>
+      <name>Nicholas Allen</name>
+      <email>nicholas.allen@_no_spam_nicta.com.au</email>
+      <organization>NICTA</organization>
+      <organizationUrl>www.nicta.com.au</organizationUrl>
+      <roles>
+        <role>Developer</role>
       </roles>
       <timezone>+10</timezone>
     </developer>
@@ -184,7 +208,7 @@
       <id>maven</id>
       <url>http://repo1.maven.org/maven2</url>
       <layout>default</layout>
-    </repository>
+    </repository>    
   </repositories>
 
   <!-- External plugin repositories - where to find third-part dependencies. -->
@@ -198,6 +222,20 @@
 
   <!-- Use an optimized build for releases. -->
   <profiles>
+    <profile>
+        <id>win-package</id>
+        <properties>
+            <assembly-config>assembly-win.xml</assembly-config>
+        </properties>
+    </profile>
+
+    <profile>
+        <id>jar-package</id>
+        <properties>
+            <assembly-config>assembly-jar.xml</assembly-config>
+        </properties>
+    </profile>
+
     <profile>
       <id>release</id>
       <build>
@@ -257,6 +295,10 @@
           <mainClass>org.openshapa.OpenSHAPA</mainClass>
           <jvmVersion>1.5+</jvmVersion>
           <iconFile>${basedir}/src/main/resources/icons/OpenSHAPA.icns</iconFile>
+
+          <!-- BugzID:750 - Force dmg build to run in a 32-bit JVM -->
+          <dictionaryFile>${basedir}/Info.plist</dictionaryFile>
+
           <!-- All mvn assembly:assembly first - so that the output directory
                for the DMG is first created, otherwise this line will do
                nothing. -->
@@ -268,7 +310,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>assembly.xml</descriptor>
+            <descriptor>${assembly-config}</descriptor>
           </descriptors>
           <outputDirectory>target/site/download</outputDirectory>
         </configuration>
@@ -283,9 +325,10 @@
         </configuration>
       </plugin>
 
+      <!-- Creates the JAR -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-		<configuration>
+          <configuration>
             <archive>
                 <manifest>
                     <mainClass>org.openshapa.OpenSHAPA</mainClass>
@@ -418,10 +461,70 @@
           </configuration>
       </plugin>
 
+      <!-- BugzID:305 - Windows Application Bundle -->
+      <plugin>
+        <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+          <artifactId>launch4j-plugin</artifactId>
+          <version>1.0.0.3</version>
+          <executions>
+            <execution>
+              <id>launch4j</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>launch4j</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <headerType>gui</headerType>
+            <outfile>${basedir}/target/${project.build.finalName}.exe</outfile>
+            <jar>${basedir}/target/${project.build.finalName}.jar</jar>
+            <icon>${basedir}/src/main/resources/icons/OpenSHAPA.ico</icon>
+            <splash>
+              <file>${basedir}/src/main/resources/icons/splash.bmp</file>
+              <waitForWindow>true</waitForWindow>
+              <timeout>60</timeout>
+              <timeoutErr>true</timeoutErr>
+            </splash>
+            <jre>
+              <minVersion>1.5.0</minVersion>
+            </jre>
+            <classPath>
+              <mainClass>org.openshapa.OpenSHAPA</mainClass>
+                <preCp>junit-4.3.jar</preCp>
+                <preCp>junit-addons-1.4.jar</preCp>
+                <preCp>xercesImpl-2.6.2.jar</preCp>
+                <preCp>xmlParserAPIs-2.6.2.jar</preCp>
+                <preCp>script-api-1.1.jar</preCp>
+                <preCp>jruby-engine-1.1.6.jar</preCp>
+                <preCp>jruby-complete-1.3.1.jar</preCp>
+                <preCp>log4j-1.2.14.jar</preCp>
+                <preCp>swing-layout-1.0.3.jar</preCp>
+                <preCp>appframework-1.0.3.jar</preCp>
+                <preCp>swing-worker-1.1.jar</preCp>
+                <preCp>QTJava-7.jar</preCp>
+                <preCp>uispec4j-v2.1-B.jar</preCp>
+                <preCp>asm-3.1.jar</preCp>
+                <preCp>openhashtable-0.1.jar</preCp>
+                <preCp>openshapa-lib-0.0.4.jar</preCp>
+                <preCp>snakeyaml-1.5.jar</preCp>
+            </classPath>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
-  <!-- Third party dependancies. -->
+  <!--
+
+      Third party dependencies.
+
+       =========================================================================
+       MAKE SURE YOU ALSO EDIT:
+       =========================================================================
+         * Above list as well - so that the windows build works correctly.
+         * Info.plist - so that the OSX build works correctly.
+
+  -->
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -500,7 +603,7 @@
     <dependency>
       <groupId>org.uispec4j</groupId>
       <artifactId>uispec4j</artifactId>
-      <version>v2.0-RC3-L</version>
+      <version>v2.1-B</version>
     </dependency>
 
     <dependency>
@@ -512,9 +615,17 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.1</version>
+      <version>0.0.4</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.5</version>
+    </dependency>
   </dependencies>
+  
 </project>
+
+
 

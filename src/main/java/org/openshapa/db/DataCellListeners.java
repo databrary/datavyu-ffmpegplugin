@@ -122,6 +122,7 @@ public class DataCellListeners extends Listeners
     String newComment = null;
 
 
+
     /*************************************************************************/
     /*************************** Constructors: *******************************/
     /*************************************************************************/
@@ -374,7 +375,7 @@ public class DataCellListeners extends Listeners
         this.oldComment = oldCell.getComment();
         this.newComment = newCell.getComment();
 
-        if ( ( this.oldComment != this.newComment ) &&
+        if ( ( (Object)this.oldComment != this.newComment ) &&
              ( ( this.oldComment == null ) ||
                ( this.newComment == null ) ||
                ( this.oldComment.compareTo(this.newComment) != 0 ) ) )
@@ -478,6 +479,18 @@ public class DataCellListeners extends Listeners
 
         if ( this.changeNoted )
         {
+            boolean nonTrivial = (
+                    this.commentChanged ||
+                    this.offsetChanged ||
+                    this.onsetChanged ||
+                    this.ordChanged ||
+                    this.valChanged);
+
+            if(nonTrivial) {
+                // The database has been modified!
+                db.modifyDatabase();
+            } nonTrivial = false;
+
             // first, notify the intenal listeners...
             for ( Long id : this.ils )
             {
@@ -585,6 +598,9 @@ public class DataCellListeners extends Listeners
         DBElement dbe;
         ExternalDataCellListener el;
         InternalDataCellListener il;
+
+        // The database has been modified!
+        db.modifyDatabase();
 
         // first, notify the internal listeners...
         for ( Long id : this.ils )

@@ -58,11 +58,7 @@ begin
     pve0.append_formal_arg(farg)
     farg = NominalFormalArg.new($db, "<nominal>")
     pve0.append_formal_arg(farg)
-    farg = PredFormalArg.new($db, "<pred>")
-    pve0.append_formal_arg(farg)
     farg = QuoteStringFormalArg.new($db, "<qstring>")
-    pve0.append_formal_arg(farg)
-    farg = UnTypedFormalArg.new($db, "<untyped>")
     pve0.append_formal_arg(farg)
     predID0 = $db.add_pred_ve(pve0)
   end
@@ -82,8 +78,6 @@ begin
     farg = NominalFormalArg.new($db, "<nominal>")
     mve0.append_formal_arg(farg)
     farg = QuoteStringFormalArg.new($db, "<qstring>")
-    mve0.append_formal_arg(farg)
-    farg = UnTypedFormalArg.new($db, "<untyped>")
     mve0.append_formal_arg(farg)
     $db.replace_matrix_ve(mve0)
   end
@@ -137,17 +131,13 @@ begin
         fargid = pve0.get_formal_arg(2).get_id()
         fdv2 = NominalDataValue.new($db, fargid, "a_nominal")
         fargid = pve0.get_formal_arg(3).get_id()
-        fdv3 = PredDataValue.new($db, fargid, Predicate.new($db, predID0))
-        fargid = pve0.get_formal_arg(4).get_id()
-        fdv4 = QuoteStringDataValue.new($db, fargid, "quote_string")
-        fargid = pve0.get_formal_arg(5).get_id()
-        fdv5 = UndefinedDataValue.new($db, fargid)
+        fdv3 = QuoteStringDataValue.new($db, fargid, "quote_string")
 
         if dd == 0
           # construct a predicate with null args in first cell of column
           pred = Predicate.new($db, predID0)
         else
-          pred = Predicate.new(Predicate.construct($db, predID0, fdv0, fdv1, fdv2, fdv3, fdv4, fdv5))
+          pred = Predicate.new(Predicate.construct($db, predID0, fdv0, fdv1, fdv2, fdv3))
         end
 
         dv = PredDataValue.new($db)
@@ -166,14 +156,12 @@ begin
         fdv2 = NominalDataValue.new($db, fargid, "nm")
         fargid = mve0.get_formal_arg(3).get_id()
         fdv3 = QuoteStringDataValue.new($db, fargid, "qs")
-        fargid = mve0.get_formal_arg(4).get_id()
-        fdv4 = UndefinedDataValue.new($db, fargid)
 
         if dd == 0
           # construct a matrix with null args in first cell of column
           mat = Matrix.new($db, matID0)
         else
-          mat = Matrix.new(Matrix.construct($db, matID0, fdv0, fdv1, fdv2, fdv3, fdv4))
+          mat = Matrix.new(Matrix.construct($db, matID0, fdv0, fdv1, fdv2, fdv3))
         end
       end
 
