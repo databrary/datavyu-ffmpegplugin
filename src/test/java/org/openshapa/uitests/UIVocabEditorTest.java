@@ -43,6 +43,16 @@ public final class UIVocabEditorTest extends UISpecTestCase {
         setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
+     /**
+     * Called after each test.
+     * @throws Exception
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        getMainWindow().dispose();
+        super.tearDown();
+    }
+
     static {
         UISpec4J.setWindowInterceptionTimeLimit(4000000);
         UISpec4J.init();

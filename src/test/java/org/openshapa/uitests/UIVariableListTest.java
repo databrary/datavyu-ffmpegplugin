@@ -1,12 +1,9 @@
 package org.openshapa.uitests;
 
 import java.io.File;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.views.NewDatabaseV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.MenuBar;
 import org.uispec4j.Spreadsheet;
@@ -15,6 +12,7 @@ import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
+import org.uispec4j.interception.BasicHandler;
 import org.uispec4j.interception.FileChooserHandler;
 import org.uispec4j.interception.WindowHandler;
 
@@ -36,6 +34,16 @@ public final class UIVariableListTest extends UISpecTestCase {
     }
 
      /**
+     * Called after each test.
+     * @throws Exception
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        getMainWindow().dispose();
+        super.tearDown();
+    }
+
+     /**
      * Different cell variable types.
      */
     private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
@@ -47,14 +55,6 @@ public final class UIVariableListTest extends UISpecTestCase {
         UISpec4J.setWindowInterceptionTimeLimit(120000);
         UISpec4J.init();
     }
-
-    /**
-     * Resource map to access error messages in resources.
-     */
-    private ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                      .getContext()
-                                      .getResourceMap(NewDatabaseV.class);
-
 
      /**
      * Test adding new variables with a script.
@@ -164,7 +164,6 @@ public final class UIVariableListTest extends UISpecTestCase {
                 })
                 .run();
 
-
         // 1a. Check that variable list is populated
          Window varListWindow = WindowInterceptor.run(menuBar.getMenu(
                 "Spreadsheet").getSubMenu("Variable List").triggerClick());
@@ -173,21 +172,12 @@ public final class UIVariableListTest extends UISpecTestCase {
         // 2. Create new database (and discard unsaved changes)
         WindowInterceptor
             .init(menuBar.getMenu("File").getSubMenu("New").triggerClick())
+            .process(BasicHandler.init().triggerButtonClick("OK"))
             .process(new WindowHandler() {
-                public Trigger process(final Window changesDialog) {
-
-                     WindowInterceptor
-                    .init(changesDialog.getButton("Ok").triggerClick())
-                    .process(new WindowHandler() {
-                        public Trigger process(final Window newDBWindow) {
-                            newDBWindow.
-                                    getTextBox("nameField").setText("newDB");
-                            return newDBWindow.getButton("Ok").triggerClick();
-                        }
-                     }).run();
-
-                return changesDialog.getButton("Ok").triggerClick();
-
+                public Trigger process(final Window newDBWindow) {
+                    newDBWindow.
+                            getTextBox("nameField").setText("newDB");
+                    return newDBWindow.getButton("Ok").triggerClick();
                 }
              })
              .run();

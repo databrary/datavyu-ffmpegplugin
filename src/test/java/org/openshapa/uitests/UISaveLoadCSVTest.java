@@ -32,6 +32,16 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
+     /**
+     * Called after each test.
+     * @throws Exception
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        getMainWindow().dispose();
+        super.tearDown();
+    }
+
     static {
         UISpec4J.setWindowInterceptionTimeLimit(120000);
         UISpec4J.init();
@@ -154,9 +164,6 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
 
         // 3. Check that CSV file is correct
         assertTrue(areFilesSame(testCSV, savedCSV));
-
-        //Close window
-        window.dispose();
     }
 
     /**
@@ -167,7 +174,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      *
      * @throws Exception If unable to save file.
      */
-    public void testLoad(final String inputFile,
+    private void loadTest(final String inputFile,
                          final String expectedOutputFile) throws Exception {
         //Preparation
         Window window = getMainWindow();
@@ -220,7 +227,6 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
 
         // 3. Check that CSV file is correct
         assertTrue(areFilesSame(testOutputCSV, savedCSV));
-        window.dispose();
     }
 
     /**
@@ -230,7 +236,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      */
 
     public void testLoadingCSVv1() throws Exception {
-        this.testLoad("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
+        this.loadTest("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
     }
 
     /**
@@ -240,7 +246,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      */
 
     public void testLoadingCSVv2() throws Exception {
-        this.testLoad("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
+        this.loadTest("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
     }
 
     /**

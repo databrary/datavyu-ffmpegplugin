@@ -30,6 +30,16 @@ public final class UIBug309Test extends UISpecTestCase {
         setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
+     /**
+     * Called after each test.
+     * @throws Exception
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        getMainWindow().dispose();
+        super.tearDown();
+    }
+
     static {
       UISpec4J.init();
     }
@@ -74,5 +84,5 @@ public final class UIBug309Test extends UISpecTestCase {
                 .equals(varType));
         //check that column has no cells
         assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
-    }    
+    }
 }
