@@ -1,20 +1,17 @@
 package org.openshapa.uitests;
 
-import java.io.BufferedReader;
+
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import org.uispec4j.interception.MainClassAdapter;
-import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.util.FileTester;
 import org.uispec4j.MenuBar;
-import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 import org.uispec4j.interception.BasicHandler;
 import org.uispec4j.interception.FileChooserHandler;
-import org.uispec4j.interception.WindowHandler;
+import org.uispec4j.interception.WindowInterceptor;
 
 /**
  * Test saving and loading a database to a CSV file.
@@ -105,7 +102,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      *
      * @throws Exception If unable to save file.
      */
-    public void testLoad(final String inputFile,
+    private void testLoad(final String inputFile,
                          final String expectedOutputFile) throws Exception {
         //Preparation
         Window window = getMainWindow();
@@ -156,7 +153,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
 
         // 3. Check that CSV file is correct
         File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
-        assertTrue(areFilesSame(testOutputCSV, bug541SavedCSV));
+        assertTrue(FileTester.areFilesSame(testOutputCSV, bug541SavedCSV));
         window.dispose();
     }
 
@@ -180,35 +177,5 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         this.testLoad("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
     }
 
-    /**
-     * Checks if two text files are equal.
-     *
-     * @param file1 First file
-     * @param file2 Second file
-     *
-     * @throws IOException on file read error
-     * @return true if equal, else false
-     */
-    private Boolean areFilesSame(final File file1, final File file2)
-    throws IOException {
-        BufferedReader r1 = new BufferedReader(new FileReader(file1));
-        BufferedReader r2 = new BufferedReader(new FileReader(file2));
-
-        String line1 = r1.readLine();
-        String line2 = r2.readLine();
-        if (!line1.equals(line2)) {
-            return false;
-        }
-
-        while (line1 != null && line2 != null) {
-            if (!line1.equals(line2)) {
-                return false;
-            }
-
-            line1 = r1.readLine();
-            line2 = r2.readLine();
-        }
-
-        return true;
-    }   
+    
 }
