@@ -17,14 +17,19 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.EventListenerList;
+import org.openshapa.event.TracksControllerEvent;
+import org.openshapa.event.TracksControllerListener;
 import org.openshapa.graphics.NeedlePainter;
 import org.openshapa.graphics.TimescalePainter;
 import org.openshapa.graphics.TrackPainter;
+import org.openshapa.graphics.event.NeedleEvent;
+import org.openshapa.graphics.event.NeedleEventListener;
 
 /**
  * This class manages the tracks information interface
  */
-public class TracksControllerV {
+public class TracksControllerV implements NeedleEventListener {
 
     // Root interface panel
     private JPanel tracksPanel;
@@ -62,11 +67,17 @@ public class TracksControllerV {
      * Key: Track name
      */
     private Map<String, Track> trackPainterMap;
+    /**
+     * 
+     */
+    private EventListenerList listenerList;
 
     public TracksControllerV() {
         // Set default scale values
         maxEnd = 60000;
         minStart = 0;
+
+        listenerList = new EventListenerList();
 
         layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(800, 295));
@@ -177,16 +188,19 @@ public class TracksControllerV {
         needle = new NeedlePainter();
         {
             Dimension size = new Dimension();
-            size.setSize(765, 274);
+            size.setSize(765, 248);
             needle.setSize(size);
             needle.setPreferredSize(size);
-            needle.setLocation(10, 0);
-            needle.setPadding(lockButton.getSize().height + pad, 101);
+            // Value determined through trial-and-error.
+            needle.setLocation(10, 26);
+//            needle.setPadding(lockButton.getSize().height + pad, 101);
+            needle.setPadding(0, 101);
             needle.setWindowStart(minStart);
             needle.setWindowEnd(maxEnd);
             needle.setIntervalTime(scale.getIntervalTime());
             needle.setIntervalWidth(scale.getIntervalWidth());
         }
+        needle.addNeedleEventListener(this);
         layeredPane.add(needle, new Integer(10));
 
         {
@@ -392,6 +406,9 @@ public class TracksControllerV {
         tracksPanel.repaint();
     }
 
+    /**
+     * Removes all track components from this controller and resets components.
+     */
     public void removeAll() {
         headerBox.removeAll();
         carriageBox.removeAll();
@@ -399,6 +416,11 @@ public class TracksControllerV {
         zoomSetting = 1;
         rescale();
         zoomTracks(null);
+        needle.setCurrentTime(0);
+        needle.setWindowStart(0);
+        needle.setWindowEnd(0);
+        needle.setIntervalTime(scale.getIntervalTime());
+        needle.setIntervalWidth(scale.getIntervalWidth());
         tracksPanel.invalidate();
         tracksPanel.repaint();
     }
@@ -444,6 +466,50 @@ public class TracksControllerV {
         needle.setWindowEnd(newEnd);
         needle.setIntervalTime(scale.getIntervalTime());
         needle.setIntervalWidth(scale.getIntervalWidth());
+    }
+
+    /**
+     * NeedlePainter needle was moved using the mouse
+     * @param e needle event from the NeedlePainter
+     */
+    public void needleMoved(NeedleEvent e) {
+        fireTracksControllerEvent(e);
+    }
+
+    /**
+     * Register listeners who are interested in events from this class.
+     * @param listener
+     */
+    public synchronized void addTracksControllerListener(
+            TracksControllerListener listener) {
+        listenerList.add(TracksControllerListener.class, listener);
+    }
+
+    /**
+     * De-register listeners from receiving events from this class.
+     * @param listener
+     */
+    public synchronized void removeTracksControllerListener(
+            TracksControllerListener listener) {
+        listenerList.remove(TracksControllerListener.class, listener);
+    }
+
+    /**
+     * Used to fire a new event informing listeners about new child component
+     * events.
+     * @param needleEvent
+     */
+    private synchronized void fireTracksControllerEvent(NeedleEvent needleEvent) {
+        TracksControllerEvent e = new TracksControllerEvent(this, needleEvent);
+        Object[] listeners = listenerList.getListenerList();
+        /* The listener list contains the listening class and then the listener
+         * instance.
+         */
+        for (int i = 0; i < listeners.length; i += 2) {
+           if (listeners[i] == TracksControllerListener.class) {
+               ((TracksControllerListener)listeners[i+1]).tracksControllerChanged(e);
+           }
+        }
     }
 
     /**
