@@ -18,12 +18,8 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -49,7 +45,6 @@ import org.openshapa.controllers.SaveProjectC;
 import org.openshapa.db.Cell;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
-import org.openshapa.db.Database;
 import org.openshapa.project.Project;
 import org.openshapa.project.ViewerSetting;
 import org.openshapa.util.ArrayDirection;
@@ -713,12 +708,12 @@ public final class OpenSHAPAView extends FrameView {
         spreadsheetMenu.setAction(actionMap.get("showQTVideoController")); // NOI18N
         spreadsheetMenu.setName("spreadsheetMenu"); // NOI18N
         spreadsheetMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                spreadsheetMenuMenuSelected(evt);
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                spreadsheetMenuMenuSelected(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
 
@@ -845,12 +840,12 @@ public final class OpenSHAPAView extends FrameView {
 
         scriptMenu.setName("scriptMenu"); // NOI18N
         scriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                populateFavourites(evt);
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                populateFavourites(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
 
@@ -860,12 +855,12 @@ public final class OpenSHAPAView extends FrameView {
 
         runRecentScriptMenu.setName("runRecentScriptMenu"); // NOI18N
         runRecentScriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                populateRecentScripts(evt);
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                populateRecentScripts(evt);
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
 
@@ -933,7 +928,7 @@ public final class OpenSHAPAView extends FrameView {
         // Flush the menu - excluding the top menu item.
         int size = runRecentScriptMenu.getMenuComponentCount();
         for (int i = 1; i < size; i++) {
-            runRecentScriptMenu.remove(i);
+            runRecentScriptMenu.remove(1);
         }
 
         LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
@@ -1209,7 +1204,5 @@ public final class OpenSHAPAView extends FrameView {
 
     /** The spreadsheet panel for this view. */
     private SpreadsheetPanel panel;
-
-    
 
 }
