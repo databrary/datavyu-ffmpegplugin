@@ -410,6 +410,7 @@ public class TracksControllerV implements NeedleEventListener {
      * Removes all track components from this controller and resets components.
      */
     public void removeAll() {
+        trackPainterMap.clear();
         headerBox.removeAll();
         carriageBox.removeAll();
         maxEnd = 60000;

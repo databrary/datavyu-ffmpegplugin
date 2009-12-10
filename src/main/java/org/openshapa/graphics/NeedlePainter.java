@@ -7,6 +7,7 @@ package org.openshapa.graphics;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -171,13 +172,30 @@ public class NeedlePainter extends Component {
         }
 
         @Override
+        public void mouseEntered(MouseEvent e) {
+            if (x1 <= e.getX() && e.getX() <= x2 &&
+                    y1 <= e.getY() && e.getY() <= y2) {
+                setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
+            } else {
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            mouseEntered(e);
+        }
+
+        @Override
         public void mousePressed(MouseEvent e) {
             if (x1 <= e.getX() && e.getX() <= x2 &&
                     y1 <= e.getY() && e.getY() <= y2) {
                 // Mouse is pressed on the needle.
                 onNeedle = true;
+                setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
             } else {
                 onNeedle = false;
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }
         }
 
@@ -209,6 +227,7 @@ public class NeedlePainter extends Component {
         @Override
         public void mouseReleased(MouseEvent e) {
             onNeedle = false;
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
 
     }
