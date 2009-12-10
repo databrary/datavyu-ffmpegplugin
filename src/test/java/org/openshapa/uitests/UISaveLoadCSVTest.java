@@ -4,7 +4,7 @@ package org.openshapa.uitests;
 import java.io.File;
 import org.uispec4j.interception.MainClassAdapter;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.util.FileTester;
+import org.openshapa.util.UiUtil;
 import org.uispec4j.MenuBar;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
@@ -91,7 +91,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         // 3. Check that CSV file is correct
         // Please note: This assumes that saving was working on 05-Aug-2009
         File bug541SavedCSV = new File(savedCSV.getAbsolutePath());
-        assertTrue(FileTester.areFilesSame(testCSV, bug541SavedCSV));
+        assertTrue(UiUtil.areFilesSame(testCSV, bug541SavedCSV));
     }*/
 
     /**
@@ -152,7 +152,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         }
 
         // 3. Check that CSV file is correct
-        assertTrue(FileTester.areFilesSame(testOutputCSV, savedCSV));
+        assertTrue(UiUtil.areFilesSame(testOutputCSV, savedCSV));
         window.dispose();
     }
 

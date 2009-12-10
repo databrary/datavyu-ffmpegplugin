@@ -4,7 +4,7 @@ import java.io.File;
 import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.util.FileTester;
+import org.openshapa.util.UiUtil;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.MenuBar;
 import org.uispec4j.Spreadsheet;
@@ -110,6 +110,6 @@ public final class UIRunModifyDatabaseScriptTest extends UISpecTestCase {
         File bug429SavedCSV = new File(savedCSV.getAbsolutePath());
         File testCSV = new File(root + "/ui/modify-test-out.csv");
 
-        assertTrue(FileTester.areFilesSame(testCSV, bug429SavedCSV));
+        assertTrue(UiUtil.areFilesSame(testCSV, bug429SavedCSV));
     }
 }
