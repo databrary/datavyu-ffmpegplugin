@@ -4,12 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.uispec4j.UISpecTestCase;
 
 /**
  *
  */
-public class FileTester extends UISpecTestCase {
+public class FileTester {
+
 
 
     /**
