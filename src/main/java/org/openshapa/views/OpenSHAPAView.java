@@ -25,6 +25,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Vector;
 import javax.swing.JFileChooser;
@@ -275,12 +277,26 @@ public final class OpenSHAPAView extends FrameView {
                 // Save the database first
                 String projectName = FileUtils.getFilenameNoExtension(
                         jd.getSelectedFile().getName());
-                new SaveDatabaseC(FileUtils.getFilenameNoExtension(
-                        jd.getSelectedFile().getAbsolutePath()) + ".csv",
-                        new CSVFilter());
+                String databaseFileName = FileUtils.getFilenameNoExtension(
+                            jd.getSelectedFile().getAbsolutePath());
+                {
+                    /* If the database file exists, automatically choose a new
+                     * file name for the database by appending current timestamp
+                     * to it.
+                     */
+                    File databaseFile = new File(databaseFileName + ".csv");
+                    if (databaseFile.exists()) {
+                        String dateFormat = "yyyyMMddHHmmss";
+                        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+                        databaseFileName = databaseFileName.concat(
+                                sdf.format(Calendar.getInstance().getTime()));
+                    }
+                }
+                databaseFileName = databaseFileName.concat(".csv");
+                new SaveDatabaseC(databaseFileName, new CSVFilter());
                 Project project = OpenSHAPA.getProject();
                 project.setProjectName(projectName);
-                project.setDatabaseFile(projectName + ".csv");
+                project.setDatabaseFile(databaseFileName);
 
                 // Build the directory path we are in and save it to the project
                 String dir = jd.getSelectedFile().getAbsolutePath();
