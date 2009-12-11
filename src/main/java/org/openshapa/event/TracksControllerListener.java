@@ -7,6 +7,10 @@ import java.util.EventListener;
  */
 public interface TracksControllerListener extends EventListener {
 
+    /**
+     * Event handler for when the tracks controller changed
+     * @param e
+     */
     public void tracksControllerChanged(TracksControllerEvent e);
 
 }

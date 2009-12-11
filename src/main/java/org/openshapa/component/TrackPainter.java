@@ -1,10 +1,12 @@
-package org.openshapa.graphics;
+package org.openshapa.component;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import javax.swing.event.MouseInputAdapter;
 
 /**
  * This class is used to paint a track and its information
@@ -31,6 +33,9 @@ public class TrackPainter extends Component {
     public TrackPainter() {
         super();
         error = false;
+        TrackPainterListener tpl = new TrackPainterListener();
+        this.addMouseListener(tpl);
+        this.addMouseMotionListener(tpl);
     }
 
     public boolean isError() {
@@ -182,6 +187,20 @@ public class TrackPainter extends Component {
                     carriageYOffset,
                     Math.round(effectiveXOffset + carriageWidth - 1),
                     carriageYOffset + carriageHeight);
+        }
+
+    }
+
+    private class TrackPainterListener extends MouseInputAdapter {
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            System.out.println("Entered the track painter");
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            System.out.println("Mouse moved in the track painter");
         }
 
     }
