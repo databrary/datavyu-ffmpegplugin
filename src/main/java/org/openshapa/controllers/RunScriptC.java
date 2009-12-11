@@ -1,6 +1,5 @@
 package org.openshapa.controllers;
 
-import com.sun.script.jruby.JRubyScriptEngineManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,7 +10,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.LinkedList;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.swing.JFileChooser;
 import org.apache.log4j.Logger;
