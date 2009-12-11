@@ -112,7 +112,7 @@ public final class CreateNewCellC {
                                      .getCell(OpenSHAPA.getLastCreatedCellId());
                 TimeStamp ts = dc.getOffset();
                 if (ts.getTime() == 0) {
-                    ts.setTime(milliseconds - 1);
+                    ts.setTime(Math.max(0, (milliseconds - 1)));
                     dc.setOffset(ts);
                     model.replaceCell(dc);
                 }
