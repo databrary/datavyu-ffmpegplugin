@@ -58,6 +58,13 @@ public final class UIDataControllerTest extends UISpecTestCase {
             "If x>7 then x|2"};
 
      /**
+      * Nominal test output.
+      */
+     private String[] expectedNominalTestOutput = {"Subject stands up",
+            "$10432", "Hand me the manual!", "Tote_that_bale",
+            "Jeune fille celebre", "If x7 then x2"};
+
+     /**
       * Text test input.
       */
      private String[] textTestInput = {"Subject stands up ", "$10,432",
@@ -73,6 +80,12 @@ public final class UIDataControllerTest extends UISpecTestCase {
             "-123"};
 
      /**
+      * Integer test output.
+      */
+     private String[] expectedIntegerTestOutput = {"19", "-43210", "289", "178",
+        "<val>", "72", "999999999999999999", "3895", "-", "0", "-123"};
+
+     /**
       * Float test input.
       */
      private String[] floatTestInput = {"1a.9", "10-43.2",
@@ -80,6 +93,13 @@ public final class UIDataControllerTest extends UISpecTestCase {
             "If x?7 then. x? 2 ", "589.138085638", "000389.5",
             "-0.1", "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34",
             "-123"};
+
+     /**
+      * Float test output.
+      */
+     private String[] expectedFloatTestOutput = {"1.9", "-43.21", "289", "178", 
+        "0", "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0",
+        "-0.34", "-23.34", "0.34", "12.34", "-123"};
 
     static {
       UISpec4J.setWindowInterceptionTimeLimit(120000);
@@ -90,7 +110,9 @@ public final class UIDataControllerTest extends UISpecTestCase {
      * Standard test sequence focussing on jogging
      * @throws Exception any exception
      */
-    public void testStandardSequence1() throws Exception {
+    private void StandardSequence1(String varName, String varType, 
+            String[] testInputArray, String[] testExpectedArray)
+            throws Exception {
         // Retrieve the components and set variable
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
@@ -99,10 +121,10 @@ public final class UIDataControllerTest extends UISpecTestCase {
                 .getAwtComponent()));
 
         //1. Create a new variable of random type
-        String varName = "testVar";
-        String varRadio = "text";
+        String vName = varName;
+        String vRadio = varType;
 
-        createNewVariable(varName, varRadio);
+        createNewVariable(vName, vRadio);
 
         //2. Open Data Viewer Controller
         Window dvc = WindowInterceptor.run(menuBar.getMenu("Controller")
@@ -111,9 +133,9 @@ public final class UIDataControllerTest extends UISpecTestCase {
 
         //3. Create new cell - so we have something to send key to because
         // no focus handling
-        ss.getSpreadsheetColumn(varName).requestFocus();
+        ss.getSpreadsheetColumn(vName).requestFocus();
         menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+        Vector<Cell> cells = ss.getSpreadsheetColumn(vName).getCells();
 
         //4. Test jogging back and forth
         Cell c = cells.elementAt(0);
@@ -145,7 +167,7 @@ public final class UIDataControllerTest extends UISpecTestCase {
         ti.add(new KeyItem(Key.NUM0));
         c.enterText(Cell.VALUE, ti);
 
-        cells = ss.getSpreadsheetColumn(varName).getCells();
+        cells = ss.getSpreadsheetColumn(vName).getCells();
 
         assertTrue(cells.size() == 2);
         assertTrue(cells.elementAt(0).getOffsetTime().toString()
@@ -156,11 +178,13 @@ public final class UIDataControllerTest extends UISpecTestCase {
                 .equals("00:00:00:000"));
 
         //6. Insert value into both cells
-        cells.elementAt(0).enterText(Cell.VALUE, textTestInput[0]);
-        cells.elementAt(1).enterText(Cell.VALUE, textTestInput[1]);
+        cells.elementAt(0).enterText(Cell.VALUE, testInputArray[0]);
+        cells.elementAt(1).enterText(Cell.VALUE, testInputArray[1]);
 
-        assertTrue(cells.elementAt(0).getValueText().equals(textTestInput[0]));
-        assertTrue(cells.elementAt(1).getValueText().equals(textTestInput[1]));
+        assertTrueEqualValues(cells.elementAt(0).getValueText(),
+                testExpectedArray[0]);
+        assertTrueEqualValues(cells.elementAt(1).getValueText(),
+                testExpectedArray[1]);
 
         //7. Jog forward 60 times and change cell onset
         ti.removeAllElements();
@@ -226,7 +250,7 @@ public final class UIDataControllerTest extends UISpecTestCase {
         ti.add(new KeyItem(Key.NUM0));
         c.enterText(Cell.VALUE, ti);
 
-        cells = ss.getSpreadsheetColumn(varName).getCells();
+        cells = ss.getSpreadsheetColumn(vName).getCells();
 
         assertTrue(cells.size() == 3);
         /*BugzID:892 - assertTrue(cells.elementAt(1).getOffsetTime().toString()
@@ -236,6 +260,27 @@ public final class UIDataControllerTest extends UISpecTestCase {
         assertTrue(cells.elementAt(2).getOffsetTime().toString()
                 .equals("00:00:00:000"));
     }
+    
+    /**
+     * Runs standardsequence1 for different variable types (except matrix and
+     * predicate), side by side.
+     * @throws Exception any exception
+     */
+    public void testStandardSequence1() throws Exception {
+        //Text
+        StandardSequence1("textVar", "text", textTestInput, textTestInput);
+//        //Integer
+//        StandardSequence1("intVar", "integer", integerTestInput,
+//                expectedIntegerTestOutput);
+//        //Float
+//        StandardSequence1("floatVar", "float", floatTestInput,
+//                expectedFloatTestOutput);
+//        //Nominal
+//        StandardSequence1("nomVar", "nominal", nominalTestInput,
+//                expectedNominalTestOutput);
+    }
+
+
 
     /**
      * Asserts true is two cell values are equal.
