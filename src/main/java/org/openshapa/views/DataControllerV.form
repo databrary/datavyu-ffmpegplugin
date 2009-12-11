@@ -166,7 +166,7 @@
         <Component class="javax.swing.JButton" name="playButton">
           <Properties>
             <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-              <action class="org.openshapa.views.DataControllerV" id="playAction" methodName="playAction"/>
+              <action class="org.openshapa.views.QTVideoController" id="playAction" methodName="playAction"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" resourceKey="playButton.icon"/>
             <Property name="focusPainted" type="boolean" value="false"/>

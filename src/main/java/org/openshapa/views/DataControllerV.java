@@ -20,10 +20,9 @@ import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
-import org.openshapa.event.MarkerEvent;
 import org.openshapa.event.TracksControllerEvent;
 import org.openshapa.event.TracksControllerListener;
-import org.openshapa.event.NeedleEvent;
+import org.openshapa.graphics.event.NeedleEvent;
 import org.openshapa.project.Project;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer;
@@ -150,9 +149,6 @@ public final class DataControllerV extends OpenSHAPADialog
     /** The maximum duration out of all data being played */
     private long maxDuration;
 
-    private long windowPlayStart;
-    private long windowPlayEnd;
-
     //--------------------------------------------------------------------------
     // [initialization]
     //
@@ -174,9 +170,6 @@ public final class DataControllerV extends OpenSHAPADialog
         lastSync = 0;
 
         maxDuration = 0;
-
-        windowPlayStart = 0;
-        windowPlayEnd = 0;
 
         tracksControllerV = new TracksControllerV();
         tracksPanel.add(tracksControllerV.getTracksPanel());
@@ -204,18 +197,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param time Current clock time in milliseconds.
      */
     public void clockStart(final long time) {
-        long playTime = time;
-        if (playTime < windowPlayStart) {
-            playTime = windowPlayStart;
-            clockStep(playTime);
-            float currentRate = clock.getRate();
-            clock.stop();
-            clock.setTime(playTime);
-            clock.setRate(currentRate);
-            clock.start();
-        }
-
-        setCurrentTime(playTime);
+        setCurrentTime(time);
 //        for (DataViewer viewer : viewers) {
 //            viewer.play();
 //        }
@@ -234,11 +216,10 @@ public final class DataControllerV extends OpenSHAPADialog
                 lastSync = time;
 
                 // BugzID:756 - don't play video once past the max duration.
-                if (time >= windowPlayEnd && clock.getRate() >= 0) {
+                if (time >= maxDuration && clock.getRate() >= 0) {
                     clock.stop();
-                    clock.setTime(windowPlayEnd);
-                    clockStop(windowPlayEnd);
-//                    System.out.println("Stopped playing: " + time + " playEnd: " + windowPlayEnd);
+                    clock.setTime(maxDuration);
+                    clockStop(maxDuration);
                     return;
                 }
 
@@ -342,16 +323,6 @@ public final class DataControllerV extends OpenSHAPADialog
                 if (dv.getDuration() + dv.getOffset() > maxDuration) {
                     maxDuration = dv.getDuration() + dv.getOffset();
                 }
-            }
-
-            if (windowPlayEnd > maxDuration) {
-                windowPlayEnd = maxDuration;
-                tracksControllerV.setPlayRegionEnd(windowPlayEnd);
-            }
-
-            if (windowPlayStart > windowPlayEnd) {
-                windowPlayStart = 0;
-                tracksControllerV.setPlayRegionStart(windowPlayStart);
             }
 
             // Remove the data viewer from the project
@@ -875,11 +846,6 @@ public final class DataControllerV extends OpenSHAPADialog
         if (viewer.getOffset() + viewer.getDuration() > maxDuration) {
             maxDuration = viewer.getOffset() + viewer.getDuration();
         }
-
-        if (windowPlayEnd < maxDuration) {
-            windowPlayEnd = maxDuration;
-            tracksControllerV.setPlayRegionEnd(windowPlayEnd);
-        }
     }
 
     /**
@@ -914,42 +880,11 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     public void tracksControllerChanged(TracksControllerEvent e) {
-        switch (e.getTracksEvent()) {
-            case NEEDLE_EVENT:
-                handleNeedleEvent((NeedleEvent)e.getEventObject());
-                break;
-            case MARKER_EVENT:
-                handleMarkerEvent((MarkerEvent)e.getEventObject());
-                break;
-            default: break;
-        }
-    }
-
-    private void handleNeedleEvent(NeedleEvent e) {
-        this.clockStop(e.getTime());
-        this.clockStep(e.getTime());
-        this.setCurrentTime(e.getTime());
-        clock.setTime(e.getTime());
-    }
-
-    private void handleMarkerEvent(MarkerEvent e) {
-        switch (e.getMarker()) {
-            case START_MARKER:
-                if ((e.getTime() < maxDuration) &&
-                        (e.getTime() < windowPlayEnd)) {
-                    windowPlayStart = e.getTime();
-                    tracksControllerV.setPlayRegionStart(windowPlayStart);
-                }
-                break;
-            case END_MARKER:
-                if ((e.getTime() <= maxDuration) &&
-                        (e.getTime() > windowPlayStart)) {
-                    windowPlayEnd = e.getTime();
-                    tracksControllerV.setPlayRegionEnd(windowPlayEnd);
-                }
-                break;
-            default: break;
-        }
+        NeedleEvent needleEvent = e.getNeedleEvent();
+        this.clockStop(needleEvent.getTime());
+        this.clockStep(needleEvent.getTime());
+        this.setCurrentTime(needleEvent.getTime());
+        clock.setTime(needleEvent.getTime());
     }
 
     //--------------------------------------------------------------------------
