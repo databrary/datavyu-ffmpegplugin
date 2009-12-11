@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  *
  */
-public class UiUtil {
+public class UIUtils {
 
     /**
      * Checks if two text files are equal.

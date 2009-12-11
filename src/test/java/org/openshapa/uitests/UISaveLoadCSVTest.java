@@ -4,13 +4,15 @@ package org.openshapa.uitests;
 import java.io.File;
 import org.uispec4j.interception.MainClassAdapter;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.util.UiUtil;
+import org.openshapa.util.UIUtils;
 import org.uispec4j.MenuBar;
+import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 import org.uispec4j.interception.BasicHandler;
 import org.uispec4j.interception.FileChooserHandler;
+import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 
 /**
@@ -160,7 +162,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         menuBar.getMenu("File").getSubMenu("Save").click();
 
         // 3. Check that CSV file is correct
-        assertTrue(FileTester.areFilesSame(testCSV, savedCSV));
+        assertTrue(UIUtils.areFilesSame(testCSV, savedCSV));
     }
 
     /**
@@ -223,8 +225,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         }
 
         // 3. Check that CSV file is correct
-        assertTrue(UiUtil.areFilesSame(testOutputCSV, savedCSV));
-        window.dispose();
+        assertTrue(UIUtils.areFilesSame(testOutputCSV, savedCSV));
     }
 
     /**
@@ -233,9 +234,9 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
 
-    public void testLoadingCSVv1() throws Exception {
-        this.loadTest("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
-    }
+//    public void testLoadingCSVv1() throws Exception {
+//        this.loadTest("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
+//    }
 
     /**
      * Test loading a database from a version 2 CSV file.
@@ -243,8 +244,8 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
 
-    public void testLoadingCSVv2() throws Exception {
-        this.loadTest("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
-    }
+//    public void testLoadingCSVv2() throws Exception {
+//        this.loadTest("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
+//    }
 
 }

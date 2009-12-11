@@ -23,10 +23,8 @@ public final class UIBug661Test extends UISpecTestCase {
      */
     @Override
     protected void setUp() throws Exception {
-        /*
         super.setUp();
         setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
-         */
     }
 
      /**
@@ -85,7 +83,6 @@ public final class UIBug661Test extends UISpecTestCase {
      * @throws Exception on any error
      */
     public void testOpenDialogLocation() throws Exception {
-        /*
         String root = System.getProperty("testPath");
         File location1 = new File(root + "ui/location1");
         File location2 = new File(root + "ui/location2");
@@ -95,6 +92,5 @@ public final class UIBug661Test extends UISpecTestCase {
         openFileAndTest("location2/test.shapa", location1);
         //At this point it should remember location2
         openFileAndTest("location1/test.shapa", location2);
-         */
     }
 }

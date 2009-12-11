@@ -31,6 +31,8 @@ public final class UIVariableListTest extends UISpecTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
+        setAdapter(null);
+        setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
      /**
