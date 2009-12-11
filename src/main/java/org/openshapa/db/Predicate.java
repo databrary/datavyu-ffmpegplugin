@@ -1539,15 +1539,13 @@ public class Predicate extends DBElement
                     {
                         cdv = new ColPredDataValue((ColPredDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1570,15 +1568,13 @@ public class Predicate extends DBElement
                     {
                         cdv = new FloatDataValue((FloatDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1599,15 +1595,13 @@ public class Predicate extends DBElement
                     {
                         cdv = new IntDataValue((IntDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1627,6 +1621,10 @@ public class Predicate extends DBElement
                     if ( dv instanceof NominalDataValue )
                     {
                         cdv = new NominalDataValue((NominalDataValue)dv);
+                    }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
                     }
                     else if ( dv instanceof UndefinedDataValue )
                     {
@@ -1651,15 +1649,13 @@ public class Predicate extends DBElement
                     {
                         cdv = new PredDataValue((PredDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1680,15 +1676,13 @@ public class Predicate extends DBElement
                     {
                         cdv = new TimeStampDataValue((TimeStampDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1710,15 +1704,13 @@ public class Predicate extends DBElement
                         cdv =
                              new QuoteStringDataValue((QuoteStringDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -1740,15 +1732,13 @@ public class Predicate extends DBElement
                     {
                         cdv = new TextStringDataValue((TextStringDataValue)dv);
                     }
+                    else if ( dv instanceof QueryVarDataValue )
+                    {
+                        cdv = new QueryVarDataValue((QueryVarDataValue)dv);
+                    }
                     else if ( dv instanceof UndefinedDataValue )
                     {
                         cdv = new UndefinedDataValue((UndefinedDataValue)dv);
-                    }
-                    else if ( ( this.queryVarOK ) &&
-                              ( dv instanceof NominalDataValue ) &&
-                              ( ((NominalDataValue)dv).isQueryVar() ) )
-                    {
-                        cdv = new NominalDataValue((NominalDataValue)dv);
                     }
                     else if ( this.queryVarOK )
                     {
@@ -3372,11 +3362,8 @@ public class Predicate extends DBElement
                 cpfa = (ColPredFormalArg)fa;
 
                 if ( ! ( ( arg instanceof ColPredDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue )
                        )
                    )
                 {
@@ -3406,11 +3393,8 @@ public class Predicate extends DBElement
                 ffa = (FloatFormalArg)fa;
 
                 if ( ! ( ( arg instanceof FloatDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3454,11 +3438,8 @@ public class Predicate extends DBElement
                 ifa = (IntFormalArg)fa;
 
                 if ( ! ( ( arg instanceof IntDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3502,12 +3483,13 @@ public class Predicate extends DBElement
                 nfa = (NominalFormalArg)fa;
 
                 if ( ! ( ( arg instanceof NominalDataValue ) ||
+                         ( arg instanceof QueryVarDataValue ) ||
                          ( arg instanceof UndefinedDataValue )
                        )
                    )
                 {
                     throw new SystemErrorException(mName + "Arg " +
-                            "type mismatch: nominal DV, or " +
+                            "type mismatch: nominal DV, query var DV, or " +
                             "undefined DV expected.");
                 }
 
@@ -3524,9 +3506,7 @@ public class Predicate extends DBElement
                     if ( ( ndv.getSubRange() ) &&
                          ( ndv.getItsValue() != null ) )
                     {
-                        if ( ( ! nfa.approved(ndv.getItsValue()) ) &&
-                             ( ( ! this.queryVarOK ) ||
-                               ( ! ndv.isQueryVar() ) ) )
+                        if ( ! nfa.approved(ndv.getItsValue()) )
                         {
                             throw new SystemErrorException(mName +
                                 "ndv.getItsValue() out of range.");
@@ -3539,11 +3519,8 @@ public class Predicate extends DBElement
                 pfa = (PredFormalArg)fa;
 
                 if ( ! ( ( arg instanceof PredDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3587,11 +3564,8 @@ public class Predicate extends DBElement
                 tsfa = (TimeStampFormalArg)fa;
 
                 if ( ! ( ( arg instanceof TimeStampDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3633,11 +3607,8 @@ public class Predicate extends DBElement
 
             case QUOTE_STRING:
                 if ( ! ( ( arg instanceof QuoteStringDataValue ) ||
-                         ( arg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( arg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)arg).isQueryVar() )
-                         )
+                         ( arg instanceof QueryVarDataValue ) ||
+                         ( arg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -3677,6 +3648,7 @@ public class Predicate extends DBElement
                               ( arg instanceof NominalDataValue ) ||
                               ( arg instanceof PredDataValue ) ||
                               ( arg instanceof TimeStampDataValue ) ||
+                              ( arg instanceof QueryVarDataValue ) ||
                               ( arg instanceof QuoteStringDataValue ) ||
                               ( arg instanceof UndefinedDataValue ) ) )
                 {
@@ -4061,11 +4033,8 @@ public class Predicate extends DBElement
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof ColPredDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) 
                          )
                      )
                    )
@@ -4085,11 +4054,8 @@ public class Predicate extends DBElement
                 }
 
                 if ( ! ( ( newArg instanceof ColPredDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -4155,11 +4121,8 @@ public class Predicate extends DBElement
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof FloatDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( newArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) 
                          )
                        )
                    )
@@ -4179,11 +4142,8 @@ public class Predicate extends DBElement
                 }
 
                 if ( ! ( ( newArg instanceof FloatDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -4230,11 +4190,8 @@ public class Predicate extends DBElement
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof IntDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) 
                          )
                        )
                    )
@@ -4254,11 +4211,8 @@ public class Predicate extends DBElement
                 }
 
                 if ( ! ( ( newArg instanceof IntDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -4305,7 +4259,8 @@ public class Predicate extends DBElement
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof NominalDataValue ) ||
-                         ( oldArg instanceof UndefinedDataValue )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue )
                        )
                      )
                    )
@@ -4316,6 +4271,7 @@ public class Predicate extends DBElement
                 }
 
                 if ( ! ( ( newArg instanceof NominalDataValue ) ||
+                         ( newArg instanceof QueryVarDataValue ) ||
                          ( newArg instanceof UndefinedDataValue )
                        )
                    )
@@ -4338,9 +4294,7 @@ public class Predicate extends DBElement
                     if ( ( new_ndv.getSubRange() ) &&
                          ( new_ndv.getItsValue() != null ) )
                     {
-                        if ( ( ! nfa.approved(new_ndv.getItsValue()) ) &&
-                             ( ( ! this.queryVarOK ) ||
-                               ( ! new_ndv.isQueryVar() ) ) )
+                        if ( ! nfa.approved(new_ndv.getItsValue()) ) 
                         {
                             throw new SystemErrorException(mName +
                                 "new_ndv.getItsValue() out of range.");
@@ -4354,11 +4308,8 @@ public class Predicate extends DBElement
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof PredDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) 
                        )
                      )
                    )
@@ -4378,11 +4329,8 @@ public class Predicate extends DBElement
                 }
 
                 if ( ! ( ( newArg instanceof PredDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -4465,11 +4413,8 @@ public class Predicate extends DBElement
 
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof TimeStampDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) 
                          )
                        )
                    )
@@ -4489,11 +4434,8 @@ public class Predicate extends DBElement
                 }
 
                 if ( ! ( ( newArg instanceof TimeStampDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -4545,11 +4487,8 @@ public class Predicate extends DBElement
             case QUOTE_STRING:
                 if ( ( oldArg != null ) &&
                      ( ! ( ( oldArg instanceof QuoteStringDataValue ) ||
-                           ( oldArg instanceof UndefinedDataValue ) ||
-                           ( ( this.queryVarOK ) ||
-                             ( oldArg instanceof NominalDataValue ) &&
-                             ( ((NominalDataValue)oldArg).isQueryVar() )
-                           )
+                           ( oldArg instanceof QueryVarDataValue ) ||
+                           ( oldArg instanceof UndefinedDataValue ) 
                          )
                      )
                    )
@@ -4569,11 +4508,8 @@ public class Predicate extends DBElement
                 }
 
                 if ( ! ( ( newArg instanceof QuoteStringDataValue ) ||
-                         ( newArg instanceof UndefinedDataValue ) ||
-                         ( ( this.queryVarOK ) ||
-                           ( newArg instanceof NominalDataValue ) &&
-                           ( ((NominalDataValue)newArg).isQueryVar() )
-                         )
+                         ( newArg instanceof QueryVarDataValue ) ||
+                         ( newArg instanceof UndefinedDataValue ) 
                        )
                    )
                 {
@@ -4622,6 +4558,7 @@ public class Predicate extends DBElement
                               ( newArg instanceof NominalDataValue ) ||
                               ( newArg instanceof PredDataValue ) ||
                               ( newArg instanceof TimeStampDataValue ) ||
+                              ( newArg instanceof QueryVarDataValue ) ||
                               ( newArg instanceof QuoteStringDataValue ) ||
                               ( newArg instanceof UndefinedDataValue ) ) )
                 {

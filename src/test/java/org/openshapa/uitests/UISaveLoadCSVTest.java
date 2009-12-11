@@ -1,12 +1,10 @@
 package org.openshapa.uitests;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.util.FileTester;
 import org.uispec4j.MenuBar;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
@@ -163,7 +161,7 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         menuBar.getMenu("File").getSubMenu("Save").click();
 
         // 3. Check that CSV file is correct
-        assertTrue(areFilesSame(testCSV, savedCSV));
+        assertTrue(FileTester.areFilesSame(testCSV, savedCSV));
     }
 
     /**
@@ -226,7 +224,8 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         }
 
         // 3. Check that CSV file is correct
-        assertTrue(areFilesSame(testOutputCSV, savedCSV));
+        assertTrue(FileTester.areFilesSame(testOutputCSV, savedCSV));
+        window.dispose();
     }
 
     /**
@@ -249,35 +248,4 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
         this.loadTest("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
     }
 
-    /**
-     * Checks if two text files are equal.
-     *
-     * @param file1 First file
-     * @param file2 Second file
-     *
-     * @throws IOException on file read error
-     * @return true if equal, else false
-     */
-    private Boolean areFilesSame(final File file1, final File file2)
-    throws IOException {
-        BufferedReader r1 = new BufferedReader(new FileReader(file1));
-        BufferedReader r2 = new BufferedReader(new FileReader(file2));
-
-        String line1 = r1.readLine();
-        String line2 = r2.readLine();
-        if (!line1.equals(line2)) {
-            return false;
-        }
-
-        while (line1 != null && line2 != null) {
-            if (!line1.equals(line2)) {
-                return false;
-            }
-
-            line1 = r1.readLine();
-            line2 = r2.readLine();
-        }
-
-        return true;
-    }
 }

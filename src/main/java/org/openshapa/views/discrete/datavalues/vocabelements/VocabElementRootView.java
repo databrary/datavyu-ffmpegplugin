@@ -107,22 +107,4 @@ public final class VocabElementRootView extends JTextArea  {
     public Vector<EditorComponent> getEditors() {
         return editors;
     }
-
-    /**
-     * Process key events that have been dispatched to this component, pass
-     * them through to all listeners, and then if they are not consumed pass
-     * it onto the parent of this component.
-     *
-     * @param ke They keyboard event that was dispatched to this component.
-     */
-    @Override
-    public void processKeyEvent(final KeyEvent ke) {
-
-        super.processKeyEvent(ke);
-
-        if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP
-            || ke.getKeyCode() == KeyEvent.VK_DOWN) {
-            getParent().dispatchEvent(ke);
-        }
-    }
 }

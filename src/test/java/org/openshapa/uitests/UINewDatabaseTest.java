@@ -96,8 +96,6 @@ public final class UINewDatabaseTest extends UISpecTestCase {
              })
             .run();
 
-
-
         // 2a. Check that all data is cleared
         Spreadsheet ss2 = new Spreadsheet((SpreadsheetPanel)
               (window.getUIComponents(Spreadsheet.class)[0].getAwtComponent()));

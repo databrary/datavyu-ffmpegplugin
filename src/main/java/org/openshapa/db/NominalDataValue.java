@@ -25,19 +25,9 @@ public final class NominalDataValue extends DataValue {
     /*************************************************************************/
     /*
      * ItsDefault:  Constant containing the value to be assigned to all
-     *      float data values unless otherwise specified.
+     *      nominal data values unless otherwise specified.
      *
-     * itsValue:   Long containing the value assigned to the formal argument.
-     *
-     * queryVar: Boolean that is set to true iff the the value of the nominal
-     *      is a valid query variable -- that is if the nominal starts with a
-     *      '?', and is at least two characters long.
-     *
-     *      The concept of a query variable is a hold over from MacSHAPA, that
-     *      I was hoping to get rid of in OpenSHAPA -- but it seems that I am
-     *      stuck with it afterall.  However, by implementing it in this way,
-     *      we make it easy to ignore it in contexts other than the MacSHAPA
-     *      query column variable.
+     * itsValue:   String containing the value assigned to the formal argument.
      *
      * minVal & maxVal don't appear in NominalDataValue as a subrange of
      *      nominals is expressed as a set of allowed values.  Given the
@@ -51,11 +41,6 @@ public final class NominalDataValue extends DataValue {
 
     /** the value assigned to the associated formal argument in this case. */
     String itsValue = ItsDefault;
-
-    /** whether the value currently assigned to the Nominal is a valid query
-     *  variable name.
-     */
-    boolean queryVar = false;
 
 
     /*************************************************************************/
@@ -200,7 +185,7 @@ public final class NominalDataValue extends DataValue {
      *
      * Changes:
      *
-     *    - Added code to maintain this.isQueryVar.  -- 10/20/08
+     *    - None
      */
 
     public void setItsValue(String value)
@@ -265,18 +250,8 @@ public final class NominalDataValue extends DataValue {
             }
         }
 
-        if ( ( this.itsValue != null ) &&
-             ( this.itsValue.length() >= 1 ) &&
-             ( this.itsValue.charAt(0) == '?' ) )
-        {
-            this.queryVar = true;
-        }
-        else
-        {
-            this.queryVar = false;
-        }
-
         this.valueSet();
+
         return;
 
     } /* QuoteStringDataValue::setItsValue() */
@@ -784,28 +759,6 @@ public final class NominalDataValue extends DataValue {
     } /* NominalDataValue::coerceToRange() */
 
 
-    /**
-     * isQueryVar()
-     *
-     * Return true if the current value of the nominal is a valid MacSHAPA
-     * style query variable name, and false otherwise.
-     *
-     *                                               -- 10/20/08
-     *
-     * Changes:
-     *
-     *    - None.
-     */
-
-    public boolean isQueryVar()
-
-    {
-
-        return this.queryVar;
-
-    } /* NominalDataValue::isQueryVar() */
-
-
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
@@ -847,7 +800,6 @@ public final class NominalDataValue extends DataValue {
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash += (this.queryVar ? 1 : 0) * Constants.SEED1;
         hash += HashUtils.Obj2H(itsValue) * Constants.SEED2;
 
         return hash;
@@ -871,7 +823,6 @@ public final class NominalDataValue extends DataValue {
         // Must be this class to be here
         NominalDataValue n = (NominalDataValue) obj;
         return super.equals(obj)
-            && (n.queryVar == this.queryVar)
             && (itsValue == null ? n.itsValue == null
                                  : itsValue.equals(n.itsValue));
     }

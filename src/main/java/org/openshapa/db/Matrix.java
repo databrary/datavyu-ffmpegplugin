@@ -1466,7 +1466,8 @@ public class Matrix implements Cloneable {
                      ( arg instanceof TextStringDataValue ) ||
                      ( arg instanceof UndefinedDataValue ) ) )
             {
-                throw new SystemErrorException(mName + "arg of unknown type");
+                throw new SystemErrorException(mName + 
+                        "arg of unknown or disallowed type");
             }
         }
 
@@ -1765,7 +1766,7 @@ public class Matrix implements Cloneable {
                               ( newArg instanceof UndefinedDataValue ) ) )
                 {
                     throw new SystemErrorException(mName +
-                            "Unknown subtype of DataValue");
+                            "Unknown or disallowed subtype of DataValue");
                 }
                 break;
 
@@ -3168,7 +3169,7 @@ public class Matrix implements Cloneable {
                                       ( arg instanceof UndefinedDataValue ) ) )
                         {
                             throw new SystemErrorException(mName +
-                                    "Unknown subtype of DataValue");
+                                    "Unknown or disallowed subtype of DataValue");
                         }
 
                         if ( arg instanceof ColPredDataValue )
@@ -3783,7 +3784,7 @@ public class Matrix implements Cloneable {
                               ( newArg instanceof UndefinedDataValue ) ) )
                 {
                     throw new SystemErrorException(mName +
-                            "Unknown subtype of DataValue");
+                            "Unknown or disallowed subtype of DataValue");
                 }
 
                 if ( newArg instanceof ColPredDataValue )

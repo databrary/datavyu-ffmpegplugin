@@ -101,7 +101,7 @@ public final class FormalArgEditor extends EditorComponent {
      * @param e The KeyEvent that triggered this action.
      */
     @Override
-    public void keyTyped(final KeyEvent e) {
+    public void keyTyped(KeyEvent e) {
 
         // The backspace key removes digits from behind the caret.
         if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN

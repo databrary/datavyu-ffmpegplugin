@@ -20,14 +20,6 @@
         )
         ( SPREADSHEET-VARIABLE-DECLARATIONS>
           (
-            ( |a nominal var|
-              (
-                ( TYPE> <<NOMINAL>> )
-                ( VARIABLE-LENGTH> FALSE )
-                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
-                ( COLUMN-WIDTH> 200 )
-              )
-            )
             ( |a predicate var|
               (
                 ( TYPE> <<PREDICATE>> )
@@ -84,28 +76,18 @@
                 ( COLUMN-WIDTH> 200 )
               )
             )
+            ( |a nominal var|
+              (
+                ( TYPE> <<NOMINAL>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
           )
         )
         ( SPREADSHEET-VARIABLE-DEFINITIONS>
           (
-            ( |a nominal var|
-              (
-                ( CELLS>
-                  (
-                    (
-                      ( ONSET> 0 )
-                      ( OFFSET> 0 )
-                      ( |<val>| |this is nominal cell| )
-                    )
-                    (
-                      ( ONSET> 60 )
-                      ( OFFSET> 60 )
-                      ( |<val>| |<val>| )
-                    )
-                  )
-                )
-              )
-            )
             ( |a predicate var|
               (
                 ( CELLS>
@@ -267,6 +249,24 @@
                       ( ONSET> 60 )
                       ( OFFSET> 60 )
                       ( |<val>| 0.000000 )
+                    )
+                  )
+                )
+              )
+            )
+            ( |a nominal var|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |this is nominal cell| )
+                    )
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 60 )
+                      ( |<val>| |<val>| )
                     )
                   )
                 )

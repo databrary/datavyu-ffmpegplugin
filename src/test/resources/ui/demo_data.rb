@@ -58,11 +58,7 @@ begin
     pve0.append_formal_arg(farg)
     farg = NominalFormalArg.new($db, "<nominal>")
     pve0.append_formal_arg(farg)
-    farg = PredFormalArg.new($db, "<pred>")
-    pve0.append_formal_arg(farg)
     farg = QuoteStringFormalArg.new($db, "<qstring>")
-    pve0.append_formal_arg(farg)
-    farg = UnTypedFormalArg.new($db, "<untyped>")
     pve0.append_formal_arg(farg)
     predID0 = $db.add_pred_ve(pve0)
   end
@@ -83,18 +79,17 @@ begin
     mve0.append_formal_arg(farg)
     farg = QuoteStringFormalArg.new($db, "<qstring>")
     mve0.append_formal_arg(farg)
-    farg = UnTypedFormalArg.new($db, "<untyped>")
-    mve0.append_formal_arg(farg)
     $db.replace_matrix_ve(mve0)
   end
   matID0 = mve0.get_id()
 
   # Create some data
-  coldata = [0.1234, 1234, "textdata1", "nom1"]
+  coldata = [0.1234, 1234, "textdata", "nom1"]
   col1 = [0, 2, 3, 10, 10, 15, 20, 22, 30, 34, 33, 35, 35, 50, 52, 53, 54, 55, 56, 57]
   col2 = [0, 20, 30, 31, 32, 38, 46, 51, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62]
   col3 = [0, 4, 5, 10, 11, 15, 17, 22, 24, 34, 34, 35, 35, 50, 52, 53, 54, 55, 56, 57]
   col4 = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38]
+  specialstring = "moo"
   for cc in 0...colnames.length
     col = $db.get_column(colnames[cc])
     mve = $db.get_matrix_ve(col.its_mve_id)
@@ -117,7 +112,11 @@ begin
         cell.offset = TimeStamp.new(1000, col2[dd * 2 + 1] * 1000)
       elsif coltypes[cc] == MatrixVocabElement::MatrixType::TEXT
         dv = TextStringDataValue.new($db)
-        dv.set_its_value(coldata[cc])
+		if dd % 2 == 0 
+		 dv.set_its_value(coldata[cc] + dd.to_s())
+		else
+		 dv.set_its_value(specialstring + dd.to_s())
+		end
         cell.onset = TimeStamp.new(1000, col3[dd * 2] * 1000)
         cell.offset = TimeStamp.new(1000, col3[dd * 2 + 1] * 1000)
       elsif coltypes[cc] == MatrixVocabElement::MatrixType::NOMINAL
@@ -137,17 +136,13 @@ begin
         fargid = pve0.get_formal_arg(2).get_id()
         fdv2 = NominalDataValue.new($db, fargid, "a_nominal")
         fargid = pve0.get_formal_arg(3).get_id()
-        fdv3 = PredDataValue.new($db, fargid, Predicate.new($db, predID0))
-        fargid = pve0.get_formal_arg(4).get_id()
-        fdv4 = QuoteStringDataValue.new($db, fargid, "quote_string")
-        fargid = pve0.get_formal_arg(5).get_id()
-        fdv5 = UndefinedDataValue.new($db, fargid)
+        fdv3 = QuoteStringDataValue.new($db, fargid, "quote_string")
 
         if dd == 0
           # construct a predicate with null args in first cell of column
           pred = Predicate.new($db, predID0)
         else
-          pred = Predicate.new(Predicate.construct($db, predID0, fdv0, fdv1, fdv2, fdv3, fdv4, fdv5))
+          pred = Predicate.new(Predicate.construct($db, predID0, fdv0, fdv1, fdv2, fdv3))
         end
 
         dv = PredDataValue.new($db)
@@ -166,14 +161,12 @@ begin
         fdv2 = NominalDataValue.new($db, fargid, "nm")
         fargid = mve0.get_formal_arg(3).get_id()
         fdv3 = QuoteStringDataValue.new($db, fargid, "qs")
-        fargid = mve0.get_formal_arg(4).get_id()
-        fdv4 = UndefinedDataValue.new($db, fargid)
 
         if dd == 0
           # construct a matrix with null args in first cell of column
           mat = Matrix.new($db, matID0)
         else
-          mat = Matrix.new(Matrix.construct($db, matID0, fdv0, fdv1, fdv2, fdv3, fdv4))
+          mat = Matrix.new(Matrix.construct($db, matID0, fdv0, fdv1, fdv2, fdv3))
         end
       end
 

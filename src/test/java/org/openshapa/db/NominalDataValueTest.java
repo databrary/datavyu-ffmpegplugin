@@ -373,23 +373,24 @@ public class NominalDataValueTest extends DataValueTest {
         assertNull(n_value.coerceToRange("charly"));
     }
 
-    /**
-     * Test of isQueryVar method, of class NominalDataValue.
-     *
-     * @throws org.openshapa.db.SystemErrorException on failure.
-     */
-    @Test
-    public void testIsQueryVar() throws SystemErrorException {
-        NominalDataValue n_value0 = new NominalDataValue(db, ufa.getID(),
-                                                         "?query_var");
-        NominalDataValue n_value1 = new NominalDataValue(db, ufa.getID(),
-                                                         "!?query_var");
-        NominalDataValue n_value2 = new NominalDataValue(db, ufa.getID(), "?");
-
-        assertEquals(n_value0.isQueryVar(), true);
-        assertEquals(n_value1.isQueryVar(), false);
-        assertEquals(n_value2.isQueryVar(), true);
-    }
+    // TODO: Delete this eventually
+//    /**
+//     * Test of isQueryVar method, of class NominalDataValue.
+//     *
+//     * @throws org.openshapa.db.SystemErrorException on failure.
+//     */
+//    @Test
+//    public void testIsQueryVar() throws SystemErrorException {
+//        NominalDataValue n_value0 = new NominalDataValue(db, ufa.getID(),
+//                                                         "?query_var");
+//        NominalDataValue n_value1 = new NominalDataValue(db, ufa.getID(),
+//                                                         "!?query_var");
+//        NominalDataValue n_value2 = new NominalDataValue(db, ufa.getID(), "?");
+//
+//        assertEquals(n_value0.isQueryVar(), true);
+//        assertEquals(n_value1.isQueryVar(), false);
+//        assertEquals(n_value2.isQueryVar(), true);
+//    }
 
     /**
      * Test of Construct method, of class NominalDataValue.
@@ -1905,104 +1906,105 @@ public class NominalDataValueTest extends DataValueTest {
             }
         }
 
-        if ( failures == 0 )
-        {
-            if ( ( ndv3.isQueryVar() != true ) ||
-                 ( ndv4.isQueryVar() != false ) ||
-                 ( ndv5.isQueryVar() != true ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( ndv3.isQueryVar() != true )
-                    {
-                        outStream.printf(
-                                "ndv3.isQueryVar() != true for val = \"%s\"\n",
-                                ndv3.getItsValue());
-                    }
-
-                    if ( ndv4.isQueryVar() != false )
-                    {
-                        outStream.printf(
-                                "ndv4.isQueryVar() != false for val = \"%s\"\n",
-                                ndv4.getItsValue());
-                    }
-
-                    if ( ndv5.isQueryVar() != true )
-                    {
-                        outStream.printf(
-                                "ndv5.isQueryVar() != true for val = \"%s\"\n",
-                                ndv5.getItsValue());
-                    }
-                }
-            }
-
-            completed = false;
-            threwSystemErrorException = false;
-            systemErrorExceptionString = null;
-
-            try
-            {
-                ndv3.setItsValue("charlie");
-                ndv4.setItsValue("?ord");
-                ndv5.setItsValue("?1");
-
-                completed = true;
-            }
-
-            catch (SystemErrorException e)
-            {
-                threwSystemErrorException = true;
-                systemErrorExceptionString = e.getMessage();
-            }
-
-            if ( ( ndv3.isQueryVar() != false ) ||
-                 ( ndv4.isQueryVar() != true ) ||
-                 ( ndv5.isQueryVar() != true ) ||
-                 ( ! completed ) ||
-                 ( threwSystemErrorException ) )
-            {
-                failures++;
-
-                if ( verbose )
-                {
-                    if ( ndv3.isQueryVar() != false )
-                    {
-                        outStream.printf(
-                                "ndv3.isQueryVar() != false for val = \"%s\"\n",
-                                ndv3.getItsValue());
-                    }
-
-                    if ( ndv4.isQueryVar() != true )
-                    {
-                        outStream.printf(
-                                "ndv4.isQueryVar() != true for val = \"%s\"\n",
-                                ndv4.getItsValue());
-                    }
-
-                    if ( ndv5.isQueryVar() != true )
-                    {
-                        outStream.printf(
-                                "ndv5.isQueryVar() != true for val = \"%s\"\n",
-                                ndv5.getItsValue());
-                    }
-
-                    if ( ! completed )
-                    {
-                        outStream.printf("Query var setItsValue test " +
-                                         "failed to complete.\n");
-                    }
-
-                    if ( threwSystemErrorException )
-                    {
-                        outStream.printf("Query var setItsValue test threw " +
-                                "a system error exception: \"%s\"",
-                                systemErrorExceptionString);
-                    }
-                }
-            }
-        }
+        // TODO: remove this eventually
+//        if ( failures == 0 )
+//        {
+//            if ( ( ndv3.isQueryVar() != true ) ||
+//                 ( ndv4.isQueryVar() != false ) ||
+//                 ( ndv5.isQueryVar() != true ) )
+//            {
+//                failures++;
+//
+//                if ( verbose )
+//                {
+//                    if ( ndv3.isQueryVar() != true )
+//                    {
+//                        outStream.printf(
+//                                "ndv3.isQueryVar() != true for val = \"%s\"\n",
+//                                ndv3.getItsValue());
+//                    }
+//
+//                    if ( ndv4.isQueryVar() != false )
+//                    {
+//                        outStream.printf(
+//                                "ndv4.isQueryVar() != false for val = \"%s\"\n",
+//                                ndv4.getItsValue());
+//                    }
+//
+//                    if ( ndv5.isQueryVar() != true )
+//                    {
+//                        outStream.printf(
+//                                "ndv5.isQueryVar() != true for val = \"%s\"\n",
+//                                ndv5.getItsValue());
+//                    }
+//                }
+//            }
+//
+//            completed = false;
+//            threwSystemErrorException = false;
+//            systemErrorExceptionString = null;
+//
+//            try
+//            {
+//                ndv3.setItsValue("charlie");
+//                ndv4.setItsValue("?ord");
+//                ndv5.setItsValue("?1");
+//
+//                completed = true;
+//            }
+//
+//            catch (SystemErrorException e)
+//            {
+//                threwSystemErrorException = true;
+//                systemErrorExceptionString = e.getMessage();
+//            }
+//
+//            if ( ( ndv3.isQueryVar() != false ) ||
+//                 ( ndv4.isQueryVar() != true ) ||
+//                 ( ndv5.isQueryVar() != true ) ||
+//                 ( ! completed ) ||
+//                 ( threwSystemErrorException ) )
+//            {
+//                failures++;
+//
+//                if ( verbose )
+//                {
+//                    if ( ndv3.isQueryVar() != false )
+//                    {
+//                        outStream.printf(
+//                                "ndv3.isQueryVar() != false for val = \"%s\"\n",
+//                                ndv3.getItsValue());
+//                    }
+//
+//                    if ( ndv4.isQueryVar() != true )
+//                    {
+//                        outStream.printf(
+//                                "ndv4.isQueryVar() != true for val = \"%s\"\n",
+//                                ndv4.getItsValue());
+//                    }
+//
+//                    if ( ndv5.isQueryVar() != true )
+//                    {
+//                        outStream.printf(
+//                                "ndv5.isQueryVar() != true for val = \"%s\"\n",
+//                                ndv5.getItsValue());
+//                    }
+//
+//                    if ( ! completed )
+//                    {
+//                        outStream.printf("Query var setItsValue test " +
+//                                         "failed to complete.\n");
+//                    }
+//
+//                    if ( threwSystemErrorException )
+//                    {
+//                        outStream.printf("Query var setItsValue test threw " +
+//                                "a system error exception: \"%s\"",
+//                                systemErrorExceptionString);
+//                    }
+//                }
+//            }
+//        }
 
         if ( failures > 0 )
         {

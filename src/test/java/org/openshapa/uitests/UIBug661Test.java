@@ -76,7 +76,6 @@ public final class UIBug661Test extends UISpecTestCase {
                         .select(openCSV))
                     .run();
         }
-        window.dispose();
     }
 
     /**

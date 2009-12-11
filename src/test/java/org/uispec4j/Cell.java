@@ -77,7 +77,7 @@ public class Cell extends AbstractUIComponent {
      * Returns Timestamp of Offset so that components are easily accessible.
      * @return Timestamp offset timestamp
      */
-    public final Timestamp getOffsetTimestamp() {
+    public final Timestamp getOffsetTime() {
         return new Timestamp(this.getOffset().getText());
     }
 
