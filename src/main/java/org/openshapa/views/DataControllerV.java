@@ -691,10 +691,11 @@ public final class DataControllerV extends OpenSHAPADialog
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(openVideoButton, gridBagConstraints);
 
-        timestampLabel.setFont(new java.awt.Font("Tahoma", 1, 11));
+        timestampLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         timestampLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         timestampLabel.setText("00:00:00:000");
         timestampLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        timestampLabel.setName("timestampLabel"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;

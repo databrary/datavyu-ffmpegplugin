@@ -33,6 +33,16 @@ public final class UINewDatabaseTest extends UISpecTestCase {
         setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
+     /**
+     * Called after each test.
+     * @throws Exception
+     */
+    @Override
+    protected void tearDown() throws Exception {
+        getMainWindow().dispose();
+        super.tearDown();
+    }
+
     static {
         UISpec4J.setWindowInterceptionTimeLimit(120000);
         UISpec4J.init();
@@ -85,8 +95,6 @@ public final class UINewDatabaseTest extends UISpecTestCase {
                 }
              })
             .run();
-
-
 
         // 2a. Check that all data is cleared
         Spreadsheet ss2 = new Spreadsheet((SpreadsheetPanel)

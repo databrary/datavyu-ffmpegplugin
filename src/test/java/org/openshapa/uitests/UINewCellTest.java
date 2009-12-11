@@ -39,6 +39,22 @@ public final class UINewCellTest extends UISpecTestCase {
         setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
+     /**
+     * Called after each test.
+     * @throws Exception
+     */
+//    @Override
+//    protected void tearDown() throws Exception {
+//        if (readyToExit) {
+//            OpenSHAPA.getDatabase().saveDatabase();
+//            OpenSHAPA.getApplication().exit();
+//        } else {
+//            getMainWindow().dispose();
+//        }
+//        super.tearDown();
+//    }
+
+//    boolean readyToExit = false;
     /**
      * Different cell variable types.
      */
@@ -809,6 +825,7 @@ public final class UINewCellTest extends UISpecTestCase {
          * Then press enter on it
          */
         Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
+//        readyToExit = true;
     }
 
     /**
