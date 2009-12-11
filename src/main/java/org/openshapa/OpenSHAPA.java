@@ -1,6 +1,6 @@
 package org.openshapa;
 
-import org.openshapa.controllers.CreateNewCellC;
+import com.sun.script.jruby.JRubyScriptEngineManager;
 import org.jdesktop.application.Application.ExitListener;
 import org.openshapa.db.LogicErrorException;
 import org.openshapa.db.MacshapaDatabase;
@@ -22,6 +22,8 @@ import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Stack;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -297,48 +299,6 @@ implements KeyEventDispatcher {
             // Project hasn't been changed.
             return true;
         }
-
-        // ORIGINAL CODE:
-//        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-//        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-//                                      .getContext()
-//                                      .getResourceMap(OpenSHAPA.class);
-//        if (db.getHasChanged()) {
-//
-//            String defaultOpt = "Cancel";
-//            String altOpt = "OK";
-//
-//            String [] a = new String[2];
-//
-//            if (getPlatform() == Platform.MAC) {
-//                a[0] = defaultOpt; // This has int value 0 if selected
-//                a[1] = altOpt; // This has int value 1 if selected.
-//            } else {
-//                a[1] = defaultOpt; // This has int value 1 if selected
-//                a[0] = altOpt; // This has int value 0 if selected.
-//            }
-//
-//            int sel =
-//
-//            JOptionPane.showOptionDialog(mainFrame,
-//                    rMap.getString("UnsavedDialog.message"),
-//                    rMap.getString("UnsavedDialog.title"),
-//                    JOptionPane.OK_CANCEL_OPTION,
-//                    JOptionPane.QUESTION_MESSAGE,
-//                    null,
-//                    a,
-//                    defaultOpt);
-//
-//            // Button depends on platform now.
-//            if (getPlatform() == Platform.MAC) {
-//                return (sel == 1);
-//            } else {
-//                return (sel == 0);
-//            }
-//
-//        } else {
-//            return true;
-//        }
     }
 
     /**
@@ -410,6 +370,25 @@ implements KeyEventDispatcher {
                                  "%-4r [%t] %-5p %c %x - %m%n");
             PropertyConfigurator.configure(logProps);
             logger.info("Starting OpenSHAPA.");
+
+
+            // Initialise the scripting engine.
+            rubyEngine = null;
+            // we need to avoid using the
+            // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
+            // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
+            JRubyScriptEngineManager m = new JRubyScriptEngineManager();
+
+            // Whoops - JRubyScriptEngineManager may have failed, if that does
+            // not construct engines for jruby correctly, switch to
+            // javax.script.ScriptEngineManager
+            if (m.getEngineFactories().size() == 0) {
+                ScriptEngineManager m2 = new ScriptEngineManager();
+                rubyEngine = m2.getEngineByName("jruby");
+            } else {
+                rubyEngine = m.getEngineByName("jruby");
+            }
+
 
             // Make a new project
             project = new Project();
@@ -506,6 +485,10 @@ implements KeyEventDispatcher {
      */
     public static SessionStorage getSessionStorage() {
         return OpenSHAPA.getApplication().getContext().getSessionStorage();
+    }
+
+    public static ScriptEngine getScriptEngine() {
+        return OpenSHAPA.getApplication().rubyEngine;
     }
 
     /**
@@ -690,6 +673,9 @@ implements KeyEventDispatcher {
 
     /** The logger for OpenSHAPA. */
     private static Logger logger = Logger.getLogger(OpenSHAPA.class);
+
+    /** The scripting engine for this instance of OpenSHAPA. */
+    private ScriptEngine rubyEngine;
 
     /** The current database we are working on. */
     private MacshapaDatabase db;

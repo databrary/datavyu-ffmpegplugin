@@ -54,37 +54,13 @@ public final class RunScriptC {
     }
 
     /**
-     * Build the ruby scripting engine.
-     *
-     * @return ruby scripting engine to use.
-     */
-    public ScriptEngine setupRuby() {
-        ScriptEngine rubyEngine = null;
-        // we need to avoid using the
-        // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
-        // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
-        JRubyScriptEngineManager m = new JRubyScriptEngineManager();
-
-        // Whoops - JRubyScriptEngineManager may have failed, if that does
-        // not construct engines for jruby correctly, switch to
-        // javax.script.ScriptEngineManager
-        if (m.getEngineFactories().size() == 0) {
-            ScriptEngineManager m2 = new ScriptEngineManager();
-            rubyEngine = m2.getEngineByName("jruby");
-        } else {
-            rubyEngine = m.getEngineByName("jruby");
-        }
-        return rubyEngine;
-    }
-
-    /**
      * Action for running a script.
      *
      * @param rubyFile The file of the ruby script to run.
      */
     public void runScript(final File rubyFile) {
 
-        ScriptEngine rubyEngine = setupRuby();
+        ScriptEngine rubyEngine = OpenSHAPA.getScriptEngine();
 
         // Update the list of most recently used scripts.
         LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
