@@ -30,9 +30,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     /** ColumnHeaderPanel this column manages. */
     private ColumnHeaderPanel headerpanel;
 
-    /** Spreadhseet panel this column belongs to. */
-    private SpreadsheetPanel spreadsheetPanel;
-
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SpreadsheetColumn.class);
 
@@ -93,14 +90,12 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      * @param colSelector The selection for all columns.
      * @param cellSelector The selection of all cells.
      */
-    public SpreadsheetColumn(final SpreadsheetPanel sheet,
-                             final Database db,
+    public SpreadsheetColumn(final Database db,
                              final long colID,
                              final Selector colSelector,
                              final Selector cellSelector) {
         this.database = db;
         this.dbColID = colID;
-        this.spreadsheetPanel = sheet;
 
         try {
             database.registerDataColumnListener(dbColID, this);
@@ -145,7 +140,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
         }
         headerpanel.revalidate();
         datapanel.revalidate();
-        spreadsheetPanel.relayoutCells();
+        // Whereever we resize we will need to spreadsheetPanel.relayoutCells();
     }
 
     /**

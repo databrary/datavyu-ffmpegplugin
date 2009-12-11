@@ -139,8 +139,7 @@ public final class SpreadsheetPanel extends JPanel
         // Remove previous instance of newVar from the header.
         headerView.remove(newVar);
 
-        SpreadsheetColumn col = new SpreadsheetColumn(this,
-                                                      db,
+        SpreadsheetColumn col = new SpreadsheetColumn(db,
                                                       colID,
                                                       colSelector,
                                                       cellSelector);
