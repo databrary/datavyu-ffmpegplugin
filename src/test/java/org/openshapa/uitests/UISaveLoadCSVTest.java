@@ -234,9 +234,9 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
 
-//    public void testLoadingCSVv1() throws Exception {
+    public void testLoadingCSVv1() throws Exception {
 //        this.loadTest("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
-//    }
+   }
 
     /**
      * Test loading a database from a version 2 CSV file.
@@ -244,8 +244,8 @@ public final class UISaveLoadCSVTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
 
-//    public void testLoadingCSVv2() throws Exception {
+    public void testLoadingCSVv2() throws Exception {
 //        this.loadTest("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
-//    }
+    }
 
 }
