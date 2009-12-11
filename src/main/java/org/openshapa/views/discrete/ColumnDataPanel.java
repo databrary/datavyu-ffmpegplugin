@@ -24,7 +24,8 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
  */
-public final class ColumnDataPanel extends SpreadsheetElementPanel {
+public final class ColumnDataPanel extends SpreadsheetElementPanel
+implements KeyEventDispatcher {
 
     /** Width of the column. */
     private int columnWidth;
@@ -72,25 +73,26 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
 
         // Populate the data column with spreadsheet cells.
         this.buildDataPanelCells(model);
+    }
 
-        KeyboardFocusManager manager = KeyboardFocusManager
-                                   .getCurrentKeyboardFocusManager();
+    /**
+     * Registers this column data panel with everything that needs to notify
+     * this class of events.
+     */
+    public void registerListeners() {
+        KeyboardFocusManager m = KeyboardFocusManager
+                                 .getCurrentKeyboardFocusManager();
+        m.addKeyEventDispatcher(this);
+    }
 
-        manager.addKeyEventDispatcher(new KeyEventDispatcher() {
-                /**
-                 * Dispatches the key event to the desired components.
-                 *
-                 * @param evt The key event to dispatch.
-                 *
-                 * @return true if the event has been consumed by this dispatch,
-                 * false otherwise.
-                 */
-                public boolean dispatchKeyEvent(KeyEvent evt) {
-                    // Pass the keyevent onto the keyswitchboard so that it can
-                    // route it to the correct action.
-                    return dispatchKEvent(evt);
-                }
-        });
+    /**
+     * Deregisters this column data panel with everything that is currently
+     * notiying it of events.
+     */
+    public void deregisterListeners() {
+        KeyboardFocusManager m = KeyboardFocusManager
+                                 .getCurrentKeyboardFocusManager();
+        m.removeKeyEventDispatcher(this);
     }
 
     /**
@@ -108,6 +110,8 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
                 SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(),
                                                          dc,
                                                          cellSelector);
+                dbColumn.getDB().registerDataCellListener(dc.getID(), sc);
+
                 // add cell to the JPanel
                 this.add(sc);
                 // and add it to our reference list
@@ -118,6 +122,14 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
         }
     }
 
+    public void deleteAllCells() {
+        for (SpreadsheetCell cell : cells) {
+            // Need to deregister data cell listener here.
+        }
+
+        cells.clear();
+    }
+
     /**
      * Find and delete SpreadsheetCell by its ID.
      *
@@ -126,6 +138,7 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
     public void deleteCellByID(final long cellID) {
         for (SpreadsheetCell cell : cells) {
             if (cell.getCellID() == cellID) {
+                // Need to deregister data cell listener here.
                 cells.remove(cell);
                 this.remove(cell);
                 break;
@@ -146,6 +159,8 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
             SpreadsheetCell nCell = new SpreadsheetCell(db,
                                                         dc,
                                                         cellSelector);
+            db.registerDataCellListener(dc.getID(), nCell);
+
             Long newOrd = new Long(dc.getOrd());
             if (cells.size() > newOrd.intValue()) {
                 cells.insertElementAt(nCell, newOrd.intValue() - 1);
@@ -237,7 +252,7 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
      * @return true if the event has been consumed by this dispatch, false
      * otherwise
      */
-    public boolean dispatchKEvent(KeyEvent e) {
+    public boolean dispatchKeyEvent(KeyEvent e) {
 
         // Quick filter - if we aren't dealing with a key press or up and down
         // arrow. Forget about it - just chuck it back to Java to deal with.

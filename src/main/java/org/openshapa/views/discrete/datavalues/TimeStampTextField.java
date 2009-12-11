@@ -27,9 +27,6 @@ implements FocusListener, KeyListener {
     /** The editors that make up the representation of the data. */
     private TimeStampDataValueEditor myEditor;
 
-    /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(TimeStampTextField.class);
-
     /**
      * Creates a new instance of MatrixV.
      *

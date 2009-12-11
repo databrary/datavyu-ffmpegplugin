@@ -146,8 +146,6 @@ implements ExternalDataCellListener, Selectable {
             selection.addSelectionSilent(this);
         }
 
-        db.registerDataCellListener(dc.getID(), this);
-
         cellPanel = new SpreadsheetElementPanel();
         strut = new Filler(new Dimension(0,0), new Dimension(0,0),
                                             new Dimension(Short.MAX_VALUE, 0));

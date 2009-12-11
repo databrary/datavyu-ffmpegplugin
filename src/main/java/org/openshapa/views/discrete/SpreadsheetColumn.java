@@ -98,9 +98,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
         this.dbColID = colID;
 
         try {
-            database.registerDataColumnListener(dbColID, this);
-            database.registerCascadeListener(this);
-
             DataColumn dbColumn = database.getDataColumn(dbColID);
 
             headerpanel = new ColumnHeaderPanel(this,
@@ -113,6 +110,34 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             logger.error("Problem retrieving DataColumn", e);
         }
         colChanges = new ColumnChanges();
+    }
+
+    /**
+     * Registers this spreadsheet column with everything that needs to notify
+     * this class of events.
+     */
+    public void registerListeners() {
+        try {
+            database.registerDataColumnListener(dbColID, this);
+            database.registerCascadeListener(this);
+            datapanel.registerListeners();
+        } catch (SystemErrorException e) {
+            logger.error("Unable to register listeners for the column.", e);
+        }
+    }
+
+    /**
+     * Deregisters this spreadsheet column with everything that is currently
+     * notiying it of events.
+     */
+    public void deregisterListeners() {
+        try {
+            database.deregisterDataColumnListener(dbColID, this);
+            database.deregisterCascadeListener(this);
+            datapanel.deregisterListeners();
+        } catch (SystemErrorException e) {
+            logger.error("Unable to register listeners for the column.", e);
+        }
     }
 
     /**
