@@ -1,17 +1,17 @@
-package org.openshapa.component;
+package org.openshapa.graphics;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.text.SimpleDateFormat;
 import java.util.SimpleTimeZone;
-import javax.swing.JComponent;
 
 /**
  * This class is used to paint a timescale for a given range of times.
  */
-public class TimescalePainter extends JComponent {
+public class TimescalePainter extends Component {
 
     // The start time of the scale in milliseconds
     private long start;
