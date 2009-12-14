@@ -19,7 +19,7 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.util.FileFilters.RBFilter;
 import org.openshapa.views.ConsoleV;
 import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.discrete.SpreadsheetPanel;
+import org.openshapa.views.OpenSHAPAView;
 
 /**
  * Controller for running scripts.
@@ -54,11 +54,10 @@ public final class RunScriptC {
     }
 
     /**
-     * Build the ruby scripting engine.
-     *
-     * @return ruby scripting engine to use.
+     * @return The scripting engine to use when running this script controller.
      */
-    public ScriptEngine setupRuby() {
+    private ScriptEngine setupScripting() {
+        // Initialise the scripting engine.
         ScriptEngine rubyEngine = null;
         // we need to avoid using the
         // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
@@ -74,6 +73,7 @@ public final class RunScriptC {
         } else {
             rubyEngine = m.getEngineByName("jruby");
         }
+
         return rubyEngine;
     }
 
@@ -84,7 +84,7 @@ public final class RunScriptC {
      */
     public void runScript(final File rubyFile) {
 
-        ScriptEngine rubyEngine = setupRuby();
+        ScriptEngine rubyEngine = setupScripting();
 
         // Update the list of most recently used scripts.
         LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
@@ -104,13 +104,13 @@ public final class RunScriptC {
             rubyEngine.getContext().setWriter(OpenSHAPA.getConsoleWriter());
 
             // Place a reference to the database within the scripting engine.
-            rubyEngine.put("db", OpenSHAPA.getDatabase());
+            rubyEngine.put("db", OpenSHAPA.getDB());
 
             FileReader reader = new FileReader(rubyFile);
             rubyEngine.eval(reader);
 
             // Remove the reference to db
-            rubyEngine.put("db", new Object());
+            rubyEngine.put("db", null);
 
             Reader reader1 = new StringReader("");
             rubyEngine.getContext().setReader(reader1);
@@ -139,10 +139,9 @@ public final class RunScriptC {
         }
 
         // Display any changes.
-        SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
-                                                            .getMainView()
-                                                            .getComponent();
-        view.relayoutCells();
+        OpenSHAPAView view = (OpenSHAPAView) OpenSHAPA.getApplication()
+                                                      .getMainView();
+        view.showSpreadsheet();
     }
 
     /** The logger for this class. */

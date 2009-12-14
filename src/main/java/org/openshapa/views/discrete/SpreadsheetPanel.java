@@ -134,16 +134,16 @@ public final class SpreadsheetPanel extends JPanel
      * @param colID ID of the column to add.
      */
     private void addColumn(final Database db, final long colID) {
-        // make the SpreadsheetColumn
-
         // Remove previous instance of newVar from the header.
         headerView.remove(newVar);
 
-        SpreadsheetColumn col = new SpreadsheetColumn(this,
-                                                      db,
+        // Create the spreadsheet column and register it.
+        SpreadsheetColumn col = new SpreadsheetColumn(db,
                                                       colID,
                                                       colSelector,
                                                       cellSelector);
+        col.registerListeners();
+
         // add the datapanel to the scrollpane viewport
         mainView.add(col.getDataPanel());
         // add the headerpanel to the scrollpane headerviewport
@@ -155,6 +155,18 @@ public final class SpreadsheetPanel extends JPanel
         columns.add(col);
     }
 
+    public void removeAll() {
+        for (SpreadsheetColumn col : columns) {
+            col.deregisterListeners();
+            col.clear();
+
+            mainView.remove(col.getDataPanel());
+            headerView.remove(col.getHeaderPanel());
+        }
+
+        columns.clear();
+    }
+
     /**
      * Remove a column panel from the scroll panel viewport.
      *
@@ -163,6 +175,7 @@ public final class SpreadsheetPanel extends JPanel
     private void removeColumn(final long colID) {
         for (SpreadsheetColumn col : columns) {
             if (col.getColID() == colID) {
+                col.deregisterListeners();
                 mainView.remove(col.getDataPanel());
                 headerView.remove(col.getHeaderPanel());
                 columns.remove(col);

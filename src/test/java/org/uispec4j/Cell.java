@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.util.Vector;
 import javax.swing.text.JTextComponent;
 import junit.framework.Assert;
+import org.openshapa.db.SystemErrorException;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 import org.uispec4j.utils.KeyUtils;
@@ -61,7 +62,7 @@ public class Cell extends AbstractUIComponent {
      * returns the ordinal column identifier.
      * @return long ordinal column identifier
      */
-    public final long getOrd() {
+    public final long getOrd() throws SystemErrorException {
         return ssCell.getOrdinal();
     }
 

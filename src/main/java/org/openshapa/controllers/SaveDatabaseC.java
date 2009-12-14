@@ -98,8 +98,8 @@ public final class SaveDatabaseC {
                 } else {
                     dbName = outFile.getName();
                 }
-                OpenSHAPA.getDatabase().setName(dbName);
-                OpenSHAPA.getDatabase().setSourceFile(outFile);
+                OpenSHAPA.getDB().setName(dbName);
+                OpenSHAPA.getDB().setSourceFile(outFile);
 
                 // Update the name of the window to include the name we just
                 // set in the database.
@@ -120,10 +120,10 @@ public final class SaveDatabaseC {
 
         try {
             PrintStream outStream = new PrintStream(outFile);
-            OpenSHAPA.getDatabase().toMODBFile(outStream, "\r");
+            OpenSHAPA.getDB().toMODBFile(outStream, "\r");
             outStream.close();
 
-            Database db = OpenSHAPA.getDatabase();
+            Database db = OpenSHAPA.getDB();
 
             // BugzID:743 - Here we update the GUI to indicate successful save
             db.saveDatabase();
@@ -143,7 +143,7 @@ public final class SaveDatabaseC {
      * @param outFile The path of the file to use when writing to disk.
      */
     public void saveAsCSV(final String outFile) {
-        MacshapaDatabase db = OpenSHAPA.getDatabase();
+        MacshapaDatabase db = OpenSHAPA.getDB();
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(outFile));

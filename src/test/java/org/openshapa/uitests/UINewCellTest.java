@@ -6,7 +6,10 @@ import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
+import org.openshapa.db.MacshapaDatabase;
+import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.FloatUtils;
+import org.openshapa.views.OpenSHAPAView;
 import org.uispec4j.Cell;
 import org.uispec4j.Clipboard;
 import org.uispec4j.Key;
@@ -922,7 +925,7 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     private void runAdvancedTest(final String varName,
             final String[] testInput, final Key[][] advancedInput,
-            final String[] expectedTestOutput) {
+            final String[] expectedTestOutput) throws SystemErrorException {
         // Retrieve the components and set variable
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();

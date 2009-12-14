@@ -21,7 +21,7 @@ public final class SetNewCellStopTimeC {
      */
     public SetNewCellStopTimeC(final long milliseconds) {
         try {
-            Database model = OpenSHAPA.getDatabase();
+            Database model = OpenSHAPA.getDB();
 
             DataCell cell = (DataCell) model.getCell(OpenSHAPA
                                                        .getLastCreatedCellId());

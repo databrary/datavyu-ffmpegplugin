@@ -1,10 +1,10 @@
 package org.openshapa.views.discrete.datavalues;
 
-import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataValue;
 import org.openshapa.db.FormalArgument;
@@ -32,7 +32,7 @@ public abstract class DataValueEditor extends EditorComponent {
     private DataValue model = null;
 
     /** The parent datacell for the DataValue that this view represents. */
-    private DataCell parentCell;
+    private long parentCell;
 
     /** The index of the datavalue within its parent matrix. */
     private int mIndex;
@@ -104,7 +104,7 @@ public abstract class DataValueEditor extends EditorComponent {
         // so far all DataValueEditors are editable
         setEditable(true);
         try {
-            parentCell = cell;
+            parentCell = cell.getID();
             parentPredicate = predicate;
             pIndex = predicateIndex;
             parentMatrix = matrix;
@@ -134,7 +134,7 @@ public abstract class DataValueEditor extends EditorComponent {
     public final void resetValue(final DataCell cell, final Matrix matrix) {
         try {
             parentMatrix = matrix;
-            parentCell = cell;
+            parentCell = cell.getID();
             if (parentPredicate == null) {
                 model = matrix.getArgCopy(mIndex);
             } else {
@@ -361,8 +361,7 @@ public abstract class DataValueEditor extends EditorComponent {
     public void updateDatabase() {
         try {
             // reget the parentCell in case onset or offset have been changed.
-            parentCell = (DataCell) parentCell.getDB()
-                                              .getCell(parentCell.getID());
+            DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
 
             // Update the OpenSHAPA database with the latest values.
             if (parentMatrix != null && parentPredicate == null) {
@@ -374,8 +373,8 @@ public abstract class DataValueEditor extends EditorComponent {
                 parentPredicate.setItsValue(p);
                 parentMatrix.replaceArg(mIndex, parentPredicate);
             }
-            parentCell.setVal(parentMatrix);
-            parentCell.getDB().replaceCell(parentCell);
+            c.setVal(parentMatrix);
+            c.getDB().replaceCell(c);
         } catch (SystemErrorException ex) {
             logger.error("Unable to update Database: ", ex);
         }
@@ -419,13 +418,6 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     public final DataValue getModel() {
         return this.model;
-    }
-
-    /**
-     * @return The datacell this datavlue is in.
-     */
-    public final DataCell getCell() {
-        return this.parentCell;
     }
 
     /**
