@@ -148,7 +148,9 @@ public final class OpenSHAPAView extends FrameView {
      */
     public void updateTitle() {
         // BugzID:449 - Update the name of the window to include the default
-        // name of the project.
+        // name of the database.
+
+        // Show the project name instead of database.
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         ResourceMap rMap = OpenSHAPA.getApplication()
                                     .getContext()
