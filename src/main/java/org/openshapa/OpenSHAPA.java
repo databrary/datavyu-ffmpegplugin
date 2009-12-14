@@ -371,25 +371,6 @@ implements KeyEventDispatcher {
             PropertyConfigurator.configure(logProps);
             logger.info("Starting OpenSHAPA.");
 
-
-            // Initialise the scripting engine.
-            rubyEngine = null;
-            // we need to avoid using the
-            // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
-            // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
-            JRubyScriptEngineManager m = new JRubyScriptEngineManager();
-
-            // Whoops - JRubyScriptEngineManager may have failed, if that does
-            // not construct engines for jruby correctly, switch to
-            // javax.script.ScriptEngineManager
-            if (m.getEngineFactories().size() == 0) {
-                ScriptEngineManager m2 = new ScriptEngineManager();
-                rubyEngine = m2.getEngineByName("jruby");
-            } else {
-                rubyEngine = m.getEngineByName("jruby");
-            }
-
-
             // Make a new project
             project = new Project();
 
@@ -487,17 +468,13 @@ implements KeyEventDispatcher {
         return OpenSHAPA.getApplication().getContext().getSessionStorage();
     }
 
-    public static ScriptEngine getScriptEngine() {
-        return OpenSHAPA.getApplication().rubyEngine;
-    }
-
     /**
      * Gets the single instance database associated with the currently running
      * OpenSHAPA.
      *
      * @return The single database in use with this instance of OpenSHAPA
      */
-    public static MacshapaDatabase getDatabase() {
+    public static MacshapaDatabase getDB() {
         return OpenSHAPA.getApplication().db;
     }
 
@@ -664,7 +641,7 @@ implements KeyEventDispatcher {
     }
 
     public void closeOpenedWindows() {
-        while (! windows.empty()) {
+        while (!windows.empty()) {
             Window window = windows.pop();
             window.setVisible(false);
             window.dispose();
@@ -673,9 +650,6 @@ implements KeyEventDispatcher {
 
     /** The logger for OpenSHAPA. */
     private static Logger logger = Logger.getLogger(OpenSHAPA.class);
-
-    /** The scripting engine for this instance of OpenSHAPA. */
-    private ScriptEngine rubyEngine;
 
     /** The current database we are working on. */
     private MacshapaDatabase db;

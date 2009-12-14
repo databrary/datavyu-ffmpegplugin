@@ -78,7 +78,7 @@ public final class OpenDatabaseC {
         // BugzID:449 - Set filename in spreadsheet window and database if the
         // database name is undefined.
         try {
-            Database db = OpenSHAPA.getDatabase();
+            Database db = OpenSHAPA.getDB();
 
             if (db.getName().equals("Undefined")) {
                 String dbName = sourceFile.getName();
@@ -138,7 +138,7 @@ public final class OpenDatabaseC {
      */
     public void openAsCSV(final File sFile) {
         try {
-            Database db = OpenSHAPA.getDatabase();
+            Database db = OpenSHAPA.getDB();
             BufferedReader csvFile = new BufferedReader(new FileReader(sFile));
 
             // Read each line of the CSV file.

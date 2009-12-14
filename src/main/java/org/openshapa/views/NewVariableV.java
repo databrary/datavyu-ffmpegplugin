@@ -34,7 +34,7 @@ public final class NewVariableV extends OpenSHAPADialog {
         initComponents();
         setName(this.getClass().getSimpleName());
 
-        model = OpenSHAPA.getDatabase();
+        model = OpenSHAPA.getDB();
 
         // init button group
         buttonGroup1.add(textTypeButton);
@@ -209,7 +209,7 @@ public final class NewVariableV extends OpenSHAPADialog {
      */
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         try {
-            Column.isValidColumnName(OpenSHAPA.getDatabase(),
+            Column.isValidColumnName(OpenSHAPA.getDB(),
                                      this.getVariableName());
             DataColumn dc = new DataColumn(model,
                                            this.getVariableName(),

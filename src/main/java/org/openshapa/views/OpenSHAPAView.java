@@ -138,7 +138,7 @@ public final class OpenSHAPAView extends FrameView {
         newCellRightMenuItem.setAccelerator(KeyStroke
                                          .getKeyStroke(KeyEvent.VK_R, keyMask));
 
-        this.panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
+        this.panel = new SpreadsheetPanel(OpenSHAPA.getDB());
         this.setComponent(panel);
 
     }
@@ -156,7 +156,7 @@ public final class OpenSHAPAView extends FrameView {
         String postFix = "";
         Project project = OpenSHAPA.getProject();
 
-        if (project.isChanged() || OpenSHAPA.getDatabase().getHasChanged()) {
+        if (project.isChanged() || OpenSHAPA.getDB().getHasChanged()) {
             postFix = "*";
         }
 
@@ -208,7 +208,7 @@ public final class OpenSHAPAView extends FrameView {
         } else if (OpenSHAPA.getProject().getDatabaseFile() == null) {
             saveAs();
         } else {
-            new SaveDatabaseC(OpenSHAPA.getDatabase().getSourceFile());
+            new SaveDatabaseC(OpenSHAPA.getDB().getSourceFile());
             new SaveProjectC().save(OpenSHAPA.getProject().getProjectName());
             OpenSHAPA.getApplication().updateTitle();
         }
@@ -350,7 +350,7 @@ public final class OpenSHAPAView extends FrameView {
         panel.removeAll();
 
         // Create a fresh spreadsheet component and redraw the component.
-        panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
+        panel = new SpreadsheetPanel(OpenSHAPA.getDB());
         this.setComponent(panel);
         this.getComponent().revalidate();
         this.getComponent().resetKeyboardActions();
@@ -384,13 +384,13 @@ public final class OpenSHAPAView extends FrameView {
             for (DataColumn dc : colsToDelete) {
                 // Must remove cells from the data column before removing it.
                 while (dc.getNumCells() > 0) {
-                    Cell c = OpenSHAPA.getDatabase().getCell(dc.getID(), 1);
-                    OpenSHAPA.getDatabase().removeCell(c.getID());
-                    dc = OpenSHAPA.getDatabase().getDataColumn(dc.getID());
+                    Cell c = OpenSHAPA.getDB().getCell(dc.getID(), 1);
+                    OpenSHAPA.getDB().removeCell(c.getID());
+                    dc = OpenSHAPA.getDB().getDataColumn(dc.getID());
                 }
 
                 // All cells in the column removed - now delete the column.
-                OpenSHAPA.getDatabase().removeColumn(dc.getID());
+                OpenSHAPA.getDB().removeColumn(dc.getID());
                 panel.revalidate();
                 panel.repaint();
             }
@@ -409,7 +409,7 @@ public final class OpenSHAPAView extends FrameView {
 
         try {
             for (DataCell c : cellsToDelete) {
-                OpenSHAPA.getDatabase().removeCell(c.getID());
+                OpenSHAPA.getDB().removeCell(c.getID());
             }
             panel.revalidate();
             panel.repaint();
@@ -441,7 +441,7 @@ public final class OpenSHAPAView extends FrameView {
         dir = dir.substring(0, match);
         newProject.setDatabaseDir(dir);
         newProject.setDatabaseFile(jd.getSelectedFile().getName());
-        newProject.setProjectName(OpenSHAPA.getDatabase().getName());
+        newProject.setProjectName(OpenSHAPA.getDB().getName());
     }
 
     private void openProject(final OpenSHAPAFileChooser jd) {
@@ -503,14 +503,14 @@ public final class OpenSHAPAView extends FrameView {
     private void setSheetLayout() {
         try {
             SheetLayoutType type = SheetLayoutType.Ordinal;
-            OpenSHAPA.getDatabase().setTemporalOrdering(false);
+            OpenSHAPA.getDB().setTemporalOrdering(false);
 
             if (weakTemporalOrderMenuItem.isSelected()) {
                 type = SheetLayoutType.WeakTemporal;
-                OpenSHAPA.getDatabase().setTemporalOrdering(true);
+                OpenSHAPA.getDB().setTemporalOrdering(true);
             } else if (strongTemporalOrderMenuItem.isSelected()) {
                 type = SheetLayoutType.StrongTemporal;
-                OpenSHAPA.getDatabase().setTemporalOrdering(true);
+                OpenSHAPA.getDB().setTemporalOrdering(true);
             }
 
             new SetSheetLayoutC(type);

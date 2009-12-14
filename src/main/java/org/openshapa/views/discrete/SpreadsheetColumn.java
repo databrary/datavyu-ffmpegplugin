@@ -148,6 +148,13 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     }
 
     /**
+     * Clears the display components from the spreadsheet column.
+     */
+    public void clear() {
+        datapanel.clear();
+    }
+
+    /**
      * @param colWidth Column width to set in pixels.
      */
     public void setWidth(final int colWidth) {

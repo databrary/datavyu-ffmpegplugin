@@ -10,6 +10,7 @@ import org.openshapa.views.discrete.Selector;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.db.SystemErrorException;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
 
 /**
@@ -22,10 +23,13 @@ implements FocusListener, KeyListener {
     private Selector sheetSelection;
 
     /** The parent cell for this JPanel. */
-    private DataCell parentCell = null;
+    private long parentCell = -1;
 
     /** The editors that make up the representation of the data. */
     private TimeStampDataValueEditor myEditor;
+
+    /** Logger for this class. */
+    private static Logger logger = Logger.getLogger(TimeStampTextField.class);
 
     /**
      * Creates a new instance of MatrixV.
@@ -41,7 +45,7 @@ implements FocusListener, KeyListener {
         super();
 
         sheetSelection = cellSelection;
-        parentCell = cell;
+        parentCell = cell.getID();
 
         myEditor = new TimeStampDataValueEditor(this, cell, tsType);
 
@@ -77,22 +81,27 @@ implements FocusListener, KeyListener {
      * @param fe The Focus Event that triggered this action.
      */
     public void focusGained(final FocusEvent fe) {
-        // BugzID:320 Deselect Cells before selecting cell contents.
-        if (sheetSelection != null) {
-            sheetSelection.deselectAll();
-            sheetSelection.deselectOthers();
-        }
+        try {
+            // BugzID:320 Deselect Cells before selecting cell contents.
+            if (sheetSelection != null) {
+                sheetSelection.deselectAll();
+                sheetSelection.deselectOthers();
+            }
 
-        // We need to remember which cell should be duplicated if the user
-        // presses the enter key or selects New Cell from the menu.
-        if (parentCell != null) {
-            // method names don't reflect usage - we didn't really create this
-            // cell just now.
-            OpenSHAPA.setLastCreatedColId(parentCell.getItsColID());
-            OpenSHAPA.setLastCreatedCellId(parentCell.getID());
-        }
+            // We need to remember which cell should be duplicated if the user
+            // presses the enter key or selects New Cell from the menu.
+            if (parentCell != -1) {
+                // method names don't reflect usage - we didn't really create this
+                // cell just now.
+                DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
+                OpenSHAPA.setLastCreatedColId(c.getItsColID());
+                OpenSHAPA.setLastCreatedCellId(parentCell);
+            }
 
-        myEditor.focusGained(fe);
+            myEditor.focusGained(fe);
+        } catch (SystemErrorException se) {
+            logger.error("Unable to gain focus", se);
+        }
     }
 
     /**

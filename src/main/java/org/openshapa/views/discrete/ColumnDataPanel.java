@@ -14,6 +14,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import org.apache.log4j.Logger;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
 import org.openshapa.db.Database;
@@ -122,12 +123,22 @@ implements KeyEventDispatcher {
         }
     }
 
-    public void deleteAllCells() {
-        for (SpreadsheetCell cell : cells) {
-            // Need to deregister data cell listener here.
-        }
+    /**
+     * Clears the cells stored in the column data panel.
+     */
+    public void clear() {
+        try {
+            for (SpreadsheetCell cell : cells) {
+                // Need to deregister data cell listener here.
+                OpenSHAPA.getDB().deregisterDataCellListener(cell.getCellID(),
+                                                             cell);
+                this.remove(cell);
+            }
 
-        cells.clear();
+            cells.clear();
+        } catch (SystemErrorException se) {
+            logger.error("Unable to delete all cells", se);
+        }
     }
 
     /**
@@ -136,13 +147,17 @@ implements KeyEventDispatcher {
      * @param cellID ID of cell to find and delete.
      */
     public void deleteCellByID(final long cellID) {
-        for (SpreadsheetCell cell : cells) {
-            if (cell.getCellID() == cellID) {
-                // Need to deregister data cell listener here.
-                cells.remove(cell);
-                this.remove(cell);
-                break;
+        try {
+            for (SpreadsheetCell cell : cells) {
+                if (cell.getCellID() == cellID) {
+                    OpenSHAPA.getDB().deregisterDataCellListener(cellID, cell);
+                    cells.remove(cell);
+                    this.remove(cell);
+                    break;
+                }
             }
+        } catch (SystemErrorException se) {
+            logger.error("Unable to delete cell by ID", se);
         }
     }
 

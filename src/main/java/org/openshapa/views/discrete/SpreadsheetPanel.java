@@ -158,6 +158,8 @@ public final class SpreadsheetPanel extends JPanel
     public void removeAll() {
         for (SpreadsheetColumn col : columns) {
             col.deregisterListeners();
+            col.clear();
+
             mainView.remove(col.getDataPanel());
             headerView.remove(col.getHeaderPanel());
         }

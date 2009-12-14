@@ -60,9 +60,6 @@ implements ExternalDataCellListener, Selectable {
     /** The Database the cell belongs to. */
     private Database db;
 
-    /** The data cell that this view represents. */
-    private DataCell dc;
-
     /** The cellID for retrieving the cell from the database. */
     private long cellID;
 
@@ -133,11 +130,8 @@ implements ExternalDataCellListener, Selectable {
 
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
-        if (cell instanceof DataCell) {
-            dc = (DataCell)cell;
-        } else {
-            dc = (DataCell)db.getCell(((ReferenceCell)cell).getTargetID());
-        }
+        DataCell dc = (DataCell) OpenSHAPA.getDB().getCell(cellID);
+
         // Check the selected state of the datacell
         // If it is already selected in the database, we need to inform
         // the selector, but not trigger a selection change or deselect others.
@@ -243,6 +237,7 @@ implements ExternalDataCellListener, Selectable {
      * @throws SystemErrorException
      */
     public long getOnsetTicks() throws SystemErrorException {
+        DataCell dc = (DataCell) OpenSHAPA.getDB().getCell(cellID);
         return dc.getOnset().getTime();
     }
 
@@ -252,13 +247,15 @@ implements ExternalDataCellListener, Selectable {
      * @throws SystemErrorException
      */
     public long getOffsetTicks() throws SystemErrorException {
+        DataCell dc = (DataCell) OpenSHAPA.getDB().getCell(cellID);
         return dc.getOffset().getTime();
     }
 
     /**
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
-    public long getOrdinal() {
+    public long getOrdinal() throws SystemErrorException {
+        DataCell dc = (DataCell) OpenSHAPA.getDB().getCell(cellID);
         return dc.getOrd();
     }
 

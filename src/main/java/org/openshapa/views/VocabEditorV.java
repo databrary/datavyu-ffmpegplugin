@@ -67,7 +67,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public VocabEditorV(final Frame parent, final boolean modal) {
         super(parent, modal);
 
-        db = OpenSHAPA.getDatabase();
+        db = OpenSHAPA.getDB();
         initComponents();
         setName(this.getClass().getSimpleName());
         selectedVocabElement = null;
@@ -355,7 +355,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
                         // If the new vocab element is a matrix vocab element,
                         // we actually need to create a column.
                         if (ve.getClass() == MatrixVocabElement.class) {
-                            Column.isValidColumnName(OpenSHAPA.getDatabase(),
+                            Column.isValidColumnName(OpenSHAPA.getDB(),
                                                      ve.getName());
                             DataColumn dc = new DataColumn(db,
                                                            ve.getName(),

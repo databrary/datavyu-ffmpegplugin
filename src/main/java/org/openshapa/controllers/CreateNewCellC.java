@@ -27,7 +27,7 @@ public final class CreateNewCellC {
         view = (SpreadsheetPanel) OpenSHAPA.getApplication()
                                            .getMainView()
                                            .getComponent();
-        model = OpenSHAPA.getDatabase();
+        model = OpenSHAPA.getDB();
 
         try {
             this.createNewCell(-1);
@@ -50,7 +50,7 @@ public final class CreateNewCellC {
         view = (SpreadsheetPanel) OpenSHAPA.getApplication()
                                            .getMainView()
                                            .getComponent();
-        model = OpenSHAPA.getDatabase();
+        model = OpenSHAPA.getDB();
 
         try {
             // Get the column that is the parent of the source cell.
@@ -101,7 +101,7 @@ public final class CreateNewCellC {
         view = (SpreadsheetPanel) OpenSHAPA.getApplication()
                                            .getMainView()
                                            .getComponent();
-        model = OpenSHAPA.getDatabase();
+        model = OpenSHAPA.getDB();
 
         // BugzID:758 - Before creating a new cell and setting onset. We need
         // the last created cell and need to set the previous cells offset...
