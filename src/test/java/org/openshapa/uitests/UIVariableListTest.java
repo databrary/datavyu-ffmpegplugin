@@ -71,6 +71,7 @@ public final class UIVariableListTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
     public void testAddingVariablesWithScript() throws Exception {
+        System.err.println("testAddingVariablesWithScript()");
         //Preparation
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
@@ -109,6 +110,7 @@ public final class UIVariableListTest extends UISpecTestCase {
                 assertTrue(inTable(ss.getColumns().elementAt(j).getHeaderType(),
                         varListWindow.getTable(), 2));
             }
+        System.err.println("PASS");
     }
 
     /**
@@ -116,6 +118,7 @@ public final class UIVariableListTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
     public void testAddingVariablesManually() throws Exception {
+        System.err.println("testAddingVariablesManually()");
         //Preparation
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
@@ -144,6 +147,7 @@ public final class UIVariableListTest extends UISpecTestCase {
                         varListWindow.getTable(), 2));
             }
         }
+        System.err.println("PASS");
     }
 
     /**
@@ -151,6 +155,7 @@ public final class UIVariableListTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
     public void testRemovalWithNewDatabase() throws Exception {
+        System.err.println("testRemovalWithNewDatabase()");
         //Preparation
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
@@ -208,15 +213,16 @@ public final class UIVariableListTest extends UISpecTestCase {
                  varListWindow = WindowInterceptor.run(menuBar.getMenu(
                 "Spreadsheet").getSubMenu("Variable List").triggerClick());
          assertTrue(varListWindow.getTable().getRowCount() == 0);
+         System.err.println("PASS");
     }
 
-    public void testWaitingRoom() {
-        System.err.println("In the waiting room");
-        for (int i = 0; i < 1000000000; i++) {
-            Math.random();
-        }
-        System.err.println("The doctor has arrived");
-    }
+//    public void testWaitingRoom() throws InterruptedException {
+//        System.err.println("In the waiting room");
+//        for (int i = 0; i < 10000; i++) {
+//            Thread.sleep(10);
+//        }
+//        System.err.println("The doctor has arrived");
+//    }
 
     /**
      * Creates a new variable and checks that it has been created.

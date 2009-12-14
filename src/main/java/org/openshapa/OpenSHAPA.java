@@ -497,6 +497,7 @@ implements KeyEventDispatcher {
         aboutWindow = null;
         view = null;
         rubyEngine = null;
+        closeOpenedWindows();
         getMainFrame().dispose();
     }
 
