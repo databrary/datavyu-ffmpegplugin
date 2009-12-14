@@ -41,7 +41,7 @@ public final class UIDeleteCellValueTest extends UISpecTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
-        getMainWindow().dispose();
+        OpenSHAPA.getApplication().cleanUpForTests();
         super.tearDown();
     }
 

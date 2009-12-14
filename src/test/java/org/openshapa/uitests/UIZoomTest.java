@@ -38,7 +38,7 @@ public final class UIZoomTest extends UISpecTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
-        getMainWindow().dispose();
+        OpenSHAPA.getApplication().cleanUpForTests();
         super.tearDown();
     }
 

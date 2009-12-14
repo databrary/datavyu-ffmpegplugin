@@ -39,7 +39,7 @@ public final class UIDataControllerTest extends UISpecTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
-        getMainWindow().dispose();
+        OpenSHAPA.getApplication().cleanUpForTests();
         super.tearDown();
     }
 
@@ -111,7 +111,7 @@ public final class UIDataControllerTest extends UISpecTestCase {
      * @throws Exception any exception
      */
     private void StandardSequence1(String varName, String varType, 
-            String[] testInputArray, String[] testExpectedArray)
+            String[] testInputArray, String[] testExpectedArray, int Iteration)
             throws Exception {
         // Retrieve the components and set variable
         Window window = getMainWindow();
@@ -259,6 +259,7 @@ public final class UIDataControllerTest extends UISpecTestCase {
                 .equals("00:02:21:000"));
         assertTrue(cells.elementAt(2).getOffsetTime().toString()
                 .equals("00:00:00:000"));
+        dvc.dispose();
     }
     
     /**
@@ -268,16 +269,16 @@ public final class UIDataControllerTest extends UISpecTestCase {
      */
     public void testStandardSequence1() throws Exception {
         //Text
-        StandardSequence1("textVar", "text", textTestInput, textTestInput);
-//        //Integer
+        StandardSequence1("textVar", "text", textTestInput, textTestInput, 1);
+        //Integer
 //        StandardSequence1("intVar", "integer", integerTestInput,
-//                expectedIntegerTestOutput);
+//                expectedIntegerTestOutput, 2);
 //        //Float
 //        StandardSequence1("floatVar", "float", floatTestInput,
-//                expectedFloatTestOutput);
+//                expectedFloatTestOutput, 3);
 //        //Nominal
 //        StandardSequence1("nomVar", "nominal", nominalTestInput,
-//                expectedNominalTestOutput);
+//                expectedNominalTestOutput, 4);
     }
 
 

@@ -66,4 +66,34 @@ public class Timestamp {
         return ms;
     }
 
+    public void add(Timestamp ts) {
+        int carryThe = 0;
+        int newMS = ts.getMilliseconds() + ms;
+        if (newMS > 999) {
+            carryThe = newMS % 1000;
+            newMS = newMS - (carryThe * 1000);
+        }
+
+        int newSecs = ts.getSeconds() + carryThe + secs;
+        carryThe = 0;
+        if (newSecs > 59) {
+            carryThe = newSecs % 60;
+            newSecs = newSecs - (carryThe * 60);
+        }
+
+        int newMins = ts.getMinutes() + carryThe + mins;
+        carryThe = 0;
+        if (newMins > 59) {
+            carryThe = newMins % 60;
+            newMins = newMins - (carryThe * 60);
+        }
+
+        int newHours = ts.getHours() + carryThe + hrs;
+        carryThe = 0;
+        if (newMins > 59) {
+            carryThe = newMins % 60;
+            newMins = newMins - (carryThe * 60);
+        }
+
+    }
 }

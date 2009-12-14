@@ -1,6 +1,6 @@
 package org.openshapa;
 
-import org.openshapa.controllers.CreateNewCellC;
+import com.sun.script.jruby.JRubyScriptEngineManager;
 import org.jdesktop.application.Application.ExitListener;
 import org.openshapa.db.LogicErrorException;
 import org.openshapa.db.MacshapaDatabase;
@@ -22,6 +22,8 @@ import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Stack;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -411,6 +413,23 @@ implements KeyEventDispatcher {
             PropertyConfigurator.configure(logProps);
             logger.info("Starting OpenSHAPA.");
 
+            // Initalise scripting engine
+            rubyEngine = null;
+            // we need to avoid using the
+            // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
+            // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
+            JRubyScriptEngineManager m = new JRubyScriptEngineManager();
+
+            // Whoops - JRubyScriptEngineManager may have failed, if that does
+            // not construct engines for jruby correctly, switch to
+            // javax.script.ScriptEngineManager
+            if (m.getEngineFactories().size() == 0) {
+                ScriptEngineManager m2 = new ScriptEngineManager();
+                rubyEngine = m2.getEngineByName("jruby");
+            } else {
+                rubyEngine = m.getEngineByName("jruby");
+            }
+
             // Make a new project
             project = new Project();
 
@@ -467,6 +486,21 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * Used between tests to release all memory.
+     */
+    public void cleanUpForTests() {
+        db = null;
+        consoleOutputStream = null;
+        consoleWriter = null;
+        listVarView = null;
+        dataController = null;
+        aboutWindow = null;
+        view = null;
+        rubyEngine = null;
+        getMainFrame().dispose();
+    }
+
+    /**
      * This method is to initialize the specified window by injecting resources.
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
@@ -506,6 +540,14 @@ implements KeyEventDispatcher {
      */
     public static SessionStorage getSessionStorage() {
         return OpenSHAPA.getApplication().getContext().getSessionStorage();
+    }
+
+    /**
+     * @return The single instance of the scripting engine we use with
+     * OpenSHAPA.
+     */
+    public static ScriptEngine getScriptingEngine() {
+        return OpenSHAPA.getApplication().rubyEngine;
     }
 
     /**
@@ -687,6 +729,9 @@ implements KeyEventDispatcher {
             window.dispose();
         }
     }
+
+    /** The scripting engine that we use with OpenSHAPA. */
+    private ScriptEngine rubyEngine;
 
     /** The logger for OpenSHAPA. */
     private static Logger logger = Logger.getLogger(OpenSHAPA.class);

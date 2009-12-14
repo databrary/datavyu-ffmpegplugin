@@ -40,7 +40,7 @@ public final class UIBug497Test extends UISpecTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
-        getMainWindow().dispose();
+        OpenSHAPA.getApplication().cleanUpForTests();
         super.tearDown();
     }
 

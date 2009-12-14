@@ -36,23 +36,22 @@ public final class UINewCellTest extends UISpecTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
+        try {
+            getMainWindow();
+        } catch (Exception e) {
+            setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
+        }
     }
 
      /**
      * Called after each test.
      * @throws Exception
      */
-//    @Override
-//    protected void tearDown() throws Exception {
-//        if (readyToExit) {
-//            OpenSHAPA.getDatabase().saveDatabase();
-//            OpenSHAPA.getApplication().exit();
-//        } else {
-//            getMainWindow().dispose();
-//        }
-//        super.tearDown();
-//    }
+    @Override
+    protected void tearDown() throws Exception {
+        OpenSHAPA.getApplication().cleanUpForTests();
+        super.tearDown();
+    }
 
 //    boolean readyToExit = false;
     /**
