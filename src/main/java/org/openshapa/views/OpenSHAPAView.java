@@ -84,6 +84,7 @@ public final class OpenSHAPAView extends FrameView {
             public boolean dispatchKeyEvent(final KeyEvent evt) {
                 // Pass the keyevent onto the keyswitchboard so that it can
                 // route it to the correct action.
+                spreadsheetMenuMenuSelected(null);
                 return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
             }
         });
