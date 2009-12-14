@@ -24,6 +24,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -245,10 +246,10 @@ public final class OpenSHAPAView extends FrameView {
                      */
                     File databaseFile = new File(databaseFileName + ".csv");
                     if (databaseFile.exists()) {
-                        String dateFormat = "yyyyMMddHHmmss";
-                        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
                         databaseFileName = databaseFileName.concat(
-                                sdf.format(Calendar.getInstance().getTime()));
+                                Long
+                                .toString(new Random(System.nanoTime())
+                                .nextLong()));
                     }
                 }
                 databaseFileName = databaseFileName.concat(".csv");
