@@ -24,6 +24,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -212,7 +213,9 @@ public final class OpenSHAPAView extends FrameView {
             saveAs();
         } else {
             new SaveDatabaseC(OpenSHAPA.getDB().getSourceFile());
-            new SaveProjectC().save(OpenSHAPA.getProject().getProjectName());
+            // Save the project in the same directory as the database
+            new SaveProjectC().save(OpenSHAPA.getProject().getDatabaseDir() +
+                    "/" + OpenSHAPA.getProject().getProjectName());
             OpenSHAPA.getApplication().updateTitle();
         }
     }
@@ -246,10 +249,10 @@ public final class OpenSHAPAView extends FrameView {
                      */
                     File databaseFile = new File(databaseFileName + ".csv");
                     if (databaseFile.exists()) {
-                        String dateFormat = "yyyyMMddHHmmss";
-                        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
                         databaseFileName = databaseFileName.concat(
-                                sdf.format(Calendar.getInstance().getTime()));
+                                Long
+                                .toString(new Random(System.nanoTime())
+                                .nextLong()));
                     }
                 }
                 databaseFileName = databaseFileName.concat(".csv");

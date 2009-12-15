@@ -70,7 +70,7 @@ public class Project {
     public void setProjectName(String projectName) {
         assert(projectName != null);
         String name = projectName;
-        int match = name.lastIndexOf(".openshapa");
+        int match = name.lastIndexOf(".shapa");
         if (match != -1) {
             name = name.substring(0, match);
         }
