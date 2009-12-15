@@ -84,6 +84,7 @@ public final class OpenSHAPAView extends FrameView {
             public boolean dispatchKeyEvent(final KeyEvent evt) {
                 // Pass the keyevent onto the keyswitchboard so that it can
                 // route it to the correct action.
+                spreadsheetMenuMenuSelected(null);
                 return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
             }
         });
@@ -138,7 +139,7 @@ public final class OpenSHAPAView extends FrameView {
         newCellRightMenuItem.setAccelerator(KeyStroke
                                          .getKeyStroke(KeyEvent.VK_R, keyMask));
 
-        this.panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
+        this.panel = new SpreadsheetPanel(OpenSHAPA.getDB());
         this.setComponent(panel);
 
     }
@@ -149,35 +150,7 @@ public final class OpenSHAPAView extends FrameView {
     public void updateTitle() {
         // BugzID:449 - Update the name of the window to include the default
         // name of the database.
-//        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-//        ResourceMap rMap = OpenSHAPA.getApplication()
-//                                    .getContext()
-//                                    .getResourceMap(OpenSHAPA.class);
-//        String postFix = "";
-//        Database db = OpenSHAPA.getDatabase();
-//
-//        if (db.getHasChanged()) {
-//            postFix = "*";
-//        }
-//        File dbFile = db.getSourceFile();
-//
-//        if (dbFile != null) {
-//            String fName = dbFile.getName();
-//            mainFrame.setTitle(rMap.getString("Application.title")
-//                               + " - "
-//                               + fName
-//                               + postFix);
-//        } else if (db.getName() != null) {
-//            mainFrame.setTitle(rMap.getString("Application.title")
-//                               + " - "
-//                               + db.getName()
-//                               + postFix);
-//        } else {
-//            mainFrame.setTitle(rMap.getString("Application.title")
-//                               + " - "
-//                               + "Database1"
-//                               + postFix);
-//        }
+
         // Show the project name instead of database.
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         ResourceMap rMap = OpenSHAPA.getApplication()
@@ -186,7 +159,7 @@ public final class OpenSHAPAView extends FrameView {
         String postFix = "";
         Project project = OpenSHAPA.getProject();
 
-        if (project.isChanged() || OpenSHAPA.getDatabase().getHasChanged()) {
+        if (project.isChanged() || OpenSHAPA.getDB().getHasChanged()) {
             postFix = "*";
         }
 
@@ -233,23 +206,15 @@ public final class OpenSHAPAView extends FrameView {
     public void save() {
         // If the user has not saved before - invoke the saveAs() controller to
         // force the user to nominate a destination file.
-        
         if (OpenSHAPA.getProject().getProjectName() == null) {
             saveAs();
         } else if (OpenSHAPA.getProject().getDatabaseFile() == null) {
             saveAs();
         } else {
-            new SaveDatabaseC(OpenSHAPA.getDatabase().getSourceFile());
+            new SaveDatabaseC(OpenSHAPA.getDB().getSourceFile());
             new SaveProjectC().save(OpenSHAPA.getProject().getProjectName());
             OpenSHAPA.getApplication().updateTitle();
         }
-
-        // ORIGINAL CODE:
-//        if (OpenSHAPA.getDatabase().getSourceFile() == null) {
-//            saveAs();
-//        } else {
-//            new SaveDatabaseC(OpenSHAPA.getDatabase().getSourceFile());
-//        }
     }
 
     /**
@@ -306,16 +271,6 @@ public final class OpenSHAPAView extends FrameView {
                 new SaveDatabaseC(jd.getSelectedFile().toString(), filter);
             }
         }
-
-        // ORIGINAL CODE:
-//        jd.addChoosableFileFilter(new MODBFilter());
-//        jd.addChoosableFileFilter(new CSVFilter());
-//        int result = jd.showSaveDialog(this.getComponent());
-//
-//        FileFilter ff = jd.getFileFilter();
-//        if (result == JFileChooser.APPROVE_OPTION) {
-//            new SaveDatabaseC(jd.getSelectedFile().toString(), ff);
-//        }
     }
 
     /**
@@ -346,35 +301,6 @@ public final class OpenSHAPAView extends FrameView {
                 }
             }
         }
-        // ORIGINAL CODE:
-
-//        if (OpenSHAPA.getApplication().safeQuit()) {
-//
-//            OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
-//
-//            jd.addChoosableFileFilter(new MODBFilter());
-//            jd.addChoosableFileFilter(new CSVFilter());
-//
-//            int result = jd.showOpenDialog(this.getComponent());
-//
-//            if (result == JFileChooser.APPROVE_OPTION) {
-//                try {
-//                    MacshapaDatabase newDB = new MacshapaDatabase();
-//                    OpenSHAPA.setDatabase(newDB);
-//                    OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
-//                                                               .getMainView();
-//                    s.showSpreadsheet();
-//
-//                    // TODO- BugzID:79 This needs to move above showSpreadsheet,
-//                    // when setTicks is fully implemented.
-//                    newDB.setTicks(Constants.TICKS_PER_SECOND);
-//                } catch (SystemErrorException se) {
-//                    logger.error("Unable to create new database on open", se);
-//                }
-//
-//                new OpenDatabaseC(jd.getSelectedFile());
-//            }
-//        }
     }
 
     /**
@@ -424,9 +350,10 @@ public final class OpenSHAPAView extends FrameView {
     public void showSpreadsheet() {
         weakTemporalOrderMenuItem.setSelected(false);
         strongTemporalOrderMenuItem.setSelected(false);
+        panel.removeAll();
 
         // Create a fresh spreadsheet component and redraw the component.
-        panel = new SpreadsheetPanel(OpenSHAPA.getDatabase());
+        panel = new SpreadsheetPanel(OpenSHAPA.getDB());
         this.setComponent(panel);
         this.getComponent().revalidate();
         this.getComponent().resetKeyboardActions();
@@ -460,13 +387,13 @@ public final class OpenSHAPAView extends FrameView {
             for (DataColumn dc : colsToDelete) {
                 // Must remove cells from the data column before removing it.
                 while (dc.getNumCells() > 0) {
-                    Cell c = OpenSHAPA.getDatabase().getCell(dc.getID(), 1);
-                    OpenSHAPA.getDatabase().removeCell(c.getID());
-                    dc = OpenSHAPA.getDatabase().getDataColumn(dc.getID());
+                    Cell c = OpenSHAPA.getDB().getCell(dc.getID(), 1);
+                    OpenSHAPA.getDB().removeCell(c.getID());
+                    dc = OpenSHAPA.getDB().getDataColumn(dc.getID());
                 }
 
                 // All cells in the column removed - now delete the column.
-                OpenSHAPA.getDatabase().removeColumn(dc.getID());
+                OpenSHAPA.getDB().removeColumn(dc.getID());
                 panel.revalidate();
                 panel.repaint();
             }
@@ -485,7 +412,7 @@ public final class OpenSHAPAView extends FrameView {
 
         try {
             for (DataCell c : cellsToDelete) {
-                OpenSHAPA.getDatabase().removeCell(c.getID());
+                OpenSHAPA.getDB().removeCell(c.getID());
             }
             panel.revalidate();
             panel.repaint();
@@ -517,7 +444,7 @@ public final class OpenSHAPAView extends FrameView {
         dir = dir.substring(0, match);
         newProject.setDatabaseDir(dir);
         newProject.setDatabaseFile(jd.getSelectedFile().getName());
-        newProject.setProjectName(OpenSHAPA.getDatabase().getName());
+        newProject.setProjectName(OpenSHAPA.getDB().getName());
     }
 
     private void openProject(final OpenSHAPAFileChooser jd) {
@@ -579,14 +506,14 @@ public final class OpenSHAPAView extends FrameView {
     private void setSheetLayout() {
         try {
             SheetLayoutType type = SheetLayoutType.Ordinal;
-            OpenSHAPA.getDatabase().setTemporalOrdering(false);
+            OpenSHAPA.getDB().setTemporalOrdering(false);
 
             if (weakTemporalOrderMenuItem.isSelected()) {
                 type = SheetLayoutType.WeakTemporal;
-                OpenSHAPA.getDatabase().setTemporalOrdering(true);
+                OpenSHAPA.getDB().setTemporalOrdering(true);
             } else if (strongTemporalOrderMenuItem.isSelected()) {
                 type = SheetLayoutType.StrongTemporal;
-                OpenSHAPA.getDatabase().setTemporalOrdering(true);
+                OpenSHAPA.getDB().setTemporalOrdering(true);
             }
 
             new SetSheetLayoutC(type);

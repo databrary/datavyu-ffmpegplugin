@@ -299,48 +299,6 @@ implements KeyEventDispatcher {
             // Project hasn't been changed.
             return true;
         }
-
-        // ORIGINAL CODE:
-//        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-//        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-//                                      .getContext()
-//                                      .getResourceMap(OpenSHAPA.class);
-//        if (db.getHasChanged()) {
-//
-//            String defaultOpt = "Cancel";
-//            String altOpt = "OK";
-//
-//            String [] a = new String[2];
-//
-//            if (getPlatform() == Platform.MAC) {
-//                a[0] = defaultOpt; // This has int value 0 if selected
-//                a[1] = altOpt; // This has int value 1 if selected.
-//            } else {
-//                a[1] = defaultOpt; // This has int value 1 if selected
-//                a[0] = altOpt; // This has int value 0 if selected.
-//            }
-//
-//            int sel =
-//
-//            JOptionPane.showOptionDialog(mainFrame,
-//                    rMap.getString("UnsavedDialog.message"),
-//                    rMap.getString("UnsavedDialog.title"),
-//                    JOptionPane.OK_CANCEL_OPTION,
-//                    JOptionPane.QUESTION_MESSAGE,
-//                    null,
-//                    a,
-//                    defaultOpt);
-//
-//            // Button depends on platform now.
-//            if (getPlatform() == Platform.MAC) {
-//                return (sel == 1);
-//            } else {
-//                return (sel == 0);
-//            }
-//
-//        } else {
-//            return true;
-//        }
     }
 
     /**
@@ -418,13 +376,13 @@ implements KeyEventDispatcher {
             // we need to avoid using the
             // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
             // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
-            JRubyScriptEngineManager m = new JRubyScriptEngineManager();
+            m = new JRubyScriptEngineManager();
 
             // Whoops - JRubyScriptEngineManager may have failed, if that does
             // not construct engines for jruby correctly, switch to
             // javax.script.ScriptEngineManager
             if (m.getEngineFactories().size() == 0) {
-                ScriptEngineManager m2 = new ScriptEngineManager();
+                m2 = new ScriptEngineManager();
                 rubyEngine = m2.getEngineByName("jruby");
             } else {
                 rubyEngine = m.getEngineByName("jruby");
@@ -497,6 +455,8 @@ implements KeyEventDispatcher {
         aboutWindow = null;
         view = null;
         rubyEngine = null;
+        m2 = null;
+        m = null;
         closeOpenedWindows();
         getMainFrame().dispose();
     }
@@ -557,7 +517,7 @@ implements KeyEventDispatcher {
      *
      * @return The single database in use with this instance of OpenSHAPA
      */
-    public static MacshapaDatabase getDatabase() {
+    public static MacshapaDatabase getDB() {
         return OpenSHAPA.getApplication().db;
     }
 
@@ -724,7 +684,7 @@ implements KeyEventDispatcher {
     }
 
     public void closeOpenedWindows() {
-        while (! windows.empty()) {
+        while (!windows.empty()) {
             Window window = windows.pop();
             window.setVisible(false);
             window.dispose();
@@ -733,6 +693,10 @@ implements KeyEventDispatcher {
 
     /** The scripting engine that we use with OpenSHAPA. */
     private ScriptEngine rubyEngine;
+
+    private ScriptEngineManager m2;
+
+    private JRubyScriptEngineManager m;
 
     /** The logger for OpenSHAPA. */
     private static Logger logger = Logger.getLogger(OpenSHAPA.class);

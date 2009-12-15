@@ -14,6 +14,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import org.apache.log4j.Logger;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
 import org.openshapa.db.Database;
@@ -24,7 +25,8 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
  */
-public final class ColumnDataPanel extends SpreadsheetElementPanel {
+public final class ColumnDataPanel extends SpreadsheetElementPanel
+implements KeyEventDispatcher {
 
     /** Width of the column. */
     private int columnWidth;
@@ -72,25 +74,26 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
 
         // Populate the data column with spreadsheet cells.
         this.buildDataPanelCells(model);
+    }
 
-        KeyboardFocusManager manager = KeyboardFocusManager
-                                   .getCurrentKeyboardFocusManager();
+    /**
+     * Registers this column data panel with everything that needs to notify
+     * this class of events.
+     */
+    public void registerListeners() {
+        KeyboardFocusManager m = KeyboardFocusManager
+                                 .getCurrentKeyboardFocusManager();
+        m.addKeyEventDispatcher(this);
+    }
 
-        manager.addKeyEventDispatcher(new KeyEventDispatcher() {
-                /**
-                 * Dispatches the key event to the desired components.
-                 *
-                 * @param evt The key event to dispatch.
-                 *
-                 * @return true if the event has been consumed by this dispatch,
-                 * false otherwise.
-                 */
-                public boolean dispatchKeyEvent(KeyEvent evt) {
-                    // Pass the keyevent onto the keyswitchboard so that it can
-                    // route it to the correct action.
-                    return dispatchKEvent(evt);
-                }
-        });
+    /**
+     * Deregisters this column data panel with everything that is currently
+     * notiying it of events.
+     */
+    public void deregisterListeners() {
+        KeyboardFocusManager m = KeyboardFocusManager
+                                 .getCurrentKeyboardFocusManager();
+        m.removeKeyEventDispatcher(this);
     }
 
     /**
@@ -108,6 +111,8 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
                 SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(),
                                                          dc,
                                                          cellSelector);
+                dbColumn.getDB().registerDataCellListener(dc.getID(), sc);
+
                 // add cell to the JPanel
                 this.add(sc);
                 // and add it to our reference list
@@ -119,17 +124,40 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
     }
 
     /**
+     * Clears the cells stored in the column data panel.
+     */
+    public void clear() {
+        try {
+            for (SpreadsheetCell cell : cells) {
+                // Need to deregister data cell listener here.
+                OpenSHAPA.getDB().deregisterDataCellListener(cell.getCellID(),
+                                                             cell);
+                this.remove(cell);
+            }
+
+            cells.clear();
+        } catch (SystemErrorException se) {
+            logger.error("Unable to delete all cells", se);
+        }
+    }
+
+    /**
      * Find and delete SpreadsheetCell by its ID.
      *
      * @param cellID ID of cell to find and delete.
      */
     public void deleteCellByID(final long cellID) {
-        for (SpreadsheetCell cell : cells) {
-            if (cell.getCellID() == cellID) {
-                cells.remove(cell);
-                this.remove(cell);
-                break;
+        try {
+            for (SpreadsheetCell cell : cells) {
+                if (cell.getCellID() == cellID) {
+                    OpenSHAPA.getDB().deregisterDataCellListener(cellID, cell);
+                    cells.remove(cell);
+                    this.remove(cell);
+                    break;
+                }
             }
+        } catch (SystemErrorException se) {
+            logger.error("Unable to delete cell by ID", se);
         }
     }
 
@@ -146,6 +174,8 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
             SpreadsheetCell nCell = new SpreadsheetCell(db,
                                                         dc,
                                                         cellSelector);
+            db.registerDataCellListener(dc.getID(), nCell);
+
             Long newOrd = new Long(dc.getOrd());
             if (cells.size() > newOrd.intValue()) {
                 cells.insertElementAt(nCell, newOrd.intValue() - 1);
@@ -237,7 +267,7 @@ public final class ColumnDataPanel extends SpreadsheetElementPanel {
      * @return true if the event has been consumed by this dispatch, false
      * otherwise
      */
-    public boolean dispatchKEvent(KeyEvent e) {
+    public boolean dispatchKeyEvent(KeyEvent e) {
 
         // Quick filter - if we aren't dealing with a key press or up and down
         // arrow. Forget about it - just chuck it back to Java to deal with.

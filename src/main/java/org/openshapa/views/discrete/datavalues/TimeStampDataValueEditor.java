@@ -7,6 +7,7 @@ import org.openshapa.db.TimeStamp;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.db.DataValue;
 import org.openshapa.db.TimeStampDataValue;
 import org.openshapa.views.discrete.EditorComponent;
@@ -16,27 +17,6 @@ import org.openshapa.views.discrete.EditorComponent;
  */
 public final class TimeStampDataValueEditor extends EditorComponent {
 
-    /** Conversion factor for converting hours to ticks. */
-    private static final long HH_TO_TICKS = 3600000;
-
-    /** Array index for hourse. */
-    private static final int HH = 0;
-
-    /** Array index for minutes.  */
-    private static final int MM = 1;
-
-    /** Array index for seconds. */
-    private static final int SS = 2;
-
-    /** Array index for milliseconds. */
-    private static final int MMM = 3;
-
-    /** Conversion factor for converting minutes to ticks. */
-    private static final long MM_TO_TICKS = 60000;
-
-    /** Conversion factor for converting seconds to ticks. */
-    private static final int SS_TO_TICKS = 1000;
-
     /** Logger for this class. */
     private static Logger logger = Logger
                                    .getLogger(TimeStampDataValueEditor.class);
@@ -45,7 +25,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     private TimeStampDataValue model;
 
     /** The parent datacell for the TimeStamp that this view represents. */
-    private DataCell parentCell;
+    private long parentCell;
 
     /** The source of the TimeStampDataValue being edited. */
     private TimeStampSource dataSourceType;
@@ -54,21 +34,13 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      *
      */
     public enum TimeStampSource {
-        /**
-         * Timestamp is the Onset of the datacell associated.
-         */
+        /** Timestamp is the Onset of the datacell associated. */
         Onset,
-        /**
-         * Timestamp is the Offset of the datacell associated.
-         */
+        /** Timestamp is the Offset of the datacell associated. */
         Offset,
-        /**
-         * Timestamp is an argument of a datacell's matrix.
-         */
+        /** Timestamp is an argument of a datacell's matrix. */
         MatrixArg,
-        /**
-         * Timestamp is an argument of a predicate within a datacell.
-         */
+        /** Timestamp is an argument of a predicate within a datacell. */
         PredicateArg
     }
 
@@ -84,7 +56,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
                                     final TimeStampSource sourceType) {
         super(ta);
         setEditable(true);
-        parentCell = cell;
+        parentCell = cell.getID();
         dataSourceType = sourceType;
         this.addPreservedChars(":");
         this.setDeleteChar('0');
@@ -104,16 +76,16 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     public void resetValue() {
         try {
             // reget the parentCell in case other data items have changed
-            parentCell = (DataCell) parentCell.getDB()
-                                                   .getCell(parentCell.getID());
+            DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
+
             switch (dataSourceType) {
                 case Onset:
-                    model = new TimeStampDataValue(parentCell.getDB());
-                    model.setItsValue(parentCell.getOnset());
+                    model = new TimeStampDataValue(c.getDB());
+                    model.setItsValue(c.getOnset());
                     break;
                 case Offset:
-                    model = new TimeStampDataValue(parentCell.getDB());
-                    model.setItsValue(parentCell.getOffset());
+                    model = new TimeStampDataValue(c.getDB());
+                    model.setItsValue(c.getOffset());
                     break;
                 default:
                     break;
@@ -131,20 +103,20 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     public void updateDatabase() {
         try {
             // Reget the parentCell in case other data items have changed
-            parentCell = (DataCell) parentCell.getDB()
-                                                   .getCell(parentCell.getID());
+            DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
+
             TimeStampDataValue tsdv = (TimeStampDataValue) this.getModel();
             switch (dataSourceType) {
                 case Onset:
-                    parentCell.setOnset(tsdv.getItsValue());
+                    c.setOnset(tsdv.getItsValue());
                     break;
                 case Offset:
-                    parentCell.setOffset(tsdv.getItsValue());
+                    c.setOffset(tsdv.getItsValue());
                     break;
                 default:
                     break;
             }
-            parentCell.getDB().replaceCell(parentCell);
+            c.getDB().replaceCell(c);
         } catch (SystemErrorException se) {
             logger.error("Unable to update Database: ", se);
         }

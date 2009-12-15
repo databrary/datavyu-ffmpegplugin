@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.util.Vector;
 import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.db.DBIndex;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.Database;
@@ -172,7 +173,7 @@ public final class PredicateNameEditor extends DataValueEditor {
     public void updateModelValue(final long newPredID) {
         try {
             // Make a new predicate data value
-            PredDataValue pdv = new PredDataValue(getCell().getDB());
+            PredDataValue pdv = new PredDataValue(OpenSHAPA.getDB());
             if (newPredID == DBIndex.INVALID_ID) {
                 pdv.clearValue();
             } else {

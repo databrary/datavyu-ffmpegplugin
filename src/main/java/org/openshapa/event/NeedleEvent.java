@@ -1,4 +1,4 @@
-package org.openshapa.graphics.event;
+package org.openshapa.event;
 
 import java.util.EventObject;
 
