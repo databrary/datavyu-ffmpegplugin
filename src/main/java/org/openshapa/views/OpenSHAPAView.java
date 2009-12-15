@@ -215,7 +215,7 @@ public final class OpenSHAPAView extends FrameView {
             new SaveDatabaseC(OpenSHAPA.getDB().getSourceFile());
             // Save the project in the same directory as the database
             new SaveProjectC().save(OpenSHAPA.getProject().getDatabaseDir() +
-                    "/" + OpenSHAPA.getProject().getProjectName());
+                   "/" + OpenSHAPA.getProject().getProjectName());
             OpenSHAPA.getApplication().updateTitle();
         }
     }
@@ -268,7 +268,16 @@ public final class OpenSHAPAView extends FrameView {
                 project.setDatabaseDir(dir);
 
                 // Save the project, we have all the info.
-                new SaveProjectC().save(jd.getSelectedFile().toString());
+                String projectFileName = jd.getSelectedFile().toString();
+                if (!projectFileName.endsWith(".shapa")) {
+                    projectFileName = projectFileName.concat(".shapa");
+                }
+                File projectFile = new File(projectFileName);
+                if (!projectFile.exists() ||
+                        (projectFile.exists() &&
+                        OpenSHAPA.getApplication().overwriteExisting())) {
+                    new SaveProjectC().save(projectFileName);
+                }
             // Save as a database
             } else {
                 new SaveDatabaseC(jd.getSelectedFile().toString(), filter);
