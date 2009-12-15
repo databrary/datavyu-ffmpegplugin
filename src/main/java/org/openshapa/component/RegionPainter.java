@@ -335,7 +335,7 @@ public class RegionPainter extends Component implements InterceptedEventListener
             int startPos = Math.round(visibleStartRegion * ratio -
                     windowStart * ratio) + paddingLeft;
             int endPos = Math.round(visibleEndRegion * ratio -
-                    windowStart * ratio) + paddingLeft;
+                    windowStart * ratio) + paddingLeft + 1;
 
             g.setColor(new Color(15, 135, 0, 100));
             g.fillRect(startPos, 37, endPos - startPos, size.height);

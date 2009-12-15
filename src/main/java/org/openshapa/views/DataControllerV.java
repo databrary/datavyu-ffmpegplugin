@@ -214,11 +214,7 @@ public final class DataControllerV extends OpenSHAPADialog
             clock.setRate(currentRate);
             clock.start();
         }
-
         setCurrentTime(playTime);
-//        for (DataViewer viewer : viewers) {
-//            viewer.play();
-//        }
     }
 
     /**
@@ -227,20 +223,11 @@ public final class DataControllerV extends OpenSHAPADialog
     public void clockTick(final long time) {
         try {
             setCurrentTime(time);
-            long thresh = (long) (SYNC_THRESH * Math.abs(clock.getRate()));
 
             // Synchronise viewers only if we have exceded our pulse time.
             if ((time - this.lastSync) > (SYNC_PULSE * clock.getRate())) {
+                long thresh = (long) (SYNC_THRESH * Math.abs(clock.getRate()));
                 lastSync = time;
-
-                // BugzID:756 - don't play video once past the max duration.
-                if (time >= windowPlayEnd && clock.getRate() >= 0) {
-                    clock.stop();
-                    clock.setTime(windowPlayEnd);
-                    clockStop(windowPlayEnd);
-//                    System.out.println("Stopped playing: " + time + " playEnd: " + windowPlayEnd);
-                    return;
-                }
 
                 for (DataViewer v : viewers) {
                     /* Use offsets to determine if the video file should start
@@ -257,6 +244,36 @@ public final class DataControllerV extends OpenSHAPADialog
                     }
                 }
             }
+
+            // BugzID:466 - Prevent rewind wrapping the clock past the start
+            // point of the view window.
+            if (time < windowPlayStart) {
+                setCurrentTime(windowPlayStart);
+                clock.stop();
+                clock.setTime(windowPlayStart);
+                clockStop(windowPlayStart);
+            }
+
+            // BugzID:756 - don't play video once past the max duration.
+            if (time >= windowPlayEnd && clock.getRate() >= 0) {
+                setCurrentTime(windowPlayEnd);
+                clock.stop();
+                clock.setTime(windowPlayEnd);
+                clockStop(windowPlayEnd);
+                return;
+            }
+
+            // Check all the viewers to see if we need to start playing any of
+            // them.
+            /* BugzID:905 - This second playback check causes performance
+             * issues.
+             */
+//            for (DataViewer v : viewers) {
+//                if (time >= v.getOffset() && !v.isPlaying()) {
+//                    v.seekTo(time - v.getOffset());
+//                    v.play();
+//                }
+//            }
 
         } catch (Exception e) {
             logger.error("Unable to Sync viewers", e);
@@ -353,6 +370,18 @@ public final class DataControllerV extends OpenSHAPADialog
                 windowPlayStart = 0;
                 tracksControllerV.setPlayRegionStart(windowPlayStart);
             }
+
+            long tracksTime = tracksControllerV.getCurrentTime();
+            if (tracksTime < windowPlayStart) {
+                tracksTime = windowPlayStart;
+            }
+            if (tracksTime > windowPlayEnd) {
+                tracksTime = windowPlayEnd;
+            }
+            tracksControllerV.setCurrentTime(tracksTime);
+
+            clock.setTime(tracksTime);
+            clockStep(tracksTime);
 
             // Remove the data viewer from the project
             OpenSHAPA.getProject().removeViewerSetting(
@@ -926,19 +955,33 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     private void handleNeedleEvent(NeedleEvent e) {
-        this.clockStop(e.getTime());
-        this.clockStep(e.getTime());
-        this.setCurrentTime(e.getTime());
-        clock.setTime(e.getTime());
+        long newTime = e.getTime();
+        if (newTime < windowPlayStart) {
+            newTime = windowPlayStart;
+        }
+        if (newTime > windowPlayEnd) {
+            newTime = windowPlayEnd;
+        }
+        this.clockStop(newTime);
+        this.clockStep(newTime);
+        this.setCurrentTime(newTime);
+        clock.setTime(newTime);
     }
 
     private void handleMarkerEvent(MarkerEvent e) {
+        final long newWindowTime = e.getTime();
+        final long tracksTime = tracksControllerV.getCurrentTime();
         switch (e.getMarker()) {
             case START_MARKER:
-                if ((e.getTime() < maxDuration) &&
-                        (e.getTime() < windowPlayEnd)) {
-                    windowPlayStart = e.getTime();
+                if ((newWindowTime < maxDuration) &&
+                        (newWindowTime < windowPlayEnd)) {
+                    windowPlayStart = newWindowTime;
                     tracksControllerV.setPlayRegionStart(windowPlayStart);
+                    if (tracksTime < windowPlayStart) {
+                        tracksControllerV.setCurrentTime(windowPlayStart);
+                        clock.setTime(windowPlayStart);
+                        clockStep(windowPlayStart);
+                    }
                 }
                 break;
             case END_MARKER:
@@ -946,6 +989,11 @@ public final class DataControllerV extends OpenSHAPADialog
                         (e.getTime() > windowPlayStart)) {
                     windowPlayEnd = e.getTime();
                     tracksControllerV.setPlayRegionEnd(windowPlayEnd);
+                    if (tracksTime > windowPlayEnd) {
+                        tracksControllerV.setCurrentTime(windowPlayEnd);
+                        clock.setTime(windowPlayEnd);
+                        clockStep(windowPlayEnd);
+                    }
                 }
                 break;
             default: break;
