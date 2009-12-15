@@ -1,12 +1,10 @@
 package org.openshapa.uitests;
 
 import java.io.File;
-import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.OpenSHAPA;
 import org.uispec4j.MenuBar;
+import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.UISpec4J;
-import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 import org.uispec4j.interception.FileChooserHandler;
 
@@ -14,7 +12,7 @@ import org.uispec4j.interception.FileChooserHandler;
  * Bug 661 Test
  * Make sure that the open dialog remembers previous open location.
  */
-public final class UIBug661Test extends UISpecTestCase {
+public final class UIBug661Test extends OpenSHAPAUISpecTestCase {
 
     /**
      * Initialiser called before each unit test.
@@ -24,7 +22,6 @@ public final class UIBug661Test extends UISpecTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
      /**
@@ -33,7 +30,6 @@ public final class UIBug661Test extends UISpecTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
-        OpenSHAPA.getApplication().cleanUpForTests();
         super.tearDown();
     }
 

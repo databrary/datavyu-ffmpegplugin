@@ -1,19 +1,17 @@
 package org.openshapa.uitests;
 
 import java.io.File;
-import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
 import org.uispec4j.Cell;
 import org.uispec4j.Key;
 import org.uispec4j.MenuBar;
+import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.TextBox;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
-import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 import org.uispec4j.interception.FileChooserHandler;
 import org.uispec4j.interception.WindowHandler;
@@ -22,7 +20,7 @@ import org.uispec4j.interception.WindowHandler;
  * Bug 583.
  * Highlighting float value and pressing zero changes to "."
  */
-public final class UIBug583Test extends UISpecTestCase {
+public final class UIBug583Test extends OpenSHAPAUISpecTestCase {
 
     /**
      * Initialiser called before each unit test.
@@ -32,7 +30,6 @@ public final class UIBug583Test extends UISpecTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
      /**
@@ -41,7 +38,6 @@ public final class UIBug583Test extends UISpecTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
-        OpenSHAPA.getApplication().cleanUpForTests();
         super.tearDown();
     }
 

@@ -11,9 +11,9 @@ import org.openshapa.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.project.Project;
 import org.openshapa.util.UIUtils;
 import org.uispec4j.MenuBar;
+import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
-import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 import org.uispec4j.interception.BasicHandler;
 import org.uispec4j.interception.FileChooserHandler;
@@ -27,7 +27,7 @@ import org.yaml.snakeyaml.Yaml;
 /**
  * Test saving and loading a database to a SHAPA file.
  */
-public final class UISaveLoadSHAPATest extends UISpecTestCase {
+public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
 
     /**
      * Initialiser called before each unit test.
@@ -37,7 +37,6 @@ public final class UISaveLoadSHAPATest extends UISpecTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
 
         /* Deleting these temp files before and after tests because Java does
          * not always delete them during the test case. Doing the deletes here
@@ -110,7 +109,6 @@ public final class UISaveLoadSHAPATest extends UISpecTestCase {
             file.delete();
         }
 
-        getMainWindow().dispose();
         super.tearDown();
     }
 

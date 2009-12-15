@@ -3,9 +3,7 @@ package org.openshapa.uitests;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Vector;
-import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.uispec4j.Cell;
@@ -13,6 +11,7 @@ import org.uispec4j.Column;
 import org.uispec4j.Key;
 import org.uispec4j.KeyItem;
 import org.uispec4j.MenuBar;
+import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Panel;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.StringItem;
@@ -20,7 +19,6 @@ import org.uispec4j.TextBox;
 import org.uispec4j.TextItem;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
-import org.uispec4j.UISpecTestCase;
 import org.uispec4j.VocabElement;
 import org.uispec4j.Window;
 import org.uispec4j.interception.FileChooserHandler;
@@ -30,7 +28,7 @@ import org.uispec4j.interception.WindowHandler;
  * Test the creation of a new database.
  *
  */
-public final class UIVocabEditorTest extends UISpecTestCase {
+public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
     /**
      * Initialiser called before each unit test.
@@ -40,7 +38,6 @@ public final class UIVocabEditorTest extends UISpecTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
     /**
@@ -49,7 +46,6 @@ public final class UIVocabEditorTest extends UISpecTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
-        OpenSHAPA.getApplication().cleanUpForTests();
         super.tearDown();
     }
 

@@ -1,27 +1,23 @@
 package org.openshapa.uitests;
 
 import java.io.File;
-import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
-import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.FloatUtils;
-import org.openshapa.views.OpenSHAPAView;
 import org.uispec4j.Cell;
 import org.uispec4j.Clipboard;
 import org.uispec4j.Key;
 import org.uispec4j.KeysItem;
 import org.uispec4j.MenuBar;
+import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.StringItem;
 import org.uispec4j.TextBox;
 import org.uispec4j.TextItem;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
-import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 import org.uispec4j.interception.FileChooserHandler;
 import org.uispec4j.interception.WindowHandler;
@@ -29,7 +25,7 @@ import org.uispec4j.interception.WindowHandler;
 /**
  * Test for the New Cells.
  */
-public final class UINewCellTest extends UISpecTestCase {
+public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
 
     /**
      * Initialiser called before each unit test.
@@ -39,11 +35,6 @@ public final class UINewCellTest extends UISpecTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        try {
-            getMainWindow();
-        } catch (Exception e) {
-            setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
-        }
     }
 
      /**
@@ -52,7 +43,6 @@ public final class UINewCellTest extends UISpecTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
-        OpenSHAPA.getApplication().cleanUpForTests();
         super.tearDown();
     }
 
@@ -254,7 +244,7 @@ public final class UINewCellTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
     public void testFloatPasting() throws Exception {
-       String varName = "floatVar";
+        String varName = "floatVar";
         String varRadio = "float";
 
         String[] expectedTestOutput = {"1.9", "-43.21", "289", "178", "0",
@@ -649,7 +639,7 @@ public final class UINewCellTest extends UISpecTestCase {
      * @throws java.lang.Exception on any error
      */
     public void testNewMatrixCellDoubleArgFloat() throws Exception {
-       // Retrieve the components
+        // Retrieve the components
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
 
