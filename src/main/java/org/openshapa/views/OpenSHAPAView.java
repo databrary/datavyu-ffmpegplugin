@@ -544,9 +544,10 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void safeQuit() {
-        if (OpenSHAPA.getApplication().safeQuit()) {
-            System.exit(0);
-        }
+        OpenSHAPA.getApplication().cleanUpForTests();
+//        if (OpenSHAPA.getApplication().safeQuit()) {
+//            System.exit(0);
+//        }
     }
 
     /** This method is called from within the constructor to
