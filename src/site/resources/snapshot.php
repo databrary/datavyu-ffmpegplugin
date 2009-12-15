@@ -8,12 +8,20 @@ while ($file = readdir($dh)) {
     if ($file != "." && $file != "..") {
         // Parse the time of the download.
         $chunks = explode("-", $file);
-        $date = explode(".", $chunks[3]);
-        $files[$date[0]] = $file;
+        $date = explode(".", $chunks[3]);        
+
+        if (strlen($date[0]) == 10) {
+            $date[0] = $date[0]."0000";
+        }
+
+        if ($files[$date[0]] == null) {
+            $files[$date[0]] = array();            
+        }
+        array_push($files[$date[0]], $file);
     }
 }
 closedir($dh);
-asort($files);
+ksort($files, SORT_NUMERIC);
 
 // Log into FogBugz and get the token for the session.
 $raw = file_get_contents($FOGBUGZ_URL."api.xml");
@@ -29,7 +37,6 @@ foreach ($raw->fixfors->fixfor as $value) {
         echo "\n";
         $release_date = str_replace("-", "", $value->dt);
         $release_date = substr($release_date, 0, strpos($release_date, "T"))."235959";
-
         $releases[$release_date] = $value->sFixFor;
    }
 }
@@ -40,7 +47,7 @@ $last_build_file = array_pop(array_values($files));
 array_pop($files);
 
 // Sort the remaining builds.
-arsort($files);
+krsort($files, SORT_NUMERIC);
 
 // Sort the milestones by date.
 asort($releases, SORT_NUMERIC);
@@ -147,17 +154,22 @@ $raw = file_get_contents($FOGBUGZ_URL."api.php?cmd=logoff&token=".$token);
 					<div id="content">
 
 <h2>Latest snapshot build for release - <?= $matching_release ?></h2>
-<h3>(due <?php print date("jS F o", strtotime($release_date)); ?>)</h3>
+<h3>Due <?php print date("jS F o", strtotime($release_date)); ?>:</h3>
 This page contains the latest snapshot builds for OpenSHAPA, they contain the
 very latest development work, and are a little unstable. However we need your
 help to try and test the latest features.
 
 <br/><br/>
-<h3>Build Download:</h3>
-<strong><a href="<?= $DOWNLOAD_URL.$last_build_file?>"><?= $last_build_file ?></a></strong>
+<h3>Development Snapshot Download:</h3>
+<?php
+foreach($last_build_file as $file) {
+    print "<strong><a href=\"".$DOWNLOAD_URL.$file."\">".$file."</a></strong><br/>";
+}
+?>
+
 
 <br/><br/>
-<h3>Build Status:</h3>
+<h3>Devlopment Snapshot Status:</h3>
 <table class="bodyTable"><tr class="a"><th>Fixes included in this build that require verfication:</th>
 </tr>
 <?php
@@ -204,9 +216,13 @@ foreach ($closed_bugs as $key => $value) {
 $odd = true;
 foreach ($files as $key => $value) {
     if ($odd) {
-        print "<tr class=\"b\"><td>" . date("jS F o - g:ia", strtotime($key)) . "</td><td><a href=\"".$DOWNLOAD_URL.$value."\">". $value . "</a></td></tr>";
+        foreach($value as $file) {
+            print "<tr class=\"b\"><td>" . date("jS F o - g:ia", strtotime($key)) . "</td><td><a href=\"".$DOWNLOAD_URL.$file."\">". $file . "</a></td></tr>";
+        }
     } else {
-        print "<tr class=\"a\"><td>" . date("jS F o - g:ia", strtotime($key)) . "</td><td><a href=\"".$DOWNLOAD_URL.$value."\">". $value . "</a></td></tr>";
+        foreach($value as $file) {
+            print "<tr class=\"a\"><td>" . date("jS F o - g:ia", strtotime($key)) . "</td><td><a href=\"".$DOWNLOAD_URL.$file."\">". $file . "</a></td></tr>";
+        }
     }
     $odd = !$odd;
 }

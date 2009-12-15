@@ -220,6 +220,30 @@ Navigation
 }
 
 
+table.bodyTable {
+    width: 600px;
+}
+
+table.bodyTable th {
+  color: white;
+  background-color: #bbb;
+  text-align: left;
+  font-weight: bold;
+}
+
+table.bodyTable th, table.bodyTable td {
+  font-size: 1em;
+}
+
+table.bodyTable tr.a {
+  background-color: #ddd;
+}
+
+table.bodyTable tr.b {
+  background-color: #eee;
+}
+
+
 /*----------------------------
 Sidebar
 ----------------------------*/
