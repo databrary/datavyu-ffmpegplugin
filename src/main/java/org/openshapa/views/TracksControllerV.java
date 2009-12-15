@@ -368,6 +368,13 @@ public class TracksControllerV implements NeedleEventListener,
     }
 
     /**
+     * @return Current time, in milliseconds, that is being used.
+     */
+    public long getCurrentTime() {
+        return needle.getCurrentTime();
+    }
+
+    /**
      * Set the start of the new playback region
      * @param time time in milliseconds
      */

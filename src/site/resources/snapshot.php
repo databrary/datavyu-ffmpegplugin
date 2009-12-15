@@ -8,14 +8,14 @@ while ($file = readdir($dh)) {
     if ($file != "." && $file != "..") {
         // Parse the time of the download.
         $chunks = explode("-", $file);
-        $date = explode(".", $chunks[3]);        
+        $date = explode(".", $chunks[3]);
 
         if (strlen($date[0]) == 10) {
             $date[0] = $date[0]."0000";
         }
 
         if ($files[$date[0]] == null) {
-            $files[$date[0]] = array();            
+            $files[$date[0]] = array();
         }
         array_push($files[$date[0]], $file);
     }

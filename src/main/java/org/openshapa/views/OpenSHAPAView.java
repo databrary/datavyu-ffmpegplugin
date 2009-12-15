@@ -237,6 +237,21 @@ public final class OpenSHAPAView extends FrameView {
             FileFilter filter = jd.getFileFilter();
             // Save as a project
             if (filter instanceof SHAPAFilter) {
+                // Check if the target project file exists or not
+                String projectFileName = jd.getSelectedFile().toString();
+                if (!projectFileName.endsWith(".shapa")) {
+                    projectFileName = projectFileName.concat(".shapa");
+                }
+                File projectFile = new File(projectFileName);
+                boolean doSave = (!projectFile.exists() ||
+                        (projectFile.exists() &&
+                        OpenSHAPA.getApplication().overwriteExisting()));
+
+                /* They don't want to overwrite the existing project, don't
+                 * continue
+                 */
+                if (!doSave) return;
+
                 // Save the database first
                 String projectName = FileUtils.getFilenameNoExtension(
                         jd.getSelectedFile().getName());
@@ -268,16 +283,7 @@ public final class OpenSHAPAView extends FrameView {
                 project.setDatabaseDir(dir);
 
                 // Save the project, we have all the info.
-                String projectFileName = jd.getSelectedFile().toString();
-                if (!projectFileName.endsWith(".shapa")) {
-                    projectFileName = projectFileName.concat(".shapa");
-                }
-                File projectFile = new File(projectFileName);
-                if (!projectFile.exists() ||
-                        (projectFile.exists() &&
-                        OpenSHAPA.getApplication().overwriteExisting())) {
-                    new SaveProjectC().save(projectFileName);
-                }
+                new SaveProjectC().save(projectFileName);
             // Save as a database
             } else {
                 new SaveDatabaseC(jd.getSelectedFile().toString(), filter);
@@ -538,9 +544,10 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void safeQuit() {
-        if (OpenSHAPA.getApplication().safeQuit()) {
-            System.exit(0);
-        }
+        OpenSHAPA.getApplication().cleanUpForTests();
+//        if (OpenSHAPA.getApplication().safeQuit()) {
+//            System.exit(0);
+//        }
     }
 
     /** This method is called from within the constructor to

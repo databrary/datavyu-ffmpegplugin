@@ -1,8 +1,6 @@
 package org.openshapa.uitests;
 
-import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
 import org.openshapa.util.FloatUtils;
@@ -11,16 +9,16 @@ import org.uispec4j.Cell;
 import org.uispec4j.Key;
 import org.uispec4j.KeyItem;
 import org.uispec4j.MenuBar;
+import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.TextItem;
 import org.uispec4j.UISpec4J;
-import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 
 /**
  * Test for the DataController.
  */
-public final class UIDataControllerTest extends UISpecTestCase {
+public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
 
     /**
      * Initialiser called before each unit test.
@@ -30,7 +28,6 @@ public final class UIDataControllerTest extends UISpecTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
      /**
@@ -39,7 +36,6 @@ public final class UIDataControllerTest extends UISpecTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
-        getMainWindow().dispose();
         super.tearDown();
     }
 
@@ -111,7 +107,7 @@ public final class UIDataControllerTest extends UISpecTestCase {
      * @throws Exception any exception
      */
     private void StandardSequence1(String varName, String varType, 
-            String[] testInputArray, String[] testExpectedArray)
+            String[] testInputArray, String[] testExpectedArray, int Iteration)
             throws Exception {
         // Retrieve the components and set variable
         Window window = getMainWindow();
@@ -259,6 +255,7 @@ public final class UIDataControllerTest extends UISpecTestCase {
                 .equals("00:02:21:000"));
         assertTrue(cells.elementAt(2).getOffsetTime().toString()
                 .equals("00:00:00:000"));
+        dvc.dispose();
     }
     
     /**
@@ -268,16 +265,16 @@ public final class UIDataControllerTest extends UISpecTestCase {
      */
     public void testStandardSequence1() throws Exception {
         //Text
-        StandardSequence1("textVar", "text", textTestInput, textTestInput);
-//        //Integer
+        StandardSequence1("textVar", "text", textTestInput, textTestInput, 1);
+        //Integer
 //        StandardSequence1("intVar", "integer", integerTestInput,
-//                expectedIntegerTestOutput);
+//                expectedIntegerTestOutput, 2);
 //        //Float
 //        StandardSequence1("floatVar", "float", floatTestInput,
-//                expectedFloatTestOutput);
+//                expectedFloatTestOutput, 3);
 //        //Nominal
 //        StandardSequence1("nomVar", "nominal", nominalTestInput,
-//                expectedNominalTestOutput);
+//                expectedNominalTestOutput, 4);
     }
 
 
