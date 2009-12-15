@@ -304,16 +304,16 @@
 						<div id="sidebar-content">
 							<h2>Major Supporters</h2>
 							<ul class="logos">
-								<li><a href="#"><img src="images/supporters/logo_NICTA.gif" alt="NICTA" /></a></li>
-								<li><a href="#"><img src="images/supporters/logo_uni_qld.gif" alt="The University of Queensland Australia" /></a></li>
-								<li><a href="#"><img src="images/supporters/logo_uni_ny.gif" alt="New York University" /></a></li>
+								<li><a href="http://www.nicta.com.au" target="_blank"><img src="images/supporters/logo_NICTA.gif" alt="NICTA" /></a></li>
+								<li><a href="http://www.uq.edu.au" target="_blank"><img src="images/supporters/logo_uni_qld.gif" alt="The University of Queensland Australia" /></a></li>
+								<li><a href="http://www.nyu.edu" target="_blank"><img src="images/supporters/logo_uni_ny.gif" alt="New York University" /></a></li>
 							</ul>
-							<h2><a href="#">Other Supporters</a></h2>
+							<h2><a href="supporters.html">Other Supporters</a></h2>
 						</div>
 					</div>
 					<!-- /sidebar -->
 					<div id="content">
-                                        $bodyContent
+$bodyContent
 					</div>
 					<!-- /content -->
 					<div class="clear"></div>
@@ -326,45 +326,18 @@
 			</div>
 			<!-- /page -->
 		</div>
-		<!-- /page-container -->
-                <!-- Piwik -->
-                <script type="text/javascript">
-                var pkBaseURL = (("https:" == document.location.protocol) ? "https://openshapa.org/piwik/" : "http://openshapa.org/piwik/");
-                document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-                </script><script type="text/javascript">
-                try {
-                var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
-                piwikTracker.trackPageView();
-                piwikTracker.enableLinkTracking();
-                } catch( err ) {}
-                </script>
-                <!-- End Piwik Tag -->
+<!-- /page-container -->
+<!-- Piwik -->
+<script type="text/javascript">
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://openshapa.org/piwik/" : "http://openshapa.org/piwik/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script type="text/javascript">
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+</script>
+<!-- End Piwik Tag -->
 	</body>
-
-
-<!--
-  <body class="composite">
-    <div id="banner">
-      #banner( $decoration.bannerLeft "bannerLeft" )
-      #banner( $decoration.bannerRight "bannerRight" )
-      <div class="clear">
-        <hr/>
-      </div>
-    </div>
-    <div id="breadcrumbs">
-      #publishDate( "left" $decoration.publishDate $decoration.version )
-      <div class="xright">#links( $decoration.body.links )#publishDate( "right" $decoration.publishDate $decoration.version )</div>
-      <div class="clear">
-        <hr/>
-      </div>
-    </div>
-    <div id="leftColumn">
-      <div id="navcolumn">
-       #publishDate( "navigation-top" $decoration.publishDate $decoration.version )
-       #mainMenu( $decoration.body.menus )
-       #poweredByLogo( $decoration.poweredBy )
-       #publishDate( "navigation-bottom" $decoration.publishDate $decoration.version )
-      </div>
-    </div>
--->
 </html>
