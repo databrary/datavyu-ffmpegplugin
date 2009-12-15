@@ -778,8 +778,10 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
           (window.getUIComponents(Spreadsheet.class)[0].getAwtComponent()));
         assertTrue(ss.getColumns().size() > 0);
 
-        // ******* MORE ADVANCED TEST HERE **********
+        // BugzID:584 - "Create advanced matrix tests"
+        // **** UNFINISHED ADVANCED TEST HERE *******
         // **** FOR A SIMPLE TEST: SCROLL DOWN ******
+        //     Test with the simple test first.
 
         /* Within this block, we have a large multi-dimensional matrix
          * of tests that can eventually be uncommented and tested, after
