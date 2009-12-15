@@ -143,11 +143,11 @@ $raw = file_get_contents($FOGBUGZ_URL."api.php?cmd=logoff&token=".$token);
 						<div id="sidebar-content">
 							<h2>Major Supporters</h2>
 							<ul class="logos">
-								<li><a href="#"><img src="images/supporters/logo_NICTA.gif" alt="NICTA" /></a></li>
-								<li><a href="#"><img src="images/supporters/logo_uni_qld.gif" alt="The University of Queensland Australia" /></a></li>
-								<li><a href="#"><img src="images/supporters/logo_uni_ny.gif" alt="New York University" /></a></li>
+								<li><a href="http://www.nicta.com.au" target="_blank"><img src="images/supporters/logo_NICTA.gif" alt="NICTA" /></a></li>
+								<li><a href="http://www.uq.edu.au" taget="_blank"><img src="images/supporters/logo_uni_qld.gif" alt="The University of Queensland Australia" /></a></li>
+								<li><a href="http://www.nyu.edu" target="_blank"><img src="images/supporters/logo_uni_ny.gif" alt="New York University" /></a></li>
 							</ul>
-							<h2><a href="#">Other Supporters</a></h2>
+							<h2><a href="supporters.html">Other Supporters</a></h2>
 						</div>
 					</div>
 					<!-- /sidebar -->
