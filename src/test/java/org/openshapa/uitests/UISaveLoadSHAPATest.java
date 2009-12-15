@@ -3,6 +3,7 @@ package org.openshapa.uitests;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import org.uispec4j.interception.MainClassAdapter;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.project.OpenSHAPAProjectConstructor;
@@ -37,6 +38,38 @@ public final class UISaveLoadSHAPATest extends UISpecTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
+
+        /* Deleting these temp files before and after tests because Java does
+         * not always delete them during the test case. Doing the deletes here
+         * has resulted in consistent behaviour.
+         */
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+
+        File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
+        savedSHAPA.deleteOnExit();
+        if (savedSHAPA.exists()) {
+            savedSHAPA.delete();
+        }
+
+        File savedDB = new File(tempFolder + "/savedSHAPA.csv");
+        savedDB.deleteOnExit();
+        if (savedDB.exists()) {
+            savedDB.delete();
+        }
+
+        // Delete other temporary CSV and SHAPA files
+        FilenameFilter ff  = new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return (name.endsWith(".csv") || name.endsWith(".shapa"));
+            }
+        };
+        File tempDirectory = new File(tempFolder);
+        String[] files = tempDirectory.list(ff);
+        for (int i = 0; i < files.length; i++) {
+            File file = new File(tempFolder + "/" + files[i]);
+            file.deleteOnExit();
+            file.delete();
+        }
     }
 
      /**
@@ -45,6 +78,38 @@ public final class UISaveLoadSHAPATest extends UISpecTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
+        /* Deleting these temp files before and after tests because Java does
+         * not always delete them during the test case. Doing the deletes here
+         * has resulted in consistent behaviour.
+         */
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
+        File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
+        savedSHAPA.deleteOnExit();
+        if (savedSHAPA.exists()) {
+            savedSHAPA.delete();
+        }
+
+        File savedDB = new File(tempFolder + "/savedSHAPA.csv");
+        savedDB.deleteOnExit();
+        if (savedDB.exists()) {
+            savedDB.delete();
+        }
+
+        // Delete other temporary CSV and SHAPA files
+        FilenameFilter ff  = new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return (name.endsWith(".csv") || name.endsWith(".shapa"));
+            }
+        };
+        File tempDirectory = new File(tempFolder);
+        String[] files = tempDirectory.list(ff);
+        for (int i = 0; i < files.length; i++) {
+            File file = new File(tempFolder + "/" + files[i]);
+            file.deleteOnExit();
+            file.delete();
+        }
+
         getMainWindow().dispose();
         super.tearDown();
     }
@@ -68,22 +133,8 @@ public final class UISaveLoadSHAPATest extends UISpecTestCase {
         File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
         assertTrue(demoFile.exists());
 
-        String tempFolder = System.getProperty("java.io.tmpdir");
+        final String tempFolder = System.getProperty("java.io.tmpdir");
         
-        File savedDB = new File(tempFolder + "/savedSHAPA.csv");
-        savedDB.deleteOnExit();
-        if (savedDB.exists()) {
-            savedDB.delete();
-        }
-        assertFalse(savedDB.exists());
-
-        File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
-        savedSHAPA.deleteOnExit();
-        if (savedSHAPA.exists()) {
-            savedSHAPA.delete();
-        }
-        assertFalse(savedSHAPA.exists());
-
         // 1. Open and run script to populate database
         WindowInterceptor
                 .init(menuBar.getMenu("Script").getSubMenu("Run script")
@@ -100,18 +151,27 @@ public final class UISaveLoadSHAPATest extends UISpecTestCase {
                 .run();
 
         // 2. Save SHAPA file
+        File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
+        if (savedSHAPA.exists()) {
+            savedSHAPA.delete();
+        }
+        savedSHAPA.deleteOnExit();
+
         WindowInterceptor
                 .init(menuBar.getMenu("File").getSubMenu("Save As...")
                     .triggerClick())
                 .process(FileChooserHandler.init()
                     .assertIsSaveDialog()
                     .assertAcceptsFilesOnly()
-                    .select(savedSHAPA))
+                    .select(tempFolder + "/savedSHAPA.shapa"))
                 .run();
 
-        // 3. Check that SHAPA file is correct
+        // 3. Check that the generated SHAPA file is correct
         Yaml yaml = new Yaml(new Loader(new OpenSHAPAProjectConstructor()));
-        Project project = (Project) yaml.load(new FileReader(savedSHAPA));
+        FileReader fileReader = new FileReader(savedSHAPA);
+        Project project = (Project) yaml.load(fileReader);
+        fileReader.close();
+
         assertTrue(project.getProjectName().equals("savedSHAPA"));
         assertNull(project.getProjectDescription());
         assertTrue(project.getDatabaseFile().contains("savedSHAPA.csv"));
@@ -129,9 +189,9 @@ public final class UISaveLoadSHAPATest extends UISpecTestCase {
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
 
-        String tempFolder = System.getProperty("java.io.tmpdir");
+        final String tempFolder = System.getProperty("java.io.tmpdir");
 
-        String root = System.getProperty("testPath");
+        final String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
         assertTrue(demoFile.exists());
 
@@ -139,18 +199,8 @@ public final class UISaveLoadSHAPATest extends UISpecTestCase {
         assertTrue(testCSV.exists());
 
         File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
+        savedSHAPA.delete();
         savedSHAPA.deleteOnExit();
-        if (savedSHAPA.exists()) {
-            savedSHAPA.delete();
-        }
-        assertFalse(savedSHAPA.exists());
-
-        File savedDB = new File(tempFolder + "/savedSHAPA.csv");
-        savedDB.deleteOnExit();
-        if (savedDB.exists()) {
-            savedDB.delete();
-        }
-        assertFalse(savedDB.exists());
 
         //1. Click save on empty project. Expecting it to act like Save As
         WindowInterceptor
@@ -181,6 +231,9 @@ public final class UISaveLoadSHAPATest extends UISpecTestCase {
         // 2. Save project file. Not expecting anything except a save
         menuBar.getMenu("File").getSubMenu("Save").click();
 
+        File savedDB = new File(tempFolder + "/savedSHAPA.csv");
+        savedDB.deleteOnExit();
+        
         // 3. Check that the saved database file is correct
         assertTrue(UIUtils.areFilesSame(testCSV, savedDB));
     }
@@ -221,7 +274,7 @@ public final class UISaveLoadSHAPATest extends UISpecTestCase {
         Project loadedProject = new Project();
         loadedProject.setDatabaseDir(root);
         loadedProject.setDatabaseFile(root + inputFile);
-        loadedProject.setProjectName("savedSHAPA");
+        loadedProject.setProjectName("newSHAPA");
 
         // 2. Write the project out
         Dumper dumper = new Dumper(new OpenSHAPAProjectRepresenter(),
@@ -267,10 +320,6 @@ public final class UISaveLoadSHAPATest extends UISpecTestCase {
 
         // 5. Check that CSV file is correct
         assertTrue(UIUtils.areFilesSame(testOutputCSV, savedDB));
-
-        // 6. Delete the files
-        savedDB.delete();
-        savedSHAPA.delete();
     }
 
     /**

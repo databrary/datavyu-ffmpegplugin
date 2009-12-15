@@ -213,7 +213,9 @@ public final class OpenSHAPAView extends FrameView {
             saveAs();
         } else {
             new SaveDatabaseC(OpenSHAPA.getDB().getSourceFile());
-            new SaveProjectC().save(OpenSHAPA.getProject().getProjectName());
+            // Save the project in the same directory as the database
+            new SaveProjectC().save(OpenSHAPA.getProject().getDatabaseDir() +
+                    "/" + OpenSHAPA.getProject().getProjectName());
             OpenSHAPA.getApplication().updateTitle();
         }
     }

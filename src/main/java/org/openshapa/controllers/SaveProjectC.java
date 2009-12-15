@@ -33,12 +33,16 @@ public class SaveProjectC {
 
         try {
             File outputProjectFile = new File(outFile);
+
             if ((outputProjectFile.exists()
                     && OpenSHAPA.getApplication().overwriteExisting())
                 || !outputProjectFile.exists()) {
 
-                BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
+                FileWriter fileWriter = new FileWriter(fileName);
+                BufferedWriter out = new BufferedWriter(fileWriter);
                 yaml.dump(project, out);
+                out.close();
+                fileWriter.close();
                 project.saveProject();
             }
         } catch (IOException ex) {
