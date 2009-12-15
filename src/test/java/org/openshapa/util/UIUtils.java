@@ -21,8 +21,11 @@ public class UIUtils {
      */
     public static Boolean areFilesSame(final File file1, final File file2)
     throws IOException {
-        BufferedReader r1 = new BufferedReader(new FileReader(file1));
-        BufferedReader r2 = new BufferedReader(new FileReader(file2));
+        FileReader fr1 = new FileReader(file1);
+        FileReader fr2 = new FileReader(file2);
+
+        BufferedReader r1 = new BufferedReader(fr1);
+        BufferedReader r2 = new BufferedReader(fr2);
 
         String line1 = r1.readLine();
         String line2 = r2.readLine();
@@ -38,6 +41,12 @@ public class UIUtils {
             line1 = r1.readLine();
             line2 = r2.readLine();
         }
+
+        r1.close();
+        r2.close();
+
+        fr1.close();
+        fr2.close();
 
         return true;
     }

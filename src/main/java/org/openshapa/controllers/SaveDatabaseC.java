@@ -146,7 +146,8 @@ public final class SaveDatabaseC {
         MacshapaDatabase db = OpenSHAPA.getDB();
 
         try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(outFile));
+            FileWriter fileWriter = new FileWriter(outFile);
+            BufferedWriter out = new BufferedWriter(fileWriter);
             // Dump out an identifier for the version of file.
             out.write("#2");
             out.newLine();
@@ -216,6 +217,7 @@ public final class SaveDatabaseC {
                 }
             }
             out.close();
+            fileWriter.close();
 
             // BugzID:743 - Here we update the GUI to indicate successful save
             db.saveDatabase();
