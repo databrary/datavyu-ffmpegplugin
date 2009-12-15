@@ -206,12 +206,6 @@ public final class ClockTimer {
             time += rate * (currentNano - nanoTime) / NANO_IN_MILLI;
             nanoTime = currentNano;
 
-            // BugzID:466 - Prevent rewind wrapping the clock past zero.
-            if (time < 0) {
-                time = 0;
-                stop();
-            }
-
             notifyTick();
         }
 

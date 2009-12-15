@@ -227,20 +227,11 @@ public final class DataControllerV extends OpenSHAPADialog
     public void clockTick(final long time) {
         try {
             setCurrentTime(time);
-            long thresh = (long) (SYNC_THRESH * Math.abs(clock.getRate()));
 
             // Synchronise viewers only if we have exceded our pulse time.
             if ((time - this.lastSync) > (SYNC_PULSE * clock.getRate())) {
+                long thresh = (long) (SYNC_THRESH * Math.abs(clock.getRate()));
                 lastSync = time;
-
-                // BugzID:756 - don't play video once past the max duration.
-                if (time >= windowPlayEnd && clock.getRate() >= 0) {
-                    clock.stop();
-                    clock.setTime(windowPlayEnd);
-                    clockStop(windowPlayEnd);
-//                    System.out.println("Stopped playing: " + time + " playEnd: " + windowPlayEnd);
-                    return;
-                }
 
                 for (DataViewer v : viewers) {
                     /* Use offsets to determine if the video file should start
@@ -255,6 +246,33 @@ public final class DataControllerV extends OpenSHAPADialog
                     if (Math.abs(v.getCurrentTime() - time) > thresh) {
                         v.seekTo(time - v.getOffset());
                     }
+                }
+            }
+
+            // BugzID:466 - Prevent rewind wrapping the clock past the start
+            // point of the view window.
+            if (time < windowPlayStart) {
+                setCurrentTime(0);
+                clock.stop();
+                clock.setTime(windowPlayStart);
+                clockStop(windowPlayStart);
+            }
+
+            // BugzID:756 - don't play video once past the max duration.
+            if (time >= windowPlayEnd && clock.getRate() >= 0) {
+                setCurrentTime(windowPlayEnd);
+                clock.stop();
+                clock.setTime(windowPlayEnd);
+                clockStop(windowPlayEnd);
+                return;
+            }
+
+            // Check all the viewers to see if we need to start playing any of
+            // them.
+            for (DataViewer v : viewers) {
+                if (time >= v.getOffset() && !v.isPlaying()) {
+                    v.seekTo(time - v.getOffset());
+                    v.play();
                 }
             }
 
