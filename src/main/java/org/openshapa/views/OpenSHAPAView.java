@@ -21,7 +21,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.LinkedList;
-import java.util.Random;
 import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -50,7 +49,6 @@ import org.openshapa.project.ViewerSetting;
 import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
-import org.openshapa.util.FileUtils;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.PluginManager;
 
@@ -205,16 +203,14 @@ public final class OpenSHAPAView extends FrameView {
     public void save() {
         // If the user has not saved before - invoke the saveAs() controller to
         // force the user to nominate a destination file.
-        if (OpenSHAPA.getProject().getProjectName() == null) {
+        Project openShapaProject = OpenSHAPA.getProject();
+        if (openShapaProject.isNewProject() ||
+                openShapaProject.getProjectName() == null) {
             saveAs();
         } else if (openShapaProject.getDatabaseFile() == null) {
             saveAs();
         } else {
-            new SaveDatabaseC(OpenSHAPA.getDB().getSourceFile());
-            // Save the project in the same directory as the database
-            new SaveProjectC().save(OpenSHAPA.getProject().getDatabaseDir() +
-                   "/" + OpenSHAPA.getProject().getProjectName());
-            OpenSHAPA.getApplication().updateTitle();
+            SaveC.getInstance().save();
         }
     }
 
@@ -237,8 +233,8 @@ public final class OpenSHAPAView extends FrameView {
             FileFilter filter = jd.getFileFilter();
             // Save as a project
             if (filter instanceof SHAPAFilter) {
-                // Check if the target project file exists or not
-                String projectFileName = jd.getSelectedFile().toString();
+                // Build the project file name
+                String projectFileName = jd.getSelectedFile().getName();
                 if (!projectFileName.endsWith(".shapa")) {
                     projectFileName = projectFileName.concat(".shapa");
                 }
@@ -261,23 +257,9 @@ public final class OpenSHAPAView extends FrameView {
                 if (!databaseFileName.endsWith(".odb")) {
                     databaseFileName = databaseFileName.concat(".odb");
                 }
-                databaseFileName = databaseFileName.concat(".csv");
-                new SaveDatabaseC(databaseFileName, new CSVFilter());
-                Project project = OpenSHAPA.getProject();
-                project.setProjectName(projectName);
-                project.setDatabaseFile(databaseFileName);
-
-                // Build the directory path we are in and save it to the project
-                String dir = jd.getSelectedFile().getAbsolutePath();
-                int match = dir.lastIndexOf(project.getProjectName());
-                dir = dir.substring(0, match);
-                project.setDatabaseDir(dir);
-
-                // Save the project, we have all the info.
-                new SaveProjectC().save(projectFileName);
-            // Save as a database
-            } else {
-                new SaveDatabaseC(jd.getSelectedFile().toString(), filter);
+                saveC.saveAsDatabase(jd.getSelectedFile().getParent(),
+                        databaseFileName, filter);
+                saveC.setLastSaveOption(filter);
             }
         }
     }
