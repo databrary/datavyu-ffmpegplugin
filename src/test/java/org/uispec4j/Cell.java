@@ -264,4 +264,8 @@ public class Cell extends AbstractUIComponent {
         }
     }
 
+    public void setSelected(Boolean selected) {
+        ssCell.setSelected(selected);
+    }
+
 }

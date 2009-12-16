@@ -3,7 +3,7 @@ package org.openshapa.uitests;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
-import org.openshapa.db.TimeStamp;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.uispec4j.Cell;
@@ -118,6 +118,8 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
                 window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent()));
 
+        ss.deselectAll();
+
         //1. Create a new variable of random type
         String vName = varName;
         String vRadio = varType;
@@ -167,17 +169,21 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
                 .getText()));
 
         //5. Test Create New Cell with Onset
+        ss.getSpreadsheetColumn(vName).requestFocus();
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM0));
         c.enterText(Cell.VALUE, ti);
 
         cells = ss.getSpreadsheetColumn(vName).getCells();
 
+        Timestamp oneLess = new Timestamp(expectedDVCTime.toString());
+        oneLess.subtract(new Timestamp("00:00:00:001"));
+
         assertTrue(cells.size() == 2);
         assertTrue(cells.elementAt(0).getOffsetTime().toString()
-                .equals("00:00:02:999"));
+                .equals(oneLess.toString()));
         assertTrue(cells.elementAt(1).getOnsetTime().toString()
-                .equals("00:00:03:000"));
+                .equals(expectedDVCTime.toString()));
         assertTrue(cells.elementAt(1).getOffsetTime().toString()
                 .equals("00:00:00:000"));
 
@@ -198,6 +204,8 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
             c.enterText(Cell.ONSET, ti);
         }
 
+        expectedDVCTime.add(new Timestamp("00:01:00:000"));
+
         //Set cell onset
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM_DIVIDE));
@@ -209,12 +217,14 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         //Mouse.click(cells.elementAt(1));
 
         c.enterText(Cell.OFFSET, ti);
-        assertTrue(cells.elementAt(1).getOnsetTime().toString()
-                .equals("00:01:03:000"));
+        assertTrue(expectedDVCTime.equals(cells.elementAt(1).getOnsetTime()
+                .toString()));
 
         //8. Change cell offset
-        assertTrue(cells.elementAt(0).getOffsetTime().toString()
-                .equals("00:00:02:999"));
+//        assertTrue(cells.elementAt(0).getOffsetTime().toString()
+//                .equals("00:00:02:999"));
+        assertTrue(oneLess.equals(cells.elementAt(0).getOffsetTime()
+                .toString()));
 
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM_ASTERISK));
@@ -227,27 +237,35 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         //Mouse.click(cells.elementAt(1));
 
         c.enterText(Cell.OFFSET, ti);
-        assertTrue(cells.elementAt(0).getOffsetTime().toString()
-                .equals("00:01:03:000"));
+        ((SpreadsheetCell) cells.elementAt(0).getAwtComponent())
+                .setSelected(false);
+        assertTrue(expectedDVCTime.equals(cells.elementAt(0).getOffsetTime()
+                .toString()));
 
         //9. Jog back and forward, then create a new cell with onset
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM1));
-        //Jog back 2 times
+        //Jog back 21 times
         for (int i = 0; i < 21; i++) {
             c.enterText(Cell.VALUE, ti);
         }
+        expectedDVCTime.subtract(new Timestamp("00:00:21:000"));
+//        assertTrue(dvc.getTextBox("timestampLabel").getText()
+//                .equalsIgnoreCase("00:00:42:000"));
         assertTrue(dvc.getTextBox("timestampLabel").getText()
-                .equalsIgnoreCase("00:00:42:000"));
+                .equalsIgnoreCase(expectedDVCTime.toString()));
 
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM3));
-        //Jog back 2 times
+        //Jog forward 99 times
         for (int i = 0; i < 99; i++) {
             c.enterText(Cell.VALUE, ti);
         }
-        assertTrue(dvc.getTextBox("timestampLabel").getText()
-                .equalsIgnoreCase("00:02:21:000"));
+        expectedDVCTime.add(new Timestamp("00:01:39:000"));
+//        assertTrue(dvc.getTextBox("timestampLabel").getText()
+//                .equalsIgnoreCase("00:02:21:000"));
+        assertTrue(expectedDVCTime.equals(dvc.getTextBox("timestampLabel")
+                .getText()));
 
         //Create new cell with offset
         ti.removeAllElements();
@@ -259,11 +277,10 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         assertTrue(cells.size() == 3);
         /*BugzID:892 - assertTrue(cells.elementAt(1).getOffsetTime().toString()
                 .equals("00:02:20:999"));*/
-        assertTrue(cells.elementAt(2).getOnsetTime().toString()
-                .equals("00:02:21:000"));
+        assertTrue(expectedDVCTime.equals(cells.elementAt(2).getOnsetTime().toString()));
         assertTrue(cells.elementAt(2).getOffsetTime().toString()
                 .equals("00:00:00:000"));
-        dvc.dispose();
+        OpenSHAPA.getDataController().setVisible(false);
     }
     
     /**
@@ -275,14 +292,14 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         //Text
         StandardSequence1("textVar", "text", textTestInput, textTestInput);
         //Integer
-//        StandardSequence1("intVar", "integer", integerTestInput,
-//                expectedIntegerTestOutput);
-//        //Float
-//        StandardSequence1("floatVar", "float", floatTestInput,
-//                expectedFloatTestOutput);
-//        //Nominal
-//        StandardSequence1("nomVar", "nominal", nominalTestInput,
-//                expectedNominalTestOutput);
+        StandardSequence1("intVar", "integer", integerTestInput,
+                expectedIntegerTestOutput);
+        //Float
+        StandardSequence1("floatVar", "float", floatTestInput,
+                expectedFloatTestOutput);
+        //Nominal
+        StandardSequence1("nomVar", "nominal", nominalTestInput,
+                expectedNominalTestOutput);
     }
 
 

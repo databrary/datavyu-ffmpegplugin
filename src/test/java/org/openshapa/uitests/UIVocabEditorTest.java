@@ -131,6 +131,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         String veName = ve.getVEName();
         vocEdWindow.getButton("OK").click();
 
+
         // 2. Create new predicate variable and cell
         Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
                 window.getUIComponents(Spreadsheet.class)[0]

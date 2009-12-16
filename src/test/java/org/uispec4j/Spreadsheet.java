@@ -82,4 +82,16 @@ public class Spreadsheet extends AbstractUIComponent {
         return returnColumns;
     }
 
+    /**
+     * Deselect all cells and columns.
+     */
+    public final void deselectAll() {
+        for (Column col : getColumns()) {
+            col.deselect();
+            for (Cell cell : col.getCells()) {
+                cell.setSelected(false);
+            }
+        }
+    }
+
 }

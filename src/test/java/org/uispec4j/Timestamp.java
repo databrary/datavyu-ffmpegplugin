@@ -109,37 +109,16 @@ public class Timestamp {
      * @param ts timestamp
      */
     public void add(Timestamp ts) {
-        int carryThe = 0;
-        int newMS = ts.getMilliseconds() + ms;
-        if (newMS > 999) {
-            carryThe = newMS % 1000;
-            newMS = newMS - (carryThe * 1000);
-        }
+        //Convert to milliseconds
+        int thisMS = convertTimestampToMilliseconds(this);
+        int subtractMS = convertTimestampToMilliseconds(ts);
 
-        int newSecs = ts.getSeconds() + carryThe + secs;
-        carryThe = 0;
-        if (newSecs > 59) {
-            carryThe = newSecs % 60;
-            newSecs = newSecs - (carryThe * 60);
-        }
-
-        int newMins = ts.getMinutes() + carryThe + mins;
-        carryThe = 0;
-        if (newMins > 59) {
-            carryThe = newMins % 60;
-            newMins = newMins - (carryThe * 60);
-        }
-
-        int newHours = ts.getHours() + carryThe + hrs;
-        carryThe = 0;
-        if (newMins > 99) {
-            carryThe = newMins % 60;
-            newMins = newMins - (carryThe * 60);
-        }
-        ms = newMS;
-        secs = newSecs;
-        mins = newMins;
-        hrs = newHours;
+        Timestamp temp = convertMillisecondsToTimestamp(thisMS
+                + subtractMS);
+        ms = temp.getMilliseconds();
+        secs = temp.getSeconds();
+        mins = temp.getMinutes();
+        hrs = temp.getHours();
     }
 
     public void subtract(Timestamp ts) {
