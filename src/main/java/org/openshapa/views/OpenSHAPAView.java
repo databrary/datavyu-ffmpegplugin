@@ -487,9 +487,7 @@ public final class OpenSHAPAView extends FrameView {
 
             // Load the database
             new OpenDatabaseC(
-                    new File(
-                            openedProject.getDatabaseDir(),
-                            openedProject.getDatabaseFile()));
+                    new File(openedProject.getDatabaseFile()));
 
             // Use the plugin manager to load up the data viewers
             PluginManager pm = PluginManager.getInstance();

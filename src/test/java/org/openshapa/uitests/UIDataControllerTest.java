@@ -3,6 +3,7 @@ package org.openshapa.uitests;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
+import org.openshapa.db.TimeStamp;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.uispec4j.Cell;
@@ -12,6 +13,7 @@ import org.uispec4j.MenuBar;
 import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.TextItem;
+import org.uispec4j.Timestamp;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.Window;
 
@@ -107,7 +109,7 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
      * @throws Exception any exception
      */
     private void StandardSequence1(String varName, String varType, 
-            String[] testInputArray, String[] testExpectedArray, int Iteration)
+            String[] testInputArray, String[] testExpectedArray)
             throws Exception {
         // Retrieve the components and set variable
         Window window = getMainWindow();
@@ -122,9 +124,12 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
 
         createNewVariable(vName, vRadio);
 
-        //2. Open Data Viewer Controller
+        //2. Open Data Viewer Controller and get starting time
         Window dvc = WindowInterceptor.run(menuBar.getMenu("Controller")
                 .getSubMenu("Data Viewer Controller").triggerClick());
+
+        Timestamp expectedDVCTime = new Timestamp(dvc.getTextBox(
+                "timestampLabel").getText());
 
 
         //3. Create new cell - so we have something to send key to because
@@ -145,8 +150,10 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
             c.enterText(Cell.VALUE, ti);            
         }
 
-        assertTrue(dvc.getTextBox("timestampLabel").getText()
-                .equalsIgnoreCase("00:00:05:000"));
+        expectedDVCTime.add(new Timestamp("00:00:05:000"));
+        assertTrue(expectedDVCTime.equals(dvc.getTextBox("timestampLabel")
+                .getText()));
+
 
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM1));
@@ -155,6 +162,7 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
             c.enterText(Cell.VALUE, ti);
         }
 
+//        expectedDVCTime.subtract(expectedDVCTime)
         assertTrue(dvc.getTextBox("timestampLabel").getText()
                 .equalsIgnoreCase("00:00:03:000"));
 
@@ -265,16 +273,16 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
      */
     public void testStandardSequence1() throws Exception {
         //Text
-        StandardSequence1("textVar", "text", textTestInput, textTestInput, 1);
+        StandardSequence1("textVar", "text", textTestInput, textTestInput);
         //Integer
 //        StandardSequence1("intVar", "integer", integerTestInput,
-//                expectedIntegerTestOutput, 2);
+//                expectedIntegerTestOutput);
 //        //Float
 //        StandardSequence1("floatVar", "float", floatTestInput,
-//                expectedFloatTestOutput, 3);
+//                expectedFloatTestOutput);
 //        //Nominal
 //        StandardSequence1("nomVar", "nominal", nominalTestInput,
-//                expectedNominalTestOutput, 4);
+//                expectedNominalTestOutput);
     }
 
 

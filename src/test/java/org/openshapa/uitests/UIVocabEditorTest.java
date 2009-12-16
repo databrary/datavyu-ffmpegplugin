@@ -260,7 +260,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         assertTrue(t.getText().equalsIgnoreCase(veName + "(<arg0>)"));
     }
 
-    /** Test vocab editor creating new predicate and adding VE argument.
+    /** Test vocab editor creating new predicate and adding to VE argument.
      * @throws java.lang.Exception on any error
      */
     public void testNewPredicateAddingVEArgument() throws Exception {
