@@ -162,9 +162,9 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
             c.enterText(Cell.VALUE, ti);
         }
 
-//        expectedDVCTime.subtract(expectedDVCTime)
-        assertTrue(dvc.getTextBox("timestampLabel").getText()
-                .equalsIgnoreCase("00:00:03:000"));
+        expectedDVCTime.subtract(new Timestamp("00:00:02:000"));
+        assertTrue(expectedDVCTime.equals(dvc.getTextBox("timestampLabel")
+                .getText()));
 
         //5. Test Create New Cell with Onset
         ti.removeAllElements();

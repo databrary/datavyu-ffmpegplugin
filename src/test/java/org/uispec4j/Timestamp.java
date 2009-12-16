@@ -169,17 +169,24 @@ public class Timestamp {
     }
 
     private Timestamp convertMillisecondsToTimestamp(int milliseconds) {
-        int wholeValues = milliseconds % MS_IN_HOUR;
-        int newHours = wholeValues;
-        milliseconds = milliseconds - (wholeValues * MS_IN_HOUR);
+        int newHours = 0;
+        int newMins = 0;
+        int newSecs = 0;
 
-        wholeValues = milliseconds % MS_IN_MINS;
-        int newMins = wholeValues;
-        milliseconds = milliseconds - (wholeValues * MS_IN_HOUR);
+        if (milliseconds >= MS_IN_HOUR) {
+            newHours = milliseconds / MS_IN_HOUR;
+            milliseconds = milliseconds - (newHours * MS_IN_HOUR);
+        }
 
-        wholeValues = milliseconds % MS_IN_SEC;
-        int newSecs = wholeValues;
-        milliseconds = milliseconds - (wholeValues * MS_IN_SEC);
+        if (milliseconds >= MS_IN_MINS) {
+            newMins = milliseconds / MS_IN_MINS;
+            milliseconds = milliseconds - (newMins * MS_IN_MINS);
+        }
+
+        if (milliseconds >= MS_IN_SEC) {
+            newSecs = milliseconds / MS_IN_SEC;
+            milliseconds = milliseconds - (newSecs * MS_IN_SEC);
+        }
 
         String hours = "0" + newHours;
         String minutes = "0" + newMins;

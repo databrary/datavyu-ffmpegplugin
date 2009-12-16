@@ -1,11 +1,9 @@
 package org.openshapa.uitests;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.project.OpenSHAPAProjectConstructor;
 import org.openshapa.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.project.Project;
 import org.openshapa.util.UIUtils;
@@ -14,13 +12,11 @@ import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
 import org.uispec4j.Window;
-import org.uispec4j.interception.BasicHandler;
 import org.uispec4j.interception.FileChooserHandler;
 import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 import org.yaml.snakeyaml.Dumper;
 import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Loader;
 import org.yaml.snakeyaml.Yaml;
 
 /**
