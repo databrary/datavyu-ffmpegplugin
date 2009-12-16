@@ -7,7 +7,6 @@ import org.openshapa.controllers.NewDatabaseC;
 import org.openshapa.controllers.NewVariableC;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.RunTestsC;
-import org.openshapa.controllers.SaveDatabaseC;
 import org.openshapa.controllers.SetSheetLayoutC;
 import org.openshapa.controllers.VocabEditorC;
 import org.openshapa.util.FileFilters.CSVFilter;
@@ -21,10 +20,7 @@ import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.LinkedList;
-import java.util.Random;
 import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -44,7 +40,7 @@ import org.openshapa.util.Constants;
 import org.openshapa.Configuration;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.controllers.OpenProjectC;
-import org.openshapa.controllers.SaveProjectC;
+import org.openshapa.controllers.SaveC;
 import org.openshapa.db.Cell;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
@@ -53,7 +49,6 @@ import org.openshapa.project.ViewerSetting;
 import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
-import org.openshapa.util.FileUtils;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.PluginManager;
 
@@ -160,7 +155,8 @@ public final class OpenSHAPAView extends FrameView {
         String postFix = "";
         Project project = OpenSHAPA.getProject();
 
-        if (project.isChanged() || OpenSHAPA.getDB().getHasChanged()) {
+        if (project.isChanged() || project.isNewProject() ||
+                OpenSHAPA.getDB().getHasChanged()) {
             postFix = "*";
         }
 
@@ -207,16 +203,14 @@ public final class OpenSHAPAView extends FrameView {
     public void save() {
         // If the user has not saved before - invoke the saveAs() controller to
         // force the user to nominate a destination file.
-        if (OpenSHAPA.getProject().getProjectName() == null) {
+        Project openShapaProject = OpenSHAPA.getProject();
+        if (openShapaProject.isNewProject() ||
+                openShapaProject.getProjectName() == null) {
             saveAs();
-        } else if (OpenSHAPA.getProject().getDatabaseFile() == null) {
+        } else if (openShapaProject.getDatabaseFile() == null) {
             saveAs();
         } else {
-            new SaveDatabaseC(OpenSHAPA.getDB().getSourceFile());
-            // Save the project in the same directory as the database
-            new SaveProjectC().save(OpenSHAPA.getProject().getDatabaseDir() +
-                   "/" + OpenSHAPA.getProject().getProjectName());
-            OpenSHAPA.getApplication().updateTitle();
+            SaveC.getInstance().save();
         }
     }
 
@@ -231,62 +225,41 @@ public final class OpenSHAPAView extends FrameView {
         jd.addChoosableFileFilter(new CSVFilter());
         jd.addChoosableFileFilter(new SHAPAFilter());
 
+        SaveC saveC = SaveC.getInstance();
+
         int result = jd.showSaveDialog(this.getComponent());
 
         if (result == JFileChooser.APPROVE_OPTION) {
             FileFilter filter = jd.getFileFilter();
             // Save as a project
             if (filter instanceof SHAPAFilter) {
-                // Check if the target project file exists or not
-                String projectFileName = jd.getSelectedFile().toString();
+                // Build the project file name
+                String projectFileName = jd.getSelectedFile().getName();
                 if (!projectFileName.endsWith(".shapa")) {
                     projectFileName = projectFileName.concat(".shapa");
                 }
-                File projectFile = new File(projectFileName);
-                boolean doSave = (!projectFile.exists() ||
-                        (projectFile.exists() &&
-                        OpenSHAPA.getApplication().overwriteExisting()));
-
-                /* They don't want to overwrite the existing project, don't
-                 * continue
-                 */
-                if (!doSave) return;
-
-                // Save the database first
-                String projectName = FileUtils.getFilenameNoExtension(
-                        jd.getSelectedFile().getName());
-                String databaseFileName = FileUtils.getFilenameNoExtension(
-                            jd.getSelectedFile().getAbsolutePath());
-                {
-                    /* If the database file exists, automatically choose a new
-                     * file name for the database by appending current timestamp
-                     * to it.
-                     */
-                    File databaseFile = new File(databaseFileName + ".csv");
-                    if (databaseFile.exists()) {
-                        databaseFileName = databaseFileName.concat(
-                                Long
-                                .toString(new Random(System.nanoTime())
-                                .nextLong()));
-                    }
+                // Send it off to the controller
+                saveC.saveAsProject(jd.getSelectedFile().getParent(),
+                        projectFileName);
+                saveC.setLastSaveOption(filter);
+            // Save as a CSV database
+            } else if (filter instanceof CSVFilter) {
+                String databaseFileName = jd.getSelectedFile().getName();
+                if (!databaseFileName.endsWith(".csv")) {
+                    databaseFileName = databaseFileName.concat(".csv");
                 }
-                databaseFileName = databaseFileName.concat(".csv");
-                new SaveDatabaseC(databaseFileName, new CSVFilter());
-                Project project = OpenSHAPA.getProject();
-                project.setProjectName(projectName);
-                project.setDatabaseFile(databaseFileName);
-
-                // Build the directory path we are in and save it to the project
-                String dir = jd.getSelectedFile().getAbsolutePath();
-                int match = dir.lastIndexOf(project.getProjectName());
-                dir = dir.substring(0, match);
-                project.setDatabaseDir(dir);
-
-                // Save the project, we have all the info.
-                new SaveProjectC().save(projectFileName);
-            // Save as a database
-            } else {
-                new SaveDatabaseC(jd.getSelectedFile().toString(), filter);
+                saveC.saveAsDatabase(jd.getSelectedFile().getParent(),
+                        databaseFileName, filter);
+                saveC.setLastSaveOption(filter);
+            // Save as a ODB database
+            } else if (filter instanceof MODBFilter) {
+                String databaseFileName = jd.getSelectedFile().getName();
+                if (!databaseFileName.endsWith(".odb")) {
+                    databaseFileName = databaseFileName.concat(".odb");
+                }
+                saveC.saveAsDatabase(jd.getSelectedFile().getParent(),
+                        databaseFileName, filter);
+                saveC.setLastSaveOption(filter);
             }
         }
     }
@@ -462,6 +435,8 @@ public final class OpenSHAPAView extends FrameView {
         newProject.setDatabaseDir(dir);
         newProject.setDatabaseFile(jd.getSelectedFile().getName());
         newProject.setProjectName(OpenSHAPA.getDB().getName());
+
+        OpenSHAPA.getApplication().updateTitle();
     }
 
     private void openProject(final OpenSHAPAFileChooser jd) {
@@ -487,9 +462,8 @@ public final class OpenSHAPAView extends FrameView {
 
             // Load the database
             new OpenDatabaseC(
-                    new File(
-                            openedProject.getDatabaseDir(),
-                            openedProject.getDatabaseFile()));
+                    new File(openedProject.getDatabaseDir(),
+                             openedProject.getDatabaseFile()));
 
             // Use the plugin manager to load up the data viewers
             PluginManager pm = PluginManager.getInstance();
