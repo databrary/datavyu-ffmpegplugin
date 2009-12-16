@@ -162,8 +162,8 @@ begin
     mve9.append_formal_arg(farg)
     farg = NominalFormalArg.new($db, "<nominal>")
     mve9.append_formal_arg(farg)
-    #    farg = TextFormalArg.new($db, "<text>")
-    #    mve9.append_formal_arg(farg)
+    farg = QuoteStringFormalArg.new($db, "<text>") # My changes
+    mve9.append_formal_arg(farg)			       # ..
     $db.replace_matrix_ve(mve9)
   end
   matID9 = mve9.get_id()
