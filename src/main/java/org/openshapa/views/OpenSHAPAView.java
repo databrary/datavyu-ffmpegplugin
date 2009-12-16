@@ -160,16 +160,29 @@ public final class OpenSHAPAView extends FrameView {
             postFix = "*";
         }
 
+        String extension = "";
+        SaveC saveController = SaveC.getInstance();
+        final FileFilter lastSaveOption = saveController.getLastSaveOption();
+        if (lastSaveOption instanceof SHAPAFilter) {
+            extension = ".shapa";
+        } else if (lastSaveOption instanceof CSVFilter) {
+            extension = ".csv";
+        } else if (lastSaveOption instanceof MODBFilter) {
+            extension = ".odb";
+        }
+
         String projectName = project.getProjectName();
         if (projectName != null) {
             mainFrame.setTitle(rMap.getString("Application.title")
                                + " - "
                                + projectName
+                               + extension
                                + postFix);
         } else {
             mainFrame.setTitle(rMap.getString("Application.title")
                                + " - "
                                + "Project1"
+                               + extension
                                + postFix);
         }
     }
@@ -241,7 +254,6 @@ public final class OpenSHAPAView extends FrameView {
                 // Send it off to the controller
                 saveC.saveAsProject(jd.getSelectedFile().getParent(),
                         projectFileName);
-                saveC.setLastSaveOption(filter);
             // Save as a CSV database
             } else if (filter instanceof CSVFilter) {
                 String databaseFileName = jd.getSelectedFile().getName();
@@ -250,7 +262,6 @@ public final class OpenSHAPAView extends FrameView {
                 }
                 saveC.saveAsDatabase(jd.getSelectedFile().getParent(),
                         databaseFileName, filter);
-                saveC.setLastSaveOption(filter);
             // Save as a ODB database
             } else if (filter instanceof MODBFilter) {
                 String databaseFileName = jd.getSelectedFile().getName();
@@ -259,7 +270,6 @@ public final class OpenSHAPAView extends FrameView {
                 }
                 saveC.saveAsDatabase(jd.getSelectedFile().getParent(),
                         databaseFileName, filter);
-                saveC.setLastSaveOption(filter);
             }
         }
     }
@@ -285,9 +295,11 @@ public final class OpenSHAPAView extends FrameView {
 
                 // Opening a project file
                 if (filter instanceof SHAPAFilter) {
+                    SaveC.getInstance().setLastSaveOption(filter);
                     openProject(jd);
                 // Opening a database file
                 } else {
+                    SaveC.getInstance().setLastSaveOption(filter);
                     openDatabase(jd);
                 }
             }
