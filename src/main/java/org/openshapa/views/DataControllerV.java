@@ -262,19 +262,6 @@ public final class DataControllerV extends OpenSHAPADialog
                 clockStop(windowPlayEnd);
                 return;
             }
-
-            // Check all the viewers to see if we need to start playing any of
-            // them.
-            /* BugzID:905 - This second playback check causes performance
-             * issues.
-             */
-//            for (DataViewer v : viewers) {
-//                if (time >= v.getOffset() && !v.isPlaying()) {
-//                    v.seekTo(time - v.getOffset());
-//                    v.play();
-//                }
-//            }
-
         } catch (Exception e) {
             logger.error("Unable to Sync viewers", e);
         }
