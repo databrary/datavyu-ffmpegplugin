@@ -283,6 +283,7 @@ public class TracksControllerV implements NeedleEventListener,
         // Check if the scale needs to be updated.
         if (duration + offset > maxEnd) {
             maxEnd = duration + offset;
+            region.setMaxEnd(maxEnd);
             rescale();
         }
 
