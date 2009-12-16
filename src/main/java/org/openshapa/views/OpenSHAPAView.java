@@ -7,7 +7,6 @@ import org.openshapa.controllers.NewDatabaseC;
 import org.openshapa.controllers.NewVariableC;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.RunTestsC;
-import org.openshapa.controllers.SaveDatabaseC;
 import org.openshapa.controllers.SetSheetLayoutC;
 import org.openshapa.controllers.VocabEditorC;
 import org.openshapa.util.FileFilters.CSVFilter;
@@ -21,8 +20,6 @@ import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Vector;
@@ -44,7 +41,7 @@ import org.openshapa.util.Constants;
 import org.openshapa.Configuration;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.controllers.OpenProjectC;
-import org.openshapa.controllers.SaveProjectC;
+import org.openshapa.controllers.SaveC;
 import org.openshapa.db.Cell;
 import org.openshapa.db.DataCell;
 import org.openshapa.db.DataColumn;
@@ -160,7 +157,8 @@ public final class OpenSHAPAView extends FrameView {
         String postFix = "";
         Project project = OpenSHAPA.getProject();
 
-        if (project.isChanged() || OpenSHAPA.getDB().getHasChanged()) {
+        if (project.isChanged() || project.isNewProject() ||
+                OpenSHAPA.getDB().getHasChanged()) {
             postFix = "*";
         }
 
@@ -209,7 +207,7 @@ public final class OpenSHAPAView extends FrameView {
         // force the user to nominate a destination file.
         if (OpenSHAPA.getProject().getProjectName() == null) {
             saveAs();
-        } else if (OpenSHAPA.getProject().getDatabaseFile() == null) {
+        } else if (openShapaProject.getDatabaseFile() == null) {
             saveAs();
         } else {
             new SaveDatabaseC(OpenSHAPA.getDB().getSourceFile());
@@ -231,6 +229,8 @@ public final class OpenSHAPAView extends FrameView {
         jd.addChoosableFileFilter(new CSVFilter());
         jd.addChoosableFileFilter(new SHAPAFilter());
 
+        SaveC saveC = SaveC.getInstance();
+
         int result = jd.showSaveDialog(this.getComponent());
 
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -242,33 +242,24 @@ public final class OpenSHAPAView extends FrameView {
                 if (!projectFileName.endsWith(".shapa")) {
                     projectFileName = projectFileName.concat(".shapa");
                 }
-                File projectFile = new File(projectFileName);
-                boolean doSave = (!projectFile.exists() ||
-                        (projectFile.exists() &&
-                        OpenSHAPA.getApplication().overwriteExisting()));
-
-                /* They don't want to overwrite the existing project, don't
-                 * continue
-                 */
-                if (!doSave) return;
-
-                // Save the database first
-                String projectName = FileUtils.getFilenameNoExtension(
-                        jd.getSelectedFile().getName());
-                String databaseFileName = FileUtils.getFilenameNoExtension(
-                            jd.getSelectedFile().getAbsolutePath());
-                {
-                    /* If the database file exists, automatically choose a new
-                     * file name for the database by appending current timestamp
-                     * to it.
-                     */
-                    File databaseFile = new File(databaseFileName + ".csv");
-                    if (databaseFile.exists()) {
-                        databaseFileName = databaseFileName.concat(
-                                Long
-                                .toString(new Random(System.nanoTime())
-                                .nextLong()));
-                    }
+                // Send it off to the controller
+                saveC.saveAsProject(jd.getSelectedFile().getParent(),
+                        projectFileName);
+                saveC.setLastSaveOption(filter);
+            // Save as a CSV database
+            } else if (filter instanceof CSVFilter) {
+                String databaseFileName = jd.getSelectedFile().getName();
+                if (!databaseFileName.endsWith(".csv")) {
+                    databaseFileName = databaseFileName.concat(".csv");
+                }
+                saveC.saveAsDatabase(jd.getSelectedFile().getParent(),
+                        databaseFileName, filter);
+                saveC.setLastSaveOption(filter);
+            // Save as a ODB database
+            } else if (filter instanceof MODBFilter) {
+                String databaseFileName = jd.getSelectedFile().getName();
+                if (!databaseFileName.endsWith(".odb")) {
+                    databaseFileName = databaseFileName.concat(".odb");
                 }
                 databaseFileName = databaseFileName.concat(".csv");
                 new SaveDatabaseC(databaseFileName, new CSVFilter());
@@ -462,6 +453,8 @@ public final class OpenSHAPAView extends FrameView {
         newProject.setDatabaseDir(dir);
         newProject.setDatabaseFile(jd.getSelectedFile().getName());
         newProject.setProjectName(OpenSHAPA.getDB().getName());
+
+        OpenSHAPA.getApplication().updateTitle();
     }
 
     private void openProject(final OpenSHAPAFileChooser jd) {
@@ -487,7 +480,8 @@ public final class OpenSHAPAView extends FrameView {
 
             // Load the database
             new OpenDatabaseC(
-                    new File(openedProject.getDatabaseFile()));
+                    new File(openedProject.getDatabaseDir(),
+                             openedProject.getDatabaseFile()));
 
             // Use the plugin manager to load up the data viewers
             PluginManager pm = PluginManager.getInstance();

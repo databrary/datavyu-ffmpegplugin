@@ -84,10 +84,12 @@ public abstract class EditorComponent implements ClipboardOwner {
      */
     public void focusLost(final FocusEvent fe) {
         // BugzID:566 - Deselect anything on focus lost.
-        if (this.parentComp != null) {
-            this.parentComp.select(this.getCaretPosition(),
-                                   this.getCaretPosition());
-        }
+        // Caution this fix breaks the vocab editor - need to figure something
+        // else out.
+        //if (this.parentComp != null) {
+        //    this.parentComp.select(this.getCaretPosition(),
+        //                           this.getCaretPosition());
+        //}
     }
 
     /**
