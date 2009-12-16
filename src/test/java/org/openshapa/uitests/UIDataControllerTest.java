@@ -214,15 +214,12 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         // focus handling is implemented
         ((SpreadsheetCell) cells.elementAt(1).getAwtComponent())
                 .setSelected(true);
-        //Mouse.click(cells.elementAt(1));
 
         c.enterText(Cell.OFFSET, ti);
         assertTrue(expectedDVCTime.equals(cells.elementAt(1).getOnsetTime()
                 .toString()));
 
         //8. Change cell offset
-//        assertTrue(cells.elementAt(0).getOffsetTime().toString()
-//                .equals("00:00:02:999"));
         assertTrue(oneLess.equals(cells.elementAt(0).getOffsetTime()
                 .toString()));
 
@@ -250,8 +247,6 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
             c.enterText(Cell.VALUE, ti);
         }
         expectedDVCTime.subtract(new Timestamp("00:00:21:000"));
-//        assertTrue(dvc.getTextBox("timestampLabel").getText()
-//                .equalsIgnoreCase("00:00:42:000"));
         assertTrue(dvc.getTextBox("timestampLabel").getText()
                 .equalsIgnoreCase(expectedDVCTime.toString()));
 
@@ -262,8 +257,6 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
             c.enterText(Cell.VALUE, ti);
         }
         expectedDVCTime.add(new Timestamp("00:01:39:000"));
-//        assertTrue(dvc.getTextBox("timestampLabel").getText()
-//                .equalsIgnoreCase("00:02:21:000"));
         assertTrue(expectedDVCTime.equals(dvc.getTextBox("timestampLabel")
                 .getText()));
 
@@ -277,9 +270,30 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         assertTrue(cells.size() == 3);
         /*BugzID:892 - assertTrue(cells.elementAt(1).getOffsetTime().toString()
                 .equals("00:02:20:999"));*/
-        assertTrue(expectedDVCTime.equals(cells.elementAt(2).getOnsetTime().toString()));
+        assertTrue(expectedDVCTime.equals(cells.elementAt(2).getOnsetTime()
+                .toString()));
         assertTrue(cells.elementAt(2).getOffsetTime().toString()
                 .equals("00:00:00:000"));
+
+        //Test data controller view onset, offset and find
+        ss.deselectAll();
+        Vector<TextItem> find = new Vector<TextItem>();
+        find.add(new KeyItem(Key.NUM_ADD));
+        Vector<TextItem> shiftFind = new Vector<TextItem>();
+        shiftFind.add(new KeyItem(Key.shift(Key.NUM_ADD)));
+        for (Cell cell : cells) {
+            cell.setSelected(true);
+            assertTrue(dvc.getTextBox("findOnsetLabel").getText()
+                    .equals(cell.getOnset().getText()));
+            assertTrue(dvc.getTextBox("findOffsetLabel").getText()
+                    .equals(cell.getOffset().getText()));
+            cell.enterText(Cell.VALUE, find);
+            assertTrue(dvc.getTextBox("timestampLabel").getText()
+                    .equals(cell.getOnset().getText()));
+            cell.enterText(Cell.VALUE, shiftFind);
+            assertTrue(dvc.getTextBox("timestampLabel").getText()
+                    .equals(cell.getOffset().getText()));
+        }
         OpenSHAPA.getDataController().setVisible(false);
     }
     

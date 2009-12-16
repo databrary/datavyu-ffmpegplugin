@@ -671,6 +671,7 @@ public final class DataControllerV extends OpenSHAPADialog
         findTextField.setText("00:00:00:000");
         findTextField.setMaximumSize(new java.awt.Dimension(80, 45));
         findTextField.setMinimumSize(new java.awt.Dimension(80, 45));
+        findTextField.setName("findOnsetLabel"); // NOI18N
         findTextField.setPreferredSize(new java.awt.Dimension(80, 45));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
@@ -772,6 +773,7 @@ public final class DataControllerV extends OpenSHAPADialog
         findOffsetField.setEnabled(false);
         findOffsetField.setMaximumSize(new java.awt.Dimension(80, 45));
         findOffsetField.setMinimumSize(new java.awt.Dimension(80, 45));
+        findOffsetField.setName("findOffsetLabel"); // NOI18N
         findOffsetField.setPreferredSize(new java.awt.Dimension(80, 45));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
