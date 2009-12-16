@@ -41,6 +41,13 @@ public class SaveC {
         this.lastSaveOption = saveOption;
     }
 
+    public FileFilter getLastSaveOption() {
+        if (lastSaveOption == null) {
+            return new SHAPAFilter();
+        }
+        return lastSaveOption;
+    }
+
     /**
      * Saves what is being worked on using the last save option.
      */
@@ -149,6 +156,8 @@ public class SaveC {
         project.setDatabaseDir(directory);
         project.setDatabaseFile(databaseFileName);
 
+        this.setLastSaveOption(new SHAPAFilter());
+
         // Save the database
         new SaveDatabaseC(new File(directory, databaseFileName));
 
@@ -196,6 +205,8 @@ public class SaveC {
         project.setDatabaseDir(directory);
         project.setDatabaseFile(file);
         project.saveProject();
+
+        this.setLastSaveOption(saveFormat);
 
         new SaveDatabaseC(directory + "/" + file, saveFormat);
     }
