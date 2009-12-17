@@ -675,16 +675,25 @@ implements KeyEventDispatcher {
     }
 
     public void show(JDialog dialog) {
+        if (windows == null) {
+            windows = new Stack<Window>();
+        }
         windows.push(dialog);
         super.show(dialog);
     }
 
     public void show(JFrame frame) {
+        if (windows == null) {
+            windows = new Stack<Window>();
+        }
         windows.push(frame);
         super.show(frame);
     }
 
     public void closeOpenedWindows() {
+        if (windows == null) {
+            windows = new Stack<Window>();
+        }
         while (!windows.empty()) {
             Window window = windows.pop();
             window.setVisible(false);

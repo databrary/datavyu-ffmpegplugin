@@ -1143,8 +1143,8 @@ public final class OpenSHAPAView extends FrameView {
     public static final int ZOOM_DEFAULT_SIZE = 14;
 
     //Variables to set the maximum zoom and minimum zoom.
-    static final int ZOOM_MAX_SIZE = 42;
-    static final int ZOOM_MIN_SIZE = 8;
+    public static final int ZOOM_MAX_SIZE = 42;
+    public static final int ZOOM_MIN_SIZE = 8;
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(OpenSHAPAView.class);
