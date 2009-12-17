@@ -160,7 +160,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     public void setWidth(final int colWidth) {
         width = colWidth;
         Dimension dim = getHeaderSize();
-        headerpanel.setMinimumSize(dim);
         headerpanel.setPreferredSize(dim);
         headerpanel.setMaximumSize(dim);
         Dimension dim2 = getHeaderSize();
