@@ -88,9 +88,9 @@ public final class UIDeleteCellValueTest extends OpenSHAPAUISpecTestCase {
                 Spreadsheet.class)[0].getAwtComponent())));
         assertTrue(ss.getColumns().size() > 0);
 
-        /*BugzID629:highlightAndBackspaceTest(ss, type);
+        highlightAndBackspaceTest(ss, type);
         highlightAndDeleteTest(ss, type);
-        backSpaceAllTest(ss, type);*/
+        backSpaceAllTest(ss, type);
         deleteAllTest(ss, type);
     }
 

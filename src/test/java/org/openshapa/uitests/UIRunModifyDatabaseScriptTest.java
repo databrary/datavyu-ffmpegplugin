@@ -13,7 +13,6 @@ import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpec4J;
-import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 import org.uispec4j.interception.FileChooserHandler;
 import org.uispec4j.interception.WindowHandler;
@@ -144,10 +143,10 @@ public final class UIRunModifyDatabaseScriptTest
                 .run();
 
         Project project = OpenSHAPA.getProject();
-        File bug429SavedCSV = new File(project.getDatabaseDir(),
+        File savedCSV = new File(project.getDatabaseDir(),
                                        project.getDatabaseFile());
         File testCSV = new File(root + "/ui/modify-test-out.csv");
 
-        assertTrue(UIUtils.areFilesSame(testCSV, bug429SavedCSV));
+        assertTrue(UIUtils.areFilesSame(testCSV, savedCSV));
     }
 }
