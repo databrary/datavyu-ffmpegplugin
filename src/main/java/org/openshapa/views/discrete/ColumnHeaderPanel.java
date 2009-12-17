@@ -1,9 +1,11 @@
 package org.openshapa.views.discrete;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import org.openshapa.Configuration;
@@ -13,7 +15,7 @@ import org.openshapa.Configuration;
  * Public for use by UISpec4J
  */
 public final class ColumnHeaderPanel extends JLabel
-implements Selectable, MouseListener {
+implements Selectable, MouseListener, MouseMotionListener {
 
     /** Selected state. */
     private boolean selected = false;
@@ -49,6 +51,7 @@ implements Selectable, MouseListener {
         setPreferredSize(dim);
         setMaximumSize(dim);
         this.addMouseListener(this);
+        this.addMouseMotionListener(this);
         selection = selector;
     }
 
@@ -91,6 +94,7 @@ implements Selectable, MouseListener {
      * @param me The mouse event that triggered this action.
      */
     public void mouseExited(final MouseEvent me) {
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     /**
@@ -119,4 +123,38 @@ implements Selectable, MouseListener {
     public void mouseClicked(final MouseEvent me) {
 
     }
+
+    /**
+     * The action to invoke when the mouse is dragged.
+     *
+     * @param me The mouse event that triggered this action
+     */
+    public void mouseDragged(final MouseEvent me) {
+        // BugzID:660 - Implements columns dragging.
+        if (draggable) {
+            int newWidth = me.getX();
+            if (newWidth >= this.getMinimumSize().width) {
+                parentCol.setWidth(newWidth);
+            }
+        }
+    }
+
+    /**
+     * The action to invoke when the mouse is moved.
+     *
+     * @param me The mouse event that triggered this action
+     */
+    public void mouseMoved(final MouseEvent me) {
+        // BugzID:660 - Implements columns dragging.
+        if (this.getSize().width - me.getX() < 4) {
+            setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
+            draggable = true;
+        } else {
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            draggable = false;
+        }
+    }
+
+    /** Can the column be dragged? */
+    private boolean draggable;
 }
