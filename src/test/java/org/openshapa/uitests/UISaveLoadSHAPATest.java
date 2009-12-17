@@ -41,7 +41,7 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff  = new FilenameFilter() {
-            public boolean accept(final File dir, final String name) {
+            public boolean accept(File dir, String name) {
                 return (name.endsWith(".csv") || name.endsWith(".shapa"));
             }
         };
@@ -56,7 +56,7 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
 
      /**
      * Called after each test.
-     * @throws Exception on any exception
+     * @throws Exception
      */
     @Override
     protected void tearDown() throws Exception {
