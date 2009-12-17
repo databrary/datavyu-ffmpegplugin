@@ -11,7 +11,7 @@
       <item name="Forum" href="https://openshapa.org/fogbugz/default.php?OpenSHAPA" />
       <item name="Issue Database" href="https://openshapa.org/fogbugz/" />
       <item name="Code Coverage" href="http://www.openshapa.org/dev/clover" />
-      <item name="Daily Build" href="http://www.openshapa.org/hudson/" />
+      <item name="Build Server" href="http://www.openshapa.org/hudson/" />
     </menu>
   </body>
 </project>
