@@ -95,7 +95,7 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
      /**
       * Float test output.
       */
-     private String[] expectedFloatTestOutput = {"1.9", "-43.21", "289", "178", 
+     private String[] expectedFloatTestOutput = {"1.9", "-43.21", "289", "178",
         "0", "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0",
         "-0.34", "-23.34", "0.34", "12.34", "-123"};
 
@@ -105,11 +105,11 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
     }
 
     /**
-     * Standard test sequence focussing on jogging
+     * Standard test sequence focussing on jogging.
      * @throws Exception any exception
      */
-    private void StandardSequence1(String varName, String varType, 
-            String[] testInputArray, String[] testExpectedArray)
+    private void StandardSequence1(final String varName, final String varType,
+            final String[] testInputArray, final String[] testExpectedArray)
             throws Exception {
         // Retrieve the components and set variable
         Window window = getMainWindow();
@@ -149,7 +149,7 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
 
         // Jog forward 5 times
         for (int i = 0; i < 5; i++) {
-            c.enterText(Cell.VALUE, ti);            
+            c.enterText(Cell.VALUE, ti);
         }
 
         expectedDVCTime.add(new Timestamp("00:00:05:000"));
@@ -296,7 +296,7 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         }
         OpenSHAPA.getDataController().setVisible(false);
     }
-    
+
     /**
      * Runs standardsequence1 for different variable types (except matrix and
      * predicate), side by side.

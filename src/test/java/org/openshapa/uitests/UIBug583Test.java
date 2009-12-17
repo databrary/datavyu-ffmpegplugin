@@ -34,7 +34,7 @@ public final class UIBug583Test extends OpenSHAPAUISpecTestCase {
 
      /**
      * Called after each test.
-     * @throws Exception
+     * @throws Exception on any error
      */
     @Override
     protected void tearDown() throws Exception {

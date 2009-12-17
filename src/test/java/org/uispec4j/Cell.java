@@ -223,7 +223,8 @@ public class Cell extends AbstractUIComponent {
     public final void requestFocus(final int element) {
        if (element == VALUE) {
             ((MatrixRootView) getComponentByType(element)).focusGained(null);
-             ((MatrixRootView) getComponentByType(element)).getEdTracker().focusGained(null);
+             ((MatrixRootView) getComponentByType(element)).getEdTracker()
+                     .focusGained(null);
         } else {
             ((TimeStampTextField) getComponentByType(element))
                     .focusGained(null);

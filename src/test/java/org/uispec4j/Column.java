@@ -80,8 +80,6 @@ public class Column extends AbstractUIComponent {
         // Iterate through cells, create new Cells and add to new vector
         Iterator itr = originalCells.iterator();
         while (itr.hasNext()) {
-
-            //((ColumnHeaderPanel)(ssColumn.getHeaderPanel())).mouseClicked(new MouseEvent(InputEvent.BUTTON1_MASK));
             returnCells.add(new Cell((SpreadsheetCell) itr.next()));
         }
 
@@ -93,12 +91,15 @@ public class Column extends AbstractUIComponent {
     /**
      * Requests focus for this column, for example to create new cells.
      */
-    public void requestFocus() {
+    public final void requestFocus() {
         ssColumn.setSelected(true);
         //ssColumn.requestFocus();
     }
 
-    public void deselect() {
+    /**
+     * Deselect column.
+     */
+    public final void deselect() {
         ssColumn.setSelected(false);
     }
 

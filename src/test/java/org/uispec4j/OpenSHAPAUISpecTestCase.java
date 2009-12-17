@@ -21,6 +21,7 @@ public abstract class OpenSHAPAUISpecTestCase extends UISpecTestCase {
    * NB: If you provide your own implementation, do not forget to
    * call this one first.
    */
+  @Override
   protected void setUp() throws Exception {
     super.setUp();
     setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
@@ -30,6 +31,7 @@ public abstract class OpenSHAPAUISpecTestCase extends UISpecTestCase {
    * Checks whether an unexpected exception had occurred, and
    * releases the test resources.
    */
+  @Override
   protected void tearDown() throws Exception {
     OpenSHAPA.getApplication().cleanUpForTests();
     super.tearDown();

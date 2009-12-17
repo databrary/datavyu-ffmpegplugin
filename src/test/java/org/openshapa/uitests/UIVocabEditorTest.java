@@ -54,6 +54,20 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         UISpec4J.init();
     }
 
+    /**
+      * Nominal test input.
+      */
+     private String[] nominalTestInput = {"Subject stands )up ", "$10,432",
+            "Hand me (the manual!", "Tote_that_bale", "Jeune; fille celebre",
+            "If x>7 then x|2"};
+
+     /**
+      * Nominal test output.
+      */
+     private String[] expectedNominalTestOutput = {"Subject stands up",
+            "$10432", "Hand me the manual!", "Tote_that_bale",
+            "Jeune fille celebre", "If x7 then x2"};
+
     /** Test vocab editor is being populated.
      * @throws java.lang.Exception on any error
      */
@@ -153,6 +167,14 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         c.enterText(Cell.VALUE, vti);
 
         assertTrue(t.getText().equalsIgnoreCase("predicate1(<arg0>)"));
+
+//        vti.clear();
+//        vti.add(new KeyItem(Key.TAB));
+//        vti.add(new StringItem(nominalTestInput[0]));
+//
+//        c.enterText(Cell.VALUE, vti);
+//        assertTrue(t.getText().equalsIgnoreCase("predicate1("
+//                + expectedNominalTestOutput[0] + ")"));
     }
 
     /** Test vocab editor creating new predicate and replacing VE name.

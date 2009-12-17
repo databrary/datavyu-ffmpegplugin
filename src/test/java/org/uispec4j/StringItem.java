@@ -8,6 +8,7 @@ import org.uispec4j.utils.KeyUtils;
  *
  */
 public class StringItem extends TextItem {
+
     /**
      * The Key.
      */
@@ -21,7 +22,7 @@ public class StringItem extends TextItem {
         str = s;
     }
 
-   @Override
+    @Override
     public void enterItem(final Component c) {
         KeyUtils.enterString(c, str);
     }

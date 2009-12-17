@@ -34,7 +34,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPAUISpecTestCase {
 
      /**
      * Called after each test.
-     * @throws Exception
+     * @throws Exception on any error
      */
     @Override
     protected void tearDown() throws Exception {
@@ -215,7 +215,8 @@ public final class UIDeleteCellValueTest extends OpenSHAPAUISpecTestCase {
      * @param ss Spreadsheet
      * @param type column type to test
      */
-    private void highlightAndBackspaceTest(final Spreadsheet ss, final String type) {
+    private void highlightAndBackspaceTest(final Spreadsheet ss,
+            final String type) {
         Vector<Cell> cells = null;
         //1. Get cells for test type
         for (Column col : ss.getColumns()) {
@@ -237,7 +238,8 @@ public final class UIDeleteCellValueTest extends OpenSHAPAUISpecTestCase {
      * @param ss Spreadsheet
      * @param type column type to test
      */
-    private void highlightAndDeleteTest(final Spreadsheet ss, final String type) {
+    private void highlightAndDeleteTest(final Spreadsheet ss,
+            final String type) {
         Vector<Cell> cells = null;
 
         //1. Get cells for test type

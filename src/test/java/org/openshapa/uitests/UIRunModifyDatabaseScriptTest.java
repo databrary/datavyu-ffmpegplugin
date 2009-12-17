@@ -22,7 +22,8 @@ import org.uispec4j.interception.WindowHandler;
  * Test the creation of a new database.
  *
  */
-public final class UIRunModifyDatabaseScriptTest extends OpenSHAPAUISpecTestCase {
+public final class UIRunModifyDatabaseScriptTest
+        extends OpenSHAPAUISpecTestCase {
 
     /**
      * Initialiser called before each unit test.

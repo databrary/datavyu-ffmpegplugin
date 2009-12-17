@@ -39,7 +39,7 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
 
      /**
      * Called after each test.
-     * @throws Exception
+     * @throws Exception on any error
      */
     @Override
     protected void tearDown() throws Exception {
@@ -734,8 +734,9 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
      */
     public void testNewAdvancedMatrixCellMixed() throws Exception {
 
-        System.err.println("testNewAdvancedMatrixCellMixed still has commented out sections.");
-        
+        System.err.println("testNewAdvancedMatrixCellMixed " +
+                "still has commented out sections.");
+
         // These are just variables and can be left uncommented.
         String [] expectedInt2bTempOutput = {"19", "-4321", "289", "178", "0",
         "72"};
@@ -950,7 +951,8 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
      * @param value1 first cell value
      * @param value2 second cell value
      */
-    private void assertTrueEqualValues(final String value1, final String value2) {
+    private void assertTrueEqualValues(final String value1,
+            final String value2) {
         if ((value1.startsWith("<") && value1.endsWith(">")) ||
                 (value2.startsWith("<") && value2.endsWith(">"))) {
             assertTrue(value1.equalsIgnoreCase(value2));
@@ -1036,6 +1038,7 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
      * @param testInput array of test input
      * @param advancedInput extra advanced input
      * @param expectedTestOutput expected test output
+     * @throws SystemErrorException on system error exception
      */
     private void runAdvancedTest(final String varName,
             final String[] testInput, final Key[][] advancedInput,

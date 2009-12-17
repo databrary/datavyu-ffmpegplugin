@@ -1,8 +1,6 @@
 package org.openshapa.uitests;
 
-import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.MenuBar;
 import org.uispec4j.OpenSHAPAUISpecTestCase;
@@ -32,7 +30,7 @@ public final class UIBug308Test extends OpenSHAPAUISpecTestCase {
 
      /**
      * Called after each test.
-     * @throws Exception
+     * @throws Exception on any error
      */
     @Override
     protected void tearDown() throws Exception {

@@ -33,7 +33,7 @@ public final class UIBug417Test extends OpenSHAPAUISpecTestCase {
 
      /**
      * Called after each test.
-     * @throws Exception
+     * @throws Exception on any error
      */
     @Override
     protected void tearDown() throws Exception {
@@ -54,7 +54,7 @@ public final class UIBug417Test extends OpenSHAPAUISpecTestCase {
     /**
      * Resource map to access error messages in resources.
      */
-    ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+    private ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(Column.class);
 
@@ -155,7 +155,8 @@ public final class UIBug417Test extends OpenSHAPAUISpecTestCase {
         WindowInterceptor
                 .init(newVarWindow.getButton("Ok").triggerClick())
                 .process(BasicHandler.init()
-                    .assertContainsText(rMap.getString("Error.invalid", varName))
+                    .assertContainsText(rMap.getString(
+                    "Error.invalid", varName))
                     .triggerButtonClick("OK"))
                 .run();
 

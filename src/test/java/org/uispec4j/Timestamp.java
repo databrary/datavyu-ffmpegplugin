@@ -1,7 +1,7 @@
 package org.uispec4j;
 
 /**
- * Used to parse timestamp (onset, offset) for elements
+ * Used to parse timestamp (onset, offset) for elements.
  *
  */
 public class Timestamp {
@@ -11,8 +11,19 @@ public class Timestamp {
      */
     private int hrs, mins, secs, ms;
 
+    /**
+     * Milliseconds in an hour.
+     */
     private static final int MS_IN_HOUR = 1000 * 60 * 60;
+
+    /**
+     * Milliseconds in a minute.
+     */
     private static final int MS_IN_MINS = 1000 * 60;
+
+     /**
+     * Milliseconds in a second.
+     */
     private static final int MS_IN_SEC = 1000;
 
     /**
@@ -78,29 +89,33 @@ public class Timestamp {
 
     /**
      * Set Hours in timestamp.
+     * @param hours hours
      */
-    public final void setHours(int hours) {
+    public final void setHours(final int hours) {
         hrs = hours;
     }
 
     /**
      * Set Minutes in timestamp.
+     * @param minutes minutes
      */
-    public final void setMinutes(int minutes) {
+    public final void setMinutes(final int minutes) {
         mins = minutes;
     }
 
     /**
      * Set Seconds in timestamp.
+     * @param seconds seconds
      */
-    public final void setSeconds(int seconds) {
+    public final void setSeconds(final int seconds) {
         secs = seconds;
     }
 
     /**
      * Returns Milliseconds in timestamp.
+     * @param milliseconds milliseconds
      */
-    public final void setMilliseconds(int milliseconds) {
+    public final void setMilliseconds(final int milliseconds) {
         ms = milliseconds;
     }
 
@@ -108,7 +123,7 @@ public class Timestamp {
      * Add another timestamp to this Timestamp.
      * @param ts timestamp
      */
-    public void add(Timestamp ts) {
+    public final void add(final Timestamp ts) {
         //Convert to milliseconds
         int thisMS = convertTimestampToMilliseconds(this);
         int subtractMS = convertTimestampToMilliseconds(ts);
@@ -121,7 +136,11 @@ public class Timestamp {
         hrs = temp.getHours();
     }
 
-    public void subtract(Timestamp ts) {
+    /**
+     * Subtract another timestamp from this Timestamp.
+     * @param ts timestamp
+     */
+    public final void subtract(final Timestamp ts) {
         //Convert to milliseconds
         int thisMS = convertTimestampToMilliseconds(this);
         int subtractMS = convertTimestampToMilliseconds(ts);
@@ -132,7 +151,7 @@ public class Timestamp {
             mins = 0;
             hrs = 0;
         } else {
-            Timestamp temp = convertMillisecondsToTimestamp(thisMS 
+            Timestamp temp = convertMillisecondsToTimestamp(thisMS
                     - subtractMS);
             ms = temp.getMilliseconds();
             secs = temp.getSeconds();
@@ -142,35 +161,46 @@ public class Timestamp {
 
     }
 
-    private int convertTimestampToMilliseconds(Timestamp ts) {
+    /**
+     * Converts Timestamp to milliseconds.
+     * @param ts Timestamp to convert
+     * @return number of milliseconds
+     */
+    private int convertTimestampToMilliseconds(final Timestamp ts) {
         return ((((ts.getHours() * 60) + ts.getMinutes()) * 60)
                 + ts.getSeconds()) * 1000 + ts.getMilliseconds();
     }
 
-    private Timestamp convertMillisecondsToTimestamp(int milliseconds) {
+    /**
+     * Converts milliseconds to Timestamp.
+     * @param milliseconds milliseconds to convert
+     * @return Timestamp
+     */
+    private Timestamp convertMillisecondsToTimestamp(final int milliseconds) {
         int newHours = 0;
         int newMins = 0;
         int newSecs = 0;
+        int msecs = milliseconds;
 
-        if (milliseconds >= MS_IN_HOUR) {
-            newHours = milliseconds / MS_IN_HOUR;
-            milliseconds = milliseconds - (newHours * MS_IN_HOUR);
+        if (msecs >= MS_IN_HOUR) {
+            newHours = msecs / MS_IN_HOUR;
+            msecs = msecs - (newHours * MS_IN_HOUR);
         }
 
-        if (milliseconds >= MS_IN_MINS) {
-            newMins = milliseconds / MS_IN_MINS;
-            milliseconds = milliseconds - (newMins * MS_IN_MINS);
+        if (msecs >= MS_IN_MINS) {
+            newMins = msecs / MS_IN_MINS;
+            msecs = msecs - (newMins * MS_IN_MINS);
         }
 
-        if (milliseconds >= MS_IN_SEC) {
-            newSecs = milliseconds / MS_IN_SEC;
-            milliseconds = milliseconds - (newSecs * MS_IN_SEC);
+        if (msecs >= MS_IN_SEC) {
+            newSecs = msecs / MS_IN_SEC;
+            msecs = msecs - (newSecs * MS_IN_SEC);
         }
 
         String hours = "0" + newHours;
         String minutes = "0" + newMins;
         String seconds = "0" + newSecs;
-        String millsecs = "00" + milliseconds;
+        String millsecs = "00" + msecs;
 
         hours = hours.substring(hours.length() - 2);
         minutes = minutes.substring(minutes.length() - 2);
@@ -178,11 +208,16 @@ public class Timestamp {
         millsecs = millsecs.substring(millsecs.length() - 3);
 
         String timestamp = hours + ":" + minutes + ":" + seconds + ":"
-                + milliseconds;
+                + msecs;
         return new Timestamp(timestamp);
     }
 
-    public Boolean equals(Timestamp ts) {
+    /**
+     * Returns true if Timestamps are equal, else false.
+     * @param ts Timestamp to compare to
+     * @return true if equal, else false
+     */
+    public final Boolean equals(final Timestamp ts) {
         if (ts.getMilliseconds() == ms
                 && ts.getSeconds() == secs
                 && ts.getMinutes() == mins
@@ -192,7 +227,13 @@ public class Timestamp {
         return false;
     }
 
-    public Boolean equals(String stringTS) {
+    /**
+     * Returns true if Timestamp strings are equal, else false.
+     * No checking is done, so please use properly formatted timestamp
+     * @param stringTS string Timestamp to compare to.
+     * @return true if equal, else false
+     */
+    public final Boolean equals(final String stringTS) {
         if (toString().equals(stringTS)) {
             return true;
         }

@@ -41,7 +41,7 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff  = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
+            public boolean accept(final File dir, final String name) {
                 return (name.endsWith(".csv") || name.endsWith(".shapa"));
             }
         };
@@ -56,7 +56,7 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
 
      /**
      * Called after each test.
-     * @throws Exception
+     * @throws Exception on any exception
      */
     @Override
     protected void tearDown() throws Exception {
@@ -137,7 +137,7 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
 
         // 3. Check that the generated CSV file is correct
         Project project = OpenSHAPA.getProject();
-        File outputCSV = new File(project.getDatabaseDir(), 
+        File outputCSV = new File(project.getDatabaseDir(),
                 project.getDatabaseFile());
 
         File expectedOutputCSV = new File(root + "/ui/test-v2-out.csv");
