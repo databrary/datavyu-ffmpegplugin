@@ -168,14 +168,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
             visualMedia = visualTrack.getMedia();
 
-            fps = (float) visualMedia.getSampleCount()
-                  / visualMedia.getDuration() * visualMedia.getTimeScale();
-
-            if (visualMedia.getSampleCount() == 1.0
-                    || visualMedia.getSampleCount() == 1) {
-                fps = correctFPS();
-            }
-
             this.add(QTFactory.makeQTComponent(movie).asComponent());
 
             setName(getClass().getSimpleName() + "-" + videoFile.getName());
@@ -189,6 +181,16 @@ public final class QTDataViewer extends JFrame implements DataViewer {
                            movie.getBox().getWidth(),
                            movie.getBox().getHeight());
 
+            // FPS calculations will fail when using H264 - Apparently the
+            // Quicktime for Java API, does not support a whole bunch of methods
+            // with H264.
+            fps = (float) visualMedia.getSampleCount()
+                  / visualMedia.getDuration() * visualMedia.getTimeScale();
+
+            if (visualMedia.getSampleCount() == 1.0
+                    || visualMedia.getSampleCount() == 1) {
+                fps = correctFPS();
+            }
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
