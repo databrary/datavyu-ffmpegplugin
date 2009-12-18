@@ -687,8 +687,6 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
                     + ", <float2>)";
         }
 
-//        runMatrixTest(varName, floatTestInput, expectedFloat2TestOutput,
-//                "<float2>");
         runMatrixTest(varName, floatTestInput, expectedFloat2TestOutput,
                 "<float2>");
 

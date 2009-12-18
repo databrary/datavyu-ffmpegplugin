@@ -144,7 +144,6 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         Cell c = cells.elementAt(0);
 
         Vector<TextItem> ti = new Vector<TextItem>();
-        //ti.add(new StringItem("hello"));
         ti.add(new KeyItem(Key.NUM3));
 
         // Jog forward 5 times
@@ -231,7 +230,6 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
                 .setSelected(false);
         ((SpreadsheetCell) cells.elementAt(0).getAwtComponent())
                 .setSelected(true);
-        //Mouse.click(cells.elementAt(1));
 
         c.enterText(Cell.OFFSET, ti);
         ((SpreadsheetCell) cells.elementAt(0).getAwtComponent())
