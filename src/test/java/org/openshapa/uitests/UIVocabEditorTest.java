@@ -42,7 +42,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
     /**
      * Called after each test.
-     * @throws Exception
+     * @throws Exception on error
      */
     @Override
     protected void tearDown() throws Exception {
@@ -71,7 +71,6 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
     /** Test vocab editor is being populated.
      * @throws java.lang.Exception on any error
      */
-    @SuppressWarnings("empty-statement")
     public void testLoading() throws Exception {
         //Preparation
         Window window = getMainWindow();
@@ -1216,7 +1215,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
      * @param panel Panel with vocabElements
      * @return array of VocabElements
      */
-    public final VocabElement[] getVocabElements(Panel panel) {
+    private VocabElement[] getVocabElements(final Panel panel) {
 
         int numOfElements = panel.getUIComponents(VocabElement.class).length;
 
