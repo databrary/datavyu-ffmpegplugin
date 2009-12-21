@@ -16,7 +16,7 @@ public class Project {
     private String projectName;
     /** Project description */
     private String projectDescription;
-    /** directory the database is stored */
+    /** directory the database and project is stored */
     private String databaseDir;
     /** database file name */
     private String databaseFile;
@@ -27,10 +27,13 @@ public class Project {
     private Map<String, ViewerSetting> viewerSettings;
     /** has this project been changed since it was created. */
     private boolean changed;
+    /** is this a new project */
+    private boolean newProject;
     
     public Project() {
         viewerSettings = new HashMap();
         changed = false;
+        newProject = true;
     }
     
     public void setDatabasePath(String directory, String filename) {
@@ -49,10 +52,12 @@ public class Project {
 
     public void setDatabaseDir(String databaseDir) {
         this.databaseDir = databaseDir;
+        changed = true;
     }
 
     public void setDatabaseFile(String databaseFile) {
         this.databaseFile = databaseFile;
+        changed = true;
     }
 
     public String getProjectName() {
@@ -70,7 +75,7 @@ public class Project {
     public void setProjectName(String projectName) {
         assert(projectName != null);
         String name = projectName;
-        int match = name.lastIndexOf(".openshapa");
+        int match = name.lastIndexOf(".shapa");
         if (match != -1) {
             name = name.substring(0, match);
         }
@@ -78,6 +83,7 @@ public class Project {
             name = "Project1";
         }
         this.projectName = name;
+        changed = true;
     }
 
     public void setViewerSettings(Map<String, ViewerSetting> viewerSettings) {
@@ -148,8 +154,17 @@ public class Project {
         return vs;
     }
 
+    public boolean isNewProject() {
+        return newProject;
+    }
+
+    public void setNewProject(boolean newProject) {
+        this.newProject = newProject;
+    }
+
     public void saveProject() {
         changed = false;
+        newProject = false;
         OpenSHAPA.getApplication().updateTitle();
     }
 

@@ -69,7 +69,6 @@ public class Spreadsheet extends AbstractUIComponent {
      /**
      * Returns all Columns in the Spreadsheet.
      * Returns empty vector if not found.
-     * @param name name (label) of column spreadsheet
      * @return Vector<Column> , empty vector if not found
      */
     public final Vector<Column> getColumns() {
@@ -80,6 +79,18 @@ public class Spreadsheet extends AbstractUIComponent {
         }
 
         return returnColumns;
+    }
+
+    /**
+     * Deselect all cells and columns.
+     */
+    public final void deselectAll() {
+        for (Column col : getColumns()) {
+            col.deselect();
+            for (Cell cell : col.getCells()) {
+                cell.setSelected(false);
+            }
+        }
     }
 
 }

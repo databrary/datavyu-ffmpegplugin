@@ -371,6 +371,23 @@ implements KeyEventDispatcher {
             PropertyConfigurator.configure(logProps);
             logger.info("Starting OpenSHAPA.");
 
+            // Initalise scripting engine
+            rubyEngine = null;
+            // we need to avoid using the
+            // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
+            // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
+            m = new JRubyScriptEngineManager();
+
+            // Whoops - JRubyScriptEngineManager may have failed, if that does
+            // not construct engines for jruby correctly, switch to
+            // javax.script.ScriptEngineManager
+            if (m.getEngineFactories().size() == 0) {
+                m2 = new ScriptEngineManager();
+                rubyEngine = m2.getEngineByName("jruby");
+            } else {
+                rubyEngine = m.getEngineByName("jruby");
+            }
+
             // Make a new project
             project = new Project();
 
@@ -427,6 +444,25 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * Used between tests to release all memory.
+     */
+    public void cleanUpForTests() {
+        db = null;
+        consoleOutputStream = null;
+        consoleWriter = null;
+        listVarView = null;
+        dataController = null;
+        aboutWindow = null;
+        view = null;
+        rubyEngine = null;
+        m2 = null;
+        m = null;
+        closeOpenedWindows();
+        getMainFrame().dispose();
+        //System.gc();
+    }
+
+    /**
      * This method is to initialize the specified window by injecting resources.
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
@@ -466,6 +502,14 @@ implements KeyEventDispatcher {
      */
     public static SessionStorage getSessionStorage() {
         return OpenSHAPA.getApplication().getContext().getSessionStorage();
+    }
+
+    /**
+     * @return The single instance of the scripting engine we use with
+     * OpenSHAPA.
+     */
+    public static ScriptEngine getScriptingEngine() {
+        return OpenSHAPA.getApplication().rubyEngine;
     }
 
     /**
@@ -631,22 +675,38 @@ implements KeyEventDispatcher {
     }
 
     public void show(JDialog dialog) {
+        if (windows == null) {
+            windows = new Stack<Window>();
+        }
         windows.push(dialog);
         super.show(dialog);
     }
 
     public void show(JFrame frame) {
+        if (windows == null) {
+            windows = new Stack<Window>();
+        }
         windows.push(frame);
         super.show(frame);
     }
 
     public void closeOpenedWindows() {
+        if (windows == null) {
+            windows = new Stack<Window>();
+        }
         while (!windows.empty()) {
             Window window = windows.pop();
             window.setVisible(false);
             window.dispose();
         }
     }
+
+    /** The scripting engine that we use with OpenSHAPA. */
+    private ScriptEngine rubyEngine;
+
+    private ScriptEngineManager m2;
+
+    private JRubyScriptEngineManager m;
 
     /** The logger for OpenSHAPA. */
     private static Logger logger = Logger.getLogger(OpenSHAPA.class);

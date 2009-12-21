@@ -283,6 +283,7 @@ public class TracksControllerV implements NeedleEventListener,
         // Check if the scale needs to be updated.
         if (duration + offset > maxEnd) {
             maxEnd = duration + offset;
+            region.setMaxEnd(maxEnd);
             rescale();
         }
 
@@ -365,6 +366,13 @@ public class TracksControllerV implements NeedleEventListener,
     public void setCurrentTime(long time) {
         needle.setCurrentTime(time);
         needle.repaint();
+    }
+
+    /**
+     * @return Current time, in milliseconds, that is being used.
+     */
+    public long getCurrentTime() {
+        return needle.getCurrentTime();
     }
 
     /**

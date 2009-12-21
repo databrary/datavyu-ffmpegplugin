@@ -31,6 +31,7 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             project.setDatabaseFile((String)values.get("dbFile"));
             project.setViewerSettings((Map)values.get("viewerSettings"));
             project.setChanged(false);
+            project.setNewProject(false);
             return project;
         }
 

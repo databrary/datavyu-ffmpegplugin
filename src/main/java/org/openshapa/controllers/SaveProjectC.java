@@ -1,6 +1,7 @@
 package org.openshapa.controllers;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import org.apache.log4j.Logger;
@@ -31,9 +32,15 @@ public class SaveProjectC {
         }
 
         try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
+            File outputProjectFile = new File(fileName);
+
+            FileWriter fileWriter = new FileWriter(outputProjectFile);
+            BufferedWriter out = new BufferedWriter(fileWriter);
             yaml.dump(project, out);
+            out.close();
+            fileWriter.close();
             project.saveProject();
+            
         } catch (IOException ex) {
             logger.error("Unable to save project file", ex);
         }

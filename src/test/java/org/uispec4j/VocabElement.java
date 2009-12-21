@@ -9,7 +9,7 @@ import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.uispec4j.utils.KeyUtils;
 
 /**
- * A single Vocabulary Element from the Vocab Editor
+ * A single Vocabulary Element from the Vocab Editor.
  */
 public class VocabElement extends AbstractUIComponent {
 

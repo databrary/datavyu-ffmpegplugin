@@ -1,26 +1,26 @@
 package org.openshapa.uitests;
 
-import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.uispec4j.Cell;
 import org.uispec4j.Key;
 import org.uispec4j.KeyItem;
 import org.uispec4j.MenuBar;
+import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.TextItem;
+import org.uispec4j.Timestamp;
 import org.uispec4j.UISpec4J;
-import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 
 /**
  * Test for the DataController.
  */
-public final class UIDataControllerTest extends UISpecTestCase {
+public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
 
     /**
      * Initialiser called before each unit test.
@@ -30,7 +30,6 @@ public final class UIDataControllerTest extends UISpecTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
      /**
@@ -39,7 +38,6 @@ public final class UIDataControllerTest extends UISpecTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
-        getMainWindow().dispose();
         super.tearDown();
     }
 
@@ -97,7 +95,7 @@ public final class UIDataControllerTest extends UISpecTestCase {
      /**
       * Float test output.
       */
-     private String[] expectedFloatTestOutput = {"1.9", "-43.21", "289", "178", 
+     private String[] expectedFloatTestOutput = {"1.9", "-43.21", "289", "178",
         "0", "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0",
         "-0.34", "-23.34", "0.34", "12.34", "-123"};
 
@@ -107,11 +105,11 @@ public final class UIDataControllerTest extends UISpecTestCase {
     }
 
     /**
-     * Standard test sequence focussing on jogging
+     * Standard test sequence focussing on jogging.
      * @throws Exception any exception
      */
-    private void StandardSequence1(String varName, String varType, 
-            String[] testInputArray, String[] testExpectedArray)
+    private void StandardSequence1(final String varName, final String varType,
+            final String[] testInputArray, final String[] testExpectedArray)
             throws Exception {
         // Retrieve the components and set variable
         Window window = getMainWindow();
@@ -120,15 +118,20 @@ public final class UIDataControllerTest extends UISpecTestCase {
                 window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent()));
 
+        ss.deselectAll();
+
         //1. Create a new variable of random type
         String vName = varName;
         String vRadio = varType;
 
         createNewVariable(vName, vRadio);
 
-        //2. Open Data Viewer Controller
+        //2. Open Data Viewer Controller and get starting time
         Window dvc = WindowInterceptor.run(menuBar.getMenu("Controller")
                 .getSubMenu("Data Viewer Controller").triggerClick());
+
+        Timestamp expectedDVCTime = new Timestamp(dvc.getTextBox(
+                "timestampLabel").getText());
 
 
         //3. Create new cell - so we have something to send key to because
@@ -141,16 +144,17 @@ public final class UIDataControllerTest extends UISpecTestCase {
         Cell c = cells.elementAt(0);
 
         Vector<TextItem> ti = new Vector<TextItem>();
-        //ti.add(new StringItem("hello"));
         ti.add(new KeyItem(Key.NUM3));
 
         // Jog forward 5 times
         for (int i = 0; i < 5; i++) {
-            c.enterText(Cell.VALUE, ti);            
+            c.enterText(Cell.VALUE, ti);
         }
 
-        assertTrue(dvc.getTextBox("timestampLabel").getText()
-                .equalsIgnoreCase("00:00:05:000"));
+        expectedDVCTime.add(new Timestamp("00:00:05:000"));
+        assertTrue(expectedDVCTime.equals(dvc.getTextBox("timestampLabel")
+                .getText()));
+
 
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM1));
@@ -159,21 +163,26 @@ public final class UIDataControllerTest extends UISpecTestCase {
             c.enterText(Cell.VALUE, ti);
         }
 
-        assertTrue(dvc.getTextBox("timestampLabel").getText()
-                .equalsIgnoreCase("00:00:03:000"));
+        expectedDVCTime.subtract(new Timestamp("00:00:02:000"));
+        assertTrue(expectedDVCTime.equals(dvc.getTextBox("timestampLabel")
+                .getText()));
 
         //5. Test Create New Cell with Onset
+        ss.getSpreadsheetColumn(vName).requestFocus();
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM0));
         c.enterText(Cell.VALUE, ti);
 
         cells = ss.getSpreadsheetColumn(vName).getCells();
 
+        Timestamp oneLess = new Timestamp(expectedDVCTime.toString());
+        oneLess.subtract(new Timestamp("00:00:00:001"));
+
         assertTrue(cells.size() == 2);
         assertTrue(cells.elementAt(0).getOffsetTime().toString()
-                .equals("00:00:02:999"));
+                .equals(oneLess.toString()));
         assertTrue(cells.elementAt(1).getOnsetTime().toString()
-                .equals("00:00:03:000"));
+                .equals(expectedDVCTime.toString()));
         assertTrue(cells.elementAt(1).getOffsetTime().toString()
                 .equals("00:00:00:000"));
 
@@ -194,6 +203,8 @@ public final class UIDataControllerTest extends UISpecTestCase {
             c.enterText(Cell.ONSET, ti);
         }
 
+        expectedDVCTime.add(new Timestamp("00:01:00:000"));
+
         //Set cell onset
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM_DIVIDE));
@@ -202,15 +213,14 @@ public final class UIDataControllerTest extends UISpecTestCase {
         // focus handling is implemented
         ((SpreadsheetCell) cells.elementAt(1).getAwtComponent())
                 .setSelected(true);
-        //Mouse.click(cells.elementAt(1));
 
         c.enterText(Cell.OFFSET, ti);
-        assertTrue(cells.elementAt(1).getOnsetTime().toString()
-                .equals("00:01:03:000"));
+        assertTrue(expectedDVCTime.equals(cells.elementAt(1).getOnsetTime()
+                .toString()));
 
         //8. Change cell offset
-        assertTrue(cells.elementAt(0).getOffsetTime().toString()
-                .equals("00:00:02:999"));
+        assertTrue(oneLess.equals(cells.elementAt(0).getOffsetTime()
+                .toString()));
 
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM_ASTERISK));
@@ -220,30 +230,33 @@ public final class UIDataControllerTest extends UISpecTestCase {
                 .setSelected(false);
         ((SpreadsheetCell) cells.elementAt(0).getAwtComponent())
                 .setSelected(true);
-        //Mouse.click(cells.elementAt(1));
 
         c.enterText(Cell.OFFSET, ti);
-        assertTrue(cells.elementAt(0).getOffsetTime().toString()
-                .equals("00:01:03:000"));
+        ((SpreadsheetCell) cells.elementAt(0).getAwtComponent())
+                .setSelected(false);
+        assertTrue(expectedDVCTime.equals(cells.elementAt(0).getOffsetTime()
+                .toString()));
 
         //9. Jog back and forward, then create a new cell with onset
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM1));
-        //Jog back 2 times
+        //Jog back 21 times
         for (int i = 0; i < 21; i++) {
             c.enterText(Cell.VALUE, ti);
         }
+        expectedDVCTime.subtract(new Timestamp("00:00:21:000"));
         assertTrue(dvc.getTextBox("timestampLabel").getText()
-                .equalsIgnoreCase("00:00:42:000"));
+                .equalsIgnoreCase(expectedDVCTime.toString()));
 
         ti.removeAllElements();
         ti.add(new KeyItem(Key.NUM3));
-        //Jog back 2 times
+        //Jog forward 99 times
         for (int i = 0; i < 99; i++) {
             c.enterText(Cell.VALUE, ti);
         }
-        assertTrue(dvc.getTextBox("timestampLabel").getText()
-                .equalsIgnoreCase("00:02:21:000"));
+        expectedDVCTime.add(new Timestamp("00:01:39:000"));
+        assertTrue(expectedDVCTime.equals(dvc.getTextBox("timestampLabel")
+                .getText()));
 
         //Create new cell with offset
         ti.removeAllElements();
@@ -255,12 +268,33 @@ public final class UIDataControllerTest extends UISpecTestCase {
         assertTrue(cells.size() == 3);
         /*BugzID:892 - assertTrue(cells.elementAt(1).getOffsetTime().toString()
                 .equals("00:02:20:999"));*/
-        assertTrue(cells.elementAt(2).getOnsetTime().toString()
-                .equals("00:02:21:000"));
+        assertTrue(expectedDVCTime.equals(cells.elementAt(2).getOnsetTime()
+                .toString()));
         assertTrue(cells.elementAt(2).getOffsetTime().toString()
                 .equals("00:00:00:000"));
+
+        //Test data controller view onset, offset and find
+        ss.deselectAll();
+        Vector<TextItem> find = new Vector<TextItem>();
+        find.add(new KeyItem(Key.NUM_ADD));
+        Vector<TextItem> shiftFind = new Vector<TextItem>();
+        shiftFind.add(new KeyItem(Key.shift(Key.NUM_ADD)));
+        for (Cell cell : cells) {
+            cell.setSelected(true);
+            assertTrue(dvc.getTextBox("findOnsetLabel").getText()
+                    .equals(cell.getOnset().getText()));
+            assertTrue(dvc.getTextBox("findOffsetLabel").getText()
+                    .equals(cell.getOffset().getText()));
+            cell.enterText(Cell.VALUE, find);
+            assertTrue(dvc.getTextBox("timestampLabel").getText()
+                    .equals(cell.getOnset().getText()));
+            cell.enterText(Cell.VALUE, shiftFind);
+            assertTrue(dvc.getTextBox("timestampLabel").getText()
+                    .equals(cell.getOffset().getText()));
+        }
+        OpenSHAPA.getDataController().setVisible(false);
     }
-    
+
     /**
      * Runs standardsequence1 for different variable types (except matrix and
      * predicate), side by side.
@@ -269,15 +303,15 @@ public final class UIDataControllerTest extends UISpecTestCase {
     public void testStandardSequence1() throws Exception {
         //Text
         StandardSequence1("textVar", "text", textTestInput, textTestInput);
-//        //Integer
-//        StandardSequence1("intVar", "integer", integerTestInput,
-//                expectedIntegerTestOutput);
-//        //Float
-//        StandardSequence1("floatVar", "float", floatTestInput,
-//                expectedFloatTestOutput);
-//        //Nominal
-//        StandardSequence1("nomVar", "nominal", nominalTestInput,
-//                expectedNominalTestOutput);
+        //Integer
+        StandardSequence1("intVar", "integer", integerTestInput,
+                expectedIntegerTestOutput);
+        //Float
+        StandardSequence1("floatVar", "float", floatTestInput,
+                expectedFloatTestOutput);
+        //Nominal
+        StandardSequence1("nomVar", "nominal", nominalTestInput,
+                expectedNominalTestOutput);
     }
 
 

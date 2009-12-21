@@ -1,18 +1,16 @@
 package org.openshapa.uitests;
 
-import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
 import org.uispec4j.Cell;
 import org.uispec4j.Clipboard;
 import org.uispec4j.Key;
 import org.uispec4j.MenuBar;
+import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.TextBox;
 import org.uispec4j.UISpec4J;
-import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 
 /**
@@ -21,7 +19,7 @@ import org.uispec4j.Window;
  * Example: 999999999999999999-239839231-2398392310820831
  * Pressing -ve on such a number results in unpredictable behaviour.
  */
-public final class UIBug497Test extends UISpecTestCase {
+public final class UIBug497Test extends OpenSHAPAUISpecTestCase {
 
     /**
      * Initialiser called before each unit test.
@@ -31,16 +29,14 @@ public final class UIBug497Test extends UISpecTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        setAdapter(new MainClassAdapter(OpenSHAPA.class, new String[0]));
     }
 
      /**
      * Called after each test.
-     * @throws Exception
+     * @throws Exception on exception
      */
     @Override
     protected void tearDown() throws Exception {
-        getMainWindow().dispose();
         super.tearDown();
     }
 
