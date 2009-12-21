@@ -3021,7 +3021,7 @@ public class MacshapaODBReader
                 {
                     this.l2_tok.str = new StringBuilder("");
                 }
-                else
+                else if ( this.l2_tok.str.length() > 0 )
                 {
                     this.l2_tok.str.delete(0, this.l2_tok.str.length() - 1);
                 }

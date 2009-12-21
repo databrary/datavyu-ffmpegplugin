@@ -5246,6 +5246,2489 @@ public class MacshapaODBReaderTest {
     } /* MacshapaODBReaderTest::parserTest129() */
 
 
+    @Test
+    public void parserTest130()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest130()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_130.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_130.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_130.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_130.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_130.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_130.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_130.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest130() */
+
+
+    @Test
+    public void parserTest131()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest131()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_131.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_131.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_131.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_131.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_131.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_131.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_131.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest131() */
+
+
+    @Test
+    public void parserTest132()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest132()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_132.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_132.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_132.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_132.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_132.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_132.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_132.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest132() */
+
+
+    @Test
+    public void parserTest133()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest133()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_133.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_133.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_133.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_133.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_133.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_133.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_133.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest133() */
+
+
+    @Test
+    public void parserTest134()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest134()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_134.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_134.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_134.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_134.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_134.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_134.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_134.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBRparser_test_134() */
+
+
+    @Test
+    public void parserTest135()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest135()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_135.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_135.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_135.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_135.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_135.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_135.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_135.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest135() */
+
+
+    @Test
+    public void parserTest136()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest136()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_136.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_136.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_136.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_136.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_136.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_136.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_136.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest136() */
+
+
+    @Test
+    public void parserTest137()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest137()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_137.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_137.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_137.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_137.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_137.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_137.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_137.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest137() */
+
+
+    @Test
+    public void parserTest138()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest138()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_138.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_138.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_138.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_138.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_138.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_138.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_138.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest138() */
+
+
+    @Test
+    public void parserTest139()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest139()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_139.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_139.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_139.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_139.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_139.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_139.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_139.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest139() */
+
+
+    @Test
+    public void parserTest140()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest140()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_140.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_140.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_140.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_140.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_140.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_140.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_140.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest140() */
+
+
+    @Test
+    public void parserTest141()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest141()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_141.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_141.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_141.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_141.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_141.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_141.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_141.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest141() */
+
+
+    @Test
+    public void parserTest142()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest142()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_142.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_142.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_142.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_142.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_142.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_142.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_142.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest142() */
+
+
+    @Test
+    public void parserTest143()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest143()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_143.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_143.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_143.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_143.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_143.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_143.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_143.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest143() */
+
+
+    @Test
+    public void parserTest144()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest144()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_144.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_144.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_144.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_144.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_144.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_144.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_144.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBRparser_test_144() */
+
+
+    @Test
+    public void parserTest145()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest145()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_145.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_145.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_145.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_145.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_145.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_145.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_145.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest145() */
+
+
+    @Test
+    public void parserTest146()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest146()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_146.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_146.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_146.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_146.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_146.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_146.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_146.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest146() */
+
+
+    @Test
+    public void parserTest147()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest147()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_147.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_147.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_147.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_147.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_147.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_147.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_147.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest147() */
+
+
+    @Test
+    public void parserTest148()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest148()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_148.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_148.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_148.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_148.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_148.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_148.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_148.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest148() */
+
+
+    @Test
+    public void parserTest149()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest149()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_149.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_149.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_149.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_149.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_149.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_149.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_149.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest149() */
+
+
+    @Test
+    public void parserTest150()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest150()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_150.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_150.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_150.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_150.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_150.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_150.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_150.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest150() */
+
+
+    @Test
+    public void parserTest151()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest151()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_151.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_151.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_151.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_151.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_151.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_151.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_151.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest151() */
+
+
+    @Test
+    public void parserTest152()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest152()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_152.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_152.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_152.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_152.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_152.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_152.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_152.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest152() */
+
+
+    @Test
+    public void parserTest153()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest153()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_153.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_153.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_153.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_153.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_153.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_153.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_153.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest153() */
+
+
+    @Test
+    public void parserTest154()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest154()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_154.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_154.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_154.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_154.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_154.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_154.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_154.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBRparser_test_154() */
+
+
+    @Test
+    public void parserTest155()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest155()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_155.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_155.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_155.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_155.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_155.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_155.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_155.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest155() */
+
+
+    @Test
+    public void parserTest156()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest156()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_156.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_156.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_156.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_156.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_156.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_156.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_156.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest156() */
+
+
+    @Test
+    public void parserTest157()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest157()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_157.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_157.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_157.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_157.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_157.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_157.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_157.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest157() */
+
+
+    @Test
+    public void parserTest158()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest158()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_158.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_158.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_158.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_158.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_158.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_158.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_158.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest158() */
+
+
+    @Test
+    public void parserTest159()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest159()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_159.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_159.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_159.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_159.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_159.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_159.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_159.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest159() */
+
+
+    @Test
+    public void parserTest160()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest160()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_160.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_160.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_160.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_160.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_160.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_160.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_160.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest160() */
+
+
+    @Test
+    public void parserTest161()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest161()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_161.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_161.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_161.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_161.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_161.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_161.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_161.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest161() */
+
+
+    @Test
+    public void parserTest162()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest162()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_162.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_162.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_162.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_162.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_162.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_162.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_162.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest162() */
+
+
+    @Test
+    public void parserTest163()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest163()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_163.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_163.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_163.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_163.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_163.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_163.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_163.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest163() */
+
+
+    @Test
+    public void parserTest164()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest164()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_164.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_164.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_164.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_164.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_164.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_164.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_164.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBRparser_test_164() */
+
+
+    @Test
+    public void parserTest165()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest165()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_165.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_165.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_165.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_165.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_165.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_165.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_165.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest165() */
+
+
+    @Test
+    public void parserTest166()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest166()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_166.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_166.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_166.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_166.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_166.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_166.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_166.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest166() */
+
+
+    @Test
+    public void parserTest167()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest167()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_167.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_167.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_167.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_167.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_167.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_167.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_167.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest167() */
+
+
+    @Test
+    public void parserTest168()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest168()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_168.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_168.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_168.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_168.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_168.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_168.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_168.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest168() */
+
+
+    @Test
+    public void parserTest169()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest169()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_169.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_169.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_169.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_169.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_169.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_169.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_169.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest169() */
+
+
+    @Test
+    public void parserTest170()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest170()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_170.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_170.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_170.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_170.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_170.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_170.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_170.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest170() */
+
+
+    @Test
+    public void parserTest171()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest171()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_171.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_171.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_171.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_171.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_171.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_171.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_171.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest171() */
+
+
+    @Test
+    public void parserTest172()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest172()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_172.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_172.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_172.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_172.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_172.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_172.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_172.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest172() */
+
+
+    @Test
+    public void parserTest173()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest173()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_173.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_173.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_173.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_173.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_173.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_173.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_173.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest173() */
+
+
+    @Test
+    public void parserTest174()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest174()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_174.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_174.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_174.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_174.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_174.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_174.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_174.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBRparser_test_174() */
+
+
+    @Test
+    public void parserTest175()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest175()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_175.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_175.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_175.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_175.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_175.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_175.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_175.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest175() */
+
+
+    @Test
+    public void parserTest176()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest176()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_176.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_176.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_176.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_176.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_176.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_176.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_176.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest176() */
+
+
+    @Test
+    public void parserTest177()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest177()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_177.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_177.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_177.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_177.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_177.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_177.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_177.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest177() */
+
+
+    @Test
+    public void parserTest178()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest178()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_178.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_178.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_178.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_178.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_178.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_178.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_178.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest178() */
+
+
+    @Test
+    public void parserTest179()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest179()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_179.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_179.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_179.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_179.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_179.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_179.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_179.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest179() */
+
+
+    @Test
+    public void parserTest180()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest180()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_180.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_180.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_180.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_180.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_180.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_180.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_180.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest180() */
+
+
+    @Test
+    public void parserTest181()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest181()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_181.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_181.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_181.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_181.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_181.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_181.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_181.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest181() */
+
+
+    @Test
+    public void parserTest182()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest182()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_182.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_182.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_182.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_182.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_182.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_182.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_182.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest182() */
+
+
+    @Test
+    public void parserTest183()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest183()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_183.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_183.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_183.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_183.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_183.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_183.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_183.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest183() */
+
+
+    @Test
+    public void parserTest184()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest184()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_184.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_184.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_184.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_184.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_184.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_184.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_184.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBRparser_test_184() */
+
+
+    @Test
+    public void parserTest185()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest185()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_185.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_185.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_185.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_185.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_185.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_185.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_185.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest185() */
+
+
+    @Test
+    public void parserTest186()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest186()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_186.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_186.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_186.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_186.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_186.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_186.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_186.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest186() */
+
+
+    @Test
+    public void parserTest187()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest187()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_187.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_187.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_187.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_187.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_187.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_187.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_187.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest187() */
+
+
+    @Test
+    public void parserTest188()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest188()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_188.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_188.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_188.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_188.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_188.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_188.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_188.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest188() */
+
+
+    @Test
+    public void parserTest189()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest189()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_189.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_189.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_189.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_189.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_189.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_189.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_189.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest189() */
+
+
+    @Test
+    public void parserTest190()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest190()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_190.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_190.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_190.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_190.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_190.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_190.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_190.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest190() */
+
+
+    @Test
+    public void parserTest191()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest191()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_191.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_191.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_191.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_191.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_191.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_191.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_191.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest191() */
+
+
+    @Test
+    public void parserTest192()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest192()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_192.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_192.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_192.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_192.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_192.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_192.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_192.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest192() */
+
+
+    @Test
+    public void parserTest193()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest193()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_193.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_193.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_193.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_193.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_193.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_193.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_193.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest193() */
+
+
+    @Test
+    public void parserTest194()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest194()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 20;
+        final String inputFile = "/db/odb/parser_test/parser_test_194.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_194.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_194.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_194.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_194.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_194.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_194.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBRparser_test_194() */
+
+
+    @Test
+    public void parserTest195()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest195()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_195.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_195.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_195.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_195.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_195.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_195.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_195.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest195() */
+
+
+    @Test
+    public void parserTest196()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest196()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_196.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_196.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_196.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_196.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_196.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_196.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_196.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest196() */
+
+
+    @Test
+    public void parserTest197()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest197()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_197.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_197.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_197.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_197.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_197.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_197.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_197.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest197() */
+
+
+    @Test
+    public void parserTest198()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::parserTest198()";
+        final boolean saveMismatchFiles = globalSaveMismatchFiles || false;
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 2;
+        final int warningLimit = 5;
+        final String inputFile = "/db/odb/parser_test/parser_test_198.txt";
+        final String listingFile = "/db/odb/parser_test/parser_test_198.lst";
+        final String errorFile = "/db/odb/parser_test/parser_test_198.err";
+        final String dumpFile = "/db/odb/parser_test/parser_test_198.dump";
+        final String expListingFile = "/db/odb/parser_test/parser_test_198.lst.exp";
+        final String expErrorFile = "/db/odb/parser_test/parser_test_198.err.exp";
+        final String expDumpFile = "/db/odb/parser_test/parser_test_198.dump.exp";
+
+        runParserTest(inputFile,
+                listingFile,
+                errorFile,
+                dumpFile,
+                expListingFile,
+                expErrorFile,
+                expDumpFile,
+                saveMismatchFiles,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::parserTest198() */
+
 
 //    /**
 //     * Test of get_next_token method, of class MacshapaODBReader.

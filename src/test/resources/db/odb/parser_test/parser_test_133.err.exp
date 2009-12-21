@@ -1,0 +1,11 @@
+
+      WARNING  25 (Line 9:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING  22 (Line 255:11): The type of the value supplied for the a-list entry is inconsistant with that entry.
+        The value of a SHAPA-PANE-VARS> attribute must be a list of spreadsheet names.  All spreadsheet variables will be made visible.
+
+
+      WARNING  16 (Line 258:9): Encountered a-list entry with more than one value.  Excess values were discarded.
+        Excess values encountered the SYSTEM> SHAPA-PANE-VARS> attribute.
+
