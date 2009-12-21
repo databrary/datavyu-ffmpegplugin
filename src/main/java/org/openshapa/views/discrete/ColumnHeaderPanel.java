@@ -9,6 +9,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import org.openshapa.Configuration;
+import org.openshapa.OpenSHAPA;
 
 /**
  * ColumnHeaderPanel displays the column variable name.
@@ -137,6 +138,21 @@ implements Selectable, MouseListener, MouseMotionListener {
                 parentCol.setWidth(newWidth);
             }
         }
+        if (moveable) {
+             setCursor(new Cursor(Cursor.MOVE_CURSOR));
+             final int columnWidth = this.getSize().width;
+             if (me.getX() > columnWidth) {
+                 int positions = Math.round((me.getX() * 1F) / (columnWidth * 1F));
+                 SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA
+                         .getApplication().getMainView().getComponent();
+                 sp.moveColumnRight(parentCol.getColID(), positions);
+             } else if (me.getX() < 0) {
+                 int positions = Math.round((me.getX() * -1F) / (columnWidth * 1F));
+                 SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA
+                         .getApplication().getMainView().getComponent();
+                 sp.moveColumnLeft(parentCol.getColID(), positions);
+             }
+        }
     }
 
     /**
@@ -145,16 +161,27 @@ implements Selectable, MouseListener, MouseMotionListener {
      * @param me The mouse event that triggered this action
      */
     public void mouseMoved(final MouseEvent me) {
+        final int xCoord = me.getX();
+        final int componentWidth = this.getSize().width;
+        final int rangeStart = Math.round(componentWidth / 4F);
+        final int rangeEnd = Math.round(3F * componentWidth / 4F);
+
         // BugzID:660 - Implements columns dragging.
-        if (this.getSize().width - me.getX() < 4) {
+        if (componentWidth - xCoord < 4) {
             setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
             draggable = true;
+        // BugzID:128 - Implements moveable columns
+        } else if ((rangeStart <= xCoord) && (xCoord <= rangeEnd)) {
+            moveable = true;
         } else {
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             draggable = false;
+            moveable = false;
         }
     }
 
     /** Can the column be dragged? */
     private boolean draggable;
+    /** Can the column be moved? */
+    private boolean moveable;
 }

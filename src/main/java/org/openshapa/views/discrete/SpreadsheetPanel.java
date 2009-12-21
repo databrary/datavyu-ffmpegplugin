@@ -11,6 +11,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import org.openshapa.controllers.NewVariableC;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -453,6 +454,111 @@ public final class SpreadsheetPanel extends JPanel
     @Action
     public void openNewVarMenu() {
         new NewVariableC();
+    }
+
+    /**
+     * Moves a given column to the left by a certain number of positions.
+     * @param colID the ID of the column to move
+     * @param positions the number of positions to the left to move the given
+     * column. 
+     */
+    public void moveColumnLeft(final long colID, final int positions){
+        int columnIndex = -1;
+        // What index does the given column sit at
+        for (int i = 0; i < columns.size(); i++) {
+            if (columns.elementAt(i).getColID() == colID) {
+                columnIndex = i;
+            }
+        }
+        if (columnIndex >= 0) {
+            int newIndex = columnIndex - positions;
+            if (newIndex < 0) {
+                newIndex = 0;
+            }
+            shuffleColumn(columnIndex, newIndex);
+            relayoutCells();
+            this.invalidate();
+            this.repaint();
+        }
+    }
+
+    /**
+     * Moves a given column to the right by a certain number of positions.
+     * @param colID the ID of the column to move
+     * @param positions the number for positions to the right to move the given
+     * column.
+     */
+    public void moveColumnRight(final long colID, final int positions) {
+        int columnIndex = -1;
+        // What index does the column sit at
+        for (int i = 0; i < columns.size(); i++) {
+                        if (columns.elementAt(i).getColID() == colID) {
+                columnIndex = i;
+            }
+        }
+        if (columnIndex >= 0) {
+            int newIndex = columnIndex + positions;
+            if (newIndex < columns.size()) {
+                shuffleColumn(columnIndex, newIndex);
+                relayoutCells();
+                this.invalidate();
+                this.repaint();
+            }
+        }
+    }
+
+    /**
+     * Removes the source column and reinserts the column at a given
+     * destination.
+     * @param source index of the source column
+     * @param destination index of the destination column
+     */
+    private void shuffleColumn(final int source, final int destination) {
+        if (source >= columns.size() || destination >= columns.size()) {
+            return;
+        }
+        if (source == destination) {
+            return;
+        }
+
+        // Reorder the columns vector
+        SpreadsheetColumn sourceColumn = columns.elementAt(source);
+        columns.removeElementAt(source);
+        columns.insertElementAt(sourceColumn, destination);
+
+        // Reorder the header components
+        Vector<Component> newHeaders = new Vector<Component>();
+        Component[] headers = headerView.getComponents();
+        for (int i = 0; i < headers.length; i++) {
+            newHeaders.add(headers[i]);
+        }
+        Component sourceHeaderComponent = newHeaders.elementAt(source + 1);
+        newHeaders.removeElementAt(source + 1);
+        newHeaders.insertElementAt(sourceHeaderComponent, destination + 1);
+
+        // Reorder the data components
+        Vector<Component> newData = new Vector<Component>();
+        Component[] data = mainView.getComponents();
+        for (int i = 0; i < data.length; i++) {
+            newData.add(data[i]);
+        }
+        Component sourceDataComponent = newData.elementAt(source + 1);
+        newData.removeElementAt(source + 1);
+        newData.insertElementAt(sourceDataComponent, destination + 1);
+
+        // Reset the containers
+        headerView.removeAll();
+        mainView.removeAll();
+
+        // Re-insert components into the containers
+        for (int i = 0; i < headers.length; i++) {
+            if (i < data.length) {
+                headerView.add(newHeaders.elementAt(i));
+                mainView.add(newData.elementAt(i));
+            } else {
+                headerView.add(newHeaders.elementAt(i));
+            }
+        }
     }
 
     /** Scrollable view inserted into the JScrollPane. */
