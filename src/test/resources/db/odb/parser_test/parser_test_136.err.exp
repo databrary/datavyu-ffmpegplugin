@@ -1,0 +1,72 @@
+
+      WARNING  25 (Line 9:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+
+      WARNING   1 (Line 110:15): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING   1 (Line 110:15): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING   1 (Line 110:15): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING   1 (Line 110:15): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING  41 (Line 110:15): Encountered a spreadsheet variable declaration in which the name of the spreadsheet variable is not a valid spreadsheet variable name.
+        Will coerce the name to a valid spreadsheet variable name.
+
+
+      WARNING   1 (Line 265:13): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING   1 (Line 265:13): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING   1 (Line 265:13): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING   1 (Line 265:13): Illegal character detected in a symbol.  Character replaced with a '_'.
+        The illegal character was: ' ' (HEX 0x20)
+
+
+      WARNING  86 (Line 265:13): Encountered an invalid spreadsheet variable name in the list associated with the SYSTEM> SHAPA-PANE-VARS> attribute.
+        Will coerce the name to a valid spreadsheet variable name.
+
+
+      WARNING  87 (Line 266:13): Encountered reference to an undefined spreadsheet variable in the list associated with the SYSTEM> SHAPA-PANE-VARS> attribute.
+        The entry in the shapa pane variables list will be ignored.
+
+
+      WARNING  87 (Line 267:13): Encountered reference to an undefined spreadsheet variable in the list associated with the SYSTEM> SHAPA-PANE-VARS> attribute.
+        The entry in the shapa pane variables list will be ignored.
+
+
+      WARNING  87 (Line 268:13): Encountered reference to an undefined spreadsheet variable in the list associated with the SYSTEM> SHAPA-PANE-VARS> attribute.
+        The entry in the shapa pane variables list will be ignored.
+
+
+      WARNING  90 (Line 270:13): Encountered a non spreadsheet variable name in the list associated with the SYSTEM> SHAPA-PANE-VARS> attribute.  The item will be ignored.
+        The item was an atom.
+
+
+      WARNING  90 (Line 272:13): Encountered a non spreadsheet variable name in the list associated with the SYSTEM> SHAPA-PANE-VARS> attribute.  The item will be ignored.
+        The item was a list.
+
+
+      WARNING  89 (Line 275:13): Encountered duplicate reference to a spreadsheet variable in the list associated with the SYSTEM> SHAPA-PANE-VARS> attribute.
+        The duplicate reference will be ignored.
+
+
+      ERROR  4 (Line 285:0): Encountered end of file unexpectedly.
+        EOF in the list associated with the SYSTEM> SHAPA-PANE-VARS> attribute.
+
+Unable to continue parse -- Aborting...

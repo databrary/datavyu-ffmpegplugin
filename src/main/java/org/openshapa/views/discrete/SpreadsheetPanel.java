@@ -460,9 +460,9 @@ public final class SpreadsheetPanel extends JPanel
      * Moves a given column to the left by a certain number of positions.
      * @param colID the ID of the column to move
      * @param positions the number of positions to the left to move the given
-     * column. 
+     * column.
      */
-    public void moveColumnLeft(final long colID, final int positions){
+    public void moveColumnLeft(final long colID, final int positions) {
         int columnIndex = -1;
         // What index does the given column sit at
         for (int i = 0; i < columns.size(); i++) {
@@ -520,6 +520,7 @@ public final class SpreadsheetPanel extends JPanel
         if (source == destination) {
             return;
         }
+
 
         // Reorder the columns vector
         SpreadsheetColumn sourceColumn = columns.elementAt(source);

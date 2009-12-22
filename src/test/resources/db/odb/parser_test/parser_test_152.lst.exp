@@ -1,0 +1,383 @@
+00001  ; MacSHAPA Open Database
+00002  ( setf macshapa-db 
+00003   '( 
+00004      ( HEADER>
+00005        ( 
+00006          ( VERSION> 1 ) 
+00007          ( NAME> "parser_test.db" )
+00008          ;( DEBUG-LEVEL> 2 ) 
+00009          ( MAX-ERRORS> 20 )
+00010          ( MAX-WARNINGS> 50 )
+
+      WARNING  25 (Line 9:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
+
+00011        )
+00012      )
+00013      (
+00014        USER>
+00015        (
+00016          (
+00017            PREDICATE-DEFINITIONS>
+00018            (
+00019              (
+00020                |&*=[^^a-strange-pred-name|
+00021                ( 
+00022                  ( VARIABLE-LENGTH> FALSE )
+00023                  ( FORMAL-ARG-LIST> ( |<arg1>| ) ) 
+00024                )
+00025              )
+00026              ( 
+00027                |GOAL| 
+00028                ( 
+00029                  ( VARIABLE-LENGTH> FALSE )
+00030                  ( FORMAL-ARG-LIST> ( |<TEMPERATURE>| |<VOLUME>| |<FLOWRATE>| ) ) 
+00031                )
+00032              )
+00033              ( 
+00034                |COMMAND|
+00035                (
+00036                  ( VARIABLE-LENGTH> FALSE )
+00037                  ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<TO>| |<MITIGATION>| ) ) 
+00038                )
+00039              )
+00040              ( 
+00041                |ACKNOWL|
+00042                (
+00043                  ( VARIABLE-LENGTH> FALSE )
+00044                  ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<TO>| |<MITIGATION>| ) ) 
+00045                )
+00046              )
+00047              ( 
+00048                |ANNOUNCE|
+00049                (
+00050                  ( VARIABLE-LENGTH> FALSE )
+00051                  ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<MITIGATION>| ) ) 
+00052                )
+00053              )
+00054              ( 
+00055                |OBSERVE|
+00056                (
+00057                  ( VARIABLE-LENGTH> FALSE )
+00058                  ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<MITIGATION>| ) ) 
+00059                )
+00060              )
+00061              ( 
+00062                |REASON|
+00063                (
+00064                  ( VARIABLE-LENGTH> FALSE )
+00065                  ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<MITIGATION>| ) ) 
+00066                )
+00067              )
+00068              ( 
+00069                |PREDICT|
+00070                (
+00071                  ( VARIABLE-LENGTH> FALSE )
+00072                  ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<MITIGATION>| ) ) 
+00073                )
+00074              )
+00075            )
+00076          )
+00077          (
+00078            SPREADSHEET-VARIABLE-DECLARATIONS>
+00079            (
+00080              (
+00081                |&*=[^^a-strange-var-name|
+00082                (
+00083                  ( TYPE>            <<TEXT>> )
+00084                  ( VARIABLE-LENGTH> FALSE  )
+00085                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+00086                  ( COLUMN-WIDTH>    183 )
+00087                )
+00088              )
+00089              (
+00090                |verbal|
+00091                (
+00092                  ( TYPE>            <<TEXT>> )
+00093                  ( VARIABLE-LENGTH> FALSE  )
+00094                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+00095                  ( COLUMN-WIDTH>    183 )
+00096                )
+00097              )
+00098              (
+00099                |state.var|
+00100                (
+00101                  ( TYPE>            <<MATRIX>> )
+00102                  ( VARIABLE-LENGTH> FALSE  )
+00103                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<PARAM>| |<SUBSYS>| |<VAL>| ) )
+00104                  ( COLUMN-WIDTH>    183 )
+00105                )
+00106              )
+00107              (
+00108                |sys.var|
+00109                (
+00110                  ( TYPE>            <<MATRIX>> )
+00111                  ( VARIABLE-LENGTH> FALSE  )
+00112                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<PARAM>| |<SUBSYS>| |<VAL>| ) )
+00113                  ( COLUMN-WIDTH>    200 )
+00114                )
+00115              )
+00116              (
+00117                |speechcode|
+00118                (
+00119                  ( TYPE>            <<PREDICATE>> )
+00120                  ( VARIABLE-LENGTH> FALSE  )
+00121                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+00122                  ( COLUMN-WIDTH>    200 )
+00123                )
+00124              )
+00125            )
+00126          )
+00127          (
+00128            SPREADSHEET-VARIABLE-DEFINITIONS>
+00129            (
+00130              (
+00131                |verbal|
+00132                (
+00133                  (
+00134                    CELLS>
+00135                    (
+00136                      ( ( ONSET>   60 ) ( OFFSET>  360 ) ( |<val>| "Expter:  Please try to increase temperature, increase volume and increase flowrate." ) ) 
+00137                      ( ( ONSET>  420 ) ( OFFSET>  540 ) ( |<val>| "Sam:  Tom, you can do the hydraulic side and I'll do the heat side." ) ) 
+00138                      ( ( ONSET>  600 ) ( OFFSET>  660 ) ( |<val>| "Tom:  If you like." ) ) 
+00139                      ( ( ONSET>  660 ) ( OFFSET>  780 ) ( |<val>| "Sam:  I'll set heater up to 8 for now." ) ) 
+00140                      ( ( ONSET>  780 ) ( OFFSET> 1260 ) ( |<val>| "Tom:  OK.  First to increase flowrate I'm going to open the input valve a bit more and open up the output valve." ) ) 
+00141                      ( ( ONSET> 1260 ) ( OFFSET> 1440 ) ( |<val>| "Sam:  OK, volume is starting to increase..." ) ) 
+00142                      ( ( ONSET> 1440 ) ( OFFSET> 1560 ) ( |<val>| "Sam:  ...and so is flow rate." ) ) 
+00143                      ( ( ONSET> 1680 ) ( OFFSET> 1800 ) ( |<val>| "Sam:  Nothing happening so far on temperature..." ) ) 
+00144                      ( ( ONSET> 1800 ) ( OFFSET> 1860 ) ( |<val>| "Sam:  ...so I'll send it up to 9." ) ) 
+00145                      ( ( ONSET> 1920 ) ( OFFSET> 2040 ) ( |<val>| "Sam:  You haven't done anything to the mixer value and volume is going up pretty fast." ) ) 
+00146                      ( ( ONSET> 2160 ) ( OFFSET> 2220 ) ( |<val>| "Tom:  Oh sorry...I always forget that!" ) ) 
+00147                      ( ( ONSET> 2280 ) ( OFFSET> 2400 ) ( |<val>| "Tom:  I wonder why the flow rate is decreasing?" ) ) 
+00148                      ( ( ONSET> 2460 ) ( OFFSET> 2520 ) ( |<val>| "Tom:  I increased input and output so flow rate should increase." ) ) 
+00149                      ( ( ONSET> 2580 ) ( OFFSET> 2700 ) ( |<val>| "Tom:  Oh!  It's because I forgot to open the mixer valve." ) ) 
+00150                      ( ( ONSET> 2700 ) ( OFFSET> 2880 ) ( |<val>| "Tom:  So flow rate should increase in a minute or two." ) ) 
+00151                      ( ( ONSET> 2760 ) ( OFFSET> 2820 ) ( |<val>| "Sam:  There the temperature goes!" ) ) 
+00152                      ( ( ONSET> 2880 ) ( OFFSET> 3000 ) ( |<val>| "Tom:  ...and that's what it's doing." ) ) 
+00153                      ( ( ONSET> 3000 ) ( OFFSET> 3120 ) ( |<val>| "Tom:  Oh hell!  It's going down again." ) ) 
+00154                      ( ( ONSET> 3120 ) ( OFFSET> 3180 ) ( |<val>| "Tom:  So I'll open the output a bit." ) ) 
+00155                      ( ( ONSET> 3300 ) ( OFFSET> 3480 ) ( |<val>| "Sam:  Why don't you let it settle rather than keeping on playing with it?" ) ) 
+00156                      ( ( ONSET> 3540 ) ( OFFSET> 3840 ) ( |<val>| "Tom:  Oh well...I don't think I play with it too much." ) ) 
+00157                      ( ( ONSET> 3840 ) ( OFFSET> 3960 ) ( |<val>| "Sam:  You do, you know." ) ) 
+00158                      ( ( ONSET> 4200 ) ( OFFSET> 4320 ) ( |<val>| "Sam:  Temperature's still rising." ) ) 
+00159                      ( ( ONSET> 4500 ) ( OFFSET> 4680 ) ( |<val>| "Tom:  You've confused me about the flowrate now, Sam!" ) ) 
+00160                    )
+00161                  )
+00162                )
+00163              )
+00164              (
+00165                |state.var|
+00166                (
+00167                  (
+00168                    CELLS>
+00169                    (
+00170                      ( ( ONSET>    0 ) ( OFFSET>    0 ) ( |<PARAM>| |M| ) ( |<SUBSYS>| |L| ) ( |<VAL>| 5 ) ) 
+00171                      ( ( ONSET>    0 ) ( OFFSET>    0 ) ( |<PARAM>| |I| ) ( |<SUBSYS>| |A| ) ( |<VAL>| 5 ) ) 
+00172                      ( ( ONSET>    0 ) ( OFFSET>    0 ) ( |<PARAM>| |O| ) ( |<SUBSYS>| |A| ) ( |<VAL>| 1 ) ) 
+00173                      ( ( ONSET>    0 ) ( OFFSET>    0 ) ( |<PARAM>| |H| ) ( |<SUBSYS>| |A| ) ( |<VAL>| 5 ) ) 
+00174                      ( ( ONSET>  660 ) ( OFFSET>  720 ) ( |<PARAM>| |H| ) ( |<SUBSYS>| |A| ) ( |<VAL>| 9 ) ) 
+00175                      ( ( ONSET> 1140 ) ( OFFSET> 1260 ) ( |<PARAM>| |O| ) ( |<SUBSYS>| |A| ) ( |<VAL>| 8 ) ) 
+00176                      ( ( ONSET> 1260 ) ( OFFSET> 1380 ) ( |<PARAM>| |I| ) ( |<SUBSYS>| |A| ) ( |<VAL>| 8 ) ) 
+00177                      ( ( ONSET> 1800 ) ( OFFSET> 1920 ) ( |<PARAM>| |H| ) ( |<SUBSYS>| |A| ) ( |<VAL>| 9 ) ) 
+00178                      ( ( ONSET> 2460 ) ( OFFSET> 2580 ) ( |<PARAM>| |M| ) ( |<SUBSYS>| |L| ) ( |<VAL>| 8 ) ) 
+00179                    )
+00180                  )
+00181                  ( VOCAB> ( ) )
+00182                )
+00183              )
+00184              (
+00185                |sys.var|
+00186                (
+00187                  (
+00188                    CELLS>
+00189                    (
+00190                      ( ( ONSET>    0 ) ( OFFSET> 1320 ) ( |<PARAM>| |V|  ) ( |<SUBSYS>| |A| ) ( |<VAL>| 21 ) ) 
+00191                      ( ( ONSET>    0 ) ( OFFSET> 1440 ) ( |<PARAM>| |FR| ) ( |<SUBSYS>| |A| ) ( |<VAL>|  5 ) ) 
+00192                      ( ( ONSET>    0 ) ( OFFSET> 2760 ) ( |<PARAM>| |T|  ) ( |<SUBSYS>| |A| ) ( |<VAL>|  3 ) ) 
+00193                      ( ( ONSET> 1320 ) ( OFFSET> 1500 ) ( |<PARAM>| |V|  ) ( |<SUBSYS>| |A| ) ( |<VAL>| 22 ) ) 
+00194                      ( ( ONSET> 1440 ) ( OFFSET> 1680 ) ( |<PARAM>| |FR| ) ( |<SUBSYS>| |A| ) ( |<VAL>|  6 ) ) 
+00195                      ( ( ONSET> 1500 ) ( OFFSET> 1860 ) ( |<PARAM>| |V|  ) ( |<SUBSYS>| |A| ) ( |<VAL>| 23 ) ) 
+00196                      ( ( ONSET> 1680 ) ( OFFSET> 1920 ) ( |<PARAM>| |FR| ) ( |<SUBSYS>| |A| ) ( |<VAL>|  5 ) ) 
+00197                      ( ( ONSET> 1860 ) ( OFFSET> 1980 ) ( |<PARAM>| |V|  ) ( |<SUBSYS>| |A| ) ( |<VAL>| 24 ) ) 
+00198                      ( ( ONSET> 1920 ) ( OFFSET> 2760 ) ( |<PARAM>| |FR| ) ( |<SUBSYS>| |A| ) ( |<VAL>|  4 ) ) 
+00199                      ( ( ONSET> 1980 ) ( OFFSET> 2040 ) ( |<PARAM>| |V|  ) ( |<SUBSYS>| |A| ) ( |<VAL>| 25 ) ) 
+00200                      ( ( ONSET> 2040 ) ( OFFSET> 2580 ) ( |<PARAM>| |V|  ) ( |<SUBSYS>| |A| ) ( |<VAL>| 26 ) ) 
+00201                      ( ( ONSET> 2580 ) ( OFFSET> 4800 ) ( |<PARAM>| |V|  ) ( |<SUBSYS>| |A| ) ( |<VAL>| 25 ) ) 
+00202                      ( ( ONSET> 2760 ) ( OFFSET> 2820 ) ( |<PARAM>| |FR| ) ( |<SUBSYS>| |A| ) ( |<VAL>|  5 ) ) 
+00203                      ( ( ONSET> 2760 ) ( OFFSET> 2880 ) ( |<PARAM>| |T|  ) ( |<SUBSYS>| |A| ) ( |<VAL>| 24 ) ) 
+00204                      ( ( ONSET> 2820 ) ( OFFSET> 2880 ) ( |<PARAM>| |FR| ) ( |<SUBSYS>| |A| ) ( |<VAL>|  6 ) ) 
+00205                      ( ( ONSET> 2880 ) ( OFFSET> 3300 ) ( |<PARAM>| |FR| ) ( |<SUBSYS>| |A| ) ( |<VAL>|  5 ) ) 
+00206                      ( ( ONSET> 2880 ) ( OFFSET> 4200 ) ( |<PARAM>| |T|  ) ( |<SUBSYS>| |A| ) ( |<VAL>| 25 ) ) 
+00207                      ( ( ONSET> 3300 ) ( OFFSET> 3780 ) ( |<PARAM>| |FR| ) ( |<SUBSYS>| |A| ) ( |<VAL>|  4 ) ) 
+00208                      ( ( ONSET> 3780 ) ( OFFSET> 4800 ) ( |<PARAM>| |FR| ) ( |<SUBSYS>| |A| ) ( |<VAL>|  3 ) ) 
+00209                      ( ( ONSET> 4200 ) ( OFFSET> 4800 ) ( |<PARAM>| |T|  ) ( |<SUBSYS>| |A| ) ( |<VAL>| 26 ) ) 
+00210                    )
+00211                  )
+00212                  ( VOCAB> ( ) )
+00213                )
+00214              )
+00215              ( |speechcode|
+00216                (
+00217                  (
+00218                    CELLS>
+00219                    (
+00220                      ( ( ONSET>   60 ) ( OFFSET>  360 ) ( |<val>| ( |GOAL|     |+|   |+|   |+| ) ) ) 
+00221                      ( ( ONSET>  420 ) ( OFFSET>  540 ) ( |<val>| ( |COMMAND|  |Sam| |Tom| +1  ) ) )
+00222                      ( ( ONSET>  600 ) ( OFFSET>  660 ) ( |<val>| ( |ACKNOWL|  |Tom| |Sam| -1  ) ) ) 
+00223                      ( ( ONSET>  660 ) ( OFFSET>  780 ) ( |<val>| ( |ANNOUNCE| |Sam| 0         ) ) ) 
+00224                      ( ( ONSET>  780 ) ( OFFSET> 1260 ) ( |<val>| ( |ANNOUNCE| |Tom| 0         ) ) ) 
+00225                      ( ( ONSET> 1260 ) ( OFFSET> 1440 ) ( |<val>| ( |OBSERVE|  |Sam| 0         ) ) ) 
+00226                      ( ( ONSET> 1440 ) ( OFFSET> 1560 ) ( |<val>| ( |OBSERVE|  |Sam| 0         ) ) ) 
+00227                      ( ( ONSET> 1680 ) ( OFFSET> 1800 ) ( |<val>| ( |OBSERVE|  |Sam| 0         ) ) ) 
+00228                      ( ( ONSET> 1800 ) ( OFFSET> 1860 ) ( |<val>| ( |ANNOUNCE| |Sam| 0         ) ) ) 
+00229                      ( ( ONSET> 1920 ) ( OFFSET> 2040 ) ( |<val>| ( |COMMAND|  |Sam| |Tom| -1  ) ) ) 
+00230                      ( ( ONSET> 2160 ) ( OFFSET> 2220 ) ( |<val>| ( |ACKNOWL|  |Tom| |Sam| -1  ) ) ) 
+00231                      ( ( ONSET> 2280 ) ( OFFSET> 2400 ) ( |<val>| ( |OBSERVE|  |Tom| -1        ) ) ) 
+00232                      ( ( ONSET> 2460 ) ( OFFSET> 2520 ) ( |<val>| ( |REASON|   |Tom| 0         ) ) ) 
+00233                      ( ( ONSET> 2580 ) ( OFFSET> 2700 ) ( |<val>| ( |REASON|   |Tom| 0         ) ) ) 
+00234                      ( ( ONSET> 2700 ) ( OFFSET> 2880 ) ( |<val>| ( |PREDICT|  |Tom| 0         ) ) ) 
+00235                      ( ( ONSET> 2760 ) ( OFFSET> 2820 ) ( |<val>| ( |OBSERVE|  |Sam| 0         ) ) ) 
+00236                      ( ( ONSET> 2880 ) ( OFFSET> 3000 ) ( |<val>| ( |OBSERVE|  |Tom| 0         ) ) ) 
+00237                      ( ( ONSET> 3000 ) ( OFFSET> 3120 ) ( |<val>| ( |OBSERVE|  |Tom| +1        ) ) ) 
+00238                      ( ( ONSET> 3120 ) ( OFFSET> 3180 ) ( |<val>| ( |ANNOUNCE| |Tom| 0         ) ) ) 
+00239                      ( ( ONSET> 3300 ) ( OFFSET> 3480 ) ( |<val>| ( |COMMAND|  |Sam| |Tom| +1  ) ) ) 
+00240                      ( ( ONSET> 3540 ) ( OFFSET> 3840 ) ( |<val>| ( |ACKNOWL|  |Tom| |Sam| -1  ) ) ) 
+00241                      ( ( ONSET> 3840 ) ( OFFSET> 3960 ) ( |<val>| ( |ACKNOWL|  |Sam| |Tom| +1  ) ) ) 
+00242                      ( ( ONSET> 4200 ) ( OFFSET> 4320 ) ( |<val>| ( |OBSERVE|  |Sam| 0         ) ) ) 
+00243                      ( ( ONSET> 4500 ) ( OFFSET> 4680 ) ( |<val>| ( |ACKNOWL|  |Tom| |Sam| +1  ) ) ) 
+00244                    )
+00245                  )
+00246                  ( VOCAB> ( |GOAL| |COMMAND| |ACKNOWL| |ANNOUNCE| |OBSERVE| |REASON| |PREDICT| ) )
+00247                )
+00248              )
+00249            )
+00250          )
+00251        )
+00252      )
+00253      (
+00254        QUERY>
+00255        (
+00256          ( 
+00257            |query| 
+00258            ( 
+00259              |or| 
+00260              ( |speechcode| |?o1| |<onset>| |<offset>| |?x| ) 
+00261              ( |speechcode| |?o2| |<onset>| |<offset>| |?y| ) 
+00262            ) 
+00263            ( |print| |?x| ) 
+00264          ) 
+00265        )
+00266      )
+00267      ( SYSTEM>
+00268        ( 
+00269          (
+00270            ALIGNMENTS>
+00271            (
+00272            	( |not an alignment var name| 22 ( "an" |arbitrary| LIST> ) TRUE )
+00273            	( |&*=[^^a-strange-pred-name| ( "an" |arbitrary| LIST> ) ) ; this pred is already defined
+00274            	( |&*=[^^a-strange-var-name| ) ; this var is already defined
+00275              (
+00276                |&*=[^^an-alignment|
+00277                (
+00278                  ( TYPE>            <<MATRIX>> )
+00279                  ( VARIABLE-LENGTH> FALSE  )
+00280                  ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| |<status>| ) )
+00281                  ( COLUMN-WIDTH>    200 )
+00282                  (
+00283                    CELLS>
+00284                    (
+00285                      ( ( ONSET>  0 ) ( OFFSET>    0 ) ( |<arg1>| |speechcode| ) ( |<arg2>| |speechcode| ) ( |<status>| 1 ) )  
+00286                      ( ( ONSET> 30 ) ( OFFSET>    0 ) ( |<arg1>| ":pred" )      ( |<arg2>| ":pred" )      ( |<status>| 0 ) ) 
+00287                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>|  1 )           ( |<arg2>|  1 )           ( |<status>| 0 ) ) 
+00288                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>|  2 )           ( |<arg2>|  2 )           ( |<status>| 0 ) ) 
+00289                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>|  3 )           ( |<arg2>|  3 )           ( |<status>| 0 ) ) 
+00290                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>|  4 )           ( |<arg2>|  4 )           ( |<status>| 0 ) ) 
+00291                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>|  5 )           ( |<arg2>|  5 )           ( |<status>| 0 ) ) 
+00292                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>|  6 )           ( |<arg2>|  6 )           ( |<status>| 0 ) ) 
+00293                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>|  7 )           ( |<arg2>|  7 )           ( |<status>| 0 ) ) 
+00294                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>|  8 )           ( |<arg2>|  8 )           ( |<status>| 0 ) ) 
+00295                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>|  9 )           ( |<arg2>|  9 )           ( |<status>| 0 ) ) 
+00296                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 10 )           ( |<arg2>| 10 )           ( |<status>| 0 ) ) 
+00297                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 11 )           ( |<arg2>| 11 )           ( |<status>| 0 ) ) 
+00298                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 12 )           ( |<arg2>| 12 )           ( |<status>| 0 ) ) 
+00299                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 13 )           ( |<arg2>| 13 )           ( |<status>| 0 ) ) 
+00300                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 14 )           ( |<arg2>| 14 )           ( |<status>| 0 ) ) 
+00301                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 15 )           ( |<arg2>| 15 )           ( |<status>| 0 ) ) 
+00302                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 16 )           ( |<arg2>| 16 )           ( |<status>| 0 ) ) 
+00303                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 17 )           ( |<arg2>| 17 )           ( |<status>| 0 ) ) 
+00304                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 18 )           ( |<arg2>| 18 )           ( |<status>| 0 ) ) 
+00305                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 19 )           ( |<arg2>| 19 )           ( |<status>| 0 ) ) 
+00306                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 20 )           ( |<arg2>| 20 )           ( |<status>| 0 ) ) 
+00307                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 21 )           ( |<arg2>| 21 )           ( |<status>| 0 ) ) 
+00308                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 22 )           ( |<arg2>| 22 )           ( |<status>| 0 ) ) 
+00309                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 23 )           ( |<arg2>| 23 )           ( |<status>| 0 ) ) 
+00310                      ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 24 )           ( |<arg2>| 24 )           ( |<status>| 0 ) ) 
+00311                    )
+00312                  )
+00313                )
+00314              )
+00315              (
+00316                |&*=[^^another-alignment|
+00317  ;              (
+00318  ;                ( TYPE>            <<MATRIX>> )
+00319  ;                ( VARIABLE-LENGTH> FALSE  )
+00320  ;                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<arg1>| |<arg2>| |<status>| ) )
+00321  ;                ( COLUMN-WIDTH>    200 )
+00322  ;                (
+00323  ;                  CELLS>
+00324  ;                  (
+00325  ;                    ( ( ONSET>  0 ) ( OFFSET>    0 ) ( |<arg1>| |state.var| ) ( |<arg2>| |state.var| ) ( |<status>| 1 ) ) 
+00326  ;                    ( ( ONSET> 30 ) ( OFFSET>    0 ) ( |<arg1>| ":<PARAM>" )  ( |<arg2>| ":<PARAM>" )  ( |<status>| 0 ) ) 
+00327  ;                    ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 1 )           ( |<arg2>| 1 )           ( |<status>| 0 ) ) 
+00328  ;                    ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 2 )           ( |<arg2>| 2 )           ( |<status>| 0 ) ) 
+00329  ;                    ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 3 )           ( |<arg2>| 3 )           ( |<status>| 0 ) ) 
+00330  ;                    ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 4 )           ( |<arg2>| 4 )           ( |<status>| 0 ) ) 
+00331  ;                    ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 5 )           ( |<arg2>| 5 )           ( |<status>| 0 ) ) 
+00332  ;                    ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 6 )           ( |<arg2>| 6 )           ( |<status>| 0 ) ) 
+00333  ;                    ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 7 )           ( |<arg2>| 7 )           ( |<status>| 0 ) ) 
+00334  ;                    ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 8 )           ( |<arg2>| 8 )           ( |<status>| 0 ) ) 
+00335  ;                    ( ( ONSET> 60 ) ( OFFSET>    0 ) ( |<arg1>| 9 )           ( |<arg2>| 9 )           ( |<status>| 0 ) ) 
+00336  ;                  )
+00337  ;                )
+00338  ;              )
+00339  ;            )
+00340  ;          ) 
+00341  ;        )
+00342  ;        ( SHAPA-PANE-VARS> ( |verbal| |speechcode| |state.var| |sys.var| ) )
+00343  ;        ( GROUPS> 
+00344  ;          ( 
+00345  ;            ( ( |verbal|  1 ) ( |speechcode|  1 ) )
+00346  ;            ( ( |verbal|  2 ) ( |speechcode|  2 ) )
+00347  ;            ( ( |verbal|  3 ) ( |speechcode|  3 ) )
+00348  ;            ( ( |verbal|  4 ) ( |speechcode|  4 ) )
+00349  ;            ( ( |verbal|  5 ) ( |speechcode|  5 ) )
+00350  ;            ( ( |verbal|  6 ) ( |speechcode|  6 ) )
+00351  ;            ( ( |verbal|  7 ) ( |speechcode|  7 ) )
+00352  ;            ( ( |verbal|  8 ) ( |speechcode|  8 ) )
+00353  ;            ( ( |verbal|  9 ) ( |speechcode|  9 ) )
+00354  ;            ( ( |verbal| 10 ) ( |speechcode| 10 ) )
+00355  ;            ( ( |verbal| 11 ) ( |speechcode| 11 ) )
+00356  ;            ( ( |verbal| 12 ) ( |speechcode| 12 ) )
+00357  ;            ( ( |verbal| 13 ) ( |speechcode| 13 ) )
+00358  ;            ( ( |verbal| 14 ) ( |speechcode| 14 ) )
+00359  ;            ( ( |verbal| 15 ) ( |speechcode| 15 ) )
+00360  ;            ( ( |verbal| 16 ) ( |speechcode| 16 ) )
+00361  ;            ( ( |verbal| 17 ) ( |speechcode| 17 ) )
+00362  ;            ( ( |verbal| 18 ) ( |speechcode| 18 ) )
+00363  ;            ( ( |verbal| 19 ) ( |speechcode| 19 ) )
+00364  ;            ( ( |verbal| 20 ) ( |speechcode| 20 ) )
+00365  ;            ( ( |verbal| 21 ) ( |speechcode| 21 ) )
+00366  ;            ( ( |verbal| 22 ) ( |speechcode| 22 ) )
+00367  ;            ( ( |verbal| 23 ) ( |speechcode| 24 ) ( |speechcode| 23 ) ( |sys.var| 20 ) ( |verbal| 24 ) )
+00368  ;          )
+00369  ;        )
+00370  ;        ( IMPORT-FORMATS-LIST> ( ) )
+00371  ;      )
+00372  ;    )
+00373  ;  )
+00374  ;)
+00375  
+
+      ERROR  4 (Line 375:0): Encountered end of file unexpectedly.
+        EOF encountered in an arbitrary list that was being discarded.
+
+Unable to continue parse -- Aborting...
