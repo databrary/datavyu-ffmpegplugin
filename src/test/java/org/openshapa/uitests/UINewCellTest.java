@@ -46,7 +46,6 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
         super.tearDown();
     }
 
-//    boolean readyToExit = false;
     /**
      * Different cell variable types.
      */
