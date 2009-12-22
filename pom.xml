@@ -603,7 +603,7 @@
     <dependency>
       <groupId>org.uispec4j</groupId>
       <artifactId>uispec4j</artifactId>
-      <version>v2.1-C</version>
+      <version>v2.1-D</version>
     </dependency>
 
     <dependency>

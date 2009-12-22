@@ -68,46 +68,46 @@ public final class UIVariableListTest extends OpenSHAPAUISpecTestCase {
      * Test adding new variables with a script.
      * @throws java.lang.Exception on any error
      */
-//    public void testAddingVariablesWithScript() throws Exception {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//
-//        // 1. Open and run script to populate database
-//        String root = System.getProperty("testPath");
-//        File demoFile = new File(root + "/ui/demo_data.rb");
-//        assertTrue(demoFile.exists());
-//
-//        WindowInterceptor
-//                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-//                    .triggerClick())
-//                .process(FileChooserHandler.init()
-//                    .assertIsOpenDialog()
-//                    .assertAcceptsFilesOnly()
-//                    .select(demoFile.getAbsolutePath()))
-//                .process(new WindowHandler() {
-//                    public Trigger process(Window console) {
-//                        return console.getButton("Close").triggerClick();
-//                    }
-//                })
-//                .run();
-//
-//
-//        // 1a. Check that variable list is populated with correct data
-//        Window varListWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Variable List").triggerClick());
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-//                window.getUIComponents(Spreadsheet.class)[0]
-//                .getAwtComponent()));
-//        assertTrue(varListWindow.getTable().getRowCount()
-//                == ss.getColumns().size());
-//            for (int j = 0; j < ss.getColumns().size(); j++) {
-//                assertTrue(inTable(ss.getColumns().elementAt(j).getHeaderName(),
-//                        varListWindow.getTable(), 1));
-//                assertTrue(inTable(ss.getColumns().elementAt(j).getHeaderType(),
-//                        varListWindow.getTable(), 2));
-//            }
-//    }
+    public void testAddingVariablesWithScript() throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        // 1. Open and run script to populate database
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data.rb");
+        assertTrue(demoFile.exists());
+
+        WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsOpenDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile.getAbsolutePath()))
+                .process(new WindowHandler() {
+                    public Trigger process(Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+
+        // 1a. Check that variable list is populated with correct data
+        Window varListWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("Variable List").triggerClick());
+        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
+                window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+        assertTrue(varListWindow.getTable().getRowCount()
+                == ss.getColumns().size());
+            for (int j = 0; j < ss.getColumns().size(); j++) {
+                assertTrue(inTable(ss.getColumns().elementAt(j).getHeaderName(),
+                        varListWindow.getTable(), 1));
+                assertTrue(inTable(ss.getColumns().elementAt(j).getHeaderType(),
+                        varListWindow.getTable(), 2));
+            }
+    }
 
     /**
      * Test adding new variables manually.
@@ -148,65 +148,65 @@ public final class UIVariableListTest extends OpenSHAPAUISpecTestCase {
      * Test removal with new database.
      * @throws java.lang.Exception on any error
      */
-//    public void testRemovalWithNewDatabase() throws Exception {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//
-//        // 1. Open and run script to populate database
-//        String root = System.getProperty("testPath");
-//        File demoFile = new File(root + "/ui/demo_data.rb");
-//        assertTrue(demoFile.exists());
-//
-//                WindowInterceptor
-//                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-//                    .triggerClick())
-//                .process(FileChooserHandler.init()
-//                    .assertIsOpenDialog()
-//                    .assertAcceptsFilesOnly()
-//                    .select(demoFile.getAbsolutePath()))
-//                .process(new WindowHandler() {
-//                    public Trigger process(final Window console) {
-//                        return console.getButton("Close").triggerClick();
-//                    }
-//                })
-//                .run();
-//
-//
-//        // 1a. Check that variable list is populated
-//         Window varListWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Variable List").triggerClick());
-//         assertTrue(varListWindow.getTable().getRowCount() > 0);
-//
-//        // 2. Create new database (and discard unsaved changes)
-//        WindowInterceptor
-//            .init(menuBar.getMenu("File").getSubMenu("New").triggerClick())
-//            .process(new WindowHandler() {
-//                public Trigger process(final Window changesDialog) {
-//
-//                     WindowInterceptor
-//                    .init(changesDialog.getButton("Ok").triggerClick())
-//                    .process(new WindowHandler() {
-//                        public Trigger process(final Window newDBWindow) {
-//                            newDBWindow.
-//                                    getTextBox("nameField").setText("newDB");
-//                            return newDBWindow.getButton("Ok").triggerClick();
-//                        }
-//                     }).run();
-//
-//                return changesDialog.getButton("Ok").triggerClick();
-//
-//                }
-//             })
-//             .run();
-//
-//        // 2b. Check that variable list is empty
-//        //BugzID:430
-//        //assertTrue(varListWindow.getTable().getRowCount() == 0);
-//                 varListWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Variable List").triggerClick());
-//         assertTrue(varListWindow.getTable().getRowCount() == 0);
-//    }
+    public void testRemovalWithNewDatabase() throws Exception {
+        //Preparation
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        // 1. Open and run script to populate database
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data.rb");
+        assertTrue(demoFile.exists());
+
+                WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsOpenDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile.getAbsolutePath()))
+                .process(new WindowHandler() {
+                    public Trigger process(final Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+
+        // 1a. Check that variable list is populated
+         Window varListWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("Variable List").triggerClick());
+         assertTrue(varListWindow.getTable().getRowCount() > 0);
+
+        // 2. Create new database (and discard unsaved changes)
+        WindowInterceptor
+            .init(menuBar.getMenu("File").getSubMenu("New").triggerClick())
+            .process(new WindowHandler() {
+                public Trigger process(final Window changesDialog) {
+
+                     WindowInterceptor
+                    .init(changesDialog.getButton("Ok").triggerClick())
+                    .process(new WindowHandler() {
+                        public Trigger process(final Window newDBWindow) {
+                            newDBWindow.
+                                    getTextBox("nameField").setText("newDB");
+                            return newDBWindow.getButton("Ok").triggerClick();
+                        }
+                     }).run();
+
+                return changesDialog.getButton("Ok").triggerClick();
+
+                }
+             })
+             .run();
+
+        // 2b. Check that variable list is empty
+        //BugzID:430
+        //assertTrue(varListWindow.getTable().getRowCount() == 0);
+                 varListWindow = WindowInterceptor.run(menuBar.getMenu(
+                "Spreadsheet").getSubMenu("Variable List").triggerClick());
+         assertTrue(varListWindow.getTable().getRowCount() == 0);
+    }
 
     /**
      * Creates a new variable and checks that it has been created.

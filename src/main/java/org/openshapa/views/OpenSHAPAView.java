@@ -530,9 +530,8 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void safeQuit() {
-        OpenSHAPA.getApplication().cleanUpForTests();
 //        if (OpenSHAPA.getApplication().safeQuit()) {
-//            System.exit(0);
+            System.exit(0);
 //        }
     }
 
@@ -1093,6 +1092,14 @@ public final class OpenSHAPAView extends FrameView {
      */
     private void runRecentScript(java.awt.event.ActionEvent evt) {
         new RunScriptC(evt.getActionCommand());
+    }
+
+    /**
+     * Returns SpreadsheetPanel
+     * @return SpreadsheetPanel panel
+     */
+    public SpreadsheetPanel getSpreadsheetPanel() {
+        return panel;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -39,6 +39,7 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.openshapa.project.Project;
 import org.openshapa.util.MacHandler;
 import org.openshapa.views.AboutV;
+import org.openshapa.views.continuous.PluginManager;
 
 /**
  * The main class of the application.
@@ -447,6 +448,7 @@ implements KeyEventDispatcher {
      * Used between tests to release all memory.
      */
     public void cleanUpForTests() {
+        view.getSpreadsheetPanel().removeAll();
         db = null;
         consoleOutputStream = null;
         consoleWriter = null;
@@ -454,6 +456,8 @@ implements KeyEventDispatcher {
         dataController = null;
         aboutWindow = null;
         view = null;
+        rubyEngine.getContext().setWriter(null);
+        rubyEngine.getContext().setReader(null);
         rubyEngine = null;
         m2 = null;
         m = null;
@@ -704,8 +708,10 @@ implements KeyEventDispatcher {
     /** The scripting engine that we use with OpenSHAPA. */
     private ScriptEngine rubyEngine;
 
+    /** The scripting engine manager that we use with OpenSHAPA. */
     private ScriptEngineManager m2;
 
+    /** The JRuby scripting engine manager that we use with OpenSHAPA. */
     private JRubyScriptEngineManager m;
 
     /** The logger for OpenSHAPA. */

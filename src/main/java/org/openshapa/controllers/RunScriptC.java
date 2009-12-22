@@ -84,23 +84,11 @@ public final class RunScriptC {
 
             FileReader reader = new FileReader(rubyFile);
             rubyEngine.eval(reader);
+            reader = null;
 
             // Remove the reference to db
             rubyEngine.put("db", null);
 
-            Reader reader1 = new StringReader("");
-            rubyEngine.getContext().setReader(reader1);
-
-            // Build output streams for the scripting engine.
-            try {
-                PipedInputStream consoleOutputStream = new PipedInputStream();
-                PipedOutputStream sIn =
-                                     new PipedOutputStream(consoleOutputStream);
-                PrintWriter consoleWriter = new PrintWriter(sIn);
-                rubyEngine.getContext().setWriter(consoleWriter);
-            } catch (java.io.IOException e) {
-                logger.error("Unable to execute script: ", e);
-            }
         } catch (ScriptException e) {
             PrintWriter consoleWriter = OpenSHAPA.getConsoleWriter();
             consoleWriter.println("***** SCRIPT ERRROR *****");
