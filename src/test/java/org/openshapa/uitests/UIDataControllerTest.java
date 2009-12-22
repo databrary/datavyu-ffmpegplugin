@@ -314,9 +314,7 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
                 expectedNominalTestOutput);
     }
 
-
-
-    /**
+     /**
      * Asserts true is two cell values are equal.
      * @param value1 first cell value
      * @param value2 second cell value
@@ -357,49 +355,5 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         newVarWindow.getRadioButton(varRadio).click();
         newVarWindow.getButton("Ok").click();
     }
-
-      /**
-      * Parses a matrix value and returns an arg.
-      * @param matrixCellValue matrix cell value
-      * @param arg argument number
-      * @return argument as a string
-      */
-     private String getArgFromMatrix(final String matrixCellValue,
-             final int arg) {
-         String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 2);
-
-         String [] tokens = argList.split(", ");
-
-         return tokens[arg];
-     }
-
-          /**
-      * Parses a matrix value and returns an arg.
-      * @param matrixCellValue matrix cell value
-      * @return int number of arguments
-      */
-     private int getNumberofArgFromMatrix(final String matrixCellValue) {
-         String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 1);
-
-         String [] tokens = argList.split(", ");
-
-         return tokens.length;
-     }
-
-     /**
-      * Parses a matrix value and returns array of arguments.
-      * @param matrixCellValue matrix cell value
-      * @return arguments in an array
-      */
-     private String [] getArgsFromMatrix(final String matrixCellValue) {
-         String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 1);
-
-         String [] tokens = argList.split(", ");
-
-         return tokens;
-     }
 }
 
