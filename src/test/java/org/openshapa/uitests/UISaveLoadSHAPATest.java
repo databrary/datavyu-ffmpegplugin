@@ -56,7 +56,7 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
 
      /**
      * Called after each test.
-     * @throws Exception
+     * @throws Exception on any error
      */
     @Override
     protected void tearDown() throws Exception {
@@ -84,16 +84,18 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
     }
 
     static {
-        UISpec4J.setWindowInterceptionTimeLimit(120000);
-        UISpec4J.init();
+       UISpec4J.setWindowInterceptionTimeLimit(120000);
+       UISpec4J.init();
     }
 
     /**
-     * Test saving a database to a SHAPA file with Save As.
-     *
-     * @throws java.lang.Exception on any error
+     * Test saving a database with Save As.
+     * @param fileName fileName to save as
+     * @param extension extension to save as
+     * @throws Exception on any error
      */
-    public void testSaveAsSHAPA() throws Exception {
+    public void saveAsTest(final String fileName, final String extension)
+            throws Exception {
         //Preparation
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
@@ -124,12 +126,12 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
         assertTrue(titlePreSave.endsWith("*"));
 
 
-        // 2. Save SHAPA file
-        File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
-        if (savedSHAPA.exists()) {
-            savedSHAPA.delete();
+        // 2. Save file
+        File savedFile = new File(tempFolder + "/" + fileName);
+        if (savedFile.exists()) {
+            savedFile.delete();
         }
-        savedSHAPA.deleteOnExit();
+        savedFile.deleteOnExit();
 
         WindowInterceptor
                 .init(menuBar.getMenu("File").getSubMenu("Save As...")
@@ -137,8 +139,16 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
                 .process(FileChooserHandler.init()
                     .assertIsSaveDialog()
                     .assertAcceptsFilesOnly()
-                    .select(tempFolder + "/savedSHAPA.shapa"))
+                    .selectFileFilter(extension)
+                    .select(tempFolder + "/" + fileName))
                 .run();
+
+        String filePath = tempFolder + "/" + fileName;
+        if (!fileName.endsWith(extension)) {
+            filePath = filePath + "." + extension;
+        }
+        File justSaved = new File(filePath);
+        assertTrue(justSaved.exists());
 
         //Check that title no longer has asterix
         String titlePostSave = window.getTitle();
@@ -156,12 +166,13 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
     }
 
     /**
-     * Test saving a database to a SHAPA file with Save.
-     *
-     * @throws java.lang.Exception on any error
+     * Test saving a database to a file with Save.
+     * @param fileName file name to save
+     * @param extension extension to save
+     * @throws Exception on any error
      */
-    public void testSaveSHAPA() throws Exception {
-        //TODO: Should be modified for other file types once they're ready
+    public void saveTest(final String fileName, final String extension)
+            throws Exception {
         //Preparation
         Window window = getMainWindow();
         MenuBar menuBar = window.getMenuBar();
@@ -172,10 +183,6 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
         File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
         assertTrue(demoFile.exists());
 
-        // Check that title has an asterix on it
-        String titlePreSave = window.getTitle();
-        assertTrue(titlePreSave.endsWith("*"));
-
         //1. Click save on empty project. Expecting it to act like Save As
         WindowInterceptor
                 .init(menuBar.getMenu("File").getSubMenu("Save")
@@ -183,12 +190,16 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
                 .process(FileChooserHandler.init()
                     .assertIsSaveDialog()
                     .assertAcceptsFilesOnly()
-                    .select(tempFolder + "/savedSHAPA.shapa"))
+                    .selectFileFilter(extension)
+                    .select(tempFolder + "/" + fileName))
                 .run();
 
-        //Check that title no longer has asterix
-        String titlePostSave = window.getTitle();
-        assertTrue(!titlePostSave.endsWith("*"));
+        String filePath = tempFolder + "/" + fileName;
+        if (!fileName.endsWith(extension)) {
+            filePath = filePath + "." + extension;
+        }
+        File justSaved = new File(filePath);
+        assertTrue(justSaved.exists());
 
         // 2. Open and run script to populate database
         WindowInterceptor
@@ -206,19 +217,20 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
                 .run();
 
         // Check that title has an asterix on it
-        titlePreSave = window.getTitle();
+        String titlePreSave = window.getTitle();
         assertTrue(titlePreSave.endsWith("*"));
 
         // 2. Save project file. Not expecting anything except a save
         menuBar.getMenu("File").getSubMenu("Save").click();
 
         //Check that title no longer has asterix
-        titlePostSave = window.getTitle();
+        String titlePostSave = window.getTitle();
         assertTrue(!titlePostSave.endsWith("*"));
 
         // 3. Check that the saved database file is correct
         Project project = OpenSHAPA.getProject();
-        File savedDB = new File(project.getDatabaseDir(), project.getDatabaseFile());
+        File savedDB = new File(project.getDatabaseDir(),
+                project.getDatabaseFile());
 
         File testCSV = new File(root + "/ui/test-v2-out.csv");
         assertTrue(testCSV.exists());
@@ -286,8 +298,6 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
                 .select(savedSHAPA))
             .run();
 
-        
-
         // 5. Check that CSV file is correct
         File testOutputCSV = new File(root + expectedOutputFile);
         assertTrue(testOutputCSV.exists());
@@ -317,4 +327,112 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
         this.loadTest("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
     }
 
+     /**
+     * Test saving a SHAPA database with Save As, no extension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveAsSHAPA1() throws Exception {
+        this.saveAsTest("savedSHAPA", "shapa");
+    }
+
+     /**
+     * Test saving a CSV database with Save As, no extension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveAsCSV1() throws Exception {
+        this.saveAsTest("savedCSV", "csv");
+    }
+
+     /**
+     * Test saving a SHAPA database with Save As, extension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveAsSHAPA2() throws Exception {
+        this.saveAsTest("savedSHAPA.shapa", "shapa");
+    }
+
+     /**
+     * Test saving a CSV database with Save As, extension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveAsCSV2() throws Exception {
+        this.saveAsTest("savedCSV.csv", "csv");
+    }
+
+         /**
+     * Test saving a SHAPA database with Save As, wrong extension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveAsSHAPA3() throws Exception {
+        this.saveAsTest("savedSHAPA.csv", "shapa");
+    }
+
+     /**
+     * Test saving a CSV database with Save As, wrong entension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveAsCSV3() throws Exception {
+        this.saveAsTest("savedCSV.shapa", "csv");
+    }
+
+    /***********************SAVE TESTS***************************/
+    /**
+     * Test saving a SHAPA database with Save, no extension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveSHAPA1() throws Exception {
+        this.saveTest("savedSHAPA", "shapa");
+    }
+
+     /**
+     * Test saving a CSV database with Save, no extension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveCSV1() throws Exception {
+        this.saveTest("savedCSV", "csv");
+    }
+
+     /**
+     * Test saving a SHAPA database with Save, extension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveSHAPA2() throws Exception {
+        this.saveTest("savedSHAPA.shapa", "shapa");
+    }
+
+     /**
+     * Test saving a CSV database with Save, extension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveCSV2() throws Exception {
+        this.saveTest("savedCSV.csv", "csv");
+    }
+
+     /**
+     * Test saving a SHAPA database with Save, wrong extension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveSHAPA3() throws Exception {
+        this.saveTest("savedSHAPA.csv", "shapa");
+    }
+
+     /**
+     * Test saving a CSV database with Save, wrong entension in file name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testSaveCSV3() throws Exception {
+        this.saveTest("savedCSV.shapa", "csv");
+    }
 }
