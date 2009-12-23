@@ -119,6 +119,11 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
                 })
                 .run();
 
+        // Check that title has an asterix on it
+        String titlePreSave = window.getTitle();
+        assertTrue(titlePreSave.endsWith("*"));
+
+
         // 2. Save SHAPA file
         File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
         if (savedSHAPA.exists()) {
@@ -134,6 +139,10 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
                     .assertAcceptsFilesOnly()
                     .select(tempFolder + "/savedSHAPA.shapa"))
                 .run();
+
+        //Check that title no longer has asterix
+        String titlePostSave = window.getTitle();
+        assertTrue(!titlePostSave.endsWith("*"));
 
         // 3. Check that the generated CSV file is correct
         Project project = OpenSHAPA.getProject();
@@ -163,6 +172,10 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
         File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
         assertTrue(demoFile.exists());
 
+        // Check that title has an asterix on it
+        String titlePreSave = window.getTitle();
+        assertTrue(titlePreSave.endsWith("*"));
+
         //1. Click save on empty project. Expecting it to act like Save As
         WindowInterceptor
                 .init(menuBar.getMenu("File").getSubMenu("Save")
@@ -172,6 +185,10 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
                     .assertAcceptsFilesOnly()
                     .select(tempFolder + "/savedSHAPA.shapa"))
                 .run();
+
+        //Check that title no longer has asterix
+        String titlePostSave = window.getTitle();
+        assertTrue(!titlePostSave.endsWith("*"));
 
         // 2. Open and run script to populate database
         WindowInterceptor
@@ -188,8 +205,16 @@ public final class UISaveLoadSHAPATest extends OpenSHAPAUISpecTestCase {
                 })
                 .run();
 
+        // Check that title has an asterix on it
+        titlePreSave = window.getTitle();
+        assertTrue(titlePreSave.endsWith("*"));
+
         // 2. Save project file. Not expecting anything except a save
         menuBar.getMenu("File").getSubMenu("Save").click();
+
+        //Check that title no longer has asterix
+        titlePostSave = window.getTitle();
+        assertTrue(!titlePostSave.endsWith("*"));
 
         // 3. Check that the saved database file is correct
         Project project = OpenSHAPA.getProject();
