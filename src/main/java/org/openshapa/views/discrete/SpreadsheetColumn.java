@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import java.util.logging.Level;
 import org.openshapa.db.DataColumn;
 import org.openshapa.db.Database;
 import org.openshapa.db.ExternalCascadeListener;
@@ -216,6 +217,20 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
         } catch (SystemErrorException e) {
            logger.error("Failed setting column select state.", e);
         }
+    }
+
+    /**
+     * Returns selection status.
+     */
+    public boolean getSelected() {
+        DataColumn dc = null;
+        try {
+            dc = database.getDataColumn(dbColID);
+            
+        } catch (SystemErrorException ex) {
+            java.util.logging.Logger.getLogger(SpreadsheetColumn.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return dc.getSelected();
     }
 
     /**

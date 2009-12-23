@@ -103,5 +103,19 @@ public class Column extends AbstractUIComponent {
         ssColumn.setSelected(false);
     }
 
+    /**
+     * Select column.
+     */
+    public final void select() {
+        ssColumn.setSelected(true);
+    }
+
+    /**
+     * Returns true if column is selected.
+     */
+    public boolean isSelected() {
+        return ssColumn.getSelected();
+    }
+
 
 }
