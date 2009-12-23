@@ -126,4 +126,127 @@ public final class UIDeleteCellsTest extends OpenSHAPAUISpecTestCase {
 //            assertTrue(col.getCells().isEmpty());
 //        }
     }
+
+    /**
+     * Select all cells in spreadsheet and delete at once.
+     * @throws java.lang.Exception on any error
+     */
+    public void testDeleteAllCellsInSpreadsheet() throws Exception {
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data.rb");
+        assertTrue(demoFile.exists());
+
+         // Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        // 1. Open and run script to populate database
+        WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsOpenDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile))
+                .process(new WindowHandler() {
+                    public Trigger process(Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+
+        // 2. Select all cells and press delete
+        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+
+        Vector<Column> cols = ss.getColumns();
+
+
+        //Hack algorithm to get around UISpec4J not detecting deleted cells
+        for (int i = 0; i < cols.size(); i++) {
+            ss = new Spreadsheet((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+
+            cols = ss.getColumns();
+            Column col = cols.elementAt(i);
+            for (Cell cell : col.getCells()) {
+                cell.setSelected(true);
+            }            
+        }
+        menuBar.getMenu("Spreadsheet").getSubMenu("Delete Cell").click();
+
+        Spreadsheet ss2 = null;
+        ss2 = new Spreadsheet((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+        Vector<Column> cols2 = ss2.getColumns();
+        for (Column col : cols2) {
+            assertTrue(col.getCells().isEmpty());
+        }
+    }
+
+    /**
+     * Delete all cells one at a time.
+     * @throws java.lang.Exception on any error
+     */
+    public void testDeleteSingleCells() throws Exception {
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data.rb");
+        assertTrue(demoFile.exists());
+
+         // Retrieve the components
+        Window window = getMainWindow();
+        MenuBar menuBar = window.getMenuBar();
+
+        // 1. Open and run script to populate database
+        WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertIsOpenDialog()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile))
+                .process(new WindowHandler() {
+                    public Trigger process(Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+
+        // 2. For each column, select all cells and press delete
+        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+
+        Vector<Column> cols = ss.getColumns();
+
+
+        //Hack algorithm to get around UISpec4J not detecting deleted cells
+        for (int i = 0; i < cols.size(); i++) {
+            ss = new Spreadsheet((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+
+            cols = ss.getColumns();
+            Column col = cols.elementAt(i);
+            int numOfCells = col.getCells().size();
+            for (int j = 0; j < numOfCells; j++) {
+                Cell cell = col.getCells().elementAt(j);
+                cell.setSelected(true);
+                menuBar.getMenu("Spreadsheet").getSubMenu("Delete Cell")
+                        .click();
+                Spreadsheet ss2 = null;
+                ss2 = new Spreadsheet((SpreadsheetPanel)
+                (window.getUIComponents(Spreadsheet.class)[0]
+                .getAwtComponent()));
+                Column col2 = ss2.getColumns().elementAt(i);
+                assertTrue(col2.getCells().size()
+                        == (col.getCells().size() - (j + 1)));
+            }
+        }
+    }
 }
