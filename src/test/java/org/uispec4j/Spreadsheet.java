@@ -93,4 +93,45 @@ public class Spreadsheet extends AbstractUIComponent {
         }
     }
 
+    /**
+     * Returns true if Spreadsheet ss is equal, including order to this.
+     * @param ss Spreadsheet to compare to
+     * @return true if equal
+     */
+    public boolean equals(Spreadsheet ss) {
+        //Check that all columns equal, including order
+        if (ss.getColumns().size() != getColumns().size()) {
+            return false;
+        }
+        for (int i = 0; i < ss.getColumns().size(); i++) {
+            Column c1 = ss.getColumns().elementAt(i);
+            Column c2 = getColumns().elementAt(i);
+            if (!c1.getHeaderName().equals(c2.getHeaderName())) {
+                return false;
+            }
+            if (!c1.getHeaderType().equals(c2.getHeaderType())) {
+                return false;
+            }
+
+            //Check that all cells within column are equal
+            if (c1.getCells().size() != c2.getCells().size()) {
+                return false;
+            }
+            for (int j = 0; j < c1.getCells().size(); j++) {
+                Cell cell1 = c1.getCells().elementAt(j);
+                Cell cell2 = c2.getCells().elementAt(j);
+                if (!cell1.getValueText().equals(cell2.getValueText())) {
+                    return false;
+                }
+                if (!cell1.getOnsetTime().equals(cell2.getOnsetTime())) {
+                    return false;
+                }
+                if (!cell1.getOffsetTime().equals(cell2.getOffsetTime())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }

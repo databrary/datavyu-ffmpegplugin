@@ -108,4 +108,61 @@ public final class UINewDatabaseTest extends OpenSHAPAUISpecTestCase {
         assertTrue((vocEdWindow.getPanel("currentVocabList")
                                .getSwingComponents(Box.class)).length == 0);
     }
+
+    /**
+     * Should display warning if database has no name.
+     *
+     * @throws java.lang.Exception on any error
+     */
+    public void testBug576() throws Exception {
+        //Preparation
+        final Window window = getMainWindow();
+        final MenuBar menuBar = window.getMenuBar();
+
+        // 1. Open and run script to populate database
+        String root = System.getProperty("testPath");
+        final File demoFile = new File(root + "/ui/demo_data.rb");
+        assertTrue(demoFile.exists());
+
+        WindowInterceptor
+                .init(menuBar.getMenu("Script").getSubMenu("Run script")
+                    .triggerClick())
+                .process(FileChooserHandler.init()
+                    .assertAcceptsFilesOnly()
+                    .select(demoFile.getAbsolutePath()))
+                .process(new WindowHandler() {
+                    public Trigger process(Window console) {
+                        return console.getButton("Close").triggerClick();
+                    }
+                })
+                .run();
+
+        // 1a. Check that database is populated
+        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
+              (window.getUIComponents(Spreadsheet.class)[0].getAwtComponent()));
+        assertTrue(ss.getColumns().size() > 0);
+
+        // 2. Create new database (and discard unsaved changes)
+
+        WindowInterceptor
+            .init(menuBar.getMenu("File").getSubMenu("New").triggerClick())
+            .process(BasicHandler.init()
+                    .triggerButtonClick("OK"))
+            .process(new WindowHandler() {
+                public Trigger process(final Window newDBWindow) {
+                    return newDBWindow.getButton("Ok").triggerClick();
+                }
+             })
+            .process(BasicHandler.init()
+                     .triggerButtonClick("OK"))
+            .run();
+
+        //BugzID938 - Expecting the new database dialog to remain open.
+        //Must write test to check that this is true.
+
+        // 2a. Check that all data is unchanged
+        Spreadsheet ss2 = new Spreadsheet((SpreadsheetPanel)
+              (window.getUIComponents(Spreadsheet.class)[0].getAwtComponent()));
+        assertTrue(ss2.equals(ss));
+    }
 }
