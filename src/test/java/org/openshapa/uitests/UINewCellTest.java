@@ -6,6 +6,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.FloatUtils;
+import org.openshapa.util.UIUtils;
 import org.uispec4j.Cell;
 import org.uispec4j.Clipboard;
 import org.uispec4j.Key;
@@ -26,34 +27,7 @@ import org.uispec4j.interception.WindowHandler;
  * Test for the New Cells.
  */
 public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
      /**
-     * Called after each test.
-     * @throws Exception on any error
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    /**
-     * Different cell variable types.
-     */
-     private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
-    };
-
-    /**
       * Nominal test input.
       */
      private String[] nominalTestInput = {"Subject stands )up ", "$10,432",
@@ -915,7 +889,8 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
      */
     public void testCreateNewCellWithEnter() throws Exception {
         String varName = "testVar";
-        String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
+        String varType = UIUtils.VAR_TYPES[(int) (Math.random() 
+                * UIUtils.VAR_TYPES.length)];
         String varRadio = varType.toLowerCase();
 
         // 1. Retrieve the components
@@ -975,14 +950,7 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
             final String varRadio) throws Exception {
         // 1. Retrieve the components
         Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2a. Create new variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        newVarWindow.getButton("Ok").click();
+        UIUtils.createNewVariable(window, varName, varRadio);
     }
 
     /**
@@ -1107,9 +1075,9 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
             Cell c = cells.elementAt(i);
             TextBox t = c.getValue();
             c.enterMatrixText(testInput[i]);
-            int numOfArgs = getNumberofArgFromMatrix(t.getText());
-            String [] actualValues = getArgsFromMatrix(t.getText());
-            String [] expectedValues = getArgsFromMatrix(expectedTestOutput[i]);
+            int numOfArgs = UIUtils.getNumberofArgFromMatrix(t.getText());
+            String [] actualValues = UIUtils.getArgsFromMatrix(t.getText());
+            String [] expectedValues = UIUtils.getArgsFromMatrix(expectedTestOutput[i]);
             for (int j = 0; j < numOfArgs; j++) {
                 assertTrueEqualValues(actualValues[j], expectedValues[j]);
             }
@@ -1184,49 +1152,5 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
             assertTrueEqualValues(t.getText(), expectedTestOutput[i]);
         }
     }
-
-     /**
-      * Parses a matrix value and returns an arg.
-      * @param matrixCellValue matrix cell value
-      * @param arg argument number
-      * @return argument as a string
-      */
-     private String getArgFromMatrix(final String matrixCellValue,
-             final int arg) {
-         String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 2);
-
-         String [] tokens = argList.split(", ");
-
-         return tokens[arg];
-     }
-
-          /**
-      * Parses a matrix value and returns an arg.
-      * @param matrixCellValue matrix cell value
-      * @return int number of arguments
-      */
-     private int getNumberofArgFromMatrix(final String matrixCellValue) {
-         String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 1);
-
-         String [] tokens = argList.split(", ");
-
-         return tokens.length;
-     }
-
-     /**
-      * Parses a matrix value and returns array of arguments.
-      * @param matrixCellValue matrix cell value
-      * @return arguments in an array
-      */
-     private String [] getArgsFromMatrix(final String matrixCellValue) {
-         String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 1);
-
-         String [] tokens = argList.split(", ");
-
-         return tokens;
-     }
 }
 

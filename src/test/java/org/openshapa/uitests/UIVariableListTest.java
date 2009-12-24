@@ -3,9 +3,9 @@ package org.openshapa.uitests;
 import java.io.File;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.util.UIUtils;
 import org.openshapa.views.NewDatabaseV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.MenuBar;
@@ -23,33 +23,6 @@ import org.uispec4j.interception.WindowHandler;
  *
  */
 public final class UIVariableListTest extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /**
-     * Called after each test.
-     * @throws Exception
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-     /**
-     * Different cell variable types.
-     */
-    private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
-    };
-
 
     static {
         UISpec4J.setWindowInterceptionTimeLimit(120000);
@@ -125,7 +98,7 @@ public final class UIVariableListTest extends OpenSHAPAUISpecTestCase {
         // 1. Create a new variable, then check that the variable list
         // is populated with correct data.
         for (int i = 0; i < varNames.length; i++) {
-            createNewVariable(varNames[i], varTypes[i]);
+            UIUtils.createNewVariable(window, varNames[i], varTypes[i]);
 
             // 1a. Check that variable list is populated with correct data
             Window varListWindow = WindowInterceptor.run(menuBar.getMenu(
@@ -240,27 +213,6 @@ public final class UIVariableListTest extends OpenSHAPAUISpecTestCase {
                 .equals(varType));
         //check that column has no cells
         assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
-    }
-
-    /**
-     * Create a new variable.
-     * @param varName String for the name of the variable
-     * @param varType String for the variable type
-     * @throws java.lang.Exception on any error
-     */
-    private void createNewVariable(final String varName,
-            final String varType) throws Exception {
-        String varRadio = varType.toLowerCase();
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2a. Create new variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        newVarWindow.getButton("Ok").click();
     }
 
     /**

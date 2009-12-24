@@ -13,30 +13,6 @@ import org.uispec4j.interception.FileChooserHandler;
  * Make sure that the open dialog remembers previous open location.
  */
 public final class UIBug661Test extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception on any error
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    static {
-      UISpec4J.init();
-    }
-
     /**
      * Open a file and maybe check what open dialog opens to.
      * @param openFile file to open

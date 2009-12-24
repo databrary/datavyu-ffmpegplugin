@@ -3,9 +3,9 @@ package org.openshapa.uitests;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Vector;
+import org.openshapa.util.UIUtils;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.uispec4j.Cell;
 import org.uispec4j.Column;
 import org.uispec4j.Key;
@@ -29,25 +29,6 @@ import org.uispec4j.interception.WindowHandler;
  *
  */
 public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /**
-     * Called after each test.
-     * @throws Exception on error
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     static {
         UISpec4J.setWindowInterceptionTimeLimit(4000000);
@@ -84,7 +65,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
                 .getPanel("verticalFrame");
 
 
-        int numVocElements = getVocabElements(vocElementsPanel).length;
+        int numVocElements = UIUtils.getVocabElements(vocElementsPanel).length;
 
         assertTrue(numVocElements == 0);
 
@@ -118,7 +99,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
 
-        numVocElements = getVocabElements(vocElementsPanel).length;
+        numVocElements = UIUtils.getVocabElements(vocElementsPanel).length;
         assertTrue(numVocElements == 2);
     }
 
@@ -139,7 +120,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = getVocabElements(vocElementsPanel)[0];
+        VocabElement ve = UIUtils.getVocabElements(vocElementsPanel)[0];
 
         String veName = ve.getVEName();
         vocEdWindow.getButton("OK").click();
@@ -151,7 +132,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
                 .getAwtComponent()));
 
         String varName = "predicate";
-        createNewVariable(varName, varName.toUpperCase());
+        UIUtils.createNewVariable(window, varName, varName.toUpperCase());
 
         menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
 
@@ -193,7 +174,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = getVocabElements(vocElementsPanel)[0];
+        VocabElement ve = UIUtils.getVocabElements(vocElementsPanel)[0];
 
         String oldVEName = ve.getVEName();
 
@@ -214,7 +195,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
                 .getAwtComponent()));
 
         String varName = "predicate";
-        createNewVariable(varName, varName.toUpperCase());
+        UIUtils.createNewVariable(window, varName, varName.toUpperCase());
 
         menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
 
@@ -245,7 +226,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = getVocabElements(vocElementsPanel)[0];
+        VocabElement ve = UIUtils.getVocabElements(vocElementsPanel)[0];
 
         String oldVEName = ve.getVEName();
 
@@ -266,7 +247,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
                 .getAwtComponent()));
 
         String varName = "predicate";
-        createNewVariable(varName, varName.toUpperCase());
+        UIUtils.createNewVariable(window, varName, varName.toUpperCase());
 
         menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
 
@@ -299,7 +280,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = getVocabElements(vocElementsPanel)[0];
+        VocabElement ve = UIUtils.getVocabElements(vocElementsPanel)[0];
 
         String oldVEArgName = ve.getArgument(0);
 
@@ -320,7 +301,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
                 .getAwtComponent()));
 
         String varName = "predicate";
-        createNewVariable(varName, varName.toUpperCase());
+        UIUtils.createNewVariable(window, varName, varName.toUpperCase());
 
         menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
 
@@ -355,7 +336,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = getVocabElements(vocElementsPanel)[0];
+        VocabElement ve = UIUtils.getVocabElements(vocElementsPanel)[0];
 
         String oldVEArgName = ve.getArgument(0);
 
@@ -376,7 +357,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
                 .getAwtComponent()));
 
         String varName = "predicate";
-        createNewVariable(varName, varName.toUpperCase());
+        UIUtils.createNewVariable(window, varName, varName.toUpperCase());
 
         menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
 
@@ -456,7 +437,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
         String [] originalData = new String[numVocElements];
         Vector<VocabElement> vve = new Vector<VocabElement>(Arrays.asList(
-                getVocabElements(vocElementsPanel)));
+                UIUtils.getVocabElements(vocElementsPanel)));
         for (int i = 0; i < numVocElements; i++) {
             originalData[i] = vve.elementAt(i).getValueText();
         }
@@ -548,7 +529,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
         String [] originalData = new String[numVocElements];
         Vector<VocabElement> vve = new Vector<VocabElement>(Arrays.asList(
-                getVocabElements(vocElementsPanel)));
+                UIUtils.getVocabElements(vocElementsPanel)));
         for (int i = 0; i < numVocElements; i++) {
             originalData[i] = vve.elementAt(i).getValueText();
         }
@@ -688,7 +669,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
         String [] originalData = new String[numVocElements];
         Vector<VocabElement> vve = new Vector<VocabElement>(Arrays.asList(
-                getVocabElements(vocElementsPanel)));
+                UIUtils.getVocabElements(vocElementsPanel)));
         for (int i = 0; i < numVocElements; i++) {
             originalData[i] = vve.elementAt(i).getValueText();
         }
@@ -842,7 +823,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
         String [] originalData = new String[numVocElements];
         Vector<VocabElement> vve = new Vector<VocabElement>(Arrays.asList(
-                getVocabElements(vocElementsPanel)));
+                UIUtils.getVocabElements(vocElementsPanel)));
         for (int i = 0; i < numVocElements; i++) {
             originalData[i] = vve.elementAt(i).getValueText();
         }
@@ -924,7 +905,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
 
-        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+        VocabElement [] oldVEs = UIUtils.getVocabElements(vocElementsPanel);
 
         vocEdWindow.getButton("Add Predicate()").click();
 
@@ -932,7 +913,8 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
                 .getPanel("verticalFrame");
 
         //Check that VE exists
-        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+        assertTrue(oldVEs.length < UIUtils.getVocabElements(
+                vocElementsPanel).length);
 
         //Revert
         vocEdWindow.getButton("Revert").click();
@@ -940,7 +922,8 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
 
-        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+        VocabElement [] finalVocElements = UIUtils.getVocabElements(
+                vocElementsPanel);
 
         //Check that vocab element has been removed
         assertTrue(oldVEs.length == finalVocElements.length);
@@ -984,7 +967,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
 
-        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+        VocabElement [] oldVEs = UIUtils.getVocabElements(vocElementsPanel);
 
         vocEdWindow.getButton("Add Predicate()").click();
 
@@ -992,7 +975,8 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
                 .getPanel("verticalFrame");
 
         //Check that VE exists
-        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+        assertTrue(oldVEs.length < UIUtils.getVocabElements(
+                vocElementsPanel).length);
 
         //Revert
         vocEdWindow.getButton("Revert").click();
@@ -1000,7 +984,8 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
 
-        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+        VocabElement [] finalVocElements = UIUtils.getVocabElements(
+                vocElementsPanel);
 
         //Check that vocab element has been removed
         assertTrue(oldVEs.length == finalVocElements.length);
@@ -1026,7 +1011,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
 
-        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+        VocabElement [] oldVEs = UIUtils.getVocabElements(vocElementsPanel);
 
         vocEdWindow.getButton("Add Matrix()").click();
 
@@ -1034,7 +1019,8 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
                 .getPanel("verticalFrame");
 
         //Check that VE exists
-        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+        assertTrue(oldVEs.length < UIUtils.getVocabElements(
+                vocElementsPanel).length);
 
         //Revert
         vocEdWindow.getButton("Revert").click();
@@ -1042,7 +1028,8 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
 
-        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+        VocabElement [] finalVocElements = UIUtils.getVocabElements(
+                vocElementsPanel);
 
         //Check that vocab element has been removed
         assertTrue(oldVEs.length == finalVocElements.length);
@@ -1086,7 +1073,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
 
-        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+        VocabElement [] oldVEs = UIUtils.getVocabElements(vocElementsPanel);
 
         vocEdWindow.getButton("Add Matrix()").click();
 
@@ -1094,7 +1081,8 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
                 .getPanel("verticalFrame");
 
         //Check that VE exists
-        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+        assertTrue(oldVEs.length < UIUtils.getVocabElements(vocElementsPanel)
+                .length);
 
         //Revert
         vocEdWindow.getButton("Revert").click();
@@ -1102,7 +1090,8 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
 
-        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+        VocabElement [] finalVocElements = UIUtils.getVocabElements(
+                vocElementsPanel);
 
         //Check that vocab element has been removed
         assertTrue(oldVEs.length == finalVocElements.length);
@@ -1146,7 +1135,7 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         Panel vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
 
-        VocabElement [] oldVEs = getVocabElements(vocElementsPanel);
+        VocabElement [] oldVEs = UIUtils.getVocabElements(vocElementsPanel);
 
         vocEdWindow.getButton("Add Matrix()").click();
 
@@ -1154,7 +1143,8 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
                 .getPanel("verticalFrame");
 
         //Check that VE exists
-        assertTrue(oldVEs.length < getVocabElements(vocElementsPanel).length);
+        assertTrue(oldVEs.length < UIUtils.getVocabElements(vocElementsPanel)
+                .length);
 
         //Click Apply
         vocEdWindow.getButton("Apply").click();
@@ -1162,7 +1152,8 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
         vocElementsPanel = vocEdWindow.getPanel("currentVocabList")
                 .getPanel("verticalFrame");
 
-        VocabElement [] finalVocElements = getVocabElements(vocElementsPanel);
+        VocabElement [] finalVocElements = UIUtils.getVocabElements(
+                vocElementsPanel);
 
         //Check that new matrix column has been created
          Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
@@ -1187,44 +1178,5 @@ public final class UIVocabEditorTest extends OpenSHAPAUISpecTestCase {
 
         assertTrue(cells.elementAt(0).getValueText().equalsIgnoreCase(
                 "<" + argName + ">"));
-    }
-
-
-    /**
-     * Create a new variable.
-     * @param varName String for the name of the variable
-     * @param varRadio String for the corresponding radio button to click
-     * @throws java.lang.Exception on any error
-     */
-    private void createNewVariable(final String varName,
-            final String varRadio) throws Exception {
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2a. Create new variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        newVarWindow.getButton("Ok").click();
-    }
-
-     /**
-     * returns array of VocabElements from a Panel.
-     * @param panel Panel with vocabElements
-     * @return array of VocabElements
-     */
-    private VocabElement[] getVocabElements(final Panel panel) {
-
-        int numOfElements = panel.getUIComponents(VocabElement.class).length;
-
-        VocabElement [] veArray = new VocabElement[numOfElements];
-
-        for (int i = 0; i < numOfElements; i++) {
-            veArray[i] = new VocabElement((VocabElementV) (panel.
-                    getUIComponents(VocabElement.class)[i].getAwtComponent()));
-        }
-        return veArray;
     }
 }

@@ -21,34 +21,6 @@ import org.uispec4j.interception.WindowHandler;
  * Test for the New Cells.
  */
 public final class UIDeleteCellValueTest extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception on any error
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    /**
-     * Different cell variable types.
-     */
-    private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
-    };
-
-
     static {
       UISpec4J.setWindowInterceptionTimeLimit(120000);
       UISpec4J.init();

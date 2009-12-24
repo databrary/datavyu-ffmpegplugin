@@ -44,13 +44,6 @@ public final class UILeftRightCreateCellTest extends OpenSHAPAUISpecTestCase {
     }
 
     /**
-     * Different cell variable types.
-     */
-    private static final String [] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
-        };
-
-    /**
      * Test creating a cell to the left and right.
      * @throws java.lang.Exception on any error
      */

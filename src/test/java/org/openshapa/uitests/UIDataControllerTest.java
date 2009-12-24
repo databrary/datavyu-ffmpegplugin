@@ -5,6 +5,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.util.FloatUtils;
+import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.uispec4j.Cell;
 import org.uispec4j.Key;
@@ -21,33 +22,6 @@ import org.uispec4j.Window;
  * Test for the DataController.
  */
 public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception When unable to tear down
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    /**
-     * Different cell variable types.
-     */
-     private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
-    };
-
     /**
       * Nominal test input.
       */
@@ -124,7 +98,7 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         String vName = varName;
         String vRadio = varType;
 
-        createNewVariable(vName, vRadio);
+        UIUtils.createNewVariable(window, vName, vRadio);
 
         //2. Open Data Viewer Controller and get starting time
         Window dvc = WindowInterceptor.run(menuBar.getMenu("Controller")
@@ -334,26 +308,6 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
                 assertTrue(value1.equalsIgnoreCase(value2));
             }
         }
-    }
-
-    /**
-     * Create a new variable.
-     * @param varName String for the name of the variable
-     * @param varRadio String for the corresponding radio button to click
-     * @throws java.lang.Exception on any error
-     */
-    private void createNewVariable(final String varName,
-            final String varRadio) throws Exception {
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2a. Create new variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        newVarWindow.getButton("Ok").click();
     }
 }
 

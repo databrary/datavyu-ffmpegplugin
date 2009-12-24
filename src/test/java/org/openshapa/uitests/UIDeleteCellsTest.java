@@ -24,30 +24,6 @@ import org.uispec4j.interception.WindowHandler;
  *
  */
 public final class UIDeleteCellsTest extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    static {
-      UISpec4J.init();
-    }
-
     /**
      * Test for Bug 713.
      * Bug 713: If an extended selection includes the last (bottom) cell

@@ -5,7 +5,6 @@ import java.io.File;
 import java.util.Vector;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.Cell;
 import org.uispec4j.Column;
 import org.uispec4j.MenuBar;
 import org.uispec4j.OpenSHAPAUISpecTestCase;
@@ -24,30 +23,6 @@ import org.uispec4j.interception.WindowHandler;
  *
  */
 public final class UIDeleteColumnsTest extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    static {
-      UISpec4J.init();
-    }
-
     /**
      * Test for deletion of columns.
      * Delete columns one by one.

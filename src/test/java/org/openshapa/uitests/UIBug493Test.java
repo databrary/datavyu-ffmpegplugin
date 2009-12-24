@@ -1,8 +1,8 @@
 package org.openshapa.uitests;
 
-import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
+import org.openshapa.util.UIUtils;
 import org.uispec4j.Cell;
 import org.uispec4j.Clipboard;
 import org.uispec4j.Key;
@@ -10,7 +10,6 @@ import org.uispec4j.MenuBar;
 import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.TextBox;
-import org.uispec4j.UISpec4J;
 import org.uispec4j.Window;
 
 /**
@@ -18,30 +17,6 @@ import org.uispec4j.Window;
  * instead of one.
  */
 public final class UIBug493Test extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    static {
-      UISpec4J.init();
-    }
-
     /**
      * Bug 493 test.
      * @throws java.lang.Exception on any error
@@ -64,7 +39,7 @@ public final class UIBug493Test extends OpenSHAPAUISpecTestCase {
         MenuBar menuBar = window.getMenuBar();
         //1. Create new TEXT variable,
         //open spreadsheet and check that it's there
-        createNewVariable(varName, varType, varRadio);
+        UIUtils.createNewVariable(window, varName, varRadio);
         Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
                 (window.getUIComponents(Spreadsheet.class)[0]
                 .getAwtComponent()));
@@ -88,28 +63,5 @@ public final class UIBug493Test extends OpenSHAPAUISpecTestCase {
                     + "\n"));
         }
     }
-
-    /**
-     * Create a new variable.
-     * @param varName String for the name of the variable
-     * @param varType String for the variable type
-     * @param varRadio String for the corresponding radio button to click
-     * @throws java.lang.Exception on any error
-     */
-    private void createNewVariable(final String varName,
-            final String varType,
-            final String varRadio) throws Exception {
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2a. Create new variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        newVarWindow.getButton("Ok").click();
-    }
-
 }
 

@@ -17,26 +17,6 @@ import org.uispec4j.Window;
  *
  */
 public final class UINewVariableTest extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     static {
       UISpec4J.init();
     }

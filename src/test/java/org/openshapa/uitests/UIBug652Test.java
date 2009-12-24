@@ -1,13 +1,12 @@
 package org.openshapa.uitests;
 
 import java.io.File;
+import org.openshapa.util.UIUtils;
 import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.uispec4j.MenuBar;
 import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Panel;
 import org.uispec4j.Trigger;
-import org.uispec4j.UISpec4J;
 import org.uispec4j.VocabElement;
 import org.uispec4j.Window;
 import org.uispec4j.interception.FileChooserHandler;
@@ -20,30 +19,6 @@ import org.uispec4j.interception.WindowHandler;
  *
  */
 public final class UIBug652Test extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /**
-     * Called after each test.
-     * @throws Exception on error
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    static {
-        UISpec4J.init();
-    }
-
     /** Test for closing window and creating new predicate.
      * @throws java.lang.Exception on any error
      */
@@ -61,7 +36,7 @@ public final class UIBug652Test extends OpenSHAPAUISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = getVocabElements(vocElementsPanel)[0];
+        VocabElement ve = UIUtils.getVocabElements(vocElementsPanel)[0];
 
         String [] veName = new String[2];
         veName[0] = ve.getVEName();
@@ -77,7 +52,7 @@ public final class UIBug652Test extends OpenSHAPAUISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        ve = getVocabElements(vocElementsPanel)[1];
+        ve = UIUtils.getVocabElements(vocElementsPanel)[1];
 
         veName[1] = ve.getVEName();
         assertTrue(veName[1].equals("predicate2"));
@@ -120,7 +95,7 @@ public final class UIBug652Test extends OpenSHAPAUISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        VocabElement ve = getVocabElements(vocElementsPanel)[2];
+        VocabElement ve = UIUtils.getVocabElements(vocElementsPanel)[2];
 
         String [] veName = new String[2];
         veName[0] = ve.getVEName();
@@ -137,29 +112,10 @@ public final class UIBug652Test extends OpenSHAPAUISpecTestCase {
 
         vocEdWindow.getButton("Add Predicate()").click();
 
-        ve = getVocabElements(vocElementsPanel)[3];
+        ve = UIUtils.getVocabElements(vocElementsPanel)[3];
 
         veName[1] = ve.getVEName();
         assertTrue(veName[1].equals("predicate3"));
         vocEdWindow.getButton("OK").click();
-    }
-
-
-     /**
-     * returns array of VocabElements from a Panel.
-     * @param panel Panel with vocabElements
-     * @return array of VocabElements
-     */
-    private VocabElement[] getVocabElements(final Panel panel) {
-
-        int numOfElements = panel.getUIComponents(VocabElement.class).length;
-
-        VocabElement [] veArray = new VocabElement[numOfElements];
-
-        for (int i = 0; i < numOfElements; i++) {
-            veArray[i] = new VocabElement((VocabElementV) (panel.
-                    getUIComponents(VocabElement.class)[i].getAwtComponent()));
-        }
-        return veArray;
     }
 }

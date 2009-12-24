@@ -1,6 +1,7 @@
 package org.openshapa.uitests;
 
 import java.util.Vector;
+import org.openshapa.util.UIUtils;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.Cell;
@@ -20,37 +21,10 @@ import org.uispec4j.Window;
  * left/right caret movement
  */
 public final class UITimestampTest extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-
     static {
         UISpec4J.setWindowInterceptionTimeLimit(120000);
         UISpec4J.init();
     }
-    /**
-     * Different cell variable types.
-     */
-    private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
-    };
 
     /**
      * Test editing the onset and offset timestamps.
@@ -225,12 +199,13 @@ public final class UITimestampTest extends OpenSHAPAUISpecTestCase {
     }
 
     /**
-     * Create a new cell.
+     * Create new cells.
      * @throws java.lang.Exception on any error
      */
     private Vector<Cell> createNewCells(int amount) throws Exception {
         String varName = "testVar";
-        String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
+        String varType = UIUtils.VAR_TYPES[(int) (Math.random()
+                * UIUtils.VAR_TYPES.length)];
         String varRadio = varType.toLowerCase();
 
         // 1. Retrieve the components

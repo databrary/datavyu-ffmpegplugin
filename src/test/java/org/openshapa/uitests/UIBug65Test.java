@@ -20,26 +20,6 @@ import org.uispec4j.interception.WindowHandler;
  * inserted regardless of show spreadsheet is invoked.
  */
 public final class UIBug65Test extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception on any exception
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     static {
         UISpec4J.setWindowInterceptionTimeLimit(4000000);
         UISpec4J.setAssertionTimeLimit(4000);
