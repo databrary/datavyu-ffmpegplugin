@@ -4,13 +4,11 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
-import java.util.EventObject;
 import javax.swing.event.EventListenerList;
+import javax.swing.event.MouseInputAdapter;
 import org.openshapa.component.RegionPainter;
 import org.openshapa.component.model.RegionModel;
 import org.openshapa.component.model.ViewableModel;
-import org.openshapa.event.InterceptedEvent;
-import org.openshapa.event.InterceptedEventListener;
 import org.openshapa.event.MarkerEvent;
 import org.openshapa.event.MarkerEvent.Marker;
 import org.openshapa.event.MarkerEventListener;
@@ -18,7 +16,7 @@ import org.openshapa.event.MarkerEventListener;
 /**
  * RegionController is responsible for managing a RegionPainter
  */
-public class RegionController implements InterceptedEventListener {
+public class RegionController {
     /** View */
     private RegionPainter view;
     /** Models */
@@ -42,6 +40,9 @@ public class RegionController implements InterceptedEventListener {
         view.setRegionModel(regionModel);
 
         regionMarkerListener = new RegionMarkerListener();
+        view.addMouseListener(regionMarkerListener);
+        view.addMouseMotionListener(regionMarkerListener);
+
         listenerList = new EventListenerList();
     }
 
@@ -140,38 +141,9 @@ public class RegionController implements InterceptedEventListener {
     }
 
     /**
-     * Handle intercepted events.
-     * @param e
-     */
-    public void eventIntercepted(InterceptedEvent e) {
-        EventObject event = e.getInterceptedEvent();
-        if (event instanceof MouseEvent) {
-            MouseEvent mouseEvent = (MouseEvent) event;
-            switch(e.getEvent()) {
-                case MOUSE_ENTERED:
-                    regionMarkerListener.mouseEntered(mouseEvent);
-                    break;
-                case MOUSE_MOVED:
-                    regionMarkerListener.mouseMoved(mouseEvent);
-                    break;
-                case MOUSE_PRESSED:
-                    regionMarkerListener.mousePressed(mouseEvent);
-                    break;
-                case MOUSE_DRAGGED:
-                    regionMarkerListener.mouseDragged(mouseEvent);
-                    break;
-                case MOUSE_RELEASED:
-                    regionMarkerListener.mouseReleased(mouseEvent);
-                    break;
-                default: break;
-            }
-        }
-    }
-
-    /**
      * Inner class used to handle intercepted events.
      */
-    private class RegionMarkerListener {
+    private class RegionMarkerListener extends MouseInputAdapter {
         private boolean onStartMarker;
         private boolean onEndMarker;
 
@@ -183,6 +155,7 @@ public class RegionController implements InterceptedEventListener {
             onEndMarker = false;
         }
 
+        @Override
         public void mouseEntered(MouseEvent e) {
             Component source = (Component)e.getSource();
             final Polygon startMarker = view.getStartMarkerPolygon();
@@ -194,12 +167,15 @@ public class RegionController implements InterceptedEventListener {
             } else {
                 source.setCursor(defaultCursor);
             }
+            System.out.printf("In the region controller!");
         }
 
+        @Override
         public void mouseMoved(MouseEvent e) {
             mouseEntered(e);
         }
 
+        @Override
         public void mousePressed(MouseEvent e) {
             Component source = (Component)e.getSource();
             final Polygon startMarker = view.getStartMarkerPolygon();
@@ -218,6 +194,7 @@ public class RegionController implements InterceptedEventListener {
             }
         }
 
+        @Override
         public void mouseDragged(MouseEvent e) {
             if (onStartMarker) {
                 int x = e.getX();
@@ -269,6 +246,7 @@ public class RegionController implements InterceptedEventListener {
             }
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
             onStartMarker = false;
             onEndMarker = false;

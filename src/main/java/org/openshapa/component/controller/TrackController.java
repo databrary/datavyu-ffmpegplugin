@@ -149,16 +149,16 @@ public class TrackController {
         private boolean inCarriage;
         private int xInit;
 
+        private final Cursor moveCursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
+        private final Cursor defaultCursor = Cursor.getDefaultCursor();
+
         @Override
         public void mousePressed(MouseEvent e) {
             if (TrackController.this.view.getCarriagePolygon().contains(e.getPoint())) {
                 inCarriage = true;
                 xInit = e.getX();
                 offsetInit = trackModel.getOffset();
-//                Component source = (Component) e.getSource();
-//                TrackController.this.view.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-//                System.out.printf("Contains: %b\n", view.contains(e.getPoint()));
-//                source.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+                TrackController.this.view.setCursor(moveCursor);
             }
         }
 
@@ -170,17 +170,15 @@ public class TrackController {
                 float newOffset = (xNet * 1F) /
                         viewableModel.getIntervalWidth() *
                         viewableModel.getIntervalTime() + offsetInit;
-                TrackController.this.view.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
                 TrackController.this.fireCarriageEvent(Math.round(newOffset));
-
             }
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
             inCarriage = false;
-//            Component source = (Component) e.getSource();
-//            source.setCursor(Cursor.getDefaultCursor());
+            Component source = (Component) e.getSource();
+            source.setCursor(defaultCursor);
         }
     }
 

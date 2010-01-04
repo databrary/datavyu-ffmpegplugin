@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Polygon;
 import org.openshapa.component.model.NeedleModel;
 import org.openshapa.component.model.ViewableModel;
@@ -43,6 +44,16 @@ public class NeedlePainter extends Component {
 
     public Polygon getNeedleMarker() {
         return needleMarker;
+    }
+
+    @Override
+    public boolean contains(Point p) {
+        return needleMarker.contains(p);
+    }
+
+    @Override
+    public boolean contains(int x, int y) {
+        return needleMarker.contains(x, y);
     }
 
     @Override

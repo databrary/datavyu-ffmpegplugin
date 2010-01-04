@@ -4,20 +4,18 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
-import java.util.EventObject;
 import javax.swing.event.EventListenerList;
+import javax.swing.event.MouseInputAdapter;
 import org.openshapa.component.NeedlePainter;
 import org.openshapa.component.model.NeedleModel;
 import org.openshapa.component.model.ViewableModel;
-import org.openshapa.event.InterceptedEvent;
-import org.openshapa.event.InterceptedEventListener;
 import org.openshapa.event.NeedleEvent;
 import org.openshapa.event.NeedleEventListener;
 
 /**
  * NeedleController is responsible for managing a NeedlePainter
  */
-public class NeedleController implements InterceptedEventListener {
+public class NeedleController {
     /** View */
     private NeedlePainter view;
     /** Models */
@@ -41,6 +39,8 @@ public class NeedleController implements InterceptedEventListener {
         view.setNeedleModel(needleModel);
 
         needleListener = new NeedleListener();
+        view.addMouseListener(needleListener);
+        view.addMouseMotionListener(needleListener);
 
         listenerList = new EventListenerList();
     }
@@ -126,38 +126,9 @@ public class NeedleController implements InterceptedEventListener {
     }
 
     /**
-     * Handle intercepted events.
-     * @param e
-     */
-    public void eventIntercepted(InterceptedEvent e) {
-        EventObject event = e.getInterceptedEvent();
-        if (event instanceof MouseEvent) {
-            MouseEvent mouseEvent = (MouseEvent) event;
-            switch(e.getEvent()) {
-                case MOUSE_ENTERED:
-                    needleListener.mouseEntered(mouseEvent);
-                    break;
-                case MOUSE_MOVED:
-                    needleListener.mouseMoved(mouseEvent);
-                    break;
-                case MOUSE_PRESSED:
-                    needleListener.mousePressed(mouseEvent);
-                    break;
-                case MOUSE_DRAGGED:
-                    needleListener.mouseDragged(mouseEvent);
-                    break;
-                case MOUSE_RELEASED:
-                    needleListener.mouseReleased(mouseEvent);
-                    break;
-                default: break;
-            }
-        }
-    }
-
-    /**
      * Inner class used to handle intercepted events.
      */
-    private class NeedleListener {
+    private class NeedleListener extends MouseInputAdapter {
         private boolean onNeedle;
 
         private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
@@ -167,6 +138,7 @@ public class NeedleController implements InterceptedEventListener {
             onNeedle = false;
         }
 
+        @Override
         public void mouseEntered(MouseEvent e) {
             Polygon p = view.getNeedleMarker();
             Component source = (Component)e.getSource();
@@ -175,12 +147,15 @@ public class NeedleController implements InterceptedEventListener {
             } else {
                 source.setCursor(defaultCursor);
             }
+            System.out.printf("In the needle controller!");
         }
 
+        @Override
         public void mouseMoved(MouseEvent e) {
             mouseEntered(e);
         }
 
+        @Override
         public void mousePressed(MouseEvent e) {
             Polygon p = view.getNeedleMarker();
             Component source = (Component)e.getSource();
@@ -194,6 +169,7 @@ public class NeedleController implements InterceptedEventListener {
             }
         }
 
+        @Override
         public void mouseDragged(MouseEvent e) {
             if (onNeedle) {
                 int x = e.getX();
@@ -218,6 +194,7 @@ public class NeedleController implements InterceptedEventListener {
             }
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
             onNeedle = false;
             Component source = (Component)e.getSource();

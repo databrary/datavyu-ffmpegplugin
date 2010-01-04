@@ -21,7 +21,6 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.EventListenerList;
-import org.openshapa.component.InterceptorPane;
 import org.openshapa.event.CarriageEvent;
 import org.openshapa.event.MarkerEvent;
 import org.openshapa.event.TracksControllerEvent;
@@ -57,8 +56,6 @@ public class TracksControllerV implements NeedleEventListener,
     private Box headerBox;
     /** This box holds the carriage */
     private Box carriageBox;
-    /** This component is used to intercept events and repeat them to listeners */
-    private InterceptorPane interceptor;
     /** Zoomed into the display by how much.
      * Values should only be 1, 2, 4, 8, 16, 32
      */
@@ -233,19 +230,6 @@ public class TracksControllerV implements NeedleEventListener,
         needleController.addNeedleEventListener(this);
 
         layeredPane.add(needleView, new Integer(20));
-
-        // Create the interceptor pane
-        interceptor = new InterceptorPane();
-        {
-            Dimension size = new Dimension();
-            size.setSize(785, 38);
-            interceptor.setSize(size);
-            interceptor.setPreferredSize(size);
-            interceptor.setLocation(10, 26);
-        }
-        interceptor.addInterceptedEventListener(needleController);
-        interceptor.addInterceptedEventListener(regionController);
-        layeredPane.add(interceptor, new Integer(30));
 
         {
             GridBagConstraints c = new GridBagConstraints();

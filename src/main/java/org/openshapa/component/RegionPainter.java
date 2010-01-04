@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Polygon;
 import org.openshapa.component.model.RegionModel;
 import org.openshapa.component.model.ViewableModel;
@@ -49,6 +50,16 @@ public class RegionPainter extends Component {
 
     public Polygon getStartMarkerPolygon() {
         return startMarkerPolygon;
+    }
+
+    @Override
+    public boolean contains(Point p) {
+        return startMarkerPolygon.contains(p) || endMarkerPolygon.contains(p);
+    }
+
+    @Override
+    public boolean contains(int x, int y) {
+        return startMarkerPolygon.contains(x, y) || endMarkerPolygon.contains(x, y);
     }
 
     @Override
