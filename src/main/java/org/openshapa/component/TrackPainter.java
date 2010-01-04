@@ -5,107 +5,47 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import javax.swing.event.MouseInputAdapter;
+import java.awt.Polygon;
+import org.openshapa.component.model.TrackModel;
+import org.openshapa.component.model.ViewableModel;
 
 /**
  * This class is used to paint a track and its information
  */
 public class TrackPainter extends Component {
 
-    // The start time of the track in milliseconds
-    private long start;
-    // The end time of the track in milliseconds
-    private long end;
-    // The offset of the track in milliseconds
-    private long offset;
-    // The pixel width of an interval
-    private float intervalWidth;
-    // The time represented by an interval
-    private float intervalTime;
-    // The start time of the zoomed window
-    private long zoomWindowStart;
-    // The end time of the zoomed window
-    private long zoomWindowEnd;
-    // Is there an error with track information
-    private boolean error;
+    /** Painted region of the carriage*/
+    private Polygon carriagePolygon;
+
+    private TrackModel trackModel;
+
+    private ViewableModel viewableModel;
 
     public TrackPainter() {
         super();
-        error = false;
-        TrackPainterListener tpl = new TrackPainterListener();
-        this.addMouseListener(tpl);
-        this.addMouseMotionListener(tpl);
     }
 
-    public boolean isError() {
-        return error;
+    public TrackModel getTrackModel() {
+        return trackModel;
     }
 
-    /**
-     * @param error Set to true if there is an error with trying to determine
-     * any aspect of track information. If true, the carriage will not be
-     * painted and an error message will be printed in place.
-     */
-    public void setError(boolean error) {
-        this.error = error;
+    public void setTrackModel(TrackModel model) {
+        this.trackModel = model;
+        this.repaint();
     }
 
-    public float getIntervalTime() {
-        return intervalTime;
+    public ViewableModel getViewableModel() {
+        return viewableModel;
     }
 
-    public void setIntervalTime(float intervalTime) {
-        this.intervalTime = intervalTime;
+    public void setViewableModel(ViewableModel viewableModel) {
+        this.viewableModel = viewableModel;
+        this.repaint();
     }
 
-    public float getIntervalWidth() {
-        return intervalWidth;
-    }
-
-    public void setIntervalWidth(float intervalWidth) {
-        this.intervalWidth = intervalWidth;
-    }
-
-    public long getOffset() {
-        return offset;
-    }
-
-    public void setOffset(long offset) {
-        this.offset = offset;
-    }
-
-    public long getEnd() {
-        return end;
-    }
-
-    public void setEnd(long end) {
-        this.end = end;
-    }
-
-    public long getStart() {
-        return start;
-    }
-
-    public void setStart(long start) {
-        this.start = start;
-    }
-
-    public long getZoomWindowEnd() {
-        return zoomWindowEnd;
-    }
-
-    public void setZoomWindowEnd(long zoomWindowEnd) {
-        this.zoomWindowEnd = zoomWindowEnd;
-    }
-
-    public long getZoomWindowStart() {
-        return zoomWindowStart;
-    }
-
-    public void setZoomWindowStart(long zoomWindowStart) {
-        this.zoomWindowStart = zoomWindowStart;
-    }
+    public Polygon getCarriagePolygon() {
+        return carriagePolygon;
+    }  
 
     @Override
     public void paint(Graphics g) {
@@ -117,7 +57,7 @@ public class TrackPainter extends Component {
 
 
         // If there is an error with track information, don't paint the carriage
-        if (error) {
+        if (trackModel.isErroneous()) {
             g.setColor(Color.red);
             FontMetrics fm = g.getFontMetrics();
             String errorMessage = "Track timing information could not be calculated.";
@@ -128,8 +68,6 @@ public class TrackPainter extends Component {
         }
 
         // Calculate effective start and end points for the carriage
-//        long effectiveStart;
-//        long effectiveEnd;
         float effectiveXOffset;
         /* Calculating carriage width by deleting offsets and remainders because
          * using the displayed scale's measurements will sometimes result in a
@@ -138,29 +76,53 @@ public class TrackPainter extends Component {
          */
         float carriageWidth = size.width;
 
-        if (start + offset >= zoomWindowStart) {
-//            effectiveStart = start + offset;
-            effectiveXOffset = ((offset*1F / intervalTime) * intervalWidth);
+        if (trackModel.getOffset() >= viewableModel.getZoomWindowStart()) {
+            /* Absolute value because if the offset is negative we dont want the
+             * carriage to grow in size.
+             */
+            long offset = Math.abs(trackModel.getOffset());
+            // Calculate the width taken up by the offset
+            effectiveXOffset = ((offset * 1F /
+                    viewableModel.getIntervalTime()) *
+                    viewableModel.getIntervalWidth());
+            // The width of the viewable carriage shrinks
             carriageWidth -= effectiveXOffset;
+            /* If offset is negative, the effective offset is always zero
+             * because that region of the carriage is never shown.
+             */
+            if (trackModel.getOffset() < 0) {
+                effectiveXOffset = 0;
+            }
         } else {
-//            effectiveStart = zoomWindowStart;
             effectiveXOffset = 0;
         }
 
-        if (end + offset <= zoomWindowEnd) {
-//            effectiveEnd = end + offset;
-            carriageWidth -= (zoomWindowEnd - (end + offset)) / intervalTime * intervalWidth;
-        } else {
-//            effectiveEnd = zoomWindowEnd;
+        if (trackModel.getDuration() + trackModel.getOffset()
+                <= viewableModel.getZoomWindowEnd()) {
+            carriageWidth -= (viewableModel.getZoomWindowEnd() -
+                    (trackModel.getDuration() + trackModel.getOffset()))
+                    / viewableModel.getIntervalTime() *
+                    viewableModel.getIntervalWidth();
         }
 
-        int carriageHeight = (int)(size.getHeight() * 8D / 10D);
-//        float carriageWidth = (((effectiveEnd - effectiveStart)*1F) / intervalTime) * intervalWidth;
-        int carriageYOffset = (int)(size.getHeight() / 10D);
+        int carriageHeight = (int) (size.getHeight() * 8D / 10D);
+        int carriageYOffset = (int) (size.getHeight() / 10D);
 
         // Paint the carriage
-        g.setColor(new Color(130,190,255)); // Light blue
-        g.fillRect(Math.round(effectiveXOffset), carriageYOffset, Math.round(carriageWidth), carriageHeight);
+        g.setColor(new Color(130, 190, 255)); // Light blue
+
+        // Interactable region
+        carriagePolygon = new Polygon();
+        carriagePolygon.addPoint(Math.round(effectiveXOffset),
+                carriageYOffset);
+        carriagePolygon.addPoint(Math.round(effectiveXOffset + carriageWidth - 1),
+                carriageYOffset);
+        carriagePolygon.addPoint(Math.round(effectiveXOffset + carriageWidth - 1),
+                carriageYOffset + carriageHeight);
+        carriagePolygon.addPoint(Math.round(effectiveXOffset),
+                carriageYOffset + carriageHeight);
+
+        g.fillPolygon(carriagePolygon);
 
         // Paint the carriage top and bottom outline
         g.setColor(Color.BLUE);
@@ -174,15 +136,16 @@ public class TrackPainter extends Component {
                 carriageYOffset + carriageHeight);
 
         // Determine if the left outline should be painted
-        if (start + offset >= zoomWindowStart) {
-            g.drawLine(Math.round(effectiveXOffset), 
+        if (trackModel.getOffset() >= viewableModel.getZoomWindowStart()) {
+            g.drawLine(Math.round(effectiveXOffset),
                     carriageYOffset,
                     Math.round(effectiveXOffset),
                     carriageYOffset + carriageHeight);
         }
 
         // Determine if the right outline should be painted
-        if (end + offset <= zoomWindowEnd) {
+        if (trackModel.getDuration() + trackModel.getOffset()
+                <= viewableModel.getZoomWindowEnd()) {
             g.drawLine(Math.round(effectiveXOffset + carriageWidth - 1),
                     carriageYOffset,
                     Math.round(effectiveXOffset + carriageWidth - 1),
@@ -190,19 +153,4 @@ public class TrackPainter extends Component {
         }
 
     }
-
-    private class TrackPainterListener extends MouseInputAdapter {
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            System.out.println("Entered the track painter");
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent e) {
-            System.out.println("Mouse moved in the track painter");
-        }
-
-    }
-
 }

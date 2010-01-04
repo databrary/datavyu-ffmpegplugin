@@ -8,8 +8,9 @@ import java.util.EventObject;
 public class TracksControllerEvent extends EventObject {
 
     public static enum TracksEvent {
-        NEEDLE_EVENT,   /** @see NeedleEvent */
-        MARKER_EVENT    /** @see MarkerEvent */
+        NEEDLE_EVENT,       /** @see NeedleEvent */
+        MARKER_EVENT,       /** @see MarkerEvent */
+        CARRIAGE_EVENT         /** @see CarriageEvent */
     }
 
     /** Needle event from child component */

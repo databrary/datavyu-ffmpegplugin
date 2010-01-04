@@ -36,6 +36,7 @@ public class InterceptorPane extends Component {
         this.addMouseMotionListener(mouseListener);
     }
 
+    // Handy for seeing where the interceptor pane is sitting on
 //    @Override
 //    public void paint(Graphics g) {
 //        Dimension size = getSize();

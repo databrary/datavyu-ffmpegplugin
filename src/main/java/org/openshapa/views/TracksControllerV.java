@@ -2,6 +2,7 @@ package org.openshapa.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -9,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventObject;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -20,13 +22,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.EventListenerList;
 import org.openshapa.component.InterceptorPane;
+import org.openshapa.event.CarriageEvent;
 import org.openshapa.event.MarkerEvent;
 import org.openshapa.event.TracksControllerEvent;
 import org.openshapa.event.TracksControllerListener;
-import org.openshapa.component.NeedlePainter;
-import org.openshapa.component.RegionPainter;
-import org.openshapa.component.TimescalePainter;
-import org.openshapa.component.TrackPainter;
+import org.openshapa.component.controller.NeedleController;
+import org.openshapa.component.controller.RegionController;
+import org.openshapa.component.controller.TimescaleController;
+import org.openshapa.component.controller.TrackController;
+import org.openshapa.component.model.ViewableModel;
+import org.openshapa.event.CarriageEventListener;
 import org.openshapa.event.MarkerEventListener;
 import org.openshapa.event.NeedleEvent;
 import org.openshapa.event.NeedleEventListener;
@@ -36,20 +41,14 @@ import org.openshapa.event.TracksControllerEvent.TracksEvent;
  * This class manages the tracks information interface
  */
 public class TracksControllerV implements NeedleEventListener,
-        MarkerEventListener {
+        MarkerEventListener, CarriageEventListener {
 
     /** Root interface panel */
     private JPanel tracksPanel;
     /** Panel that holds individual tracks */
     private JPanel tracksInfoPanel;
-    /** Component that is responsible for rendering the time scale */
-    private TimescalePainter scale;
     /** Scroll pane that holds track information */
     private JScrollPane tracksScrollPane;
-    /** Component responsible for painting the timing needle */
-    private NeedlePainter needle;
-    /** Component responsible for painting a selected region */
-    private RegionPainter region;
     /** This layered pane holds the needle painter */
     private JLayeredPane layeredPane;
     /** This box holds the header and carriage box */
@@ -60,7 +59,6 @@ public class TracksControllerV implements NeedleEventListener,
     private Box carriageBox;
     /** This component is used to intercept events and repeat them to listeners */
     private InterceptorPane interceptor;
-
     /** Zoomed into the display by how much.
      * Values should only be 1, 2, 4, 8, 16, 32
      */
@@ -80,8 +78,14 @@ public class TracksControllerV implements NeedleEventListener,
     private Map<String, Track> trackPainterMap;
     /** Listeners interested in tracks controller events */
     private EventListenerList listenerList;
+    /** Controller responsible for managing the time scale */
+    private TimescaleController timescaleController;
+    /** Controller responsible for managing the timing needle */
+    private NeedleController needleController;
+    /** Controller responsible for managing a selected region */
+    private RegionController regionController;
 
-    public TracksControllerV() {
+    public TracksControllerV() {  
         // Set default scale values
         maxEnd = 60000;
         minStart = 0;
@@ -108,6 +112,7 @@ public class TracksControllerV implements NeedleEventListener,
 
         JButton zoomInButton = new JButton("( + )");
         zoomInButton.addActionListener(new ActionListener() {
+
             public void actionPerformed(ActionEvent e) {
                 zoomInScale(e);
                 zoomTracks(e);
@@ -116,13 +121,14 @@ public class TracksControllerV implements NeedleEventListener,
 
         JButton zoomOutButton = new JButton("( - )");
         zoomOutButton.addActionListener(new ActionListener() {
+
             public void actionPerformed(ActionEvent e) {
                 zoomOutScale(e);
                 zoomTracks(e);
             }
         });
 
-        
+
         final int pad = 3;
         int xOffset = pad * 3;
 
@@ -135,7 +141,7 @@ public class TracksControllerV implements NeedleEventListener,
         bookmarkButton.setLocation(xOffset, 0);
         layeredPane.add(bookmarkButton, new Integer(0));
         xOffset += bookmarkButton.getSize().width + pad;
-        
+
         snapButton.setSize(snapButton.getPreferredSize());
         snapButton.setLocation(xOffset, 0);
         layeredPane.add(snapButton, new Integer(0));
@@ -153,19 +159,19 @@ public class TracksControllerV implements NeedleEventListener,
         int yOffset = lockButton.getSize().height + pad;
 
         // Add the timescale
-        scale = new TimescalePainter();
+        timescaleController = new TimescaleController();
+        Component timescaleView = timescaleController.getView();
         {
             Dimension size = new Dimension();
             size.setSize(785, 35);
-            scale.setSize(size);
-            scale.setPreferredSize(size);
-            scale.setConstraints(minStart, maxEnd, zoomIntervals(1));
-            scale.setLocation(10, yOffset);
+            timescaleView.setSize(size);
+            timescaleView.setPreferredSize(size);
+            timescaleView.setLocation(10, yOffset);
+            timescaleController.setConstraints(minStart, maxEnd, zoomIntervals(1));
         }
+        layeredPane.add(timescaleView, new Integer(0));
 
-        layeredPane.add(scale, new Integer(0));
-
-        yOffset += pad + scale.getSize().height;
+        yOffset += pad + timescaleView.getSize().height;
 
         // Add the scroll pane
 
@@ -196,61 +202,51 @@ public class TracksControllerV implements NeedleEventListener,
         layeredPane.add(tracksScrollPane, new Integer(0));
 
         // Create the region markers
-        region = new RegionPainter();
+        regionController = new RegionController();
+        Component regionView = regionController.getView();
         {
             Dimension size = new Dimension();
-            size.setSize(765, 248);
-            region.setSize(size);
-            region.setPreferredSize(size);
-            region.setLocation(10, 26);
-            region.setPaddingTop(0);
-            region.setPaddingLeft(101);
-            region.setWindowStart(minStart);
-            region.setWindowEnd(maxEnd);
-            region.setIntervalTime(scale.getIntervalTime());
-            region.setIntervalWidth(scale.getIntervalWidth());
-            region.setRegionStart(minStart);
-            region.setRegionEnd(maxEnd);
-            region.setMinStart(minStart);
-            region.setMaxEnd(maxEnd);
+            size.setSize(785, 248);//765
+            regionView.setSize(size);
+            regionView.setPreferredSize(size);
+            regionView.setLocation(10, 26);
+
+            regionController.setViewableModel(timescaleController.getViewableModel());
+            regionController.setPlaybackRegion(minStart, maxEnd);
         }
-        region.addMarkerEventListener(this);
-        
-        layeredPane.add(region, new Integer(10));
+        regionController.addMarkerEventListener(this);
+
+        layeredPane.add(regionView, new Integer(10));
 
         // Create the timing needle
-        needle = new NeedlePainter();
+        needleController = new NeedleController();
+        Component needleView = needleController.getView();
         {
             Dimension size = new Dimension();
-            size.setSize(765, 248);
-            needle.setSize(size);
-            needle.setPreferredSize(size);
+            size.setSize(765, 248); // 765
+            needleView.setSize(size);
+            needleView.setPreferredSize(size);
             // Values determined through trial-and-error.
-            needle.setLocation(10, 26);
-            needle.setPaddingTop(0);
-            needle.setPaddingLeft(101);
-            needle.setWindowStart(minStart);
-            needle.setWindowEnd(maxEnd);
-            needle.setIntervalTime(scale.getIntervalTime());
-            needle.setIntervalWidth(scale.getIntervalWidth());
+            needleView.setLocation(10, 26);
+            needleController.setViewableModel(timescaleController.getViewableModel());
         }
-        needle.addNeedleEventListener(this);
-        
-        layeredPane.add(needle, new Integer(20));
+        needleController.addNeedleEventListener(this);
+
+        layeredPane.add(needleView, new Integer(20));
 
         // Create the interceptor pane
         interceptor = new InterceptorPane();
         {
             Dimension size = new Dimension();
-            size.setSize(765, 248);
+            size.setSize(785, 38);
             interceptor.setSize(size);
             interceptor.setPreferredSize(size);
             interceptor.setLocation(10, 26);
         }
-        interceptor.addInterceptedEventListener(needle);
-        interceptor.addInterceptedEventListener(region);
+        interceptor.addInterceptedEventListener(needleController);
+        interceptor.addInterceptedEventListener(regionController);
         layeredPane.add(interceptor, new Integer(30));
-        
+
         {
             GridBagConstraints c = new GridBagConstraints();
             c.gridx = 0;
@@ -262,7 +258,7 @@ public class TracksControllerV implements NeedleEventListener,
 
         tracksPanel.validate();
 
-        trackPainterMap = new HashMap<String,Track>();
+        trackPainterMap = new HashMap<String, Track>();
     }
 
     /**
@@ -270,6 +266,32 @@ public class TracksControllerV implements NeedleEventListener,
      */
     public JPanel getTracksPanel() {
         return tracksPanel;
+    }
+
+    /**
+     * @return the longest data feed duration in milliseconds
+     */
+    public long getMaxEnd() {
+        return maxEnd;
+    }
+
+    /**
+     * Sets the longest data feed duration.
+     * @param maxEnd duration in milliseconds
+     */
+    public void setMaxEnd(long maxEnd) {
+        this.maxEnd = maxEnd;
+        ViewableModel model = timescaleController.getViewableModel();
+        model.setEnd(maxEnd);
+        timescaleController.setViewableModel(model);
+        regionController.setViewableModel(model);
+        needleController.setViewableModel(model);
+        Iterator<Track> it = trackPainterMap.values().iterator();
+        while (it.hasNext()) {
+            Track t = it.next();
+            t.trackController.setViewableModel(model);
+        }
+        rescale();
     }
 
     /**
@@ -283,7 +305,11 @@ public class TracksControllerV implements NeedleEventListener,
         // Check if the scale needs to be updated.
         if (duration + offset > maxEnd) {
             maxEnd = duration + offset;
-            region.setMaxEnd(maxEnd);
+            ViewableModel model = timescaleController.getViewableModel();
+            model.setEnd(maxEnd);
+            timescaleController.setViewableModel(model);
+            regionController.setViewableModel(model);
+            needleController.setViewableModel(model);
             rescale();
         }
 
@@ -312,28 +338,26 @@ public class TracksControllerV implements NeedleEventListener,
         carriagePanel.setLayout(new BorderLayout());
         carriagePanel.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
 
-        TrackPainter trackPainter = new TrackPainter();
+        TrackController trackController = new TrackController();
+        Component trackView = trackController.getView();
         {
             Dimension size = new Dimension();
             size.height = 66;
             size.width = 665;
-            trackPainter.setPreferredSize(size);
+            trackView.setSize(size);
+            trackView.setPreferredSize(size);
         }
+        trackController.setViewableModel(timescaleController.getViewableModel());
 
         if (duration == -1) {
             // Case where the track duration could not be determined
-            trackPainter.setError(true);
+            trackController.setErroneous(true);
         } else {
-            trackPainter.setStart(0);
-            trackPainter.setEnd(duration);
-            trackPainter.setOffset(offset);
-            trackPainter.setIntervalTime(scale.getIntervalTime());
-            trackPainter.setIntervalWidth(scale.getIntervalWidth());
-            trackPainter.setZoomWindowStart(scale.getStart());
-            trackPainter.setZoomWindowEnd(scale.getEnd());
+            trackController.setTrackInformation(mediaPath, duration, offset);
+            trackController.addCarriageEventListener(this);
         }
-        
-        carriagePanel.add(trackPainter, BorderLayout.PAGE_START);
+
+        carriagePanel.add(trackView, BorderLayout.PAGE_START);
         {
             Dimension size = new Dimension();
             size.height = 70;
@@ -342,16 +366,14 @@ public class TracksControllerV implements NeedleEventListener,
             carriagePanel.setMaximumSize(size);
             carriagePanel.setSize(size);
             carriagePanel.setPreferredSize(size);
-            
+
             carriageBox.add(carriagePanel);
             carriageBox.add(Box.createVerticalStrut(2));
         }
 
-        zoomTracks(null);
-
         // Record this track's information
         Track track = new Track();
-        track.trackPainter = trackPainter;
+        track.trackController = trackController;
         track.infoPanel = infoPanel;
         track.carriagePanel = carriagePanel;
 
@@ -364,15 +386,14 @@ public class TracksControllerV implements NeedleEventListener,
      * @param time Set the current time in milliseconds to use.
      */
     public void setCurrentTime(long time) {
-        needle.setCurrentTime(time);
-        needle.repaint();
+        needleController.setCurrentTime(time);
     }
 
     /**
      * @return Current time, in milliseconds, that is being used.
      */
     public long getCurrentTime() {
-        return needle.getCurrentTime();
+        return needleController.getCurrentTime();
     }
 
     /**
@@ -380,8 +401,7 @@ public class TracksControllerV implements NeedleEventListener,
      * @param time time in milliseconds
      */
     public void setPlayRegionStart(long time) {
-        region.setRegionStart(time);
-        region.repaint();
+        regionController.setPlaybackRegionStart(time);
     }
 
     /**
@@ -389,8 +409,7 @@ public class TracksControllerV implements NeedleEventListener,
      * @param time time in milliseconds
      */
     public void setPlayRegionEnd(long time) {
-        region.setRegionEnd(time);
-        region.repaint();
+        regionController.setPlaybackRegionEnd(time);
     }
 
     /**
@@ -405,9 +424,6 @@ public class TracksControllerV implements NeedleEventListener,
         }
 
         rescale();
-        
-        scale.repaint();
-        needle.repaint();
     }
 
     /**
@@ -422,9 +438,6 @@ public class TracksControllerV implements NeedleEventListener,
         }
 
         rescale();
-        
-        scale.repaint();
-        needle.repaint();
     }
 
     /**
@@ -433,13 +446,10 @@ public class TracksControllerV implements NeedleEventListener,
      */
     public void zoomTracks(ActionEvent evt) {
         Iterable<Track> tracks = trackPainterMap.values();
+        ViewableModel model = timescaleController.getViewableModel();
         for (Track track : tracks) {
-            TrackPainter tp = track.trackPainter;
-            tp.setIntervalTime(scale.getIntervalTime());
-            tp.setIntervalWidth(scale.getIntervalWidth());
-            tp.setZoomWindowStart(scale.getStart());
-            tp.setZoomWindowEnd(scale.getEnd());
-            tp.repaint();
+            TrackController tc = track.trackController;
+            tc.setViewableModel(model);
         }
         tracksInfoBox.validate();
     }
@@ -457,16 +467,9 @@ public class TracksControllerV implements NeedleEventListener,
         headerBox.remove(removedTrack.infoPanel);
         carriageBox.remove(removedTrack.carriagePanel);
 
-        // Recalculate max zoom window
-        Iterable<Track> tracks = trackPainterMap.values();
-        maxEnd = 0;
-        for (Track track : tracks) {
-            TrackPainter tp = track.trackPainter;
-            long length = tp.getEnd() + tp.getOffset();
-            if (length > maxEnd) {
-                maxEnd = length;
-            }
-        }
+        // De-register listener
+        removedTrack.trackController.removeCarriageEventListener(this);
+
         // If there are no more tracks, reset.
         if (maxEnd == 0) {
             maxEnd = 60000;
@@ -485,6 +488,11 @@ public class TracksControllerV implements NeedleEventListener,
      * Removes all track components from this controller and resets components.
      */
     public void removeAll() {
+        Iterator<Track> it = trackPainterMap.values().iterator();
+        while (it.hasNext()) {
+            Track t = it.next();
+            t.trackController.removeCarriageEventListener(this);
+        }
         trackPainterMap.clear();
         headerBox.removeAll();
         carriageBox.removeAll();
@@ -493,18 +501,15 @@ public class TracksControllerV implements NeedleEventListener,
         rescale();
         zoomTracks(null);
 
-        needle.setCurrentTime(0);
-        needle.setWindowStart(0);
-        needle.setWindowEnd(60000);
-        needle.setIntervalTime(scale.getIntervalTime());
-        needle.setIntervalWidth(scale.getIntervalWidth());
+        ViewableModel model = timescaleController.getViewableModel();
+        model.setZoomWindowStart(0);
+        model.setZoomWindowEnd(60000);
 
-        region.setRegionStart(0);
-        region.setRegionEnd(60000);
-        region.setWindowStart(0);
-        region.setWindowEnd(60000);
-        region.setIntervalTime(scale.getIntervalTime());
-        region.setIntervalWidth(scale.getIntervalWidth());
+        regionController.setViewableModel(model);
+        regionController.setPlaybackRegion(0, 60000);
+        needleController.setCurrentTime(0);
+        needleController.setViewableModel(model);
+        timescaleController.setViewableModel(model);
 
         tracksPanel.invalidate();
         tracksPanel.repaint();
@@ -515,8 +520,8 @@ public class TracksControllerV implements NeedleEventListener,
      * @return the amount of intervals to show given a zoom value
      */
     private int zoomIntervals(final int zoomValue) {
-        assert(zoomValue >= 1);
-        assert(zoomValue <= 32);
+        assert (zoomValue >= 1);
+        assert (zoomValue <= 32);
         if (zoomValue <= 2) {
             return 20;
         }
@@ -545,17 +550,20 @@ public class TracksControllerV implements NeedleEventListener,
             newEnd = maxEnd;
         }
 
-        scale.setConstraints(newStart, newEnd, zoomIntervals(zoomSetting));
+        timescaleController.setConstraints(newStart, newEnd, zoomIntervals(zoomSetting));
 
-        needle.setWindowStart(newStart);
-        needle.setWindowEnd(newEnd);
-        needle.setIntervalTime(scale.getIntervalTime());
-        needle.setIntervalWidth(scale.getIntervalWidth());
+        ViewableModel newModel = timescaleController.getViewableModel();
+        newModel.setZoomWindowStart(newStart);
+        newModel.setZoomWindowEnd(newEnd);
 
-        region.setWindowStart(newStart);
-        region.setWindowEnd(newEnd);
-        region.setIntervalTime(scale.getIntervalTime());
-        region.setIntervalWidth(scale.getIntervalWidth());
+        needleController.setViewableModel(newModel);
+        regionController.setViewableModel(newModel);
+
+        Iterator<Track> it = trackPainterMap.values().iterator();
+        while (it.hasNext()) {
+            Track t = it.next();
+            t.trackController.setViewableModel(newModel);
+        }
     }
 
     /**
@@ -566,8 +574,24 @@ public class TracksControllerV implements NeedleEventListener,
         fireTracksControllerEvent(TracksEvent.NEEDLE_EVENT, e);
     }
 
+    /**
+     * RegionPainter region markers were moved using the mouse
+     * @param e
+     */
     public void markerMoved(MarkerEvent e) {
         fireTracksControllerEvent(TracksEvent.MARKER_EVENT, e);
+    }
+
+    /**
+     * TrackPainter recorded a change in the track's offset using the mouse
+     * @param e
+     */
+    public void offsetChanged(CarriageEvent e) {
+        Track track = trackPainterMap.get(e.getTrackId());
+        track.trackController.setTrackOffset(e.getOffset());
+        fireTracksControllerEvent(TracksEvent.CARRIAGE_EVENT, e);
+        tracksPanel.invalidate();
+        tracksPanel.repaint();
     }
 
     /**
@@ -602,9 +626,9 @@ public class TracksControllerV implements NeedleEventListener,
          * instance.
          */
         for (int i = 0; i < listeners.length; i += 2) {
-           if (listeners[i] == TracksControllerListener.class) {
-               ((TracksControllerListener)listeners[i+1]).tracksControllerChanged(e);
-           }
+            if (listeners[i] == TracksControllerListener.class) {
+                ((TracksControllerListener) listeners[i + 1]).tracksControllerChanged(e);
+            }
         }
     }
 
@@ -612,9 +636,9 @@ public class TracksControllerV implements NeedleEventListener,
      * Inner class used for tracks panel management.
      */
     private class Track {
+
         public JPanel infoPanel;
         public JPanel carriagePanel;
-        public TrackPainter trackPainter;
+        public TrackController trackController;
     }
-
 }

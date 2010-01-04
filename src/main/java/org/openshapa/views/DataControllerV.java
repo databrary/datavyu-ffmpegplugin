@@ -20,6 +20,7 @@ import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
+import org.openshapa.event.CarriageEvent;
 import org.openshapa.event.MarkerEvent;
 import org.openshapa.event.TracksControllerEvent;
 import org.openshapa.event.TracksControllerListener;
@@ -347,6 +348,7 @@ public final class DataControllerV extends OpenSHAPADialog
                     maxDuration = dv.getDuration() + dv.getOffset();
                 }
             }
+            tracksControllerV.setMaxEnd(maxDuration);
 
             if (windowPlayEnd > maxDuration) {
                 windowPlayEnd = maxDuration;
@@ -864,13 +866,21 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Adds a track to the tracks panel.
      *
-     * @param name the name of the track to add
+     * @param mediaPath Absolute file path to the media file.
+     * @param name The name of the track to add.
+     * @param offset The time offset of the data feed in milliseconds.
      */
     public void addTrack(final String mediaPath, final String name,
             final long duration, final long offset) {
         tracksControllerV.addNewTrack(mediaPath, name, duration, offset);
     }
 
+    /**
+     * Add the data viewer to the current project.
+     * @param pluginName Fully qualified plugin class name.
+     * @param filePath Absolute file path to the data feed.
+     * @param offset The time offset of the data feed in milliseconds.
+     */
     public void addDataViewerToProject(final String pluginName,
             final String filePath, final long offset) {
         Project project = OpenSHAPA.getProject();
@@ -931,6 +941,10 @@ public final class DataControllerV extends OpenSHAPADialog
         this.validate();
     }
 
+    /**
+     * Handler for a TracksControllerEvent.
+     * @param e
+     */
     public void tracksControllerChanged(TracksControllerEvent e) {
         switch (e.getTracksEvent()) {
             case NEEDLE_EVENT:
@@ -939,10 +953,18 @@ public final class DataControllerV extends OpenSHAPADialog
             case MARKER_EVENT:
                 handleMarkerEvent((MarkerEvent)e.getEventObject());
                 break;
+            case CARRIAGE_EVENT:
+                handleCarriageEvent((CarriageEvent)e.getEventObject());
+                break;
             default: break;
         }
     }
 
+    /**
+     * Handles a NeedleEvent (when the timing needle changes due to user
+     * interaction)
+     * @param e
+     */
     private void handleNeedleEvent(NeedleEvent e) {
         long newTime = e.getTime();
         if (newTime < windowPlayStart) {
@@ -957,6 +979,11 @@ public final class DataControllerV extends OpenSHAPADialog
         clock.setTime(newTime);
     }
 
+    /**
+     * Handles a MarkerEvent (when one of the region marker changes due to user
+     * interaction)
+     * @param e
+     */
     private void handleMarkerEvent(MarkerEvent e) {
         final long newWindowTime = e.getTime();
         final long tracksTime = tracksControllerV.getCurrentTime();
@@ -987,6 +1014,65 @@ public final class DataControllerV extends OpenSHAPADialog
                 break;
             default: break;
         }
+    }
+
+    /**
+     * Handles a CarriageEvent (when the carriage moves due to user interaction)
+     * @param e
+     */
+    private void handleCarriageEvent(CarriageEvent e) {
+        // Look through our data viewers and update the offset
+        Iterator<DataViewer> itOffset = viewers.iterator();
+        while (itOffset.hasNext()) {
+            DataViewer dv = itOffset.next();
+            File feed = dv.getDataFeed();
+            /* Found our data viewer, update the DV offset and the settings in
+             * the project file.
+             */
+            if (feed.getAbsolutePath().equals(e.getTrackId())) {
+                dv.setOffset(e.getOffset());
+                Project project = OpenSHAPA.getProject();
+                project.removeViewerSetting(e.getTrackId());
+                project.addViewerSetting(dv.getClass().getName(),
+                        e.getTrackId(), e.getOffset());
+                OpenSHAPA.getApplication().updateTitle();
+            }
+        }
+
+        // Recalculate the maximum playback duration.
+        maxDuration = 0;
+        Iterator<DataViewer> itDuration = viewers.iterator();
+        while (itDuration.hasNext()) {
+            DataViewer dv = itDuration.next();
+            if (dv.getDuration() + dv.getOffset() > maxDuration) {
+                maxDuration = dv.getDuration() + dv.getOffset();
+            }
+        }
+        tracksControllerV.setMaxEnd(maxDuration);
+
+        // Reset our playback windows
+        if (windowPlayEnd > maxDuration) {
+            windowPlayEnd = maxDuration;
+            tracksControllerV.setPlayRegionEnd(windowPlayEnd);
+        }
+
+        if (windowPlayStart > windowPlayEnd) {
+            windowPlayStart = 0;
+            tracksControllerV.setPlayRegionStart(windowPlayStart);
+        }
+        
+        // Reset the time if needed
+        long tracksTime = tracksControllerV.getCurrentTime();
+        if (tracksTime < windowPlayStart) {
+            tracksTime = windowPlayStart;
+        }
+        if (tracksTime > windowPlayEnd) {
+            tracksTime = windowPlayEnd;
+        }
+        tracksControllerV.setCurrentTime(tracksTime);
+
+        clock.setTime(tracksTime);
+        clockStep(tracksTime);
     }
 
     //--------------------------------------------------------------------------
