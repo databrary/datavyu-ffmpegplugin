@@ -12,3 +12,6 @@ nb-configuration.xml
 src/main/java/au
 src/test/java/au
 src/main/resources/au
+.classpath
+.project
+.settings/
