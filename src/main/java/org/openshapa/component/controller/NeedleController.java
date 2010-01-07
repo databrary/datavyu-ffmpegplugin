@@ -147,7 +147,6 @@ public class NeedleController {
             } else {
                 source.setCursor(defaultCursor);
             }
-            System.out.printf("In the needle controller!");
         }
 
         @Override
