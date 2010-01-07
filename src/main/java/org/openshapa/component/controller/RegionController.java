@@ -167,7 +167,6 @@ public class RegionController {
             } else {
                 source.setCursor(defaultCursor);
             }
-            System.out.printf("In the region controller!");
         }
 
         @Override
