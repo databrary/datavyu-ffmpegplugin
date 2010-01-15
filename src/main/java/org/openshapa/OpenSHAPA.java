@@ -463,7 +463,6 @@ implements KeyEventDispatcher {
         m = null;
         closeOpenedWindows();
         getMainFrame().dispose();
-        //System.gc();
     }
 
     /**

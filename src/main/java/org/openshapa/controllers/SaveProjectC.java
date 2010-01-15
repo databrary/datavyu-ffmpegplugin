@@ -15,7 +15,7 @@ import org.yaml.snakeyaml.Yaml;
 /**
  * Controller for saving the OpenSHAPA project to disk.
  */
-public class SaveProjectC {
+public final class SaveProjectC {
 
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(SaveProjectC.class);
@@ -40,7 +40,7 @@ public class SaveProjectC {
             out.close();
             fileWriter.close();
             project.saveProject();
-            
+            OpenSHAPA.getApplication().updateTitle();
         } catch (IOException ex) {
             logger.error("Unable to save project file", ex);
         }

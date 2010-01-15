@@ -9,7 +9,7 @@ package org.openshapa.db;
  * user of the mistake they have made and allow them to fix the error and
  * procede
  */
-public final class LogicErrorException extends java.lang.Exception {
+public final class LogicErrorException extends Exception {
 
     /**
      * Creates a new instance of <code>LogicErrorException</code> without detail
@@ -18,14 +18,25 @@ public final class LogicErrorException extends java.lang.Exception {
     public LogicErrorException() {
     }
 
-
     /**
      * Constructs an instance of <code>LogicErrorException</code> with the
      * specified detail message.
      *
-     * @param msg the detail message.
+     * @param msg The detail message.
      */
     public LogicErrorException(final String msg) {
         super(msg);
+    }
+
+    /**
+     * Constructs an instance of <code>LogicErrorException</code> with the
+     * specified message and call stack.
+     *
+     * @param msg The detail message.
+     * @param e Used to create a call stack (the exception that lead to a logic
+     * error exception).
+     */
+    public LogicErrorException(final String msg, final Exception e) {
+        super(msg, e);
     }
 }

@@ -164,8 +164,7 @@ public class Project {
 
     public void saveProject() {
         changed = false;
-        newProject = false;
-        OpenSHAPA.getApplication().updateTitle();
+        newProject = false;        
     }
 
 }
