@@ -521,6 +521,18 @@ public final class SpreadsheetPanel extends JPanel
             return;
         }
 
+        try {
+            // Write the new column order back to the database.
+            Vector<Long> orderVec = this.database.getColOrderVector();
+
+            Long sourceColumn = orderVec.elementAt(source);
+            orderVec.removeElementAt(source);
+            orderVec.insertElementAt(sourceColumn, destination);
+
+            this.database.setColOrderVector(orderVec);
+        } catch (SystemErrorException se) {
+            logger.error("Unable to shuffle column order", se);
+        }
 
         // Reorder the columns vector
         SpreadsheetColumn sourceColumn = columns.elementAt(source);
