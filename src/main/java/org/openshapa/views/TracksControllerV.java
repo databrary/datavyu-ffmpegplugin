@@ -109,7 +109,6 @@ public class TracksControllerV implements NeedleEventListener,
 
         JButton zoomInButton = new JButton("( + )");
         zoomInButton.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 zoomInScale(e);
                 zoomTracks(e);
@@ -118,13 +117,11 @@ public class TracksControllerV implements NeedleEventListener,
 
         JButton zoomOutButton = new JButton("( - )");
         zoomOutButton.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 zoomOutScale(e);
                 zoomTracks(e);
             }
         });
-
 
         final int pad = 3;
         int xOffset = pad * 3;
@@ -577,7 +574,16 @@ public class TracksControllerV implements NeedleEventListener,
         tracksPanel.invalidate();
         tracksPanel.repaint();
     }
-
+    
+    /**
+     * Track is requesting current temporal position to create a bookmark.
+     * @param e
+     */
+	public void requestBookmark(CarriageEvent e) {
+		TrackController trackController = (TrackController) e.getSource();
+		trackController.addTemporalBookmark(needleController.getCurrentTime());
+	}
+	
     /**
      * Register listeners who are interested in events from this class.
      * @param listener
@@ -625,4 +631,6 @@ public class TracksControllerV implements NeedleEventListener,
         public JPanel carriagePanel;
         public TrackController trackController;
     }
+
+
 }

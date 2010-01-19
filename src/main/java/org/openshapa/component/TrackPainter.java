@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Polygon;
 import org.openshapa.component.model.TrackModel;
 import org.openshapa.component.model.ViewableModel;
@@ -55,7 +56,6 @@ public class TrackPainter extends Component {
         g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, size.width, size.height);
 
-
         // If there is an error with track information, don't paint the carriage
         if (trackModel.isErroneous()) {
             g.setColor(Color.red);
@@ -65,8 +65,8 @@ public class TrackPainter extends Component {
             g.drawString(errorMessage, (size.width / 2) - (width / 2),
                     (size.height / 2) - (fm.getAscent() / 2));
             return;
-        }
-
+        } 
+        
         // Calculate effective start and end points for the carriage
         float effectiveXOffset;
         /* Calculating carriage width by deleting offsets and remainders because
@@ -74,7 +74,7 @@ public class TrackPainter extends Component {
          * carriage with a visually inaccurate representation (gap from the
          * displayed end of the carriage to the carriage holder's border)
          */
-        float carriageWidth = size.width;
+        float carriageWidth = size.width; 
 
         if (trackModel.getOffset() >= viewableModel.getZoomWindowStart()) {
             /* Absolute value because if the offset is negative we dont want the
@@ -107,7 +107,7 @@ public class TrackPainter extends Component {
 
         int carriageHeight = (int) (size.getHeight() * 8D / 10D);
         int carriageYOffset = (int) (size.getHeight() / 10D);
-
+        
         // Paint the carriage
         g.setColor(new Color(130, 190, 255)); // Light blue
 
@@ -123,7 +123,7 @@ public class TrackPainter extends Component {
                 carriageYOffset + carriageHeight);
 
         g.fillPolygon(carriagePolygon);
-
+        
         // Paint the carriage top and bottom outline
         g.setColor(Color.BLUE);
         g.drawLine(Math.round(effectiveXOffset),
@@ -150,6 +150,33 @@ public class TrackPainter extends Component {
                     carriageYOffset,
                     Math.round(effectiveXOffset + carriageWidth - 1),
                     carriageYOffset + carriageHeight);
+        }
+        
+        // Determine if a bookmark should be painted.
+        final long bookmark = trackModel.getBookmark();
+        if (viewableModel.getZoomWindowStart() <= bookmark && 
+        		bookmark <= viewableModel.getZoomWindowEnd()) {
+        	// Calculate bookmark position
+        	
+        	// Time pixels per unit time
+        	float ratio = viewableModel.getIntervalWidth() / 
+        			viewableModel.getIntervalTime();
+        	int xPos = Math.round(bookmark * ratio  + effectiveXOffset);
+        	
+        	Polygon topMarker = new Polygon();
+        	topMarker.addPoint(xPos - 9, carriageYOffset);
+        	topMarker.addPoint(xPos - 2, carriageYOffset + 7);
+        	topMarker.addPoint(xPos + 5, carriageYOffset);
+        	
+        	g.setColor(Color.LIGHT_GRAY);
+        	g.fillPolygon(topMarker);
+        	
+        	g.setColor(Color.BLUE);
+        	// Top marker outline
+        	g.drawLine(xPos - 9, carriageYOffset, xPos - 2, carriageYOffset + 7);
+        	g.drawLine(xPos - 2, carriageYOffset + 7, xPos + 5, carriageYOffset);
+        	
+        	g.drawLine(xPos - 2, carriageYOffset + 7, xPos - 2, carriageYOffset + carriageHeight);
         }
 
     }

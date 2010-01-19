@@ -2,14 +2,21 @@ package org.openshapa.component.controller;
 
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
+
 import org.openshapa.component.TrackPainter;
 import org.openshapa.component.model.TrackModel;
 import org.openshapa.component.model.ViewableModel;
 import org.openshapa.event.CarriageEvent;
 import org.openshapa.event.CarriageEventListener;
+import org.openshapa.event.CarriageEvent.EventType;
 
 /**
  * TrackPainterController is responsible for managing a TrackPainter.
@@ -17,6 +24,7 @@ import org.openshapa.event.CarriageEventListener;
 public class TrackController {
     /** View */
     private TrackPainter view;
+    private PopupMenu menu;
     /** Models */
     private ViewableModel viewableModel;
     private TrackModel trackModel;
@@ -30,6 +38,7 @@ public class TrackController {
 
         viewableModel = new ViewableModel();
         trackModel = new TrackModel();
+        trackModel.setBookmark(-1);
 
         view.setViewableModel(viewableModel);
         view.setTrackModel(trackModel);
@@ -39,6 +48,24 @@ public class TrackController {
         trackPainterListener = new TrackPainterListener();
         view.addMouseListener(trackPainterListener);
         view.addMouseMotionListener(trackPainterListener);
+        
+        menu = new PopupMenu();
+        MenuItem setBookmarkMenuItem = new MenuItem("Set bookmark");
+        setBookmarkMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TrackController.this.setBookmarkAction();
+			}
+        });
+        MenuItem clearBookmarkMenuItem = new MenuItem("Clear bookmark");
+        clearBookmarkMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TrackController.this.clearBookmarkAction();
+			}
+        });
+        menu.add(setBookmarkMenuItem);
+        menu.add(clearBookmarkMenuItem);
+                
+        view.add(menu);
     }
 
     /**
@@ -73,6 +100,27 @@ public class TrackController {
         trackModel.setErroneous(erroneous);
         view.setTrackModel(trackModel);
     }
+    
+    /**
+     * Add a bookmark location to the track. Does not take track offsets
+     * into account.
+     * @param bookmark bookmark position in milliseconds
+     */
+    public void addBookmark(final long bookmark) {
+    	if (0 <= bookmark && bookmark <= trackModel.getDuration()) {
+    		trackModel.setBookmark(bookmark);
+        	view.setTrackModel(trackModel);
+    	}
+    }
+    
+    /**
+     * Add a bookmark location to the track. Track offsets are taken into 
+     * account. This call is the same as addBookmark(position - offset).
+     * @param position temporal position in milliseconds to bookmark.
+     */
+    public void addTemporalBookmark(final long position) {
+    	addBookmark(position - trackModel.getOffset());
+    }
 
     /**
      * @return View used by the controller
@@ -104,6 +152,16 @@ public class TrackController {
         this.viewableModel.setZoomWindowStart(viewableModel.getZoomWindowStart());
         view.setViewableModel(this.viewableModel);
     }
+    
+    private void setBookmarkAction() {
+    	fireCarriageBookmarkRequestEvent();
+    	
+    }
+    
+    private void clearBookmarkAction() {
+    	trackModel.setBookmark(-1);
+    	view.setTrackModel(trackModel);
+    }
 
     /**
      * Register the listener to be notified of carriage events
@@ -125,10 +183,10 @@ public class TrackController {
      * Used to inform listeners about a new carriage event
      * @param offset
      */
-    private synchronized void fireCarriageEvent(long offset) {
+    private synchronized void fireCarriageOffsetChangeEvent(long offset) {
         CarriageEvent e = new CarriageEvent(this,
                 trackModel.getTrackId(), offset,
-                trackModel.getDuration());
+                trackModel.getDuration(), EventType.OFFSET_CHANGE);
         Object[] listeners = listenerList.getListenerList();
         /* The listener list contains the listening class and then the listener
          * instance.
@@ -136,6 +194,25 @@ public class TrackController {
         for (int i = 0; i < listeners.length; i += 2) {
            if (listeners[i] == CarriageEventListener.class) {
                ((CarriageEventListener)listeners[i+1]).offsetChanged(e);
+           }
+        }
+    }
+    
+    /**
+     * Used to inform listeners about a bookmark request event
+     * @param offset
+     */
+    private synchronized void fireCarriageBookmarkRequestEvent() {
+        CarriageEvent e = new CarriageEvent(this,
+                trackModel.getTrackId(), trackModel.getOffset(),
+                trackModel.getDuration(), EventType.BOOKMARK_REQUEST);
+        Object[] listeners = listenerList.getListenerList();
+        /* The listener list contains the listening class and then the listener
+         * instance.
+         */
+        for (int i = 0; i < listeners.length; i += 2) {
+           if (listeners[i] == CarriageEventListener.class) {
+               ((CarriageEventListener)listeners[i+1]).requestBookmark(e);
            }
         }
     }
@@ -160,6 +237,9 @@ public class TrackController {
                 offsetInit = trackModel.getOffset();
                 TrackController.this.view.setCursor(moveCursor);
             }
+            if (e.isPopupTrigger()) {
+            	menu.show(e.getComponent(), e.getX(), e.getY());
+            }
         }
 
         @Override
@@ -170,7 +250,7 @@ public class TrackController {
                 float newOffset = (xNet * 1F) /
                         viewableModel.getIntervalWidth() *
                         viewableModel.getIntervalTime() + offsetInit;
-                TrackController.this.fireCarriageEvent(Math.round(newOffset));
+                TrackController.this.fireCarriageOffsetChangeEvent(Math.round(newOffset));
             }
         }
 
@@ -179,6 +259,9 @@ public class TrackController {
             inCarriage = false;
             Component source = (Component) e.getSource();
             source.setCursor(defaultCursor);
+            if (e.isPopupTrigger()) {
+            	menu.show(e.getComponent(), e.getX(), e.getY());
+            }
         }
     }
 

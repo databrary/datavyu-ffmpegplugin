@@ -7,18 +7,27 @@ import java.util.EventObject;
  */
 public class CarriageEvent extends EventObject {
 
+	public enum EventType {
+		OFFSET_CHANGE,
+		BOOKMARK_REQUEST
+	}
+	
     /** Track identifier */
     private String trackId;
     /** New time offset, in milliseconds, for the given track */
     private long offset;
     /** Duration of the track im milliseconds */
     private long duration;
+    /** What event does this represent */
+    private EventType eventType;
 
-    public CarriageEvent(Object source, String trackId, long offset, long duration) {
+    public CarriageEvent(Object source, String trackId, long offset, 
+    		long duration, EventType eventType) {
         super(source);
         this.trackId = trackId;
         this.offset = offset;
         this.duration = duration;
+        this.eventType = eventType;
     }
 
     /**
@@ -37,6 +46,10 @@ public class CarriageEvent extends EventObject {
 
     public long getDuration() {
         return duration;
+    }
+    
+    public EventType getEventType() {
+    	return eventType;
     }
 
 }
