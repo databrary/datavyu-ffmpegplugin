@@ -210,7 +210,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
                 // cell just now.
                 DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
                 OpenSHAPA.setLastCreatedColId(c.getItsColID());
-                OpenSHAPA.setLastCreatedCellId(parentCell);
+                OpenSHAPA.setLastSelectedCellId(parentCell);
             }
         } catch (SystemErrorException se) {
             logger.error("Unable to gain focus", se);

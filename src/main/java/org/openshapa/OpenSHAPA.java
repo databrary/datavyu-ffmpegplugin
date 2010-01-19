@@ -39,7 +39,6 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.openshapa.project.Project;
 import org.openshapa.util.MacHandler;
 import org.openshapa.views.AboutV;
-import org.openshapa.views.continuous.PluginManager;
 
 /**
  * The main class of the application.
@@ -402,6 +401,8 @@ implements KeyEventDispatcher {
             lastCreatedCellID = 0;
             lastCreatedColID = 0;
 
+            lastSelectedCellID = 0;
+
             // Build output streams for the scripting engine.
             consoleOutputStream = new PipedInputStream();
             PipedOutputStream sIn = new PipedOutputStream(consoleOutputStream);
@@ -583,6 +584,22 @@ implements KeyEventDispatcher {
     }
 
     /**
+     * @return The id of the last selected cell.
+     */
+    public static long getLastSelectedCellId() {
+        return OpenSHAPA.getApplication().lastSelectedCellID;
+    }
+
+    /**
+     * Sets the id of the last selected cell to the specified parameter.
+     *
+     * @param newId The id of hte newly selected cell.
+     */
+    public static void setLastSelectedCellId(final long newId) {
+        OpenSHAPA.getApplication().lastSelectedCellID = newId;
+    }
+
+    /**
      * @return The id of the last created column.
      */
     public static long getLastCreatedColId() {
@@ -728,6 +745,9 @@ implements KeyEventDispatcher {
     /** The id of the last datacell that was created. */
     private long lastCreatedCellID;
 
+    /** The id of the last selected cell. */
+    private long lastSelectedCellID;
+
     /** The id of the last datacell that was created. */
     private long lastCreatedColID;
 
@@ -764,7 +784,8 @@ implements KeyEventDispatcher {
 
     /** The current project file. */
     private Project project;
-    /** Opened windows */
+
+    /** Opened windows. */
     private Stack<Window> windows;
 
     /**

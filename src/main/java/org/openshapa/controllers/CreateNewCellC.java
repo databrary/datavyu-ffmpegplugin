@@ -227,9 +227,9 @@ public final class CreateNewCellC {
         if (!newcelladded && multiadd) {
             // else check for Situation 3: User is or was editing an
             // existing cell and has requested a new cell
-            if (OpenSHAPA.getLastCreatedCellId() != 0) {
+            if (OpenSHAPA.getLastSelectedCellId() != 0) {
                 DataCell dc = (DataCell) model
-                                 .getCell(OpenSHAPA.getLastCreatedCellId());
+                                 .getCell(OpenSHAPA.getLastSelectedCellId());
                 DataCell cell = new DataCell(model,
                                              dc.getItsColID(),
                                              dc.getItsMveID());

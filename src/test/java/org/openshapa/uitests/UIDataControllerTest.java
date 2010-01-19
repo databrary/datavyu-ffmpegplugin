@@ -240,8 +240,8 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         cells = ss.getSpreadsheetColumn(vName).getCells();
 
         assertTrue(cells.size() == 3);
-        /*BugzID:892 - assertTrue(cells.elementAt(1).getOffsetTime().toString()
-                .equals("00:02:20:999"));*/
+        assertTrue(cells.elementAt(1).getOffsetTime().toString()
+                   .equals("00:02:20:999"));
         assertTrue(expectedDVCTime.equals(cells.elementAt(2).getOnsetTime()
                 .toString()));
         assertTrue(cells.elementAt(2).getOffsetTime().toString()
