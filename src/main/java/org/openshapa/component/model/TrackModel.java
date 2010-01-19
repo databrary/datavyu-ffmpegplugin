@@ -9,6 +9,8 @@ public class TrackModel {
     private long duration;
     /** The offset of the track in milliseconds */
     private long offset;
+    /** Track bookmark location in milliseconds */ 
+    private long bookmark;
     /** Is there an error with track information */
     private boolean erroneous;
     /** Track identifier, this is currently just the track's absolute file path */
@@ -18,10 +20,11 @@ public class TrackModel {
     }
 
     protected TrackModel(TrackModel other) {
-        duration    = other.duration;
-        offset      = other.offset;
-        erroneous  = other.erroneous;
-        trackId     = other.trackId;
+        duration = other.duration;
+        offset = other.offset;
+        bookmark = other.bookmark;
+        erroneous = other.erroneous;
+        trackId = other.trackId;
     }
 
     /**
@@ -84,41 +87,74 @@ public class TrackModel {
         this.erroneous = erroneous;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final TrackModel other = (TrackModel) obj;
-        if (this.duration != other.duration) {
-            return false;
-        }
-        if (this.offset != other.offset) {
-            return false;
-        }
-        if (this.erroneous != other.erroneous) {
-            return false;
-        }
-        if ((this.trackId == null) ? (other.trackId != null) : !this.trackId.equals(other.trackId)) {
-            return false;
-        }
-        return true;
-    }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 79 * hash + (int) (this.duration ^ (this.duration >>> 32));
-        hash = 79 * hash + (int) (this.offset ^ (this.offset >>> 32));
-        hash = 79 * hash + (this.erroneous ? 1 : 0);
-        hash = 79 * hash + (this.trackId != null ? this.trackId.hashCode() : 0);
-        return hash;
-    }
+    /**
+	 * @return the bookmark
+	 */
+	public long getBookmark() {
+		return bookmark;
+	}
 
-    @Override
+	/**
+	 * @param bookmark the bookmark to set
+	 */
+	public void setBookmark(long bookmark) {
+		this.bookmark = bookmark;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (bookmark ^ (bookmark >>> 32));
+		result = prime * result + (int) (duration ^ (duration >>> 32));
+		result = prime * result + (erroneous ? 1231 : 1237);
+		result = prime * result + (int) (offset ^ (offset >>> 32));
+		result = prime * result + ((trackId == null) ? 0 : trackId.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		TrackModel other = (TrackModel) obj;
+		if (bookmark != other.bookmark) {
+			return false;
+		}
+		if (duration != other.duration) {
+			return false;
+		}
+		if (erroneous != other.erroneous) {
+			return false;
+		}
+		if (offset != other.offset) {
+			return false;
+		}
+		if (trackId == null) {
+			if (other.trackId != null) {
+				return false;
+			}
+		} else if (!trackId.equals(other.trackId)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
     public Object clone() {
         return new TrackModel(this);
     }
