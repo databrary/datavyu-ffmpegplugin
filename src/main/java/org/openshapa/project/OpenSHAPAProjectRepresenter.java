@@ -11,9 +11,13 @@ import org.yaml.snakeyaml.representer.Representer;
  */
 public class OpenSHAPAProjectRepresenter extends Representer {
 
+    /**
+     * Default Constructor.
+     */
     public OpenSHAPAProjectRepresenter() {
         this.representers.put(Project.class, new RepresentProject());
-        this.representers.put(ViewerSetting.class, new RepresentViewerSetting());
+        this.representers.put(ViewerSetting.class,
+                              new RepresentViewerSetting());
     }
 
     /**

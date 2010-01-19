@@ -2,7 +2,6 @@ package org.openshapa.project;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.openshapa.OpenSHAPA;
 
 /**
  * This class represents a project in OpenSHAPA. A project manages the different
@@ -10,15 +9,15 @@ import org.openshapa.OpenSHAPA;
  */
 public class Project {
 
-    /** Project specification version */
+    /** Project specification version. */
     public static final int VERSION = 1;
-    /** name of this project */
+    /** Name of this project. */
     private String projectName;
-    /** Project description */
+    /** Project description. */
     private String projectDescription;
-    /** directory the database and project is stored */
+    /** Directory the database and project is stored. */
     private String databaseDir;
-    /** database file name */
+    /** Database file name. */
     private String databaseFile;
     /**
      * Key   : file path
@@ -27,15 +26,15 @@ public class Project {
     private Map<String, ViewerSetting> viewerSettings;
     /** has this project been changed since it was created. */
     private boolean changed;
-    /** is this a new project */
+    /** Is this a new project? */
     private boolean newProject;
-    
+
     public Project() {
         viewerSettings = new HashMap();
         changed = false;
         newProject = true;
     }
-    
+
     public void setDatabasePath(String directory, String filename) {
         this.databaseDir = directory;
         this.databaseFile = filename;
@@ -141,7 +140,7 @@ public class Project {
 
     /**
      * Remove a media file from the project.
-     * 
+     *
      * @param filePath The absolute path to the media file
      * @return the removed media file's viewer settings if it exists, null
      * otherwise.
@@ -165,7 +164,6 @@ public class Project {
     public void saveProject() {
         changed = false;
         newProject = false;
-        OpenSHAPA.getApplication().updateTitle();
     }
 
 }

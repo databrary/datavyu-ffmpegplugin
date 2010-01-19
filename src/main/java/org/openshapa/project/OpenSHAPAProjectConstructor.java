@@ -11,6 +11,9 @@ import org.yaml.snakeyaml.nodes.Node;
  */
 public class OpenSHAPAProjectConstructor extends Constructor {
 
+    /**
+     * Default Constructor.
+     */
     public OpenSHAPAProjectConstructor() {
         this.yamlConstructors.put("!vs", new ConstructViewerSetting());
         this.yamlConstructors.put("!project", new ConstructProject());
@@ -25,11 +28,11 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             MappingNode mnode = (MappingNode) node;
             Map values = constructMapping(mnode);
             Project project = new Project();
-            project.setProjectName((String)values.get("name"));
-            project.setProjectDescription((String)values.get("description"));
-            project.setDatabaseDir((String)values.get("dbDir"));
-            project.setDatabaseFile((String)values.get("dbFile"));
-            project.setViewerSettings((Map)values.get("viewerSettings"));
+            project.setProjectName((String) values.get("name"));
+            project.setProjectDescription((String) values.get("description"));
+            project.setDatabaseDir((String) values.get("dbDir"));
+            project.setDatabaseFile((String) values.get("dbFile"));
+            project.setViewerSettings((Map) values.get("viewerSettings"));
             project.setChanged(false);
             project.setNewProject(false);
             return project;
@@ -46,13 +49,12 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             MappingNode mnode = (MappingNode) node;
             Map values = constructMapping(mnode);
             ViewerSetting vs = new ViewerSetting();
-            vs.setFilePath((String)values.get("feed"));
-            vs.setPluginName((String)values.get("plugin"));
+            vs.setFilePath((String) values.get("feed"));
+            vs.setPluginName((String) values.get("plugin"));
             // WARNING: SnakeYAML refuses to parse this as a Long.
-            vs.setOffset(Long.parseLong((String)values.get("offset")));
+            vs.setOffset(Long.parseLong((String) values.get("offset")));
             return vs;
         }
-        
     }
 
 }
