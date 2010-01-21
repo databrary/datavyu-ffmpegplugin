@@ -1,6 +1,10 @@
 package org.openshapa.views.continuous.quicktime;
 
+import java.awt.Component;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import javax.swing.JFrame;
 import org.apache.log4j.Logger;
@@ -33,6 +37,12 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** Logger for this class. */
     private static Logger logger = Logger.getLogger(QTDataViewer.class);
 
+    /** How many milliseconds in a second? */
+    private static final int MILLI = 1000;
+
+    /** How many frames to check when correcting the FPS. */
+    private static final int CORRECTIONFRAMES = 5;
+
     //--------------------------------------------------------------------------
     //
     //
@@ -55,23 +65,20 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** parent controller. */
     private DataController parent;
 
-    /** The fixed window width. */
-    private static final int WIN_X = 400;
-    /** The fixed window height. */
-    private static final int WIN_Y = 400;
-
-    /** How many milliseconds in a second? */
-    private static final int MILLI = 1000;
-
-    /** How many frames to check when correcting the FPS. */
-    private static final int CORRECTIONFRAMES = 5;
-
     /** The playback offset of the movie in milliseconds. */
     private long offset;
 
+    /** Is the movie currently playing? */
     private boolean playing;
 
+    /** The current video file that this viewer is representing. */
     private File videoFile;
+
+    /** The aspect ratio of the opened video. */
+    private float aspectRatio;
+
+    /** Has the size of the window had its aspect ratio corrected? */
+    private boolean updatedAspect;
 
     //--------------------------------------------------------------------------
     // [initialization]
@@ -85,8 +92,12 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             movie = null;
             offset = 0;
             playing = false;
+            aspectRatio = 0.0f;
+            updatedAspect = false;
+
             // Initalise QTJava.
             QTSession.open();
+
         } catch (Throwable e) {
             logger.error("Unable to create QTVideoViewer", e);
         }
@@ -104,13 +115,28 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public long getDuration() {
         try {
             if (movie != null) {
-                return (long)Constants.TICKS_PER_SECOND *
-                        (long)movie.getDuration() / (long)movie.getTimeScale();
+                return (long) Constants.TICKS_PER_SECOND
+                     * (long) movie.getDuration() / (long) movie.getTimeScale();
             }
         } catch (StdQTException ex) {
             logger.error("Unable to determine QT movie duration", ex);
         }
+
         return -1;
+    }
+
+    @Override
+    public void validate() {
+        // BugzID:753 - Locks the window to the videos aspect ratio.
+        if (this.aspectRatio > 0.0 && !updatedAspect) {
+            System.out.println("maintaining Aspect ratio");
+            setSize((int) (getHeight() * aspectRatio), getHeight());
+            this.invalidate();
+            updatedAspect = true;
+        } else {
+            updatedAspect = false;
+        }
+        super.validate();
     }
 
     /**
@@ -124,7 +150,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * @param offset The playback offset of the movie in milliseconds.
      */
     public void setOffset(final long offset) {
-        assert(offset >= 0);
+        assert (offset >= 0);
         this.offset = offset;
     }
 
@@ -159,15 +185,15 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             // Initialise the video to be no bigger than a quarter of the screen
             int hScrnWidth = Toolkit.getDefaultToolkit()
                                     .getScreenSize().width / 2;
-            if (movie.getBounds().getWidth() > hScrnWidth) {
-                float aspectRatio = movie.getBounds().getWidthF()
+            aspectRatio = movie.getBounds().getWidthF()
                                     / movie.getBounds().getHeightF();
+
+            if (movie.getBounds().getWidth() > hScrnWidth) {
                 visualTrack.setSize(new QDDimension(hScrnWidth,
                                                     hScrnWidth / aspectRatio));
             }
 
             visualMedia = visualTrack.getMedia();
-
             this.add(QTFactory.makeQTComponent(movie).asComponent());
 
             setName(getClass().getSimpleName() + "-" + videoFile.getName());
@@ -313,7 +339,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         return movie.getTime();
     }
 
-
     //--------------------------------------------------------------------------
     // [generated]
     //
@@ -339,7 +364,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
     /**
      * Action to invoke when the QTDataViewer window is closing (clean itself
-     * up)
+     * up).
      *
      * @param evt The event that triggered this action.
      */
