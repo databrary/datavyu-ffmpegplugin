@@ -234,6 +234,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             }
 
             ve.appendFormalArg(fa);
+            selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
 
             // Select the contents of the newly created formal argument.
