@@ -154,15 +154,22 @@ public final class OpenSHAPAView extends FrameView {
                                     .getResourceMap(OpenSHAPA.class);
         String postFix = "";
         Project project = OpenSHAPA.getProject();
+        SaveC saveController = SaveC.getInstance();
+        final FileFilter lastSaveOption = saveController.getLastSaveOption();
 
-        if (project.isChanged() || project.isNewProject() ||
-                OpenSHAPA.getDB().getHasChanged()) {
+        // BugzID:1074 - temporarily Removed openshapa nag, when we refine
+        // concept of project only the 'else if' should remain.
+        if (lastSaveOption instanceof CSVFilter) {
+            if (OpenSHAPA.getDB().getHasChanged()) {
+                postFix = "*";
+            }
+        } else if ((project.isChanged() || project.isNewProject()
+                   || OpenSHAPA.getDB().getHasChanged())) {
             postFix = "*";
         }
 
         String extension = "";
-        SaveC saveController = SaveC.getInstance();
-        final FileFilter lastSaveOption = saveController.getLastSaveOption();
+
         if (lastSaveOption instanceof SHAPAFilter) {
             extension = ".shapa";
         } else if (lastSaveOption instanceof CSVFilter) {
@@ -186,8 +193,6 @@ public final class OpenSHAPAView extends FrameView {
                                + postFix);
         }
     }
-
-
 
     /**
      * Action for creating a new database.
@@ -214,16 +219,27 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void save() {
-        // If the user has not saved before - invoke the saveAs() controller to
-        // force the user to nominate a destination file.
-        Project openShapaProject = OpenSHAPA.getProject();
-        if (openShapaProject.isNewProject() ||
-                openShapaProject.getProjectName() == null) {
-            saveAs();
-        } else if (openShapaProject.getDatabaseFile() == null) {
-            saveAs();
-        } else {
+
+        // BugzID:1074 - Temporarily turned off 'nag' for forcing users to
+        // project file. When we revisit project files this will be removed.
+        // I.e. only the 'else' should remain.
+        FileFilter filter = SaveC.getInstance().getLastSaveOption();
+        if (filter instanceof CSVFilter) {
             SaveC.getInstance().save();
+            OpenSHAPA.getApplication().updateTitle();
+
+        } else {
+            // If the user has not saved before - invoke the saveAs() controller
+            // to force the user to nominate a destination file.
+            Project openShapaProject = OpenSHAPA.getProject();
+            if (openShapaProject.isNewProject() ||
+                    openShapaProject.getProjectName() == null) {
+                saveAs();
+            } else if (openShapaProject.getDatabaseFile() == null) {
+                saveAs();
+            } else {
+                SaveC.getInstance().save();
+            }
         }
     }
 
@@ -292,14 +308,13 @@ public final class OpenSHAPAView extends FrameView {
                 OpenSHAPA.getApplication().closeOpenedWindows();
 
                 FileFilter filter = jd.getFileFilter();
+                SaveC.getInstance().setLastSaveOption(filter);
 
                 // Opening a project file
                 if (filter instanceof SHAPAFilter) {
-                    SaveC.getInstance().setLastSaveOption(filter);
                     openProject(jd);
                 // Opening a database file
                 } else {
-                    SaveC.getInstance().setLastSaveOption(filter);
                     openDatabase(jd);
                 }
             }
