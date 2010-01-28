@@ -129,7 +129,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public void validate() {
         // BugzID:753 - Locks the window to the videos aspect ratio.
         if (this.aspectRatio > 0.0 && !updatedAspect) {
-            System.out.println("maintaining Aspect ratio");
             setSize((int) (getHeight() * aspectRatio), getHeight());
             this.invalidate();
             updatedAspect = true;
