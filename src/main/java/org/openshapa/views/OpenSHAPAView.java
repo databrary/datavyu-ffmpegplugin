@@ -21,7 +21,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.LinkedList;
-import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -38,12 +37,11 @@ import org.openshapa.db.MacshapaDatabase;
 import org.openshapa.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.Configuration;
+import org.openshapa.controllers.DeleteCellC;
+import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.controllers.OpenProjectC;
 import org.openshapa.controllers.SaveC;
-import org.openshapa.db.Cell;
-import org.openshapa.db.DataCell;
-import org.openshapa.db.DataColumn;
 import org.openshapa.project.Project;
 import org.openshapa.project.ViewerSetting;
 import org.openshapa.util.ArrayDirection;
@@ -398,26 +396,7 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void deleteColumn() {
-        Vector<DataColumn> colsToDelete = panel.getSelectedCols();
-        panel.deselectAll();
-
-        try {
-            for (DataColumn dc : colsToDelete) {
-                // Must remove cells from the data column before removing it.
-                while (dc.getNumCells() > 0) {
-                    Cell c = OpenSHAPA.getDB().getCell(dc.getID(), 1);
-                    OpenSHAPA.getDB().removeCell(c.getID());
-                    dc = OpenSHAPA.getDB().getDataColumn(dc.getID());
-                }
-
-                // All cells in the column removed - now delete the column.
-                OpenSHAPA.getDB().removeColumn(dc.getID());
-                panel.revalidate();
-                panel.repaint();
-            }
-        } catch (SystemErrorException e) {
-            logger.error("Unable to delete columns.", e);
-        }
+        new DeleteColumnC(panel.getSelectedCols());
     }
 
     /**
@@ -425,17 +404,7 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void deleteCells() {
-        Vector<DataCell> cellsToDelete = panel.getSelectedCells();
-        panel.deselectAll();
-
-        try {
-            for (DataCell c : cellsToDelete) {
-                OpenSHAPA.getDB().removeCell(c.getID());
-            }
-            this.showSpreadsheet();
-        } catch (SystemErrorException e) {
-            logger.error("Unable to delete cells", e);
-        }
+        new DeleteCellC(panel.getSelectedCells());
     }
 
     private void openDatabase(final OpenSHAPAFileChooser jd) {
