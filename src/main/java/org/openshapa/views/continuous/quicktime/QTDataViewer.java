@@ -283,7 +283,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         try {
             int currentTime = movie.getTime();
             movie.preroll(currentTime, rate);
-            movie.task((int) (32 / rate * 100));
+            movie.task((int) (32 / Math.abs(rate) * 100));
         } catch (QTException e) {
             logger.error("Failed to pre-roll", e);
         }
