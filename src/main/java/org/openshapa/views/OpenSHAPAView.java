@@ -406,8 +406,21 @@ public final class OpenSHAPAView extends FrameView {
                 // Must remove cells from the data column before removing it.
                 while (dc.getNumCells() > 0) {
                     Cell c = OpenSHAPA.getDB().getCell(dc.getID(), 1);
+
+                    // Check if the cell we are deleting is the last created
+                    // cell... Default this back to 0.
+                    if (c.getID() == OpenSHAPA.getLastCreatedCellId()) {
+                        OpenSHAPA.setLastCreatedCellId(0);
+                    }
+
                     OpenSHAPA.getDB().removeCell(c.getID());
                     dc = OpenSHAPA.getDB().getDataColumn(dc.getID());
+                }
+
+                // Check if the column we are deleting was the last created
+                // column... Default this back to 0 if it is.
+                if (dc.getID() == OpenSHAPA.getLastCreatedColId()) {
+                    OpenSHAPA.setLastCreatedColId(0);
                 }
 
                 // All cells in the column removed - now delete the column.
@@ -430,6 +443,12 @@ public final class OpenSHAPAView extends FrameView {
 
         try {
             for (DataCell c : cellsToDelete) {
+                // Check if the cell we are deleting is the last created cell...
+                // Default this back to 0 if it is.
+                if (c.getID() == OpenSHAPA.getLastCreatedCellId()) {
+                    OpenSHAPA.setLastCreatedCellId(0);
+                }
+
                 OpenSHAPA.getDB().removeCell(c.getID());
             }
             this.showSpreadsheet();
