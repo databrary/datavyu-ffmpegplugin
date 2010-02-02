@@ -59,7 +59,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
     /**
      * The threshold to use while synchronising viewers (augmented by rate).
      */
-    private static final long SYNC_THRESH = 50;
+    private static long SYNC_THRESH = 50;
     /**
      * How often to synchronise the viewers with the master clock.
      */
@@ -292,11 +292,19 @@ public final class DataControllerV extends OpenSHAPADialog implements
     }
 
     private long getSyncThreshold() {
-        // final float rate = clock.getRate();
-        // if (rate == FFORWARD_RATE || rate == REWIND_RATE) {
-        // return 60000L;
-        // }
         return (long) (SYNC_THRESH * Math.abs(clock.getRate()));
+    }
+
+    private long calculateSyncThresh() {
+        long totalTime = 0;
+        for (DataViewer viewer : viewers) {
+            totalTime += viewer.getDuration();
+        }
+        if (totalTime <= 0) {
+            // This was the default sync threshold value.
+            return 50L;
+        }
+        return (long) (totalTime / viewers.size() * 0.001F);
     }
 
     /**
@@ -415,6 +423,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
             clock.setTime(tracksTime);
             clockStep(tracksTime);
+
+            SYNC_THRESH = calculateSyncThresh();
 
             // Remove the data viewer from the project
             OpenSHAPA.getProject().removeViewerSetting(
@@ -1029,6 +1039,9 @@ public final class DataControllerV extends OpenSHAPADialog implements
             windowPlayEnd = maxDuration;
             tracksControllerV.setPlayRegionEnd(windowPlayEnd);
         }
+
+        // Update the sync threshold.
+        SYNC_THRESH = calculateSyncThresh();
     }
 
     /**
@@ -1368,7 +1381,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
     @Action
     public void shuttleForwardAction() {
         if (clock.getTime() <= 0
-                && (shuttleRate != 0 || shuttleDirection != shuttleDirection.UNDEFINED)) {
+                && (shuttleRate != 0 || shuttleDirection != ShuttleDirection.UNDEFINED)) {
             shuttleRate = 0;
             pauseRate = 0;
             shuttleDirection = ShuttleDirection.UNDEFINED;
@@ -1393,7 +1406,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
     @Action
     public void shuttleBackAction() {
         if (clock.getTime() <= 0
-                && (shuttleRate != 0 || shuttleDirection != shuttleDirection.UNDEFINED)) {
+                && (shuttleRate != 0 || shuttleDirection != ShuttleDirection.UNDEFINED)) {
             shuttleRate = 0;
             pauseRate = 0;
             shuttleDirection = ShuttleDirection.UNDEFINED;
