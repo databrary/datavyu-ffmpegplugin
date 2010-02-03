@@ -2,18 +2,18 @@ package org.openshapa.views.discrete.datavalues;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import org.openshapa.db.DataCell;
-import org.openshapa.db.Matrix;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.Matrix;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.Selector;
 import java.util.Vector;
 import javax.swing.JTextArea;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.FormalArgument.FArgType;
-import org.openshapa.db.PredDataValue;
-import org.openshapa.db.Predicate;
-import org.openshapa.db.VocabElement;
+import org.openshapa.models.db.FormalArgument.FArgType;
+import org.openshapa.models.db.PredDataValue;
+import org.openshapa.models.db.Predicate;
+import org.openshapa.models.db.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 

@@ -1,6 +1,6 @@
 package org.openshapa.views.discrete.layouts;
 
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;

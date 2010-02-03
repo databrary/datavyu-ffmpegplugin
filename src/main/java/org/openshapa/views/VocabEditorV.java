@@ -1,20 +1,19 @@
 package org.openshapa.views;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.DBIndex;
-import org.openshapa.db.Database;
-import org.openshapa.db.FloatFormalArg;
-import org.openshapa.db.FormalArgument;
-import org.openshapa.db.IntFormalArg;
-import org.openshapa.db.LogicErrorException;
-import org.openshapa.db.MatrixVocabElement;
-import org.openshapa.db.MatrixVocabElement.MatrixType;
-import org.openshapa.db.NominalFormalArg;
-import org.openshapa.db.PredicateVocabElement;
-import org.openshapa.db.QuoteStringFormalArg;
-import org.openshapa.db.SystemErrorException;
-import org.openshapa.db.UnTypedFormalArg;
-import org.openshapa.db.VocabElement;
+import org.openshapa.models.db.DBIndex;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.FloatFormalArg;
+import org.openshapa.models.db.FormalArgument;
+import org.openshapa.models.db.IntFormalArg;
+import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.MatrixVocabElement;
+import org.openshapa.models.db.MatrixVocabElement.MatrixType;
+import org.openshapa.models.db.NominalFormalArg;
+import org.openshapa.models.db.PredicateVocabElement;
+import org.openshapa.models.db.QuoteStringFormalArg;
+import org.openshapa.models.db.UnTypedFormalArg;
+import org.openshapa.models.db.VocabElement;
 import org.openshapa.views.discrete.datavalues.vocabelements.FormalArgEditor;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import java.awt.BorderLayout;
@@ -29,8 +28,9 @@ import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.db.Column;
-import org.openshapa.db.DataColumn;
+import org.openshapa.models.db.Column;
+import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.db.SystemErrorException;
 
 /**
  * A view for editing the database vocab.

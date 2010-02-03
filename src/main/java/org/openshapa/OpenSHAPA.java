@@ -2,9 +2,9 @@ package org.openshapa;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import org.jdesktop.application.Application.ExitListener;
-import org.openshapa.db.LogicErrorException;
-import org.openshapa.db.MacshapaDatabase;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.views.ListVariables;
 import org.openshapa.views.OpenSHAPAView;
@@ -36,7 +36,7 @@ import org.jdesktop.application.LocalStorage;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
-import org.openshapa.project.Project;
+import org.openshapa.models.project.Project;
 import org.openshapa.util.MacHandler;
 import org.openshapa.views.AboutV;
 

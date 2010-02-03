@@ -2,8 +2,8 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import java.awt.BorderLayout;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.FormalArgument;
-import org.openshapa.db.VocabElement;
+import org.openshapa.models.db.FormalArgument;
+import org.openshapa.models.db.VocabElement;
 import org.openshapa.views.VocabEditorV;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.Configuration;
-import org.openshapa.db.MatrixVocabElement;
+import org.openshapa.models.db.MatrixVocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**

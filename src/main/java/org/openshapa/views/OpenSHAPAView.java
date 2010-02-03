@@ -6,7 +6,6 @@ import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.NewDatabaseC;
 import org.openshapa.controllers.NewVariableC;
 import org.openshapa.controllers.RunScriptC;
-import org.openshapa.controllers.RunTestsC;
 import org.openshapa.controllers.SetSheetLayoutC;
 import org.openshapa.controllers.VocabEditorC;
 import org.openshapa.util.FileFilters.CSVFilter;
@@ -21,6 +20,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.LinkedList;
+import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -33,17 +33,18 @@ import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.controllers.OpenDatabaseC;
-import org.openshapa.db.MacshapaDatabase;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.Configuration;
-import org.openshapa.controllers.DeleteCellC;
-import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.controllers.OpenProjectC;
 import org.openshapa.controllers.SaveC;
-import org.openshapa.project.Project;
-import org.openshapa.project.ViewerSetting;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.project.Project;
+import org.openshapa.models.project.ViewerSetting;
 import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
@@ -152,22 +153,15 @@ public final class OpenSHAPAView extends FrameView {
                                     .getResourceMap(OpenSHAPA.class);
         String postFix = "";
         Project project = OpenSHAPA.getProject();
-        SaveC saveController = SaveC.getInstance();
-        final FileFilter lastSaveOption = saveController.getLastSaveOption();
 
-        // BugzID:1074 - temporarily Removed openshapa nag, when we refine
-        // concept of project only the 'else if' should remain.
-        if (lastSaveOption instanceof CSVFilter) {
-            if (OpenSHAPA.getDB().getHasChanged()) {
-                postFix = "*";
-            }
-        } else if ((project.isChanged() || project.isNewProject()
-                   || OpenSHAPA.getDB().getHasChanged())) {
+        if (project.isChanged() || project.isNewProject() ||
+                OpenSHAPA.getDB().getHasChanged()) {
             postFix = "*";
         }
 
         String extension = "";
-
+        SaveC saveController = SaveC.getInstance();
+        final FileFilter lastSaveOption = saveController.getLastSaveOption();
         if (lastSaveOption instanceof SHAPAFilter) {
             extension = ".shapa";
         } else if (lastSaveOption instanceof CSVFilter) {
@@ -191,6 +185,8 @@ public final class OpenSHAPAView extends FrameView {
                                + postFix);
         }
     }
+
+
 
     /**
      * Action for creating a new database.
@@ -217,27 +213,16 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void save() {
-
-        // BugzID:1074 - Temporarily turned off 'nag' for forcing users to
-        // project file. When we revisit project files this will be removed.
-        // I.e. only the 'else' should remain.
-        FileFilter filter = SaveC.getInstance().getLastSaveOption();
-        if (filter instanceof CSVFilter) {
-            SaveC.getInstance().save();
-            OpenSHAPA.getApplication().updateTitle();
-
+        // If the user has not saved before - invoke the saveAs() controller to
+        // force the user to nominate a destination file.
+        Project openShapaProject = OpenSHAPA.getProject();
+        if (openShapaProject.isNewProject() ||
+                openShapaProject.getProjectName() == null) {
+            saveAs();
+        } else if (openShapaProject.getDatabaseFile() == null) {
+            saveAs();
         } else {
-            // If the user has not saved before - invoke the saveAs() controller
-            // to force the user to nominate a destination file.
-            Project openShapaProject = OpenSHAPA.getProject();
-            if (openShapaProject.isNewProject() ||
-                    openShapaProject.getProjectName() == null) {
-                saveAs();
-            } else if (openShapaProject.getDatabaseFile() == null) {
-                saveAs();
-            } else {
-                SaveC.getInstance().save();
-            }
+            SaveC.getInstance().save();
         }
     }
 
@@ -306,13 +291,14 @@ public final class OpenSHAPAView extends FrameView {
                 OpenSHAPA.getApplication().closeOpenedWindows();
 
                 FileFilter filter = jd.getFileFilter();
-                SaveC.getInstance().setLastSaveOption(filter);
 
                 // Opening a project file
                 if (filter instanceof SHAPAFilter) {
+                    SaveC.getInstance().setLastSaveOption(filter);
                     openProject(jd);
                 // Opening a database file
                 } else {
+                    SaveC.getInstance().setLastSaveOption(filter);
                     openDatabase(jd);
                 }
             }
@@ -376,14 +362,6 @@ public final class OpenSHAPAView extends FrameView {
     }
 
     /**
-     * Action for running tests.
-     */
-    @Action
-    public void runTests() {
-        new RunTestsC();
-    }
-
-    /**
      * Action for invoking a script.
      */
     @Action
@@ -396,7 +374,26 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void deleteColumn() {
-        new DeleteColumnC(panel.getSelectedCols());
+        Vector<DataColumn> colsToDelete = panel.getSelectedCols();
+        panel.deselectAll();
+
+        try {
+            for (DataColumn dc : colsToDelete) {
+                // Must remove cells from the data column before removing it.
+                while (dc.getNumCells() > 0) {
+                    Cell c = OpenSHAPA.getDB().getCell(dc.getID(), 1);
+                    OpenSHAPA.getDB().removeCell(c.getID());
+                    dc = OpenSHAPA.getDB().getDataColumn(dc.getID());
+                }
+
+                // All cells in the column removed - now delete the column.
+                OpenSHAPA.getDB().removeColumn(dc.getID());
+                panel.revalidate();
+                panel.repaint();
+            }
+        } catch (SystemErrorException e) {
+            logger.error("Unable to delete columns.", e);
+        }
     }
 
     /**
@@ -404,7 +401,17 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void deleteCells() {
-        new DeleteCellC(panel.getSelectedCells());
+        Vector<DataCell> cellsToDelete = panel.getSelectedCells();
+        panel.deselectAll();
+
+        try {
+            for (DataCell c : cellsToDelete) {
+                OpenSHAPA.getDB().removeCell(c.getID());
+            }
+            this.showSpreadsheet();
+        } catch (SystemErrorException e) {
+            logger.error("Unable to delete cells", e);
+        }
     }
 
     private void openDatabase(final OpenSHAPAFileChooser jd) {

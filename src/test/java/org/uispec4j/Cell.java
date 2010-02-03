@@ -6,7 +6,7 @@ import java.awt.Font;
 import java.util.Vector;
 import javax.swing.text.JTextComponent;
 import junit.framework.Assert;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 import org.uispec4j.utils.KeyUtils;

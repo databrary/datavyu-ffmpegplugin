@@ -1,7 +1,7 @@
 package org.openshapa.controllers;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.ConsoleV;
 import java.io.File;
 import java.io.IOException;

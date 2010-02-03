@@ -1,10 +1,10 @@
 package org.openshapa.views.discrete;
 
-import org.openshapa.db.DataCell;
-import org.openshapa.db.DataColumn;
-import org.openshapa.db.Database;
-import org.openshapa.db.ExternalColumnListListener;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.ExternalColumnListListener;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.layouts.SheetLayout;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -56,6 +56,7 @@ public final class SpreadsheetPanel extends JPanel
         headerView.setLayout(new BoxLayout(headerView, BoxLayout.X_AXIS));
         headerView.setBorder(
                       BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+        headerView.setName("headerView");
 
         columns = new Vector<SpreadsheetColumn>();
 

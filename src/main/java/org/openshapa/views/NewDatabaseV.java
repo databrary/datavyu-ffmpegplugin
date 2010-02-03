@@ -1,9 +1,9 @@
 package org.openshapa.views;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.LogicErrorException;
-import org.openshapa.db.MacshapaDatabase;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import java.awt.Frame;
 import javax.swing.JFrame;

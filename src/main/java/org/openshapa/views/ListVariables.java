@@ -1,10 +1,10 @@
 package org.openshapa.views;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.DataColumn;
-import org.openshapa.db.Database;
-import org.openshapa.db.ExternalColumnListListener;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.ExternalColumnListListener;
+import org.openshapa.models.db.SystemErrorException;
 import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;

@@ -4,7 +4,7 @@ import java.io.File;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.UIUtils;
 import org.uispec4j.Cell;

@@ -1,11 +1,11 @@
 package org.openshapa.controllers;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.DataCell;
-import org.openshapa.db.DataColumn;
-import org.openshapa.db.LogicErrorException;
-import org.openshapa.db.MacshapaDatabase;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.FileFilters.CSVFilter;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,11 +18,11 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.db.Database;
-import org.openshapa.db.FormalArgument;
-import org.openshapa.db.MatrixVocabElement;
-import org.openshapa.db.MatrixVocabElement.MatrixType;
-import org.openshapa.db.PredicateVocabElement;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.FormalArgument;
+import org.openshapa.models.db.MatrixVocabElement;
+import org.openshapa.models.db.MatrixVocabElement.MatrixType;
+import org.openshapa.models.db.PredicateVocabElement;
 import org.openshapa.util.FileFilters.MODBFilter;
 
 /**

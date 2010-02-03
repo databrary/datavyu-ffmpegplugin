@@ -1,15 +1,15 @@
 package org.openshapa.views.discrete.datavalues;
 
 import java.awt.event.FocusEvent;
-import org.openshapa.db.DataCell;
-import org.openshapa.db.SystemErrorException;
-import org.openshapa.db.TimeStamp;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.TimeStamp;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.DataValue;
-import org.openshapa.db.TimeStampDataValue;
+import org.openshapa.models.db.DataValue;
+import org.openshapa.models.db.TimeStampDataValue;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**

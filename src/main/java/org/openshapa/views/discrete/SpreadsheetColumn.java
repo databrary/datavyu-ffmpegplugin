@@ -1,11 +1,11 @@
 package org.openshapa.views.discrete;
 
 import java.util.logging.Level;
-import org.openshapa.db.DataColumn;
-import org.openshapa.db.Database;
-import org.openshapa.db.ExternalCascadeListener;
-import org.openshapa.db.ExternalDataColumnListener;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.ExternalCascadeListener;
+import org.openshapa.models.db.ExternalDataColumnListener;
+import org.openshapa.models.db.SystemErrorException;
 import java.awt.Dimension;
 import java.util.Vector;
 import javax.swing.JComponent;

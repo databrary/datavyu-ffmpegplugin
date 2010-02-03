@@ -1,15 +1,15 @@
 package org.openshapa.views;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.LogicErrorException;
-import org.openshapa.db.MacshapaDatabase;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import java.awt.Frame;
 import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.project.Project;
+import org.openshapa.models.project.Project;
 
 /**
  * The dialog for users to create a new project.

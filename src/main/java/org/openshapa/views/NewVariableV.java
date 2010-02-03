@@ -1,14 +1,14 @@
 package org.openshapa.views;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.DataColumn;
-import org.openshapa.db.Database;
-import org.openshapa.db.LogicErrorException;
-import org.openshapa.db.MatrixVocabElement;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.MatrixVocabElement;
+import org.openshapa.models.db.SystemErrorException;
 import org.apache.log4j.Logger;
-import org.openshapa.db.Column;
-import org.openshapa.db.NominalFormalArg;
+import org.openshapa.models.db.Column;
+import org.openshapa.models.db.NominalFormalArg;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**

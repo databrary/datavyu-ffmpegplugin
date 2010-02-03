@@ -3,11 +3,11 @@ package org.openshapa.views.discrete.datavalues;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
-import org.openshapa.db.DataCell;
-import org.openshapa.db.Matrix;
-import org.openshapa.db.PredDataValue;
-import org.openshapa.db.SystemErrorException;
-import org.openshapa.db.TextStringDataValue;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.Matrix;
+import org.openshapa.models.db.PredDataValue;
+import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.TextStringDataValue;
 
 /**
  * This class is the character editor of a TextStringDataValue.

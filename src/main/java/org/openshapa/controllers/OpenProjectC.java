@@ -6,8 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.project.OpenSHAPAProjectConstructor;
-import org.openshapa.project.Project;
+import org.openshapa.models.project.OpenSHAPAProjectConstructor;
+import org.openshapa.models.project.Project;
 import org.yaml.snakeyaml.Loader;
 import org.yaml.snakeyaml.Yaml;
 

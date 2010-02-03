@@ -5,7 +5,7 @@ import java.io.FilenameFilter;
 import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.project.Project;
+import org.openshapa.models.project.Project;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.MenuBar;

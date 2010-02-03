@@ -4,8 +4,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
-import org.openshapa.db.SystemErrorException;
-import org.openshapa.db.VocabElement;
+import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**

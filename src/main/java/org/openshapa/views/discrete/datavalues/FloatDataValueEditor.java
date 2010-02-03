@@ -1,12 +1,12 @@
 package org.openshapa.views.discrete.datavalues;
 
-import org.openshapa.db.DataCell;
-import org.openshapa.db.Matrix;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.Matrix;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import javax.swing.text.JTextComponent;
-import org.openshapa.db.FloatDataValue;
-import org.openshapa.db.PredDataValue;
+import org.openshapa.models.db.FloatDataValue;
+import org.openshapa.models.db.PredDataValue;
 import org.openshapa.util.Constants;
 
 /**

@@ -15,10 +15,10 @@ import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.DataCell;
-import org.openshapa.db.DataColumn;
-import org.openshapa.db.Database;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 

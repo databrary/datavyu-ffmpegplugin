@@ -4,7 +4,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.Column;
+import org.openshapa.models.db.Column;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.MenuBar;
 import org.uispec4j.OpenSHAPAUISpecTestCase;

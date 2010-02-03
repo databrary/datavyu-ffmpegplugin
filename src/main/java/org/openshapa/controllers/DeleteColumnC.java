@@ -3,10 +3,10 @@ package org.openshapa.controllers;
 import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.Cell;
-import org.openshapa.db.DataColumn;
-import org.openshapa.db.MacshapaDatabase;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
