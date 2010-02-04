@@ -162,7 +162,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
     /**
      * Method to open a video file for playback.
-     * 
+     *
      * @param videoFile
      *            The video file that this viewer is going to display to the
      *            user.
@@ -233,7 +233,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * inspected, with the delay between each measured; the two frames with the
      * smallest delay between them are assumed to represent the fps of the
      * entire movie.
-     * 
+     *
      * @return The best fps found in the first few frames.
      */
     private float correctFPS() {
@@ -259,7 +259,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
     /**
      * Sets parent data controller.
-     * 
+     *
      * @param dataController
      *            The data controller to be set as parent.
      */
@@ -280,13 +280,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      */
     public void setPlaybackSpeed(final float rate) {
         playRate = rate;
-        try {
-            int currentTime = movie.getTime();
-            movie.preroll(currentTime, rate);
-            movie.task((int) (32 / Math.abs(rate) * 100));
-        } catch (QTException e) {
-            logger.error("Failed to pre-roll", e);
-        }
     }
 
     /**
