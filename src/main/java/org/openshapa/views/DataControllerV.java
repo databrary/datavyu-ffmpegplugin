@@ -225,23 +225,29 @@ public final class DataControllerV extends OpenSHAPADialog
         try {
             setCurrentTime(time);
 
-            // Synchronise viewers only if we have exceded our pulse time.
-            if ((time - this.lastSync) > (SYNC_PULSE * clock.getRate())) {
-                long thresh = (long) (SYNC_THRESH * Math.abs(clock.getRate()));
-                lastSync = time;
-
+            if (fake) {
                 for (DataViewer v : viewers) {
-                    /* Use offsets to determine if the video file should start
-                     * playing.
-                     */
-                    if (time >= v.getOffset() && !v.isPlaying()) {
-                        v.seekTo(time - v.getOffset());
-                        v.play();
-                    }
+                    v.seekTo(time);
+                }
+            } else {
+                // Synchronise viewers only if we have exceded our pulse time.
+                if ((time - this.lastSync) > (SYNC_PULSE * clock.getRate())) {
+                    long thresh = (long) (SYNC_THRESH * Math.abs(clock.getRate()));
+                    lastSync = time;
 
-                    // Only synchronise viewers if we have a noticable drift.
-                    if (Math.abs(v.getCurrentTime() - time) > thresh) {
-                        v.seekTo(time - v.getOffset());
+                    for (DataViewer v : viewers) {
+                        /* Use offsets to determine if the video file should start
+                         * playing.
+                         */
+                        if (time >= v.getOffset() && !v.isPlaying()) {
+                            v.seekTo(time - v.getOffset());
+                            v.play();
+                        }
+
+                        // Only synchronise viewers if we have a noticable drift.
+                        if (Math.abs(v.getCurrentTime() - time) > thresh) {
+                            v.seekTo(time - v.getOffset());
+                        }
                     }
                 }
             }
@@ -279,15 +285,26 @@ public final class DataControllerV extends OpenSHAPADialog
         }
     }
 
+    private boolean fake = false;
+
     /**
      * @param rate Current (updated) clock rate.
      */
     public void clockRate(final float rate) {
         lblSpeed.setText(FloatUtils.doubleToFractionStr(new Double(rate)));
-        for (DataViewer viewer : viewers) {
-            viewer.setPlaybackSpeed(rate);
-            if (!clock.isStopped()) {
-                viewer.play();
+        if (rate > 2.0) {
+            fake = true;
+            for (DataViewer viewer : viewers) {
+                viewer.setPlaybackSpeed(rate);
+                viewer.stop();
+            }
+        } else {
+            fake = false;
+            for (DataViewer viewer : viewers) {
+                viewer.setPlaybackSpeed(rate);
+                if (!clock.isStopped()) {
+                    viewer.play();
+                }
             }
         }
     }
