@@ -208,6 +208,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param time Current clock time in milliseconds.
      */
     public void clockStart(final long time) {
+        resetSync();
         long playTime = time;
         if (playTime < windowPlayStart) {
             playTime = windowPlayStart;
@@ -219,6 +220,13 @@ public final class DataControllerV extends OpenSHAPADialog
             clock.start();
         }
         setCurrentTime(playTime);
+    }
+
+    /**
+     * Reset the sync.
+     */
+    private void resetSync() {
+        lastSync = 0;
     }
 
     /**
@@ -288,6 +296,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param time Current clock time in milliseconds.
      */
     public void clockStop(final long time) {
+        resetSync();
         setCurrentTime(time);
         for (DataViewer viewer : viewers) {
             viewer.stop();
@@ -299,6 +308,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param rate Current (updated) clock rate.
      */
     public void clockRate(final float rate) {
+        resetSync();
         lblSpeed.setText(FloatUtils.doubleToFractionStr(new Double(rate)));
 
         // If rate is faster than two times - we need to fake playback to give
@@ -328,6 +338,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param time Current clock time in milliseconds.
      */
     public void clockStep(final long time) {
+        resetSync();
         setCurrentTime(time);
         for (DataViewer viewer : viewers) {
             viewer.seekTo(time - viewer.getOffset());
@@ -349,6 +360,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param milliseconds The millisecond time.
      */
     public void setCurrentTime(final long milliseconds) {
+        resetSync();
         timestampLabel.setText(CLOCK_FORMAT.format(milliseconds));
         tracksControllerV.setCurrentTime(milliseconds);
     }
