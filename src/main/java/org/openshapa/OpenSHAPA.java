@@ -153,13 +153,19 @@ implements KeyEventDispatcher {
                 dataController.pressShuttleForward();
                 break;
             case KeyEvent.VK_NUMPAD1:
-                dataController.pressJogBack();
+                // We don't do the press Jog thing for jogging - as users often
+                // just hold the button down... Which causes weird problems when
+                // attempting to do multiple presses.
+                dataController.jogBackAction();
                 break;
             case KeyEvent.VK_NUMPAD5:
                 dataController.pressStop();
                 break;
             case KeyEvent.VK_NUMPAD3:
-                dataController.pressJogForward();
+                // We don't do the press Jog thing for jogging - as users often
+                // just hold the button down... Which causes weird problems when
+                // attempting to do multiple presses.
+                dataController.jogForwardAction();
                 break;
             case KeyEvent.VK_NUMPAD0:
                 dataController.pressCreateNewCellSettingOffset();

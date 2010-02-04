@@ -1,16 +1,15 @@
 package org.openshapa.views.continuous.quicktime;
 
-import java.awt.Component;
 import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
+
 import javax.swing.JFrame;
+
 import org.apache.log4j.Logger;
 import org.openshapa.util.Constants;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
+
 import quicktime.QTException;
 import quicktime.QTSession;
 import quicktime.app.view.QTFactory;
@@ -30,7 +29,7 @@ import quicktime.std.movies.media.Media;
  */
 public final class QTDataViewer extends JFrame implements DataViewer {
 
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
     //
     //
 
@@ -43,7 +42,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** How many frames to check when correcting the FPS. */
     private static final int CORRECTIONFRAMES = 5;
 
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
     //
     //
 
@@ -80,7 +79,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** Has the size of the window had its aspect ratio corrected? */
     private boolean updatedAspect;
 
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
     // [initialization]
     //
 
@@ -104,19 +103,19 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         initComponents();
     }
 
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
     // [interface] org.openshapa.views.continuous.DataViewer
     //
 
     /**
      * @return The duration of the movie in milliseconds. If -1 is returned, the
-     * movie's duration cannot be determined.
+     *         movie's duration cannot be determined.
      */
     public long getDuration() {
         try {
             if (movie != null) {
                 return (long) Constants.TICKS_PER_SECOND
-                     * (long) movie.getDuration() / (long) movie.getTimeScale();
+                        * (long) movie.getDuration() / movie.getTimeScale();
             }
         } catch (StdQTException ex) {
             logger.error("Unable to determine QT movie duration", ex);
@@ -128,8 +127,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     @Override
     public void validate() {
         // BugzID:753 - Locks the window to the videos aspect ratio.
-        if (this.aspectRatio > 0.0 && !updatedAspect) {
-            System.out.println("maintaining Aspect ratio");
+        if (aspectRatio > 0.0 && !updatedAspect) {
             setSize((int) (getHeight() * aspectRatio), getHeight());
             this.invalidate();
             updatedAspect = true;
@@ -147,7 +145,8 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     }
 
     /**
-     * @param offset The playback offset of the movie in milliseconds.
+     * @param offset
+     *            The playback offset of the movie in milliseconds.
      */
     public void setOffset(final long offset) {
         assert (offset >= 0);
@@ -164,8 +163,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /**
      * Method to open a video file for playback.
      *
-     * @param videoFile The video file that this viewer is going to display to
-     * the user.
+     * @param videoFile
+     *            The video file that this viewer is going to display to the
+     *            user.
      */
     public void setDataFeed(final File videoFile) {
         this.videoFile = videoFile;
@@ -179,18 +179,17 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             movie.setTimeScale(Constants.TICKS_PER_SECOND);
 
             visualTrack = movie.getIndTrackType(1,
-                                       StdQTConstants.visualMediaCharacteristic,
-                                       StdQTConstants.movieTrackCharacteristic);
+                    StdQTConstants.visualMediaCharacteristic,
+                    StdQTConstants.movieTrackCharacteristic);
 
             // Initialise the video to be no bigger than a quarter of the screen
-            int hScrnWidth = Toolkit.getDefaultToolkit()
-                                    .getScreenSize().width / 2;
+            int hScrnWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
             aspectRatio = movie.getBounds().getWidthF()
-                                    / movie.getBounds().getHeightF();
+                    / movie.getBounds().getHeightF();
 
             if (movie.getBounds().getWidth() > hScrnWidth) {
-                visualTrack.setSize(new QDDimension(hScrnWidth,
-                                                    hScrnWidth / aspectRatio));
+                visualTrack.setSize(new QDDimension(hScrnWidth, hScrnWidth
+                        / aspectRatio));
             }
 
             visualMedia = visualTrack.getMedia();
@@ -203,15 +202,14 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             this.setVisible(true);
 
             // Set the size of the window to be the same as the incoming video.
-            this.setBounds(this.getX(), this.getY(),
-                           movie.getBox().getWidth(),
-                           movie.getBox().getHeight());
+            this.setBounds(this.getX(), this.getY(), movie.getBox().getWidth(),
+                    movie.getBox().getHeight());
 
             // BugzID:928 - FPS calculations will fail when using H264.
             // Apparently the Quicktime for Java API does not support a whole
             // bunch of methods with H264.
             fps = (float) visualMedia.getSampleCount()
-                  / visualMedia.getDuration() * visualMedia.getTimeScale();
+                    / visualMedia.getDuration() * visualMedia.getTimeScale();
 
             if (visualMedia.getSampleCount() == 1.0
                     || visualMedia.getSampleCount() == 1) {
@@ -230,11 +228,12 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     }
 
     /**
-     * If there was a problem getting the fps, we use this method to fix it.
-     * The first few frames (number of which is specified by CORRECTIONFRAMES)
-     * are inspected, with the delay between each measured; the two frames with
-     * the smallest delay between them are assumed to represent the fps of the
+     * If there was a problem getting the fps, we use this method to fix it. The
+     * first few frames (number of which is specified by CORRECTIONFRAMES) are
+     * inspected, with the delay between each measured; the two frames with the
+     * smallest delay between them are assumed to represent the fps of the
      * entire movie.
+     *
      * @return The best fps found in the first few frames.
      */
     private float correctFPS() {
@@ -244,7 +243,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         for (int i = 0; i < CORRECTIONFRAMES; i++) {
             try {
                 TimeInfo timeObj = visualTrack.getNextInterestingTime(
-                    StdQTConstants.nextTimeStep, curTime, 1);
+                        StdQTConstants.nextTimeStep, curTime, 1);
                 float candidateFrameLen = timeObj.time - curFrameLen;
                 curFrameLen = timeObj.time;
                 curTime += curFrameLen;
@@ -260,7 +259,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
     /**
      * Sets parent data controller.
-     * @param dataController The data controller to be set as parent.
+     *
+     * @param dataController
+     *            The data controller to be set as parent.
      */
     public void setParentController(final DataController dataController) {
         parent = dataController;
@@ -274,10 +275,11 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     }
 
     /**
-     * @param rate The playback rate.
+     * @param rate
+     *            The playback rate.
      */
     public void setPlaybackSpeed(final float rate) {
-        this.playRate = rate;
+        playRate = rate;
     }
 
     /**
@@ -316,13 +318,14 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     }
 
     /**
-     * @param position Millisecond absolute position for track.
+     * @param position
+     *            Millisecond absolute position for track.
      */
     public void seekTo(final long position) {
         try {
             if (movie != null) {
                 TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
-                                                 position);
+                        position);
                 movie.setTime(time);
             }
         } catch (QTException e) {
@@ -332,28 +335,30 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
     /**
      * @return Current time in milliseconds.
-     *
-     * @throws QTException If error occurs accessing underlying implementation.
+     * @throws QTException
+     *             If error occurs accessing underlying implementation.
      */
     public long getCurrentTime() throws QTException {
         return movie.getTime();
     }
 
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
     // [generated]
     //
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed"
+    // desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -365,14 +370,13 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /**
      * Action to invoke when the QTDataViewer window is closing (clean itself
      * up).
-     *
-     * @param evt The event that triggered this action.
+     * 
+     * @param evt
+     *            The event that triggered this action.
      */
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {// GEN-FIRST:event_formWindowClosing
         try {
-            //removeAll();
             movie.stop();
-            //movie.disposeQTObject();
         } catch (QTException e) {
             logger.error("Couldn't kill", e);
         }
