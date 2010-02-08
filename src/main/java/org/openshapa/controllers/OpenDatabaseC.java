@@ -448,6 +448,15 @@ public final class OpenDatabaseC {
             // Split the line into tokens using a comma delimiter.
             String[] tokens = line.split(",");
 
+            // BugzID: 1075 - If the line ends with an escaped new line - add
+            // the next line to the current text field.
+            while (line.endsWith("\\")) {
+                line = csvFile.readLine();
+                String content = tokens[tokens.length - 1];
+                content = content.substring(0, content.length() - 1);
+                tokens[tokens.length - 1] = content + '\n' + line;
+            }
+
             // Create the data cell from line in the CSV file.
             DataCell cell = new DataCell(dc.getDB(),
                                          dc.getID(),

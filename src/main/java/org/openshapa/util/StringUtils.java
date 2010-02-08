@@ -18,6 +18,9 @@ public final class StringUtils {
             } else if (input.charAt(n) == ',') {
                 char[] buff = {'\\', ','};
                 result = result.concat(new String(buff));
+            } else if (input.charAt(n) == '\n') {
+                char[] buff = {'\\', '\n'};
+                result = result.concat(new String(buff));
             } else {
                 result += input.charAt(n);
             }
