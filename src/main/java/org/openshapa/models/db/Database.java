@@ -4664,7 +4664,7 @@ public abstract class Database
     /**
      * @return Whether the database has changed since our last edit.
      */
-    public boolean getHasChanged() {
+    public boolean isChanged() {
         return hasChanged;
     }
 

@@ -34,7 +34,7 @@ public class SetSelectedCellStartTimeC {
             for (DataCell c : view.getSelectedCells()) {
                 c.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND,
                                          milliseconds));
-                OpenSHAPA.getDB().replaceCell(c);
+                OpenSHAPA.getProject().getDB().replaceCell(c);
             }
         } catch (SystemErrorException se) {
             logger.error("Unable to set selected cell onset", se);

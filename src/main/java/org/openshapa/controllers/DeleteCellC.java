@@ -27,7 +27,7 @@ public final class DeleteCellC {
         SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
                                                             .getMainView()
                                                             .getComponent();
-        MacshapaDatabase model = OpenSHAPA.getDB();
+        MacshapaDatabase model = OpenSHAPA.getProject().getDB();
 
         view.deselectAll();
 

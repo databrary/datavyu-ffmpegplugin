@@ -173,7 +173,8 @@ public final class PredicateNameEditor extends DataValueEditor {
     public void updateModelValue(final long newPredID) {
         try {
             // Make a new predicate data value
-            PredDataValue pdv = new PredDataValue(OpenSHAPA.getDB());
+            PredDataValue pdv = new PredDataValue(OpenSHAPA.getProject()
+                                                           .getDB());
             if (newPredID == DBIndex.INVALID_ID) {
                 pdv.clearValue();
             } else {

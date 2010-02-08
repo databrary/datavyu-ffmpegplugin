@@ -27,7 +27,7 @@ public final class DeleteColumnC {
         SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
                                                             .getMainView()
                                                             .getComponent();
-        MacshapaDatabase model = OpenSHAPA.getDB();
+        MacshapaDatabase model = OpenSHAPA.getProject().getDB();
 
         try {
             // Deselect everything.
@@ -44,8 +44,9 @@ public final class DeleteColumnC {
                         OpenSHAPA.setLastCreatedCellId(0);
                     }
 
-                    OpenSHAPA.getDB().removeCell(c.getID());
-                    dc = OpenSHAPA.getDB().getDataColumn(dc.getID());
+                    OpenSHAPA.getProject().getDB().removeCell(c.getID());
+                    dc = OpenSHAPA.getProject().getDB()
+                                  .getDataColumn(dc.getID());
                 }
 
                 // Check if the column we are deleting was the last created

@@ -169,12 +169,11 @@ public final class NewProjectV extends OpenSHAPADialog {
             project.setProjectDescription(getProjectDescription());
 
             MacshapaDatabase database = new MacshapaDatabase();
-           
             database.setName(getProjectName());
             database.setDescription(getProjectDescription());
 
             OpenSHAPA.setProject(project);
-            OpenSHAPA.setDatabase(database);
+            OpenSHAPA.getProject().setDatabase(database);
             OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
                                                        .getMainView();
 

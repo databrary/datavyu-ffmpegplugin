@@ -130,7 +130,7 @@ implements ExternalDataCellListener, Selectable {
 
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
-        DataCell dc = (DataCell) OpenSHAPA.getDB().getCell(cellID);
+        DataCell dc = (DataCell) OpenSHAPA.getProject().getDB().getCell(cellID);
 
         // Check the selected state of the datacell
         // If it is already selected in the database, we need to inform
@@ -237,7 +237,7 @@ implements ExternalDataCellListener, Selectable {
      * @throws SystemErrorException
      */
     public long getOnsetTicks() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getDB().getCell(cellID);
+        DataCell dc = (DataCell) OpenSHAPA.getProject().getDB().getCell(cellID);
         return dc.getOnset().getTime();
     }
 
@@ -247,7 +247,7 @@ implements ExternalDataCellListener, Selectable {
      * @throws SystemErrorException
      */
     public long getOffsetTicks() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getDB().getCell(cellID);
+        DataCell dc = (DataCell) OpenSHAPA.getProject().getDB().getCell(cellID);
         return dc.getOffset().getTime();
     }
 
@@ -255,7 +255,7 @@ implements ExternalDataCellListener, Selectable {
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
     public long getOrdinal() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getDB().getCell(cellID);
+        DataCell dc = (DataCell) OpenSHAPA.getProject().getDB().getCell(cellID);
         return dc.getOrd();
     }
 

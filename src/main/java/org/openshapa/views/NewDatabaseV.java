@@ -170,7 +170,7 @@ public final class NewDatabaseV extends OpenSHAPADialog {
             model.setName(this.getDatabaseName());
             model.setDescription(this.getDatabaseDescription());
 
-            OpenSHAPA.setDatabase(model);
+            OpenSHAPA.getProject().setDatabase(model);
             OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
                                                        .getMainView();
 

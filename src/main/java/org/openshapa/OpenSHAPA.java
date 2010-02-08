@@ -207,9 +207,9 @@ implements KeyEventDispatcher {
      */
     public void showVariableList() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        listVarView = new ListVariables(mainFrame, false, db);
+        listVarView = new ListVariables(mainFrame, false, project.getDB());
         try {
-            db.registerColumnListListener(listVarView);
+            project.getDB().registerColumnListListener(listVarView);
         } catch (SystemErrorException e) {
             logger.error("Unable register column list listener: ", e);
         }
@@ -271,7 +271,7 @@ implements KeyEventDispatcher {
                                       .getContext()
                                       .getResourceMap(OpenSHAPA.class);
 
-        if (project.isChanged() || db.getHasChanged()) {
+        if (project.isChanged()) {
 
             String cancel = "Cancel";
             String ok = "OK";
@@ -397,12 +397,6 @@ implements KeyEventDispatcher {
             // Make a new project
             project = new Project();
 
-            // Initalise DB
-            db = new MacshapaDatabase();
-
-            // BugzID:449 - Set default database name.
-            db.setName("Database1");
-
             // Initalise last created values
             lastCreatedCellID = 0;
             lastCreatedColID = 0;
@@ -415,9 +409,16 @@ implements KeyEventDispatcher {
             consoleWriter = new PrintWriter(sIn);
             lastScriptsExecuted = new LinkedList<File>();
 
+            // Initalise DB
+            MacshapaDatabase db = new MacshapaDatabase();
+            // BugzID:449 - Set default database name.
+            db.setName("Database1");
+            project.setDatabase(db);
+
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.
             db.setTicks(Constants.TICKS_PER_SECOND);
+
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
         } catch (IOException e) {
@@ -456,7 +457,6 @@ implements KeyEventDispatcher {
      */
     public void cleanUpForTests() {
         view.getSpreadsheetPanel().removeAll();
-        db = null;
         consoleOutputStream = null;
         consoleWriter = null;
         listVarView = null;
@@ -523,16 +523,6 @@ implements KeyEventDispatcher {
     }
 
     /**
-     * Gets the single instance database associated with the currently running
-     * OpenSHAPA.
-     *
-     * @return The single database in use with this instance of OpenSHAPA
-     */
-    public static MacshapaDatabase getDB() {
-        return OpenSHAPA.getApplication().db;
-    }
-
-    /**
      * Gets the single instance project associated with the currently running
      * with OpenSHAPA.
      *
@@ -561,16 +551,6 @@ implements KeyEventDispatcher {
      */
     public static DataControllerV getDataController() {
         return OpenSHAPA.getApplication().dataController;
-    }
-
-    /**
-     * Sets the single instance of the database assocaited with the currently
-     * running OpenSHAPA to the defined parameter.
-     *
-     * @param newDB The new database to use for this instance of OpenSHAPA.
-     */
-    public static void setDatabase(final MacshapaDatabase newDB) {
-        OpenSHAPA.getApplication().db = newDB;
     }
 
     /**
@@ -738,9 +718,6 @@ implements KeyEventDispatcher {
 
     /** The logger for OpenSHAPA. */
     private static Logger logger = Logger.getLogger(OpenSHAPA.class);
-
-    /** The current database we are working on. */
-    private MacshapaDatabase db;
 
     /** output stream for messages coming from the scripting engine. */
     private PipedInputStream consoleOutputStream;

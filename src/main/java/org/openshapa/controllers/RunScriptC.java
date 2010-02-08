@@ -80,7 +80,7 @@ public final class RunScriptC {
             rubyEngine.getContext().setWriter(OpenSHAPA.getConsoleWriter());
 
             // Place a reference to the database within the scripting engine.
-            rubyEngine.put("db", OpenSHAPA.getDB());
+            rubyEngine.put("db", OpenSHAPA.getProject().getDB());
 
             FileReader reader = new FileReader(rubyFile);
             rubyEngine.eval(reader);

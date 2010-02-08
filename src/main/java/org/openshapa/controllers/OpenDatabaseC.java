@@ -78,7 +78,7 @@ public final class OpenDatabaseC {
         // BugzID:449 - Set filename in spreadsheet window and database if the
         // database name is undefined.
         try {
-            Database db = OpenSHAPA.getDB();
+            Database db = OpenSHAPA.getProject().getDB();
 
             if (db.getName().equals("Undefined")) {
                 String dbName = sourceFile.getName();
@@ -118,7 +118,7 @@ public final class OpenDatabaseC {
             MacshapaODBReader modbr = new MacshapaODBReader(sourceStream,
                                                             listStream,
                                                             errorStream);
-            OpenSHAPA.setDatabase(modbr.readDB());
+            OpenSHAPA.getProject().setDatabase(modbr.readDB());
         } catch (FileNotFoundException e) {
             logger.error("Unable to load macshapa database:'" + sFile + "'", e);
         } catch (SystemErrorException e) {
@@ -138,7 +138,7 @@ public final class OpenDatabaseC {
      */
     public void openAsCSV(final File sFile) {
         try {
-            Database db = OpenSHAPA.getDB();
+            Database db = OpenSHAPA.getProject().getDB();
             BufferedReader csvFile = new BufferedReader(new FileReader(sFile));
 
             // Read each line of the CSV file.

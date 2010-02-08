@@ -2,12 +2,13 @@ package org.openshapa.models.project;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.openshapa.models.db.MacshapaDatabase;
 
 /**
  * This class represents a project in OpenSHAPA. A project manages the different
  * files used by OpenSHAPA, such as database files and media files.
  */
-public class Project {
+public final class Project {
 
     /** Project specification version. */
     public static final int VERSION = 1;
@@ -19,6 +20,9 @@ public class Project {
     private String databaseDir;
     /** Database file name. */
     private String databaseFile;
+    /** The current database we are working on. */
+    private MacshapaDatabase db;
+
     /**
      * Key   : file path
      * Value : viewer settings for the medial file
@@ -33,6 +37,24 @@ public class Project {
         viewerSettings = new HashMap();
         changed = false;
         newProject = true;
+    }
+
+    /**
+     * Sets the database associated with this project.
+     *
+     * @param newDB The new database to use with this project.
+     */
+    public void setDatabase(final MacshapaDatabase newDB) {
+        this.db = newDB;
+    }
+
+    /**
+     * Gets the database associated with this project.
+     *
+     * @return The single database to use with this project.
+     */
+    public MacshapaDatabase getDB() {
+        return this.db;
     }
 
     public void setDatabasePath(String directory, String filename) {
@@ -64,7 +86,7 @@ public class Project {
     }
 
     public boolean isChanged() {
-        return changed;
+        return (changed || (db != null && db.isChanged()));
     }
 
     public void setChanged(boolean changed) {

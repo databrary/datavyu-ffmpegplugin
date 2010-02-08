@@ -107,7 +107,8 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
                 VocabElement newVE = m.getDB().getVocabElement(m.getMveID());
                 boolean hasPredChanged = hasPredicateVocabChanged(m);
 
-                DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
+                DataCell c = (DataCell) OpenSHAPA.getProject().getDB()
+                                                 .getCell(parentCell);
 
                 // No editors exist yet - build some to begin with.
                 if (allEditors.size() == 0) {
@@ -208,7 +209,8 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
             if (parentCell != -1) {
                 // method names don't reflect usage - we didn't really create this
                 // cell just now.
-                DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
+                DataCell c = (DataCell) OpenSHAPA.getProject().getDB()
+                                                 .getCell(parentCell);
                 OpenSHAPA.setLastCreatedColId(c.getItsColID());
                 OpenSHAPA.setLastSelectedCellId(parentCell);
             }

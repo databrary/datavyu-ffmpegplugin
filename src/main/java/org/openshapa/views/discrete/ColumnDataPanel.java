@@ -130,8 +130,8 @@ implements KeyEventDispatcher {
         try {
             for (SpreadsheetCell cell : cells) {
                 // Need to deregister data cell listener here.
-                OpenSHAPA.getDB().deregisterDataCellListener(cell.getCellID(),
-                                                             cell);
+                OpenSHAPA.getProject().getDB()
+                         .deregisterDataCellListener(cell.getCellID(), cell);
                 this.remove(cell);
             }
 
@@ -150,7 +150,8 @@ implements KeyEventDispatcher {
         try {
             for (SpreadsheetCell cell : cells) {
                 if (cell.getCellID() == cellID) {
-                    OpenSHAPA.getDB().deregisterDataCellListener(cellID, cell);
+                    OpenSHAPA.getProject().getDB()
+                             .deregisterDataCellListener(cellID, cell);
                     cells.remove(cell);
                     this.remove(cell);
                     break;

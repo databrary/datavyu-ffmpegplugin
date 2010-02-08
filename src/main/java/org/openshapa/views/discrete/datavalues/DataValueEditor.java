@@ -361,7 +361,8 @@ public abstract class DataValueEditor extends EditorComponent {
     public void updateDatabase() {
         try {
             // reget the parentCell in case onset or offset have been changed.
-            DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
+            DataCell c = (DataCell) OpenSHAPA.getProject().getDB()
+                                             .getCell(parentCell);
 
             // Update the OpenSHAPA database with the latest values.
             if (parentMatrix != null && parentPredicate == null) {

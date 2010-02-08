@@ -93,7 +93,8 @@ implements FocusListener, KeyListener {
             if (parentCell != -1) {
                 // method names don't reflect usage - we didn't really create this
                 // cell just now.
-                DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
+                DataCell c = (DataCell) OpenSHAPA.getProject().getDB()
+                                                 .getCell(parentCell);
                 OpenSHAPA.setLastCreatedColId(c.getItsColID());
                 OpenSHAPA.setLastSelectedCellId(parentCell);
             }

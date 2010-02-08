@@ -76,7 +76,8 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     public void resetValue() {
         try {
             // reget the parentCell in case other data items have changed
-            DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
+            DataCell c = (DataCell) OpenSHAPA.getProject().getDB()
+                                             .getCell(parentCell);
 
             switch (dataSourceType) {
                 case Onset:
@@ -103,7 +104,8 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     public void updateDatabase() {
         try {
             // Reget the parentCell in case other data items have changed
-            DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
+            DataCell c = (DataCell) OpenSHAPA.getProject().getDB()
+                                             .getCell(parentCell);
 
             TimeStampDataValue tsdv = (TimeStampDataValue) this.getModel();
             switch (dataSourceType) {
