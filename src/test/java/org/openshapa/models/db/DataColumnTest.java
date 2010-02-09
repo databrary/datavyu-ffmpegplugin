@@ -3,10 +3,12 @@ package org.openshapa.models.db;
 import java.io.PrintStream;
 import java.util.Vector;
 import junitx.util.PrivateAccessor;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
+
 
 /**
  * Unit test for simple App.
@@ -69,7 +71,7 @@ public final class DataColumnTest {
      * Sets up the test fixture (i.e. the data available to all tests), this is
      * performed before each test case.
      */
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         f_mve0 = new MatrixVocabElement(db, "f_col0");
@@ -187,7 +189,7 @@ public final class DataColumnTest {
      * Tears down the test fixture (i.e. the data available to all tests), this
      * is performed after each test case.
      */
-    @After
+    @AfterMethod
     public void tearDown() {
     }
 
@@ -270,24 +272,24 @@ public final class DataColumnTest {
         assertTrue(t_col.getItsMveType() == MatrixVocabElement.MatrixType.TEXT);
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure0() throws SystemErrorException {
         dc = new DataColumn(null, "f_col",
                 MatrixVocabElement.MatrixType.FLOAT);
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure1() throws SystemErrorException {
         dc = new DataColumn(db, "", MatrixVocabElement.MatrixType.FLOAT);
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure2() throws SystemErrorException {
         dc = new DataColumn(db, " invalid ",
                 MatrixVocabElement.MatrixType.FLOAT);
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure3() throws SystemErrorException {
         DataColumn fc = new DataColumn(db, "f_col",
                 MatrixVocabElement.MatrixType.FLOAT);
@@ -299,7 +301,7 @@ public final class DataColumnTest {
         dc = new DataColumn(db, "f_col", MatrixVocabElement.MatrixType.FLOAT);
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure4() throws SystemErrorException {
         dc = new DataColumn(db, "valid",
                 MatrixVocabElement.MatrixType.UNDEFINED);
@@ -469,37 +471,37 @@ public final class DataColumnTest {
         assertTrue(t_col1.getVarLen() == t_mve1.getVarLen());
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test5ArgConstructorFailure0() throws SystemErrorException {
         dc = new DataColumn(null, "f_col2", false, true, f_mve2ID);
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test5ArgConstructorFailure1() throws SystemErrorException {
         dc = new DataColumn(db, null, false, true, f_mve2ID);
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test5ArgConstructorFailure2() throws SystemErrorException {
         dc = new DataColumn(db, "", false, true, f_mve2ID);
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test5ArgConstructorFailure3() throws SystemErrorException {
         dc = new DataColumn(db, " invalid ", false, true, f_mve2ID);
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test5ArgConstructorFailure4() throws SystemErrorException {
         dc = new DataColumn(db, "f_col3", false, true, f_mve2ID);
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test5ArgConstructorFailure5() throws SystemErrorException {
         dc = new DataColumn(db, "f_col2", false, true, DBIndex.INVALID_ID);
     }
 
-    @Test(expected = SystemErrorException.class)
+    @Test(expectedExceptions = SystemErrorException.class)
     public void test5ArgConstructorFailure6() throws SystemErrorException {
         dc = new DataColumn(db, "f_col2", false, true, f_mve2ID + 1);
     }

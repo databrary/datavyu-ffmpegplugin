@@ -1,10 +1,11 @@
 package org.openshapa.models.db;
 
 import junitx.util.PrivateAccessor;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  * Unit tests for the undefined data value class.
@@ -24,14 +25,16 @@ public class UndefinedDataValueTest extends DataValueTest {
     public UndefinedDataValueTest() {
     }
 
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         uDataValue =  new UndefinedDataValue(db);
+        System.out.println("Set up test.");
     }
 
-    @After
+    @AfterMethod
     public void tearDown() {
+        System.out.println("tore down test.");
     }
 
     /**
@@ -54,8 +57,8 @@ public class UndefinedDataValueTest extends DataValueTest {
      * Test of getItsValue method, of class UndefinedDataValue.
      */
     @Test
-    public void testGetItsValue() throws SystemErrorException {        
-        assertEquals(uDataValue.getItsValue(), "<val>");        
+    public void testGetItsValue() throws SystemErrorException {
+        assertEquals(uDataValue.getItsValue(), "<val>");
     }
 
     /**
@@ -63,7 +66,7 @@ public class UndefinedDataValueTest extends DataValueTest {
      */
     @Test
     public void testSetItsValue() throws Exception {
-        uDataValue.setItsValue("<moo>");        
+        uDataValue.setItsValue("<moo>");
         String itsValue = (String) PrivateAccessor.getField(uDataValue,
                                                             "itsValue");
         assertEquals(itsValue, "<moo>");
@@ -74,6 +77,7 @@ public class UndefinedDataValueTest extends DataValueTest {
      */
     @Test
     public void testToString() throws SystemErrorException {
+        System.out.println("testToString");
         assertEquals(uDataValue.toString(), "<val>");
     }
 
@@ -115,7 +119,7 @@ public class UndefinedDataValueTest extends DataValueTest {
     /**
      * Tests the equals method of an undefined data value.
      *
-     * @throws org.openshapa.db.SystemErrorException If Unable to
+     * @throws org.openshapa.models.db.SystemErrorException If Unable to
      * create or manipulate undefined data values.
      * @throws java.lang.CloneNotSupportedException If the clone method is not
      * implemented for the undefined data value.

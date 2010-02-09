@@ -3,9 +3,10 @@ package org.openshapa.models.db;
 import java.io.PrintStream;
 import java.util.Vector;
 import junitx.util.PrivateAccessor;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  * Test class for the ColPred class.
@@ -21,7 +22,7 @@ public class ColPredTest {
     public ColPredTest() {
     }
 
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         

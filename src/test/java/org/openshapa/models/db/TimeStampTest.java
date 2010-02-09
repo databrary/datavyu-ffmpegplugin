@@ -1,9 +1,7 @@
 package org.openshapa.models.db;
 
 import junitx.util.PrivateAccessor;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 /**
  *
@@ -11,14 +9,6 @@ import org.junit.Test;
 public class TimeStampTest {
 
     public TimeStampTest() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
     }
 
     /**

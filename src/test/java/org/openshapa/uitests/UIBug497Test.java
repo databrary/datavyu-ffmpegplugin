@@ -1,18 +1,15 @@
 package org.openshapa.uitests;
 
-import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.views.discrete.SpreadsheetPanel;
-import java.util.Vector;
+import org.fest.swing.util.Platform;
+import java.awt.event.KeyEvent;
+import org.fest.swing.core.KeyPressInfo;
+import org.fest.swing.core.matcher.JTextComponentMatcher;
+import org.fest.swing.fixture.JLabelFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
 import org.openshapa.util.UIUtils;
-import org.uispec4j.Cell;
-import org.uispec4j.Clipboard;
-import org.uispec4j.Key;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.TextBox;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Bug 497:
@@ -20,102 +17,83 @@ import org.uispec4j.Window;
  * Example: 999999999999999999-239839231-2398392310820831
  * Pressing -ve on such a number results in unpredictable behaviour.
  */
-public final class UIBug497Test extends OpenSHAPAUISpecTestCase {
+public class UIBug497Test extends OpenSHAPATestClass {
 
     /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
+     * Bug 497 integer test.
      */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception on exception
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    static {
-      UISpec4J.init();
-    }
-
-    /**
-     * Bug 497 test.
-     *
-     * @throws java.lang.Exception on any error
-     */
-    public void testBug497Integer() throws Exception {
+    @Test
+    public void testBug497Integer() {
+        System.err.println("testBug497Integer");
         String varName = "intVar";
         String varType = "INTEGER";
-        String varRadio = "integer";
+        String varRadio = varType.toLowerCase() + "TypeButton";
 
         String testInput = "999999999999999999-239839231-2398392310820831";
+        String expectedTestOutput = "2999999999999999999";
 
-        // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        //1. Create new INTEGER variable,
-        //open spreadsheet and check that it's there
-        UIUtils.createNewVariable(window, varName, varRadio);
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-        //3. Create new cell, check that they have been created
-        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
 
-        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-        //5. Check copy pasting
-        Clipboard.putText(testInput);
-        // Delete existing cell contents.
-        Cell c = cells.elementAt(0);
-        c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
-        // Paste new contents.
-        TextBox t = c.getValue();
-        t.pasteFromClipboard();
-        assertTrue(t.getText().equalsIgnoreCase("2999999999999999999"));
+        // 1. Get spreadsheet
+        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+
+        //2. Create new TEXT variable
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+
+        // Find column header
+        JLabelFixture column = ssPanel.panel("headerView").label();
+
+        //3. Create cell, paste text
+        //a. Create cell
+        column.click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
+
+        //b. Paste text
+        UIUtils.setClipboard(testInput);
+        JTextComponentFixture cell = mainFrameFixture.textBox(JTextComponentMatcher.withText("<val>"));
+        cell.click();
+        cell.pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_V).modifiers(Platform.controlOrCommandMask()));
+
+        //c. Check text
+        Assert.assertEquals(cell.text(), expectedTestOutput);
     }
 
     /**
-     * Bug 497 test.
-     *
-     * @throws java.lang.Exception on any error
+     * Bug 497 float test.
      */
-    public void testBug497Float() throws Exception {
+    @Test
+    public void testBug497Float() {
+        System.err.println("testBug497Float");
         String varName = "floatVar";
         String varType = "FLOAT";
-        String varRadio = "float";
+        String varRadio = varType.toLowerCase() + "TypeButton";
 
         String testInput = "999999999999999999-239839231-2398392310820831";
+        String expectedTestOutput = "999999999999999.0";
 
-        // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        //1. Create new FLOAT variable,
-        //open spreadsheet and check that it's there
-        UIUtils.createNewVariable(window, varName, varRadio);
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-        //3. Create new cell, check that they have been created
-        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
 
-        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-        //5. Check copy pasting
-        Clipboard.putText(testInput);
-        // Delete existing cell contents.
-        Cell c = cells.elementAt(0);
-        c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
-        // Paste new contents.
-        TextBox t = c.getValue();
-        t.pasteFromClipboard();
-        assertTrue(t.getText().equalsIgnoreCase("999999999999999.0"));
+        // 1. Get spreadsheet
+        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+
+        //2. Create new TEXT variable
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+
+        // Find column header
+        JLabelFixture column = ssPanel.panel("headerView").label();
+
+        //3. Create cell, paste text
+        //a. Create cell
+        column.click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
+
+        //b. Paste text
+        UIUtils.setClipboard(testInput);
+        JTextComponentFixture cell = mainFrameFixture.textBox(JTextComponentMatcher.withText("<val>"));
+        cell.click();
+        cell.pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_V).modifiers(Platform.controlOrCommandMask()));
+
+        //c. Check text
+        Assert.assertEquals(cell.text(), expectedTestOutput);
     }
-
 }
-

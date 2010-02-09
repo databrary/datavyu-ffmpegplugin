@@ -1,14 +1,12 @@
 package org.openshapa.models.db;
 
-import org.openshapa.models.db.MatrixVocabElement.MatrixType;
 import java.io.PrintStream;
 import java.util.Vector;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  *
@@ -26,7 +24,7 @@ public class DataCellTest extends CellTest {
     public DataCellTest() {
     }
 
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
 
@@ -43,7 +41,7 @@ public class DataCellTest extends CellTest {
         verbose = true;
     }
 
-    @After
+    @AfterMethod
     public void tearDown() {
     }
 

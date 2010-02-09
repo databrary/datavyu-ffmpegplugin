@@ -1,58 +1,53 @@
 package org.openshapa.uitests;
 
-import org.openshapa.views.discrete.SpreadsheetPanel;
-import java.util.Vector;
+import java.awt.event.KeyEvent;
+import org.fest.swing.core.KeyPressInfo;
+import org.fest.swing.core.matcher.JTextComponentMatcher;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.util.Platform;
 import org.openshapa.util.UIUtils;
-import org.uispec4j.Cell;
-import org.uispec4j.Clipboard;
-import org.uispec4j.Key;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.TextBox;
-import org.uispec4j.Window;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Bug 496:
  * Pasting "2398392310820831" into a new cell, shows 23983 as highlighted.
  * Expected: Nothing highlighted or entire value highlighted.
  */
-public final class UIBug496Test extends OpenSHAPAUISpecTestCase {
+public final class UIBug496Test extends OpenSHAPATestClass {
+
     /**
      * Bug 496 test.
      *
      * @throws java.lang.Exception on any error
      */
+    @Test
     public void testBug496() throws Exception {
-        String varName = "intVar";
+        String varName = "i";
         String varType = "INTEGER";
-        String varRadio = "integer";
-
+        String varRadio = varType.toLowerCase() + "TypeButton";
         String testInput = "2398392310820831";
 
-         // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        //1. Create new INTEGER variable,
-        //open spreadsheet and check that it's there
-        UIUtils.createNewVariable(window, varName, varRadio);
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-        //3. Create new cell, check that they have been created
-        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+        // Retrieve the components
+        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-        //5. Check copy pasting
-        Clipboard.putText(testInput);
-        // Delete existing cell contents.
-        Cell c = cells.elementAt(0);
-        c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
-        // Paste new contents.
-        TextBox t = c.getValue();
-        t.pasteFromClipboard();
-        assertTrue(t.getText().equalsIgnoreCase("2398392310820831"));
-        assertTrue(t.getSelectedText() == null);
+        // 1. Create new INTEGER variable, open spreadsheet and check that it's
+        // there.
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        ssPanel.panel("headerView").label().text().startsWith(varName);
+
+        // Create new variable.
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
+
+        //b. Paste text
+        UIUtils.setClipboard(testInput);
+        JTextComponentFixture cell = mainFrameFixture
+                              .textBox(JTextComponentMatcher.withText("<val>"));
+        cell.click();
+        cell.pressAndReleaseKey(KeyPressInfo.keyCode(
+                    KeyEvent.VK_V).modifiers(Platform.controlOrCommandMask()));
+        Assert.assertEquals(cell.text(), testInput);
     }
 }
 

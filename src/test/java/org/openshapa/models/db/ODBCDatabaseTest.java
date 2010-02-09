@@ -1,11 +1,11 @@
 package org.openshapa.models.db;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import static org.testng.AssertJUnit.*;
 
 /**
  *
@@ -30,12 +30,12 @@ public class ODBCDatabaseTest extends DatabaseTest {
     public static void tearDownClass() throws Exception {
     }
 
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
     }
 
-    @After
+    @AfterMethod
     public void tearDown() {
         db = null;
     }

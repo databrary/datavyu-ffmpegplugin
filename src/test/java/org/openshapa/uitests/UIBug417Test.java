@@ -1,17 +1,20 @@
 package org.openshapa.uitests;
 
+
+import javax.swing.JPanel;
+
+import org.fest.swing.core.GenericTypeMatcher;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JOptionPaneFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Column;
+import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
-import org.uispec4j.interception.BasicHandler;
+import org.testng.annotations.Test;
 
 /**
  * Bug 417 Test
@@ -19,147 +22,141 @@ import org.uispec4j.interception.BasicHandler;
  * already existing variables.
  * Also make sure variations of reserved vocabulary are allowed.
  */
-public final class UIBug417Test extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception on any error
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    static {
-      UISpec4J.init();
-    }
+public class UIBug417Test extends OpenSHAPATestClass {
 
     /**
      * Different cell variable types.
      */
-    private static final String [] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
-        };
+    private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
+            "NOMINAL", "MATRIX", "FLOAT" };
 
-    /**
+     /**
      * Resource map to access error messages in resources.
      */
     private ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(Column.class);
 
-
-    /**
+     /**
      * Test creating a variable with the same name
-     * Type is selected randomly since it should not affect this.
-     * @throws java.lang.Exception on any error
+     * Type is selected randomly since it should not affect this
      */
-    public void testDuplicateName() throws Exception {
-        final String varName = "textVar";
+    @Test
+    public void testDuplicateName() {
+        System.err.println("testDuplicateName");
+        String varName = "textVar";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
-        String varRadio = varType.toLowerCase();
+        String varRadio = varType.toLowerCase() + "TypeButton";
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2. Create new variable,
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
-        newVarWindow.getButton("Ok").click();
-        //check that correct column has been created
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-        assertNotNull(ss.getSpreadsheetColumn(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
-                .equals(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
-                .equals(varType));
-        //check that column has no cells
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
+        // 2. Check that a column has been created
+        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+
+        // Find our new column header
+        ssPanel.panel("headerView").label().text().startsWith(varName);
+
         // 3. Create variable with same name
-        //Test should fail regardless of variable type, so select new variable
-        //type
-        varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
-        varRadio = varType.toLowerCase();
-        newVarWindow = WindowInterceptor.run(menuBar.getMenu("Spreadsheet")
-                .getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
-        WindowInterceptor
-                .init(newVarWindow.getButton("Ok").triggerClick())
-                .process(BasicHandler.init()
-                    .assertContainsText(rMap.getString("Error.exists", varName))
-                    .triggerButtonClick("OK"))
-                .run();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Variable")
+                .click();
+        // Find the new variable dialog
+        DialogFixture newVariableDialog = mainFrameFixture.dialog();
+        // Check if the new variable dialog is actually visible
+        newVariableDialog.requireVisible();
+        // Get the variable value text box
+        JTextComponentFixture variableValueTextBox = newVariableDialog
+                .textBox();
+        // The variable value box should have no text in it
+        variableValueTextBox.requireEmpty();
+        // It should be editable
+        variableValueTextBox.requireEditable();
+        // Type in some text.
+        variableValueTextBox.enterText(varName);
+        // Get the radio button for text variables
+        newVariableDialog.radioButton(varRadio).click();
+        // Check that it is selected
+        newVariableDialog.radioButton(varRadio).requireSelected();
+        // Click "OK"
+        newVariableDialog.button("okButton").click();
+
+        JOptionPaneFixture warning = newVariableDialog.optionPane();
+        warning.requireTitle("Warning:");
+        warning.requireMessage(rMap.getString("Error.exists", varName));
+        warning.buttonWithText("OK").click();
     }
 
-    /**
+     /**
      * Test creating a variable with a reserved name.
-     * @throws java.lang.Exception on any error
      */
-    public void testReservedName() throws Exception {
-        final String varName = "ge";
+    @Test
+    public void testReservedName() {
+        System.err.println("testReservedName");
+        String varName = "ge";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
-        String varRadio = varType.toLowerCase();
+        String varRadio = varType.toLowerCase() + "TypeButton";
+        // 1. Create new variable
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Variable")
+                .click();
+        // Find the new variable dialog
+        DialogFixture newVariableDialog = mainFrameFixture.dialog();
+        // Check if the new variable dialog is actually visible
+        newVariableDialog.requireVisible();
+        // Get the variable value text box
+        JTextComponentFixture variableValueTextBox = newVariableDialog
+                .textBox();
+        // The variable value box should have no text in it
+        variableValueTextBox.requireEmpty();
+        // It should be editable
+        variableValueTextBox.requireEditable();
+        // Type in some text.
+        variableValueTextBox.enterText(varName);
+        // Get the radio button for text variables
+        newVariableDialog.radioButton(varRadio).click();
+        // Check that it is selected
+        newVariableDialog.radioButton(varRadio).requireSelected();
+        // Click "OK"
+        newVariableDialog.button("okButton").click();
 
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2. Create new variable,
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
-        WindowInterceptor
-                .init(newVarWindow.getButton("Ok").triggerClick())
-                .process(BasicHandler.init()
-                    .assertContainsText(rMap.getString("Error.system", varName))
-                    .triggerButtonClick("OK"))
-                .run();
+        JOptionPaneFixture warning = newVariableDialog.optionPane();
+        warning.requireTitle("Warning:");
+        warning.requireMessage(rMap.getString("Error.system", varName));
+        warning.buttonWithText("OK").click();
     }
 
-    /**
-     * Test invalid column name.
-     * @throws java.lang.Exception on any error
+     /**
+     *  Test invalid column name.
      */
-    public void testInvalidColumnName() throws Exception {
-        final String varName = "(hello)";
+    @Test
+    public void testInvalidColumnName() {
+        System.err.println("testInvalidColumnName");
+        String varName = "(hello)";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
-        String varRadio = varType.toLowerCase();
+        String varRadio = varType.toLowerCase() + "TypeButton";
+        // 1. Create new variable
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Variable")
+                .click();
+        // Find the new variable dialog
+        DialogFixture newVariableDialog = mainFrameFixture.dialog();
+        // Check if the new variable dialog is actually visible
+        newVariableDialog.requireVisible();
+        // Get the variable value text box
+        JTextComponentFixture variableValueTextBox = newVariableDialog
+                .textBox();
+        // The variable value box should have no text in it
+        variableValueTextBox.requireEmpty();
+        // It should be editable
+        variableValueTextBox.requireEditable();
+        // Type in some text.
+        variableValueTextBox.enterText(varName);
+        // Get the radio button for text variables
+        newVariableDialog.radioButton(varRadio).click();
+        // Check that it is selected
+        newVariableDialog.radioButton(varRadio).requireSelected();
+        // Click "OK"
+        newVariableDialog.button("okButton").click();
 
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2. Create new variable,
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
-        WindowInterceptor
-                .init(newVarWindow.getButton("Ok").triggerClick())
-                .process(BasicHandler.init()
-                    .assertContainsText(rMap.getString(
-                    "Error.invalid", varName))
-                    .triggerButtonClick("OK"))
-                .run();
-
-        window.dispose();
+        JOptionPaneFixture warning = newVariableDialog.optionPane();
+        warning.requireTitle("Warning:");
+        warning.requireMessage(rMap.getString("Error.invalid", varName));
+        warning.buttonWithText("OK").click();
     }
 }

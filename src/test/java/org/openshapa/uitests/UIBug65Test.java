@@ -1,85 +1,62 @@
 package org.openshapa.uitests;
 
+import org.fest.swing.util.Platform;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Vector;
-import org.uispec4j.interception.WindowInterceptor;
+import org.fest.swing.core.KeyPressInfo;
+import org.fest.swing.core.matcher.JTextComponentMatcher;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JLabelFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
+import org.openshapa.util.UIUtils;
+import org.openshapa.views.discrete.SpreadsheetColumn;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.Column;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.Trigger;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
-import org.uispec4j.interception.FileChooserHandler;
-import org.uispec4j.interception.WindowHandler;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Bug 65 Test
  * Columns should always stay in the order they are
  * inserted regardless of show spreadsheet is invoked.
  */
-public final class UIBug65Test extends OpenSHAPAUISpecTestCase {
-    static {
-        UISpec4J.setWindowInterceptionTimeLimit(4000000);
-        UISpec4J.setAssertionTimeLimit(4000);
-        UISpec4J.init();
-    }
+public class UIBug65Test extends OpenSHAPATestClass {
 
     /**
      * Test that the order of columns remains the same.
-     *
-     * @throws java.lang.Exception on any error
      */
-    public void testColumnOrder() throws Exception {
-        //Preparation
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-
+    @Test
+    public void testColumnOrder() {
+        System.err.println("testBug493");
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
-        assertTrue(demoFile.exists());
+        Assert.assertTrue(demoFile.exists());
+        
+        //1. Run script to populate
+        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
 
-        // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+        jfcf.selectFile(demoFile).approve();
 
-        // 2. Save column vector
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) (
-                window.getUIComponents(
-                Spreadsheet.class)[0].getAwtComponent())));
-        assertTrue(ss.getColumns().size() > 0);
-
-        Vector<Column> originalColumns = ss.getColumns();
-
+        //Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        scriptConsole.button("closeButton").click();
+        
+        //2. Save column vector
+        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanel sp = (SpreadsheetPanel)ssPanel.component();
+        Vector<SpreadsheetColumn> vecSCBefore = sp.getColumns();
+        
         //3. Press "Show spreadsheet"
-        menuBar.getMenu("Spreadsheet").getSubMenu("Show Spreadsheet").click();
-
-        //3. Check that columns are the same
-        Spreadsheet ss2 = new Spreadsheet(((SpreadsheetPanel) (
-                window.getUIComponents(
-                Spreadsheet.class)[0].getAwtComponent())));
-
-        Vector<Column> newColumns = ss2.getColumns();
-
-        assertTrue(newColumns.size() == originalColumns.size());
-
-        for (int i = 0; i < newColumns.size(); i++) {
-            assertTrue(newColumns.elementAt(i).getHeaderName()
-                    .equals(originalColumns.elementAt(i).getHeaderName()));
-            assertTrue(newColumns.elementAt(i).getHeaderType()
-                    .equals(originalColumns.elementAt(i).getHeaderType()));
-        }
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Show Spreadsheet").click();
+        
+        //4. Get columns again and confirm unchanged
+        JPanelFixture ssPanel2 = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanel sp2 = (SpreadsheetPanel)ssPanel.component();
+        Vector<SpreadsheetColumn> vecSCAfter = sp.getColumns();
+        
+        Assert.assertEquals(vecSCBefore, vecSCAfter);
     }
 }

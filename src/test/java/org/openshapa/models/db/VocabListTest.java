@@ -2,10 +2,11 @@ package org.openshapa.models.db;
 
 import java.io.PrintStream;
 import java.util.Vector;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  *
@@ -19,14 +20,14 @@ public class VocabListTest {
     public VocabListTest() {
     }
 
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         outStream = System.out;
         verbose = true;
         odb = new ODBCDatabase();
     }
 
-    @After
+    @AfterMethod
     public void tearDown() {
     }
 
@@ -119,9 +120,9 @@ public class VocabListTest {
     /**
      * Tests a single argument constructor failure for this class.
      *
-     * @throws org.openshapa.db.SystemErrorException
+     * @throws org.openshapa.models.db.SystemErrorException
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void Test1ArgConstructorFailure() throws SystemErrorException {
         VocabList vl = new VocabList(null);
     }
@@ -129,7 +130,7 @@ public class VocabListTest {
     /**
      * Tests a single argument constructor for this class.
      *
-     * @throws org.openshapa.db.SystemErrorException if unable to
+     * @throws org.openshapa.models.db.SystemErrorException if unable to
      * correctly create the vocablist.
      */
     @Test
@@ -145,7 +146,7 @@ public class VocabListTest {
      * Allocate a database, and verify that getPreds() and getMatricies() return
      * null when run on an empty vocab list.
      *
-     * @throws org.openshapa.db.SystemErrorException If unable to
+     * @throws org.openshapa.models.db.SystemErrorException If unable to
      * correctly get predicates or matricies.
      */
     @Test
@@ -161,7 +162,7 @@ public class VocabListTest {
      * Insert several system and/or non matrixType.MATRIX matricies, and run
      * getMatricies() & getPreds() again.  They should still return null.
      *
-     * @throws org.openshapa.db.SystemErrorException If unable to
+     * @throws org.openshapa.models.db.SystemErrorException If unable to
      * correctly get predicates or matricies.
      */
     @Test
@@ -217,7 +218,7 @@ public class VocabListTest {
      * Insert several system and/or non matrixType.MATRIX matricies, and run
      * getMatricies() & getPreds() again.  They should still return null.
      *
-     * @throws org.openshapa.db.SystemErrorException
+     * @throws org.openshapa.models.db.SystemErrorException
      */
     @Test
     public void TestGetPredsAndMatricies3()
@@ -1841,7 +1842,7 @@ public class VocabListTest {
      * to see if the ID exists in the vocab list first, and thus this error will
      * only appear if there is a bug in the hash table.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestRemoveVocabElement02() throws SystemErrorException {
         odb.vl.removeVocabElement(1);
     }
@@ -1849,7 +1850,7 @@ public class VocabListTest {
     /**
      * Verify that removeVocabElement() fails when supplied with INVALID_ID.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestRemoveVocabElement01() throws SystemErrorException {
         odb.vl.removeVocabElement(DBIndex.INVALID_ID);
     }
@@ -1858,7 +1859,7 @@ public class VocabListTest {
      * Verify that getVocabElement fails when supplied with an id that does not
      * exist in the vocab list.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestGetVocabElementFailure06() throws SystemErrorException {
         odb.vl.getVocabElement(1);
     }
@@ -1867,7 +1868,7 @@ public class VocabListTest {
      * Verify that getVocabElement fails when supplied with an invalid vocab
      * element name.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestGetVocabElementFailure05() throws SystemErrorException {
         odb.vl.getVocabElement("(a)");
     }
@@ -1875,7 +1876,7 @@ public class VocabListTest {
     /**
      * Verify that getVocabElement fails when invalid string is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestGetVocabElementFailure04() throws SystemErrorException {
         odb.vl.getVocabElement("pve0");
     }
@@ -1883,7 +1884,7 @@ public class VocabListTest {
     /**
      * Verify that getVocabElement fails when empty string is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestGetVocabElementFailure03() throws SystemErrorException {
         odb.vl.getVocabElement("");
     }
@@ -1891,7 +1892,7 @@ public class VocabListTest {
     /**
      * Verify that getVocabElement fails when NULL is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestGetVocabElementFailure02() throws SystemErrorException {
         odb.vl.getVocabElement(null);
     }
@@ -1899,7 +1900,7 @@ public class VocabListTest {
     /**
      * Verify that getVocabElement faile when an INVALID_ID is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestGetVocabElementFailure01() throws SystemErrorException {
         odb.vl.getVocabElement(DBIndex.INVALID_ID);
     }
@@ -1907,7 +1908,7 @@ public class VocabListTest {
     /**
      * Verify that inVocabList fails when invalid string is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestInVocabListFailure04() throws SystemErrorException {
         odb.vl.inVocabList("<invalid>");
     }
@@ -1915,7 +1916,7 @@ public class VocabListTest {
     /**
      * Verify that inVocabList fails when empty string is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestInVocabListFailure03() throws SystemErrorException {
         odb.vl.inVocabList("");
     }
@@ -1923,7 +1924,7 @@ public class VocabListTest {
     /**
      * Verify that inVocabList fails when NULL is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestInVocabListFailure02() throws SystemErrorException {
         odb.vl.inVocabList(null);
     }
@@ -1931,7 +1932,7 @@ public class VocabListTest {
     /**
      * Verify that inVocabList faile when an INVALID_ID is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestInVocabListFailure01() throws SystemErrorException {
         odb.vl.inVocabList(DBIndex.INVALID_ID);
     }
@@ -1939,7 +1940,7 @@ public class VocabListTest {
     /**
      * Verify that matrixInVocabList fails when invalid string is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestMatrixInVocabListFailure04() throws SystemErrorException {
         odb.vl.matrixInVocabList("<invalid>");
     }
@@ -1947,7 +1948,7 @@ public class VocabListTest {
     /**
      * Verify that matrixInVocabList fails when empty string is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestMatrixInVocabListFailure03() throws SystemErrorException {
         odb.vl.matrixInVocabList("");
     }
@@ -1955,7 +1956,7 @@ public class VocabListTest {
     /**
      * Verify that matrixInVocabList fails when NULL is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestMatrixInVocabListFailure02() throws SystemErrorException {
         odb.vl.matrixInVocabList(null);
     }
@@ -1963,7 +1964,7 @@ public class VocabListTest {
     /**
      * Verify that matrixInVocabList faile when an INVALID_ID is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestMatrixInVocabListFailure01() throws SystemErrorException {
         odb.vl.matrixInVocabList(DBIndex.INVALID_ID);
     }
@@ -1971,7 +1972,7 @@ public class VocabListTest {
     /**
      * Verify that predInVocabList fails when invalid string is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestPredInVocabListFailure04() throws SystemErrorException {
         odb.vl.predInVocabList("<invalid>");
     }
@@ -1979,7 +1980,7 @@ public class VocabListTest {
     /**
      * Verify that predInVocabList fails when empty string is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestPredInVocabListFailure03() throws SystemErrorException {
         odb.vl.predInVocabList("");
     }
@@ -1987,7 +1988,7 @@ public class VocabListTest {
     /**
      * Verify that predInVocabList fails when NULL is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestPredInVocabListFailure02() throws SystemErrorException {
         odb.vl.predInVocabList(null);
     }
@@ -1995,7 +1996,7 @@ public class VocabListTest {
     /**
      * Verify that predInVocabList faile when an INVALID_ID is supplied.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestpredInVocabListFailure01() throws SystemErrorException {
         odb.vl.predInVocabList(DBIndex.INVALID_ID);
     }
@@ -2004,7 +2005,7 @@ public class VocabListTest {
      * Verify that replaceVocabElement fails when a vocab element with an ID
      * that doesn't exist in the vocab list is attempted to be replaced.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestReplaceVocabElementFailure05()
     throws SystemErrorException {
         PredicateVocabElement p6 = ConstructTestPred(odb, "p6", null,
@@ -2018,7 +2019,7 @@ public class VocabListTest {
      * different database is attemped to be replaced in a vocab list with a
      * differing database.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestReplaceVocabElementFailure04()
     throws SystemErrorException {
         Database other = new ODBCDatabase();
@@ -2031,7 +2032,7 @@ public class VocabListTest {
      * Verify that replaceVocabElement fails when a VocabElement with a id field
      * set to INVALID_ID.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestReplaceVocabElementFailure03()
     throws SystemErrorException {
         PredicateVocabElement p6 = ConstructTestPred(odb, "p6", null,
@@ -2043,7 +2044,7 @@ public class VocabListTest {
      * Verify that replaceVocabElement fails when null is supplied as the
      * argument.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestReplaceVocabElementFailure02()
     throws SystemErrorException {
         odb.vl.replaceVocabElement(null);
@@ -2052,7 +2053,7 @@ public class VocabListTest {
     /**
      * Try to replace an element that isn't in the vocab list.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestReplaceVocabElementFailure01()
     throws SystemErrorException {
         PredicateVocabElement p6 = ConstructTestPred(odb, "p6", null,
@@ -2066,7 +2067,7 @@ public class VocabListTest {
      * Try to replace a vocab list entry with a VocabElement of a different
      * sub-class.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestVLManagement1()
     throws SystemErrorException {
         PredicateVocabElement p6 = ConstructTestPred(odb, "p6", null, null,
@@ -2088,7 +2089,7 @@ public class VocabListTest {
      *
      * @throws SystemErrorException Expected exception.
      */
-    @Test (expected=SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestVLManagement0()
     throws SystemErrorException {
 

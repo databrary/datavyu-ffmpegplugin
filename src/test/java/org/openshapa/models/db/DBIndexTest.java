@@ -2,10 +2,11 @@ package org.openshapa.models.db;
 
 import java.io.PrintStream;
 import junitx.util.PrivateAccessor;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  *
@@ -18,14 +19,14 @@ public class DBIndexTest {
     public DBIndexTest() {
     }
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public void setUpClass() {
         outStream = System.out;
         verbose = true;
     }
 
-    @After
-    public void tearDown() {
+    @AfterClass
+    public void tearDownClass() {
     }
 
     @Test

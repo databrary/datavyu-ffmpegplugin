@@ -1,126 +1,98 @@
 package org.openshapa.uitests;
 
 
+
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Vector;
-import org.uispec4j.interception.WindowInterceptor;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.SpreadsheetColumnFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.Column;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.Trigger;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
-import org.uispec4j.interception.FileChooserHandler;
-import org.uispec4j.interception.WindowHandler;
-
-
-
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Test for the Deletion of columns.
- *
  */
-public final class UIDeleteColumnsTest extends OpenSHAPAUISpecTestCase {
-    /**
+public class UIDeleteColumnsTest extends OpenSHAPATestClass {
+     /**
      * Test for deletion of columns.
      * Delete columns one by one.
-     * @throws java.lang.Exception on any error
      */
-    public void testDeleteSingleColumns() throws Exception {
+    @Test
+    public void testDeleteSingleColumns() {
+        System.err.println("testDeleteSingleColumns");
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
-        assertTrue(demoFile.exists());
+        Assert.assertTrue(demoFile.exists());
 
-         // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
+        //1. Run script to populate
+        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
 
-        // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+        jfcf.selectFile(demoFile).approve();
 
+        //Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        scriptConsole.button("closeButton").click();
 
-        // 2. Sequentially select each column and delete.
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
+        //2. Sequentially select each column and delete
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        Vector<Column> cols = ss.getColumns();
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel)jPanel.component());
 
-        int numOfCols = cols.size();
-        for (int i = 0; i < numOfCols; i++) {
-            Column col = cols.lastElement();
-            String colName = col.getHeaderName();
-            col.select();
-            menuBar.getMenu("Spreadsheet").getSubMenu("Delete Variable")
-                    .click();
+        Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
+        for (SpreadsheetColumnFixture col : cols) {
+            col.header().click();
+            mainFrameFixture.menuItemWithPath("Spreadsheet").click();
+            mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Variable").click();
 
-            //Confirm that this particular column no longer exists
-            cols = ss.getColumns();
-            for (Column c : cols) {
-                assertFalse(c.getHeaderName().equals(colName));
-            }
+            //Confirm column no longer exists
+            Assert.assertNull(ssPanel.column(col.getColumnName()));
         }
-        assertTrue(cols.isEmpty());
+        Assert.assertTrue(ssPanel.numOfColumns() == 0);
     }
 
     /**
      * Test for deletion of columns.
-     * Delete all columns at once.
-     * @throws java.lang.Exception on any error
+     * Delete all columns at once
      */
-    public void testDeleteMultipleColumns() throws Exception {
+    @Test
+    public void testDeleteMultipleColumns() {
+        System.err.println("testDeleteMultipleColumns");
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
-        assertTrue(demoFile.exists());
+        Assert.assertTrue(demoFile.exists());
 
-         // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
+        //1. Run script to populate
+        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
 
-        // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+        jfcf.selectFile(demoFile).approve();
 
+        //Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        scriptConsole.button("closeButton").click();
 
-        // 2. Sequentially select each column and delete.
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
+        //2. Select all columns and delete
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        Vector<Column> cols = ss.getColumns();
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel)jPanel.component());
 
-        for (Column col : cols) {
-            col.select();
+        Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
+
+        for (SpreadsheetColumnFixture col : cols) {
+            mainFrameFixture.pressKey(KeyEvent.VK_CONTROL);
+            col.header().click();
         }
-
-        menuBar.getMenu("Spreadsheet").getSubMenu("Delete Variable").click();
-
-        cols = ss.getColumns();
-        assertTrue(cols.isEmpty());
+        mainFrameFixture.releaseKey(KeyEvent.VK_CONTROL);
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Variables").click();
+        Assert.assertTrue(ssPanel.numOfColumns() == 0);
     }
 }
