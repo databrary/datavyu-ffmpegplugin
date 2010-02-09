@@ -39,6 +39,9 @@ public final class Project {
     /** Is this a new project? */
     private boolean newProject;
 
+    /**
+     * Constructor.
+     */
     public Project() {
         viewerSettings = new HashMap();
         changed = false;
@@ -90,21 +93,42 @@ public final class Project {
         changed = true;
     }
 
+    /**
+     * @return The name of this project.
+     */
     public String getProjectName() {
         return projectName;
     }
 
+    /**
+     * @return True if a change has been made to either the project or
+     * the database, false otherwise.
+     */
     public boolean isChanged() {
         return (changed || (db != null && db.isChanged()));
     }
 
-    public void setChanged(boolean changed) {
-        this.changed = changed;
+    /**
+     * Mark the project as changed.
+     *
+     * @param isChanged The state to use for the change status of the project.
+     * true = project has changed, false = project is unchanged.
+     */
+    public void setChanged(final boolean isChanged) {
+        this.changed = isChanged;
     }
 
-    public void setProjectName(String projectName) {
-        assert(projectName != null);
-        String name = projectName;
+    /**
+     * Sets the name of the project.
+     *
+     * @param newProjectName The new name to use for this project.
+     */
+    public void setProjectName(final String newProjectName) {
+        // Check Pre-conditions.
+        assert (newProjectName != null);
+
+        // Set the name of the project.
+        String name = newProjectName;
         int match = name.lastIndexOf(".shapa");
         if (match != -1) {
             name = name.substring(0, match);
@@ -142,6 +166,9 @@ public final class Project {
         return viewerSettings;
     }
 
+    /**
+     * @return The description of this project.
+     */
     public String getProjectDescription() {
         return projectDescription;
     }
@@ -184,12 +211,21 @@ public final class Project {
         return vs;
     }
 
+    /**
+     * @return True if the project is new, false otherwise.
+     */
     public boolean isNewProject() {
         return newProject;
     }
 
-    public void setNewProject(boolean newProject) {
-        this.newProject = newProject;
+    /**
+     * Sets the new state of this project.
+     *
+     * @param isNewProject The new state to use for this project: True if the
+     * project is new, false otherwise.
+     */
+    public void setNewProject(final boolean isNewProject) {
+        this.newProject = isNewProject;
     }
 
     public void saveProject() {
