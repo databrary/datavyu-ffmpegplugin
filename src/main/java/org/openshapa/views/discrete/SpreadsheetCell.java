@@ -389,8 +389,8 @@ implements ExternalDataCellListener, Selectable {
             if (selected) {
                 // method names don't reflect usage - we didn't really create
                 // this cell just now.
-                OpenSHAPA.setLastCreatedColId(cell.getItsColID());
-                OpenSHAPA.setLastSelectedCellId(cell.getID());
+                OpenSHAPA.getProject().setLastCreatedColId(cell.getItsColID());
+                OpenSHAPA.getProject().setLastSelectedCellId(cell.getID());
                 OpenSHAPA.getDataController()
                          .setFindTime(dcell.getOnset().getTime());
                 OpenSHAPA.getDataController()

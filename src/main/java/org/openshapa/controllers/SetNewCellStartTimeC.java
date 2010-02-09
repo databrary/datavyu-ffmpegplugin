@@ -23,7 +23,7 @@ public final class SetNewCellStartTimeC {
         try {
             Database model = OpenSHAPA.getProject().getDB();
 
-            DataCell cell = (DataCell) model.getCell(OpenSHAPA
+            DataCell cell = (DataCell) model.getCell(OpenSHAPA.getProject()
                                                        .getLastCreatedCellId());
             cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND,
                                          milliseconds));

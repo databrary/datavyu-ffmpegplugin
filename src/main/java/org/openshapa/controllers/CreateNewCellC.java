@@ -75,7 +75,7 @@ public final class CreateNewCellC {
 
                             cell.setOnset(sourceCell.getOnset());
                             cell.setOffset(sourceCell.getOffset());
-                            OpenSHAPA
+                            OpenSHAPA.getProject()
                                   .setLastCreatedCellId(model.appendCell(cell));
                         }
 
@@ -107,9 +107,9 @@ public final class CreateNewCellC {
         // the last created cell and need to set the previous cells offset...
         // But only if it is not 0.
         try {
-            if (OpenSHAPA.getLastCreatedCellId() != 0) {
+            if (OpenSHAPA.getProject().getLastCreatedCellId() != 0) {
                 DataCell dc = (DataCell) model
-                                     .getCell(OpenSHAPA.getLastCreatedCellId());
+                    .getCell(OpenSHAPA.getProject().getLastCreatedCellId());
                 TimeStamp ts = dc.getOffset();
                 if (ts.getTime() == 0) {
                     ts.setTime(Math.max(0, (milliseconds - 1)));
@@ -181,11 +181,14 @@ public final class CreateNewCellC {
             cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
 
             if (onset > 0) {
-                OpenSHAPA.setLastCreatedCellId(model.appendCell(cell));
+                OpenSHAPA.getProject()
+                         .setLastCreatedCellId(model.appendCell(cell));
             } else {
-                OpenSHAPA.setLastCreatedCellId(model.insertdCell(cell, 1));
+                OpenSHAPA.getProject()
+                         .setLastCreatedCellId(model.insertdCell(cell, 1));
             }
-            OpenSHAPA.setLastCreatedColId(col.getID());
+            OpenSHAPA.getProject()
+                     .setLastCreatedColId(col.getID());
 
             newcelladded = true;
             if (!multiadd) {
@@ -209,14 +212,15 @@ public final class CreateNewCellC {
                 if (multiadd) {
                     cell.setOnset(dc.getOnset());
                     cell.setOffset(dc.getOffset());
-                    OpenSHAPA.setLastCreatedCellId(model
-                                       .insertdCell(cell, dc.getOrd() + 1));
+                    OpenSHAPA.getProject().setLastCreatedCellId(model
+                                          .insertdCell(cell, dc.getOrd() + 1));
                 } else {
                     cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND,
                                                 onset));
-                    OpenSHAPA.setLastCreatedCellId(model.appendCell(cell));
+                    OpenSHAPA.getProject()
+                             .setLastCreatedCellId(model.appendCell(cell));
                 }
-                OpenSHAPA.setLastCreatedColId(cell.getItsColID());
+                OpenSHAPA.getProject().setLastCreatedColId(cell.getItsColID());
                 newcelladded = true;
                 if (!multiadd) {
                     break;
@@ -227,17 +231,17 @@ public final class CreateNewCellC {
         if (!newcelladded && multiadd) {
             // else check for Situation 3: User is or was editing an
             // existing cell and has requested a new cell
-            if (OpenSHAPA.getLastSelectedCellId() != 0) {
-                DataCell dc = (DataCell) model
-                                 .getCell(OpenSHAPA.getLastSelectedCellId());
+            if (OpenSHAPA.getProject().getLastSelectedCellId() != 0) {
+                DataCell dc = (DataCell) model.getCell(OpenSHAPA
+                              .getProject().getLastSelectedCellId());
                 DataCell cell = new DataCell(model,
                                              dc.getItsColID(),
                                              dc.getItsMveID());
                 cell.setOnset(dc.getOnset());
                 cell.setOffset(dc.getOffset());
-                OpenSHAPA.setLastCreatedCellId(model
-                                       .insertdCell(cell, dc.getOrd() + 1));
-                OpenSHAPA.setLastCreatedColId(cell.getItsColID());
+                OpenSHAPA.getProject().setLastCreatedCellId(model
+                                      .insertdCell(cell, dc.getOrd() + 1));
+                OpenSHAPA.getProject().setLastCreatedColId(cell.getItsColID());
                 newcelladded = true;
             }
         }
@@ -252,21 +256,20 @@ public final class CreateNewCellC {
                 return;
             }
 
-            if (OpenSHAPA.getLastCreatedColId() == 0) {
-                OpenSHAPA.setLastCreatedColId(model.getDataColumns()
-                                                   .get(0)
-                                                   .getID());
+            if (OpenSHAPA.getProject().getLastCreatedColId() == 0) {
+                OpenSHAPA.getProject()
+                .setLastCreatedColId(model.getDataColumns().get(0).getID());
             }
 
             // would throw by now if no columns exist
-            DataColumn col = model.getDataColumn(OpenSHAPA
+            DataColumn col = model.getDataColumn(OpenSHAPA.getProject()
                                                     .getLastCreatedColId());
 
             DataCell cell = new DataCell(col.getDB(),
                                          col.getID(),
                                          col.getItsMveID());
             cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
-            OpenSHAPA.setLastCreatedCellId(model.appendCell(cell));
+            OpenSHAPA.getProject().setLastCreatedCellId(model.appendCell(cell));
         }
         view.deselectAll();
         view.relayoutCells();

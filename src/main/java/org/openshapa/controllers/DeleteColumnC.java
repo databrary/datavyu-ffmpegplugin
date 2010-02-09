@@ -40,8 +40,8 @@ public final class DeleteColumnC {
 
                     // Check if the cell we are deleting is the last created
                     // cell... Default this back to 0.
-                    if (c.getID() == OpenSHAPA.getLastCreatedCellId()) {
-                        OpenSHAPA.setLastCreatedCellId(0);
+                    if (c.getID() == OpenSHAPA.getProject().getLastCreatedCellId()) {
+                        OpenSHAPA.getProject().setLastCreatedCellId(0);
                     }
 
                     OpenSHAPA.getProject().getDB().removeCell(c.getID());
@@ -51,8 +51,8 @@ public final class DeleteColumnC {
 
                 // Check if the column we are deleting was the last created
                 // column... Default this back to 0 if it is.
-                if (dc.getID() == OpenSHAPA.getLastCreatedColId()) {
-                    OpenSHAPA.setLastCreatedColId(0);
+                if (dc.getID() == OpenSHAPA.getProject().getLastCreatedColId()) {
+                    OpenSHAPA.getProject().setLastCreatedColId(0);
                 }
 
                 // All cells in the column removed - now delete the column.

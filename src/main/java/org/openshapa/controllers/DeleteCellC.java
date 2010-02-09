@@ -35,8 +35,9 @@ public final class DeleteCellC {
             for (DataCell c : cellsToDelete) {
                 // Check if the cell we are deleting is the last created cell...
                 // Default this back to 0 if it is.
-                if (c.getID() == OpenSHAPA.getLastCreatedCellId()) {
-                    OpenSHAPA.setLastCreatedCellId(0);
+                if (c.getID() == OpenSHAPA.getProject()
+                                          .getLastCreatedCellId()) {
+                    OpenSHAPA.getProject().setLastCreatedCellId(0);
                 }
 
                 model.removeCell(c.getID());

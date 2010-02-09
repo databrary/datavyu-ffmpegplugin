@@ -95,8 +95,8 @@ implements FocusListener, KeyListener {
                 // cell just now.
                 DataCell c = (DataCell) OpenSHAPA.getProject().getDB()
                                                  .getCell(parentCell);
-                OpenSHAPA.setLastCreatedColId(c.getItsColID());
-                OpenSHAPA.setLastSelectedCellId(parentCell);
+                OpenSHAPA.getProject().setLastCreatedColId(c.getItsColID());
+                OpenSHAPA.getProject().setLastSelectedCellId(parentCell);
             }
 
             myEditor.focusGained(fe);

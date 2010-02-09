@@ -22,6 +22,12 @@ public final class Project {
     private String databaseFile;
     /** The current database we are working on. */
     private MacshapaDatabase db;
+    /** The id of the last datacell that was created. */
+    private long lastCreatedCellID;
+    /** The id of the last selected cell. */
+    private long lastSelectedCellID;
+    /** The id of the last datacell that was created. */
+    private long lastCreatedColID;
 
     /**
      * Key   : file path
@@ -37,6 +43,9 @@ public final class Project {
         viewerSettings = new HashMap();
         changed = false;
         newProject = true;
+        lastCreatedCellID = 0;
+        lastCreatedColID = 0;
+        lastSelectedCellID = 0;
     }
 
     /**
@@ -188,4 +197,51 @@ public final class Project {
         newProject = false;
     }
 
+    /**
+     * @return The id of the last created cell.
+     */
+    public long getLastCreatedCellId() {
+        return lastCreatedCellID;
+    }
+
+    /**
+     * Sets the id of the last created cell to the specified parameter.
+     *
+     * @param newId The Id of the newly created cell.
+     */
+    public void setLastCreatedCellId(final long newId) {
+        lastCreatedCellID = newId;
+    }
+
+    /**
+     * @return The id of the last selected cell.
+     */
+    public long getLastSelectedCellId() {
+        return lastSelectedCellID;
+    }
+
+    /**
+     * Sets the id of the last selected cell to the specified parameter.
+     *
+     * @param newId The id of hte newly selected cell.
+     */
+    public void setLastSelectedCellId(final long newId) {
+        lastSelectedCellID = newId;
+    }
+
+    /**
+     * @return The id of the last created column.
+     */
+    public long getLastCreatedColId() {
+        return lastCreatedColID;
+    }
+
+    /**
+     * Sets the id of the last created column to the specified parameter.
+     *
+     * @param newId The Id of the newly created column.
+     */
+    public void setLastCreatedColId(final long newId) {
+        lastCreatedColID = newId;
+    }
 }

@@ -397,12 +397,6 @@ implements KeyEventDispatcher {
             // Make a new project
             project = new Project();
 
-            // Initalise last created values
-            lastCreatedCellID = 0;
-            lastCreatedColID = 0;
-
-            lastSelectedCellID = 0;
-
             // Build output streams for the scripting engine.
             consoleOutputStream = new PipedInputStream();
             PipedOutputStream sIn = new PipedOutputStream(consoleOutputStream);
@@ -554,54 +548,6 @@ implements KeyEventDispatcher {
     }
 
     /**
-     * @return The id of the last created cell.
-     */
-    public static long getLastCreatedCellId() {
-        return OpenSHAPA.getApplication().lastCreatedCellID;
-    }
-
-    /**
-     * Sets the id of the last created cell to the specified parameter.
-     *
-     * @param newId The Id of the newly created cell.
-     */
-    public static void setLastCreatedCellId(final long newId) {
-        OpenSHAPA.getApplication().lastCreatedCellID = newId;
-    }
-
-    /**
-     * @return The id of the last selected cell.
-     */
-    public static long getLastSelectedCellId() {
-        return OpenSHAPA.getApplication().lastSelectedCellID;
-    }
-
-    /**
-     * Sets the id of the last selected cell to the specified parameter.
-     *
-     * @param newId The id of hte newly selected cell.
-     */
-    public static void setLastSelectedCellId(final long newId) {
-        OpenSHAPA.getApplication().lastSelectedCellID = newId;
-    }
-
-    /**
-     * @return The id of the last created column.
-     */
-    public static long getLastCreatedColId() {
-        return OpenSHAPA.getApplication().lastCreatedColID;
-    }
-
-    /**
-     * Sets the id of the last created column to the specified parameter.
-     *
-     * @param newId The Id of the newly created column.
-     */
-    public static void setLastCreatedColId(final long newId) {
-        OpenSHAPA.getApplication().lastCreatedColID = newId;
-    }
-
-    /**
      * @return The list of last scripts that have been executed.
      */
     public static LinkedList<File> getLastScriptsExecuted() {
@@ -724,15 +670,6 @@ implements KeyEventDispatcher {
 
     /** input stream for displaying messages from the scripting engine. */
     private PrintWriter consoleWriter;
-
-    /** The id of the last datacell that was created. */
-    private long lastCreatedCellID;
-
-    /** The id of the last selected cell. */
-    private long lastSelectedCellID;
-
-    /** The id of the last datacell that was created. */
-    private long lastCreatedColID;
 
     /** The list of scripts that the user has last invoked. */
     private LinkedList<File> lastScriptsExecuted;
