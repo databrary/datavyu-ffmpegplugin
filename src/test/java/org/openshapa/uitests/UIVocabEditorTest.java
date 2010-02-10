@@ -45,7 +45,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor is being populated.
      */
-    //@Test
+    @Test
     public void testLoading() {
         System.err.println("testLoading");
         //1. Check that vocab editor is empty
@@ -79,7 +79,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate.
      */
-    //@Test
+    @Test
     public void testNewPredicateNoEdit() {
         System.err.println("testNewPredicateNoEdit");
         //1. Create new predicate
@@ -106,7 +106,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and replacing VE name.
      */
-    //@Test
+    @Test
     public void testNewPredicateReplaceVEName() {
         System.err.println("testNewPredicateReplaceVEName");
         //1. Create new predicate
@@ -143,7 +143,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and adding to VE name.
      */
-    //@Test
+    @Test
     public void testNewPredicateAddingVEName() {
         System.err.println("testNewPredicateAddingVEName");
         //1. Create new predicate
@@ -176,7 +176,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and adding to VE argument.
      */
-    //@Test
+    @Test
     public void testNewPredicateAddingVEArgument() {
         System.err.println("testNewPredicateAddingVEArgument");
         //1. Create new predicate
@@ -218,7 +218,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and adding to VE argument.
      */
-    //@Test
+    @Test
     public void testNewPredicateReplaceVEArgument() {
         System.err.println("testNewPredicateReplaceVEArgument");
         //1. Create new predicate
@@ -260,7 +260,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor reverting with multiple changes.
      */
-    //@Test
+    @Test
     public void testRevertButton1() throws BadLocationException {
         System.err.println("testRevertButton1");
 
@@ -320,7 +320,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor reverting with single addition changes.
      */
-    //@Test
+    @Test
     public void testRevertButton2() throws BadLocationException {
         System.err.println("testRevertButton2");
 
@@ -441,7 +441,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor reverting with standard deleting.
      */
-    //@Test
+    @Test
     public void testRevertButton3a() throws BadLocationException {
         System.err.println("testRevertButton3a");
 
@@ -705,7 +705,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/o script.
      */
-    //@Test
+    @Test
     public void testAddNewPredicateAndRevert1() {
         System.err.println("testAddNewPredicateAndRevert1");
         //1. Create new predicate
@@ -728,7 +728,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/ script.
      */
-    //@Test
+    @Test
     public void testAddNewPredicateAndRevert2() {
         System.err.println("testAddNewPredicateAndRevert2");
         //1. Create new variables using script
@@ -766,7 +766,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/o script.
      */
-    //@Test
+    @Test
     public void testAddNewMatrixAndRevert1() {
         System.err.println("testAddNewMatrixAndRevert1");
         //1. Create new predicate
@@ -789,7 +789,7 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/ script.
      */
-    //@Test
+    @Test
     public void testAddNewMatrixAndRevert2() {
         System.err.println("testAddNewMatrixAndRevert2");
         //1. Create new variables using script
@@ -871,6 +871,6 @@ public class UIVocabEditorTest extends OpenSHAPATestClass {
         mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
         SpreadsheetCellFixture cell = matrixCol.cell(1);
         String argName = veDialog.allVocabElements().lastElement().getArgument(0);
-        Assert.assertEquals(cell.cellValue(), "<" + argName + ">");
+        Assert.assertEquals(cell.cellValue().text(), "<" + argName + ">");
     }
 }
