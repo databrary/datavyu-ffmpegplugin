@@ -85,6 +85,11 @@ public class VocabElementFixture extends JPanelFixture {
         value().enterText(text);
     }
 
+    public void replaceTextInArg(final int arg, final String text) throws BadLocationException {
+        clickToCharPos(getArgStartIndex(arg), 2);
+        value().enterText(text);
+    }
+
     public void select(int startPos, int endPos) throws BadLocationException {
         Point startPoint = centerOf(ve.getDataView().modelToView(startPos));
         Point endPoint = centerOf(ve.getDataView().modelToView(endPos));
