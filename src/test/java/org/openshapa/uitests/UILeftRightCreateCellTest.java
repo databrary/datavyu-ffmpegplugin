@@ -65,9 +65,9 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
                 "Expecting left cell to be created.");
 
         // 4. Check that onset and offset values have been inherited
-        Assert.assertTrue(equalsOnset("L", 1, centerOnset),
+        Assert.assertTrue(cellHasOnset("L", 1, centerOnset),
                 "Expecting left cell to inherit centre cell onset value.");
-        Assert.assertTrue(equalsOffset("L", 1, centerOffset),
+        Assert.assertTrue(cellHasOffset("L", 1, centerOffset),
                 "Expecting left cell to inherit centre cell offset value.");
 
         /*
@@ -85,9 +85,9 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
                 "Expecting right cell to be created.");
 
         // 4. Check that onset and offset values have been inherited
-        Assert.assertTrue(equalsOnset("R", 1, centerOnset),
+        Assert.assertTrue(cellHasOnset("R", 1, centerOnset),
                 "Expecting right cell to inherit centre cell onset value.");
-        Assert.assertTrue(equalsOffset("R", 1, centerOffset),
+        Assert.assertTrue(cellHasOffset("R", 1, centerOffset),
                 "Expecting right cell to inherit centre cell offset value.");
     }
 
@@ -100,7 +100,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      * @param onset
      *            Should be in the format HH:mm:ss:SSS
      */
-    private boolean equalsOnset(final String varName, final int id,
+    private boolean cellHasOnset(final String varName, final int id,
             final String onset) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet =
@@ -120,7 +120,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      * @param offset
      *            Should be in the format HH:mm:ss:SSS
      */
-    private boolean equalsOffset(final String varName, final int id,
+    private boolean cellHasOffset(final String varName, final int id,
             final String offset) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet =
