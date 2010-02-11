@@ -8,11 +8,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.JPanel;
 import org.fest.swing.core.GenericTypeMatcher;
+import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
+import org.jruby.RubyThread$s_method_0_0$RUBYINVOKER$main;
+import org.openshapa.views.NewVariableV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
+import org.uispec4j.Window;
 
 /**
  *
@@ -80,9 +84,16 @@ public class UIUtils {
     public static void createNewVariable(FrameFixture ff,
             String varName,
             String varRadio) {
+        String varRadioCompName;
+        if (varRadio.endsWith("TypeButton")) {
+            varRadioCompName = varRadio;
+        } else {
+            varRadioCompName = varRadio + "TypeButton";
+        }
         // 1. Create new variable
         ff.menuItemWithPath("Spreadsheet", "New Variable").click();
-        DialogFixture newVariableDialog = ff.dialog();
+        //DialogFixture newVariableDialog = ff.dialog();
+        DialogFixture newVariableDialog = WindowFinder.findDialog(NewVariableV.class).withTimeout(10000).using(ff.robot);
         // Check if the new variable dialog is actually visible
         newVariableDialog.requireVisible();
         // Get the variable value text box
@@ -94,9 +105,9 @@ public class UIUtils {
         // Type in some text.
         variableValueTextBox.enterText(varName);
         // Get the radio button for text variables
-        newVariableDialog.radioButton(varRadio).click();
+        newVariableDialog.radioButton(varRadioCompName).click();
         // Check that it is selected
-        newVariableDialog.radioButton(varRadio).requireSelected();
+        newVariableDialog.radioButton(varRadioCompName).requireSelected();
         // Click "OK"
         newVariableDialog.button("okButton").click();
     }
