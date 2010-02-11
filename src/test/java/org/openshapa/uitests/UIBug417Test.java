@@ -1,9 +1,7 @@
 package org.openshapa.uitests;
 
 
-import javax.swing.JPanel;
 
-import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JPanelFixture;
@@ -13,7 +11,7 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Column;
 import org.openshapa.util.UIUtils;
-import org.openshapa.views.discrete.SpreadsheetPanel;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -80,6 +78,8 @@ public class UIBug417Test extends OpenSHAPATestClass {
 
         JOptionPaneFixture warning = newVariableDialog.optionPane();
         warning.requireTitle("Warning:");
+        Assert.assertNotNull(warning.label().text());
+        Assert.assertTrue(warning.label().text().length() > 1);
         warning.requireMessage(rMap.getString("Error.exists", varName));
         warning.buttonWithText("OK").click();
     }
@@ -118,6 +118,8 @@ public class UIBug417Test extends OpenSHAPATestClass {
 
         JOptionPaneFixture warning = newVariableDialog.optionPane();
         warning.requireTitle("Warning:");
+        Assert.assertNotNull(warning.label().text());
+        Assert.assertTrue(warning.label().text().length() > 1);
         warning.requireMessage(rMap.getString("Error.system", varName));
         warning.buttonWithText("OK").click();
     }
@@ -156,6 +158,8 @@ public class UIBug417Test extends OpenSHAPATestClass {
 
         JOptionPaneFixture warning = newVariableDialog.optionPane();
         warning.requireTitle("Warning:");
+        Assert.assertNotNull(warning.label().text());
+        Assert.assertTrue(warning.label().text().length() > 1);
         warning.requireMessage(rMap.getString("Error.invalid", varName));
         warning.buttonWithText("OK").click();
     }
