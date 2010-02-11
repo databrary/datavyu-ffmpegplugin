@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.BorderLayout;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Cell;
@@ -23,10 +24,8 @@ import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.border.Border;
-import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.models.db.VocabElement;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 
@@ -105,8 +104,8 @@ implements ExternalDataCellListener, Selectable {
                     Configuration.getInstance().getSSOverlapColour())),
                 BorderFactory.createEmptyBorder(0, 3, 1, 2));
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(SpreadsheetCell.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(SpreadsheetCell.class);
 
     /**
      * Creates new form SpreadsheetCell.

@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
@@ -15,7 +16,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Vector;
 import javax.swing.filechooser.FileFilter;
-import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.models.db.Database;
@@ -30,8 +30,8 @@ import org.openshapa.util.FileFilters.MODBFilter;
  */
 public final class SaveDatabaseC {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(SaveDatabaseC.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(SaveDatabaseC.class);
 
     /**
      * Constructor.

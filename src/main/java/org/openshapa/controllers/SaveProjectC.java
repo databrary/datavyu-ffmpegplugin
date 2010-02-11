@@ -1,10 +1,10 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.OpenSHAPAProjectRepresenter;
@@ -17,8 +17,8 @@ import org.yaml.snakeyaml.Yaml;
  */
 public final class SaveProjectC {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(SaveProjectC.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(SaveProjectC.class);
 
     public void save(final String outFile) {
         Project project = OpenSHAPA.getProject();

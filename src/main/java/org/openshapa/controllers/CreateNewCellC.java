@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
@@ -11,7 +12,6 @@ import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Iterator;
 import java.util.Vector;
-import org.apache.log4j.Logger;
 import org.openshapa.util.ArrayDirection;
 
 /**
@@ -276,7 +276,7 @@ public final class CreateNewCellC {
     }
 
     /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(CreateNewCellC.class);
+    private UserMetrix logger = UserMetrix.getInstance(CreateNewCellC.class);
 
     /** The view (the spreadsheet) for this controller. */
     private SpreadsheetPanel view;

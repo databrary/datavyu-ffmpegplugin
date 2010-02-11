@@ -1,9 +1,9 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataValue;
@@ -43,8 +43,8 @@ public abstract class DataValueEditor extends EditorComponent {
     /** Text when editor gained focus (became current editor). */
     private String textOnFocus;
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(DataValueEditor.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(DataValueEditor.class);
 
     /**
      * Constructor.

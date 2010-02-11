@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -11,7 +12,6 @@ import java.util.SimpleTimeZone;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
-import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -42,8 +42,8 @@ public final class DataControllerV extends OpenSHAPADialog
     //--------------------------------------------------------------------------
     // [static]
     //
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(DataControllerV.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(DataControllerV.class);
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
     /** Rate of playback for rewinding. */

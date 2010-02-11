@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,9 +8,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Vector;
-import javax.swing.JFrame;
-import org.apache.log4j.Logger;
-import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Column;
 import org.openshapa.models.db.DataCell;
@@ -45,8 +43,8 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
  */
 public final class OpenDatabaseC {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(OpenDatabaseC.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(OpenDatabaseC.class);
 
     /** The index of the ONSET timestamp in the CSV line. */
     private static final int DATA_ONSET = 0;

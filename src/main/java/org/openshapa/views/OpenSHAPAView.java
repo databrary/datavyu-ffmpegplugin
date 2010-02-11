@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.OpenSHAPA.Platform;
 import org.openshapa.controllers.CreateNewCellC;
@@ -29,7 +30,6 @@ import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
-import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.controllers.OpenDatabaseC;
@@ -1141,10 +1141,9 @@ public final class OpenSHAPAView extends FrameView {
     public static final int ZOOM_MAX_SIZE = 42;
     public static final int ZOOM_MIN_SIZE = 8;
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(OpenSHAPAView.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(OpenSHAPAView.class);
 
     /** The spreadsheet panel for this view. */
     private SpreadsheetPanel panel;
-
 }

@@ -1,10 +1,10 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.project.OpenSHAPAProjectConstructor;
 import org.openshapa.models.project.Project;
@@ -16,8 +16,8 @@ import org.yaml.snakeyaml.Yaml;
  */
 public class OpenProjectC {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(OpenProjectC.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(OpenProjectC.class);
 
     /**
      * Opens and loads a project file from disk.

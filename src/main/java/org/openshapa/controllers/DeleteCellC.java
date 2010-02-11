@@ -1,7 +1,7 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.util.Vector;
-import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.MacshapaDatabase;
@@ -14,8 +14,8 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
  */
 public final class DeleteCellC {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(DeleteColumnC.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(DeleteColumnC.class);
 
     /**
      * Constructor.

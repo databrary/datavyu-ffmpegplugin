@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.util.logging.Level;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
@@ -9,7 +10,6 @@ import org.openshapa.models.db.SystemErrorException;
 import java.awt.Dimension;
 import java.util.Vector;
 import javax.swing.JComponent;
-import org.apache.log4j.Logger;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
@@ -31,8 +31,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     /** ColumnHeaderPanel this column manages. */
     private ColumnHeaderPanel headerpanel;
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(SpreadsheetColumn.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(SpreadsheetColumn.class);
 
     /** Records changes to column during a cascade. */
     private ColumnChanges colChanges;
@@ -268,7 +268,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
                 headerpanel.setText(dbColumn.getName()
                             + "  (" + dbColumn.getItsMveType() + ")");
             } catch (SystemErrorException e) {
-                logger.warn("Problem getting data column", e);
+                logger.error("Problem getting data column", e);
             }
         }
 

@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
@@ -23,7 +24,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import org.apache.log4j.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -213,7 +213,7 @@ public final class SpreadsheetPanel extends JPanel
             try {
                 database.deregisterColumnListListener(this);
             } catch (SystemErrorException e) {
-                logger.warn("deregisterColumnListListener failed", e);
+                logger.error("deregisterColumnListListener failed", e);
             }
         }
 
@@ -593,8 +593,8 @@ public final class SpreadsheetPanel extends JPanel
     /** Selector object for handling SpreadsheetCell selection. */
     private Selector cellSelector;
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(SpreadsheetPanel.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(SpreadsheetPanel.class);
 
     /** Reference to the spreadsheet layout handler. */
     private SheetLayout sheetLayout;

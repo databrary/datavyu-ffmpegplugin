@@ -1,10 +1,10 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import javax.swing.filechooser.FileFilter;
-import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.FileFilters.SHAPAFilter;
@@ -16,8 +16,8 @@ import org.openshapa.util.HashUtils;
 public class SaveC {
 
     private static SaveC INSTANCE = new SaveC();
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(SaveC.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(SaveC.class);
     /** Last option used for saving */
     private FileFilter lastSaveOption;
 

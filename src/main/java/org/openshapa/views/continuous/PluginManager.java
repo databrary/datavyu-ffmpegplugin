@@ -1,6 +1,7 @@
 
 package org.openshapa.views.continuous;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -17,7 +18,6 @@ import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.swing.filechooser.FileFilter;
-import org.apache.log4j.Logger;
 import org.jdesktop.application.LocalStorage;
 import org.openshapa.OpenSHAPA;
 
@@ -37,8 +37,8 @@ public final class PluginManager {
     private static final String DEFAULT_VIEW =
                         "org.openshapa.views.continuous.quicktime.QTDataViewer";
 
-    /** Logger for this class. */
-    private static final Logger LOGGER = Logger.getLogger(PluginManager.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(PluginManager.class);
 
     /** A reference to the interface that plugins must override. */
     private static final Class PLUGIN_CLASS;
@@ -47,7 +47,8 @@ public final class PluginManager {
             PLUGIN_CLASS
                     = Class.forName("org.openshapa.views.continuous.Plugin");
         } catch (ClassNotFoundException ex) {
-            LOGGER.fatal("Unable to initialize Plugin Class", ex);
+            UserMetrix.getInstance(PluginManager.class)
+                      .error("Unable to init plugin class");
             throw new RuntimeException(ex);
         }
     }
@@ -203,11 +204,11 @@ public final class PluginManager {
 
         // Whoops, something went bad. Chuck a spaz.
         } catch (ClassNotFoundException e) {
-            LOGGER.error("Unable to build Plugin", e);
+            logger.error("Unable to build Plugin", e);
         } catch (IOException ie) {
-            LOGGER.error("Unable to load jar file", ie);
+            logger.error("Unable to load jar file", ie);
         } catch (URISyntaxException se) {
-            LOGGER.error("Unable to build path to jar file", se);
+            logger.error("Unable to build path to jar file", se);
         }
     }
 
@@ -229,7 +230,7 @@ public final class PluginManager {
             method.setAccessible(true);
             method.invoke(sysLoader, new Object[] {f.toURL()});
         } catch (Throwable t) {
-            LOGGER.error("Unable to inject class into class path.", t);
+            logger.error("Unable to inject class into class path.", t);
         }
     }
 
@@ -265,11 +266,11 @@ public final class PluginManager {
                 }
              }
         } catch (InstantiationException e) {
-            LOGGER.error("Unable to instantiate plugin", e);
+            logger.error("Unable to instantiate plugin", e);
         } catch (IllegalAccessException e) {
-            LOGGER.error("Unable to instantiate plugin", e);
+            logger.error("Unable to instantiate plugin", e);
         } catch (ClassNotFoundException e) {
-            LOGGER.error("Unable to find plugin.", e);
+            logger.error("Unable to find plugin.", e);
         }
     }
 

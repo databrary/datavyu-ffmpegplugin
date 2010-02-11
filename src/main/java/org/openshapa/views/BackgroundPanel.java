@@ -1,19 +1,19 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import org.apache.log4j.Logger;
 
 public class BackgroundPanel extends JPanel {
     /** The image to use as the background. */
     Image image;
 
-    /** The error logger for this class. */
-    private static Logger logger = Logger.getLogger(BackgroundPanel.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(BackgroundPanel.class);
 
     public BackgroundPanel(String resource) {
         try {

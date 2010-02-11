@@ -1,10 +1,10 @@
 package org.openshapa;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
-import org.apache.log4j.Logger;
 import org.jdesktop.application.LocalStorage;
 import org.openshapa.util.ConfigProperties;
 
@@ -39,7 +39,7 @@ public final class Configuration {
     private static final Color DEFAULT_OVERLAP = Color.RED;
 
     /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(Configuration.class);
+    private UserMetrix logger = UserMetrix.getInstance(Configuration.class);
 
     /**
      * @return The single instance of the Configuration object in OpenSHAPA.
