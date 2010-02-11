@@ -6,17 +6,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+
 import javax.swing.JPanel;
+
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
-import org.jruby.RubyThread$s_method_0_0$RUBYINVOKER$main;
 import org.openshapa.views.NewVariableV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.Window;
 
 /**
  *
@@ -26,17 +26,18 @@ public class UIUtils {
     /**
      * Different cell variable types.
      */
-    public static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
-    };
+    public static final String[] VAR_TYPES =
+            { "TEXT", "PREDICATE", "INTEGER", "NOMINAL", "MATRIX", "FLOAT" };
 
     /**
      * Checks if two text files are equal.
-     *
-     * @param file1 First file
-     * @param file2 Second file
-     *
-     * @throws IOException on file read error
+     * 
+     * @param file1
+     *            First file
+     * @param file2
+     *            Second file
+     * @throws IOException
+     *             on file read error
      * @return true if equal, else false
      */
     public static Boolean areFilesSame(final File file1, final File file2)
@@ -81,8 +82,7 @@ public class UIUtils {
         });
     }
 
-    public static void createNewVariable(FrameFixture ff,
-            String varName,
+    public static void createNewVariable(FrameFixture ff, String varName,
             String varRadio) {
         String varRadioCompName;
         if (varRadio.endsWith("TypeButton")) {
@@ -92,12 +92,15 @@ public class UIUtils {
         }
         // 1. Create new variable
         ff.menuItemWithPath("Spreadsheet", "New Variable").click();
-        //DialogFixture newVariableDialog = ff.dialog();
-        DialogFixture newVariableDialog = WindowFinder.findDialog(NewVariableV.class).withTimeout(10000).using(ff.robot);
+        // DialogFixture newVariableDialog = ff.dialog();
+        DialogFixture newVariableDialog =
+                WindowFinder.findDialog(NewVariableV.class).withTimeout(10000)
+                        .using(ff.robot);
         // Check if the new variable dialog is actually visible
         newVariableDialog.requireVisible();
         // Get the variable value text box
-        JTextComponentFixture variableValueTextBox = newVariableDialog.textBox();
+        JTextComponentFixture variableValueTextBox =
+                newVariableDialog.textBox();
         // The variable value box should have no text in it
         variableValueTextBox.requireEmpty();
         // It should be editable
@@ -115,5 +118,40 @@ public class UIUtils {
     public static void setClipboard(String str) {
         StringSelection ss = new StringSelection(str);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+    }
+
+    public static boolean equalValues(final String value1, final String value2) {
+        if ((value1.startsWith("<") && value1.endsWith(">"))
+                || (value2.startsWith("<") && value2.endsWith(">"))) {
+            boolean result = value1.equalsIgnoreCase(value2);
+            if (!result) {
+                System.out.println("Val1: " + value1);
+                System.out.println("Val2: " + value2);
+            }
+
+            return result;
+        } else {
+            try {
+                // Handle doubles
+                boolean result =
+                        FloatUtils.closeEnough(Double.parseDouble(value1),
+                                Double.parseDouble(value2));
+                if (!result) {
+                    System.out.println("Val1: " + value1);
+                    System.out.println("Val2: " + value2);
+                }
+
+                return result;
+            } catch (NumberFormatException nfe) {
+                boolean result = value1.equalsIgnoreCase(value2);
+                if (!result) {
+                    System.out.println("Val1: " + value1);
+                    System.out.println("Val2: " + value2);
+                }
+
+                return result;
+                // Handle other variable types
+            }
+        }
     }
 }

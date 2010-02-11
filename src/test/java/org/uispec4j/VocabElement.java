@@ -2,8 +2,12 @@ package org.uispec4j;
 
 import java.awt.Component;
 import java.util.Vector;
+
 import javax.swing.JLabel;
+
 import junit.framework.Assert;
+
+import org.openshapa.util.TextItem;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementRootView;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.uispec4j.utils.KeyUtils;
@@ -20,7 +24,7 @@ public class VocabElement extends AbstractUIComponent {
     /**
      * UISpec4J convention to declare associated class.
      */
-    public static final Class[] SWING_CLASSES = {VocabElementV.class};
+    public static final Class[] SWING_CLASSES = { VocabElementV.class };
     /**
      * Since this is an Adaptor class, this is the class being adapted.
      */
@@ -28,11 +32,13 @@ public class VocabElement extends AbstractUIComponent {
 
     /**
      * VocabElement constructor.
-     * @param vocabElementV actual VocabElementV class being adapted
+     * 
+     * @param vocabElementV
+     *            actual VocabElementV class being adapted
      */
     public VocabElement(final VocabElementV vocabElementV) {
         Assert.assertNotNull(vocabElementV);
-        this.ve = vocabElementV;
+        ve = vocabElementV;
     }
 
     public Component getAwtComponent() {
@@ -45,6 +51,7 @@ public class VocabElement extends AbstractUIComponent {
 
     /**
      * returns the changed status.
+     * 
      * @return boolean has element changed?
      */
     public final boolean getChangedStatus() {
@@ -53,6 +60,7 @@ public class VocabElement extends AbstractUIComponent {
 
     /**
      * returns the deletion status.
+     * 
      * @return boolean has element changed?
      */
     public final boolean getDeletionStatus() {
@@ -61,6 +69,7 @@ public class VocabElement extends AbstractUIComponent {
 
     /**
      * Returns the delta icon label.
+     * 
      * @return JLabel delta icon
      */
     public final JLabel getChangedIcon() {
@@ -69,6 +78,7 @@ public class VocabElement extends AbstractUIComponent {
 
     /**
      * Returns the delta icon label.
+     * 
      * @return JLabel delta icon
      */
     public final JLabel getTypeIcon() {
@@ -76,8 +86,9 @@ public class VocabElement extends AbstractUIComponent {
     }
 
     /**
-     * returns the value, which is a JTextArea (MatrixRootView).
-     * returns as a TextBox
+     * returns the value, which is a JTextArea (MatrixRootView). returns as a
+     * TextBox
+     * 
      * @return TextBox value
      */
     public final TextBox getValue() {
@@ -86,8 +97,8 @@ public class VocabElement extends AbstractUIComponent {
     }
 
     /**
-     * returns the text of the value.
-     * returns as a String
+     * returns the text of the value. returns as a String
+     * 
      * @return String value
      */
     public final String getValueText() {
@@ -96,48 +107,58 @@ public class VocabElement extends AbstractUIComponent {
 
     /**
      * types text into a cell element.
-     * @param s String to type
+     * 
+     * @param s
+     *            String to type
      */
     public final void enterText(final String s) {
-        //requestFocus(element);
+        // requestFocus(element);
         KeyUtils.enterString(ve.getDataView(), s);
     }
 
-     /**
+    /**
      * types text into the cell element.
-     * @param s1 String to type first
-     * @param keys Keys to type next
-     * @param s2 String to add at the end
+     * 
+     * @param s1
+     *            String to type first
+     * @param keys
+     *            Keys to type next
+     * @param s2
+     *            String to add at the end
      */
-    public final void enterText(final String s1,
-            final Key[] keys, final String s2) {
-        //requestFocus(element);
+    public final void enterText(final String s1, final Key[] keys,
+            final String s2) {
+        // requestFocus(element);
 
         KeyUtils.enterString(ve.getDataView(), s1);
         KeyUtils.enterKeys(ve.getDataView(), keys);
         KeyUtils.enterString(ve.getDataView(), s2);
     }
 
-     /**
+    /**
      * types text into a cell element using a vector of TextItem.
-     * @param vti vector of TextItems.
+     * 
+     * @param vti
+     *            vector of TextItems.
      */
     public final void enterText(final Vector<TextItem> vti) {
-        this.requestFocus();
+        requestFocus();
 
         for (TextItem t : vti) {
-            t.enterItem(ve.getDataView());
+            // t.enterItem(ve.getDataView());
         }
     }
 
     /**
      * types text into vocab argument.
-     * @param arg Argument number
-     * @param vti vector of TextItems.
+     * 
+     * @param arg
+     *            Argument number
+     * @param vti
+     *            vector of TextItems.
      */
-    public final void enterTextInArg(final int arg, final Vector<TextItem> vti)
-    {
-        this.requestFocus();
+    public final void enterTextInArg(final int arg, final Vector<TextItem> vti) {
+        requestFocus();
 
         KeyUtils.enterKey(ve.getDataView(), Key.HOME);
 
@@ -145,23 +166,25 @@ public class VocabElement extends AbstractUIComponent {
             KeyUtils.enterKey(ve.getDataView(), Key.TAB);
         }
 
-        //Deselect argument
+        // Deselect argument
         KeyUtils.enterKey(ve.getDataView(), Key.LEFT);
         KeyUtils.enterKey(ve.getDataView(), Key.RIGHT);
 
         for (TextItem t : vti) {
-            t.enterItem(ve.getDataView());
+            // t.enterItem(ve.getDataView());
         }
     }
 
-     /**
+    /**
      * replaces text in vocab argument.
-     * @param arg Argument number
-     * @param vti vector of TextItems.
+     * 
+     * @param arg
+     *            Argument number
+     * @param vti
+     *            vector of TextItems.
      */
-    public final void replaceTextInArg(final int arg,
-            final Vector<TextItem> vti) {
-        this.requestFocus();
+    public final void replaceTextInArg(final int arg, final Vector<TextItem> vti) {
+        requestFocus();
 
         KeyUtils.enterKey(ve.getDataView(), Key.HOME);
 
@@ -170,32 +193,36 @@ public class VocabElement extends AbstractUIComponent {
         }
 
         for (TextItem t : vti) {
-            t.enterItem(ve.getDataView());
+            // t.enterItem(ve.getDataView());
         }
     }
 
-         /**
+    /**
      * replaces text in vocab name.
-     * @param vti vector of TextItems.
+     * 
+     * @param vti
+     *            vector of TextItems.
      */
     public final void replaceTextInName(final Vector<TextItem> vti) {
-        this.requestFocus();
+        requestFocus();
 
         KeyUtils.enterKey(ve.getDataView(), Key.HOME);
 
         ve.getDataView().selectAll();
 
         for (TextItem t : vti) {
-            t.enterItem(ve.getDataView());
+            // t.enterItem(ve.getDataView());
         }
     }
 
-     /**
+    /**
      * presses keys in a cell element.
-     * @param keys Keys to type next
+     * 
+     * @param keys
+     *            Keys to type next
      */
     public final void pressKeys(final Key[] keys) {
-        //requestFocus(element);
+        // requestFocus(element);
 
         KeyUtils.enterKeys(ve.getDataView(), keys);
     }
@@ -204,11 +231,12 @@ public class VocabElement extends AbstractUIComponent {
      * sets the focus to the element.
      */
     public final void requestFocus() {
-       ve.getDataView().getEdTracker().focusGained(null);
+        ve.getDataView().getEdTracker().focusGained(null);
     }
 
     /**
      * Returns the Vocab Element name.
+     * 
      * @return vocab element name
      */
     public final String getVEName() {
@@ -217,7 +245,9 @@ public class VocabElement extends AbstractUIComponent {
 
     /**
      * Returns argument name.
-     * @param arg argument number
+     * 
+     * @param arg
+     *            argument number
      * @return argument name
      */
     public final String getArgument(final int arg) {

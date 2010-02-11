@@ -1,8 +1,11 @@
 package org.openshapa.views.discrete.datavalues;
 
 import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+
 import javax.swing.text.JTextComponent;
+
 import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataCell;
@@ -17,12 +20,12 @@ import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**
- * DataValueEditor - abstract class extending EditorComponent.
- * Adds functionality specific to DataValues being edited.
+ * DataValueEditor - abstract class extending EditorComponent. Adds
+ * functionality specific to DataValues being edited.
  */
 public abstract class DataValueEditor extends EditorComponent {
 
-    /** The parent matrix for the DataValue that this view represents.*/
+    /** The parent matrix for the DataValue that this view represents. */
     private Matrix parentMatrix;
 
     /** The parent predicate for the DataValue that this view represents. */
@@ -48,59 +51,66 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * Constructor.
-     *
-     * @param tc JTextComponent this editor works with.
-     * @param cell The Parent cell that holds the matrix.
-     * @param matrix The parent matrix that holds the DataValue.
-     * @param matrixIndex The index of the data value within the above matrix
-     * that this view is to represent.
+     * 
+     * @param tc
+     *            JTextComponent this editor works with.
+     * @param cell
+     *            The Parent cell that holds the matrix.
+     * @param matrix
+     *            The parent matrix that holds the DataValue.
+     * @param matrixIndex
+     *            The index of the data value within the above matrix that this
+     *            view is to represent.
      */
-    public DataValueEditor(final JTextComponent tc,
-                           final DataCell cell,
-                           final Matrix matrix,
-                           final int matrixIndex) {
+    public DataValueEditor(final JTextComponent tc, final DataCell cell,
+            final Matrix matrix, final int matrixIndex) {
         super(tc);
         init(cell, null, 0, matrix, matrixIndex);
     }
 
     /**
      * Constructor.
-     *
-     * @param ta The parent JTextComponent that this editor is nested within.
-     * @param cell The Parent cell that holds the matrix.
-     * @param predicate The parent predicate.
-     * @param predicateIndex The index of the data value within the above
-     * predicate that this view is to represent.
-     * @param matrix The parent matrix that holds the DataValue.
-     * @param matrixIndex The index of the data value within the above matrix
-     * that this view is to represent.
+     * 
+     * @param ta
+     *            The parent JTextComponent that this editor is nested within.
+     * @param cell
+     *            The Parent cell that holds the matrix.
+     * @param predicate
+     *            The parent predicate.
+     * @param predicateIndex
+     *            The index of the data value within the above predicate that
+     *            this view is to represent.
+     * @param matrix
+     *            The parent matrix that holds the DataValue.
+     * @param matrixIndex
+     *            The index of the data value within the above matrix that this
+     *            view is to represent.
      */
-    public DataValueEditor(final JTextComponent ta,
-                           final DataCell cell,
-                           final PredDataValue predicate,
-                           final int predicateIndex,
-                           final Matrix matrix,
-                           final int matrixIndex) {
+    public DataValueEditor(final JTextComponent ta, final DataCell cell,
+            final PredDataValue predicate, final int predicateIndex,
+            final Matrix matrix, final int matrixIndex) {
         super(ta);
         init(cell, predicate, predicateIndex, matrix, matrixIndex);
     }
 
     /**
      * Initialise internal values.
-     *
-     * @param cell The Parent cell that holds the matrix.
-     * @param predicate The parent predicate.
-     * @param predicateIndex The index of the data value within the above
-     * predicate that this view is to represent.
-     * @param matrix The parent matrix that holds the DataValue.
-     * @param matrixIndex The index of the data value within the above matrix
-     * that this view is to represent.
+     * 
+     * @param cell
+     *            The Parent cell that holds the matrix.
+     * @param predicate
+     *            The parent predicate.
+     * @param predicateIndex
+     *            The index of the data value within the above predicate that
+     *            this view is to represent.
+     * @param matrix
+     *            The parent matrix that holds the DataValue.
+     * @param matrixIndex
+     *            The index of the data value within the above matrix that this
+     *            view is to represent.
      */
-    private void init(final DataCell cell,
-                      final PredDataValue predicate,
-                      final int predicateIndex,
-                      final Matrix matrix,
-                      final int matrixIndex) {
+    private void init(final DataCell cell, final PredDataValue predicate,
+            final int predicateIndex, final Matrix matrix, final int matrixIndex) {
         // so far all DataValueEditors are editable
         setEditable(true);
         try {
@@ -126,9 +136,11 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * Reset the values by retrieving from the database.
-     *
-     * @param cell The Parent cell that holds the matrix.
-     * @param matrix The parent matrix that holds the DataValue.
+     * 
+     * @param cell
+     *            The Parent cell that holds the matrix.
+     * @param matrix
+     *            The parent matrix that holds the DataValue.
      */
     @Override
     public final void resetValue(final DataCell cell, final Matrix matrix) {
@@ -150,39 +162,38 @@ public abstract class DataValueEditor extends EditorComponent {
     }
 
     /**
-     * Recalculate the string for this editor.  In particular check if it
-     * is "null" and display the appropriate FormalArg.
+     * Recalculate the string for this editor. In particular check if it is
+     * "null" and display the appropriate FormalArg.
      */
     public void updateStrings() {
         String t = "";
-        if (!this.getModel().isEmpty()) {
-            t = this.getModel().toString();
+        if (!getModel().isEmpty()) {
+            t = getModel().toString();
         } else {
             t = getNullArg();
         }
 
-        this.resetText(t);
+        resetText(t);
     }
 
     /**
-     * @return The displayable version of the null argument.
-     *
-     * Changes: Replace call to vocabElement.getFormalArg() with call
-     *          to vocabElement.getFormalArgCopy().
+     * @return The displayable version of the null argument. Changes: Replace
+     *         call to vocabElement.getFormalArg() with call to
+     *         vocabElement.getFormalArgCopy().
      */
     public final String getNullArg() {
         String t = "";
         try {
             if (parentMatrix != null && parentPredicate == null) {
                 long mveid = parentMatrix.getMveID();
-                MatrixVocabElement mve = parentMatrix.getDB()
-                                                     .getMatrixVE(mveid);
+                MatrixVocabElement mve =
+                        parentMatrix.getDB().getMatrixVE(mveid);
                 FormalArgument fa = mve.getFormalArgCopy(mIndex);
                 t = fa.toString();
             } else if (parentMatrix != null && parentPredicate != null) {
                 Predicate p = parentPredicate.getItsValue();
-                PredicateVocabElement pve = parentMatrix.getDB()
-                                                    .getPredVE(p.getPveID());
+                PredicateVocabElement pve =
+                        parentMatrix.getDB().getPredVE(p.getPveID());
                 FormalArgument fa = pve.getFormalArgCopy(pIndex);
                 t = fa.toString();
             }
@@ -194,7 +205,9 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * focusSet is the signal that this editor has become "current".
-     * @param fe Focus Event
+     * 
+     * @param fe
+     *            Focus Event
      */
     @Override
     public void focusGained(final FocusEvent fe) {
@@ -203,7 +216,9 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * Action to take when focus is lost for this editor.
-     * @param fe Focus Event
+     * 
+     * @param fe
+     *            Focus Event
      */
     @Override
     public void focusLost(final FocusEvent fe) {
@@ -215,130 +230,125 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * Action to take by this editor when a key is pressed.
-     * @param e The KeyEvent that triggered this action.
+     * 
+     * @param e
+     *            The KeyEvent that triggered this action.
      */
     @Override
     public void keyPressed(final KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_BACK_SPACE:
-            case KeyEvent.VK_DELETE:
-                // Ignore - handled when the key is typed.
+        case KeyEvent.VK_BACK_SPACE:
+            // Can't delete an empty data value.
+            if (!getModel().isEmpty()) {
+                removeBehindCaret();
                 e.consume();
-                break;
-
-            case KeyEvent.VK_LEFT:
-                int selectStart = this.getSelectionStart();
-                int selectEnd = this.getSelectionEnd();
-
-                // Move caret to the left.
-                int c = Math.max(0, this.getCaretPosition() - 1);
-                this.setCaretPosition(c);
-
-                // If after the move, we have a character to the left is
-                // preserved character we need to skip one before passing
-                // the key event down to skip again (effectively skipping
-                // the preserved character).
-                int b = Math.max(0, getCaretPosition());
-                c = Math.max(0, this.getCaretPosition() - 1);
-                if (this.isPreserved(getText().charAt(b))
-                    || this.isPreserved(getText().charAt(c))) {
-                    setCaretPosition(Math.max(0, getCaretPosition() - 1));
-                }
+            }
+            break;
+        case KeyEvent.VK_DELETE:
+            // Can't delete an empty data value.
+            if (!getModel().isEmpty()) {
+                removeAheadOfCaret();
                 e.consume();
+            }
+            break;
 
-                // If the user is holding down shift - alter the selection as
-                // well as the caret position.
-                if (e.getModifiers() == KeyEvent.SHIFT_MASK) {
-                    // Shrink selection left - removed entire selection.
-                    if (getCaretPosition() == selectStart) {
-                        select(selectStart, selectStart);
+        case KeyEvent.VK_LEFT:
+            int selectStart = getSelectionStart();
+            int selectEnd = getSelectionEnd();
+
+            // Move caret to the left.
+            int c = Math.max(0, getCaretPosition() - 1);
+            setCaretPosition(c);
+
+            // If after the move, we have a character to the left is
+            // preserved character we need to skip one before passing
+            // the key event down to skip again (effectively skipping
+            // the preserved character).
+            int b = Math.max(0, getCaretPosition());
+            c = Math.max(0, getCaretPosition() - 1);
+            if (isPreserved(getText().charAt(b))
+                    || isPreserved(getText().charAt(c))) {
+                setCaretPosition(Math.max(0, getCaretPosition() - 1));
+            }
+            e.consume();
+
+            // If the user is holding down shift - alter the selection as
+            // well as the caret position.
+            if (e.getModifiers() == InputEvent.SHIFT_MASK) {
+                // Shrink selection left - removed entire selection.
+                if (getCaretPosition() == selectStart) {
+                    select(selectStart, selectStart);
                     // Grow selection left.
-                    } else if (getCaretPosition() < selectStart) {
-                        select(selectEnd, getCaretPosition());
+                } else if (getCaretPosition() < selectStart) {
+                    select(selectEnd, getCaretPosition());
                     // Shrink selection left.
-                    } else {
-                        select(selectStart, getCaretPosition());
-                    }
+                } else {
+                    select(selectStart, getCaretPosition());
                 }
+            }
 
-                break;
+            break;
 
-            case KeyEvent.VK_RIGHT:
-                selectStart = this.getSelectionStart();
-                selectEnd = this.getSelectionEnd();
+        case KeyEvent.VK_RIGHT:
+            selectStart = getSelectionStart();
+            selectEnd = getSelectionEnd();
 
-                // Move caret to the right.
-                c = Math.min(this.getText().length(),
-                                 this.getCaretPosition() + 1);
-                this.setCaretPosition(c);
+            // Move caret to the right.
+            c = Math.min(getText().length(), getCaretPosition() + 1);
+            setCaretPosition(c);
 
-                // If after the move, we have a character to the right that
-                // is a preserved character, we need to skip one before
-                // passing the key event down to skip again (effectively
-                // skipping the preserved character)
-                b = Math.min(getText().length() - 1, getCaretPosition());
-                c = Math.min(getText().length() - 1, getCaretPosition() + 1);
-                if (c < this.getText().length()
-                    && (this.isPreserved(getText().charAt(c))
-                        || this.isPreserved(getText().charAt(b)))) {
-                    setCaretPosition(Math.min(getText().length() - 1,
-                                              getCaretPosition() + 1));
-                }
-                e.consume();
+            // If after the move, we have a character to the right that
+            // is a preserved character, we need to skip one before
+            // passing the key event down to skip again (effectively
+            // skipping the preserved character)
+            b = Math.min(getText().length() - 1, getCaretPosition());
+            c = Math.min(getText().length() - 1, getCaretPosition() + 1);
+            if (c < getText().length()
+                    && (isPreserved(getText().charAt(c)) || isPreserved(getText()
+                            .charAt(b)))) {
+                setCaretPosition(Math.min(getText().length() - 1,
+                        getCaretPosition() + 1));
+            }
+            e.consume();
 
-                // If the user is holding down shift - alter the selection as
-                // well as the caret position.
-                if (e.getModifiers() == KeyEvent.SHIFT_MASK) {
-                    // Shrink selection right - removed entire selection.
-                    if (getCaretPosition() == selectEnd) {
-                        select(selectEnd, selectEnd);
+            // If the user is holding down shift - alter the selection as
+            // well as the caret position.
+            if (e.getModifiers() == InputEvent.SHIFT_MASK) {
+                // Shrink selection right - removed entire selection.
+                if (getCaretPosition() == selectEnd) {
+                    select(selectEnd, selectEnd);
                     // Grow selection right.
-                    } else if (getCaretPosition() > selectEnd) {
-                        select(selectStart, getCaretPosition());
+                } else if (getCaretPosition() > selectEnd) {
+                    select(selectStart, getCaretPosition());
                     // Shrink select right.
-                    } else {
-                        select(getCaretPosition(), selectEnd);
-                    }
+                } else {
+                    select(getCaretPosition(), selectEnd);
                 }
+            }
 
-                break;
+            break;
 
-            default:
-                break;
+        default:
+            break;
         }
     }
 
     /**
      * Action to take by this editor when a key is typed.
-     * @param e KeyEvent
+     * 
+     * @param e
+     *            KeyEvent
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        // The backspace key removes digits from behind the caret.
-        if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-            && e.getKeyChar() == '\u0008') {
 
-            // Can't delete an empty data value.
-            if (!this.getModel().isEmpty()) {
-                this.removeBehindCaret();
-                e.consume();
-            }
-
-        // The delete key removes digits ahead of the caret.
-        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                   && e.getKeyChar() == '\u007F') {
-
-            // Can't delete an empty data value.
-            if (!this.getModel().isEmpty()) {
-                this.removeAheadOfCaret();
-                e.consume();
-            }
-        }
     }
 
     /**
      * Action to take by this editor when a key is released.
-     * @param e KeyEvent
+     * 
+     * @param e
+     *            KeyEvent
      */
     @Override
     public void keyReleased(final KeyEvent e) {
@@ -361,8 +371,9 @@ public abstract class DataValueEditor extends EditorComponent {
     public void updateDatabase() {
         try {
             // reget the parentCell in case onset or offset have been changed.
-            DataCell c = (DataCell) OpenSHAPA.getProject().getDB()
-                                             .getCell(parentCell);
+            DataCell c =
+                    (DataCell) OpenSHAPA.getProject().getDB().getCell(
+                            parentCell);
 
             // Update the OpenSHAPA database with the latest values.
             if (parentMatrix != null && parentPredicate == null) {
@@ -384,23 +395,26 @@ public abstract class DataValueEditor extends EditorComponent {
     /**
      * Determine if the editor tracker permits sub selections within the
      * component.
-     *
+     * 
      * @return True if permitted to perform sub selection, false otherwise.
      */
     @Override
     public boolean canSubSelect() {
-        return (!this.getModel().isEmpty());
+        return (!getModel().isEmpty());
     }
 
     /**
      * Override selection to catch if the value is null.
-     * @param startClick Start character of the selection.
-     * @param endClick End character of the selection.
+     * 
+     * @param startClick
+     *            Start character of the selection.
+     * @param endClick
+     *            End character of the selection.
      */
     @Override
     public final void select(final int startClick, final int endClick) {
-        if (this.getModel().isEmpty()) {
-            this.selectAll();
+        if (getModel().isEmpty()) {
+            selectAll();
         } else {
             super.select(startClick, endClick);
         }
@@ -408,7 +422,9 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * Set the model data value.
-     * @param dv The datavalue to set.
+     * 
+     * @param dv
+     *            The datavalue to set.
      */
     public final void setModel(final DataValue dv) {
         model = dv;
@@ -418,20 +434,20 @@ public abstract class DataValueEditor extends EditorComponent {
      * @return The model that this data value view represents.
      */
     public final DataValue getModel() {
-        return this.model;
+        return model;
     }
 
     /**
      * @return The matrix this datavalue is in.
      */
     public final Matrix getMatrix() {
-        return this.parentMatrix;
+        return parentMatrix;
     }
 
     /**
      * @return The index within the matrix where this datavalue exists.
      */
     public final int getmIndex() {
-        return this.mIndex;
+        return mIndex;
     }
 }

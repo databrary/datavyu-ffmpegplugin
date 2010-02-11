@@ -46,14 +46,35 @@ public class SpreadsheetCellFixture extends JPanelFixture {
         robot.releaseKey(KeyEvent.VK_SHIFT);
     }
 
-    public void clickToCharPos(int component, int charPos, int times) throws BadLocationException {
+    public void clickToCharPos(int component, int charPos, int times)
+            throws BadLocationException {
         Point charPoint;
         Component c;
         switch (component) {
-            case VALUE: charPoint = centerOf(((SpreadsheetCell)target).getDataView().modelToView(charPos)); c = ((SpreadsheetCell)target).getDataView(); break;
-            case ONSET: charPoint = centerOf(((SpreadsheetCell)target).getOnset().modelToView(charPos)); c = ((SpreadsheetCell)target).getOnset(); break;
-            case OFFSET: charPoint = centerOf(((SpreadsheetCell)target).getOffset().modelToView(charPos)); c = ((SpreadsheetCell)target).getOffset(); break;
-            default: charPoint = centerOf(((SpreadsheetCell)target).getDataView().modelToView(charPos)); c = ((SpreadsheetCell)target).getDataView(); break;
+        case VALUE:
+            charPoint =
+                    centerOf(((SpreadsheetCell) target).getDataView()
+                            .modelToView(charPos));
+            c = ((SpreadsheetCell) target).getDataView();
+            break;
+        case ONSET:
+            charPoint =
+                    centerOf(((SpreadsheetCell) target).getOnset().modelToView(
+                            charPos));
+            c = ((SpreadsheetCell) target).getOnset();
+            break;
+        case OFFSET:
+            charPoint =
+                    centerOf(((SpreadsheetCell) target).getOffset()
+                            .modelToView(charPos));
+            c = ((SpreadsheetCell) target).getOffset();
+            break;
+        default:
+            charPoint =
+                    centerOf(((SpreadsheetCell) target).getDataView()
+                            .modelToView(charPos));
+            c = ((SpreadsheetCell) target).getDataView();
+            break;
         }
         for (int i = 0; i < times; i++) {
             robot.click(c, charPoint);
@@ -79,7 +100,7 @@ public class SpreadsheetCellFixture extends JPanelFixture {
                 MatrixRootView.class));
     }
 
-    private static Point centerOf(Rectangle r) {
+    private Point centerOf(Rectangle r) {
         return new Point(r.x + r.width / 2, r.y + r.height / 2);
     }
 }
