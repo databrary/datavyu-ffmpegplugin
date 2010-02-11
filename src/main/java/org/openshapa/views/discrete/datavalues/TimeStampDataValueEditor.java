@@ -1,6 +1,7 @@
 package org.openshapa.views.discrete.datavalues;
 
 import java.awt.event.FocusEvent;
+import java.util.logging.Level;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.db.TimeStamp;
@@ -130,6 +131,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      */
     @Override
     public void keyPressed(final KeyEvent e) {
+        TimeStampDataValue tdv = (TimeStampDataValue) getModel();
         switch (e.getKeyCode()) {
             // BugzID:708 - Force the Home key to behave correctly on OSX 10.4
             case KeyEvent.VK_HOME:
@@ -144,9 +146,34 @@ public final class TimeStampDataValueEditor extends EditorComponent {
                 break;
 
             case KeyEvent.VK_BACK_SPACE:
-            case KeyEvent.VK_DELETE:
-                // Ignore - handled when the key is typed.
+                // Can't delete empty time stamp data value.
+                if (!tdv.isEmpty()) {
+            try {
+                this.removeBehindCaret();
+                tdv.setItsValue(new TimeStamp(getText()));
                 e.consume();
+            } catch (SystemErrorException ex) {
+                java.util.logging.Logger.getLogger(TimeStampDataValueEditor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                }
+                break;
+            case KeyEvent.VK_DELETE:
+                // Can't delete empty time stamp data value.
+                if (!tdv.isEmpty()) {
+            try {
+                int caret = getSelectionEnd();
+                this.removeAheadOfCaret();
+                setCaretPosition(caret);
+                if (caret < getText().length() && this.isPreserved(getText().charAt(caret))) {
+                    setCaretPosition(getCaretPosition() + 1);
+                }
+                this.setCaretPosition(this.getCaretPosition() + 1);
+                tdv.setItsValue(new TimeStamp(getText()));
+                e.consume();
+            } catch (SystemErrorException ex) {
+                java.util.logging.Logger.getLogger(TimeStampDataValueEditor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                }
                 break;
 
             case KeyEvent.VK_LEFT:
@@ -239,40 +266,40 @@ public final class TimeStampDataValueEditor extends EditorComponent {
         try {
             TimeStampDataValue tdv = (TimeStampDataValue) getModel();
 
-            // The backspace key removes digits from behind the caret.
-            if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                && e.getKeyChar() == '\u0008') {
-
-                // Can't delete empty time stamp data value.
-                if (!tdv.isEmpty()) {
-                    this.removeBehindCaret();
-                    tdv.setItsValue(new TimeStamp(getText()));
-                    e.consume();
-                }
-
-            // The delete key removes digits ahead of the caret.
-            } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                       && e.getKeyChar() == '\u007F') {
-
-                // Can't delete empty time stamp data value.
-                if (!tdv.isEmpty()) {
-                    int caret = getSelectionEnd();
-                    this.removeAheadOfCaret();
-                    setCaretPosition(caret);
-
-                    if (caret < getText().length()
-                        && this.isPreserved(getText().charAt(caret))) {
-                        setCaretPosition(getCaretPosition() + 1);
-                    }
-
-                    this.setCaretPosition(this.getCaretPosition() + 1);
-                    tdv.setItsValue(new TimeStamp(getText()));
-                    e.consume();
-                }
+//            // The backspace key removes digits from behind the caret.
+//            if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+//                && e.getKeyChar() == '\u0008') {
+//
+//                // Can't delete empty time stamp data value.
+//                if (!tdv.isEmpty()) {
+//                    this.removeBehindCaret();
+//                    tdv.setItsValue(new TimeStamp(getText()));
+//                    e.consume();
+//                }
+//
+//            // The delete key removes digits ahead of the caret.
+//            } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+//                       && e.getKeyChar() == '\u007F') {
+//
+//                // Can't delete empty time stamp data value.
+//                if (!tdv.isEmpty()) {
+//                    int caret = getSelectionEnd();
+//                    this.removeAheadOfCaret();
+//                    setCaretPosition(caret);
+//
+//                    if (caret < getText().length()
+//                        && this.isPreserved(getText().charAt(caret))) {
+//                        setCaretPosition(getCaretPosition() + 1);
+//                    }
+//
+//                    this.setCaretPosition(this.getCaretPosition() + 1);
+//                    tdv.setItsValue(new TimeStamp(getText()));
+//                    e.consume();
+//                }
 
             // Key stoke is number - insert stroke at current caret position
             // but only if their is room in the editor for the new digit.
-            } else if (Character.isDigit(e.getKeyChar())
+            if (Character.isDigit(e.getKeyChar())
                        && this.getCaretPosition() <= getText().length()) {
                 this.removeAheadOfCaret();
                 StringBuffer currentValue = new StringBuffer(getText());
