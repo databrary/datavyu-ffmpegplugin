@@ -504,10 +504,10 @@ public final class DataControllerV extends OpenSHAPADialog
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(DataControllerV.class, this);
         setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction")); // NOI18N
-        setCellOnsetButton.setIcon(resourceMap.getIcon("setCellOnsetButton.icon")); // NOI18N
         setCellOnsetButton.setFocusPainted(false);
         setCellOnsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
         setCellOnsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        setCellOnsetButton.setName("setCellOnsetButton"); // NOI18N
         setCellOnsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
         setCellOnsetButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/set-cell-onset-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -521,6 +521,7 @@ public final class DataControllerV extends OpenSHAPADialog
         setCellOffsetButton.setFocusPainted(false);
         setCellOffsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
         setCellOffsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        setCellOffsetButton.setName("setCellOffsetButton"); // NOI18N
         setCellOffsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
         setCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/set-cell-offset-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -626,6 +627,7 @@ public final class DataControllerV extends OpenSHAPADialog
         findButton.setFocusPainted(false);
         findButton.setMaximumSize(new java.awt.Dimension(45, 45));
         findButton.setMinimumSize(new java.awt.Dimension(45, 45));
+        findButton.setName("findButton"); // NOI18N
         findButton.setPreferredSize(new java.awt.Dimension(45, 45));
         findButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/find-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -705,6 +707,7 @@ public final class DataControllerV extends OpenSHAPADialog
         goBackTextField.setText("00:00:05:000");
         goBackTextField.setMaximumSize(new java.awt.Dimension(80, 45));
         goBackTextField.setMinimumSize(new java.awt.Dimension(80, 45));
+        goBackTextField.setName("goBackTextField"); // NOI18N
         goBackTextField.setPreferredSize(new java.awt.Dimension(80, 45));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
