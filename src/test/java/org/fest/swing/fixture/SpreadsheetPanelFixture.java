@@ -66,4 +66,8 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
     public int numOfColumns() {
         return ssPanel.getColumns().size();
     }
+
+    public void deselectAll() {
+        ssPanel.deselectAll();
+    }
 }

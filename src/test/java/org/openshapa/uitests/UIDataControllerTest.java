@@ -1,90 +1,85 @@
 package org.openshapa.uitests;
 
-import org.uispec4j.interception.WindowInterceptor;
+import java.awt.Point;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.SpreadsheetCellFixture;
+import org.fest.swing.fixture.SpreadsheetColumnFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import java.util.Vector;
-import org.openshapa.OpenSHAPA;
-import org.openshapa.util.FloatUtils;
-import org.openshapa.util.KeyItem;
-import org.openshapa.util.TextItem;
 import org.openshapa.util.UIUtils;
-import org.openshapa.views.discrete.SpreadsheetCell;
-import org.uispec4j.Cell;
-import org.uispec4j.Key;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.Timestamp;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
+import org.testng.annotations.Test;
 
 /**
  * Test for the DataController.
  */
-public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
-//    /**
-//      * Nominal test input.
-//      */
-//     private String[] nominalTestInput = {"Subject stands )up ", "$10,432",
-//            "Hand me (the manual!", "Tote_that_bale", "Jeune; fille celebre",
-//            "If x>7 then x|2"};
-//
-//     /**
-//      * Nominal test output.
-//      */
-//     private String[] expectedNominalTestOutput = {"Subject stands up",
-//            "$10432", "Hand me the manual!", "Tote_that_bale",
-//            "Jeune fille celebre", "If x7 then x2"};
-//
-//     /**
-//      * Text test input.
-//      */
-//     private String[] textTestInput = {"Subject stands up ", "$10,432",
-//            "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
-//            "If x?7 then x? 2"};
-//
-//     /**
-//      * Integer test input.
-//      */
-//     private String[] integerTestInput = {"1a9", "10-432",
-//            "!28.9(", "178&", "~~~)",
-//            "If x?7 then x? 2 ", "99999999999999999999", "000389.5", "-", "-0",
-//            "-123"};
-//
-//     /**
-//      * Integer test output.
-//      */
-//     private String[] expectedIntegerTestOutput = {"19", "-43210", "289", "178",
-//        "<val>", "72", "999999999999999999", "3895", "-", "0", "-123"};
-//
-//     /**
-//      * Float test input.
-//      */
-//     private String[] floatTestInput = {"1a.9", "10-43.2",
-//            "!289(", "178.&", "0~~~)",
-//            "If x?7 then. x? 2 ", "589.138085638", "000389.5",
-//            "-0.1", "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34",
-//            "-123"};
-//
-//     /**
-//      * Float test output.
-//      */
-//     private String[] expectedFloatTestOutput = {"1.9", "-43.21", "289", "178",
-//        "0", "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0",
-//        "-0.34", "-23.34", "0.34", "12.34", "-123"};
-//
-//    static {
-//      UISpec4J.setWindowInterceptionTimeLimit(120000);
-//      UISpec4J.init();
-//    }
-//
-//    /**
-//     * Standard test sequence focussing on jogging.
-//     * @throws Exception any exception
-//     */
-//    private void StandardSequence1(final String varName, final String varType,
-//            final String[] testInputArray, final String[] testExpectedArray)
-//            throws Exception {
+public final class UIDataControllerTest extends OpenSHAPATestClass {
+    /**
+      * Nominal test input.
+      */
+     private String[] nominalTestInput = {"Subject stands )up ", "$10,432",
+            "Hand me (the manual!", "Tote_that_bale", "Jeune; fille celebre",
+            "If x>7 then x|2"};
+
+     /**
+      * Nominal test output.
+      */
+     private String[] expectedNominalTestOutput = {"Subject stands up",
+            "$10432", "Hand me the manual!", "Tote_that_bale",
+            "Jeune fille celebre", "If x7 then x2"};
+
+     /**
+      * Text test input.
+      */
+     private String[] textTestInput = {"Subject stands up ", "$10,432",
+            "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
+            "If x?7 then x? 2"};
+
+     /**
+      * Integer test input.
+      */
+     private String[] integerTestInput = {"1a9", "10-432",
+            "!28.9(", "178&", "~~~)",
+            "If x?7 then x? 2 ", "99999999999999999999", "000389.5", "-", "-0",
+            "-123"};
+
+     /**
+      * Integer test output.
+      */
+     private String[] expectedIntegerTestOutput = {"19", "-43210", "289", "178",
+        "<val>", "72", "999999999999999999", "3895", "-", "0", "-123"};
+
+     /**
+      * Float test input.
+      */
+     private String[] floatTestInput = {"1a.9", "10-43.2",
+            "!289(", "178.&", "0~~~)",
+            "If x?7 then. x? 2 ", "589.138085638", "000389.5",
+            "-0.1", "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34",
+            "-123"};
+
+     /**
+      * Float test output.
+      */
+     private String[] expectedFloatTestOutput = {"1.9", "-43.21", "289", "178",
+        "0", "7.2", "589.138085", "389.5", "-0.1", "0.2", "0", "0", "0",
+        "-0.34", "-23.34", "0.34", "12.34", "-123"};
+
+
+    /**
+     * Standard test sequence focussing on jogging.
+     * @throws Exception any exception
+     */
+    private void StandardSequence1(final String varName,
+                                   final String varType,
+                                   final String[] testInputArray,
+                                   final String[] testExpectedArray)
+    throws Exception {
+
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                                              (SpreadsheetPanel) jPanel.component());
+        ssPanel.deselectAll();
+
 //        // Retrieve the components and set variable
 //        Window window = getMainWindow();
 //        MenuBar menuBar = window.getMenuBar();
@@ -97,12 +92,23 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
 //        //1. Create a new variable of random type
 //        String vName = varName;
 //        String vRadio = varType;
+
+        UIUtils.createNewVariable(mainFrameFixture, varName, varType + "TypeButton");
+
 //
 //        UIUtils.createNewVariable(window, vName, vRadio);
 //
 //        //2. Open Data Viewer Controller and get starting time
 //        Window dvc = WindowInterceptor.run(menuBar.getMenu("Controller")
 //                .getSubMenu("Data Viewer Controller").triggerClick());
+
+        //mainFrameFixture.d
+
+        mainFrameFixture.menuItemWithPath("Controller", "Data Viewer Controller").click();
+        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+//        DataControllerFixture fix = new DataControllerFixture(mainFrameFixture.robot,
+//                            (DataControllerV) mainFrameFixture.dialog().component());
+
 //
 //        Timestamp expectedDVCTime = new Timestamp(dvc.getTextBox(
 //                "timestampLabel").getText());
@@ -110,12 +116,23 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
 //
 //        //3. Create new cell - so we have something to send key to because
 //        // no focus handling
+        SpreadsheetColumnFixture column = ssPanel.column(varName);
+        column.header().click();
 //        ss.getSpreadsheetColumn(vName).requestFocus();
+
+
 //        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
 //        Vector<Cell> cells = ss.getSpreadsheetColumn(vName).getCells();
 //
 //        //4. Test jogging back and forth
 //        Cell c = cells.elementAt(0);
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
+        SpreadsheetCellFixture cell = column.cell(0);
+
+        for (int i = 0; i < 5; i++) {
+
+        }
+
 //
 //        Vector<TextItem> ti = new Vector<TextItem>();
 //        ti.add(new KeyItem(Key.NUM3));
@@ -267,32 +284,33 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
 //                    .equals(cell.getOffset().getText()));
 //        }
 //        OpenSHAPA.getDataController().setVisible(false);
-//    }
-//
-//    /**
-//     * Runs standardsequence1 for different variable types (except matrix and
-//     * predicate), side by side.
-//     * @throws Exception any exception
-//     */
-//    public void testStandardSequence1() throws Exception {
-//        //Text
-//        StandardSequence1("textVar", "text", textTestInput, textTestInput);
-//        //Integer
-//        StandardSequence1("intVar", "integer", integerTestInput,
-//                expectedIntegerTestOutput);
-//        //Float
-//        StandardSequence1("floatVar", "float", floatTestInput,
-//                expectedFloatTestOutput);
-//        //Nominal
-//        StandardSequence1("nomVar", "nominal", nominalTestInput,
-//                expectedNominalTestOutput);
-//    }
-//
-//     /**
-//     * Asserts true is two cell values are equal.
-//     * @param value1 first cell value
-//     * @param value2 second cell value
-//     */
+    }
+
+    /**
+     * Runs standardsequence1 for different variable types (except matrix and
+     * predicate), side by side.
+     * @throws Exception any exception
+     */
+    @Test
+    public void testStandardSequence1() throws Exception {
+        //Text
+        StandardSequence1("textVar", "text", textTestInput, textTestInput);
+        //Integer
+        //StandardSequence1("intVar", "integer", integerTestInput,
+        //        expectedIntegerTestOutput);
+        //Float
+        //StandardSequence1("floatVar", "float", floatTestInput,
+        //        expectedFloatTestOutput);
+        //Nominal
+        //StandardSequence1("nomVar", "nominal", nominalTestInput,
+        //        expectedNominalTestOutput);
+    }
+
+     /**
+     * Asserts true is two cell values are equal.
+     * @param value1 first cell value
+     * @param value2 second cell value
+     */
 //    private void assertTrueEqualValues(final String value1,
 //            final String value2) {
 //        if ((value1.startsWith("<") && value1.endsWith(">"))
