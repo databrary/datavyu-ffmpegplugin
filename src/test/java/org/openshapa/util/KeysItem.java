@@ -1,9 +1,8 @@
-package org.uispec4j;
+package org.openshapa.util;
 
 import java.awt.event.KeyEvent;
 
 import org.fest.swing.fixture.ComponentFixture;
-import org.openshapa.util.TextItem;
 
 /**
  * TextItem of type key array.

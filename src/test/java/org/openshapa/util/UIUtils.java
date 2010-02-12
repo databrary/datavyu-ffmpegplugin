@@ -123,35 +123,41 @@ public class UIUtils {
     public static boolean equalValues(final String value1, final String value2) {
         if ((value1.startsWith("<") && value1.endsWith(">"))
                 || (value2.startsWith("<") && value2.endsWith(">"))) {
-            boolean result = value1.equalsIgnoreCase(value2);
-            if (!result) {
-                System.out.println("Val1: " + value1);
-                System.out.println("Val2: " + value2);
-            }
+            // boolean result = value1.equalsIgnoreCase(value2);
+            //
+            // if (!result) {
+            // System.out.println(value1 + "\n" + value2 + "\n");
+            // }
 
-            return result;
+            return value1.equalsIgnoreCase(value2);
         } else {
             try {
                 // Handle doubles
-                boolean result =
-                        FloatUtils.closeEnough(Double.parseDouble(value1),
-                                Double.parseDouble(value2));
-                if (!result) {
-                    System.out.println("Val1: " + value1);
-                    System.out.println("Val2: " + value2);
-                }
+                // boolean result =
+                // FloatUtils.closeEnough(Double.parseDouble(value1),
+                // Double.parseDouble(value2));
+                //
+                // if (!result) {
+                // System.out.println(value1 + "\n" + value2 + "\n");
+                // }
 
-                return result;
+                return FloatUtils.closeEnough(Double.parseDouble(value1),
+                        Double.parseDouble(value2));
             } catch (NumberFormatException nfe) {
-                boolean result = value1.equalsIgnoreCase(value2);
-                if (!result) {
-                    System.out.println("Val1: " + value1);
-                    System.out.println("Val2: " + value2);
-                }
-
-                return result;
                 // Handle other variable types
+                // boolean result = value1.equalsIgnoreCase(value2);
+                //
+                // if (!result) {
+                // System.out.println(value1 + "\n" + value2 + "\n");
+                // }
+
+                return value1.equalsIgnoreCase(value2);
             }
         }
+    }
+
+    public static String[] getArgsFromMatrix(final String values) {
+        String argList = values.substring(1, values.length() - 1);
+        return argList.split(", ", -1);
     }
 }
