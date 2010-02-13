@@ -310,11 +310,10 @@ implements KeyEventDispatcher {
      * @param event The event that triggered this action.
      */
     @Override
-    public void exit(java.util.EventObject event) {
+    protected void end() {
         UserMetrix.shutdown();
-        super.exit(event);
+        super.end();
     }
-
 
     /**
      * If the user is trying to save over an existing file, prompt them whether
