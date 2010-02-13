@@ -32,6 +32,9 @@ public final class ConfigProperties implements Serializable {
     /** The last location the user navigated too using a file chooser. */
     private String lastChooserDirectory;
 
+    /** User has given permission to send usage logs to UserMetrix. */
+    private Boolean canSendLogs;
+
     /**
      * Default constructor.
      */
@@ -132,5 +135,21 @@ public final class ConfigProperties implements Serializable {
      */
     public String getLCDirectory() {
         return lastChooserDirectory;
+    }
+
+    /**
+     * Set if we are able to transmit logs or not to UserMetrix.
+     *
+     * @param send Can we send logs to UserMetrix?
+     */
+    public void setCanSendLogs(final Boolean send) {
+        canSendLogs = send;
+    }
+
+    /**
+     * @return True if we can send usage logs to UserMetrix.
+     */
+    public Boolean getCanSendLogs() {
+        return canSendLogs;
     }
 }

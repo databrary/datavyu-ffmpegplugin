@@ -4,7 +4,10 @@ import java.io.File;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
+import junitx.util.PrivateAccessor;
+import org.openshapa.Configuration;
 import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.util.ConfigProperties;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.UIUtils;
 import org.uispec4j.Cell;
@@ -64,8 +67,15 @@ public final class UINewCellTest extends OpenSHAPAUISpecTestCase {
      private int matrixMixedNumTests = 6;
 
     static {
-      UISpec4J.setWindowInterceptionTimeLimit(120000);
-      UISpec4J.init();
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
+
+        UISpec4J.setWindowInterceptionTimeLimit(120000);
+        UISpec4J.init();
     }
 
     /**

@@ -160,6 +160,15 @@ public final class Configuration {
         return new File(this.properties.getLCDirectory());
     }
 
+    public void setCanSendLogs(final Boolean send) {
+        this.properties.setCanSendLogs(send);
+        this.save();
+    }
+
+    public Boolean getCanSendLogs() {
+        return this.properties.getCanSendLogs();
+    }
+
     /**
      * Default constructor.
      */
@@ -185,6 +194,7 @@ public final class Configuration {
             properties.setSSForegroundColour(DEFAULT_FOREGROUND);
             properties.setSSSelectedColour(DEFAULT_SELECTED);
             properties.setSSOverlapColour(DEFAULT_OVERLAP);
+
             this.save();
         }
 

@@ -2,6 +2,9 @@ package org.openshapa.uitests;
 
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
+import junitx.util.PrivateAccessor;
+import org.openshapa.Configuration;
+import org.openshapa.util.ConfigProperties;
 import org.openshapa.util.UIUtils;
 import org.uispec4j.Cell;
 import org.uispec4j.Clipboard;
@@ -10,6 +13,7 @@ import org.uispec4j.MenuBar;
 import org.uispec4j.OpenSHAPAUISpecTestCase;
 import org.uispec4j.Spreadsheet;
 import org.uispec4j.TextBox;
+import org.uispec4j.UISpec4J;
 import org.uispec4j.Window;
 
 /**
@@ -18,6 +22,17 @@ import org.uispec4j.Window;
  * Expected: Nothing highlighted or entire value highlighted.
  */
 public final class UIBug496Test extends OpenSHAPAUISpecTestCase {
+
+    static {
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
+        UISpec4J.init();
+    }
+
     /**
      * Bug 496 test.
      *

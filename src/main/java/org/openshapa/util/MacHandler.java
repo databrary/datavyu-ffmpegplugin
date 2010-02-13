@@ -94,6 +94,10 @@ public class MacHandler {
                     boolean shouldQuit =
                     OpenSHAPA.getApplication().safeQuit();
 
+                    if (shouldQuit) {
+                        UserMetrix.shutdown();
+                    }
+
                     Method setHandled = ae.getMethod("setHandled",
                                                      boolean.class);
 

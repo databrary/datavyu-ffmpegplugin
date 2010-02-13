@@ -1,6 +1,9 @@
 package org.openshapa.uitests;
 
 import java.io.File;
+import junitx.util.PrivateAccessor;
+import org.openshapa.Configuration;
+import org.openshapa.util.ConfigProperties;
 import org.uispec4j.interception.WindowInterceptor;
 import org.uispec4j.MenuBar;
 import org.uispec4j.OpenSHAPAUISpecTestCase;
@@ -13,6 +16,17 @@ import org.uispec4j.interception.FileChooserHandler;
  * Make sure that the open dialog remembers previous open location.
  */
 public final class UIBug661Test extends OpenSHAPAUISpecTestCase {
+
+    static {
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
+        UISpec4J.init();
+    }
+
     /**
      * Open a file and maybe check what open dialog opens to.
      * @param openFile file to open

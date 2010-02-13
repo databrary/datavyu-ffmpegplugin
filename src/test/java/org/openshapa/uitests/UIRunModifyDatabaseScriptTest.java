@@ -2,10 +2,13 @@ package org.openshapa.uitests;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import junitx.util.PrivateAccessor;
+import org.openshapa.Configuration;
 import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.project.Project;
+import org.openshapa.util.ConfigProperties;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.MenuBar;
@@ -52,6 +55,13 @@ public final class UIRunModifyDatabaseScriptTest
     }
 
     static {
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
+
         UISpec4J.setWindowInterceptionTimeLimit(120000);
         UISpec4J.init();
     }

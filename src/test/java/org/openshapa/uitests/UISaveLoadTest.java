@@ -3,9 +3,12 @@ package org.openshapa.uitests;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
+import junitx.util.PrivateAccessor;
+import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.models.project.Project;
+import org.openshapa.util.ConfigProperties;
 import org.openshapa.util.UIUtils;
 import org.uispec4j.MenuBar;
 import org.uispec4j.OpenSHAPAUISpecTestCase;
@@ -84,7 +87,14 @@ public final class UISaveLoadTest extends OpenSHAPAUISpecTestCase {
     }
 
     static {
-       UISpec4J.setWindowInterceptionTimeLimit(120000);
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
+        UISpec4J.setWindowInterceptionTimeLimit(120000);
+        UISpec4J.init();
     }
 
     /**

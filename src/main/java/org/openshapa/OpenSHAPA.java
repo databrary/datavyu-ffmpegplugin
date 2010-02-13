@@ -37,6 +37,7 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.MacHandler;
 import org.openshapa.views.AboutV;
+import org.openshapa.views.UserMetrixV;
 
 /**
  * The main class of the application.
@@ -295,20 +296,25 @@ implements KeyEventDispatcher {
                     cancel);
 
             // Button behaviour is platform dependent.
-            if (getPlatform() == Platform.MAC
-                ? selection == 1 : selection == 0) {
-                UserMetrix.shutdown();
-                return true;
-            } else {
-                return false;
-            }
-
+            return getPlatform() == Platform.MAC
+                   ? selection == 1 : selection == 0;
         } else {
             // Project hasn't been changed.
-            UserMetrix.shutdown();
             return true;
         }
     }
+
+    /**
+     * Action to call when the application is exiting.
+     *
+     * @param event The event that triggered this action.
+     */
+    @Override
+    public void exit(java.util.EventObject event) {
+        UserMetrix.shutdown();
+        super.exit(event);
+    }
+
 
     /**
      * If the user is trying to save over an existing file, prompt them whether
@@ -360,21 +366,29 @@ implements KeyEventDispatcher {
     protected void startup() {
         windows = new Stack<Window>();
         try {
-
+            // Initalise the logger (UserMetrix).
             LocalStorage ls = OpenSHAPA.getApplication()
-                                       .getContext().getLocalStorage();
+                                   .getContext().getLocalStorage();
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                      .getContext()
-                                      .getResourceMap(OpenSHAPA.class);
-            com.usermetrix.jclient
-               .Configuration config = new com.usermetrix
-                                              .jclient.Configuration(2);
+                                  .getContext()
+                                  .getResourceMap(OpenSHAPA.class);
+
+            com.usermetrix.jclient.Configuration config = new com.usermetrix
+               .jclient.Configuration(2);
             config.setTmpDirectory(ls.getDirectory()
-                                     .toString() + File.separator);
+                                 .toString() + File.separator);
             config.addMetaData("build", rMap.getString("Application.version")
-                               + ":" + rMap.getString("Application.build"));
+                           + ":" + rMap.getString("Application.build"));
             UserMetrix.initalise(config);
             logger = UserMetrix.getInstance(OpenSHAPA.class);
+
+            // If the user hasn't specified, we don't send error logs.
+            if (Configuration.getInstance().getCanSendLogs() == null) {
+                UserMetrix.setCanSendLogs(false);
+            } else {
+                UserMetrix.setCanSendLogs(Configuration
+                          .getInstance().getCanSendLogs());
+            }
 
             // Initalise scripting engine
             rubyEngine = null;
@@ -421,6 +435,12 @@ implements KeyEventDispatcher {
         // Make view the new view so we can keep track of it for hotkeys.
         view = new OpenSHAPAView(this);
         show(view);
+
+        // Now that openshapa is up - we may need to ask the user if can send
+        // gather logs.
+        if (Configuration.getInstance().getCanSendLogs() == null) {
+            show(new UserMetrixV(view.getFrame(), true));
+        }
 
         // BugzID:435 - Correct size if a small size is detected.
         int width = (int) getMainFrame().getSize().getWidth();
