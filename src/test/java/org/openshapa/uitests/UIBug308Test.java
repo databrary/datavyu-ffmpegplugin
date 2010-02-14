@@ -1,5 +1,8 @@
 package org.openshapa.uitests;
 
+import junitx.util.PrivateAccessor;
+import org.openshapa.Configuration;
+import org.openshapa.util.ConfigProperties;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.MenuBar;
@@ -38,6 +41,12 @@ public final class UIBug308Test extends OpenSHAPAUISpecTestCase {
     }
 
     static {
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
         UISpec4J.init();
     }
 

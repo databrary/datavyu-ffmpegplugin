@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -9,7 +10,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
 import org.openshapa.Configuration;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.Matrix;
@@ -46,8 +46,7 @@ public abstract class EditorComponent implements ClipboardOwner {
     private char replaceChar;
 
     /** The logger for this class. */
-    private static Logger logger = Logger
-                                   .getLogger(EditorComponent.class);
+    private UserMetrix logger = UserMetrix.getInstance(EditorComponent.class);
 
     /**
      * Action to invoke when a key is pressed.

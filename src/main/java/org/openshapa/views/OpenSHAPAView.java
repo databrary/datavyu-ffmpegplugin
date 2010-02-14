@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.OpenSHAPA.Platform;
 import org.openshapa.controllers.CreateNewCellC;
@@ -20,7 +21,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.LinkedList;
-import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -29,7 +29,6 @@ import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
-import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.controllers.OpenDatabaseC;
@@ -37,12 +36,11 @@ import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.Configuration;
+import org.openshapa.controllers.DeleteCellC;
+import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.controllers.OpenProjectC;
 import org.openshapa.controllers.SaveC;
-import org.openshapa.models.db.Cell;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.ViewerSetting;
 import org.openshapa.util.ArrayDirection;
@@ -373,26 +371,7 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void deleteColumn() {
-        Vector<DataColumn> colsToDelete = panel.getSelectedCols();
-        panel.deselectAll();
-
-        try {
-            for (DataColumn dc : colsToDelete) {
-                // Must remove cells from the data column before removing it.
-                while (dc.getNumCells() > 0) {
-                    Cell c = OpenSHAPA.getProject().getDB().getCell(dc.getID(), 1);
-                    OpenSHAPA.getProject().getDB().removeCell(c.getID());
-                    dc = OpenSHAPA.getProject().getDB().getDataColumn(dc.getID());
-                }
-
-                // All cells in the column removed - now delete the column.
-                OpenSHAPA.getProject().getDB().removeColumn(dc.getID());
-                panel.revalidate();
-                panel.repaint();
-            }
-        } catch (SystemErrorException e) {
-            logger.error("Unable to delete columns.", e);
-        }
+        new DeleteColumnC(panel.getSelectedCols());
     }
 
     /**
@@ -400,17 +379,7 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void deleteCells() {
-        Vector<DataCell> cellsToDelete = panel.getSelectedCells();
-        panel.deselectAll();
-
-        try {
-            for (DataCell c : cellsToDelete) {
-                OpenSHAPA.getProject().getDB().removeCell(c.getID());
-            }
-            this.showSpreadsheet();
-        } catch (SystemErrorException e) {
-            logger.error("Unable to delete cells", e);
-        }
+        new DeleteCellC(panel.getSelectedCells());
     }
 
     private void openDatabase(final OpenSHAPAFileChooser jd) {
@@ -518,9 +487,7 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void safeQuit() {
-//        if (OpenSHAPA.getApplication().safeQuit()) {
-            System.exit(0);
-//        }
+        OpenSHAPA.getApplication().exit();
     }
 
     /** This method is called from within the constructor to
@@ -1141,10 +1108,9 @@ public final class OpenSHAPAView extends FrameView {
     public static final int ZOOM_MAX_SIZE = 42;
     public static final int ZOOM_MIN_SIZE = 8;
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(OpenSHAPAView.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(OpenSHAPAView.class);
 
     /** The spreadsheet panel for this view. */
     private SpreadsheetPanel panel;
-
 }

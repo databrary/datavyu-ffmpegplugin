@@ -1,12 +1,12 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
 import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MatrixVocabElement;
 import org.openshapa.models.db.SystemErrorException;
-import org.apache.log4j.Logger;
 import org.openshapa.models.db.Column;
 import org.openshapa.models.db.NominalFormalArg;
 import org.openshapa.views.discrete.SpreadsheetPanel;
@@ -18,9 +18,8 @@ public final class NewVariableV extends OpenSHAPADialog {
 
     /** The database to add the new variable too. */
     private Database model;
-
     /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(NewVariableV.class);
+    private UserMetrix logger = UserMetrix.getInstance(NewVariableV.class);
 
     /**
      * Constructor, creates a new form to create a new variable.

@@ -1,10 +1,10 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import javax.swing.JFrame;
-import org.apache.log4j.Logger;
 
 /**
  * The dialog for the scripting console. Renders output from scripts and other
@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
  */
 public class ConsoleV extends OpenSHAPADialog {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(ListVariables.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(ListVariables.class);
 
     /** The instance of the console. */
     private static ConsoleV instance;
@@ -170,7 +170,7 @@ public class ConsoleV extends OpenSHAPADialog {
                     }
                 }
             } catch (IOException e) {
-                logger.error(e);
+                logger.error("Unable to run console thread.", e);
             }
         }
     }

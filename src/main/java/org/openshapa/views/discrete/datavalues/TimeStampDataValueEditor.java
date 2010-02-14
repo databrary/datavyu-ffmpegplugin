@@ -1,12 +1,12 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.db.TimeStamp;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataValue;
 import org.openshapa.models.db.TimeStampDataValue;
@@ -17,9 +17,9 @@ import org.openshapa.views.discrete.EditorComponent;
  */
 public final class TimeStampDataValueEditor extends EditorComponent {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger
-                                   .getLogger(TimeStampDataValueEditor.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix
+            .getInstance(TimeStampDataValueEditor.class);
 
     /** The TimeStampDataValue that this view represents. **/
     private TimeStampDataValue model;

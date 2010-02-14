@@ -1,10 +1,10 @@
 package org.openshapa.util;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 
 /**
@@ -27,8 +27,8 @@ import org.openshapa.OpenSHAPA;
  */
 public class MacHandler {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(MacHandler.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(MacHandler.class);
 
     /**
      * Default constructor.
@@ -93,6 +93,10 @@ public class MacHandler {
 
                     boolean shouldQuit =
                     OpenSHAPA.getApplication().safeQuit();
+
+                    if (shouldQuit) {
+                        UserMetrix.shutdown();
+                    }
 
                     Method setHandled = ae.getMethod("setHandled",
                                                      boolean.class);

@@ -1,12 +1,12 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import java.awt.Frame;
-import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.models.project.Project;
@@ -17,7 +17,7 @@ import org.openshapa.models.project.Project;
 public final class NewProjectV extends OpenSHAPADialog {
 
     /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(NewProjectV.class);
+    private UserMetrix logger = UserMetrix.getInstance(NewProjectV.class);
 
     /**
      * Creates new form NewDatabaseView.

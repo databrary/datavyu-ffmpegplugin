@@ -1,6 +1,9 @@
 package org.openshapa.uitests;
 
 import java.util.Vector;
+import junitx.util.PrivateAccessor;
+import org.openshapa.Configuration;
+import org.openshapa.util.ConfigProperties;
 import org.openshapa.util.UIUtils;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
@@ -22,6 +25,12 @@ import org.uispec4j.Window;
  */
 public final class UITimestampTest extends OpenSHAPAUISpecTestCase {
     static {
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
         UISpec4J.setWindowInterceptionTimeLimit(120000);
         UISpec4J.init();
     }

@@ -1,11 +1,11 @@
 package org.openshapa.views.continuous.quicktime;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.Toolkit;
 import java.io.File;
 
 import javax.swing.JFrame;
 
-import org.apache.log4j.Logger;
 import org.openshapa.util.Constants;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
@@ -33,8 +33,8 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     //
     //
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(QTDataViewer.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(QTDataViewer.class);
 
     /** How many milliseconds in a second? */
     private static final int MILLI = 1000;

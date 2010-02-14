@@ -3,7 +3,10 @@ package org.openshapa.uitests;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
+import junitx.util.PrivateAccessor;
+import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.util.ConfigProperties;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetCell;
@@ -74,8 +77,15 @@ public final class UIDataControllerTest extends OpenSHAPAUISpecTestCase {
         "-0.34", "-23.34", "0.34", "12.34", "-123"};
 
     static {
-      UISpec4J.setWindowInterceptionTimeLimit(120000);
-      UISpec4J.init();
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
+
+        UISpec4J.setWindowInterceptionTimeLimit(120000);
+        UISpec4J.init();
     }
 
     /**

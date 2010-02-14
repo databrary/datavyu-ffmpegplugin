@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -8,7 +9,6 @@ import java.awt.event.KeyListener;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.views.discrete.Selector;
 import javax.swing.JTextField;
-import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
@@ -28,8 +28,9 @@ implements FocusListener, KeyListener {
     /** The editors that make up the representation of the data. */
     private TimeStampDataValueEditor myEditor;
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(TimeStampTextField.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix
+            .getInstance(TimeStampTextField.class);
 
     /**
      * Creates a new instance of MatrixV.

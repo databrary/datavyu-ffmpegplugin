@@ -3,6 +3,9 @@ package org.openshapa.uitests;
 
 import java.io.File;
 import java.util.Vector;
+import junitx.util.PrivateAccessor;
+import org.openshapa.Configuration;
+import org.openshapa.util.ConfigProperties;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.Cell;
@@ -24,6 +27,17 @@ import org.uispec4j.interception.WindowHandler;
  *
  */
 public final class UIDeleteCellsTest extends OpenSHAPAUISpecTestCase {
+
+    static {
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
+        UISpec4J.init();
+    }
+
     /**
      * Test for Bug 713.
      * Bug 713: If an extended selection includes the last (bottom) cell

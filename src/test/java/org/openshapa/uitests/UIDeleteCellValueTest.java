@@ -4,6 +4,9 @@ import java.io.File;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
+import junitx.util.PrivateAccessor;
+import org.openshapa.Configuration;
+import org.openshapa.util.ConfigProperties;
 import org.uispec4j.Cell;
 import org.uispec4j.Column;
 import org.uispec4j.Key;
@@ -22,9 +25,18 @@ import org.uispec4j.interception.WindowHandler;
  */
 public final class UIDeleteCellValueTest extends OpenSHAPAUISpecTestCase {
     static {
-      UISpec4J.setWindowInterceptionTimeLimit(120000);
-      UISpec4J.init();
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
+
+        UISpec4J.setWindowInterceptionTimeLimit(120000);
+        UISpec4J.init();
     }
+
+
 
 
 

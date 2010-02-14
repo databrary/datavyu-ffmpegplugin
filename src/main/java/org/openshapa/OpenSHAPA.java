@@ -1,6 +1,7 @@
 package org.openshapa;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
+import com.usermetrix.jclient.UserMetrix;
 import org.jdesktop.application.Application.ExitListener;
 import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
@@ -20,7 +21,6 @@ import java.io.PipedOutputStream;
 import java.io.PrintWriter;
 import java.util.EventObject;
 import java.util.LinkedList;
-import java.util.Properties;
 import java.util.Stack;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -29,8 +29,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.LocalStorage;
 import org.jdesktop.application.ResourceMap;
@@ -39,6 +37,7 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.MacHandler;
 import org.openshapa.views.AboutV;
+import org.openshapa.views.UserMetrixV;
 
 /**
  * The main class of the application.
@@ -298,13 +297,22 @@ implements KeyEventDispatcher {
 
             // Button behaviour is platform dependent.
             return getPlatform() == Platform.MAC
-                    ? selection == 1
-                    : selection == 0;
-
+                   ? selection == 1 : selection == 0;
         } else {
             // Project hasn't been changed.
             return true;
         }
+    }
+
+    /**
+     * Action to call when the application is exiting.
+     *
+     * @param event The event that triggered this action.
+     */
+    @Override
+    protected void end() {
+        UserMetrix.shutdown();
+        super.end();
     }
 
     /**
@@ -357,25 +365,29 @@ implements KeyEventDispatcher {
     protected void startup() {
         windows = new Stack<Window>();
         try {
-
-            // Configure logger - and start logging things.
-            Properties logProps = new Properties();
-            logProps.setProperty("log4j.rootLogger",
-                                 "DEBUG, A1");
-            logProps.setProperty("log4j.appender.A1",
-                                 "org.apache.log4j.FileAppender");
+            // Initalise the logger (UserMetrix).
             LocalStorage ls = OpenSHAPA.getApplication()
-                                       .getContext().getLocalStorage();
-            String logPath = ls.getDirectory().toString() + File.separator
-                             + "OpenSHAPA.log";
-            logProps.setProperty("log4j.appender.A1.file", logPath);
+                                   .getContext().getLocalStorage();
+            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                  .getContext()
+                                  .getResourceMap(OpenSHAPA.class);
 
-            logProps.setProperty("log4j.appender.A1.layout",
-                                 "org.apache.log4j.PatternLayout");
-            logProps.setProperty("log4j.appender.A1.layout.ConversionPattern",
-                                 "%-4r [%t] %-5p %c %x - %m%n");
-            PropertyConfigurator.configure(logProps);
-            logger.info("Starting OpenSHAPA.");
+            com.usermetrix.jclient.Configuration config = new com.usermetrix
+               .jclient.Configuration(2);
+            config.setTmpDirectory(ls.getDirectory()
+                                 .toString() + File.separator);
+            config.addMetaData("build", rMap.getString("Application.version")
+                           + ":" + rMap.getString("Application.build"));
+            UserMetrix.initalise(config);
+            logger = UserMetrix.getInstance(OpenSHAPA.class);
+
+            // If the user hasn't specified, we don't send error logs.
+            if (Configuration.getInstance().getCanSendLogs() == null) {
+                UserMetrix.setCanSendLogs(false);
+            } else {
+                UserMetrix.setCanSendLogs(Configuration
+                          .getInstance().getCanSendLogs());
+            }
 
             // Initalise scripting engine
             rubyEngine = null;
@@ -422,6 +434,12 @@ implements KeyEventDispatcher {
         // Make view the new view so we can keep track of it for hotkeys.
         view = new OpenSHAPAView(this);
         show(view);
+
+        // Now that openshapa is up - we may need to ask the user if can send
+        // gather logs.
+        if (Configuration.getInstance().getCanSendLogs() == null) {
+            show(new UserMetrixV(view.getFrame(), true));
+        }
 
         // BugzID:435 - Correct size if a small size is detected.
         int width = (int) getMainFrame().getSize().getWidth();
@@ -613,13 +631,14 @@ implements KeyEventDispatcher {
                         UIManager.getSystemLookAndFeelClassName());
                 new MacHandler();
             } catch (ClassNotFoundException cnfe) {
-                logger.error("Unable to start OpenSHAPA", cnfe);
+                System.err.println("Unable to start OpenSHAPA");
+                //logger.error("Unable to start OpenSHAPA", cnfe);
             } catch (InstantiationException ie) {
-                logger.error("Unable to start OpenSHAPA", ie);
+                System.err.println("Unable to instantiate OpenSHAPA");
             } catch (IllegalAccessException iae) {
-                logger.error("Unable to start OpenSHAPA", iae);
+                System.err.println("Unable to access OpenSHAPA");
             } catch (UnsupportedLookAndFeelException ulafe) {
-                logger.error("Unable to start OpenSHAPA", ulafe);
+                System.err.println("Unsupporter look and feel exception");
             }
         }
 
@@ -662,8 +681,8 @@ implements KeyEventDispatcher {
     /** The JRuby scripting engine manager that we use with OpenSHAPA. */
     private JRubyScriptEngineManager m;
 
-    /** The logger for OpenSHAPA. */
-    private static Logger logger = Logger.getLogger(OpenSHAPA.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(OpenSHAPA.class);
 
     /** output stream for messages coming from the scripting engine. */
     private PipedInputStream consoleOutputStream;

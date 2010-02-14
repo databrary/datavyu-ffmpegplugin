@@ -1,5 +1,6 @@
 package org.openshapa.views.continuous.sound;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.Component;
 import java.io.File;
 import java.util.Timer;
@@ -7,7 +8,6 @@ import java.util.TimerTask;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import org.apache.log4j.Logger;
 import org.openshapa.util.Constants;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
@@ -34,8 +34,8 @@ import quicktime.std.StdQTException;
 public final class SoundDataViewer extends JFrame
         implements DataViewer {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(SoundDataViewer.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(SoundDataViewer.class);
     /** The quicktime movie this viewer is displaying. */
     private Movie audio;
     /** The audio track for the above quicktime movie. */

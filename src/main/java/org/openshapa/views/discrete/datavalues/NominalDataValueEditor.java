@@ -1,11 +1,11 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.Matrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
 import org.openshapa.models.db.Database;
 import org.openshapa.models.db.NominalDataValue;
 import org.openshapa.models.db.PredDataValue;
@@ -24,8 +24,8 @@ public final class NominalDataValueEditor extends DataValueEditor {
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n\"\u001B";
 
     /** The logger for this class. */
-    private static Logger logger = Logger
-                                   .getLogger(NominalDataValueEditor.class);
+    private UserMetrix logger = UserMetrix
+            .getInstance(NominalDataValueEditor.class);
 
     /**
      * Constructor.

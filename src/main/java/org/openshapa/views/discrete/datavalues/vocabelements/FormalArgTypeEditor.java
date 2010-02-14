@@ -1,9 +1,9 @@
 package org.openshapa.views.discrete.datavalues.vocabelements;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
 import org.openshapa.models.db.FormalArgument;
 import org.openshapa.models.db.FormalArgument.FArgType;
 import org.openshapa.models.db.SystemErrorException;
@@ -22,7 +22,7 @@ public final class FormalArgTypeEditor extends EditorComponent {
     private int argIndex;
 
     /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(FormalArgTypeEditor.class);
+    private UserMetrix logger = UserMetrix.getInstance(FormalArgTypeEditor.class);
 
     public FormalArgTypeEditor(final JTextComponent ta,
                                final VocabElement ve,

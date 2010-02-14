@@ -1,10 +1,10 @@
 package org.openshapa.views.discrete.layouts;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import java.util.Vector;
-import org.apache.log4j.Logger;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
@@ -13,9 +13,9 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
  */
 public class SheetLayoutWeakTemporal extends SheetLayout {
 
-    /** Logger for this class. */
-    private static Logger logger =
-                                Logger.getLogger(SheetLayoutWeakTemporal.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix
+            .getInstance(SheetLayoutWeakTemporal.class);
 
     /** Temporal ordering information for each column in the layout. */
     private Vector<ColumnTemporalInfo> colsInfo;
@@ -414,7 +414,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
             // If the time decreased, there's a bug.
             if (info.time < lastTime) {
-                logger.warn("DoUpdateTemporal - time < lastTime");
+                logger.error("DoUpdateTemporal - time < lastTime");
                 break; // leave the loop
             }
         }

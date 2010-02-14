@@ -1,8 +1,8 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.Matrix;
 import org.openshapa.models.db.PredDataValue;
@@ -22,8 +22,8 @@ public final class TextStringDataValueEditor extends DataValueEditor {
     private static final String RESERVED_CHARS = "\u001B";
 
     /** The logger for this class. */
-    private static Logger logger = Logger
-                                   .getLogger(TextStringDataValueEditor.class);
+    private UserMetrix logger = UserMetrix
+            .getInstance(TextStringDataValueEditor.class);
 
     /**
      * Constructor.

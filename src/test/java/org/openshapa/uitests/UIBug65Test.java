@@ -2,6 +2,9 @@ package org.openshapa.uitests;
 
 import java.io.File;
 import java.util.Vector;
+import junitx.util.PrivateAccessor;
+import org.openshapa.Configuration;
+import org.openshapa.util.ConfigProperties;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.uispec4j.Column;
@@ -21,6 +24,13 @@ import org.uispec4j.interception.WindowHandler;
  */
 public final class UIBug65Test extends OpenSHAPAUISpecTestCase {
     static {
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
+
         UISpec4J.setWindowInterceptionTimeLimit(4000000);
         UISpec4J.setAssertionTimeLimit(4000);
         UISpec4J.init();

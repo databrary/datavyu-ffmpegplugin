@@ -1,10 +1,13 @@
 package org.openshapa.uitests;
 
 import java.io.File;
+import junitx.util.PrivateAccessor;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.openshapa.Configuration;
 import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.util.ConfigProperties;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.NewDatabaseV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
@@ -25,6 +28,13 @@ import org.uispec4j.interception.WindowHandler;
 public final class UIVariableListTest extends OpenSHAPAUISpecTestCase {
 
     static {
+        try {
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
+            p.setCanSendLogs(false);
+        } catch (Exception e) {
+            System.err.println("Unable to overide sending usage logs");
+        }
+
         UISpec4J.setWindowInterceptionTimeLimit(120000);
         UISpec4J.init();
     }

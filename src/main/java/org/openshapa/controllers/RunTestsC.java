@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.ConsoleV;
@@ -16,7 +17,6 @@ import java.util.Stack;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.apache.log4j.Logger;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -201,5 +201,5 @@ public class RunTestsC {
     }
 
     /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(RunTestsC.class);
+    private UserMetrix logger = UserMetrix.getInstance(RunTestsC.class);
 }

@@ -1,20 +1,14 @@
 package org.openshapa.controllers;
 
-import com.sun.script.jruby.JRubyScriptEngineManager;
+import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.LinkedList;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.swing.JFileChooser;
-import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.util.FileFilters.RBFilter;
 import org.openshapa.views.ConsoleV;
@@ -109,5 +103,5 @@ public final class RunScriptC {
     }
 
     /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(RunScriptC.class);
+    private UserMetrix logger = UserMetrix.getInstance(RunScriptC.class);
 }

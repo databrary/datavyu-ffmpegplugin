@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -13,7 +14,6 @@ import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
-import org.apache.log4j.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
@@ -43,8 +43,8 @@ implements KeyEventDispatcher {
     /** Selector for cells. */
     private Selector cellSelector;
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(ColumnDataPanel.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(ColumnDataPanel.class);
 
     /**
      * Creates a new ColumnDataPanel.
