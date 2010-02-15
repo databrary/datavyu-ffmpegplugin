@@ -65,9 +65,6 @@ implements ExternalDataCellListener, Selectable {
     /** selected state of cell. */
     private boolean selected = false;
 
-    /** The parent selection that could include this cell. */
-    private Selector selection;
-
     /** Component that sets the width of the cell. */
     private Filler stretcher;
 
@@ -109,18 +106,17 @@ implements ExternalDataCellListener, Selectable {
 
     /**
      * Creates new form SpreadsheetCell.
+     *
      * @param cellDB Database the cell is in
      * @param cell Cell to display
-     * @param selector Selector to register the cell with.
+     *
      * @throws SystemErrorException if trouble with db calls
      */
     public SpreadsheetCell(final Database cellDB,
-                           final Cell cell,
-                           final Selector selector)
+                           final Cell cell)
     throws SystemErrorException {
         db = cellDB;
         cellID = cell.getID();
-        selection = selector;
         setName(this.getClass().getSimpleName());
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
@@ -135,9 +131,6 @@ implements ExternalDataCellListener, Selectable {
         // If it is already selected in the database, we need to inform
         // the selector, but not trigger a selection change or deselect others.
         selected = dc.getSelected();
-        if (selected) {
-            selection.addSelectionSilent(this);
-        }
 
         cellPanel = new SpreadsheetElementPanel();
         strut = new Filler(new Dimension(0,0), new Dimension(0,0),
@@ -154,17 +147,13 @@ implements ExternalDataCellListener, Selectable {
 
         setOrdinal(dc.getOrd());
 
-        onset = new TimeStampTextField(selection,
-                              dc,
-                              TimeStampSource.Onset);
+        onset = new TimeStampTextField(dc, TimeStampSource.Onset);
         onset.setToolTipText(rMap.getString("onset.tooltip"));
 
-        offset = new TimeStampTextField(selection,
-                              dc,
-                              TimeStampSource.Offset);
+        offset = new TimeStampTextField(dc, TimeStampSource.Offset);
         offset.setToolTipText(rMap.getString("offset.tooltip"));
 
-        dataPanel = new MatrixRootView(selection, dc, null);
+        dataPanel = new MatrixRootView(dc, null);
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
         dataPanel.setMatrix(dc.getVal());
         dataPanel.setOpaque(false);
@@ -485,7 +474,7 @@ implements ExternalDataCellListener, Selectable {
         // from the previous cell in the column. A click in that area should
         // not cause a selection
         if (me.getPoint().y > cellPanel.getY()) {
-            selection.addToSelection(me, this);
+            this.setSelected(true);
             requestFocusInWindow();
             me.consume();
         }

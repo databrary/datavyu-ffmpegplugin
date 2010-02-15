@@ -7,7 +7,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import org.openshapa.models.db.DataCell;
-import org.openshapa.views.discrete.Selector;
 import javax.swing.JTextField;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.SystemErrorException;
@@ -18,9 +17,6 @@ import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStam
  */
 public final class TimeStampTextField extends JTextField
 implements FocusListener, KeyListener {
-
-    /** The selection (used for cells) for the parent spreadsheet. */
-    private Selector sheetSelection;
 
     /** The parent cell for this JPanel. */
     private long parentCell = -1;
@@ -35,19 +31,15 @@ implements FocusListener, KeyListener {
     /**
      * Creates a new instance of MatrixV.
      *
-     * @param cellSelection The parent selection for spreadsheet cells.
      * @param cell The parent datacell for this spreadsheet cell.
      * @param tsType Which TimeStamp of the cell to display.
      * represent.
      */
-    public TimeStampTextField(final Selector cellSelection,
-                   final DataCell cell,
-                   final TimeStampSource tsType) {
+    public TimeStampTextField(final DataCell cell,
+                              final TimeStampSource tsType) {
         super();
 
-        sheetSelection = cellSelection;
         parentCell = cell.getID();
-
         myEditor = new TimeStampDataValueEditor(this, cell, tsType);
 
         setValue();
@@ -83,12 +75,6 @@ implements FocusListener, KeyListener {
      */
     public void focusGained(final FocusEvent fe) {
         try {
-            // BugzID:320 Deselect Cells before selecting cell contents.
-            if (sheetSelection != null) {
-                sheetSelection.deselectAll();
-                sheetSelection.deselectOthers();
-            }
-
             // We need to remember which cell should be duplicated if the user
             // presses the enter key or selects New Cell from the menu.
             if (parentCell != -1) {

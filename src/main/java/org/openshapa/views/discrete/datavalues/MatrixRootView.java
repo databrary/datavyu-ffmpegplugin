@@ -22,9 +22,6 @@ import org.openshapa.views.discrete.EditorTracker;
  */
 public final class MatrixRootView extends JTextArea implements FocusListener {
 
-    /** The selection (used for cells) for the parent spreadsheet. */
-    private Selector sheetSelection;
-
     /** The parent cell for this JPanel. */
     private long parentCell = -1;
 
@@ -49,20 +46,17 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     /**
      * Creates a new instance of MatrixV.
      *
-     * @param cellSelection The parent selection for spreadsheet cells.
      * @param cell The parent datacell for this spreadsheet cell.
      * @param matrix The Matrix holding datavalues that this view label will
      * represent.
      */
-    public MatrixRootView(final Selector cellSelection,
-                          final DataCell cell,
+    public MatrixRootView(final DataCell cell,
                           final Matrix matrix) {
         super();
 
         setLineWrap(true);
         setWrapStyleWord(true);
 
-        sheetSelection = cellSelection;
         parentCell = cell.getID();
         allEditors = new Vector<EditorComponent>();
         edTracker = new EditorTracker(this, allEditors);
@@ -198,12 +192,6 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      */
     public void focusGained(final FocusEvent fe) {
         try {
-            // BugzID:320 Deselect Cells before selecting cell contents.
-            if (sheetSelection != null) {
-                sheetSelection.deselectAll();
-                sheetSelection.deselectOthers();
-            }
-
             // We need to remember which cell should be duplicated if the user
             // presses the enter key or selects New Cell from the menu.
             if (parentCell != -1) {

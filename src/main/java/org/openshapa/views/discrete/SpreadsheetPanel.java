@@ -65,9 +65,6 @@ public final class SpreadsheetPanel extends JPanel
         scrollPane.setViewportView(mainView);
         scrollPane.setColumnHeaderView(headerView);
         colSelector = new Selector(this);
-        cellSelector = new Selector(this);
-        colSelector.addOther(cellSelector);
-        cellSelector.addOther(colSelector);
 
         // setup strut for the mainView - used when scrollPane is resized
         Dimension d = new Dimension(0, DEFAULT_HEIGHT);
@@ -142,8 +139,7 @@ public final class SpreadsheetPanel extends JPanel
         // Create the spreadsheet column and register it.
         SpreadsheetColumn col = new SpreadsheetColumn(db,
                                                       colID,
-                                                      colSelector,
-                                                      cellSelector);
+                                                      colSelector);
         col.registerListeners();
 
         // add the datapanel to the scrollpane viewport
@@ -198,7 +194,14 @@ public final class SpreadsheetPanel extends JPanel
      * Deselect all selected items in the Spreadsheet.
      */
     public void deselectAll() {
-        cellSelector.deselectAll();
+        for (SpreadsheetColumn col : this.columns) {
+            for (SpreadsheetCell cell : col.getCells()) {
+                if (cell.isSelected()) {
+                    cell.setSelected(false);
+                }
+            }
+        }
+
         colSelector.deselectAll();
     }
 
@@ -246,13 +249,6 @@ public final class SpreadsheetPanel extends JPanel
      */
     public Database getDatabase() {
         return (this.database);
-    }
-
-    /**
-     * @return Selector handling the SpreadsheetCells.
-     */
-    public Selector getCellSelector() {
-        return cellSelector;
     }
 
     /**
@@ -589,9 +585,6 @@ public final class SpreadsheetPanel extends JPanel
 
     /** Selector object for handling Column header selection. */
     private Selector colSelector;
-
-    /** Selector object for handling SpreadsheetCell selection. */
-    private Selector cellSelector;
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(SpreadsheetPanel.class);

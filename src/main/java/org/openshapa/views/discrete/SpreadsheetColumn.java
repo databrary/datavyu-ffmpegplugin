@@ -85,16 +85,14 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
 
     /**
      * Creates new SpreadsheetColumn.
-     * @param sheet Spreadsheet parent.
+     *
      * @param db Database reference.
      * @param colID the database colID this column displays.
      * @param colSelector The selection for all columns.
-     * @param cellSelector The selection of all cells.
      */
     public SpreadsheetColumn(final Database db,
                              final long colID,
-                             final Selector colSelector,
-                             final Selector cellSelector) {
+                             final Selector colSelector) {
         this.database = db;
         this.dbColID = colID;
 
@@ -105,7 +103,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
                 dbColumn.getName() + "  (" + dbColumn.getItsMveType() + ")",
                 colSelector);
 
-            datapanel = new ColumnDataPanel(width, dbColumn, cellSelector);
+            datapanel = new ColumnDataPanel(width, dbColumn);
 
         } catch (SystemErrorException e) {
             logger.error("Problem retrieving DataColumn", e);
@@ -220,15 +218,14 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     }
 
     /**
-     * Returns selection status.
+     * @return selection status.
      */
     public boolean getSelected() {
         DataColumn dc = null;
         try {
             dc = database.getDataColumn(dbColID);
-            
-        } catch (SystemErrorException ex) {
-            java.util.logging.Logger.getLogger(SpreadsheetColumn.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SystemErrorException e) {
+            logger.error("Unable to get selected columns", e);
         }
         return dc.getSelected();
     }

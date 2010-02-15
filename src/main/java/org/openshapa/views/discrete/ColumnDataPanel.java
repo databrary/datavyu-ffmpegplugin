@@ -8,6 +8,8 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.LayoutManager;
 import java.awt.event.KeyEvent;
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.Box.Filler;
@@ -40,9 +42,6 @@ implements KeyEventDispatcher {
     /** Collection of the SpreadsheetCells held in by this data panel. */
     private Vector<SpreadsheetCell> cells;
 
-    /** Selector for cells. */
-    private Selector cellSelector;
-
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(ColumnDataPanel.class);
 
@@ -51,17 +50,14 @@ implements KeyEventDispatcher {
      *
      * @param width The width of the new column data panel in pixels.
      * @param model The Data Column that this panel represents.
-     * @param parentCellSelector The cell selector to use with cells held in
-     * this column data panel.
      */
     public ColumnDataPanel(final int width,
-                           final DataColumn model,
-                           final Selector parentCellSelector) {
+                           final DataColumn model) {
         super();
 
         // Store member variables.
         columnWidth = width;
-        cellSelector = parentCellSelector;
+        //cellSelector = parentCellSelector;
         this.cells = new Vector<SpreadsheetCell>();
 
         // Create visual container for spreadsheet cells.
@@ -109,8 +105,8 @@ implements KeyEventDispatcher {
                                     .getCell(dbColumn.getID(), j);
 
                 SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(),
-                                                         dc,
-                                                         cellSelector);
+                                                         dc/*,
+                                                         cellSelector*/);
                 dbColumn.getDB().registerDataCellListener(dc.getID(), sc);
 
                 // add cell to the JPanel
@@ -173,8 +169,8 @@ implements KeyEventDispatcher {
         try {
             DataCell dc = (DataCell) db.getCell(cellID);
             SpreadsheetCell nCell = new SpreadsheetCell(db,
-                                                        dc,
-                                                        cellSelector);
+                                                        dc/*,
+                                                        cellSelector*/);
             db.registerDataCellListener(dc.getID(), nCell);
 
             Long newOrd = new Long(dc.getOrd());
@@ -258,6 +254,22 @@ implements KeyEventDispatcher {
      */
     public Vector<SpreadsheetCell> getCells() {
         return cells;
+    }
+
+    /**
+     * @return The selected spreadsheet cells in this column.
+     */
+    public AbstractList<SpreadsheetCell> getSelectedCells() {
+        AbstractList<SpreadsheetCell> selectedCells =
+            new ArrayList<SpreadsheetCell>();
+
+        for (SpreadsheetCell c : selectedCells) {
+            if (c.isSelected()) {
+                selectedCells.add(c);
+            }
+        }
+
+        return selectedCells;
     }
 
     /**
