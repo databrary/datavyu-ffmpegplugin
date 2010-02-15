@@ -24,21 +24,17 @@ implements Selectable, MouseListener, MouseMotionListener {
     /** SpreadsheetColumn this header is part of. */
     private SpreadsheetColumn parentCol;
 
-    /** The current column selection. */
-    private Selector selection;
-
     /** Background color of the header when unselected. */
     private Color backColor;
 
     /**
      * Creates new ColumnHeaderPanel.
+     *
      * @param col SpreadsheetColumn this header is part of.
-     * @param text String to display
-     * @param selector The selection for all columns.
+     * @param text String to display.
      */
     public ColumnHeaderPanel(final SpreadsheetColumn col,
-                             final String text,
-                             final Selector selector) {
+                             final String text) {
         super(text);
 
         parentCol = col;
@@ -53,14 +49,11 @@ implements Selectable, MouseListener, MouseMotionListener {
         setMaximumSize(dim);
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
-        selection = selector;
     }
 
     /**
-     * Selectable Implementation.
-     */
-
-    /** set the selected state.
+     * set the selected state.
+     *
      * @param sel selected state.
      */
     public final void setSelected(final boolean sel) {
@@ -104,7 +97,6 @@ implements Selectable, MouseListener, MouseMotionListener {
      * @param me The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
-        selection.addToSelection(me, this);
         parentCol.requestFocus();
     }
 

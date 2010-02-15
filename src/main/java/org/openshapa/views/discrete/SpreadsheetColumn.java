@@ -88,11 +88,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      *
      * @param db Database reference.
      * @param colID the database colID this column displays.
-     * @param colSelector The selection for all columns.
      */
-    public SpreadsheetColumn(final Database db,
-                             final long colID,
-                             final Selector colSelector) {
+    public SpreadsheetColumn(final Database db, final long colID) {
         this.database = db;
         this.dbColID = colID;
 
@@ -100,8 +97,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             DataColumn dbColumn = database.getDataColumn(dbColID);
 
             headerpanel = new ColumnHeaderPanel(this,
-                dbColumn.getName() + "  (" + dbColumn.getItsMveType() + ")",
-                colSelector);
+                dbColumn.getName() + "  (" + dbColumn.getItsMveType() + ")");
 
             datapanel = new ColumnDataPanel(width, dbColumn);
 

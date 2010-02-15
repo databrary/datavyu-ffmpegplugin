@@ -64,7 +64,6 @@ public final class SpreadsheetPanel extends JPanel
         this.add(scrollPane, BorderLayout.CENTER);
         scrollPane.setViewportView(mainView);
         scrollPane.setColumnHeaderView(headerView);
-        colSelector = new Selector(this);
 
         // setup strut for the mainView - used when scrollPane is resized
         Dimension d = new Dimension(0, DEFAULT_HEIGHT);
@@ -137,9 +136,7 @@ public final class SpreadsheetPanel extends JPanel
         headerView.remove(newVar);
 
         // Create the spreadsheet column and register it.
-        SpreadsheetColumn col = new SpreadsheetColumn(db,
-                                                      colID,
-                                                      colSelector);
+        SpreadsheetColumn col = new SpreadsheetColumn(db, colID);
         col.registerListeners();
 
         // add the datapanel to the scrollpane viewport
@@ -195,14 +192,16 @@ public final class SpreadsheetPanel extends JPanel
      */
     public void deselectAll() {
         for (SpreadsheetColumn col : this.columns) {
+            if (col.getSelected()) {
+                col.setSelected(false);
+            }
+
             for (SpreadsheetCell cell : col.getCells()) {
                 if (cell.isSelected()) {
                     cell.setSelected(false);
                 }
             }
         }
-
-        colSelector.deselectAll();
     }
 
     /**
@@ -582,9 +581,6 @@ public final class SpreadsheetPanel extends JPanel
 
     /** Vector of the Spreadsheetcolumns added to the Spreadsheet. */
     private Vector<SpreadsheetColumn> columns;
-
-    /** Selector object for handling Column header selection. */
-    private Selector colSelector;
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(SpreadsheetPanel.class);
