@@ -208,6 +208,15 @@ public class TrackController {
         trackPainter.setTrackModel(trackModel);
     }
 
+    private void changeSelected() {
+        if (trackModel.isSelected()) {
+            trackModel.setSelected(false);
+        } else {
+            trackModel.setSelected(true);
+        }
+        trackPainter.setTrackModel(trackModel);
+    }
+
     /**
      * Register the listener to be notified of carriage events
      * 
@@ -283,6 +292,11 @@ public class TrackController {
         private final Cursor moveCursor =
                 Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            changeSelected();
+        }
 
         @Override
         public void mousePressed(MouseEvent e) {

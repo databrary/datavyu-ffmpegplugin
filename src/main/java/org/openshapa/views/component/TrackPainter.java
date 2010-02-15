@@ -21,6 +21,16 @@ public class TrackPainter extends JComponent {
      */
     private static final long serialVersionUID = -1528097986586594694L;
 
+    /**
+     * Color schemes
+     */
+    private static final Color NORMAL_CARRIAGE_COLOR = new Color(169, 218, 248);
+    private static final Color NORMAL_OUTLINE_COLOR = new Color(129, 167, 188);
+    private static final Color SELECTED_CARRIAGE_COLOR =
+            new Color(138, 223, 162);
+    private static final Color SELECTED_OUTLINE_COLOR =
+            new Color(105, 186, 128);
+
     /** Painted region of the carriage */
     private Polygon carriagePolygon;
 
@@ -120,7 +130,11 @@ public class TrackPainter extends JComponent {
         int carriageYOffset = (int) (size.getHeight() / 10D);
 
         // Paint the carriage
-        g.setColor(new Color(130, 190, 255)); // Light blue
+        if (trackModel.isSelected()) {
+            g.setColor(SELECTED_CARRIAGE_COLOR);
+        } else {
+            g.setColor(NORMAL_CARRIAGE_COLOR);
+        }
 
         // Interactable region
         carriagePolygon = new Polygon();
@@ -135,7 +149,11 @@ public class TrackPainter extends JComponent {
         g.fillPolygon(carriagePolygon);
 
         // Paint the carriage top and bottom outline
-        g.setColor(Color.BLUE);
+        if (trackModel.isSelected()) {
+            g.setColor(SELECTED_OUTLINE_COLOR);
+        } else {
+            g.setColor(NORMAL_OUTLINE_COLOR);
+        }
         g.drawLine(Math.round(effectiveXOffset), carriageYOffset, Math
                 .round(effectiveXOffset + carriageWidth - 1), carriageYOffset);
         g.drawLine(Math.round(effectiveXOffset), carriageYOffset
@@ -177,7 +195,12 @@ public class TrackPainter extends JComponent {
             g.setColor(Color.LIGHT_GRAY);
             g.fillPolygon(topMarker);
 
-            g.setColor(Color.BLUE);
+            if (trackModel.isSelected()) {
+                g.setColor(SELECTED_OUTLINE_COLOR);
+            } else {
+                g.setColor(NORMAL_OUTLINE_COLOR);
+            }
+
             // Top marker outline
             g
                     .drawLine(xPos - 9, carriageYOffset, xPos - 2,
