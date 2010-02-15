@@ -4,14 +4,17 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
+
+import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
-import org.openshapa.views.component.RegionPainter;
+
+import org.openshapa.event.MarkerEvent;
+import org.openshapa.event.MarkerEventListener;
+import org.openshapa.event.MarkerEvent.Marker;
 import org.openshapa.models.component.RegionModel;
 import org.openshapa.models.component.ViewableModel;
-import org.openshapa.event.MarkerEvent;
-import org.openshapa.event.MarkerEvent.Marker;
-import org.openshapa.event.MarkerEventListener;
+import org.openshapa.views.component.RegionPainter;
 
 /**
  * RegionController is responsible for managing a RegionPainter
@@ -48,8 +51,11 @@ public class RegionController {
 
     /**
      * Sets the playback region to visualise
-     * @param start start of the playback region in milliseconds
-     * @param end end of the playback region in milliseconds
+     * 
+     * @param start
+     *            start of the playback region in milliseconds
+     * @param end
+     *            end of the playback region in milliseconds
      */
     public void setPlaybackRegion(long start, long end) {
         regionModel.setRegionStart(start);
@@ -59,6 +65,7 @@ public class RegionController {
 
     /**
      * Sets the start of the playback region to visualise
+     * 
      * @param start
      */
     public void setPlaybackRegionStart(long start) {
@@ -68,6 +75,7 @@ public class RegionController {
 
     /**
      * Sets the end of the playback region to visualise
+     * 
      * @param end
      */
     public void setPlaybackRegionEnd(long end) {
@@ -78,7 +86,7 @@ public class RegionController {
     /**
      * @return View used by the controller
      */
-    public Component getView() {
+    public JComponent getView() {
         return view;
     }
 
@@ -87,27 +95,31 @@ public class RegionController {
      */
     public ViewableModel getViewableModel() {
         // return a clone to avoid model tainting
-        return (ViewableModel)viewableModel.clone();
+        return (ViewableModel) viewableModel.clone();
     }
 
     /**
      * Copies the given viewable model
+     * 
      * @param viewableModel
      */
     public void setViewableModel(ViewableModel viewableModel) {
-        /* Just copy the values, do not spread references all over the place to
+        /*
+         * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
          */
         this.viewableModel.setEnd(viewableModel.getEnd());
         this.viewableModel.setIntervalTime(viewableModel.getIntervalTime());
         this.viewableModel.setIntervalWidth(viewableModel.getIntervalWidth());
         this.viewableModel.setZoomWindowEnd(viewableModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(viewableModel.getZoomWindowStart());
+        this.viewableModel.setZoomWindowStart(viewableModel
+                .getZoomWindowStart());
         view.setViewableModel(this.viewableModel);
     }
 
     /**
      * Register the listener to be notified of region marker events
+     * 
      * @param listener
      */
     public synchronized void addMarkerEventListener(MarkerEventListener listener) {
@@ -116,27 +128,31 @@ public class RegionController {
 
     /**
      * Remove the listener from being notified of region marker events
+     * 
      * @param listener
      */
-    public synchronized void removeMarkerEventListener(MarkerEventListener listener) {
+    public synchronized void removeMarkerEventListener(
+            MarkerEventListener listener) {
         listenerList.remove(MarkerEventListener.class, listener);
     }
 
     /**
      * Used to inform listeners about the change of a region marker.
+     * 
      * @param marker
      * @param time
      */
     private synchronized void fireMarkerEvent(Marker marker, long time) {
         MarkerEvent e = new MarkerEvent(this, marker, time);
         Object[] listeners = listenerList.getListenerList();
-        /* The listener list contains the listening class and then the listener
+        /*
+         * The listener list contains the listening class and then the listener
          * instance.
          */
         for (int i = 0; i < listeners.length; i += 2) {
-           if (listeners[i] == MarkerEventListener.class) {
-               ((MarkerEventListener)listeners[i+1]).markerMoved(e);
-           }
+            if (listeners[i] == MarkerEventListener.class) {
+                ((MarkerEventListener) listeners[i + 1]).markerMoved(e);
+            }
         }
     }
 
@@ -147,7 +163,8 @@ public class RegionController {
         private boolean onStartMarker;
         private boolean onEndMarker;
 
-        private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
+        private final Cursor eastResizeCursor =
+                Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
         public RegionMarkerListener() {
@@ -157,7 +174,7 @@ public class RegionController {
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            Component source = (Component)e.getSource();
+            JComponent source = (JComponent) e.getSource();
             final Polygon startMarker = view.getStartMarkerPolygon();
             final Polygon endMarker = view.getEndMarkerPolygon();
             if (startMarker.contains(e.getPoint())) {
@@ -176,14 +193,14 @@ public class RegionController {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            Component source = (Component)e.getSource();
+            Component source = (Component) e.getSource();
             final Polygon startMarker = view.getStartMarkerPolygon();
             final Polygon endMarker = view.getEndMarkerPolygon();
             if (startMarker.contains(e.getPoint())) {
                 // Mouse is pressed on the needle.
                 onStartMarker = true;
                 source.setCursor(eastResizeCursor);
-            } else if (endMarker.contains(e.getPoint())){
+            } else if (endMarker.contains(e.getPoint())) {
                 onEndMarker = true;
                 source.setCursor(eastResizeCursor);
             } else {
@@ -206,8 +223,14 @@ public class RegionController {
                 }
 
                 // Calculate the time represented by the new location
-                float ratio = viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();
-                float newTime = (x - regionModel.getPaddingLeft() + viewableModel.getZoomWindowStart() * ratio)/ratio;
+                float ratio =
+                        viewableModel.getIntervalWidth()
+                                / viewableModel.getIntervalTime();
+                float newTime =
+                        (x - regionModel.getPaddingLeft() + viewableModel
+                                .getZoomWindowStart()
+                                * ratio)
+                                / ratio;
                 if (newTime < 0) {
                     newTime = 0;
                 }
@@ -231,9 +254,16 @@ public class RegionController {
                 }
 
                 // Calculate the time represented by the new location
-                float ratio = viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();
-                float newTime = (x - regionModel.getPaddingLeft() + viewableModel.getZoomWindowStart() * ratio)/ratio;
-                // Make sure the marker doesn't get dragged before the start marker
+                float ratio =
+                        viewableModel.getIntervalWidth()
+                                / viewableModel.getIntervalTime();
+                float newTime =
+                        (x - regionModel.getPaddingLeft() + viewableModel
+                                .getZoomWindowStart()
+                                * ratio)
+                                / ratio;
+                // Make sure the marker doesn't get dragged before the start
+                // marker
                 if (newTime < regionModel.getRegionStart()) {
                     newTime = regionModel.getRegionStart();
                 }
@@ -249,7 +279,7 @@ public class RegionController {
         public void mouseReleased(MouseEvent e) {
             onStartMarker = false;
             onEndMarker = false;
-            Component source = (Component)e.getSource();
+            JComponent source = (JComponent) e.getSource();
             source.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
     }

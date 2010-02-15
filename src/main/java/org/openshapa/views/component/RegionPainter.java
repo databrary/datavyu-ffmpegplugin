@@ -1,18 +1,20 @@
 package org.openshapa.views.component;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Polygon;
+
+import javax.swing.JComponent;
+
 import org.openshapa.models.component.RegionModel;
 import org.openshapa.models.component.ViewableModel;
 
 /**
  * This class paints the custom playback region.
  */
-public class RegionPainter extends Component {
+public class RegionPainter extends JComponent {
 
     /** Polygon region for the start marker */
     private Polygon startMarkerPolygon;
@@ -59,7 +61,8 @@ public class RegionPainter extends Component {
 
     @Override
     public boolean contains(int x, int y) {
-        return startMarkerPolygon.contains(x, y) || endMarkerPolygon.contains(x, y);
+        return startMarkerPolygon.contains(x, y)
+                || endMarkerPolygon.contains(x, y);
     }
 
     @Override
@@ -69,7 +72,9 @@ public class RegionPainter extends Component {
         }
         Dimension size = this.getSize();
 
-        final float ratio = viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();
+        final float ratio =
+                viewableModel.getIntervalWidth()
+                        / viewableModel.getIntervalTime();
 
         // If the left region marker is visible, paint the marker
         final long regionStart = regionModel.getRegionStart();
@@ -80,9 +85,10 @@ public class RegionPainter extends Component {
         if (regionStart >= viewableModel.getZoomWindowStart()) {
             g.setColor(new Color(15, 135, 0, 100)); // Semi-transparent green
             // The polygon tip
-            int pos = Math.round(regionModel.getRegionStart() * ratio
-                    - viewableModel.getZoomWindowStart() * ratio)
-                    + regionModel.getPaddingLeft();
+            int pos =
+                    Math.round(regionModel.getRegionStart() * ratio
+                            - viewableModel.getZoomWindowStart() * ratio)
+                            + regionModel.getPaddingLeft();
 
             // Make an arrow
             startMarkerPolygon = new Polygon();
@@ -105,15 +111,15 @@ public class RegionPainter extends Component {
             g.setColor(new Color(15, 135, 0, 100)); // Semi-transparent green
 
             // The polygon tip
-            int pos = Math.round(regionModel.getRegionEnd() * ratio
-                    - viewableModel.getZoomWindowStart() * ratio)
-                    + regionModel.getPaddingLeft();
+            int pos =
+                    Math.round(regionModel.getRegionEnd() * ratio
+                            - viewableModel.getZoomWindowStart() * ratio)
+                            + regionModel.getPaddingLeft();
             endMarkerPolygon = new Polygon();
             endMarkerPolygon.addPoint(pos + 1, 19 + paddingTop);
             endMarkerPolygon.addPoint(pos + 11, paddingTop);
             endMarkerPolygon.addPoint(pos + 11, 37 + paddingTop);
             endMarkerPolygon.addPoint(pos + 1, 37 + paddingTop);
-
 
             g.fillPolygon(endMarkerPolygon);
 
@@ -125,24 +131,27 @@ public class RegionPainter extends Component {
             g.drawLine(pos + 1, 37, pos + 1, size.height);
         }
 
-        /* Check if the selected region is not the maximum viewing window,
-         * if it is not the maximum, highlight the areas over the tracks.
+        /*
+         * Check if the selected region is not the maximum viewing window, if it
+         * is not the maximum, highlight the areas over the tracks.
          */
         if ((regionStart > 0) || (regionEnd < viewableModel.getEnd())) {
             final long windowStart = viewableModel.getZoomWindowStart();
             final long windowEnd = viewableModel.getZoomWindowEnd();
-            
-            long visibleStartRegion = regionStart >= windowStart 
-                    ? regionStart
-                    : windowStart;
-            long visibleEndRegion = regionEnd <= windowEnd
-                    ? regionEnd
-                    : windowEnd;
 
-            int startPos = Math.round(visibleStartRegion * ratio -
-                    windowStart * ratio) + regionModel.getPaddingLeft();
-            int endPos = Math.round(visibleEndRegion * ratio -
-                    windowStart * ratio) + regionModel.getPaddingLeft() + 1;
+            long visibleStartRegion =
+                    regionStart >= windowStart ? regionStart : windowStart;
+            long visibleEndRegion =
+                    regionEnd <= windowEnd ? regionEnd : windowEnd;
+
+            int startPos =
+                    Math
+                            .round(visibleStartRegion * ratio - windowStart
+                                    * ratio)
+                            + regionModel.getPaddingLeft();
+            int endPos =
+                    Math.round(visibleEndRegion * ratio - windowStart * ratio)
+                            + regionModel.getPaddingLeft() + 1;
 
             g.setColor(new Color(15, 135, 0, 100));
             g.fillRect(startPos, 37, endPos - startPos, size.height);

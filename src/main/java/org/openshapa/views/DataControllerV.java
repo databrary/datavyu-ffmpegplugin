@@ -155,7 +155,7 @@ public final class DataControllerV extends OpenSHAPADialog
     /** Is the tracks panel currently shown? */
     private boolean tracksPanelEnabled = false;
     /** The controller for manipulating tracks. */
-    private TracksControllerV tracksControllerV;
+    private MixerControllerV tracksControllerV;
 
     //--------------------------------------------------------------------------
     // [initialization]
@@ -182,7 +182,7 @@ public final class DataControllerV extends OpenSHAPADialog
         windowPlayStart = 0;
         windowPlayEnd = 0;
 
-        tracksControllerV = new TracksControllerV();
+        tracksControllerV = new MixerControllerV();
         tracksPanel.add(tracksControllerV.getTracksPanel());
         tracksControllerV.addTracksControllerListener(this);
 

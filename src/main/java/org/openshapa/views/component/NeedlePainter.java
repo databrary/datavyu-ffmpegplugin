@@ -1,18 +1,20 @@
 package org.openshapa.views.component;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Polygon;
+
+import javax.swing.JComponent;
+
 import org.openshapa.models.component.NeedleModel;
 import org.openshapa.models.component.ViewableModel;
 
 /**
  * This class paints a timing needle.
  */
-public class NeedlePainter extends Component {
+public class NeedlePainter extends JComponent {
 
     /** Polygon region for the needle marker */
     private Polygon needleMarker;
@@ -20,7 +22,7 @@ public class NeedlePainter extends Component {
     private NeedleModel needleModel;
     private ViewableModel viewableModel;
 
-    public NeedlePainter()  {
+    public NeedlePainter() {
         super();
     }
 
@@ -64,8 +66,8 @@ public class NeedlePainter extends Component {
 
         final long currentTime = needleModel.getCurrentTime();
         // Don't paint if the needle is out of the current window
-        if ((currentTime < viewableModel.getZoomWindowStart()) ||
-                (viewableModel.getZoomWindowEnd() < currentTime)) {
+        if ((currentTime < viewableModel.getZoomWindowStart())
+                || (viewableModel.getZoomWindowEnd() < currentTime)) {
             return;
         }
 
@@ -74,9 +76,13 @@ public class NeedlePainter extends Component {
         g.setColor(new Color(250, 0, 0, 100));
 
         // Calculate the needle position based on the selected time
-        float ratio = viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();
-        int pos = Math.round(currentTime * ratio
-                - viewableModel.getZoomWindowStart() * ratio) + needleModel.getPaddingLeft();
+        float ratio =
+                viewableModel.getIntervalWidth()
+                        / viewableModel.getIntervalTime();
+        int pos =
+                Math.round(currentTime * ratio
+                        - viewableModel.getZoomWindowStart() * ratio)
+                        + needleModel.getPaddingLeft();
 
         final int paddingTop = needleModel.getPaddingTop();
         needleMarker = new Polygon();
@@ -86,7 +92,7 @@ public class NeedlePainter extends Component {
         needleMarker.addPoint(pos, 19);
 
         g.fillPolygon(needleMarker);
-        
+
         g.setColor(Color.red);
         g.drawPolygon(needleMarker);
 

@@ -508,6 +508,7 @@
                 <preCp>openshapa-lib-0.0.4.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.2.jar</preCp>
+                <preCp>miglayout-3.7.2-swing.jar</preCp>
             </classPath>
         </configuration>
       </plugin>
@@ -630,6 +631,12 @@
         <groupId>com.usermetrix</groupId>
         <artifactId>UserMetrix-jclient</artifactId>
         <version>0.0.2</version>
+    </dependency>
+    <dependency>
+    	<groupId>com.miglayout</groupId>
+    	<artifactId>miglayout</artifactId>
+    	<version>3.7.2</version>
+    	<classifier>swing</classifier>
     </dependency>
   </dependencies>
   
