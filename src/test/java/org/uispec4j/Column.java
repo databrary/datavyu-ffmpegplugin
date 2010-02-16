@@ -1,11 +1,8 @@
 package org.uispec4j;
 
 import org.openshapa.views.discrete.SpreadsheetColumn;
-import org.openshapa.views.discrete.ColumnHeaderPanel;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import java.awt.Component;
-import java.awt.event.InputEvent;
-import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.Vector;
 import junit.framework.Assert;
@@ -40,7 +37,7 @@ public class Column extends AbstractUIComponent {
     }
 
     public Component getAwtComponent() {
-        return ssColumn.getHeaderPanel();
+        return ssColumn;
     }
 
     public String getDescriptionTypeName() {
@@ -51,8 +48,7 @@ public class Column extends AbstractUIComponent {
      * @return String name of column
      */
     public final String getHeaderName() {
-        String headerText = ((ColumnHeaderPanel)
-                (ssColumn.getHeaderPanel())).getText();
+        String headerText = ssColumn.getText();
         String headerName = headerText.substring(0,
                 headerText.lastIndexOf("  ("));
         return headerName;
@@ -62,8 +58,7 @@ public class Column extends AbstractUIComponent {
      * @return String type of column
      */
     public final String getHeaderType() {
-        String headerText = ((ColumnHeaderPanel)
-                (ssColumn.getHeaderPanel())).getText();
+        String headerText = ssColumn.getText();
         String headerType = headerText.substring(
                 headerText.lastIndexOf("(") + 1, headerText.length() - 1);
         return headerType;
@@ -114,8 +109,6 @@ public class Column extends AbstractUIComponent {
      * Returns true if column is selected.
      */
     public boolean isSelected() {
-        return ssColumn.getSelected();
+        return ssColumn.isSelected();
     }
-
-
 }

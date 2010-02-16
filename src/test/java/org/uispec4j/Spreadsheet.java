@@ -1,7 +1,6 @@
 package org.uispec4j;
 
 import org.openshapa.views.discrete.SpreadsheetColumn;
-import org.openshapa.views.discrete.ColumnHeaderPanel;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.awt.Component;
 import java.util.Iterator;
@@ -58,8 +57,8 @@ public class Spreadsheet extends AbstractUIComponent {
         Iterator it = columns.iterator();
         while (it.hasNext()) {
             SpreadsheetColumn col = (SpreadsheetColumn) it.next();
-            ColumnHeaderPanel header = (ColumnHeaderPanel) col.getHeaderPanel();
-            if (header.getText().startsWith(name)) {
+
+            if (col.getText().startsWith(name)) {
                 return new Column(col);
             }
         }
