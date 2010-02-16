@@ -6,7 +6,6 @@ import java.awt.event.FocusListener;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.Matrix;
 import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.views.discrete.Selector;
 import java.util.Vector;
 import javax.swing.JTextArea;
 import org.openshapa.OpenSHAPA;
@@ -195,8 +194,8 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
             // We need to remember which cell should be duplicated if the user
             // presses the enter key or selects New Cell from the menu.
             if (parentCell != -1) {
-                // method names don't reflect usage - we didn't really create this
-                // cell just now.
+                // method names don't reflect usage - we didn't really create
+                // this cell just now.
                 DataCell c = (DataCell) OpenSHAPA.getProject().getDB()
                                                  .getCell(parentCell);
                 OpenSHAPA.getProject().setLastCreatedColId(c.getItsColID());

@@ -474,7 +474,7 @@ implements ExternalDataCellListener, Selectable {
         // from the previous cell in the column. A click in that area should
         // not cause a selection
         if (me.getPoint().y > cellPanel.getY()) {
-            this.setSelected(true);
+            setSelected(!this.isSelected());
             requestFocusInWindow();
             me.consume();
         }

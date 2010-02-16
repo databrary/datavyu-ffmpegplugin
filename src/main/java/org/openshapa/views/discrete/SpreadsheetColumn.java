@@ -1,23 +1,32 @@
 package org.openshapa.views.discrete;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.util.logging.Level;
+import java.awt.Color;
+import java.awt.Cursor;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
 import org.openshapa.models.db.ExternalCascadeListener;
 import org.openshapa.models.db.ExternalDataColumnListener;
 import org.openshapa.models.db.SystemErrorException;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.Vector;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import org.openshapa.Configuration;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
  * This class maintains the visual representation of the column in the
  * Spreadsheet window.
  */
-public final class SpreadsheetColumn
-implements ExternalDataColumnListener, ExternalCascadeListener {
+public final class SpreadsheetColumn extends JLabel
+implements ExternalDataColumnListener, ExternalCascadeListener, Selectable,
+           MouseListener, MouseMotionListener {
 
     /** Database reference. */
     private Database database;
@@ -27,9 +36,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
 
     /** ColumnDataPanel this column manages. */
     private ColumnDataPanel datapanel;
-
-    /** ColumnHeaderPanel this column manages. */
-    private ColumnHeaderPanel headerpanel;
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(SpreadsheetColumn.class);
@@ -46,6 +52,18 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     /** Width of the column in pixels. */
     private int width = DEFAULT_COLUMN_WIDTH;
 
+    /** Selected state. */
+    private boolean selected = false;
+
+    /** Background color of the header when unselected. */
+    private Color backColor;
+
+    /** Can the column be dragged? */
+    private boolean draggable;
+
+    /** Can the column be moved? */
+    private boolean moveable;
+
     /**
      * Private class for recording the changes reported by the listener
      * callbacks on this column.
@@ -53,8 +71,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     private final class ColumnChanges {
         /** nameChanged. */
         private boolean nameChanged;
-        /** varLenChanged. */
-        private boolean varLenChanged;
         /** List of cell IDs of newly inserted cells. */
         private Vector<Long> cellInserted;
         /** List of cell IDs of deleted cells. */
@@ -76,7 +92,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
          */
         private void reset() {
             nameChanged = false;
-            varLenChanged = false;
             cellInserted.clear();
             cellDeleted.clear();
             colDeleted = false;
@@ -96,8 +111,17 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
         try {
             DataColumn dbColumn = database.getDataColumn(dbColID);
 
-            headerpanel = new ColumnHeaderPanel(this,
-                dbColumn.getName() + "  (" + dbColumn.getItsMveType() + ")");
+            setOpaque(true);
+            setHorizontalAlignment(JLabel.CENTER);
+            setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.black));
+            backColor = getBackground();
+            setMinimumSize(this.getHeaderSize());
+            setPreferredSize(this.getHeaderSize());
+            setMaximumSize(this.getHeaderSize());
+            this.addMouseListener(this);
+            this.addMouseMotionListener(this);
+            this.setText(dbColumn.getName() + "  ("
+                         + dbColumn.getItsMveType() + ")");
 
             datapanel = new ColumnDataPanel(width, dbColumn);
 
@@ -155,8 +179,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
     public void setWidth(final int colWidth) {
         width = colWidth;
         Dimension dim = getHeaderSize();
-        headerpanel.setPreferredSize(dim);
-        headerpanel.setMaximumSize(dim);
+        this.setPreferredSize(dim);
+        this.setMaximumSize(dim);
         Dimension dim2 = getHeaderSize();
         dim2.height = Integer.MAX_VALUE;
 
@@ -164,7 +188,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
         for (SpreadsheetCell cell : getCells()) {
             cell.setWidth(width);
         }
-        headerpanel.revalidate();
+        this.revalidate();
         datapanel.revalidate();
         // Whereever we resize we will need to spreadsheetPanel.relayoutCells();
     }
@@ -174,13 +198,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
      */
     public int getWidth() {
         return width;
-    }
-
-    /**
-     * @return The headerpanel.
-     */
-    public JComponent getHeaderPanel() {
-        return headerpanel;
     }
 
     /**
@@ -199,24 +216,32 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
 
     /**
      * Set the selected state for the DataColumn this displays.
-     * @param selected Selected state.
+     * @param isSelected Selected state.
      */
-    public void setSelected(final boolean selected) {
+    public void setSelected(final boolean isSelected) {
         try {
             DataColumn dc = database.getDataColumn(dbColID);
+            this.selected = isSelected;
 
-            dc.setSelected(selected);
+            dc.setSelected(isSelected);
             database.replaceColumn(dc);
 
         } catch (SystemErrorException e) {
            logger.error("Failed setting column select state.", e);
         }
+
+        if (selected) {
+            setBackground(Configuration.getInstance().getSSSelectedColour());
+        } else {
+            setBackground(backColor);
+        }
+        repaint();
     }
 
     /**
      * @return selection status.
      */
-    public boolean getSelected() {
+    public boolean isSelected() {
         DataColumn dc = null;
         try {
             dc = database.getDataColumn(dbColID);
@@ -258,8 +283,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
         if (colChanges.nameChanged) {
             try {
                 DataColumn dbColumn = db.getDataColumn(dbColID);
-                headerpanel.setText(dbColumn.getName()
-                            + "  (" + dbColumn.getItsMveType() + ")");
+                this.setText(dbColumn.getName()
+                             + "  (" + dbColumn.getItsMveType() + ")");
             } catch (SystemErrorException e) {
                 logger.error("Problem getting data column", e);
             }
@@ -332,7 +357,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
                                   final boolean oldSelected,
                                   final boolean newSelected) {
         colChanges.nameChanged = nameChanged;
-        colChanges.varLenChanged = varLenChanged;
     }
 
     /**
@@ -382,6 +406,104 @@ implements ExternalDataColumnListener, ExternalCascadeListener {
             datapanel.getCells().firstElement().requestFocusInWindow();
         } else {
             datapanel.requestFocusInWindow();
+        }
+    }
+
+    /**
+     * The action to invoke when the mouse enters this component.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseEntered(final MouseEvent me) {
+    }
+
+    /**
+     * The action to invoke when the mouse exits this component.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseExited(final MouseEvent me) {
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+    }
+
+    /**
+     * The action to invoke when a mouse button is pressed.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mousePressed(final MouseEvent me) {
+        this.setSelected(!this.isSelected());
+    }
+
+    /**
+     * The action to invoke when a mouse button is released.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseReleased(final MouseEvent me) {
+    }
+
+    /**
+     * The action to invoke when a mouse button is clicked.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseClicked(final MouseEvent me) {
+
+    }
+
+    /**
+     * The action to invoke when the mouse is dragged.
+     *
+     * @param me The mouse event that triggered this action
+     */
+    public void mouseDragged(final MouseEvent me) {
+        // BugzID:660 - Implements columns dragging.
+        if (draggable) {
+            int newWidth = me.getX();
+            if (newWidth >= this.getMinimumSize().width) {
+                this.setWidth(newWidth);
+            }
+        }
+        if (moveable) {
+             setCursor(new Cursor(Cursor.MOVE_CURSOR));
+             final int columnWidth = this.getSize().width;
+             if (me.getX() > columnWidth) {
+                 int positions = Math.round((me.getX() * 1F) / (columnWidth * 1F));
+                 SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA
+                         .getApplication().getMainView().getComponent();
+                 sp.moveColumnRight(this.getColID(), positions);
+             } else if (me.getX() < 0) {
+                 int positions = Math.round((me.getX() * -1F) / (columnWidth * 1F));
+                 SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA
+                         .getApplication().getMainView().getComponent();
+                 sp.moveColumnLeft(this.getColID(), positions);
+             }
+        }
+    }
+
+    /**
+     * The action to invoke when the mouse is moved.
+     *
+     * @param me The mouse event that triggered this action
+     */
+    public void mouseMoved(final MouseEvent me) {
+        final int xCoord = me.getX();
+        final int componentWidth = this.getSize().width;
+        final int rangeStart = Math.round(componentWidth / 4F);
+        final int rangeEnd = Math.round(3F * componentWidth / 4F);
+
+        // BugzID:660 - Implements columns dragging.
+        if (componentWidth - xCoord < 4) {
+            setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
+            draggable = true;
+        // BugzID:128 - Implements moveable columns
+        } else if ((rangeStart <= xCoord) && (xCoord <= rangeEnd)) {
+            moveable = true;
+        } else {
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            draggable = false;
+            moveable = false;
         }
     }
 }

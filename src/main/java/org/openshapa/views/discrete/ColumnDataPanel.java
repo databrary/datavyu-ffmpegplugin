@@ -57,7 +57,6 @@ implements KeyEventDispatcher {
 
         // Store member variables.
         columnWidth = width;
-        //cellSelector = parentCellSelector;
         this.cells = new Vector<SpreadsheetCell>();
 
         // Create visual container for spreadsheet cells.

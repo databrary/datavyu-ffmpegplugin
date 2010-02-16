@@ -142,7 +142,7 @@ public final class SpreadsheetPanel extends JPanel
         // add the datapanel to the scrollpane viewport
         mainView.add(col.getDataPanel());
         // add the headerpanel to the scrollpane headerviewport
-        headerView.add(col.getHeaderPanel());
+        headerView.add(col);
         // add the new variable '+' button to the header.
         headerView.add(newVar);
 
@@ -156,7 +156,7 @@ public final class SpreadsheetPanel extends JPanel
             col.clear();
 
             mainView.remove(col.getDataPanel());
-            headerView.remove(col.getHeaderPanel());
+            headerView.remove(col);
         }
 
         columns.clear();
@@ -172,7 +172,7 @@ public final class SpreadsheetPanel extends JPanel
             if (col.getColID() == colID) {
                 col.deregisterListeners();
                 mainView.remove(col.getDataPanel());
-                headerView.remove(col.getHeaderPanel());
+                headerView.remove(col);
                 columns.remove(col);
                 break;
             }
@@ -192,7 +192,7 @@ public final class SpreadsheetPanel extends JPanel
      */
     public void deselectAll() {
         for (SpreadsheetColumn col : this.columns) {
-            if (col.getSelected()) {
+            if (col.isSelected()) {
                 col.setSelected(false);
             }
 
