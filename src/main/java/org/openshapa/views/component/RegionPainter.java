@@ -85,6 +85,8 @@ public class RegionPainter extends JComponent {
         final long regionEnd = regionModel.getRegionEnd();
         final int paddingTop = regionModel.getPaddingTop();
 
+        final int markerHeight = 38;
+
         // If the left region marker is visible, paint the marker
         if (regionStart >= viewableModel.getZoomWindowStart()) {
             g.setColor(new Color(15, 135, 0, 100)); // Semi-transparent green
@@ -98,8 +100,8 @@ public class RegionPainter extends JComponent {
             startMarkerPolygon = new Polygon();
             startMarkerPolygon.addPoint(pos - 10, paddingTop);
             startMarkerPolygon.addPoint(pos, 19 + paddingTop);
-            startMarkerPolygon.addPoint(pos, 37 + paddingTop);
-            startMarkerPolygon.addPoint(pos - 10, 37 + paddingTop);
+            startMarkerPolygon.addPoint(pos, markerHeight + paddingTop);
+            startMarkerPolygon.addPoint(pos - 10, markerHeight + paddingTop);
             g.fillPolygon(startMarkerPolygon);
 
             // Draw outline
@@ -107,7 +109,7 @@ public class RegionPainter extends JComponent {
             g.drawPolygon(startMarkerPolygon);
 
             // Draw drop down line
-            g.drawLine(pos, 37, pos, size.height);
+            g.drawLine(pos, markerHeight, pos, size.height);
         }
 
         // If the right region marker is visible, paint the marker
@@ -122,8 +124,8 @@ public class RegionPainter extends JComponent {
             endMarkerPolygon = new Polygon();
             endMarkerPolygon.addPoint(pos + 1, 19 + paddingTop);
             endMarkerPolygon.addPoint(pos + 11, paddingTop);
-            endMarkerPolygon.addPoint(pos + 11, 37 + paddingTop);
-            endMarkerPolygon.addPoint(pos + 1, 37 + paddingTop);
+            endMarkerPolygon.addPoint(pos + 11, markerHeight + paddingTop);
+            endMarkerPolygon.addPoint(pos + 1, markerHeight + paddingTop);
 
             g.fillPolygon(endMarkerPolygon);
 
@@ -132,33 +134,71 @@ public class RegionPainter extends JComponent {
             g.drawPolygon(endMarkerPolygon);
 
             // Draw drop down line
-            g.drawLine(pos + 1, 37, pos + 1, size.height);
+            g.drawLine(pos + 1, markerHeight, pos + 1, size.height);
         }
 
         /*
          * Check if the selected region is not the maximum viewing window, if it
          * is not the maximum, highlight the areas over the tracks.
          */
-        if ((regionStart > 0) || (regionEnd < viewableModel.getEnd())) {
-            final long windowStart = viewableModel.getZoomWindowStart();
-            final long windowEnd = viewableModel.getZoomWindowEnd();
+        // if ((regionStart > 0) || (regionEnd < viewableModel.getEnd())) {
+        // final long windowStart = viewableModel.getZoomWindowStart();
+        // final long windowEnd = viewableModel.getZoomWindowEnd();
+        //
+        // long visibleStartRegion =
+        // regionStart >= windowStart ? regionStart : windowStart;
+        // long visibleEndRegion =
+        // regionEnd <= windowEnd ? regionEnd : windowEnd;
+        //
+        // int startPos =
+        // Math
+        // .round(visibleStartRegion * ratio - windowStart
+        // * ratio)
+        // + regionModel.getPaddingLeft();
+        // int endPos =
+        // Math.round(visibleEndRegion * ratio - windowStart * ratio)
+        // + regionModel.getPaddingLeft() + 1;
+        //
+        // g.setColor(new Color(15, 135, 0, 100));
+        // g.fillRect(startPos, markerHeight, endPos - startPos, size.height);
+        // }
 
-            long visibleStartRegion =
-                    regionStart >= windowStart ? regionStart : windowStart;
-            long visibleEndRegion =
-                    regionEnd <= windowEnd ? regionEnd : windowEnd;
+        if (regionStart > 0) {
+            long endTimePos =
+                    regionStart > viewableModel.getZoomWindowEnd()
+                            ? viewableModel.getZoomWindowEnd() : regionStart;
 
-            int startPos =
-                    Math
-                            .round(visibleStartRegion * ratio - windowStart
-                                    * ratio)
+            long endXPos =
+                    Math.round(endTimePos * ratio
+                            - viewableModel.getZoomWindowStart() * ratio)
                             + regionModel.getPaddingLeft();
-            int endPos =
-                    Math.round(visibleEndRegion * ratio - windowStart * ratio)
-                            + regionModel.getPaddingLeft() + 1;
 
-            g.setColor(new Color(15, 135, 0, 100));
-            g.fillRect(startPos, 37, endPos - startPos, size.height);
+            int startPos = regionModel.getPaddingLeft();
+
+            // Gray
+            g.setColor(new Color(63, 63, 63, 100));
+            g.fillRect(startPos, markerHeight, (int) (endXPos - startPos),
+                    size.height);
+        }
+
+        if (regionEnd < viewableModel.getZoomWindowEnd()) {
+            long startTimePos =
+                    regionEnd <= viewableModel.getZoomWindowEnd() ? regionEnd
+                            : viewableModel.getZoomWindowEnd();
+
+            int startXPos =
+                    Math.round(startTimePos * ratio
+                            - viewableModel.getZoomWindowStart() * ratio)
+                            + regionModel.getPaddingLeft();
+
+            int endXPos =
+                    Math.round(viewableModel.getZoomWindowEnd() * ratio
+                            - viewableModel.getZoomWindowStart() * ratio)
+                            + regionModel.getPaddingLeft() + 4;
+
+            g.setColor(new Color(63, 63, 63, 100));
+            g.fillRect(startXPos, markerHeight, endXPos - startXPos,
+                    size.height);
         }
 
     }
