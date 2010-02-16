@@ -1,9 +1,10 @@
 package org.openshapa.controllers.component;
 
-import java.awt.Component;
-import org.openshapa.views.component.TimescalePainter;
+import javax.swing.JComponent;
+
 import org.openshapa.models.component.TimescaleModel;
 import org.openshapa.models.component.ViewableModel;
+import org.openshapa.views.component.TimescalePainter;
 
 /**
  * Timescale controller is responsible for managing a TimescalePainter
@@ -17,7 +18,7 @@ public class TimescaleController {
 
     public TimescaleController() {
         view = new TimescalePainter();
-        
+
         timescaleModel = new TimescaleModel();
         timescaleModel.setMajorIntervals(6);
         timescaleModel.setPaddingLeft(101);
@@ -27,42 +28,48 @@ public class TimescaleController {
     }
 
     /**
-     *
-     * @param start The start time, in milliseconds, of the scale to display
-     * @param end The end time, in milliseconds, of the scale to display
-     * @param intervals The total number of intervals between two major intervals,
-     * this value is inclusive of the major intervals. i.e. if intervals is 10,
-     * then 2 (start and end interval marking) of them are major intervals and 8
-     * are minor intervals.
+     * @param start
+     *            The start time, in milliseconds, of the scale to display
+     * @param end
+     *            The end time, in milliseconds, of the scale to display
+     * @param intervals
+     *            The total number of intervals between two major intervals,
+     *            this value is inclusive of the major intervals. i.e. if
+     *            intervals is 10, then 2 (start and end interval marking) of
+     *            them are major intervals and 8 are minor intervals.
      */
-    public void setConstraints(final long start, final long end, final int intervals) {
+    public void setConstraints(final long start, final long end,
+            final int intervals) {
         viewableModel.setZoomWindowStart(start);
         viewableModel.setZoomWindowEnd(end);
 
-        int effectiveWidth = view.getWidth() - timescaleModel.getPaddingLeft()
-                - timescaleModel.getPaddingRight();
+        int effectiveWidth =
+                view.getWidth() - timescaleModel.getPaddingLeft()
+                        - timescaleModel.getPaddingRight();
         timescaleModel.setEffectiveWidth(effectiveWidth);
 
         int majorWidth = effectiveWidth / timescaleModel.getMajorIntervals();
         timescaleModel.setMajorWidth(majorWidth);
 
-        viewableModel.setIntervalWidth((majorWidth *1F) / (intervals * 1F));
-        viewableModel.setIntervalTime((end - start)*1F /
-                (timescaleModel.getMajorIntervals() * intervals * 1F));
+        viewableModel.setIntervalWidth((majorWidth * 1F) / (intervals * 1F));
+        viewableModel.setIntervalTime((end - start) * 1F
+                / (timescaleModel.getMajorIntervals() * intervals * 1F));
 
         view.setViewableModel(viewableModel);
         view.setTimescaleModel(timescaleModel);
     }
 
     public void setViewableModel(ViewableModel viewableModel) {
-        /* Just copy the values, do not spread references all over the place to
+        /*
+         * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
          */
         this.viewableModel.setEnd(viewableModel.getEnd());
         this.viewableModel.setIntervalTime(viewableModel.getIntervalTime());
         this.viewableModel.setIntervalWidth(viewableModel.getIntervalWidth());
         this.viewableModel.setZoomWindowEnd(viewableModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(viewableModel.getZoomWindowStart());
+        this.viewableModel.setZoomWindowStart(viewableModel
+                .getZoomWindowStart());
         view.setViewableModel(this.viewableModel);
     }
 
@@ -71,13 +78,13 @@ public class TimescaleController {
      */
     public ViewableModel getViewableModel() {
         // return a clone to avoid model tainting
-        return (ViewableModel)viewableModel.clone();
+        return (ViewableModel) viewableModel.clone();
     }
 
     /**
      * @return View used by the controller
      */
-    public Component getView() {
+    public JComponent getView() {
         return view;
     }
 

@@ -4,13 +4,16 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
+
+import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
-import org.openshapa.views.component.NeedlePainter;
-import org.openshapa.models.component.NeedleModel;
-import org.openshapa.models.component.ViewableModel;
+
 import org.openshapa.event.NeedleEvent;
 import org.openshapa.event.NeedleEventListener;
+import org.openshapa.models.component.NeedleModel;
+import org.openshapa.models.component.ViewableModel;
+import org.openshapa.views.component.NeedlePainter;
 
 /**
  * NeedleController is responsible for managing a NeedlePainter
@@ -25,7 +28,7 @@ public class NeedleController {
     private NeedleListener needleListener;
     /** Listeners interested in needle painter events */
     private EventListenerList listenerList;
-    
+
     public NeedleController() {
         view = new NeedlePainter();
 
@@ -34,7 +37,7 @@ public class NeedleController {
         needleModel.setPaddingLeft(101);
 
         viewableModel = new ViewableModel();
-        
+
         view.setViewableModel(viewableModel);
         view.setNeedleModel(needleModel);
 
@@ -47,6 +50,7 @@ public class NeedleController {
 
     /**
      * Register the listener to be notified of needle events
+     * 
      * @param listener
      */
     public synchronized void addNeedleEventListener(NeedleEventListener listener) {
@@ -55,31 +59,36 @@ public class NeedleController {
 
     /**
      * Removed the listener from being notified of needle events
+     * 
      * @param listener
      */
-    public synchronized void removeNeedleEventListener(NeedleEventListener listener) {
+    public synchronized void removeNeedleEventListener(
+            NeedleEventListener listener) {
         listenerList.remove(NeedleEventListener.class, listener);
     }
 
     /**
      * Used to fire a new event informing listeners about the new needle time.
+     * 
      * @param newTime
      */
     private synchronized void fireNeedleEvent(long newTime) {
         NeedleEvent e = new NeedleEvent(this, newTime);
         Object[] listeners = listenerList.getListenerList();
-        /* The listener list contains the listening class and then the listener
+        /*
+         * The listener list contains the listening class and then the listener
          * instance.
          */
         for (int i = 0; i < listeners.length; i += 2) {
-           if (listeners[i] == NeedleEventListener.class) {
-               ((NeedleEventListener)listeners[i+1]).needleMoved(e);
-           }
+            if (listeners[i] == NeedleEventListener.class) {
+                ((NeedleEventListener) listeners[i + 1]).needleMoved(e);
+            }
         }
     }
 
     /**
      * Set the current time to be represented by the needle.
+     * 
      * @param currentTime
      */
     public void setCurrentTime(long currentTime) {
@@ -99,29 +108,32 @@ public class NeedleController {
      */
     public ViewableModel getViewableModel() {
         // return a clone to avoid model tainting
-        return (ViewableModel)viewableModel.clone();
+        return (ViewableModel) viewableModel.clone();
     }
 
     /**
      * Copies the given viewable model
+     * 
      * @param viewableModel
      */
     public void setViewableModel(ViewableModel viewableModel) {
-        /* Just copy the values, do not spread references all over the place to
+        /*
+         * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
          */
         this.viewableModel.setEnd(viewableModel.getEnd());
         this.viewableModel.setIntervalTime(viewableModel.getIntervalTime());
         this.viewableModel.setIntervalWidth(viewableModel.getIntervalWidth());
         this.viewableModel.setZoomWindowEnd(viewableModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(viewableModel.getZoomWindowStart());
+        this.viewableModel.setZoomWindowStart(viewableModel
+                .getZoomWindowStart());
         view.setViewableModel(this.viewableModel);
     }
 
     /**
      * @return View used by the controller
      */
-    public Component getView() {
+    public JComponent getView() {
         return view;
     }
 
@@ -131,7 +143,8 @@ public class NeedleController {
     private class NeedleListener extends MouseInputAdapter {
         private boolean onNeedle;
 
-        private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
+        private final Cursor eastResizeCursor =
+                Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
         public NeedleListener() {
@@ -141,7 +154,7 @@ public class NeedleController {
         @Override
         public void mouseEntered(MouseEvent e) {
             Polygon p = view.getNeedleMarker();
-            Component source = (Component)e.getSource();
+            Component source = (Component) e.getSource();
             if (p.contains(e.getPoint())) {
                 source.setCursor(eastResizeCursor);
             } else {
@@ -157,7 +170,7 @@ public class NeedleController {
         @Override
         public void mousePressed(MouseEvent e) {
             Polygon p = view.getNeedleMarker();
-            Component source = (Component)e.getSource();
+            Component source = (Component) e.getSource();
             if (p.contains(e.getPoint())) {
                 // Mouse is pressed on the needle.
                 onNeedle = true;
@@ -181,8 +194,14 @@ public class NeedleController {
                 }
 
                 // Calculate the time represented by the new location
-                float ratio = viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();
-                float newTime = (x - needleModel.getPaddingLeft() + viewableModel.getZoomWindowStart() * ratio) / ratio;
+                float ratio =
+                        viewableModel.getIntervalWidth()
+                                / viewableModel.getIntervalTime();
+                float newTime =
+                        (x - needleModel.getPaddingLeft() + viewableModel
+                                .getZoomWindowStart()
+                                * ratio)
+                                / ratio;
                 if (newTime < 0) {
                     newTime = 0;
                 }
@@ -196,7 +215,7 @@ public class NeedleController {
         @Override
         public void mouseReleased(MouseEvent e) {
             onNeedle = false;
-            Component source = (Component)e.getSource();
+            Component source = (Component) e.getSource();
             source.setCursor(defaultCursor);
         }
 

@@ -10,13 +10,23 @@ public interface CarriageEventListener extends EventListener {
 
     /**
      * Event handler for a track's changed offset
+     * 
      * @param e
      */
     public void offsetChanged(CarriageEvent e);
+
     /**
      * Event handler for a track's bookmark request
+     * 
      * @param e
      */
     public void requestBookmark(CarriageEvent e);
+
+    /**
+     * Event handler for a track's selected state change
+     * 
+     * @param e
+     */
+    public void selectionChanged(CarriageEvent e);
 
 }

@@ -21,15 +21,16 @@ public class ViewableModel {
     }
 
     protected ViewableModel(ViewableModel other) {
-        end             = other.end;
-        intervalWidth   = other.intervalWidth;
-        intervalTime    = other.intervalTime;
+        end = other.end;
+        intervalWidth = other.intervalWidth;
+        intervalTime = other.intervalTime;
         zoomWindowStart = other.zoomWindowStart;
-        zoomWindowEnd   = other.zoomWindowEnd;
+        zoomWindowEnd = other.zoomWindowEnd;
     }
 
     /**
-     * @return The end time of the longest track (offset included) in milliseconds
+     * @return The end time of the longest track (offset included) in
+     *         milliseconds
      */
     public long getEnd() {
         return end;
@@ -37,6 +38,7 @@ public class ViewableModel {
 
     /**
      * Set the end time of the longest track (offset included) in milliseconds
+     * 
      * @param end
      */
     public void setEnd(long end) {
@@ -52,6 +54,7 @@ public class ViewableModel {
 
     /**
      * Set the time, in milliseconds, represented by an interval
+     * 
      * @param intervalTime
      */
     public void setIntervalTime(float intervalTime) {
@@ -67,6 +70,7 @@ public class ViewableModel {
 
     /**
      * Set the pixel width of a time interval
+     * 
      * @param intervalWidth
      */
     public void setIntervalWidth(float intervalWidth) {
@@ -82,13 +86,16 @@ public class ViewableModel {
 
     /**
      * Set the end time of the zoomed window
+     * 
      * @param zoomWindowEnd
      */
     public void setZoomWindowEnd(long zoomWindowEnd) {
         this.zoomWindowEnd = zoomWindowEnd;
     }
 
-    /**s
+    /**
+     * s
+     * 
      * @return The start time of the zoomed window
      */
     public long getZoomWindowStart() {
@@ -97,6 +104,7 @@ public class ViewableModel {
 
     /**
      * Set the start time of the zoomed window
+     * 
      * @param zoomWindowStart
      */
     public void setZoomWindowStart(long zoomWindowStart) {
@@ -112,19 +120,19 @@ public class ViewableModel {
             return false;
         }
         final ViewableModel other = (ViewableModel) obj;
-        if (this.end != other.end) {
+        if (end != other.end) {
             return false;
         }
-        if (this.intervalWidth != other.intervalWidth) {
+        if (intervalWidth != other.intervalWidth) {
             return false;
         }
-        if (this.intervalTime != other.intervalTime) {
+        if (intervalTime != other.intervalTime) {
             return false;
         }
-        if (this.zoomWindowStart != other.zoomWindowStart) {
+        if (zoomWindowStart != other.zoomWindowStart) {
             return false;
         }
-        if (this.zoomWindowEnd != other.zoomWindowEnd) {
+        if (zoomWindowEnd != other.zoomWindowEnd) {
             return false;
         }
         return true;
@@ -133,16 +141,37 @@ public class ViewableModel {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 79 * hash + (int) (this.end ^ (this.end >>> 32));
-        hash = 79 * hash + Float.floatToIntBits(this.intervalWidth);
-        hash = 79 * hash + Float.floatToIntBits(this.intervalTime);
-        hash = 79 * hash + (int) (this.zoomWindowStart ^ (this.zoomWindowStart >>> 32));
-        hash = 79 * hash + (int) (this.zoomWindowEnd ^ (this.zoomWindowEnd >>> 32));
+        hash = 79 * hash + (int) (end ^ (end >>> 32));
+        hash = 79 * hash + Float.floatToIntBits(intervalWidth);
+        hash = 79 * hash + Float.floatToIntBits(intervalTime);
+        hash = 79 * hash + (int) (zoomWindowStart ^ (zoomWindowStart >>> 32));
+        hash = 79 * hash + (int) (zoomWindowEnd ^ (zoomWindowEnd >>> 32));
         return hash;
     }
 
     @Override
     public Object clone() {
         return new ViewableModel(this);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ViewableModel [end=");
+        builder.append(end);
+        builder.append(", intervalTime=");
+        builder.append(intervalTime);
+        builder.append(", intervalWidth=");
+        builder.append(intervalWidth);
+        builder.append(", zoomWindowEnd=");
+        builder.append(zoomWindowEnd);
+        builder.append(", zoomWindowStart=");
+        builder.append(zoomWindowStart);
+        builder.append("]");
+        return builder.toString();
     }
 }
