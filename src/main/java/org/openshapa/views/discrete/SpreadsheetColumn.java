@@ -25,7 +25,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
  * Spreadsheet window.
  */
 public final class SpreadsheetColumn extends JLabel
-implements ExternalDataColumnListener, ExternalCascadeListener, Selectable,
+implements ExternalDataColumnListener, ExternalCascadeListener,
            MouseListener, MouseMotionListener {
 
     /** Database reference. */

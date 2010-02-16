@@ -33,7 +33,7 @@ import org.openshapa.views.discrete.datavalues.TimeStampTextField;
  * Visual representation of a spreadsheet cell.
  */
 public class SpreadsheetCell extends SpreadsheetElementPanel
-implements ExternalDataCellListener, Selectable {
+implements ExternalDataCellListener {
 
     /** The panel that displays the cell. */
     private SpreadsheetElementPanel cellPanel;
