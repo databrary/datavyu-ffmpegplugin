@@ -165,6 +165,13 @@ public class TrackController {
     }
 
     /**
+     * @return True if the track is selected, false otherwise.
+     */
+    public boolean isSelected() {
+        return trackModel.isSelected();
+    }
+
+    /**
      * @return View used by the controller
      */
     public JComponent getView() {
@@ -200,12 +207,21 @@ public class TrackController {
 
     private void setBookmarkAction() {
         fireCarriageBookmarkRequestEvent();
-
+        /*
+         * invert the selected state because the menu event generates a click
+         * event.
+         */
+        changeSelected();
     }
 
     private void clearBookmarkAction() {
         trackModel.setBookmark(-1);
         trackPainter.setTrackModel(trackModel);
+        /*
+         * invert the selected state because the menu event generates a click
+         * event.
+         */
+        changeSelected();
     }
 
     private void changeSelected() {
@@ -215,6 +231,7 @@ public class TrackController {
             trackModel.setSelected(true);
         }
         trackPainter.setTrackModel(trackModel);
+        fireCarriageSelectionChangeEvent();
     }
 
     /**
@@ -276,6 +293,23 @@ public class TrackController {
         for (int i = 0; i < listeners.length; i += 2) {
             if (listeners[i] == CarriageEventListener.class) {
                 ((CarriageEventListener) listeners[i + 1]).requestBookmark(e);
+            }
+        }
+    }
+
+    private synchronized void fireCarriageSelectionChangeEvent() {
+        CarriageEvent e =
+                new CarriageEvent(this, trackModel.getTrackId(), trackModel
+                        .getOffset(), trackModel.getDuration(),
+                        EventType.CARRIAGE_SELECTION);
+        Object[] listeners = listenerList.getListenerList();
+        /*
+         * The listener list contains the listening class and then the listener
+         * instance.
+         */
+        for (int i = 0; i < listeners.length; i += 2) {
+            if (listeners[i] == CarriageEventListener.class) {
+                ((CarriageEventListener) listeners[i + 1]).selectionChanged(e);
             }
         }
     }

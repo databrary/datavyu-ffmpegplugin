@@ -83,13 +83,15 @@ public class TracksEditorController {
         editingPanel.validate();
     }
 
-    public boolean removeTrack(String mediaPath) {
+    public boolean removeTrack(String mediaPath, CarriageEventListener listener) {
         Iterator<Track> allTracks = tracks.iterator();
         while (allTracks.hasNext()) {
             Track track = allTracks.next();
             if (track.mediaPath.equals(mediaPath)) {
                 editingPanel.remove(track.trackController.getView());
+                track.trackController.removeCarriageEventListener(listener);
                 allTracks.remove();
+                editingPanel.validate();
                 return true;
             }
         }
@@ -107,6 +109,27 @@ public class TracksEditorController {
             Track track = allTracks.next();
             if (track.mediaPath.equals(mediaPath)) {
                 track.trackController.setTrackOffset(newOffset);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addTemporalBookmarkToSelected(final long position) {
+        Iterator<Track> allTracks = tracks.iterator();
+        while (allTracks.hasNext()) {
+            TrackController track = allTracks.next().trackController;
+            if (track.isSelected()) {
+                track.addTemporalBookmark(position);
+            }
+        }
+    }
+
+    public boolean hasSelectedTracks() {
+        Iterator<Track> allTracks = tracks.iterator();
+        while (allTracks.hasNext()) {
+            TrackController track = allTracks.next().trackController;
+            if (track.isSelected()) {
                 return true;
             }
         }

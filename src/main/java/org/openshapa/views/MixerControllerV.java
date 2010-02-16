@@ -69,6 +69,8 @@ public class MixerControllerV implements NeedleEventListener,
     /** */
     private TracksEditorController tracksEditorController;
 
+    private JButton bookmarkButton;
+
     public MixerControllerV() {
         // Set default scale values
         maxEnd = 60000;
@@ -87,7 +89,15 @@ public class MixerControllerV implements NeedleEventListener,
 
         // Menu buttons
         JButton lockButton = new JButton("Lock");
-        JButton bookmarkButton = new JButton("Add Bookmark");
+
+        bookmarkButton = new JButton("Add Bookmark");
+        bookmarkButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                addBookmarkHandler();
+            }
+        });
+        bookmarkButton.setEnabled(false);
+
         JButton snapButton = new JButton("Snap");
 
         // lockButton.setVisible(false);
@@ -245,9 +255,6 @@ public class MixerControllerV implements NeedleEventListener,
 
         tracksEditorController.addNewTrack(mediaPath, trackName, duration,
                 offset, this);
-
-        // TODO register carriage event listener
-
     }
 
     /**
@@ -332,10 +339,7 @@ public class MixerControllerV implements NeedleEventListener,
      *            the path to the media file
      */
     public void removeTrack(final String mediaPath) {
-        tracksEditorController.removeTrack(mediaPath);
-
-        // TODO De-register listener
-        // removedTrack.trackController.removeCarriageEventListener(this);
+        tracksEditorController.removeTrack(mediaPath, this);
 
         // If there are no more tracks, reset.
         if (maxEnd == 0) {
@@ -426,6 +430,11 @@ public class MixerControllerV implements NeedleEventListener,
         tracksEditorController.setViewableModel(newModel);
     }
 
+    private void addBookmarkHandler() {
+        tracksEditorController.addTemporalBookmarkToSelected(needleController
+                .getCurrentTime());
+    }
+
     /**
      * NeedlePainter needle was moved using the mouse
      * 
@@ -466,6 +475,13 @@ public class MixerControllerV implements NeedleEventListener,
     public void requestBookmark(CarriageEvent e) {
         TrackController trackController = (TrackController) e.getSource();
         trackController.addTemporalBookmark(needleController.getCurrentTime());
+    }
+
+    /**
+     * A track's selection state was changed.
+     */
+    public void selectionChanged(CarriageEvent e) {
+        bookmarkButton.setEnabled(tracksEditorController.hasSelectedTracks());
     }
 
     /**
