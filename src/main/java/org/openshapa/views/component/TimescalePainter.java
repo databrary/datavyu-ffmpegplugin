@@ -103,10 +103,6 @@ public class TimescalePainter extends JComponent {
 
         super.paint(g);
 
-        // Draw the padding
-        // g.setColor(Color.WHITE);
-        // g.fillRect(0, 0, paddingLeft, size.height);
-        // g.fillRect(size.width - paddingRight, 0, paddingRight, size.height);
     }
 
 }

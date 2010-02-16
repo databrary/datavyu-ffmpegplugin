@@ -139,30 +139,8 @@ public class RegionPainter extends JComponent {
 
         /*
          * Check if the selected region is not the maximum viewing window, if it
-         * is not the maximum, highlight the areas over the tracks.
+         * is not the maximum, dim the unplayed regions.
          */
-        // if ((regionStart > 0) || (regionEnd < viewableModel.getEnd())) {
-        // final long windowStart = viewableModel.getZoomWindowStart();
-        // final long windowEnd = viewableModel.getZoomWindowEnd();
-        //
-        // long visibleStartRegion =
-        // regionStart >= windowStart ? regionStart : windowStart;
-        // long visibleEndRegion =
-        // regionEnd <= windowEnd ? regionEnd : windowEnd;
-        //
-        // int startPos =
-        // Math
-        // .round(visibleStartRegion * ratio - windowStart
-        // * ratio)
-        // + regionModel.getPaddingLeft();
-        // int endPos =
-        // Math.round(visibleEndRegion * ratio - windowStart * ratio)
-        // + regionModel.getPaddingLeft() + 1;
-        //
-        // g.setColor(new Color(15, 135, 0, 100));
-        // g.fillRect(startPos, markerHeight, endPos - startPos, size.height);
-        // }
-
         if (regionStart > 0) {
             long endTimePos =
                     regionStart > viewableModel.getZoomWindowEnd()
@@ -180,7 +158,6 @@ public class RegionPainter extends JComponent {
             g.fillRect(startPos, markerHeight, (int) (endXPos - startPos),
                     size.height);
         }
-
         if (regionEnd < viewableModel.getZoomWindowEnd()) {
             long startTimePos =
                     regionEnd <= viewableModel.getZoomWindowEnd() ? regionEnd

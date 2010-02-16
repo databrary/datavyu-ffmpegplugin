@@ -26,9 +26,12 @@ public class TracksEditorController {
 
     private ViewableModel viewableModel;
 
+    private boolean allowSnap;
+
     public TracksEditorController() {
         tracks = new LinkedList<Track>();
         viewableModel = new ViewableModel();
+        allowSnap = false;
         initView();
     }
 
@@ -134,6 +137,10 @@ public class TracksEditorController {
             }
         }
         return false;
+    }
+
+    public void setAllowSnap(boolean allowSnap) {
+        this.allowSnap = allowSnap;
     }
 
     private class Track {
