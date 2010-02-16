@@ -14,6 +14,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import org.openshapa.OpenSHAPA;
@@ -27,7 +28,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
  */
-public final class ColumnDataPanel extends SpreadsheetElementPanel
+public final class ColumnDataPanel extends JPanel
 implements KeyEventDispatcher {
 
     /** Width of the column. */

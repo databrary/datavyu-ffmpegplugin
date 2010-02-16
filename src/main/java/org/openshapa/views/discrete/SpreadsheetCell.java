@@ -18,11 +18,13 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.border.Border;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -32,17 +34,17 @@ import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 /**
  * Visual representation of a spreadsheet cell.
  */
-public class SpreadsheetCell extends SpreadsheetElementPanel
-implements ExternalDataCellListener {
+public class SpreadsheetCell extends JPanel
+implements ExternalDataCellListener, MouseListener {
 
     /** The panel that displays the cell. */
-    private SpreadsheetElementPanel cellPanel;
+    private JPanel cellPanel;
 
     /** Width of spacer between onset and offset timestamps. */
     private static final int TIME_SPACER = 5;
 
     /** A panel for holding the header to the cell. */
-    private SpreadsheetElementPanel topPanel;
+    private JPanel topPanel;
 
     /** A panel for holding the value of the cell. */
     private MatrixRootView dataPanel;
@@ -132,7 +134,8 @@ implements ExternalDataCellListener {
         // the selector, but not trigger a selection change or deselect others.
         selected = dc.getSelected();
 
-        cellPanel = new SpreadsheetElementPanel();
+        cellPanel = new JPanel();
+        cellPanel.addMouseListener(this);
         strut = new Filler(new Dimension(0,0), new Dimension(0,0),
                                             new Dimension(Short.MAX_VALUE, 0));
 
@@ -141,7 +144,8 @@ implements ExternalDataCellListener {
         this.add(cellPanel, BorderLayout.CENTER);
 
         // Build components used for the spreadsheet cell.
-        topPanel = new SpreadsheetElementPanel();
+        topPanel = new JPanel();
+        topPanel.addMouseListener(this);
         ord = new JLabel();
         ord.setToolTipText(rMap.getString("ord.tooltip"));
 
@@ -466,10 +470,27 @@ implements ExternalDataCellListener {
     }
 
     /**
-     * Action to perform on a mouseClick.
+     * The action to invoke when the mouse enters this component.
+     *
+     * @param me The mouse event that triggered this action.
      */
-    @Override
-    public void mousePressed(MouseEvent me) {
+    public void mouseEntered(final MouseEvent me) {
+    }
+
+    /**
+     * The action to invoke when the mouse exits this component.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseExited(final MouseEvent me) {
+    }
+
+    /**
+     * The action to invoke when a mouse button is pressed.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mousePressed(final MouseEvent me) {
         // The cell includes a strut component that keeps it a set distance
         // from the previous cell in the column. A click in that area should
         // not cause a selection
@@ -478,6 +499,22 @@ implements ExternalDataCellListener {
             requestFocusInWindow();
             me.consume();
         }
+    }
+
+    /**
+     * The action to invoke when a mouse button is released.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseReleased(final MouseEvent me) {
+    }
+
+    /**
+     * The action to invoke when a mouse button is clicked.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseClicked(final MouseEvent me) {
     }
 
     /**
