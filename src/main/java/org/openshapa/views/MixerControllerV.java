@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.EventListenerList;
 
@@ -98,11 +99,12 @@ public class MixerControllerV implements NeedleEventListener,
         });
         bookmarkButton.setEnabled(false);
 
-        JButton snapButton = new JButton("Snap");
-
-        // lockButton.setVisible(false);
-        // bookmarkButton.setVisible(false);
-        // snapButton.setVisible(false);
+        JToggleButton snapToggleButton = new JToggleButton("Snap Off");
+        snapToggleButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                snapToggleHandler(e);
+            }
+        });
 
         JButton zoomInButton = new JButton("( + )");
         zoomInButton.addActionListener(new ActionListener() {
@@ -122,7 +124,7 @@ public class MixerControllerV implements NeedleEventListener,
 
         tracksPanel.add(lockButton);
         tracksPanel.add(bookmarkButton);
-        tracksPanel.add(snapButton);
+        tracksPanel.add(snapToggleButton);
         tracksPanel.add(zoomInButton);
         tracksPanel.add(zoomOutButton, "wrap");
 
@@ -430,9 +432,29 @@ public class MixerControllerV implements NeedleEventListener,
         tracksEditorController.setViewableModel(newModel);
     }
 
+    /**
+     * Handles the event for adding a temporal bookmark to selected tracks.
+     */
     private void addBookmarkHandler() {
         tracksEditorController.addTemporalBookmarkToSelected(needleController
                 .getCurrentTime());
+    }
+
+    /**
+     * Handles the event for toggling the snap functionality on and off.
+     * 
+     * @param e
+     *            expecting the event to be generated from a JToggleButton
+     */
+    private void snapToggleHandler(ActionEvent e) {
+        JToggleButton toggle = (JToggleButton) e.getSource();
+        if (toggle.isSelected()) {
+            toggle.setText("Snap On");
+            tracksEditorController.setAllowSnap(true);
+        } else {
+            toggle.setText("Snap Off");
+            tracksEditorController.setAllowSnap(false);
+        }
     }
 
     /**
