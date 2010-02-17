@@ -14,8 +14,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Vector;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -24,6 +27,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -35,7 +39,37 @@ import org.openshapa.util.ArrayDirection;
  * OpenSHAPA database as a spreadsheet.
  */
 public final class SpreadsheetPanel extends JPanel
-    implements ExternalColumnListListener, ComponentListener {
+implements ExternalColumnListListener, ComponentListener, MouseListener {
+
+    /** Scrollable view inserted into the JScrollPane. */
+    private SpreadsheetView mainView;
+
+    /** View showing the Column titles. */
+    private JPanel headerView;
+
+    /** The Database being viewed. */
+    private Database database;
+
+    /** Vector of the Spreadsheetcolumns added to the Spreadsheet. */
+    private Vector<SpreadsheetColumn> columns;
+
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(SpreadsheetPanel.class);
+
+    /** Reference to the spreadsheet layout handler. */
+    private SheetLayout sheetLayout;
+
+    /** Reference to the scrollPane. */
+    private JScrollPane scrollPane;
+
+    /** Strut used to expand the viewport to fill the scrollpane. */
+    private Filler viewportStrut;
+
+    /** Default height for the viewport if no cells yet. */
+    private static final int DEFAULT_HEIGHT = 50;
+
+    /** New variable button to be added to the column header panel. */
+    private JButton newVar = new JButton();
 
     /**
      * Constructor.
@@ -57,6 +91,7 @@ public final class SpreadsheetPanel extends JPanel
         headerView.setBorder(
                       BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
         headerView.setName("headerView");
+        headerView.addMouseListener(this);
 
         columns = new Vector<SpreadsheetColumn>();
 
@@ -88,6 +123,7 @@ public final class SpreadsheetPanel extends JPanel
 
         // add a listener for window resize events
         scrollPane.addComponentListener(this);
+        this.addMouseListener(this);
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
@@ -570,33 +606,65 @@ public final class SpreadsheetPanel extends JPanel
         }
     }
 
-    /** Scrollable view inserted into the JScrollPane. */
-    private SpreadsheetView mainView;
 
-    /** View showing the Column titles. */
-    private JPanel headerView;
+    /**
+     * The action to invoke when the mouse enters this component.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseEntered(final MouseEvent me) {
+    }
 
-    /** The Database being viewed. */
-    private Database database;
+    /**
+     * The action to invoke when the mouse exits this component.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseExited(final MouseEvent me) {
+    }
 
-    /** Vector of the Spreadsheetcolumns added to the Spreadsheet. */
-    private Vector<SpreadsheetColumn> columns;
+    /**
+     * The action to invoke when a mouse button is pressed.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mousePressed(final MouseEvent me) {
 
-    /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SpreadsheetPanel.class);
+    }
 
-    /** Reference to the spreadsheet layout handler. */
-    private SheetLayout sheetLayout;
+    /**
+     * The action to invoke when a mouse button is released.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseReleased(final MouseEvent me) {
+    }
 
-    /** Reference to the scrollPane. */
-    private JScrollPane scrollPane;
+    /**
+     * The action to invoke when a mouse button is clicked.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseClicked(final MouseEvent me) {
+        int mod = me.getModifiers();
 
-    /** Strut used to expand the viewport to fill the scrollpane. */
-    private Filler viewportStrut;
+        boolean modifier = ((mod & ActionEvent.SHIFT_MASK) != 0
+                            || (mod & ActionEvent.CTRL_MASK) != 0);
+        Component clickedComp = SwingUtilities
+                            .getDeepestComponentAt(this, me.getX(), me.getY());
 
-    /** Default height for the viewport if no cells yet. */
-    private static final int DEFAULT_HEIGHT = 50;
+        // User has clicked on the spreadsheet column.
+        if (clickedComp != null
+            && clickedComp.getClass() == SpreadsheetColumn.class) {
 
-    /** New variable button to be added to the column header panel. */
-    private JButton newVar = new JButton();
+            SpreadsheetColumn s = (SpreadsheetColumn) clickedComp;
+
+            if (modifier) {
+                s.setSelected(!s.isSelected());
+            } else {
+                this.deselectAll();
+                s.setSelected(true);
+            }
+        }
+    }
 }

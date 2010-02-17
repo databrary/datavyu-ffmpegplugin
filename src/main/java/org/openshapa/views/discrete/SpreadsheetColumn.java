@@ -432,7 +432,25 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param me The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
-        this.setSelected(!this.isSelected());
+    }
+
+    /**
+     * processes the mouse event - throwing it up to the parent spreadsheet
+     * so that we can handle the complex selection mechanisim between cells
+     * and columns.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    @Override
+    public void processMouseEvent(final MouseEvent me) {
+        super.processMouseEvent(me);
+
+        // Send the mouse event to the parent SpreadsheetPanel so that it can
+        // handle the selection of cells and columns.
+        if (!me.isConsumed()) {
+            me.translatePoint(this.getX(), this.getY());
+            this.getParent().dispatchEvent(me);
+        }
     }
 
     /**
