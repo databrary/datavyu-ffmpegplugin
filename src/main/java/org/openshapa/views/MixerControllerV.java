@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import java.awt.Adjustable;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -12,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
@@ -72,6 +74,8 @@ public class MixerControllerV implements NeedleEventListener,
     private TracksEditorController tracksEditorController;
 
     private JButton bookmarkButton;
+
+    private JScrollBar tracksScrollBar;
 
     public MixerControllerV() {
         // Set default scale values
@@ -150,14 +154,14 @@ public class MixerControllerV implements NeedleEventListener,
         tracksScrollPane = new JScrollPane(tracksEditorController.getView());
         tracksScrollPane
                 .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        tracksScrollPane
-                .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        // tracksScrollPane
+        // .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         tracksScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         // Set an explicit size of the scroll pane
         {
             Dimension size = new Dimension();
-            size.setSize(785, 211);
+            size.setSize(785, 195);
             tracksScrollPane.setSize(size);
             tracksScrollPane.setPreferredSize(size);
             tracksScrollPane.setLocation(0, 39);
@@ -206,7 +210,20 @@ public class MixerControllerV implements NeedleEventListener,
         }
         layeredPane.add(markerView, new Integer(5));
 
-        tracksPanel.add(layeredPane, "span 5, w 785!, h 250!");
+        tracksScrollBar = new JScrollBar(Adjustable.HORIZONTAL);
+        {
+            Dimension size = new Dimension();
+            size.setSize(700, 17);
+            tracksScrollBar.setSize(size);
+            tracksScrollBar.setPreferredSize(size);
+            tracksScrollBar.setLocation(85, 234);
+        }
+        tracksScrollBar.setValues(0, 100000, 0, 100000);
+
+        layeredPane.add(tracksScrollBar, new Integer(100));
+
+        tracksPanel.add(layeredPane, "span 5, w 785!, h 250!, wrap");
+
         tracksPanel.validate();
     }
 
