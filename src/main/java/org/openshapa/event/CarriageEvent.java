@@ -17,20 +17,27 @@ public class CarriageEvent extends EventObject {
     }
 
     /** Track identifier */
-    private String trackId;
+    private final String trackId;
     /** New time offset, in milliseconds, for the given track */
-    private long offset;
+    private final long offset;
     /** Duration of the track in milliseconds */
-    private long duration;
+    private final long duration;
+    /**
+     * Temporal position of the mouse. Only meaningful for
+     * EventType.OFFSET_CHANGE
+     */
+    private final long temporalPosition;
     /** What event does this represent */
-    private EventType eventType;
+    private final EventType eventType;
 
-    public CarriageEvent(Object source, String trackId, long offset,
-            long duration, EventType eventType) {
+    public CarriageEvent(final Object source, final String trackId,
+            final long offset, final long duration,
+            final long temporalPosition, final EventType eventType) {
         super(source);
         this.trackId = trackId;
         this.offset = offset;
         this.duration = duration;
+        this.temporalPosition = temporalPosition;
         this.eventType = eventType;
     }
 
@@ -48,10 +55,24 @@ public class CarriageEvent extends EventObject {
         return trackId;
     }
 
+    /**
+     * @return Track duration in milliseconds
+     */
     public long getDuration() {
         return duration;
     }
 
+    /**
+     * @return the temporal position of the mouse in milliseconds. Only
+     *         meaningful for OFFSET_CHANGE events.
+     */
+    public long getTemporalPosition() {
+        return temporalPosition;
+    }
+
+    /**
+     * @return event type
+     */
     public EventType getEventType() {
         return eventType;
     }

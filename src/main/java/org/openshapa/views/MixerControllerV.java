@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import java.awt.Adjustable;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -9,8 +10,10 @@ import java.util.EventObject;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
@@ -71,6 +74,8 @@ public class MixerControllerV implements NeedleEventListener,
     private TracksEditorController tracksEditorController;
 
     private JButton bookmarkButton;
+
+    private JScrollBar tracksScrollBar;
 
     public MixerControllerV() {
         // Set default scale values
@@ -149,14 +154,14 @@ public class MixerControllerV implements NeedleEventListener,
         tracksScrollPane = new JScrollPane(tracksEditorController.getView());
         tracksScrollPane
                 .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        tracksScrollPane
-                .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        // tracksScrollPane
+        // .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         tracksScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         // Set an explicit size of the scroll pane
         {
             Dimension size = new Dimension();
-            size.setSize(785, 211);
+            size.setSize(785, 195);
             tracksScrollPane.setSize(size);
             tracksScrollPane.setPreferredSize(size);
             tracksScrollPane.setLocation(0, 39);
@@ -193,10 +198,32 @@ public class MixerControllerV implements NeedleEventListener,
                     .getViewableModel());
         }
         needleController.addNeedleEventListener(this);
-
         layeredPane.add(needleView, new Integer(30));
 
-        tracksPanel.add(layeredPane, "span 5, w 785!, h 250!");
+        // Create the snap marker
+        JComponent markerView = tracksEditorController.getMarkerView();
+        {
+            Dimension size = new Dimension();
+            size.setSize(785, 234);
+            markerView.setSize(size);
+            markerView.setPreferredSize(size);
+        }
+        layeredPane.add(markerView, new Integer(5));
+
+        tracksScrollBar = new JScrollBar(Adjustable.HORIZONTAL);
+        {
+            Dimension size = new Dimension();
+            size.setSize(700, 17);
+            tracksScrollBar.setSize(size);
+            tracksScrollBar.setPreferredSize(size);
+            tracksScrollBar.setLocation(85, 234);
+        }
+        tracksScrollBar.setValues(0, 100000, 0, 100000);
+
+        layeredPane.add(tracksScrollBar, new Integer(100));
+
+        tracksPanel.add(layeredPane, "span 5, w 785!, h 250!, wrap");
+
         tracksPanel.validate();
     }
 
@@ -228,7 +255,6 @@ public class MixerControllerV implements NeedleEventListener,
         regionController.setViewableModel(model);
         needleController.setViewableModel(model);
         tracksEditorController.setViewableModel(model);
-        rescale();
     }
 
     /**
@@ -257,6 +283,8 @@ public class MixerControllerV implements NeedleEventListener,
 
         tracksEditorController.addNewTrack(mediaPath, trackName, duration,
                 offset, this);
+
+        tracksScrollPane.validate();
     }
 
     /**
@@ -353,8 +381,7 @@ public class MixerControllerV implements NeedleEventListener,
         // Update zoomed tracks
         zoomTracks(null);
         // Update tracks panel display
-        tracksPanel.invalidate();
-        tracksPanel.repaint();
+        tracksScrollPane.validate();
     }
 
     /**
@@ -379,7 +406,9 @@ public class MixerControllerV implements NeedleEventListener,
         timescaleController.setViewableModel(model);
         tracksEditorController.setViewableModel(model);
 
-        tracksPanel.invalidate();
+        tracksScrollPane.validate();
+
+        tracksPanel.validate();
         tracksPanel.repaint();
     }
 
@@ -482,8 +511,8 @@ public class MixerControllerV implements NeedleEventListener,
      * @param e
      */
     public void offsetChanged(CarriageEvent e) {
-        TrackController trackController = (TrackController) e.getSource();
-        trackController.setTrackOffset(e.getOffset());
+        tracksEditorController.setTrackOffset(e.getTrackId(), e.getOffset(), e
+                .getTemporalPosition());
         fireTracksControllerEvent(TracksEvent.CARRIAGE_EVENT, e);
         tracksPanel.invalidate();
         tracksPanel.repaint();

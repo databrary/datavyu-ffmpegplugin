@@ -13,12 +13,18 @@ public class TrackModel {
     private long bookmark;
     /** Is there an error with track information */
     private boolean erroneous;
+    /** Track snap position in milliseconds */
+    private long snapPosition;
     /** Track identifier, this is currently just the track's absolute file path */
     private String trackId;
     /** Name of this track */
     private String trackName;
-    /** Is this track selected */
-    private boolean selected;
+    /** State of the track */
+    private TrackState state;
+
+    public enum TrackState {
+        NORMAL, SELECTED, SNAPPED
+    }
 
     public TrackModel() {
     }
@@ -30,6 +36,8 @@ public class TrackModel {
         erroneous = other.erroneous;
         trackId = other.trackId;
         trackName = other.trackName;
+        state = other.state;
+        snapPosition = other.snapPosition;
     }
 
     /**
@@ -132,7 +140,7 @@ public class TrackModel {
      * @return the selected
      */
     public boolean isSelected() {
-        return selected;
+        return state == TrackState.SELECTED;
     }
 
     /**
@@ -140,7 +148,34 @@ public class TrackModel {
      *            the selected to set
      */
     public void setSelected(boolean selected) {
-        this.selected = selected;
+        if (selected) {
+            state = TrackState.SELECTED;
+        } else {
+            state = TrackState.NORMAL;
+        }
+    }
+
+    public void setState(final TrackState state) {
+        this.state = state;
+    }
+
+    public TrackState getState() {
+        return state;
+    }
+
+    /**
+     * @return the snapPosition
+     */
+    public long getSnapPosition() {
+        return snapPosition;
+    }
+
+    /**
+     * @param snapPosition
+     *            the snapPosition to set
+     */
+    public void setSnapMarkerPosition(long snapPosition) {
+        this.snapPosition = snapPosition;
     }
 
     /*
@@ -155,7 +190,8 @@ public class TrackModel {
         result = prime * result + (int) (duration ^ (duration >>> 32));
         result = prime * result + (erroneous ? 1231 : 1237);
         result = prime * result + (int) (offset ^ (offset >>> 32));
-        result = prime * result + (selected ? 1231 : 1237);
+        result = prime * result + (int) (snapPosition ^ (snapPosition >>> 32));
+        result = prime * result + ((state == null) ? 0 : state.hashCode());
         result = prime * result + ((trackId == null) ? 0 : trackId.hashCode());
         result =
                 prime * result
@@ -191,7 +227,14 @@ public class TrackModel {
         if (offset != other.offset) {
             return false;
         }
-        if (selected != other.selected) {
+        if (snapPosition != other.snapPosition) {
+            return false;
+        }
+        if (state == null) {
+            if (other.state != null) {
+                return false;
+            }
+        } else if (!state.equals(other.state)) {
             return false;
         }
         if (trackId == null) {
