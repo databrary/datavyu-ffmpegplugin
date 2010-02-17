@@ -238,7 +238,6 @@ public class MixerControllerV implements NeedleEventListener,
         regionController.setViewableModel(model);
         needleController.setViewableModel(model);
         tracksEditorController.setViewableModel(model);
-        rescale();
     }
 
     /**
