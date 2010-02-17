@@ -9,6 +9,7 @@ import java.util.EventObject;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -193,8 +194,17 @@ public class MixerControllerV implements NeedleEventListener,
                     .getViewableModel());
         }
         needleController.addNeedleEventListener(this);
-
         layeredPane.add(needleView, new Integer(30));
+
+        // Create the snap marker
+        JComponent markerView = tracksEditorController.getMarkerView();
+        {
+            Dimension size = new Dimension();
+            size.setSize(785, 234);
+            markerView.setSize(size);
+            markerView.setPreferredSize(size);
+        }
+        layeredPane.add(markerView, new Integer(5));
 
         tracksPanel.add(layeredPane, "span 5, w 785!, h 250!");
         tracksPanel.validate();
@@ -257,6 +267,8 @@ public class MixerControllerV implements NeedleEventListener,
 
         tracksEditorController.addNewTrack(mediaPath, trackName, duration,
                 offset, this);
+
+        tracksScrollPane.validate();
     }
 
     /**
@@ -353,8 +365,7 @@ public class MixerControllerV implements NeedleEventListener,
         // Update zoomed tracks
         zoomTracks(null);
         // Update tracks panel display
-        tracksPanel.invalidate();
-        tracksPanel.repaint();
+        tracksScrollPane.validate();
     }
 
     /**
@@ -379,7 +390,9 @@ public class MixerControllerV implements NeedleEventListener,
         timescaleController.setViewableModel(model);
         tracksEditorController.setViewableModel(model);
 
-        tracksPanel.invalidate();
+        tracksScrollPane.validate();
+
+        tracksPanel.validate();
         tracksPanel.repaint();
     }
 
@@ -482,8 +495,8 @@ public class MixerControllerV implements NeedleEventListener,
      * @param e
      */
     public void offsetChanged(CarriageEvent e) {
-        TrackController trackController = (TrackController) e.getSource();
-        trackController.setTrackOffset(e.getOffset());
+        tracksEditorController.setTrackOffset(e.getTrackId(), e.getOffset(), e
+                .getTemporalPosition());
         fireTracksControllerEvent(TracksEvent.CARRIAGE_EVENT, e);
         tracksPanel.invalidate();
         tracksPanel.repaint();

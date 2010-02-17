@@ -154,6 +154,7 @@ public class TrackPainter extends JComponent {
         } else {
             g.setColor(NORMAL_OUTLINE_COLOR);
         }
+
         g.drawLine(Math.round(effectiveXOffset), carriageYOffset, Math
                 .round(effectiveXOffset + carriageWidth - 1), carriageYOffset);
         g.drawLine(Math.round(effectiveXOffset), carriageYOffset
@@ -176,16 +177,15 @@ public class TrackPainter extends JComponent {
         }
 
         // Determine if a bookmark should be painted.
-        final long bookmark = trackModel.getBookmark();
-        if (viewableModel.getZoomWindowStart() <= bookmark
+        final long bookmark = trackModel.getBookmark() + trackModel.getOffset();
+        if (trackModel.getBookmark() >= 0
+                && viewableModel.getZoomWindowStart() <= bookmark
                 && bookmark <= viewableModel.getZoomWindowEnd()) {
-            // Calculate bookmark position
-
             // Time pixels per unit time
             float ratio =
                     viewableModel.getIntervalWidth()
                             / viewableModel.getIntervalTime();
-            int xPos = Math.round(bookmark * ratio + effectiveXOffset) + 2;
+            int xPos = Math.round(bookmark * ratio) + 2;
 
             Polygon topMarker = new Polygon();
             topMarker.addPoint(xPos - 9, carriageYOffset);
@@ -202,16 +202,15 @@ public class TrackPainter extends JComponent {
             }
 
             // Top marker outline
+            // TODO remove sprite out of bounds painting
             g
                     .drawLine(xPos - 9, carriageYOffset, xPos - 2,
                             carriageYOffset + 7);
             g
                     .drawLine(xPos - 2, carriageYOffset + 7, xPos + 5,
                             carriageYOffset);
-
             g.drawLine(xPos - 2, carriageYOffset + 7, xPos - 2, carriageYOffset
                     + carriageHeight);
         }
-
     }
 }
