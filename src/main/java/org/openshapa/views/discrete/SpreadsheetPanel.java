@@ -14,11 +14,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Vector;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -27,7 +24,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -39,7 +35,8 @@ import org.openshapa.util.ArrayDirection;
  * OpenSHAPA database as a spreadsheet.
  */
 public final class SpreadsheetPanel extends JPanel
-implements ExternalColumnListListener, ComponentListener, MouseListener {
+implements ExternalColumnListListener, ComponentListener,
+           CellSelectionListener, ColumnSelectionListener {
 
     /** Scrollable view inserted into the JScrollPane. */
     private SpreadsheetView mainView;
@@ -91,7 +88,6 @@ implements ExternalColumnListListener, ComponentListener, MouseListener {
         headerView.setBorder(
                       BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
         headerView.setName("headerView");
-        headerView.addMouseListener(this);
 
         columns = new Vector<SpreadsheetColumn>();
 
@@ -123,7 +119,6 @@ implements ExternalColumnListListener, ComponentListener, MouseListener {
 
         // add a listener for window resize events
         scrollPane.addComponentListener(this);
-        this.addMouseListener(this);
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
@@ -172,11 +167,12 @@ implements ExternalColumnListListener, ComponentListener, MouseListener {
         headerView.remove(newVar);
 
         // Create the spreadsheet column and register it.
-        SpreadsheetColumn col = new SpreadsheetColumn(db, colID);
+        SpreadsheetColumn col = new SpreadsheetColumn(db, colID, this, this);
         col.registerListeners();
 
         // add the datapanel to the scrollpane viewport
         mainView.add(col.getDataPanel());
+
         // add the headerpanel to the scrollpane headerviewport
         headerView.add(col);
         // add the new variable '+' button to the header.
@@ -606,65 +602,25 @@ implements ExternalColumnListListener, ComponentListener, MouseListener {
         }
     }
 
-
-    /**
-     * The action to invoke when the mouse enters this component.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    public void mouseEntered(final MouseEvent me) {
+    public void addCellToSelection(SpreadsheetCell cell) {
+        this.clearColumnSelection();
     }
 
-    /**
-     * The action to invoke when the mouse exits this component.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    public void mouseExited(final MouseEvent me) {
-    }
-
-    /**
-     * The action to invoke when a mouse button is pressed.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    public void mousePressed(final MouseEvent me) {
-
-    }
-
-    /**
-     * The action to invoke when a mouse button is released.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    public void mouseReleased(final MouseEvent me) {
-    }
-
-    /**
-     * The action to invoke when a mouse button is clicked.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    public void mouseClicked(final MouseEvent me) {
-        int mod = me.getModifiers();
-
-        boolean modifier = ((mod & ActionEvent.SHIFT_MASK) != 0
-                            || (mod & ActionEvent.CTRL_MASK) != 0);
-        Component clickedComp = SwingUtilities
-                            .getDeepestComponentAt(this, me.getX(), me.getY());
-
-        // User has clicked on the spreadsheet column.
-        if (clickedComp != null
-            && clickedComp.getClass() == SpreadsheetColumn.class) {
-
-            SpreadsheetColumn s = (SpreadsheetColumn) clickedComp;
-
-            if (modifier) {
-                s.setSelected(!s.isSelected());
-            } else {
-                this.deselectAll();
-                s.setSelected(true);
+    public void clearCellSelection() {
+        for (SpreadsheetColumn col : this.getColumns()) {
+            for (SpreadsheetCell cell : col.getCells()) {
+                cell.setSelected(false);
             }
+        }
+    }
+
+    public void addColumnToSelection(SpreadsheetColumn column) {
+        this.clearCellSelection();
+    }
+
+    public void clearColumnSelection() {
+        for (SpreadsheetColumn col : this.getColumns()) {
+            col.setSelected(false);
         }
     }
 }

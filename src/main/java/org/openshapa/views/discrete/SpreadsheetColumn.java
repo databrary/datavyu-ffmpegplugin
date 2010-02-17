@@ -9,6 +9,7 @@ import org.openshapa.models.db.ExternalCascadeListener;
 import org.openshapa.models.db.ExternalDataColumnListener;
 import org.openshapa.models.db.SystemErrorException;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -64,6 +65,12 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
     /** Can the column be moved? */
     private boolean moveable;
 
+    /** cell selection listener to notify of cell selection changes. */
+    private CellSelectionListener cellSelList;
+
+    /** column selection listener to notify of column selection changes. */
+    private ColumnSelectionListener columnSelList;
+
     /**
      * Private class for recording the changes reported by the listener
      * callbacks on this column.
@@ -103,10 +110,17 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      *
      * @param db Database reference.
      * @param colID the database colID this column displays.
+     * @param cellSelL Spreadsheet cell selection listener to notify
+     * @param colSelL Column selection listener to notify.
      */
-    public SpreadsheetColumn(final Database db, final long colID) {
+    public SpreadsheetColumn(final Database db,
+                             final long colID,
+                             final CellSelectionListener cellSelL,
+                             final ColumnSelectionListener colSelL) {
         this.database = db;
         this.dbColID = colID;
+        this.cellSelList = cellSelL;
+        this.columnSelList = colSelL;
 
         try {
             DataColumn dbColumn = database.getDataColumn(dbColID);
@@ -123,7 +137,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
             this.setText(dbColumn.getName() + "  ("
                          + dbColumn.getItsMveType() + ")");
 
-            datapanel = new ColumnDataPanel(width, dbColumn);
+            datapanel = new ColumnDataPanel(width, dbColumn, cellSelL);
 
         } catch (SystemErrorException e) {
             logger.error("Problem retrieving DataColumn", e);
@@ -276,7 +290,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
         }
         if (colChanges.cellInserted.size() > 0) {
             for (Long cellID : colChanges.cellInserted) {
-                datapanel.insertCellByID(db, cellID);
+                datapanel.insertCellByID(db, cellID, cellSelList);
             }
         }
 
@@ -435,25 +449,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
     }
 
     /**
-     * processes the mouse event - throwing it up to the parent spreadsheet
-     * so that we can handle the complex selection mechanisim between cells
-     * and columns.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    @Override
-    public void processMouseEvent(final MouseEvent me) {
-        super.processMouseEvent(me);
-
-        // Send the mouse event to the parent SpreadsheetPanel so that it can
-        // handle the selection of cells and columns.
-        if (!me.isConsumed()) {
-            me.translatePoint(this.getX(), this.getY());
-            this.getParent().dispatchEvent(me);
-        }
-    }
-
-    /**
      * The action to invoke when a mouse button is released.
      *
      * @param me The mouse event that triggered this action.
@@ -467,7 +462,15 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param me The mouse event that triggered this action.
      */
     public void mouseClicked(final MouseEvent me) {
+        boolean groupSel = ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0
+                       || (me.getModifiers() & ActionEvent.CTRL_MASK) != 0);
+        boolean curSelected = this.isSelected();
 
+        if (!groupSel) {
+            this.columnSelList.clearColumnSelection();
+        }
+        this.setSelected(!curSelected);
+        this.columnSelList.addColumnToSelection(this);
     }
 
     /**

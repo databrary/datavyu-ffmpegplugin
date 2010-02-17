@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
@@ -84,6 +85,9 @@ implements ExternalDataCellListener, MouseListener {
     /** Onset has been processed and layout position calculated. */
     private boolean onsetProcessed = false;
 
+    /** The spreadsheet cell selection listener. */
+    private CellSelectionListener cellSelL;
+
     /** Border to use for normal cell. No extra information to show. */
     public static final Border NORMAL_BORDER =
         BorderFactory.createCompoundBorder(
@@ -111,11 +115,14 @@ implements ExternalDataCellListener, MouseListener {
      *
      * @param cellDB Database the cell is in
      * @param cell Cell to display
+     * @param listener The spreadsheet cell selection listener to notify of
+     * changes to cell selection.
      *
      * @throws SystemErrorException if trouble with db calls
      */
     public SpreadsheetCell(final Database cellDB,
-                           final Cell cell)
+                           final Cell cell,
+                           final CellSelectionListener listener)
     throws SystemErrorException {
         db = cellDB;
         cellID = cell.getID();
@@ -133,6 +140,7 @@ implements ExternalDataCellListener, MouseListener {
         // If it is already selected in the database, we need to inform
         // the selector, but not trigger a selection change or deselect others.
         selected = dc.getSelected();
+        cellSelL = listener;
 
         cellPanel = new JPanel();
         cellPanel.addMouseListener(this);
@@ -491,14 +499,6 @@ implements ExternalDataCellListener, MouseListener {
      * @param me The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
-        // The cell includes a strut component that keeps it a set distance
-        // from the previous cell in the column. A click in that area should
-        // not cause a selection
-        if (me.getPoint().y > cellPanel.getY()) {
-            setSelected(!this.isSelected());
-            requestFocusInWindow();
-            me.consume();
-        }
     }
 
     /**
@@ -514,7 +514,17 @@ implements ExternalDataCellListener, MouseListener {
      *
      * @param me The mouse event that triggered this action.
      */
-    public void mouseClicked(final MouseEvent me) {
+    public void mouseClicked(MouseEvent me) {
+        boolean groupSel = ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0
+                       || (me.getModifiers() & ActionEvent.CTRL_MASK) != 0);
+
+        boolean curSelected = this.isSelected();
+
+        if (!groupSel) {
+            this.cellSelL.clearCellSelection();
+        }
+        this.setSelected(!curSelected);
+        this.cellSelL.addCellToSelection(this);
     }
 
     /**

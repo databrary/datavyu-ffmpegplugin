@@ -51,9 +51,11 @@ implements KeyEventDispatcher {
      *
      * @param width The width of the new column data panel in pixels.
      * @param model The Data Column that this panel represents.
+     * @param cellSelL Spreadsheet cell selection listener.
      */
     public ColumnDataPanel(final int width,
-                           final DataColumn model) {
+                           final DataColumn model,
+                           final CellSelectionListener cellSelL) {
         super();
 
         // Store member variables.
@@ -69,7 +71,7 @@ implements KeyEventDispatcher {
         this.add(bottomStrut, -1);
 
         // Populate the data column with spreadsheet cells.
-        this.buildDataPanelCells(model);
+        this.buildDataPanelCells(model, cellSelL);
     }
 
     /**
@@ -96,8 +98,11 @@ implements KeyEventDispatcher {
      * Build the SpreadsheetCells and add to the DataPanel.
      *
      * @param dbColumn DataColumn to display.
+     * @param cellSelL Spreadsheet listener to notify about cell
+     * selection changes.
      */
-    private void buildDataPanelCells(final DataColumn dbColumn) {
+    private void buildDataPanelCells(final DataColumn dbColumn,
+                                     final CellSelectionListener cellSelL) {
         try {
             // traverse and build the cells
             for (int j = 1; j <= dbColumn.getNumCells(); j++) {
@@ -105,8 +110,8 @@ implements KeyEventDispatcher {
                                     .getCell(dbColumn.getID(), j);
 
                 SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(),
-                                                         dc/*,
-                                                         cellSelector*/);
+                                                         dc,
+                                                         cellSelL);
                 dbColumn.getDB().registerDataCellListener(dc.getID(), sc);
 
                 // add cell to the JPanel
@@ -164,13 +169,15 @@ implements KeyEventDispatcher {
      * @param db The database holding the cell that is being inserted into this
      * column data panel.
      * @param cellID ID of cell to create and insert.
+     * @param cellSelL SpreadsheetCellSelectionListener to notify of changes in
+     * selection.
      */
-    public void insertCellByID(final Database db, final long cellID) {
+    public void insertCellByID(final Database db,
+                               final long cellID,
+                               final CellSelectionListener cellSelL) {
         try {
             DataCell dc = (DataCell) db.getCell(cellID);
-            SpreadsheetCell nCell = new SpreadsheetCell(db,
-                                                        dc/*,
-                                                        cellSelector*/);
+            SpreadsheetCell nCell = new SpreadsheetCell(db, dc, cellSelL);
             db.registerDataCellListener(dc.getID(), nCell);
 
             Long newOrd = new Long(dc.getOrd());
