@@ -13,6 +13,13 @@ public interface CellSelectionListener {
     void addCellToSelection(SpreadsheetCell cell);
 
     /**
+     * Sets the currently selected cell.
+     *
+     * @param cell The cell to use as the highlight.
+     */
+    void setHighlightedCell(SpreadsheetCell cell);
+
+    /**
      * Notifiers the listeners to clear all the currently selected cells.
      */
     void clearCellSelection();

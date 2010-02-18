@@ -68,6 +68,9 @@ implements ExternalColumnListListener, ComponentListener,
     /** New variable button to be added to the column header panel. */
     private JButton newVar = new JButton();
 
+    /** The currently highlighted cell. */
+    private SpreadsheetCell highlightedCell;
+
     /**
      * Constructor.
      *
@@ -604,9 +607,26 @@ implements ExternalColumnListListener, ComponentListener,
 
     public void addCellToSelection(SpreadsheetCell cell) {
         this.clearColumnSelection();
+        if (highlightedCell != null) {
+            highlightedCell.setHighlighted(false);
+            highlightedCell.setSelected(true);
+
+            highlightedCell = null;
+        }
+    }
+
+    public void setHighlightedCell(SpreadsheetCell cell) {
+        if (highlightedCell != null) {
+            highlightedCell.setSelected(false);
+        }
+
+        this.highlightedCell = cell;
+        this.clearColumnSelection();
     }
 
     public void clearCellSelection() {
+        highlightedCell = null;
+
         for (SpreadsheetColumn col : this.getColumns()) {
             for (SpreadsheetCell cell : col.getCells()) {
                 cell.setSelected(false);

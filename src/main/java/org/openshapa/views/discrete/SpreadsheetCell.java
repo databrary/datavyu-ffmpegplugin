@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -205,16 +206,19 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         onset = new TimeStampTextField(dc, TimeStampSource.Onset);
         onset.setToolTipText(rMap.getString("onset.tooltip"));
         onset.addFocusListener(this);
+        onset.addMouseListener(this);
 
         offset = new TimeStampTextField(dc, TimeStampSource.Offset);
         offset.setToolTipText(rMap.getString("offset.tooltip"));
         offset.addFocusListener(this);
+        offset.addMouseListener(this);
 
         dataPanel = new MatrixRootView(dc, null);
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
         dataPanel.setMatrix(dc.getVal());
         dataPanel.setOpaque(false);
         dataPanel.addFocusListener(this);
+        dataPanel.addMouseListener(this);
 
         // Set the appearance of the spreadsheet cell.
         cellPanel.setBackground(Configuration.getInstance()
@@ -606,27 +610,52 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * @param me The mouse event that triggered this action.
      */
     public void mouseClicked(MouseEvent me) {
+        int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
         boolean groupSel = ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0
-                       || (me.getModifiers() & ActionEvent.CTRL_MASK) != 0);
+                         || (me.getModifiers() & keyMask) != 0);
 
-        boolean curSelected = this.isSelected();
+        Class source = me.getSource().getClass();
+        if ((!source.equals(TimeStampTextField.class) ||
+            (source.equals(TimeStampTextField.class) && groupSel)) &&
+            (!source.equals(MatrixRootView.class) ||
+            (source.equals(MatrixRootView.class) && groupSel))) {
 
-        if (!groupSel) {
+            boolean curSelected = this.isSelected();
+            /*
+            if (!groupSel) {
+                this.cellSelL.clearCellSelection();
+            }*/
+            this.ord.requestFocus();
+            this.setSelected(!curSelected);
+            this.cellSelL.addCellToSelection(this);
+        } else if (groupSel) {
+            // BugzID:320 - Deselect cells before selected cell contents.
             this.cellSelL.clearCellSelection();
+            this.setHighlighted(true);
+            this.cellSelL.setHighlightedCell(this);
         }
-        this.setSelected(!curSelected);
-        this.cellSelL.addCellToSelection(this);
-        this.ord.requestFocus();
     }
 
+    /**
+     * The action to invoke when the focus is gained on this component.
+     *
+     * @param e The focus event that triggered this action.
+     */
     public void focusGained(FocusEvent e) {
         // BugzID:320 - Deselect cells before selected cell contents.
         this.cellSelL.clearCellSelection();
         this.setHighlighted(true);
-        this.cellSelL.addCellToSelection(this);
+        this.cellSelL.setHighlightedCell(this);
     }
 
+    /**
+     * The action to invoke when the focus is lost from this component.
+     *
+     * @param e The focus event that triggered this action.
+     */
     public void focusLost(FocusEvent e) {
+        // BugzID: 718 - Make sure content is deselected.
         this.dataPanel.select(0, 0);
     }
 

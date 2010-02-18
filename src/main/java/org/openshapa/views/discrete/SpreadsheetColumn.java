@@ -9,6 +9,7 @@ import org.openshapa.models.db.ExternalCascadeListener;
 import org.openshapa.models.db.ExternalDataColumnListener;
 import org.openshapa.models.db.SystemErrorException;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -462,8 +463,10 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param me The mouse event that triggered this action.
      */
     public void mouseClicked(final MouseEvent me) {
+        int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
         boolean groupSel = ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0
-                       || (me.getModifiers() & ActionEvent.CTRL_MASK) != 0);
+                       || (me.getModifiers() & keyMask) != 0);
         boolean curSelected = this.isSelected();
 
         if (!groupSel) {
