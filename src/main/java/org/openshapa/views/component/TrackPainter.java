@@ -84,50 +84,32 @@ public class TrackPainter extends JComponent {
             return;
         }
 
-        // Calculate effective start and end points for the carriage
-        float effectiveXOffset;
-        /*
-         * Calculating carriage width by deleting offsets and remainders because
-         * using the displayed scale's measurements will sometimes result in a
-         * carriage with a visually inaccurate representation (gap from the
-         * displayed end of the carriage to the carriage holder's border)
-         */
-        float carriageWidth = size.width;
+        final float ratio =
+                viewableModel.getIntervalWidth()
+                        / viewableModel.getIntervalTime();
 
-        if (trackModel.getOffset() >= viewableModel.getZoomWindowStart()) {
-            /*
-             * Absolute value because if the offset is negative we dont want the
-             * carriage to grow in size.
-             */
-            long offset = Math.abs(trackModel.getOffset());
-            // Calculate the width taken up by the offset
-            effectiveXOffset =
-                    ((offset * 1F / viewableModel.getIntervalTime()) * viewableModel
-                            .getIntervalWidth());
-            // The width of the viewable carriage shrinks
-            carriageWidth -= effectiveXOffset;
-            /*
-             * If offset is negative, the effective offset is always zero
-             * because that region of the carriage is never shown.
-             */
-            if (trackModel.getOffset() < 0) {
-                effectiveXOffset = 0;
-            }
-        } else {
-            effectiveXOffset = 0;
-        }
+        final int carriageHeight = (int) (size.getHeight() * 7D / 10D);
+        final int carriageYOffset = (int) (size.getHeight() * 2D / 10D);
 
-        if (trackModel.getDuration() + trackModel.getOffset() <= viewableModel
-                .getZoomWindowEnd()) {
-            carriageWidth -=
-                    (viewableModel.getZoomWindowEnd() - (trackModel
-                            .getDuration() + trackModel.getOffset()))
-                            / viewableModel.getIntervalTime()
-                            * viewableModel.getIntervalWidth();
-        }
+        // Calculate carriage start and end pixel positions
+        final int startXPos =
+                Math.round(trackModel.getOffset() * ratio
+                        - viewableModel.getZoomWindowStart() * ratio);
 
-        int carriageHeight = (int) (size.getHeight() * 8D / 10D);
-        int carriageYOffset = (int) (size.getHeight() / 10D);
+        final int endXPos =
+                Math.round((trackModel.getDuration() + trackModel.getOffset())
+                        * ratio - viewableModel.getZoomWindowStart() * ratio);
+
+        // The carriage
+        carriagePolygon = new Polygon();
+        // Top left corner
+        carriagePolygon.addPoint(startXPos, carriageYOffset);
+        // Top right corner
+        carriagePolygon.addPoint(endXPos, carriageYOffset);
+        // Bottom right corner
+        carriagePolygon.addPoint(endXPos, carriageYOffset + carriageHeight);
+        // Bottom left corner
+        carriagePolygon.addPoint(startXPos, carriageYOffset + carriageHeight);
 
         // Paint the carriage
         if (trackModel.isSelected()) {
@@ -136,81 +118,52 @@ public class TrackPainter extends JComponent {
             g.setColor(NORMAL_CARRIAGE_COLOR);
         }
 
-        // Interactable region
-        carriagePolygon = new Polygon();
-        carriagePolygon.addPoint(Math.round(effectiveXOffset), carriageYOffset);
-        carriagePolygon.addPoint(Math.round(effectiveXOffset + carriageWidth
-                - 1), carriageYOffset);
-        carriagePolygon.addPoint(Math.round(effectiveXOffset + carriageWidth
-                - 1), carriageYOffset + carriageHeight);
-        carriagePolygon.addPoint(Math.round(effectiveXOffset), carriageYOffset
-                + carriageHeight);
-
         g.fillPolygon(carriagePolygon);
 
-        // Paint the carriage top and bottom outline
+        // Paint the carriage outlines
         if (trackModel.isSelected()) {
             g.setColor(SELECTED_OUTLINE_COLOR);
         } else {
             g.setColor(NORMAL_OUTLINE_COLOR);
         }
 
-        g.drawLine(Math.round(effectiveXOffset), carriageYOffset, Math
-                .round(effectiveXOffset + carriageWidth - 1), carriageYOffset);
-        g.drawLine(Math.round(effectiveXOffset), carriageYOffset
-                + carriageHeight, Math.round(effectiveXOffset + carriageWidth
-                - 1), carriageYOffset + carriageHeight);
+        g.drawPolygon(carriagePolygon);
 
-        // Determine if the left outline should be painted
-        if (trackModel.getOffset() >= viewableModel.getZoomWindowStart()) {
-            g.drawLine(Math.round(effectiveXOffset), carriageYOffset, Math
-                    .round(effectiveXOffset), carriageYOffset + carriageHeight);
+        if (trackModel.getBookmark() < 0) {
+            return;
         }
 
-        // Determine if the right outline should be painted
-        if (trackModel.getDuration() + trackModel.getOffset() <= viewableModel
-                .getZoomWindowEnd()) {
-            g.drawLine(Math.round(effectiveXOffset + carriageWidth - 1),
-                    carriageYOffset, Math.round(effectiveXOffset
-                            + carriageWidth - 1), carriageYOffset
-                            + carriageHeight);
+        // Paint the bookmark marker
+        final int bookmarkXPos =
+                Math.round((trackModel.getOffset() + trackModel.getBookmark())
+                        * ratio - viewableModel.getZoomWindowStart() * ratio);
+
+        g.drawLine(bookmarkXPos, carriageYOffset, bookmarkXPos, carriageYOffset
+                + carriageHeight);
+
+        // Paint the bookmark diamond
+
+        Polygon bookmarkDiamond = new Polygon();
+        // Top of diamond
+        bookmarkDiamond.addPoint(bookmarkXPos, carriageYOffset - 10);
+        // Right tip of diamond
+        bookmarkDiamond.addPoint(bookmarkXPos + 5, carriageYOffset - 5);
+        // Bottom of diamond
+        bookmarkDiamond.addPoint(bookmarkXPos, carriageYOffset);
+        // Left tip of diamond
+        bookmarkDiamond.addPoint(bookmarkXPos - 5, carriageYOffset - 5);
+
+        if (trackModel.isSelected()) {
+            g.setColor(SELECTED_CARRIAGE_COLOR);
+            g.fillPolygon(bookmarkDiamond);
+            g.setColor(SELECTED_OUTLINE_COLOR);
+            g.drawPolygon(bookmarkDiamond);
+        } else {
+            g.setColor(NORMAL_CARRIAGE_COLOR);
+            g.fillPolygon(bookmarkDiamond);
+            g.setColor(NORMAL_OUTLINE_COLOR);
+            g.drawPolygon(bookmarkDiamond);
         }
 
-        // Determine if a bookmark should be painted.
-        final long bookmark = trackModel.getBookmark() + trackModel.getOffset();
-        if (trackModel.getBookmark() >= 0
-                && viewableModel.getZoomWindowStart() <= bookmark
-                && bookmark <= viewableModel.getZoomWindowEnd()) {
-            // Time pixels per unit time
-            float ratio =
-                    viewableModel.getIntervalWidth()
-                            / viewableModel.getIntervalTime();
-            int xPos = Math.round(bookmark * ratio) + 2;
-
-            Polygon topMarker = new Polygon();
-            topMarker.addPoint(xPos - 9, carriageYOffset);
-            topMarker.addPoint(xPos - 2, carriageYOffset + 7);
-            topMarker.addPoint(xPos + 5, carriageYOffset);
-
-            g.setColor(Color.LIGHT_GRAY);
-            g.fillPolygon(topMarker);
-
-            if (trackModel.isSelected()) {
-                g.setColor(SELECTED_OUTLINE_COLOR);
-            } else {
-                g.setColor(NORMAL_OUTLINE_COLOR);
-            }
-
-            // Top marker outline
-            // TODO remove sprite out of bounds painting
-            g
-                    .drawLine(xPos - 9, carriageYOffset, xPos - 2,
-                            carriageYOffset + 7);
-            g
-                    .drawLine(xPos - 2, carriageYOffset + 7, xPos + 5,
-                            carriageYOffset);
-            g.drawLine(xPos - 2, carriageYOffset + 7, xPos - 2, carriageYOffset
-                    + carriageHeight);
-        }
     }
 }

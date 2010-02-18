@@ -244,6 +244,7 @@ public class TrackController {
         this.viewableModel.setZoomWindowStart(viewableModel
                 .getZoomWindowStart());
         trackPainter.setViewableModel(this.viewableModel);
+        view.repaint();
     }
 
     public void setMoveable(boolean canMove) {
