@@ -446,7 +446,9 @@ public class TrackController {
                     fireCarriageOffsetChangeEvent(Math.round(newOffset), Math
                             .round(temporalPosition));
                 } else {
-                    if (Math.abs(newOffset - offsetInit) >= 2500) {
+                    final long threshold =
+                            (long) (0.04F * trackModel.getDuration());
+                    if (Math.abs(newOffset - offsetInit) >= threshold) {
                         fireCarriageOffsetChangeEvent(Math.round(newOffset),
                                 Math.round(temporalPosition));
                     }
