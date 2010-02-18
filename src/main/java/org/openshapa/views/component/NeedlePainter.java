@@ -70,7 +70,7 @@ public class NeedlePainter extends JComponent {
         }
 
         final long currentTime = needleModel.getCurrentTime();
-        // Don't paint if the needle is out of the current window
+        // Don't paint if the needle if it is out of the current window
         if ((currentTime < viewableModel.getZoomWindowStart())
                 || (viewableModel.getZoomWindowEnd() < currentTime)) {
             return;

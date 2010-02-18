@@ -2,10 +2,11 @@ package org.openshapa.views;
 
 import java.awt.Adjustable;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.util.EventObject;
 
 import javax.swing.BorderFactory;
@@ -41,7 +42,7 @@ import org.openshapa.models.component.ViewableModel;
  * This class manages the tracks information interface
  */
 public class MixerControllerV implements NeedleEventListener,
-        MarkerEventListener, CarriageEventListener {
+        MarkerEventListener, CarriageEventListener, AdjustmentListener {
 
     /** Root interface panel */
     private JPanel tracksPanel;
@@ -135,7 +136,7 @@ public class MixerControllerV implements NeedleEventListener,
 
         // Add the timescale
         timescaleController = new TimescaleController();
-        Component timescaleView = timescaleController.getView();
+        JComponent timescaleView = timescaleController.getView();
         {
             Dimension size = new Dimension();
             size.setSize(785, 35);
@@ -154,8 +155,8 @@ public class MixerControllerV implements NeedleEventListener,
         tracksScrollPane = new JScrollPane(tracksEditorController.getView());
         tracksScrollPane
                 .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        // tracksScrollPane
-        // .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        tracksScrollPane
+                .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         tracksScrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         // Set an explicit size of the scroll pane
@@ -170,7 +171,7 @@ public class MixerControllerV implements NeedleEventListener,
 
         // Create the region markers
         regionController = new RegionController();
-        Component regionView = regionController.getView();
+        JComponent regionView = regionController.getView();
         {
             Dimension size = new Dimension();
             size.setSize(785, 234);
@@ -187,7 +188,7 @@ public class MixerControllerV implements NeedleEventListener,
 
         // Create the timing needle
         needleController = new NeedleController();
-        Component needleView = needleController.getView();
+        JComponent needleView = needleController.getView();
         {
             Dimension size = new Dimension();
             size.setSize(785, 234); // 765
@@ -219,6 +220,10 @@ public class MixerControllerV implements NeedleEventListener,
             tracksScrollBar.setLocation(85, 234);
         }
         tracksScrollBar.setValues(0, 100000, 0, 100000);
+        tracksScrollBar.setUnitIncrement(1000);
+        tracksScrollBar.setBlockIncrement(10000);
+        tracksScrollBar.addAdjustmentListener(this);
+        tracksScrollBar.setValueIsAdjusting(false);
 
         layeredPane.add(tracksScrollBar, new Integer(100));
 
@@ -255,6 +260,7 @@ public class MixerControllerV implements NeedleEventListener,
         regionController.setViewableModel(model);
         needleController.setViewableModel(model);
         tracksEditorController.setViewableModel(model);
+        updateTracksScrollBar();
     }
 
     /**
@@ -279,6 +285,7 @@ public class MixerControllerV implements NeedleEventListener,
             needleController.setViewableModel(model);
             tracksEditorController.setViewableModel(model);
             rescale();
+            updateTracksScrollBar();
         }
 
         tracksEditorController.addNewTrack(mediaPath, trackName, duration,
@@ -335,6 +342,7 @@ public class MixerControllerV implements NeedleEventListener,
         }
 
         rescale();
+        updateTracksScrollBar();
     }
 
     /**
@@ -350,6 +358,7 @@ public class MixerControllerV implements NeedleEventListener,
         }
 
         rescale();
+        updateTracksScrollBar();
     }
 
     /**
@@ -360,6 +369,7 @@ public class MixerControllerV implements NeedleEventListener,
     public void zoomTracks(ActionEvent evt) {
         ViewableModel model = timescaleController.getViewableModel();
         tracksEditorController.setViewableModel(model);
+        updateTracksScrollBar();
     }
 
     /**
@@ -380,6 +390,8 @@ public class MixerControllerV implements NeedleEventListener,
         rescale();
         // Update zoomed tracks
         zoomTracks(null);
+
+        updateTracksScrollBar();
         // Update tracks panel display
         tracksScrollPane.validate();
     }
@@ -410,6 +422,8 @@ public class MixerControllerV implements NeedleEventListener,
 
         tracksPanel.validate();
         tracksPanel.repaint();
+
+        updateTracksScrollBar();
     }
 
     /**
@@ -462,6 +476,26 @@ public class MixerControllerV implements NeedleEventListener,
     }
 
     /**
+     * Update scroll bar values.
+     */
+    private void updateTracksScrollBar() {
+        ViewableModel model = timescaleController.getViewableModel();
+
+        /*
+         * Doing these calculations because setValues uses integers but our
+         * video lengths are longs.
+         */
+        int startValue =
+                (int) (((1F * model.getZoomWindowStart()) / (1F * model
+                        .getEnd())) * 100000F);
+        int extentValue =
+                (int) (((1F * (model.getZoomWindowEnd() - model
+                        .getZoomWindowStart())) / (1F * model.getEnd())) * 100000F);
+
+        tracksScrollBar.setValues(startValue, extentValue, 0, 100000);
+    }
+
+    /**
      * Handles the event for adding a temporal bookmark to selected tracks.
      */
     private void addBookmarkHandler() {
@@ -484,6 +518,27 @@ public class MixerControllerV implements NeedleEventListener,
             toggle.setText("Snap Off");
             tracksEditorController.setAllowSnap(false);
         }
+    }
+
+    public void adjustmentValueChanged(AdjustmentEvent e) {
+        int startValue = tracksScrollBar.getValue();
+        int endValue = startValue + tracksScrollBar.getVisibleAmount();
+
+        ViewableModel model = timescaleController.getViewableModel();
+        // Calculate the new window start and end
+        long newWindowStart =
+                (long) ((1F * startValue) / (100000F) * (1F * model.getEnd()));
+        long newWindowEnd =
+                (long) ((1F * endValue) / (100000F) * (1F * model.getEnd()));
+        model.setZoomWindowStart(newWindowStart);
+        model.setZoomWindowEnd(newWindowEnd);
+
+        timescaleController.setViewableModel(model);
+        regionController.setViewableModel(model);
+        needleController.setViewableModel(model);
+        tracksEditorController.setViewableModel(model);
+
+        tracksPanel.repaint();
     }
 
     /**
