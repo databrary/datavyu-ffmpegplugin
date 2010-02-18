@@ -610,12 +610,14 @@ implements ExternalColumnListListener, ComponentListener,
         for (SpreadsheetColumn col : this.getColumns()) {
             for (SpreadsheetCell cell : col.getCells()) {
                 cell.setSelected(false);
+                cell.setHighlighted(false);
             }
         }
     }
 
     public void addColumnToSelection(SpreadsheetColumn column) {
         this.clearCellSelection();
+        column.requestFocus();
     }
 
     public void clearColumnSelection() {

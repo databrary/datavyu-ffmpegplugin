@@ -18,6 +18,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
@@ -27,6 +29,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.MatteBorder;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
@@ -36,7 +40,7 @@ import org.openshapa.views.discrete.datavalues.TimeStampTextField;
  * Visual representation of a spreadsheet cell.
  */
 public class SpreadsheetCell extends JPanel
-implements ExternalDataCellListener, MouseListener {
+implements ExternalDataCellListener, MouseListener, FocusListener {
 
     /** The panel that displays the cell. */
     private JPanel cellPanel;
@@ -68,6 +72,9 @@ implements ExternalDataCellListener, MouseListener {
     /** selected state of cell. */
     private boolean selected = false;
 
+    /** Highlighted state of cell. */
+    private boolean highlighted = false;
+
     /** Component that sets the width of the cell. */
     private Filler stretcher;
 
@@ -85,27 +92,61 @@ implements ExternalDataCellListener, MouseListener {
     /** Onset has been processed and layout position calculated. */
     private boolean onsetProcessed = false;
 
+    /** Does this cell overlap another? */
+    private boolean cellOverlap = false;
+
     /** The spreadsheet cell selection listener. */
     private CellSelectionListener cellSelL;
 
+    /** Border to use when a cell is highlighted. */
+    private static final Border HIGHLIGHT_BORDER =
+        new CompoundBorder(
+            new MatteBorder(0, 0, 1, 0, Color.BLACK),
+            new MatteBorder(3, 3, 3, 3,
+                Configuration.getInstance().getSSSelectedColour()));
+
+    /** Border to use when a cell is highlighted and overlapping cell. */
+    private static final Border HIGHLIGHT_OVERLAP_BORDER =
+         new CompoundBorder(new CompoundBorder(
+            new MatteBorder(0, 0, 1, 0, Color.BLACK),
+            new MatteBorder(0, 0, 3, 0,
+                Configuration.getInstance().getSSOverlapColour())),
+            new MatteBorder(3, 3, 0, 3,
+                Configuration.getInstance().getSSSelectedColour()));
+
+    /** Border to use when a cell is selected. */
+    private static final Border FILL_BORDER =
+        new CompoundBorder(new CompoundBorder(
+            new MatteBorder(0, 0, 1, 0, Color.BLACK),
+            new MatteBorder(0, 0, 3, 0,
+                Configuration.getInstance().getSSSelectedColour())),
+            new MatteBorder(3, 3, 0, 3,
+                Configuration.getInstance().getSSSelectedColour()));
+
+    /** Border to use when a cell is selected. */
+    private static final Border FILL_OVERLAP_BORDER = HIGHLIGHT_OVERLAP_BORDER;
+
     /** Border to use for normal cell. No extra information to show. */
-    public static final Border NORMAL_BORDER =
-        BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK),
-                BorderFactory.createEmptyBorder(0, 3, 1, 2));
+    private static final Border NORMAL_BORDER =
+        new CompoundBorder(new CompoundBorder(
+            new MatteBorder(0, 0, 1, 0, Color.BLACK),
+            new MatteBorder(0, 0, 3, 0,
+                Configuration.getInstance().getSSBackgroundColour())),
+            new MatteBorder(3, 3, 0, 3,
+                Configuration.getInstance().getSSBackgroundColour()));
+
+    /** Border to use if cell overlaps with another. */
+    public static final Border OVERLAP_BORDER =
+        new CompoundBorder(new CompoundBorder(
+            new MatteBorder(0, 0, 1, 0, Color.BLACK),
+            new MatteBorder(0, 0, 3, 0,
+                Configuration.getInstance().getSSOverlapColour())),
+            new MatteBorder(3, 3, 0, 3,
+                Configuration.getInstance().getSSBackgroundColour()));
 
     /** Border to use for normal cell if there is no strut (abuts prev cell). */
     public static final Border STRUT_BORDER =
         BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK);
-
-    /** Border to use if cell overlaps with another. */
-    public static final Border OVERLAP_BORDER =
-        BorderFactory.createCompoundBorder(
-                BorderFactory.createCompoundBorder(
-                    BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK),
-                    BorderFactory.createMatteBorder(0, 0, 3, 0,
-                    Configuration.getInstance().getSSOverlapColour())),
-                BorderFactory.createEmptyBorder(0, 3, 1, 2));
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(SpreadsheetCell.class);
@@ -156,19 +197,24 @@ implements ExternalDataCellListener, MouseListener {
         topPanel.addMouseListener(this);
         ord = new JLabel();
         ord.setToolTipText(rMap.getString("ord.tooltip"));
+        ord.addMouseListener(this);
+        ord.setFocusable(true);
 
         setOrdinal(dc.getOrd());
 
         onset = new TimeStampTextField(dc, TimeStampSource.Onset);
         onset.setToolTipText(rMap.getString("onset.tooltip"));
+        onset.addFocusListener(this);
 
         offset = new TimeStampTextField(dc, TimeStampSource.Offset);
         offset.setToolTipText(rMap.getString("offset.tooltip"));
+        offset.addFocusListener(this);
 
         dataPanel = new MatrixRootView(dc, null);
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
         dataPanel.setMatrix(dc.getVal());
         dataPanel.setOpaque(false);
+        dataPanel.addFocusListener(this);
 
         // Set the appearance of the spreadsheet cell.
         cellPanel.setBackground(Configuration.getInstance()
@@ -363,16 +409,7 @@ implements ExternalDataCellListener, MouseListener {
         stretcher.changeShape(d, d, d);
     }
 
-    /**
-     * Set this cell as selected, a selected cell has a different appearance to
-     * an unselcted one (typically colour).
-     *
-     * @param sel The selection state of the cell, when true the cell is
-     * selected false otherwise.
-     */
-    public void setSelected(boolean sel) {
-        selected = sel;
-
+    private void selectCellInDB(boolean sel) {
         // Set the selection within the database.
         try {
             Cell cell = db.getCell(this.cellID);
@@ -383,10 +420,10 @@ implements ExternalDataCellListener, MouseListener {
                 dcell = (DataCell)db.getCell(((ReferenceCell)cell)
                                                                 .getTargetID());
             }
-            dcell.setSelected(selected);
+            dcell.setSelected(sel);
             cell.getDB().replaceCell(dcell);
 
-            if (selected) {
+            if (sel) {
                 // method names don't reflect usage - we didn't really create
                 // this cell just now.
                 OpenSHAPA.getProject().setLastCreatedColId(cell.getItsColID());
@@ -397,19 +434,73 @@ implements ExternalDataCellListener, MouseListener {
                          .setFindOffsetField(dcell.getOffset().getTime());
             }
         } catch (SystemErrorException e) {
-           logger.error("Failed clicking on SpreadsheetCell.", e);
+           logger.error("Failed selected cell in SpreadsheetCell.", e);
         }
+    }
+
+    /**
+     * Set this cell as highlighted, a highlighted cell has a difference
+     * appearance to unselected (or fill selected) cell.
+     *
+     * @param isHighlighted The highlighted state of the cell, true when
+     * the cell is highlighted false otherwise.
+     */
+    public void setHighlighted(boolean sel) {
+        highlighted = sel;
+        this.selectCellInDB(highlighted);
+
+        // Update the visual representation of the SpreadsheetCell.
+        if (highlighted) {
+            if (this.cellOverlap) {
+                cellPanel.setBorder(HIGHLIGHT_OVERLAP_BORDER);
+            } else {
+                cellPanel.setBorder(HIGHLIGHT_BORDER);
+            }
+        } else {
+            if (this.cellOverlap) {
+                cellPanel.setBorder(OVERLAP_BORDER);
+            } else {
+                cellPanel.setBorder(NORMAL_BORDER);
+            }
+        }
+    }
+
+    /**
+     * @return True if the cell is highlighted, false otherwise.
+     */
+    public boolean isHighlighted() {
+        return this.highlighted;
+    }
+
+    /**
+     * Set this cell as selected, a selected cell has a different appearance to
+     * an unselcted one (typically colour).
+     *
+     * @param sel The selection state of the cell, when true the cell is
+     * selected false otherwise.
+     */
+    public void setSelected(boolean sel) {
+        selected = sel;
+        this.selectCellInDB(selected);
 
         // Update the visual representation of the SpreadsheetCell.
         if (selected) {
+            if (this.cellOverlap) {
+                cellPanel.setBorder(FILL_OVERLAP_BORDER);
+            } else {
+                cellPanel.setBorder(FILL_BORDER);
+            }
             cellPanel.setBackground(Configuration.getInstance()
                                                  .getSSSelectedColour());
         } else {
+            if (this.cellOverlap) {
+                cellPanel.setBorder(OVERLAP_BORDER);
+            } else {
+                cellPanel.setBorder(NORMAL_BORDER);
+            }
             cellPanel.setBackground(Configuration.getInstance()
                                                  .getSSBackgroundColour());
         }
-
-        repaint();
     }
 
     /**
@@ -525,6 +616,18 @@ implements ExternalDataCellListener, MouseListener {
         }
         this.setSelected(!curSelected);
         this.cellSelL.addCellToSelection(this);
+        this.ord.requestFocus();
+    }
+
+    public void focusGained(FocusEvent e) {
+        // BugzID:320 - Deselect cells before selected cell contents.
+        this.cellSelL.clearCellSelection();
+        this.setHighlighted(true);
+        this.cellSelL.addCellToSelection(this);
+    }
+
+    public void focusLost(FocusEvent e) {
+        this.dataPanel.select(0, 0);
     }
 
     /**
@@ -592,10 +695,14 @@ implements ExternalDataCellListener, MouseListener {
 
     /**
      * Set the border of the cell.
-     * @param overlap true if the cell overlaps with the following cell.
+     *
+     * @param overlap true if the cell overlaps with the following cell,
+     * false otherwise.
      */
-    public void setOverlapBorder(boolean overlap) {
-        if (overlap) {
+    public void setOverlapBorder(final boolean overlap) {
+        this.cellOverlap = overlap;
+
+        if (this.cellOverlap) {
             cellPanel.setBorder(OVERLAP_BORDER);
         } else {
             cellPanel.setBorder(NORMAL_BORDER);

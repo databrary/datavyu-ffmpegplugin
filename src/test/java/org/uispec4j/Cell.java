@@ -197,6 +197,9 @@ public class Cell extends AbstractUIComponent {
 
         Key [] keys = {Key.TAB};
 
+        KeyUtils.enterKeys(getComponentByType(VALUE), keys);
+        KeyUtils.enterKeys(getComponentByType(VALUE), keys);
+
         for (String item : s) {
             KeyUtils.enterString(getComponentByType(VALUE), item);
             KeyUtils.enterKeys(getComponentByType(VALUE), keys);
