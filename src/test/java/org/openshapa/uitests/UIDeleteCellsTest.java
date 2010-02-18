@@ -16,7 +16,7 @@ import org.testng.annotations.Test;
 /**
  * Test for the Deletion of cells.
  */
-public class UIDeleteCellsTest extends OpenSHAPATestClass {
+public final class UIDeleteCellsTest extends OpenSHAPATestClass {
 
     /**
      * Test for Bug 713. Bug 713: If an extended selection includes the last
@@ -24,9 +24,6 @@ public class UIDeleteCellsTest extends OpenSHAPATestClass {
      * deleted and all related graphics are removed Actual: All cells appear to
      * be deleted but the cell graphics for the last cell are not removed.
      * Select cells in one column, delete, repeat.
-     * 
-     * @throws java.lang.Exception
-     *             on any error
      */
     @Test
     public void testBug713() {

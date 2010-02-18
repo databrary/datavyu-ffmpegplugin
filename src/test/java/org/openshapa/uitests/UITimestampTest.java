@@ -209,13 +209,15 @@ public final class UITimestampTest extends OpenSHAPATestClass {
 
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(mainFrameFixture.robot, (SpreadsheetPanel)jPanel.component());
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel)jPanel.component());
         Assert.assertNotNull(ssPanel.column(varName));
         ssPanel.column(varName).clickHeader();
 
         //2. Create new cells
         for (int i = 0; i < amount; i++) {
-            mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
+            mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell")
+                    .click();
         }
 
         return ssPanel.column(varName).allCells();

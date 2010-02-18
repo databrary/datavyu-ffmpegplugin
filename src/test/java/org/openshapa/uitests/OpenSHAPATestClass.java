@@ -25,17 +25,26 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 
-//@GUITest
+/**
+ * GUI Test class for OpenSHAPA.
+ * All OpenSHAPA Fest tests must extend this class.
+ * @author mmuthukrishna
+ */
 public class OpenSHAPATestClass {
 
+    /** Main Frame fixture for use by all tests. */
     protected FrameFixture mainFrameFixture;
 
+    /** Constructor nulls the mainFrame Fixture. */
     public OpenSHAPATestClass() {
         mainFrameFixture = null;
     }
 
+    /**
+     * Starts openSHAPA.
+     */
     @BeforeSuite
-    public void startApplication() {
+    protected final void startApplication() {
         System.err.println("Starting Application.");
         FrameFixture fixture;
 
@@ -51,10 +60,14 @@ public class OpenSHAPATestClass {
         // ScreenshotOnFailureListener sofl = new ScreenshotOnFailureListener();
     }
 
+    /**
+     * Restarts the application between tests.
+     * Achieves this by using File->New
+     */
     @AfterMethod
-    public void restartApplication() {
+    protected final void restartApplication() {
         System.err.println("restarting Application.");
-        FrameFixture mainFrameFixture = OpenSHAPAInstance.getFixture();
+        mainFrameFixture = OpenSHAPAInstance.getFixture();
 
         // Create a new project, this is for the discard changes dialog.
         if (Platform.isOSX()) {
@@ -72,13 +85,11 @@ public class OpenSHAPATestClass {
             // Do nothing
         }
 
-//         DialogFixture newDatabaseDialog = mainFrameFixture.dialog();
-
         // Get New Database dialog
         DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
                 new GenericTypeMatcher<JDialog>(JDialog.class) {
                     @Override
-                    protected boolean isMatching(JDialog dialog) {
+                    protected boolean isMatching(final JDialog dialog) {
                         return dialog.getClass().equals(NewProjectV.class);
                     }
                 }, Timeout.timeout(5, TimeUnit.SECONDS));
@@ -88,13 +99,15 @@ public class OpenSHAPATestClass {
         newDatabaseDialog.button("okButton").click();
     }
 
+    /** Releases application after all tests in suite are finished. */
     @AfterSuite
-    public void endApplication() {
+    public final void endApplication() {
         mainFrameFixture.cleanUp();
     }
 
+    /** Gets the OpenSHAPA Instance for each test. */
     @BeforeClass
-    public void newTestClass() {
+    public final void newTestClass() {
         System.err.println("Class starting");
         if (mainFrameFixture == null) {
             mainFrameFixture = OpenSHAPAInstance.getFixture();

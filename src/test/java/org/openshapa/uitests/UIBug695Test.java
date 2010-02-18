@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
  * Actual: "ve name in use" warning
  *
  */
-public class UIBug695Test extends OpenSHAPATestClass {
+public final class UIBug695Test extends OpenSHAPATestClass {
     /** Matrix element name. */
     public static final String MATELNAME = "matrix1";
 
@@ -32,16 +32,18 @@ public class UIBug695Test extends OpenSHAPATestClass {
 
         //1. Add matrix with vocab editor
 
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor")
+                .click();
 
         DialogFixture vocabEditor = mainFrameFixture.dialog();
 
         vocabEditor.button("addMatrixButton").click();
 
         //2. Confirm matrix exists in vocab editor and spreadsheet
-        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(JTextComponent.class) {
+        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
+                JTextComponent.class) {
              @Override
-                    protected boolean isMatching(JTextComponent vocEl) {
+                    protected boolean isMatching(final JTextComponent vocEl) {
                         return vocEl.getText().startsWith("matrix1");
                     }
         });
@@ -49,30 +51,35 @@ public class UIBug695Test extends OpenSHAPATestClass {
         vocabEditor.button("okButton").click();
 
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(mainFrameFixture.robot, (SpreadsheetPanel)jPanel.component());
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
         Assert.assertNotNull(ssPanel.column(MATELNAME));
 
         //3. Delete matrix column in spreadsheet
         ssPanel.column(MATELNAME).header().click();
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Variable").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Variable")
+                .click();
 
         //4. Confirm matrix deleted in vocab editor and spreadsheet
         boolean doesNotExist = false;
         try {
-            Assert.assertFalse(ssPanel.panel("headerView").label().text().startsWith(MATELNAME));
+            Assert.assertFalse(ssPanel.panel("headerView").label().text()
+                    .startsWith(MATELNAME));
         } catch (Exception e) {
             doesNotExist = true;
         }
         Assert.assertTrue(doesNotExist);
 
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor")
+                .click();
 
         vocabEditor = mainFrameFixture.dialog();
         doesNotExist = false;
         try {
-            vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(JTextComponent.class) {
+            vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
+                    JTextComponent.class) {
              @Override
-                    protected boolean isMatching(JTextComponent vocEl) {
+                    protected boolean isMatching(final JTextComponent vocEl) {
                         return vocEl.getText().startsWith(MATELNAME);
                     }
         });
@@ -80,23 +87,24 @@ public class UIBug695Test extends OpenSHAPATestClass {
             doesNotExist = true;
         }
         Assert.assertTrue(doesNotExist);
-        
+
         //5. Add matrix again with vocab editor
         vocabEditor.button("addMatrixButton").click();
-        
-        //6. Confirm matrix in spreadsheet and vocab editorwill fail if can not find
-         vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(JTextComponent.class) {
+
+        //6. Confirm matrix in spreadsheet and vocab editorwill fail
+        //if can not find
+         vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
+                 JTextComponent.class) {
              @Override
-                    protected boolean isMatching(JTextComponent vocEl) {
+                    protected boolean isMatching(final JTextComponent vocEl) {
                         return vocEl.getText().startsWith(MATELNAME);
                     }
          });
         vocabEditor.button("okButton").click();
 
-//        ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-//        ssPanel.panel("headerView").header().text().startsWith(MATELNAME);
         jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        ssPanel = new SpreadsheetPanelFixture(mainFrameFixture.robot, (SpreadsheetPanel)jPanel.component());
+        ssPanel = new SpreadsheetPanelFixture(mainFrameFixture.robot, (
+                SpreadsheetPanel) jPanel.component());
         Assert.assertNotNull(ssPanel.column(MATELNAME));
-    }   
+    }
 }

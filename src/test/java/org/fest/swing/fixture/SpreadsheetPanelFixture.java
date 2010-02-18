@@ -13,18 +13,31 @@ import org.openshapa.views.discrete.SpreadsheetColumn;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
- * @author mmuthukrishna
+ * Fixture for the Spreadsheet panel.
  */
 public class SpreadsheetPanelFixture extends JPanelFixture {
 
-    SpreadsheetPanel ssPanel;
+    /** Underlying Spreadsheet panel. */
+    private SpreadsheetPanel ssPanel;
 
-    public SpreadsheetPanelFixture(Robot robot, SpreadsheetPanel target) {
+    /**
+     * Constructor.
+     * @param robot main frame fixture robot
+     * @param target underlying spreadsheet panel
+     */
+    public SpreadsheetPanelFixture(final Robot robot,
+            final SpreadsheetPanel target) {
         super(robot, target);
-        ssPanel = target;
+        ssPanel = (SpreadsheetPanel)this.target;
     }
 
-    public SpreadsheetColumnFixture column(int column) {
+    /**
+     * Returns fixture for Spreadsheet Column based on column order.
+     * (left to right).
+     * @param column int of column number, starting at 0 from left.
+     * @return SpreadsheetColumnFixture for column, null if not found.
+     */
+    public final SpreadsheetColumnFixture column(final int column) {
         Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();
 
         int count = 0;
@@ -37,7 +50,12 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
         return null;
     }
 
-    public SpreadsheetColumnFixture column(String columnName) {
+    /**
+     * Returns fixture for Spreadsheet Column based on column variable name.
+     * @param columnName name of column variable
+     * @return SpreadsheetColumnFixture for column, null if not found.
+     */
+    public final SpreadsheetColumnFixture column(final String columnName) {
         Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();
 
         for (SpreadsheetColumn c : ssCols) {
@@ -52,7 +70,11 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
         return null;
     }
 
-    public Vector<SpreadsheetColumnFixture> allColumns() {
+    /**
+     * Vector of fixtures for all spreadsheet columns.
+     * @return Vector all Spreadsheet columns
+     */
+    public final Vector<SpreadsheetColumnFixture> allColumns() {
         Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();
         Vector<SpreadsheetColumnFixture> result =
                 new Vector<SpreadsheetColumnFixture>();
@@ -63,11 +85,18 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
         return result;
     }
 
-    public int numOfColumns() {
+    /**
+     * number of columns in spreadsheet.
+     * @return int of number of columns in spreadsheet.
+     */
+    public final int numOfColumns() {
         return ssPanel.getColumns().size();
     }
 
-    public void deselectAll() {
+    /**
+     * Deselects all cells in spreadsheet.
+     */
+    public final void deselectAll() {
         ssPanel.deselectAll();
     }
 }

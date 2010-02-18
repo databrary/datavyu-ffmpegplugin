@@ -17,7 +17,7 @@ import org.testng.annotations.Test;
  * Example: 999999999999999999-239839231-2398392310820831
  * Pressing -ve on such a number results in unpredictable behaviour.
  */
-public class UIBug497Test extends OpenSHAPATestClass {
+public final class UIBug497Test extends OpenSHAPATestClass {
 
     /**
      * Bug 497 integer test.
@@ -25,7 +25,7 @@ public class UIBug497Test extends OpenSHAPATestClass {
     @Test
     public void testBug497Integer() {
         System.err.println("testBug497Integer");
-        String varName = "intVar";
+        String varName = "i";
         String varType = "INTEGER";
         String varRadio = varType.toLowerCase() + "TypeButton";
 
@@ -49,7 +49,8 @@ public class UIBug497Test extends OpenSHAPATestClass {
 
         //b. Paste text
         UIUtils.setClipboard(testInput);
-        JTextComponentFixture cell = mainFrameFixture.textBox(JTextComponentMatcher.withText("<val>"));
+        JTextComponentFixture cell = mainFrameFixture.textBox(
+                JTextComponentMatcher.withText("<val>"));
         cell.click();
         cell.pressAndReleaseKey(KeyPressInfo.keyCode(
                 KeyEvent.VK_V).modifiers(Platform.controlOrCommandMask()));
@@ -64,7 +65,7 @@ public class UIBug497Test extends OpenSHAPATestClass {
     @Test
     public void testBug497Float() {
         System.err.println("testBug497Float");
-        String varName = "floatVar";
+        String varName = "f";
         String varType = "FLOAT";
         String varRadio = varType.toLowerCase() + "TypeButton";
 
@@ -88,7 +89,8 @@ public class UIBug497Test extends OpenSHAPATestClass {
 
         //b. Paste text
         UIUtils.setClipboard(testInput);
-        JTextComponentFixture cell = mainFrameFixture.textBox(JTextComponentMatcher.withText("<val>"));
+        JTextComponentFixture cell = mainFrameFixture.textBox(
+                JTextComponentMatcher.withText("<val>"));
         cell.click();
         cell.pressAndReleaseKey(KeyPressInfo.keyCode(
                 KeyEvent.VK_V).modifiers(Platform.controlOrCommandMask()));

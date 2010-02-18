@@ -15,7 +15,7 @@ import org.testng.annotations.Test;
  * Test for Bug 493: Pasting and pressing Enter used to create 2 new lines
  * instead of one.
  */
-public class UIBug493Test extends OpenSHAPATestClass {
+public final class UIBug493Test extends OpenSHAPATestClass {
 
     /**
      * Bug 493 test.
@@ -23,7 +23,7 @@ public class UIBug493Test extends OpenSHAPATestClass {
     @Test
     public void testBug493() {
         System.err.println("testBug493");
-        String varName = "textVar";
+        String varName = "t";
         String varType = "TEXT";
         String varRadio = varType.toLowerCase() + "TypeButton";
 
@@ -46,11 +46,13 @@ public class UIBug493Test extends OpenSHAPATestClass {
         for (int i = 0; i < testInput.length; i++) {
             //a. Create cell
             column.click();
-            mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
+            mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell")
+                    .click();
 
             //b. Paste text
             UIUtils.setClipboard(testInput[i]);
-            JTextComponentFixture cell = mainFrameFixture.textBox(JTextComponentMatcher.withText("<val>"));
+            JTextComponentFixture cell = mainFrameFixture.textBox(
+                    JTextComponentMatcher.withText("<val>"));
             cell.click();
             cell.pressAndReleaseKey(KeyPressInfo.keyCode(
                     KeyEvent.VK_V).modifiers(Platform.controlOrCommandMask()));

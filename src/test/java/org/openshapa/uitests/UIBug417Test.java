@@ -20,13 +20,13 @@ import org.testng.annotations.Test;
  * already existing variables.
  * Also make sure variations of reserved vocabulary are allowed.
  */
-public class UIBug417Test extends OpenSHAPATestClass {
+public final class UIBug417Test extends OpenSHAPATestClass {
 
     /**
      * Different cell variable types.
      */
     private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-            "NOMINAL", "MATRIX", "FLOAT" };
+            "NOMINAL", "MATRIX", "FLOAT"};
 
      /**
      * Resource map to access error messages in resources.
@@ -36,13 +36,13 @@ public class UIBug417Test extends OpenSHAPATestClass {
                                       .getResourceMap(Column.class);
 
      /**
-     * Test creating a variable with the same name
+     * Test creating a variable with the same name.
      * Type is selected randomly since it should not affect this
      */
     @Test
     public void testDuplicateName() {
         System.err.println("testDuplicateName");
-        String varName = "textVar";
+        String varName = "v";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
@@ -78,8 +78,8 @@ public class UIBug417Test extends OpenSHAPATestClass {
 
         JOptionPaneFixture warning = newVariableDialog.optionPane();
         warning.requireTitle("Warning:");
-        Assert.assertNotNull(warning.label().text());
-        Assert.assertTrue(warning.label().text().length() > 1);
+        Assert.assertNotNull(warning.label("OptionPane.label").text());
+        Assert.assertTrue(warning.label("OptionPane.label").text().length() > 1);
         warning.requireMessage(rMap.getString("Error.exists", varName));
         warning.buttonWithText("OK").click();
     }
@@ -118,8 +118,8 @@ public class UIBug417Test extends OpenSHAPATestClass {
 
         JOptionPaneFixture warning = newVariableDialog.optionPane();
         warning.requireTitle("Warning:");
-        Assert.assertNotNull(warning.label().text());
-        Assert.assertTrue(warning.label().text().length() > 1);
+        Assert.assertNotNull(warning.label("OptionPane.label").text());
+        Assert.assertTrue(warning.label("OptionPane.label").text().length() > 1);
         warning.requireMessage(rMap.getString("Error.system", varName));
         warning.buttonWithText("OK").click();
     }
@@ -158,8 +158,8 @@ public class UIBug417Test extends OpenSHAPATestClass {
 
         JOptionPaneFixture warning = newVariableDialog.optionPane();
         warning.requireTitle("Warning:");
-        Assert.assertNotNull(warning.label().text());
-        Assert.assertTrue(warning.label().text().length() > 1);
+        Assert.assertNotNull(warning.label("OptionPane.label").text());
+        Assert.assertTrue(warning.label("OptionPane.label").text().length() > 1);
         warning.requireMessage(rMap.getString("Error.invalid", varName));
         warning.buttonWithText("OK").click();
     }

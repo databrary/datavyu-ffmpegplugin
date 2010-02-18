@@ -20,8 +20,7 @@ public final class UIBug309Test extends OpenSHAPATestClass {
      * Different possible cell types.
      */
     private static final String [] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
-    };
+        "NOMINAL", "MATRIX", "FLOAT"};
 
     /**
      * Test creating a new variable. Test to see if the user can press enter
@@ -33,7 +32,7 @@ public final class UIBug309Test extends OpenSHAPATestClass {
     public void testEnterInsteadOfClicking() throws Exception {
         System.err.println("testEnterInsteadOfClicking");
 
-        String varName = "t";
+        String varName = "v";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";
 
@@ -67,7 +66,7 @@ public final class UIBug309Test extends OpenSHAPATestClass {
         variableValueTextBox.pressAndReleaseKey(KeyPressInfo
                                                 .keyCode(KeyEvent.VK_ENTER));
 
-        // 2. Check that the column has been created        
+        // 2. Check that the column has been created
         ssPanel.panel("headerView").label().text().startsWith(varName);
     }
 }

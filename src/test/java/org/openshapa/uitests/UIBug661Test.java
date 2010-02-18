@@ -16,10 +16,9 @@ public final class UIBug661Test extends OpenSHAPATestClass {
      * Open a file and maybe check what open dialog opens to.
      * @param openFile file to open
      * @param currDirectory currDirectory or null if not testing
-     * @throws Exception on any error
      */
     private void fileLocationTest(final String openFile,
-            final String currDirectory) throws Exception {
+            final String currDirectory) {
         String root = System.getProperty("testPath") + "ui/";
         File openCSV = new File(root + openFile);
         Assert.assertTrue(openCSV.exists());
@@ -59,15 +58,14 @@ public final class UIBug661Test extends OpenSHAPATestClass {
             JFileChooserFixture openDialog = mainFrameFixture.fileChooser();
             openDialog.selectFile(openCSV).approve();
         }
-        
-        
     }
-    
+
     /**
      * Tests open dialog location.
+     *
      */
     @Test
-    public void testDialogLocation() throws Exception {
+    public void testDialogLocation() {
         System.err.println("testDialogLocation");
         //Delete confounding files from previous test
         String root = System.getProperty("testPath");

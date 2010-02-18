@@ -58,7 +58,8 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         scriptConsole.button("closeButton").click();
 
         //2. Check that variable list is populated with correct data
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List")
+                .click();
 
         DialogFixture vlDialog = mainFrameFixture.dialog();
 
@@ -67,11 +68,14 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
-        Assert.assertEquals(vlDialog.table().rowCount(), ssPanel.allColumns().size());
+        Assert.assertEquals(vlDialog.table().rowCount(), ssPanel.allColumns()
+                .size());
 
         for (int i = 0; i < ssPanel.allColumns().size(); i++) {
-            Assert.assertTrue(inTable(ssPanel.allColumns().elementAt(i).getColumnName(), vlDialog.table(), 1));
-            Assert.assertTrue(inTable(ssPanel.allColumns().elementAt(i).getColumnType(), vlDialog.table(), 2));
+            Assert.assertTrue(inTable(ssPanel.allColumns().elementAt(i)
+                    .getColumnName(), vlDialog.table(), 1));
+            Assert.assertTrue(inTable(ssPanel.allColumns().elementAt(i)
+                    .getColumnType(), vlDialog.table(), 2));
         }
     }
 
@@ -85,8 +89,10 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         String [] varTypes = {"text", "predicate", "integer", "nominal",
         "matrix", "float"};
 
-        //1. Create a new variable, then check that variable list is populated with correct data
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List").click();
+        //1. Create a new variable, then check that variable list is
+        //populated with correct data
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List")
+                .click();
 
         DialogFixture vlDialog = mainFrameFixture.dialog();
 
@@ -94,23 +100,25 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
 
         SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        
+
         int numCols = 0;
 
         for (int i = 0; i < varNames.length; i++) {
-            UIUtils.createNewVariable(mainFrameFixture, varNames[i], varTypes[i]);
+            UIUtils.createNewVariable(mainFrameFixture, varNames[i],
+                    varTypes[i]);
             numCols++;
             //Check that variable list is populated with correct data
             Assert.assertEquals(ssPanel.allColumns().size(), numCols);
-            Assert.assertEquals(vlDialog.table().rowCount(), ssPanel.allColumns().size());
+            Assert.assertEquals(vlDialog.table().rowCount(), ssPanel
+                    .allColumns().size());
 
             for (int j = 0; j < ssPanel.allColumns().size(); j++) {
-                Assert.assertTrue(inTable(ssPanel.allColumns().elementAt(j).getColumnName(), vlDialog.table(), 1));
-                Assert.assertTrue(inTable(ssPanel.allColumns().elementAt(j).getColumnType(), vlDialog.table(), 2));
+                Assert.assertTrue(inTable(ssPanel.allColumns().elementAt(j)
+                        .getColumnName(), vlDialog.table(), 1));
+                Assert.assertTrue(inTable(ssPanel.allColumns().elementAt(j)
+                        .getColumnType(), vlDialog.table(), 2));
             }
         }
-
-        
     }
 
     /**
@@ -134,7 +142,8 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         scriptConsole.button("closeButton").click();
 
         //2. Check that variable list is populated
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List")
+                .click();
 
         DialogFixture vlDialog = mainFrameFixture.dialog();
 
@@ -143,7 +152,8 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
-        Assert.assertEquals(vlDialog.table().rowCount(), ssPanel.allColumns().size());
+        Assert.assertEquals(vlDialog.table().rowCount(), ssPanel.allColumns()
+                .size());
 
         //3. Create new database (and discard unsaved changes)
         if (Platform.isOSX()) {
@@ -164,7 +174,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
                 new GenericTypeMatcher<JDialog>(JDialog.class) {
                     @Override
-                    protected boolean isMatching(JDialog dialog) {
+                    protected boolean isMatching(final JDialog dialog) {
                         return dialog.getClass().equals(NewProjectV.class);
                     }
                 }, Timeout.timeout(5, TimeUnit.SECONDS));
@@ -174,7 +184,8 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         newDatabaseDialog.button("okButton").click();
 
         //4. Check that variable list is empty
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List")
+                .click();
 
         vlDialog = mainFrameFixture.dialog();
         Assert.assertTrue(vlDialog.table().rowCount() == 0);
@@ -183,7 +194,8 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Because variable list is not in order, checks if String is in a Table column.
+     * Because variable list is not in order, checks if String is in a
+     * Table column.
      * @param item String to find
      * @param t Table to look in
      * @param col Column number

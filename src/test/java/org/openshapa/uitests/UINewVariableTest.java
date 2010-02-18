@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 /**
  * Test for the New Variable window.
  */
-public class UINewVariableTest extends OpenSHAPATestClass {
+public final class UINewVariableTest extends OpenSHAPATestClass {
 
     /**
      * Test creating a new TEXT variable.
@@ -84,7 +84,7 @@ public class UINewVariableTest extends OpenSHAPATestClass {
      * Test creating a new FLOAT variable.
      */
     @Test
-    public void testFloatVariable() throws Exception {
+    public void testFloatVariable() {
         System.err.println("testFloatVariable");
         String varName = "float var";
         String varType = "FLOAT";
@@ -94,22 +94,30 @@ public class UINewVariableTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Creates a new variable and checks that it has been created
+     * Creates a new variable and checks that it has been created.
+     * @param varName variable name
+     * @param varType variable type
      */
-    private void validateVariableType(final String varName, final String varType) {
+    private void validateVariableType(final String varName,
+            final String varType) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
         // 1. Create new variable
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Variable").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Variable")
+                .click();
         DialogFixture newVariableDialog = mainFrameFixture.dialog();
         newVariableDialog.requireVisible();
-        JTextComponentFixture variableValueTextBox = newVariableDialog.textBox();
+        JTextComponentFixture variableValueTextBox = newVariableDialog
+                .textBox();
         variableValueTextBox.requireEmpty();
         variableValueTextBox.requireEditable();
         variableValueTextBox.enterText(varName);
-        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton").click();
-        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton").requireSelected();
+        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
+                .click();
+        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
+                .requireSelected();
         newVariableDialog.button("okButton").click();
 
         //2. Check that column has been created

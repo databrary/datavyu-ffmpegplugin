@@ -28,31 +28,33 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * Nominal test input.
      */
     private String[] nominalTestInput =
-            { "Subject stands )up ", "$10,432", "Hand me (the manual!",
-                    "Tote_that_bale", "Jeune; fille celebre", "If x>7 then x|2" };
+            {"Subject stands )up ", "$10,432", "Hand me (the manual!",
+                    "Tote_that_bale", "Jeune; fille celebre",
+                    "If x>7 then x|2"};
 
     /**
      * Text test input.
      */
     private String[] textTestInput =
-            { "Subject stands up ", "$10,432", "Hand me the manual!",
-                    "Tote_that_bale", "Jeune fille celebre", "If x?7 then x? 2" };
+            {"Subject stands up ", "$10,432", "Hand me the manual!",
+                    "Tote_that_bale", "Jeune fille celebre",
+                    "If x?7 then x? 2" };
 
     /**
      * Integer test input.
      */
     private String[] integerTestInput =
-            { "1a9", "10-432", "!28.9(", "178&", "~~~)", "If x?7 then x? 2 ",
-                    "99999999999999999999", "000389.5", "-", "-0", "-123" };
+            {"1a9", "10-432", "!28.9(", "178&", "~~~)", "If x?7 then x? 2 ",
+                    "99999999999999999999", "000389.5", "-", "-0", "-123"};
 
     /**
      * Float test input.
      */
     private String[] floatTestInput =
-            { "1a.9", "10-43.2", "!289(", "178.&", "0~~~)",
+            {"1a.9", "10-43.2", "!289(", "178.&", "0~~~)",
                     "If x?7 then. x? 2 ", "589.138085638", "000389.5", "-0.1",
                     "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34",
-                    "-123" };
+                    "-123"};
 
     /**
      * The size of each dimesion of the advanced mixed matrix test.
@@ -61,41 +63,35 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Test creating a new NOMINAL cell.
-     * 
-     * @throws java.lang.Exception
-     *             on any error
      */
     @Test
     public void testNewNominalCell() {
-        String varName = "nomVar";
+        String varName = "n";
         String varType = "nominal";
 
         String[] expectedNominalTestOutput =
-                { "Subject stands up", "$10432", "Hand me the manual!",
+                {"Subject stands up", "$10432", "Hand me the manual!",
                         "Tote_that_bale", "Jeune fille celebre",
-                        "If x7 then x2" };
+                        "If x7 then x2"};
 
         // 1. Create new variable
-        createVariable(varName, varType);
+        UIUtils.createNewVariable(mainFrameFixture, varName, varType);
 
         runStandardTest(varName, nominalTestInput, expectedNominalTestOutput);
     }
 
     /**
      * Test pasting in Nominal cell.
-     * 
-     * @throws java.lang.Exception
-     *             on any error
      */
     @Test
     public void testNominalPasting() {
-        String varName = "nomVar";
+        String varName = "n";
         String varRadio = "nominal";
 
         String[] expectedNominalTestOutput =
-                { "Subject stands up ", "$10432", "Hand me the manual!",
+                {"Subject stands up ", "$10432", "Hand me the manual!",
                         "Tote_that_bale", "Jeune fille celebre",
-                        "If x7 then x2" };
+                        "If x7 then x2"};
 
         pasteTest(varName, varRadio, nominalTestInput,
                 expectedNominalTestOutput);
@@ -103,25 +99,23 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Test creating a new NOMINAL cell with more advanced input.
-     * 
-     * @throws java.lang.Exception
-     *             on any error
+     * BugzID:1203
      */
-    // @Test
-    public void testNewAdvancedNominalCell() throws Exception {
-        String varName = "nomVar";
+    //@Test
+    public void testNewAdvancedNominalCell() {
+        String varName = "n";
         String varRadio = "nominal";
 
         // advanced Input will be provided between testInput
         int[][] advancedInput =
                 {
-                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
-                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT },
-                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
-                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
+                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
+                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
+                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
+                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_DELETE, KeyEvent.VK_RIGHT },
-                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
+                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
@@ -136,11 +130,11 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                                 KeyEvent.VK_BACK_SPACE } };
 
         String[] expectedTestOutput =
-                { "Subject stands u$10432p ", "$1043Hand me the manual!2",
+                {"Subject stands u$10432p ", "$1043Hand me the manual!2",
                         "Hand me the manuaTote_that_balel",
                         "Tote_that_aJeune fille celebrel", "If x7 then x2" };
 
-        createVariable(varName, varRadio);
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
         runAdvancedTest(varName, nominalTestInput, advancedInput,
                 expectedTestOutput);
@@ -148,32 +142,26 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Test creating a new TEXT cell.
-     * 
-     * @throws java.lang.Exception
-     *             on any error
      */
     @Test
-    public void testNewTextCell() throws Exception {
-        String varName = "textVar";
+    public void testNewTextCell() {
+        String varName = "t";
         String varRadio = "text";
 
         String[] expectedTestOutput = textTestInput;
 
         // 1. Create new TEXT variable,
-        createVariable(varName, varRadio);
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
         runStandardTest(varName, textTestInput, expectedTestOutput);
     }
 
     /**
      * Test pasting in TEXT cell.
-     * 
-     * @throws java.lang.Exception
-     *             on any error
      */
     @Test
-    public void testTextPasting() throws Exception {
-        String varName = "textVar";
+    public void testTextPasting() {
+        String varName = "t";
         String varRadio = "text";
 
         String[] expectedTestOutput = textTestInput;
@@ -182,50 +170,44 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Test pasting in INTEGER cell.
-     * 
-     * @throws java.lang.Exception
-     *             on any error
      */
     @Test
-    public void testIntegerPasting() throws Exception {
-        String varName = "intVar";
+    public void testIntegerPasting() {
+        String varName = "i";
         String varRadio = "integer";
 
         String[] expectedTestOutput =
-                { "19", "-43210", "289", "178", "<val>", "72",
+                {"19", "-43210", "289", "178", "<val>", "72",
                         "999999999999999999", "3895", "-", "0", "-123" };
         pasteTest(varName, varRadio, integerTestInput, expectedTestOutput);
     }
 
     /**
      * Test creating a new TEXT cell with more advanced input.
-     * 
-     * @throws java.lang.Exception
-     *             on any error
      */
-    // @Test
-    public void testNewAdvancedTextCell() throws Exception {
-        String varName = "textVar";
+    @Test
+    public void testNewAdvancedTextCell() {
+        String varName = "t";
         String varRadio = "text";
 
         // advanced Input will be provided between testInput
         int[][] advancedInput =
                 {
-                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
-                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT },
-                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
-                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
+                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
+                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
+                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
+                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_DELETE, KeyEvent.VK_RIGHT },
-                        { KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT } };
+                        {KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT } };
 
         String[] advancedExpectedOutput =
-                { "Subject stands u$10,432p ", "$10,43Hand me the manual!2",
+                {"Subject stands u$10,432p ", "$10,43Hand me the manual!2",
                         "Hand me the manuaTote_that_balel",
                         "Tote_that_aJeune fille celebrel",
                         "Jeune fille celebreIf x?7 then x? 2" };
 
-        createVariable(varName, varRadio);
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
         runAdvancedTest(varName, textTestInput, advancedInput,
                 advancedExpectedOutput);
@@ -233,38 +215,34 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Test creating a new FLOAT cell.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
     @Test
     public void testNewFloatCell() throws Exception {
-        String varName = "floatVar";
+        String varName = "f";
         String varRadio = "float";
 
         String[] expectedTestOutput =
-                { "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
                         "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
                         "-23.34", "0.34", "12.34", "-123" };
 
-        createVariable(varName, varRadio);
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
         runStandardTest(varName, floatTestInput, expectedTestOutput);
     }
 
     /**
      * Test pasting with INTEGER cell.
-     * 
-     * @throws java.lang.Exception
-     *             on any error
      */
     @Test
-    public void testFloatPasting() throws Exception {
-        String varName = "floatVar";
+    public void testFloatPasting() {
+        String varName = "f";
         String varRadio = "float";
 
         String[] expectedTestOutput =
-                { "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
                         "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
                         "-23.34", "0.34", "12.34", "-123" };
 
@@ -273,32 +251,30 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Test creating a new FLOAT cell with advanced input.
-     * 
-     * @throws java.lang.Exception
-     *             on any error
+     * BugzID:1201
      */
     // @Test
-    public void testNewAdvancedFloatCell() throws Exception {
-        String varName = "floatVar";
+    public void testNewAdvancedFloatCell() {
+        String varName = "f";
         String varRadio = "float";
 
         String[] testInput =
-                { "1a.9", "10-43.2", "!289(", "178.&", "0~~~)",
+                {"1a.9", "10-43.2", "!289(", "178.&", "0~~~)",
                         "If x?7 then.- x? 8", "-589.138085638", "12.3" };
 
         int[][] advancedInput =
                 {
-                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
-                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT },
-                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
-                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
+                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
+                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
+                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
+                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_DELETE, KeyEvent.VK_RIGHT },
-                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
+                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE },
-                        { KeyEvent.VK_RIGHT },
-                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
+                        {KeyEvent.VK_RIGHT },
+                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
@@ -331,65 +307,63 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // KeyEvent.VK_LEFT } };
 
         String[] expectedTestOutput =
-                { "-43.21019", "-43.289210", "2178.8", "7", "-87",
+                {"-43.21019", "-43.289210", "2178.8", "7", "-87",
                         "589.138085", "-589.138085" };
 
-        createVariable(varName, varRadio);
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
         runAdvancedTest(varName, testInput, advancedInput, expectedTestOutput);
     }
 
     /**
      * Test creating a new INTEGER cell.
-     * 
-     * @throws java.lang.Exception
-     *             on any error
      */
     @Test
-    public void testNewIntegerCell() throws Exception {
-        String varName = "intVar";
+    public void testNewIntegerCell() {
+        String varName = "i";
         String varRadio = "integer";
 
         String[] expectedTestOutput =
-                { "19", "-43210", "289", "178", "<val>", "72",
+                {"19", "-43210", "289", "178", "<val>", "72",
                         "999999999999999999", "3895", "<val>", "0", "-123" };
 
-        createVariable(varName, varRadio);
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
         runStandardTest(varName, integerTestInput, expectedTestOutput);
     }
 
     /**
      * Test creating a new INTEGER cell with advanced input.
+     * BugzID:1202
      */
     // @Test
     public void testNewAdvancedIntegerCell() {
-        String varName = "intVar";
+        String varName = "i";
         String varRadio = "integer";
 
         String[] testInput =
-                { "1a9", "10-432", "!289(", "178&", "If x?7. then x? 2",
+                {"1a9", "10-432", "!289(", "178&", "If x?7. then x? 2",
                         "17-8&", "()12.3" };
 
         // advanced Input will be provided between testInput
         int[][] advancedInput =
                 {
-                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
-                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT },
-                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
-                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
+                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
+                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
+                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
+                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_DELETE, KeyEvent.VK_RIGHT },
-                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
+                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
-                                KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE },
-                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
+                                KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE},
+                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT } };
 
         String[] expectedTestOutput =
-                { "-4321019", "-43289210", "21788", "772", "-817", "-817" };
+                {"-4321019", "-43289210", "21788", "772", "-817", "-817" };
 
-        createVariable(varName, varRadio);
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
         runAdvancedTest(varName, testInput, advancedInput, expectedTestOutput);
     }
@@ -397,7 +371,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    // @Test
+    @Test
     public void testNewMatrixCellSingleArgNominal() {
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
@@ -414,10 +388,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2. Test single cell types
         // Test nominal
-        String varName = "matrixNominal1";
+        String varName = "mN1";
 
         String[] expectedNominalTestOutput =
-                { "Subject stands up", "$10432", "Hand me the manual!",
+                {"Subject stands up", "$10432", "Hand me the manual!",
                         "Tote_that_bale", "Jeune fille celebre",
                         "If x7 then x2" };
 
@@ -427,6 +401,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Test creating a new MATRIX cell.
+     * BugzID:1198
      */
     // @Test
     public void testNewMatrixCellSingleArgFloat() {
@@ -445,10 +420,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2. Test single cell types
         // Test integer
-        String varName = "matrixFloat1";
+        String varName = "mF1";
 
         String[] expectedFloatTestOutput =
-                { "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
                         "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
                         "-23.34", "0.34", "12.34", "-123" };
 
@@ -458,6 +433,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Test creating a new MATRIX cell.
+     * BugzID:1199
      */
     // @Test
     public void testNewMatrixCellSingleArgInteger() {
@@ -476,10 +452,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2. Test single cell types
         // Test integer
-        String varName = "matrixInteger1";
+        String varName = "mI1";
 
         String[] expectedIntTestOutput =
-                { "19", "-43210", "289", "178", "<int>", "72",
+                {"19", "-43210", "289", "178", "<int>", "72",
                         "999999999999999999", "3895", "<int>", "0", "-123" };
 
         runStandardTest(varName, integerTestInput, expectedIntTestOutput,
@@ -488,6 +464,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Test creating a new MATRIX cell.
+     * BugzID:1199
      */
     // @Test
     public void testNewMatrixCellDoubleArgInteger() {
@@ -505,10 +482,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         scriptConsole.button("closeButton").click();
 
         // 2. Test double cell type
-        String varName = "matrixInteger2";
+        String varName = "mI2";
 
         String[] expectedInt2TestOutput =
-                { "19", "-43210", "289", "178", "<int1>", "72",
+                {"19", "-43210", "289", "178", "<int1>", "72",
                         "999999999999999999", "3895", "<int1>", "0", "-123" };
 
         int numOfTests = integerTestInput.length;
@@ -524,14 +501,16 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
-                new String[expectedInt2TestOutput.length][expectedInt2TestOutput.length][2];
+                new String[expectedInt2TestOutput.length]
+                [expectedInt2TestOutput.length][2];
 
         String[] expectedInt2bTempOutput =
-                { "19", "-43210", "289", "178", "<int1>", "72",
+                {"19", "-43210", "289", "178", "<int1>", "72",
                         "999999999999999999", "3895", "<int1>", "0", "-123" };
 
         String[][] expectedInt2bTestOutput =
-                new String[expectedInt2TestOutput.length][expectedInt2TestOutput.length];
+                new String[expectedInt2TestOutput.length]
+                [expectedInt2TestOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
             for (int j = 0; j < numOfTests; j++) {
@@ -576,10 +555,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2. Test double cell type
         // 2a. Test nominal
-        String varName = "matrixNominal2";
+        String varName = "mN2";
 
         String[] expectedTestOutput =
-                { "Subject stands up", "$10432", "Hand me the manual!",
+                {"Subject stands up", "$10432", "Hand me the manual!",
                         "Tote_that_bale", "Jeune fille celebre",
                         "If x7 then x2" };
 
@@ -598,12 +577,13 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 new String[nominalTestInput.length][nominalTestInput.length][2];
 
         String[] expectedNominal2bTempOutput =
-                { "Subject stands up", "$10432", "Hand me the manual!",
+                {"Subject stands up", "$10432", "Hand me the manual!",
                         "Tote_that_bale", "Jeune fille celebre",
                         "If x7 then x2" };
 
         String[][] expectedNominal2bTestOutput =
-                new String[expectedNominal2bTempOutput.length][expectedNominal2bTempOutput.length];
+                new String[expectedNominal2bTempOutput.length]
+                [expectedNominal2bTempOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
             for (int j = 0; j < numOfTests; j++) {
@@ -627,7 +607,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         numOfTests = nominalTestInput.length;
         for (int i = 0; i < numOfTests; i++) {
-            runMatrixTest(varName, testInput[i], expectedNominal2bTestOutput[i]);
+            runMatrixTest(varName, testInput[i],
+                    expectedNominal2bTestOutput[i]);
         }
     }
 
@@ -650,10 +631,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         scriptConsole.button("closeButton").click();
 
         // 2. Test double cell type
-        String varName = "matrixFloat2";
+        String varName = "mF2";
 
         String[] expectedFloat2TestOutput =
-                { "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
                         "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
                         "-23.34", "0.34", "12.34", "-123" };
 
@@ -670,15 +651,17 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
-                new String[expectedFloat2TestOutput.length][expectedFloat2TestOutput.length][2];
+                new String[expectedFloat2TestOutput.length]
+                [expectedFloat2TestOutput.length][2];
 
         String[] expectedInt2bTempOutput =
-                { "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
                         "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
                         "-23.34", "0.34", "12.34", "-123" };
 
         String[][] expectedInt2bTestOutput =
-                new String[expectedFloat2TestOutput.length][expectedFloat2TestOutput.length];
+                new String[expectedFloat2TestOutput.length]
+                [expectedFloat2TestOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
             for (int j = 0; j < numOfTests; j++) {
@@ -1042,7 +1025,6 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Runs advanced tests.
-     * 
      * @param varName
      *            name of variable and therefore column header name
      * @param testInput
@@ -1134,7 +1116,6 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Runs a double argument matrix test.
-     * 
      * @param varName
      *            name of variable and therefore column header name
      * @param testInput
@@ -1217,7 +1198,6 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     //
     /**
      * matrix test exclusively for single argument matrix tests.
-     * 
      * @param varName
      *            name of variable and therefore column header name
      * @param testInput
@@ -1239,7 +1219,6 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Runs standard tests without advanced input, default custom blank used.
-     * 
      * @param varName
      *            name of variable and therefore column header name
      * @param testInput
@@ -1254,7 +1233,6 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Runs standard tests without advanced input.
-     * 
      * @param varName
      *            name of variable and therefore column header name
      * @param testInput
@@ -1294,7 +1272,6 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Tests for pasting.
-     * 
      * @param varName
      *            variable name
      * @param varRadio
@@ -1303,15 +1280,13 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      *            test input values
      * @param expectedTestOutput
      *            expected test output values
-     * @throws java.lang.Exception
-     *             on any exception
      */
     private void pasteTest(final String varName, final String varRadio,
             final String[] testInput, final String[] expectedTestOutput) {
         int numOfTests = testInput.length;
 
         // 1. Create new variable
-        createVariable(varName, varRadio);
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
         // 2. Create new cells, check that they have been created
         for (int ordinal = 1; ordinal <= numOfTests; ordinal++) {
@@ -1388,33 +1363,32 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     // }
     // }
 
-    /**
-     * Creates a variable
-     * 
-     * @param varName
-     * @param varType
-     */
-    private void createVariable(final String varName, final String varType) {
-        // 1. Create new variable
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Variable")
-                .click();
-
-        // 2. Enter variable name
-        DialogFixture newVariableDialog = mainFrameFixture.dialog();
-        newVariableDialog.requireVisible();
-        JTextComponentFixture variableValueTextBox =
-                newVariableDialog.textBox();
-        variableValueTextBox.requireEmpty();
-        variableValueTextBox.requireEditable();
-        variableValueTextBox.enterText(varName);
-
-        // 3. Choose variable type
-        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
-                .click();
-        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
-                .requireSelected();
-        newVariableDialog.button("okButton").click();
-    }
+//    /** SHOULD BE DELETED
+//     * Creates a variable.
+//     * @param varName variable name
+//     * @param varType variable type
+//     */
+//    private void createNewVariable(final String varName, final String varType) {
+//        // 1. Create new variable
+//        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Variable")
+//                .click();
+//
+//        // 2. Enter variable name
+//        DialogFixture newVariableDialog = mainFrameFixture.dialog();
+//        newVariableDialog.requireVisible();
+//        JTextComponentFixture variableValueTextBox =
+//                newVariableDialog.textBox();
+//        variableValueTextBox.requireEmpty();
+//        variableValueTextBox.requireEditable();
+//        variableValueTextBox.enterText(varName);
+//
+//        // 3. Choose variable type
+//        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
+//                .click();
+//        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
+//                .requireSelected();
+//        newVariableDialog.button("okButton").click();
+//    }
 
     /**
      * @param varName
@@ -1444,7 +1418,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * @param id
      *            cell ordinal value, assumes that the cell already exists
      */
-    private void clickCell(final String varName, int id) {
+    private void clickCell(final String varName, final int id) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
@@ -1460,7 +1434,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      *            cell ordinal value
      * @return true if the cell with ordinal 'id' exists, false otherwise
      */
-    private boolean cellExists(final String varName, int id) {
+    private boolean cellExists(final String varName, final int id) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
@@ -1477,6 +1451,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      *            cell ordinal value, assumes that the cell already exists
      * @param onset
      *            Should be in the format HH:mm:ss:SSS
+     * @return boolean - true if has onset
      */
     private boolean cellHasOnset(final String varName, final int id,
             final String onset) {
@@ -1497,6 +1472,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      *            cell ordinal value, assumes that the cell already exists
      * @param offset
      *            Should be in the format HH:mm:ss:SSS
+     * @return boolean - true if has offset
      */
     private boolean cellHasOffset(final String varName, final int id,
             final String offset) {
@@ -1533,8 +1509,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Change cell values using a string as the target value
-     * 
+     * Change cell values using a string as the target value.
      * @param varName
      *            name of column that contains the cell, assumes that the column
      *            already exists.
@@ -1554,8 +1529,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Change cell value using a list of inputs as the target value
-     * 
+     * Change cell value using a list of inputs as the target value.
      * @param varName
      *            name of column that contains the cell, assumes that the column
      *            already exists.
@@ -1565,7 +1539,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      *            list of value inputs
      */
     private void changeCellValue(final String varName, final int id,
-            List<TextItem> inputs) {
+            final List<TextItem> inputs) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
@@ -1582,8 +1556,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Change cell value using a string array of inputs as the target value,
-     * where each input is separated by the key press defined as separator
-     * 
+     * where each input is separated by the key press defined as separator.
      * @param varName
      *            name of column that contains the cell, assumes that the column
      *            already exists.
@@ -1591,8 +1564,6 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      *            cell ordinal value, assumes that the cell already exists
      * @param values
      *            array of input values
-     * @param separator
-     *            #KeyEvent
      */
     private void changeCellMatrixValue(final String varName, final int id,
             final String[] values) {
@@ -1645,6 +1616,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                                 Platform.controlOrCommandMask()));
     }
 
+    /**
+     * Deletes all cells in a particular column.
+     * @param varName variable name.
+     */
     private void deleteAllCells(final String varName) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet =

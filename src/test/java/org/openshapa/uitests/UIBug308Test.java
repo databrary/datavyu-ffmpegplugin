@@ -17,15 +17,14 @@ import org.testng.annotations.Test;
  * name), the New Variable window just disappears rather than allowing the user
  * to fix the problem.
  */
-public class UIBug308Test extends OpenSHAPATestClass {
+public final class UIBug308Test extends OpenSHAPATestClass {
 
     /**
      * Different cell variable types.
      */
-    private static final String[] VAR_TYPES = { "TEXT", "PREDICATE", "INTEGER",
-            "NOMINAL", "MATRIX", "FLOAT" };
+    private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
+            "NOMINAL", "MATRIX", "FLOAT"};
 
-    
     /**
      * Test creating a new variable. Then try to create variable with same name.
      * Type is selected randomly since it should not affect this.
@@ -33,7 +32,7 @@ public class UIBug308Test extends OpenSHAPATestClass {
     @Test
     public void testDuplicateName() {
         System.err.println("testDuplicateName");
-        String varName = "textVar";
+        String varName = "v";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
@@ -41,10 +40,9 @@ public class UIBug308Test extends OpenSHAPATestClass {
         // 2. Check that a column has been created
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-//        // Find our new column header
-//        ssPanel.panel("headerView").label().text().startsWith(varName);
-
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(mainFrameFixture.robot, (SpreadsheetPanel)jPanel.component());
+        // Find our new column header
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
         Assert.assertNotNull(ssPanel.column(varName));
 
 

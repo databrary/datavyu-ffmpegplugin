@@ -99,6 +99,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      *            cell ordinal value, assumes that the cell already exists
      * @param onset
      *            Should be in the format HH:mm:ss:SSS
+     * @return boolean - true if has onset
      */
     private boolean cellHasOnset(final String varName, final int id,
             final String onset) {
@@ -119,6 +120,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      *            cell ordinal value, assumes that the cell already exists
      * @param offset
      *            Should be in the format HH:mm:ss:SSS
+     * @return boolean - true if has offset
      */
     private boolean cellHasOffset(final String varName, final int id,
             final String offset) {
@@ -140,7 +142,8 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      * @param onset
      *            Should be in the format HH:mm:ss:SSS
      */
-    private void changeOnset(final String varName, int id, String onset) {
+    private void changeOnset(final String varName, final int id,
+            final String onset) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
@@ -158,7 +161,8 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      * @param offset
      *            Should be in the format HH:mm:ss:SSS
      */
-    private void changeOffset(final String varName, int id, String offset) {
+    private void changeOffset(final String varName, final int id,
+            String offset) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
@@ -175,7 +179,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      * @param id
      *            cell ordinal value, assumes that the cell already exists
      */
-    private void clickCell(final String varName, int id) {
+    private void clickCell(final String varName, final int id) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
@@ -191,7 +195,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      *            cell ordinal value
      * @return true if the cell with ordinal 'id' exists, false otherwise
      */
-    private boolean cellExists(final String varName, int id) {
+    private boolean cellExists(final String varName, final int id) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
@@ -201,7 +205,9 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Creates a new variable and checks that it has been created
+     * Creates a new variable and checks that it has been created.
+     * @param varName variable name
+     * @param varType variable type
      */
     private void validateVariable(final String varName, final String varType) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
@@ -219,10 +225,9 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Creates a variable
-     * 
-     * @param varName
-     * @param varType
+     * Creates a variable.
+     * @param varName variable name
+     * @param varType variable type
      */
     private void createVariable(final String varName, final String varType) {
         // 1. Create new variable

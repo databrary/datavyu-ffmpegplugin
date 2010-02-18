@@ -16,7 +16,12 @@ import org.testng.annotations.Test;
 /**
  * Test the ability to zoom in on the contents of a cell.
  */
-public class UIZoomTest extends OpenSHAPATestClass {
+public final class UIZoomTest extends OpenSHAPATestClass {
+    /** Min font size. */
+    public static final int MIN_FONT_SIZE = 10;
+
+    /** Max font size. */
+    public static final int MAX_FONT_SIZE = 40;
 
     /**
      * Test zooming in and reset.
@@ -112,7 +117,7 @@ public class UIZoomTest extends OpenSHAPATestClass {
                 "Minimum zoom size not achieved.");
 
         // 7. Zoom in
-        while (previousSize < 40) {
+        while (previousSize < MAX_FONT_SIZE) {
             mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom In")
                     .click();
             /*
@@ -214,7 +219,7 @@ public class UIZoomTest extends OpenSHAPATestClass {
                 "Maximum zoom size not achieved.");
 
         // 6. Zoom out from max
-        while (previousSize > 10) {
+        while (previousSize > MIN_FONT_SIZE) {
             mainFrameFixture
                     .menuItemWithPath("Spreadsheet", "Zoom", "Zoom Out")
                     .click();

@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.fest.swing.fixture;
 
 import java.awt.Component;
@@ -13,6 +8,7 @@ import java.awt.image.ImageObserver;
 
 import javax.swing.JLabel;
 import javax.swing.text.BadLocationException;
+import org.fest.swing.core.MouseButton;
 
 import org.fest.swing.core.Robot;
 import org.openshapa.views.discrete.SpreadsheetCell;
@@ -20,22 +16,30 @@ import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 
 /**
- * @author mmuthukrishna
+ * Fixture for a Spreadsheet Column.
  */
 public class SpreadsheetCellFixture extends JPanelFixture {
+    /** Cell value. */
     public static final int VALUE = 0;
+    /** Cell onset. */
     public static final int ONSET = 1;
+    /** Cell offset. */
     public static final int OFFSET = 2;
 
-    public SpreadsheetCellFixture(Robot robot, String panelName) {
-        super(robot, panelName);
-    }
-
-    public SpreadsheetCellFixture(Robot robot, SpreadsheetCell target) {
+    /**
+     * Constructor.
+     * @param robot main frame fixture robot.
+     * @param target underlying Spreadsheetcell class.
+     */
+    public SpreadsheetCellFixture(final Robot robot,
+            final SpreadsheetCell target) {
         super(robot, target);
     }
 
-    public void selectCell() {
+    /**
+     * Selects the cell.
+     */
+    public final void selectCell() {
         JLabel ordinalLabel = ordinalLabel().target;
         Point labelPosition = ordinalLabel.getLocation();
         Point clickPosition =
@@ -46,8 +50,16 @@ public class SpreadsheetCellFixture extends JPanelFixture {
         robot.releaseKey(KeyEvent.VK_SHIFT);
     }
 
-    public void clickToCharPos(int component, int charPos, int times)
-            throws BadLocationException {
+    /**
+     * Clicks to the position after a particular character position in
+     * either value, onset or offset.
+     * @param component VALUE, ONSET, or OFFSET
+     * @param charPos character position to click after.
+     * @param times number of times to click
+     * @throws BadLocationException on bad character location
+     */
+    public final void clickToCharPos(final int component, final int charPos,
+            final int times) throws BadLocationException {
         Point charPoint;
         Component c;
         switch (component) {
@@ -81,26 +93,89 @@ public class SpreadsheetCellFixture extends JPanelFixture {
         }
     }
 
-    public JLabelFixture ordinalLabel() {
+    /**
+     * @return JLabel for ordinal id label.
+     */
+    public final JLabelFixture ordinalLabel() {
         return new JLabelFixture(robot, findByType(JLabel.class));
     }
 
-    public JTextComponentFixture onsetTimestamp() {
+    /**
+     * @return JTextComponentFixture for onset timestamp.
+     */
+    public final JTextComponentFixture onsetTimestamp() {
         return new JTextComponentFixture(robot, findByName("onsetTextField",
                 TimeStampTextField.class));
     }
 
-    public JTextComponentFixture offsetTimestamp() {
+    /**
+     * @return JTextComponentFixture for offset timestamp.
+     */
+    public final JTextComponentFixture offsetTimestamp() {
         return new JTextComponentFixture(robot, findByName("offsetTextField",
                 TimeStampTextField.class));
     }
 
-    public JTextComponentFixture cellValue() {
+    /**
+     * @return JTextComponentFixture for cell value.
+     */
+    public final JTextComponentFixture cellValue() {
         return new JTextComponentFixture(robot, findByName("cellValue",
                 MatrixRootView.class));
     }
 
-    private Point centerOf(Rectangle r) {
+    /**
+     * @param r rectange to find centre of
+     * @return point at centre of rectange.
+     */
+    private Point centerOf(final Rectangle r) {
         return new Point(r.x + r.width / 2, r.y + r.height / 2);
     }
+
+    public void select(final int component, int startPos, int endPos)
+            throws BadLocationException {
+        Point startPoint, endPoint;
+        Component c;
+        switch (component) {
+        case VALUE:
+            startPoint = centerOf(((SpreadsheetCell) target).getDataView()
+                    .modelToView(startPos));
+            endPoint = centerOf(((SpreadsheetCell) target).getDataView()
+                    .modelToView(endPos));
+            c = ((SpreadsheetCell) target).getDataView();
+            break;
+        case ONSET:
+            startPoint = centerOf(((SpreadsheetCell) target).getOnset()
+                    .modelToView(startPos));
+            endPoint = centerOf(((SpreadsheetCell) target).getOnset()
+                    .modelToView(endPos));
+            c = ((SpreadsheetCell) target).getOnset();
+            break;
+        case OFFSET:
+            startPoint = centerOf(((SpreadsheetCell) target).getOffset()
+                    .modelToView(startPos));
+            endPoint = centerOf(((SpreadsheetCell) target).getOffset()
+                    .modelToView(endPos));
+            c = ((SpreadsheetCell) target).getOffset();
+            break;
+        default:
+            startPoint = centerOf(((SpreadsheetCell) target).getDataView()
+                    .modelToView(startPos));
+            endPoint = centerOf(((SpreadsheetCell) target).getDataView()
+                    .modelToView(endPos));
+            c = ((SpreadsheetCell) target).getDataView();
+            break;
+        }
+      
+        //First line is required to get focus on component
+        robot.click(c, endPoint);
+        //Click on start point and hold mouse
+        robot.moveMouse(c, startPoint);
+        robot.pressMouse(c, startPoint, MouseButton.LEFT_BUTTON);
+        //Drag to end pos and release mouse
+        robot.moveMouse(c, endPoint);
+        robot.releaseMouse(MouseButton.LEFT_BUTTON);
+    }
+
+
 }

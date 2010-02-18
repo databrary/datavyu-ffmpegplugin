@@ -18,11 +18,10 @@ import org.testng.annotations.Test;
 /**
  * Test the creation of a new database.
  */
-public class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
+public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
 
     /**
      * Initialiser called before each unit test.
-     * 
      * @throws java.lang.Exception
      *             When unable to initialise test
      */
@@ -39,7 +38,7 @@ public class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
+            public boolean accept(final File dir, final String name) {
                 return (name.endsWith(".csv") || name.endsWith(".shapa"));
             }
         };
@@ -52,6 +51,10 @@ public class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
         }
     }
 
+    /**
+     * Tests modifiying the spreadsheet with a script.
+     * @throws IOException if file read issues.
+     */
     @Test
     public void testModifySpreadsheet() throws IOException {
         // 1. Open and run script to populate database

@@ -56,26 +56,30 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
     /**
      * Standard test sequence focussing on jogging.
-     * @throws Exception any exception
+     * @param varName variable name
+     * @param varType variable type
+     * @param testInputArray test input values as array
+     * @param testExpectedArray test expected values as array
      */
-    private void StandardSequence1(final String varName,
+    private void standardSequence1(final String varName,
                                    final String varType,
                                    final String[] testInputArray,
-                                   final String[] testExpectedArray)
-    throws Exception {
+                                   final String[] testExpectedArray) {
 
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                                              (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
         ssPanel.deselectAll();
         UIUtils.createNewVariable(mainFrameFixture, varName, varType);
 
 
         //2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.menuItemWithPath("Controller", "Data Viewer Controller").click();
+        mainFrameFixture.menuItemWithPath("Controller",
+                "Data Viewer Controller").click();
         mainFrameFixture.dialog().moveTo(new Point(300, 300));
-        DataControllerFixture fix = new DataControllerFixture(mainFrameFixture.robot,
-                            (DataControllerV) mainFrameFixture.dialog().component());
+        DataControllerFixture fix = new DataControllerFixture(
+                mainFrameFixture.robot, (DataControllerV) mainFrameFixture
+                .dialog().component());
 
 
         //3. Create new cell - so we have something to send key to because
@@ -149,7 +153,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         Assert.assertEquals(cell3.offsetTimestamp().text(), "00:00:00:000");
         Assert.assertEquals(cell3.onsetTimestamp().text(), "00:00:07:000");
 
-        // 10. Test data controller view onset, offset and find.        
+        // 10. Test data controller view onset, offset and find.
         for (int cellId = 1; cellId <= column.numOfCells(); cellId++) {
             cell1 = column.cell(cellId);
             ssPanel.deselectAll();
@@ -177,15 +181,15 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     @Test
     public void testStandardSequence1() throws Exception {
         //Text
-        StandardSequence1("t", "text", textTestInput, textTestInput);
+        standardSequence1("t", "text", textTestInput, textTestInput);
         //Integer
-        StandardSequence1("i", "integer", integerTestInput,
+        standardSequence1("i", "integer", integerTestInput,
                 expectedIntegerTestOutput);
         //Float
-        StandardSequence1("f", "float", floatTestInput,
+        standardSequence1("f", "float", floatTestInput,
                 expectedFloatTestOutput);
         //Nominal
-        StandardSequence1("n", "nominal", nominalTestInput,
+        standardSequence1("n", "nominal", nominalTestInput,
                 expectedNominalTestOutput);
     }
 }

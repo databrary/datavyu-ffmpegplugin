@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
  * Everytime VocEditor window is reopened, the predicate counter goes back to 1
  *
  */
-public class UIBug652Test extends OpenSHAPATestClass {
+public final class UIBug652Test extends OpenSHAPATestClass {
 
     /**
      * Test for closing window and creating new predicate.
@@ -23,40 +23,45 @@ public class UIBug652Test extends OpenSHAPATestClass {
     public void testNewPredicateAfterClose() {
         System.err.println("testNewPredicateAfterClose");
 
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor")
+                .click();
 
         DialogFixture vocabEditor = mainFrameFixture.dialog();
 
         vocabEditor.button("addPredicateButton").click();
 
         //will fail if can not find
-        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(JTextComponent.class) {
+        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
+                JTextComponent.class) {
              @Override
-                    protected boolean isMatching(JTextComponent vocEl) {
+                    protected boolean isMatching(final JTextComponent vocEl) {
                         return vocEl.getText().startsWith("predicate1");
                     }
         });
 
         vocabEditor.button("okButton").click();
-        
+
         //Create a new predicate and make sure the number has incremented
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor")
+                .click();
 
         vocabEditor = mainFrameFixture.dialog();
 
         vocabEditor.button("addPredicateButton").click();
 
         //will fail if can not find
-        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(JTextComponent.class) {
+        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
+                JTextComponent.class) {
              @Override
-                    protected boolean isMatching(JTextComponent vocEl) {
+                    protected boolean isMatching(final JTextComponent vocEl) {
                         return vocEl.getText().startsWith("predicate1");
                     }
         });
 
-        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(JTextComponent.class) {
+        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
+                JTextComponent.class) {
              @Override
-                    protected boolean isMatching(JTextComponent vocEl) {
+                    protected boolean isMatching(final JTextComponent vocEl) {
                         return vocEl.getText().startsWith("predicate2");
                     }
         });
@@ -85,16 +90,18 @@ public class UIBug652Test extends OpenSHAPATestClass {
         DialogFixture scriptConsole = mainFrameFixture.dialog();
         scriptConsole.button("closeButton").click();
 
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor")
+                .click();
 
         DialogFixture vocabEditor = mainFrameFixture.dialog();
 
         vocabEditor.button("addPredicateButton").click();
 
         //will fail if can not find
-        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(JTextComponent.class) {
+        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
+                JTextComponent.class) {
              @Override
-                    protected boolean isMatching(JTextComponent vocEl) {
+                    protected boolean isMatching(final JTextComponent vocEl) {
                         return vocEl.getText().startsWith("predicate2");
                     }
         });
@@ -102,23 +109,26 @@ public class UIBug652Test extends OpenSHAPATestClass {
         vocabEditor.button("okButton").click();
 
         //Create a new predicate and make sure the number has incremented
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor")
+                .click();
 
         vocabEditor = mainFrameFixture.dialog();
 
         vocabEditor.button("addPredicateButton").click();
 
         //will fail if can not find
-        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(JTextComponent.class) {
+        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
+                JTextComponent.class) {
              @Override
-                    protected boolean isMatching(JTextComponent vocEl) {
+                    protected boolean isMatching(final JTextComponent vocEl) {
                         return vocEl.getText().startsWith("predicate2");
                     }
         });
 
-        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(JTextComponent.class) {
+        vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
+                JTextComponent.class) {
              @Override
-                    protected boolean isMatching(JTextComponent vocEl) {
+                    protected boolean isMatching(final JTextComponent vocEl) {
                         return vocEl.getText().startsWith("predicate3");
                     }
         });

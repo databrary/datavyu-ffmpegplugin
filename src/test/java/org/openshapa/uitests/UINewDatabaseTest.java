@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
  * This is now synonomous with the creation of a New Project.
  *
  */
-public class UINewDatabaseTest extends OpenSHAPATestClass {
+public final class UINewDatabaseTest extends OpenSHAPATestClass {
      /**
      * Test new spreadsheet.
      */
@@ -56,7 +56,7 @@ public class UINewDatabaseTest extends OpenSHAPATestClass {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
         SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel)jPanel.component());
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
         Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
         Assert.assertTrue(cols.size() != 0);
@@ -86,7 +86,7 @@ public class UINewDatabaseTest extends OpenSHAPATestClass {
         DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
                 new GenericTypeMatcher<JDialog>(JDialog.class) {
                     @Override
-                    protected boolean isMatching(JDialog dialog) {
+                    protected boolean isMatching(final JDialog dialog) {
                         return dialog.getClass().equals(NewProjectV.class);
                     }
                 }, Timeout.timeout(5, TimeUnit.SECONDS));
@@ -99,12 +99,13 @@ public class UINewDatabaseTest extends OpenSHAPATestClass {
         Assert.assertTrue(ssPanel.numOfColumns() == 0);
 
         //4b. Check that variable list is empty
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List")
+                .click();
         // Get VariableList dialog
         DialogFixture varListDialog = mainFrameFixture.dialog(
                 new GenericTypeMatcher<JDialog>(JDialog.class) {
                     @Override
-                    protected boolean isMatching(JDialog dialog) {
+                    protected boolean isMatching(final JDialog dialog) {
                         return dialog.getClass().equals(ListVariables.class);
                     }
                 }, Timeout.timeout(5, TimeUnit.SECONDS));
@@ -113,8 +114,11 @@ public class UINewDatabaseTest extends OpenSHAPATestClass {
         varListDialog.close();
 
         //4c. Check that vocab editor is empty
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor").click();
-        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(mainFrameFixture.robot, (VocabEditorV)mainFrameFixture.dialog().component());
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Vocab Editor")
+                .click();
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot, (VocabEditorV) mainFrameFixture.dialog()
+                .component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         veDialog.close();

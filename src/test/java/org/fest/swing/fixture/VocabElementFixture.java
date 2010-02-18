@@ -17,7 +17,7 @@ public class VocabElementFixture extends JPanelFixture {
 
     public VocabElementFixture(Robot robot, VocabElementV target) {
         super(robot, target);
-        ve = target;
+        ve = (VocabElementV)this.target;
     }
 
     /**
@@ -45,7 +45,6 @@ public class VocabElementFixture extends JPanelFixture {
     }
 
     public JTextComponentFixture value() {
-        //return new JTextComponentFixture(robot, findByType(VocabElementRootView.class));
         return new JTextComponentFixture(robot, ve.getDataView());
     }
 

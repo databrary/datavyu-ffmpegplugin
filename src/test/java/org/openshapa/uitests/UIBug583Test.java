@@ -27,8 +27,8 @@ public final class UIBug583Test extends OpenSHAPATestClass {
          */
         System.err.println("testBug583");
 
-        String[] floatCellValues = {/*BugzID:747-"0.000000",*/ "0.123400", "0.246800",
-        "0.370200", "0.493600", "0.617000", "0.740400", "0.863800",
+        String[] floatCellValues = {/*BugzID:747-"0.000000",*/ "0.123400",
+        "0.246800", "0.370200", "0.493600", "0.617000", "0.740400", "0.863800",
         "0.987200", "1.110600"};
 
         String root = System.getProperty("testPath");
@@ -47,7 +47,8 @@ public final class UIBug583Test extends OpenSHAPATestClass {
 
         //2. Get each float cell
         for (String floatVal : floatCellValues) {
-            JTextComponentFixture cellValue = mainFrameFixture.textBox(JTextComponentMatcher.withText(floatVal));
+            JTextComponentFixture cellValue = mainFrameFixture.textBox(
+                    JTextComponentMatcher.withText(floatVal));
             cellValue.selectAll();
             cellValue.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_0));
             Assert.assertEquals(cellValue.text(), "0.0");

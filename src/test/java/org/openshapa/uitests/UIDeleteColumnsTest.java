@@ -18,7 +18,7 @@ import org.testng.annotations.Test;
 /**
  * Test for the Deletion of columns.
  */
-public class UIDeleteColumnsTest extends OpenSHAPATestClass {
+public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
      /**
      * Test for deletion of columns.
      * Delete columns one by one.
@@ -44,13 +44,14 @@ public class UIDeleteColumnsTest extends OpenSHAPATestClass {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
         SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel)jPanel.component());
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
         Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
         for (SpreadsheetColumnFixture col : cols) {
             col.header().click();
             mainFrameFixture.menuItemWithPath("Spreadsheet").click();
-            mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Variable").click();
+            mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Variable")
+                    .click();
 
             //Confirm column no longer exists
             Assert.assertNull(ssPanel.column(col.getColumnName()));
@@ -83,7 +84,7 @@ public class UIDeleteColumnsTest extends OpenSHAPATestClass {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
         SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel)jPanel.component());
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
         Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
 
@@ -92,7 +93,8 @@ public class UIDeleteColumnsTest extends OpenSHAPATestClass {
             col.header().click();
         }
         mainFrameFixture.releaseKey(KeyEvent.VK_CONTROL);
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Variables").click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Variables")
+                .click();
         Assert.assertTrue(ssPanel.numOfColumns() == 0);
     }
 }
