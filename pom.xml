@@ -501,7 +501,8 @@
                 <preCp>appframework-1.0.3.jar</preCp>
                 <preCp>swing-worker-1.1.jar</preCp>
                 <preCp>QTJava-7.jar</preCp>
-                <preCp>uispec4j-v2.1-B.jar</preCp>
+                <preCp>fest-swing-testng-1.2a4.jar</preCp>
+                <preCp>testng-5.10-jdk15.jar</preCp>
                 <preCp>asm-3.1.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
                 <preCp>openshapa-lib-0.0.4.jar</preCp>
