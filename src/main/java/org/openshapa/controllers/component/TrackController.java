@@ -80,13 +80,13 @@ public class TrackController {
         menu = new PopupMenu();
         MenuItem setBookmarkMenuItem = new MenuItem("Set bookmark");
         setBookmarkMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 TrackController.this.setBookmarkAction();
             }
         });
         MenuItem clearBookmarkMenuItem = new MenuItem("Clear bookmark");
         clearBookmarkMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 TrackController.this.clearBookmarkAction();
             }
         });
@@ -143,7 +143,7 @@ public class TrackController {
      * 
      * @param erroneous
      */
-    public void setErroneous(boolean erroneous) {
+    public void setErroneous(final boolean erroneous) {
         trackModel.setErroneous(erroneous);
         trackPainter.setTrackModel(trackModel);
     }
@@ -232,7 +232,7 @@ public class TrackController {
      * 
      * @param viewableModel
      */
-    public void setViewableModel(ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel viewableModel) {
         /*
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
@@ -247,7 +247,7 @@ public class TrackController {
         view.repaint();
     }
 
-    public void setMoveable(boolean canMove) {
+    public void setMoveable(final boolean canMove) {
         moveable = canMove;
     }
 
@@ -280,11 +280,11 @@ public class TrackController {
         fireCarriageSelectionChangeEvent();
     }
 
-    public void addMouseListener(MouseListener listener) {
+    public void addMouseListener(final MouseListener listener) {
         view.addMouseListener(listener);
     }
 
-    public void removeMouseListener(MouseListener listener) {
+    public void removeMouseListener(final MouseListener listener) {
         view.removeMouseListener(listener);
     }
 
@@ -294,7 +294,7 @@ public class TrackController {
      * @param listener
      */
     public synchronized void addCarriageEventListener(
-            CarriageEventListener listener) {
+            final CarriageEventListener listener) {
         listenerList.add(CarriageEventListener.class, listener);
     }
 
@@ -304,17 +304,17 @@ public class TrackController {
      * @param listener
      */
     public synchronized void removeCarriageEventListener(
-            CarriageEventListener listener) {
+            final CarriageEventListener listener) {
         listenerList.remove(CarriageEventListener.class, listener);
     }
 
     public synchronized void addTrackMouseEventListener(
-            TrackMouseEventListener listener) {
+            final TrackMouseEventListener listener) {
         listenerList.add(TrackMouseEventListener.class, listener);
     }
 
     public synchronized void removeTrackMouseEventListener(
-            TrackMouseEventListener listener) {
+            final TrackMouseEventListener listener) {
         listenerList.remove(TrackMouseEventListener.class, listener);
     }
 
@@ -330,8 +330,8 @@ public class TrackController {
             final long newOffset, final long temporalPosition) {
         CarriageEvent e =
                 new CarriageEvent(this, trackModel.getTrackId(), newOffset,
-                        trackModel.getDuration(), temporalPosition,
-                        EventType.OFFSET_CHANGE);
+                        trackModel.getBookmark(), trackModel.getDuration(),
+                        temporalPosition, EventType.OFFSET_CHANGE);
         Object[] listeners = listenerList.getListenerList();
         /*
          * The listener list contains the listening class and then the listener
@@ -352,8 +352,8 @@ public class TrackController {
     private synchronized void fireCarriageBookmarkRequestEvent() {
         CarriageEvent e =
                 new CarriageEvent(this, trackModel.getTrackId(), trackModel
-                        .getOffset(), trackModel.getDuration(), 0,
-                        EventType.BOOKMARK_REQUEST);
+                        .getOffset(), trackModel.getBookmark(), trackModel
+                        .getDuration(), 0, EventType.BOOKMARK_REQUEST);
         Object[] listeners = listenerList.getListenerList();
         /*
          * The listener list contains the listening class and then the listener
@@ -369,8 +369,8 @@ public class TrackController {
     private synchronized void fireCarriageSelectionChangeEvent() {
         CarriageEvent e =
                 new CarriageEvent(this, trackModel.getTrackId(), trackModel
-                        .getOffset(), trackModel.getDuration(), 0,
-                        EventType.CARRIAGE_SELECTION);
+                        .getOffset(), trackModel.getBookmark(), trackModel
+                        .getDuration(), 0, EventType.CARRIAGE_SELECTION);
         Object[] listeners = listenerList.getListenerList();
         /*
          * The listener list contains the listening class and then the listener
@@ -383,7 +383,7 @@ public class TrackController {
         }
     }
 
-    private synchronized void fireMouseReleasedEvent(MouseEvent e) {
+    private synchronized void fireMouseReleasedEvent(final MouseEvent e) {
         Object[] listeners = listenerList.getListenerList();
         /*
          * The listener list contains the listening class and then the listener
@@ -411,14 +411,14 @@ public class TrackController {
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
         @Override
-        public void mouseClicked(MouseEvent e) {
+        public void mouseClicked(final MouseEvent e) {
             if (trackPainter.getCarriagePolygon().contains(e.getPoint())) {
                 changeSelected();
             }
         }
 
         @Override
-        public void mousePressed(MouseEvent e) {
+        public void mousePressed(final MouseEvent e) {
             if (trackPainter.getCarriagePolygon().contains(e.getPoint())) {
                 inCarriage = true;
                 xInit = e.getX();
@@ -432,7 +432,7 @@ public class TrackController {
         }
 
         @Override
-        public void mouseDragged(MouseEvent e) {
+        public void mouseDragged(final MouseEvent e) {
             if (inCarriage) {
                 int xNet = e.getX() - xInit;
                 // Calculate the total amount of time we offset by
@@ -457,7 +457,7 @@ public class TrackController {
         }
 
         @Override
-        public void mouseReleased(MouseEvent e) {
+        public void mouseReleased(final MouseEvent e) {
             moveable = true;
             inCarriage = false;
             Component source = (Component) e.getSource();
