@@ -74,7 +74,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     private boolean selected = false;
 
     /** Highlighted state of cell. */
-    private boolean highlighted = false;
+    private boolean highlighted = true;
 
     /** Component that sets the width of the cell. */
     private Filler stretcher;
@@ -223,7 +223,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         // Set the appearance of the spreadsheet cell.
         cellPanel.setBackground(Configuration.getInstance()
                                                       .getSSBackgroundColour());
-        cellPanel.setBorder(NORMAL_BORDER);
+        cellPanel.setBorder(HIGHLIGHT_BORDER);
         cellPanel.setLayout(new BorderLayout());
 
         // Set the apperance of the top panel and add child elements (ord, onset
@@ -413,7 +413,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         stretcher.changeShape(d, d, d);
     }
 
-    private void selectCellInDB(boolean sel) {
+    public void selectCellInDB(boolean sel) {
         // Set the selection within the database.
         try {
             Cell cell = db.getCell(this.cellID);
@@ -511,7 +511,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * @return True if the cell is selected, false otherwise.
      */
     public boolean isSelected() {
-        return selected;
+        return (selected || highlighted);
     }
 
     /**
@@ -611,25 +611,35 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      */
     public void mouseClicked(MouseEvent me) {
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-
         boolean groupSel = ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0
                          || (me.getModifiers() & keyMask) != 0);
 
         Class source = me.getSource().getClass();
-        if ((!source.equals(TimeStampTextField.class) ||
-            (source.equals(TimeStampTextField.class) && groupSel)) &&
-            (!source.equals(MatrixRootView.class) ||
-            (source.equals(MatrixRootView.class) && groupSel))) {
+        boolean isEditorSrc = (source.equals(TimeStampTextField.class)
+                              || (source.equals(MatrixRootView.class)));
 
-            boolean curSelected = this.isSelected();
-            /*
-            if (!groupSel) {
-                this.cellSelL.clearCellSelection();
-            }*/
+        // User has clicked in magic spot, without modifier. Clear
+        // currently selected cells and select this cell.
+        if (!isEditorSrc && !groupSel) {
             this.ord.requestFocus();
-            this.setSelected(!curSelected);
-            this.cellSelL.addCellToSelection(this);
-        } else if (groupSel) {
+            this.cellSelL.clearCellSelection();
+            this.setSelected(!this.isSelected());
+            if (this.isSelected()) {
+                this.cellSelL.addCellToSelection(this);
+            }
+
+        // User has clicked on editor or magic spot with modifier. Add
+        // this cell to the current selection.
+        } else if (isEditorSrc && groupSel) {
+            this.ord.requestFocus();
+            this.setSelected(!this.isSelected());
+            if (this.isSelected()) {
+                this.cellSelL.addCellToSelection(this);
+            }
+
+        // User has clicked somewhere in the cell without modifier. This
+        // cell needs to be highlighted.
+        } else {
             // BugzID:320 - Deselect cells before selected cell contents.
             this.cellSelL.clearCellSelection();
             this.setHighlighted(true);
@@ -643,10 +653,10 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * @param e The focus event that triggered this action.
      */
     public void focusGained(FocusEvent e) {
-        // BugzID:320 - Deselect cells before selected cell contents.
-        this.cellSelL.clearCellSelection();
-        this.setHighlighted(true);
-        this.cellSelL.setHighlightedCell(this);
+        if (highlighted && (this.cellPanel.getBorder().equals(NORMAL_BORDER)
+            || this.cellPanel.getBorder().equals(OVERLAP_BORDER))) {
+            this.selectCellInDB(true);
+        }
     }
 
     /**
