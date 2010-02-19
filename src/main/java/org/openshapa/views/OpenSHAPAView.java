@@ -446,9 +446,9 @@ public final class OpenSHAPAView extends FrameView {
                 DataViewer viewer =
                         pm.buildDataViewer(setting.getPluginName(), file);
                 viewer.setOffset(setting.getOffset());
-                dataController.addViewer(viewer);
+                dataController.addViewer(viewer, setting.getOffset());
                 dataController.addTrack(file.getAbsolutePath(), file.getName(),
-                        viewer.getDuration(), viewer.getOffset(), setting
+                        viewer.getDuration(), setting.getOffset(), setting
                                 .getBookmark());
             }
 

@@ -106,7 +106,7 @@ public class MixerControllerV implements NeedleEventListener,
         });
         bookmarkButton.setEnabled(false);
 
-        JToggleButton snapToggleButton = new JToggleButton("Snap Off");
+        JToggleButton snapToggleButton = new JToggleButton("Snap");
         snapToggleButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
                 snapToggleHandler(e);
@@ -513,10 +513,8 @@ public class MixerControllerV implements NeedleEventListener,
     private void snapToggleHandler(final ActionEvent e) {
         JToggleButton toggle = (JToggleButton) e.getSource();
         if (toggle.isSelected()) {
-            toggle.setText("Snap On");
             tracksEditorController.setAllowSnap(true);
         } else {
-            toggle.setText("Snap Off");
             tracksEditorController.setAllowSnap(false);
         }
     }

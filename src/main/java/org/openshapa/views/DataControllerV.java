@@ -944,7 +944,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
      *            The parent file that the viewer represents.
      */
     private void addDataViewer(final DataViewer viewer, final File f) {
-        addViewer(viewer);
+        addViewer(viewer, 0);
 
         addDataViewerToProject(viewer.getClass().getName(), f.getAbsolutePath());
 
@@ -986,10 +986,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
         OpenSHAPA.getApplication().updateTitle();
     }
 
-    public void addViewer(final DataViewer viewer) {
+    public void addViewer(final DataViewer viewer, final long offset) {
         // Add the QTDataViewer to the list of viewers we are controlling.
         viewers.add(viewer);
         viewer.setParentController(this);
+        viewer.setOffset(offset);
         OpenSHAPA.getApplication().show(viewer.getParentJFrame());
 
         // adjust the overall frame rate.

@@ -46,7 +46,7 @@ public class TrackPainter extends JComponent {
         return trackModel;
     }
 
-    public void setTrackModel(TrackModel model) {
+    public void setTrackModel(final TrackModel model) {
         trackModel = model;
         this.repaint();
     }
@@ -55,7 +55,7 @@ public class TrackPainter extends JComponent {
         return viewableModel;
     }
 
-    public void setViewableModel(ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel viewableModel) {
         this.viewableModel = viewableModel;
         this.repaint();
     }
@@ -65,7 +65,7 @@ public class TrackPainter extends JComponent {
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paint(final Graphics g) {
         Dimension size = getSize();
 
         // Paints the background
@@ -93,11 +93,12 @@ public class TrackPainter extends JComponent {
 
         // Calculate carriage start and end pixel positions
         final int startXPos =
-                Math.round(trackModel.getOffset() * ratio
-                        - viewableModel.getZoomWindowStart() * ratio);
+                (int) (trackModel.getOffset() * ratio - viewableModel
+                        .getZoomWindowStart()
+                        * ratio);
 
         final int endXPos =
-                Math.round((trackModel.getDuration() + trackModel.getOffset())
+                (int) ((trackModel.getDuration() + trackModel.getOffset())
                         * ratio - viewableModel.getZoomWindowStart() * ratio);
 
         // The carriage
@@ -135,7 +136,7 @@ public class TrackPainter extends JComponent {
 
         // Paint the bookmark marker
         final int bookmarkXPos =
-                Math.round((trackModel.getOffset() + trackModel.getBookmark())
+                (int) ((trackModel.getOffset() + trackModel.getBookmark())
                         * ratio - viewableModel.getZoomWindowStart() * ratio);
 
         g.drawLine(bookmarkXPos, carriageYOffset, bookmarkXPos, carriageYOffset

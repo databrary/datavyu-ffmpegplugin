@@ -164,6 +164,12 @@ public class TracksEditorController implements TrackMouseEventListener {
                         snapMarkerController
                                 .setMarkerTime(snapPoint.snapMarkerPosition);
                         tc.setTrackOffset(snapPoint.snapOffset + newOffset);
+                        // System.out.println("Marker: "
+                        // + snapPoint.snapMarkerPosition);
+                        // System.out.println("Snap: " + snapPoint.snapOffset);
+                        // System.out.println("Original:" + newOffset);
+                        // System.out.println("Proposed: "
+                        // + (snapPoint.snapOffset + newOffset));
                     }
                 } else {
                     tc.setTrackOffset(newOffset);
@@ -228,7 +234,9 @@ public class TracksEditorController implements TrackMouseEventListener {
         }
 
         // Calculate the snap threshold as a % of the longest track duration
-        final long threshold = (long) (0.02F * longestDuration);
+        final long threshold =
+                (long) (0.01F * (viewableModel.getZoomWindowEnd() - viewableModel
+                        .getZoomWindowStart()));
 
         // Sort the candidate snap points
         Collections.sort(snapCandidates);

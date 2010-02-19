@@ -32,7 +32,7 @@ public class SnapMarkerPainter extends JComponent {
         return snapMarkerModel;
     }
 
-    public void setSnapMarkerModel(SnapMarkerModel snapMarkerModel) {
+    public void setSnapMarkerModel(final SnapMarkerModel snapMarkerModel) {
         this.snapMarkerModel = snapMarkerModel;
         this.repaint();
     }
@@ -41,13 +41,13 @@ public class SnapMarkerPainter extends JComponent {
         return viewableModel;
     }
 
-    public void setViewableModel(ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel viewableModel) {
         this.viewableModel = viewableModel;
         this.repaint();
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paint(final Graphics g) {
         if (snapMarkerModel == null || viewableModel == null) {
             return;
         }
@@ -68,8 +68,8 @@ public class SnapMarkerPainter extends JComponent {
                 viewableModel.getIntervalWidth()
                         / viewableModel.getIntervalTime();
         int pos =
-                Math.round(markerTime * ratio
-                        - viewableModel.getZoomWindowStart() * ratio)
+                (int) (markerTime * ratio - viewableModel.getZoomWindowStart()
+                        * ratio)
                         + snapMarkerModel.getPaddingLeft();
 
         final int paddingTop = snapMarkerModel.getPaddingTop();
