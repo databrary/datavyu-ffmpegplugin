@@ -40,6 +40,8 @@ implements KeyEventDispatcher {
     /** Layout type for Ordinal and Weak Temporal Ordering. */
     private LayoutManager boxLayout;
 
+    private CellSelectionListener cellSelectionL;
+
     /** Collection of the SpreadsheetCells held in by this data panel. */
     private Vector<SpreadsheetCell> cells;
 
@@ -61,6 +63,7 @@ implements KeyEventDispatcher {
         // Store member variables.
         columnWidth = width;
         this.cells = new Vector<SpreadsheetCell>();
+        cellSelectionL = cellSelL;
 
         // Create visual container for spreadsheet cells.
         Dimension d = new Dimension(0, Constants.BOTTOM_MARGIN);
@@ -334,6 +337,8 @@ implements KeyEventDispatcher {
                             et.setEditor(ec);
                             ec.setCaretPosition(relativePos);
                             components[i - 1].requestFocus();
+                            sc.setHighlighted(true);
+                            this.cellSelectionL.setHighlightedCell(sc);
 
                             e.consume();
                             return true;
@@ -361,6 +366,9 @@ implements KeyEventDispatcher {
                             ec = et.findEditor(absolutePos);
                             et.setEditor(ec);
                             ec.setCaretPosition(relativePos);
+                            sc.setHighlighted(true);
+                            this.cellSelectionL.setHighlightedCell(sc);
+
                             e.consume();
                             return true;
                         }

@@ -74,7 +74,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     private boolean selected = false;
 
     /** Highlighted state of cell. */
-    private boolean highlighted = true;
+    private boolean highlighted = false;
 
     /** Component that sets the width of the cell. */
     private Filler stretcher;
@@ -243,8 +243,8 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         topPanel.add(strut2);
         topPanel.add(offset);
 
-        // Set the apperance of the data panel - add elements for displaying the
-        // actual data of the panel.
+        // Set the apperance of the data panel - add elements for dis6playing
+        // the actual data of the panel.
         cellPanel.add(dataPanel, BorderLayout.CENTER);
         Dimension d = new Dimension(229, 0);
         stretcher = new Filler(d, d, d);
@@ -594,22 +594,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * @param me The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
-    }
-
-    /**
-     * The action to invoke when a mouse button is released.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    public void mouseReleased(final MouseEvent me) {
-    }
-
-    /**
-     * The action to invoke when a mouse button is clicked.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    public void mouseClicked(MouseEvent me) {
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
         boolean groupSel = ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0
                          || (me.getModifiers() & keyMask) != 0);
@@ -630,7 +614,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
         // User has clicked on editor or magic spot with modifier. Add
         // this cell to the current selection.
-        } else if (isEditorSrc && groupSel) {
+        } else if (groupSel) {
             this.ord.requestFocus();
             this.setSelected(!this.isSelected());
             if (this.isSelected()) {
@@ -648,13 +632,29 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     }
 
     /**
+     * The action to invoke when a mouse button is released.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseReleased(final MouseEvent me) {
+    }
+
+    /**
+     * The action to invoke when a mouse button is clicked.
+     *
+     * @param me The mouse event that triggered this action.
+     */
+    public void mouseClicked(MouseEvent me) {
+    }
+
+    /**
      * The action to invoke when the focus is gained on this component.
      *
      * @param e The focus event that triggered this action.
      */
     public void focusGained(FocusEvent e) {
         if (highlighted && (this.cellPanel.getBorder().equals(NORMAL_BORDER)
-            || this.cellPanel.getBorder().equals(OVERLAP_BORDER))) {
+             || this.cellPanel.getBorder().equals(OVERLAP_BORDER))) {
             this.selectCellInDB(true);
         }
     }
@@ -742,9 +742,17 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         this.cellOverlap = overlap;
 
         if (this.cellOverlap) {
-            cellPanel.setBorder(OVERLAP_BORDER);
+            if (this.highlighted) {
+                cellPanel.setBorder(HIGHLIGHT_OVERLAP_BORDER);
+            } else {
+                cellPanel.setBorder(OVERLAP_BORDER);
+            }
         } else {
-            cellPanel.setBorder(NORMAL_BORDER);
+            if (this.highlighted) {
+                cellPanel.setBorder(HIGHLIGHT_BORDER);
+            } else {
+                cellPanel.setBorder(NORMAL_BORDER);
+            }
         }
     }
 

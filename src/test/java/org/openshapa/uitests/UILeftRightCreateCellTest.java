@@ -102,26 +102,30 @@ public final class UILeftRightCreateCellTest extends OpenSHAPAUISpecTestCase {
         Cell newCell = cols.elementAt(1).getCells().lastElement();
         assertTrue(newCell.getOnsetTime().equals(onset));
         assertTrue(newCell.getOffsetTime().equals(offset));
+        newCell.setSelected(false);
 
         //Do left and right for middle columns
         for (int i = 1; i < cols.size() - 1; i++) {
             Cell thisCell = cols.elementAt(i).getCells().elementAt(3);
+            thisCell.setSelected(true);
             onset = thisCell.getOnsetTime().toString();
             offset = thisCell.getOffsetTime().toString();
-            thisCell.setSelected(true);
 
             menuBar.getMenu("Spreadsheet").getSubMenu("New Cell to Left")
                     .click();
             Cell leftCell = cols.elementAt(i - 1).getCells().lastElement();
             assertTrue(leftCell.getOnsetTime().equals(onset));
             assertTrue(leftCell.getOffsetTime().equals(offset));
+            leftCell.setSelected(false);
+            thisCell.setSelected(true);
 
             menuBar.getMenu("Spreadsheet").getSubMenu("New Cell to Right")
                     .click();
-            Cell rightCell = cols.elementAt(i - 1).getCells().lastElement();
+            Cell rightCell = cols.elementAt(i + 1).getCells().lastElement();
             assertTrue(rightCell.getOnsetTime().equals(onset));
             assertTrue(rightCell.getOffsetTime().equals(offset));
 
+            rightCell.setSelected(false);
             thisCell.setSelected(false);
         }
 

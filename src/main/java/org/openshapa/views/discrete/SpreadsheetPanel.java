@@ -430,6 +430,18 @@ implements ExternalColumnListListener, ComponentListener,
         return selcells;
     }
 
+    public void highlightCell(final long cellID) {
+        for (SpreadsheetColumn col : this.getColumns()) {
+            for (SpreadsheetCell cell : col.getCells()) {
+                if (cell.getCellID() == cellID) {
+                    cell.setHighlighted(true);
+                    this.setHighlightedCell(cell);
+                    return;
+                }
+            }
+        }
+    }
+
     /**
      * Set the layout type for the spreadsheet.
      *
@@ -618,6 +630,8 @@ implements ExternalColumnListListener, ComponentListener,
     public void setHighlightedCell(SpreadsheetCell cell) {
         if (highlightedCell != null) {
             highlightedCell.setSelected(false);
+            highlightedCell.setHighlighted(false);
+            highlightedCell.invalidate();
         }
 
         this.highlightedCell = cell;
