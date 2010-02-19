@@ -2,6 +2,7 @@ package org.openshapa.models.project;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.openshapa.models.db.MacshapaDatabase;
 
 /**
@@ -11,7 +12,7 @@ import org.openshapa.models.db.MacshapaDatabase;
 public final class Project {
 
     /** Project specification version. */
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
     /** Name of this project. */
     private String projectName;
     /** Project description. */
@@ -30,8 +31,7 @@ public final class Project {
     private long lastCreatedColID;
 
     /**
-     * Key   : file path
-     * Value : viewer settings for the medial file
+     * Key : file path Value : viewer settings for the medial file
      */
     private Map<String, ViewerSetting> viewerSettings;
     /** has this project been changed since it was created. */
@@ -53,25 +53,26 @@ public final class Project {
 
     /**
      * Sets the database associated with this project.
-     *
-     * @param newDB The new database to use with this project.
+     * 
+     * @param newDB
+     *            The new database to use with this project.
      */
     public void setDatabase(final MacshapaDatabase newDB) {
-        this.db = newDB;
+        db = newDB;
     }
 
     /**
      * Gets the database associated with this project.
-     *
+     * 
      * @return The single database to use with this project.
      */
     public MacshapaDatabase getDB() {
-        return this.db;
+        return db;
     }
 
-    public void setDatabasePath(String directory, String filename) {
-        this.databaseDir = directory;
-        this.databaseFile = filename;
+    public void setDatabasePath(final String directory, final String filename) {
+        databaseDir = directory;
+        databaseFile = filename;
         changed = true;
     }
 
@@ -83,12 +84,12 @@ public final class Project {
         return databaseFile;
     }
 
-    public void setDatabaseDir(String databaseDir) {
+    public void setDatabaseDir(final String databaseDir) {
         this.databaseDir = databaseDir;
         changed = true;
     }
 
-    public void setDatabaseFile(String databaseFile) {
+    public void setDatabaseFile(final String databaseFile) {
         this.databaseFile = databaseFile;
         changed = true;
     }
@@ -101,8 +102,8 @@ public final class Project {
     }
 
     /**
-     * @return True if a change has been made to either the project or
-     * the database, false otherwise.
+     * @return True if a change has been made to either the project or the
+     *         database, false otherwise.
      */
     public boolean isChanged() {
         return (changed || (db != null && db.isChanged()));
@@ -110,18 +111,20 @@ public final class Project {
 
     /**
      * Mark the project as changed.
-     *
-     * @param isChanged The state to use for the change status of the project.
-     * true = project has changed, false = project is unchanged.
+     * 
+     * @param isChanged
+     *            The state to use for the change status of the project. true =
+     *            project has changed, false = project is unchanged.
      */
     public void setChanged(final boolean isChanged) {
-        this.changed = isChanged;
+        changed = isChanged;
     }
 
     /**
      * Sets the name of the project.
-     *
-     * @param newProjectName The new name to use for this project.
+     * 
+     * @param newProjectName
+     *            The new name to use for this project.
      */
     public void setProjectName(final String newProjectName) {
         // Check Pre-conditions.
@@ -136,11 +139,12 @@ public final class Project {
         if (name.equals("")) {
             name = "Project1";
         }
-        this.projectName = name;
+        projectName = name;
         changed = true;
     }
 
-    public void setViewerSettings(Map<String, ViewerSetting> viewerSettings) {
+    public void setViewerSettings(
+            final Map<String, ViewerSetting> viewerSettings) {
         if (viewerSettings != null) {
             this.viewerSettings = viewerSettings;
             changed = true;
@@ -156,10 +160,10 @@ public final class Project {
 
     /**
      * @return Collection of viewer settings used for each media file being
-     * managed by OpenSHAPA.
+     *         managed by OpenSHAPA.
      */
     public Iterable<ViewerSetting> getMediaViewerSettings() {
-       return viewerSettings.values();
+        return viewerSettings.values();
     }
 
     public Map<String, ViewerSetting> getViewerSettings() {
@@ -173,23 +177,23 @@ public final class Project {
         return projectDescription;
     }
 
-    public void setProjectDescription(String projectDescription) {
+    public void setProjectDescription(final String projectDescription) {
         this.projectDescription = projectDescription;
     }
 
     /**
      * Add a new viewer for the project to manage.
-     *
-     * @param pluginName The name of the plugin used to manage the media file
-     * @param filePath The absolute path to the media file
-     * @param offset The playback offset of the media file
+     * 
+     * @param pluginName
+     *            The name of the plugin used to manage the media file
+     * @param filePath
+     *            The absolute path to the media file
      */
-    public void addViewerSetting(final String pluginName, final String filePath,
-            final long offset) {
+    public void addNewViewerSetting(final String pluginName,
+            final String filePath) {
         ViewerSetting vs = new ViewerSetting();
         vs.setPluginName(pluginName);
         vs.setFilePath(filePath);
-        vs.setOffset(offset);
 
         viewerSettings.put(filePath, vs);
 
@@ -197,11 +201,56 @@ public final class Project {
     }
 
     /**
+     * Modify the offset setting of a data viewer.
+     * 
+     * @param pluginName
+     *            The name of the plugin used to manage the media file
+     * @param filePath
+     *            The absolute path to the media file
+     * @param offset
+     *            The playback offset of the media file
+     */
+    public void addViewerOffsetSetting(final String pluginName,
+            final String filePath, final long offset) {
+        ViewerSetting vs = viewerSettings.get(filePath);
+        if (vs == null) {
+            return;
+        }
+
+        vs.setOffset(offset);
+
+        changed = true;
+    }
+
+    /**
+     * Modify the bookmark setting of a data viewer.
+     * 
+     * @param pluginName
+     *            The name of the plugin used to manage the media file
+     * @param filePath
+     *            The absolute path to the media file
+     * @param bookmark
+     *            The bookmark position of the media file
+     */
+    public void addViewerBookmarkSetting(final String pluginName,
+            final String filePath, final long bookmark) {
+        ViewerSetting vs = viewerSettings.get(filePath);
+        if (vs == null) {
+            return;
+        }
+
+        vs.setBookmark(bookmark);
+
+        changed = true;
+    }
+
+    /**
      * Remove a media file from the project.
-     *
-     * @param filePath The absolute path to the media file
+     * 
+     * @param filePath
+     *            The absolute path to the media file
      * @return the removed media file's viewer settings if it exists, null
-     * otherwise.
+     *         otherwise.
      */
     public ViewerSetting removeViewerSetting(final String filePath) {
         ViewerSetting vs = viewerSettings.remove(filePath);
@@ -220,12 +269,13 @@ public final class Project {
 
     /**
      * Sets the new state of this project.
-     *
-     * @param isNewProject The new state to use for this project: True if the
-     * project is new, false otherwise.
+     * 
+     * @param isNewProject
+     *            The new state to use for this project: True if the project is
+     *            new, false otherwise.
      */
     public void setNewProject(final boolean isNewProject) {
-        this.newProject = isNewProject;
+        newProject = isNewProject;
     }
 
     public void saveProject() {
@@ -242,8 +292,9 @@ public final class Project {
 
     /**
      * Sets the id of the last created cell to the specified parameter.
-     *
-     * @param newId The Id of the newly created cell.
+     * 
+     * @param newId
+     *            The Id of the newly created cell.
      */
     public void setLastCreatedCellId(final long newId) {
         lastCreatedCellID = newId;
@@ -258,8 +309,9 @@ public final class Project {
 
     /**
      * Sets the id of the last selected cell to the specified parameter.
-     *
-     * @param newId The id of hte newly selected cell.
+     * 
+     * @param newId
+     *            The id of hte newly selected cell.
      */
     public void setLastSelectedCellId(final long newId) {
         lastSelectedCellID = newId;
@@ -274,8 +326,9 @@ public final class Project {
 
     /**
      * Sets the id of the last created column to the specified parameter.
-     *
-     * @param newId The Id of the newly created column.
+     * 
+     * @param newId
+     *            The Id of the newly created column.
      */
     public void setLastCreatedColId(final long newId) {
         lastCreatedColID = newId;

@@ -13,7 +13,7 @@ public class CarriageEvent extends EventObject {
     private static final long serialVersionUID = 4009420871939032673L;
 
     public enum EventType {
-        OFFSET_CHANGE, BOOKMARK_REQUEST, CARRIAGE_SELECTION
+        BOOKMARK_CHANGED, BOOKMARK_REQUEST, CARRIAGE_SELECTION, OFFSET_CHANGE
     }
 
     /** Track identifier */
@@ -22,6 +22,8 @@ public class CarriageEvent extends EventObject {
     private final long offset;
     /** Duration of the track in milliseconds */
     private final long duration;
+    /** Track bookmark position in milliseconds */
+    private final long bookmark;
     /**
      * Temporal position of the mouse. Only meaningful for
      * EventType.OFFSET_CHANGE
@@ -30,12 +32,22 @@ public class CarriageEvent extends EventObject {
     /** What event does this represent */
     private final EventType eventType;
 
+    /**
+     * @param source
+     * @param trackId
+     * @param offset
+     * @param bookmark
+     * @param duration
+     * @param temporalPosition
+     * @param eventType
+     */
     public CarriageEvent(final Object source, final String trackId,
-            final long offset, final long duration,
+            final long offset, final long bookmark, final long duration,
             final long temporalPosition, final EventType eventType) {
         super(source);
         this.trackId = trackId;
         this.offset = offset;
+        this.bookmark = bookmark;
         this.duration = duration;
         this.temporalPosition = temporalPosition;
         this.eventType = eventType;
@@ -46,6 +58,13 @@ public class CarriageEvent extends EventObject {
      */
     public long getOffset() {
         return offset;
+    }
+
+    /**
+     * @return the bookmark
+     */
+    public long getBookmark() {
+        return bookmark;
     }
 
     /**

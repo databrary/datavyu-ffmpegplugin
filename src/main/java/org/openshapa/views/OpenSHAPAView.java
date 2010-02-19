@@ -1,53 +1,56 @@
 package org.openshapa.views;
 
-import com.usermetrix.jclient.UserMetrix;
-import org.openshapa.OpenSHAPA;
-import org.openshapa.OpenSHAPA.Platform;
-import org.openshapa.controllers.CreateNewCellC;
-import org.openshapa.controllers.NewDatabaseC;
-import org.openshapa.controllers.NewVariableC;
-import org.openshapa.controllers.RunScriptC;
-import org.openshapa.controllers.SetSheetLayoutC;
-import org.openshapa.controllers.VocabEditorC;
-import org.openshapa.util.FileFilters.CSVFilter;
-import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.LinkedList;
+
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
+
 import org.jdesktop.application.Action;
-import org.jdesktop.application.SingleFrameApplication;
-import org.jdesktop.application.FrameView;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.FrameView;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.controllers.OpenDatabaseC;
-import org.openshapa.models.db.MacshapaDatabase;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.util.Constants;
+import org.jdesktop.application.SingleFrameApplication;
 import org.openshapa.Configuration;
+import org.openshapa.OpenSHAPA;
+import org.openshapa.OpenSHAPA.Platform;
+import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.DeleteCellC;
 import org.openshapa.controllers.DeleteColumnC;
+import org.openshapa.controllers.NewDatabaseC;
 import org.openshapa.controllers.NewProjectC;
+import org.openshapa.controllers.NewVariableC;
+import org.openshapa.controllers.OpenDatabaseC;
 import org.openshapa.controllers.OpenProjectC;
+import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
+import org.openshapa.controllers.SetSheetLayoutC;
+import org.openshapa.controllers.VocabEditorC;
+import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.ViewerSetting;
 import org.openshapa.util.ArrayDirection;
+import org.openshapa.util.Constants;
+import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.PluginManager;
+import org.openshapa.views.discrete.SpreadsheetPanel;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * The main FrameView, representing the interface for OpenSHAPA the user will
@@ -57,22 +60,23 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * Constructor.
-     *
-     * @param app The SingleFrameApplication that invoked this main FrameView.
+     * 
+     * @param app
+     *            The SingleFrameApplication that invoked this main FrameView.
      */
     public OpenSHAPAView(final SingleFrameApplication app) {
         super(app);
-        KeyboardFocusManager manager = KeyboardFocusManager
-                                   .getCurrentKeyboardFocusManager();
+        KeyboardFocusManager manager =
+                KeyboardFocusManager.getCurrentKeyboardFocusManager();
 
         manager.addKeyEventDispatcher(new KeyEventDispatcher() {
             /**
              * Dispatches the keystroke to the correct action.
-             *
-             * @param evt The event that triggered this action.
-             *
-             * @return true if the KeyboardFocusManager should take no
-             * further action with regard to the KeyEvent; false otherwise.
+             * 
+             * @param evt
+             *            The event that triggered this action.
+             * @return true if the KeyboardFocusManager should take no further
+             *         action with regard to the KeyEvent; false otherwise.
              */
             public boolean dispatchKeyEvent(final KeyEvent evt) {
                 // Pass the keyevent onto the keyswitchboard so that it can
@@ -92,48 +96,48 @@ public final class OpenSHAPAView extends FrameView {
 
         // BugzID:521 + 468 - Define accelerator keys based on Operating system.
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-        weakTemporalOrderMenuItem.setAccelerator(KeyStroke
-                .getKeyStroke(KeyEvent.VK_T, keyMask));
+        weakTemporalOrderMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_T, keyMask));
 
-        strongTemporalOrderMenuItem .setAccelerator(KeyStroke
-                .getKeyStroke(KeyEvent.VK_T, InputEvent.SHIFT_MASK | keyMask));
+        strongTemporalOrderMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_T, InputEvent.SHIFT_MASK | keyMask));
 
         // This just sets the visual appearance of the accelerator - the actual
         // short cut is handled in org.openshapa.OpenSHAPA.dispatchKeyEvent.
         // Set zoom in to keyMask + '+'
-        zoomInMenuItem.setAccelerator(KeyStroke
-                .getKeyStroke(KeyEvent.VK_PLUS, keyMask));
+        zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
+                keyMask));
 
         // Set zoom out to keyMask + '-'
-        zoomOutMenuItem.setAccelerator(KeyStroke
-                .getKeyStroke(KeyEvent.VK_MINUS, keyMask));
+        zoomOutMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_MINUS, keyMask));
 
         // Set reset zoom to keyMask + '0'
-        resetZoomMenuItem.setAccelerator(KeyStroke
-                .getKeyStroke(KeyEvent.VK_0, keyMask));
+        resetZoomMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0,
+                keyMask));
 
         // Set the save accelerator to keyMask + 'S'
         saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-                                                           keyMask));
+                keyMask));
 
         // Set the open accelerator to keyMask + 'o';
         openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
-                                                           keyMask));
+                keyMask));
 
         // Set the new accelerator to keyMask + 'N';
         newMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
-                                                            keyMask));
+                keyMask));
 
         // Set the new accelerator to keyMask + 'L';
-        newCellLeftMenuItem.setAccelerator(KeyStroke
-                                         .getKeyStroke(KeyEvent.VK_L, keyMask));
+        newCellLeftMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_L, keyMask));
 
         // Set the new accelerator to keyMask + 'R';
-        newCellRightMenuItem.setAccelerator(KeyStroke
-                                         .getKeyStroke(KeyEvent.VK_R, keyMask));
+        newCellRightMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_R, keyMask));
 
-        this.panel = new SpreadsheetPanel(OpenSHAPA.getProject().getDB());
-        this.setComponent(panel);
+        panel = new SpreadsheetPanel(OpenSHAPA.getProject().getDB());
+        setComponent(panel);
 
     }
 
@@ -146,9 +150,9 @@ public final class OpenSHAPAView extends FrameView {
 
         // Show the project name instead of database.
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap = OpenSHAPA.getApplication()
-                                    .getContext()
-                                    .getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap =
+                OpenSHAPA.getApplication().getContext().getResourceMap(
+                        OpenSHAPA.class);
         String postFix = "";
         Project project = OpenSHAPA.getProject();
 
@@ -169,21 +173,13 @@ public final class OpenSHAPAView extends FrameView {
 
         String projectName = project.getProjectName();
         if (projectName != null) {
-            mainFrame.setTitle(rMap.getString("Application.title")
-                               + " - "
-                               + projectName
-                               + extension
-                               + postFix);
+            mainFrame.setTitle(rMap.getString("Application.title") + " - "
+                    + projectName + extension + postFix);
         } else {
-            mainFrame.setTitle(rMap.getString("Application.title")
-                               + " - "
-                               + "Project1"
-                               + extension
-                               + postFix);
+            mainFrame.setTitle(rMap.getString("Application.title") + " - "
+                    + "Project1" + extension + postFix);
         }
     }
-
-
 
     /**
      * Action for creating a new database.
@@ -213,8 +209,8 @@ public final class OpenSHAPAView extends FrameView {
         // If the user has not saved before - invoke the saveAs() controller to
         // force the user to nominate a destination file.
         Project openShapaProject = OpenSHAPA.getProject();
-        if (openShapaProject.isNewProject() ||
-                openShapaProject.getProjectName() == null) {
+        if (openShapaProject.isNewProject()
+                || openShapaProject.getProjectName() == null) {
             saveAs();
         } else if (openShapaProject.getDatabaseFile() == null) {
             saveAs();
@@ -236,7 +232,7 @@ public final class OpenSHAPAView extends FrameView {
 
         SaveC saveC = SaveC.getInstance();
 
-        int result = jd.showSaveDialog(this.getComponent());
+        int result = jd.showSaveDialog(getComponent());
 
         if (result == JFileChooser.APPROVE_OPTION) {
             FileFilter filter = jd.getFileFilter();
@@ -250,7 +246,7 @@ public final class OpenSHAPAView extends FrameView {
                 // Send it off to the controller
                 saveC.saveAsProject(jd.getSelectedFile().getParent(),
                         projectFileName);
-            // Save as a CSV database
+                // Save as a CSV database
             } else if (filter instanceof CSVFilter) {
                 String databaseFileName = jd.getSelectedFile().getName();
                 if (!databaseFileName.endsWith(".csv")) {
@@ -258,7 +254,7 @@ public final class OpenSHAPAView extends FrameView {
                 }
                 saveC.saveAsDatabase(jd.getSelectedFile().getParent(),
                         databaseFileName, filter);
-            // Save as a ODB database
+                // Save as a ODB database
             } else if (filter instanceof MODBFilter) {
                 String databaseFileName = jd.getSelectedFile().getName();
                 if (!databaseFileName.endsWith(".odb")) {
@@ -282,7 +278,7 @@ public final class OpenSHAPAView extends FrameView {
             jd.addChoosableFileFilter(new CSVFilter());
             jd.addChoosableFileFilter(new SHAPAFilter());
 
-            int result = jd.showOpenDialog(this.getComponent());
+            int result = jd.showOpenDialog(getComponent());
 
             if (result == JFileChooser.APPROVE_OPTION) {
                 OpenSHAPA.getApplication().closeOpenedWindows();
@@ -293,7 +289,7 @@ public final class OpenSHAPAView extends FrameView {
                 if (filter instanceof SHAPAFilter) {
                     SaveC.getInstance().setLastSaveOption(filter);
                     openProject(jd);
-                // Opening a database file
+                    // Opening a database file
                 } else {
                     SaveC.getInstance().setLastSaveOption(filter);
                     openDatabase(jd);
@@ -353,9 +349,9 @@ public final class OpenSHAPAView extends FrameView {
 
         // Create a fresh spreadsheet component and redraw the component.
         panel = new SpreadsheetPanel(OpenSHAPA.getProject().getDB());
-        this.setComponent(panel);
-        this.getComponent().revalidate();
-        this.getComponent().resetKeyboardActions();
+        setComponent(panel);
+        getComponent().revalidate();
+        getComponent().resetKeyboardActions();
     }
 
     /**
@@ -390,7 +386,8 @@ public final class OpenSHAPAView extends FrameView {
         try {
             MacshapaDatabase newDB = new MacshapaDatabase();
             OpenSHAPA.getProject().setDatabase(newDB);
-            OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
+            OpenSHAPAView s =
+                    (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
             s.showSpreadsheet();
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.
@@ -422,7 +419,9 @@ public final class OpenSHAPAView extends FrameView {
             try {
                 MacshapaDatabase newDB = new MacshapaDatabase();
                 OpenSHAPA.getProject().setDatabase(newDB);
-                OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
+                OpenSHAPAView s =
+                        (OpenSHAPAView) OpenSHAPA.getApplication()
+                                .getMainView();
                 s.showSpreadsheet();
                 newDB.setTicks(Constants.TICKS_PER_SECOND);
             } catch (SystemErrorException ex) {
@@ -430,9 +429,8 @@ public final class OpenSHAPAView extends FrameView {
             }
 
             // Load the database
-            new OpenDatabaseC(
-                    new File(openedProject.getDatabaseDir(),
-                             openedProject.getDatabaseFile()));
+            new OpenDatabaseC(new File(openedProject.getDatabaseDir(),
+                    openedProject.getDatabaseFile()));
 
             // Use the plugin manager to load up the data viewers
             PluginManager pm = PluginManager.getInstance();
@@ -450,7 +448,8 @@ public final class OpenSHAPAView extends FrameView {
                 viewer.setOffset(setting.getOffset());
                 dataController.addViewer(viewer);
                 dataController.addTrack(file.getAbsolutePath(), file.getName(),
-                        viewer.getDuration(), viewer.getOffset());
+                        viewer.getDuration(), viewer.getOffset(), setting
+                                .getBookmark());
             }
 
             // Show the data controller
@@ -490,12 +489,13 @@ public final class OpenSHAPAView extends FrameView {
         OpenSHAPA.getApplication().exit();
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed"
+    // desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
@@ -546,33 +546,36 @@ public final class OpenSHAPAView extends FrameView {
 
         jLabel1.setName("jLabel1"); // NOI18N
 
-        org.jdesktop.layout.GroupLayout mainPanelLayout = new org.jdesktop.layout.GroupLayout(mainPanel);
+        org.jdesktop.layout.GroupLayout mainPanelLayout =
+                new org.jdesktop.layout.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
-        mainPanelLayout.setHorizontalGroup(
-            mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(mainPanelLayout.createSequentialGroup()
-                .add(119, 119, 119)
-                .add(jLabel1)
-                .addContainerGap(149, Short.MAX_VALUE))
-        );
-        mainPanelLayout.setVerticalGroup(
-            mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(mainPanelLayout.createSequentialGroup()
-                .add(55, 55, 55)
-                .add(jLabel1)
-                .addContainerGap(184, Short.MAX_VALUE))
-        );
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(OpenSHAPAView.class);
+        mainPanelLayout.setHorizontalGroup(mainPanelLayout.createParallelGroup(
+                org.jdesktop.layout.GroupLayout.LEADING).add(
+                mainPanelLayout.createSequentialGroup().add(119, 119, 119).add(
+                        jLabel1).addContainerGap(149, Short.MAX_VALUE)));
+        mainPanelLayout.setVerticalGroup(mainPanelLayout.createParallelGroup(
+                org.jdesktop.layout.GroupLayout.LEADING).add(
+                mainPanelLayout.createSequentialGroup().add(55, 55, 55).add(
+                        jLabel1).addContainerGap(184, Short.MAX_VALUE)));
+        org.jdesktop.application.ResourceMap resourceMap =
+                org.jdesktop.application.Application.getInstance(
+                        org.openshapa.OpenSHAPA.class).getContext()
+                        .getResourceMap(OpenSHAPAView.class);
         resourceMap.injectComponents(mainPanel);
 
         menuBar.setName("menuBar"); // NOI18N
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(OpenSHAPAView.class, this);
+        javax.swing.ActionMap actionMap =
+                org.jdesktop.application.Application.getInstance(
+                        org.openshapa.OpenSHAPA.class).getContext()
+                        .getActionMap(OpenSHAPAView.class, this);
         fileMenu.setAction(actionMap.get("saveAs")); // NOI18N
         fileMenu.setName("fileMenu"); // NOI18N
 
         newMenuItem.setAction(actionMap.get("showNewProjectForm")); // NOI18N
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openshapa/views/resources/OpenSHAPAView"); // NOI18N
+        java.util.ResourceBundle bundle =
+                java.util.ResourceBundle
+                        .getBundle("org/openshapa/views/resources/OpenSHAPAView"); // NOI18N
         newMenuItem.setText(bundle.getString("file_new.text")); // NOI18N
         newMenuItem.setName("newMenuItem"); // NOI18N
         fileMenu.add(newMenuItem);
@@ -609,12 +612,14 @@ public final class OpenSHAPAView extends FrameView {
         spreadsheetMenu.setAction(actionMap.get("showQTVideoController")); // NOI18N
         spreadsheetMenu.setName("spreadsheetMenu"); // NOI18N
         spreadsheetMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(final javax.swing.event.MenuEvent evt) {
                 spreadsheetMenuMenuSelected(evt);
             }
-            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+
+            public void menuDeselected(final javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+
+            public void menuCanceled(final javax.swing.event.MenuEvent evt) {
             }
         });
 
@@ -642,40 +647,48 @@ public final class OpenSHAPAView extends FrameView {
 
         newCellMenuItem.setName("newCellMenuItem"); // NOI18N
         newCellMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(final java.awt.event.ActionEvent evt) {
                 newCellMenuItemActionPerformed(evt);
             }
         });
         spreadsheetMenu.add(newCellMenuItem);
 
-        newCellLeftMenuItem.setText(resourceMap.getString("newCellLeftMenuItemSingle.text")); // NOI18N
+        newCellLeftMenuItem.setText(resourceMap
+                .getString("newCellLeftMenuItemSingle.text")); // NOI18N
         newCellLeftMenuItem.setName("newCellLeftMenuItem"); // NOI18N
-        newCellLeftMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newCellLeftMenuItemActionPerformed(evt);
-            }
-        });
+        newCellLeftMenuItem
+                .addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(
+                            final java.awt.event.ActionEvent evt) {
+                        newCellLeftMenuItemActionPerformed(evt);
+                    }
+                });
         spreadsheetMenu.add(newCellLeftMenuItem);
 
-        newCellRightMenuItem.setText(resourceMap.getString("newCellRightMenuItemSingle.text")); // NOI18N
+        newCellRightMenuItem.setText(resourceMap
+                .getString("newCellRightMenuItemSingle.text")); // NOI18N
         newCellRightMenuItem.setName("newCellRightMenuItem"); // NOI18N
-        newCellRightMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newCellRightMenuItemActionPerformed(evt);
-            }
-        });
+        newCellRightMenuItem
+                .addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(
+                            final java.awt.event.ActionEvent evt) {
+                        newCellRightMenuItemActionPerformed(evt);
+                    }
+                });
         spreadsheetMenu.add(newCellRightMenuItem);
 
         jSeparator3.setName("jSeparator3"); // NOI18N
         spreadsheetMenu.add(jSeparator3);
 
         deleteColumnMenuItem.setAction(actionMap.get("deleteColumn")); // NOI18N
-        deleteColumnMenuItem.setText(resourceMap.getString("deleteColumnMenuItemSingle.text")); // NOI18N
+        deleteColumnMenuItem.setText(resourceMap
+                .getString("deleteColumnMenuItemSingle.text")); // NOI18N
         deleteColumnMenuItem.setName("deleteColumnMenuItem"); // NOI18N
         spreadsheetMenu.add(deleteColumnMenuItem);
 
         deleteCellMenuItem.setAction(actionMap.get("deleteCells")); // NOI18N
-        deleteCellMenuItem.setText(resourceMap.getString("deleteCellMenuItemSingle.text")); // NOI18N
+        deleteCellMenuItem.setText(resourceMap
+                .getString("deleteCellMenuItemSingle.text")); // NOI18N
         deleteCellMenuItem.setName("deleteCellMenuItem"); // NOI18N
         spreadsheetMenu.add(deleteCellMenuItem);
 
@@ -683,26 +696,30 @@ public final class OpenSHAPAView extends FrameView {
         spreadsheetMenu.add(jSeparator6);
 
         weakTemporalOrderMenuItem.setName("weakTemporalOrderMenuItem"); // NOI18N
-        weakTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                weakTemporalMenuItemActionPerformed(evt);
-            }
-        });
+        weakTemporalOrderMenuItem
+                .addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(
+                            final java.awt.event.ActionEvent evt) {
+                        weakTemporalMenuItemActionPerformed(evt);
+                    }
+                });
         spreadsheetMenu.add(weakTemporalOrderMenuItem);
 
         strongTemporalOrderMenuItem.setName("strongTemporalOrderMenuItem"); // NOI18N
-        strongTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                strongTemporalMenuItemActionPerformed(evt);
-            }
-        });
+        strongTemporalOrderMenuItem
+                .addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(
+                            final java.awt.event.ActionEvent evt) {
+                        strongTemporalMenuItemActionPerformed(evt);
+                    }
+                });
         spreadsheetMenu.add(strongTemporalOrderMenuItem);
 
         zoomMenu.setName("zoomMenu"); // NOI18N
 
         zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
         zoomInMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(final java.awt.event.ActionEvent evt) {
                 zoomInMenuItemActionPerformed(evt);
             }
         });
@@ -710,7 +727,7 @@ public final class OpenSHAPAView extends FrameView {
 
         zoomOutMenuItem.setName("zoomOutMenuItem"); // NOI18N
         zoomOutMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(final java.awt.event.ActionEvent evt) {
                 zoomOutMenuItemActionPerformed(evt);
             }
         });
@@ -720,11 +737,13 @@ public final class OpenSHAPAView extends FrameView {
         zoomMenu.add(jSeparator5);
 
         resetZoomMenuItem.setName("resetZoomMenuItem"); // NOI18N
-        resetZoomMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetZoomMenuItemActionPerformed(evt);
-            }
-        });
+        resetZoomMenuItem
+                .addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(
+                            final java.awt.event.ActionEvent evt) {
+                        resetZoomMenuItemActionPerformed(evt);
+                    }
+                });
         zoomMenu.add(resetZoomMenuItem);
 
         spreadsheetMenu.add(zoomMenu);
@@ -741,12 +760,14 @@ public final class OpenSHAPAView extends FrameView {
 
         scriptMenu.setName("scriptMenu"); // NOI18N
         scriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
+            public void menuSelected(final javax.swing.event.MenuEvent evt) {
                 populateFavourites(evt);
             }
-            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+
+            public void menuDeselected(final javax.swing.event.MenuEvent evt) {
             }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+
+            public void menuCanceled(final javax.swing.event.MenuEvent evt) {
             }
         });
 
@@ -755,15 +776,21 @@ public final class OpenSHAPAView extends FrameView {
         scriptMenu.add(runScriptMenuItem);
 
         runRecentScriptMenu.setName("runRecentScriptMenu"); // NOI18N
-        runRecentScriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
-            public void menuSelected(javax.swing.event.MenuEvent evt) {
-                populateRecentScripts(evt);
-            }
-            public void menuDeselected(javax.swing.event.MenuEvent evt) {
-            }
-            public void menuCanceled(javax.swing.event.MenuEvent evt) {
-            }
-        });
+        runRecentScriptMenu
+                .addMenuListener(new javax.swing.event.MenuListener() {
+                    public void menuSelected(
+                            final javax.swing.event.MenuEvent evt) {
+                        populateRecentScripts(evt);
+                    }
+
+                    public void menuDeselected(
+                            final javax.swing.event.MenuEvent evt) {
+                    }
+
+                    public void menuCanceled(
+                            final javax.swing.event.MenuEvent evt) {
+                    }
+                });
 
         recentScriptsHeader.setEnabled(false);
         recentScriptsHeader.setName("recentScriptsHeader"); // NOI18N
@@ -801,31 +828,36 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects 'strong temporal ordering'.
-     *
-     * @param evt The event that fired this action.
+     * 
+     * @param evt
+     *            The event that fired this action.
      */
-    private void strongTemporalMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_strongTemporalMenuItemActionPerformed
+    private void strongTemporalMenuItemActionPerformed(
+            final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_strongTemporalMenuItemActionPerformed
         weakTemporalOrderMenuItem.setSelected(false);
         setSheetLayout();
-}//GEN-LAST:event_strongTemporalMenuItemActionPerformed
+    }// GEN-LAST:event_strongTemporalMenuItemActionPerformed
 
     /**
      * The action to invoke when the user selects 'weak temporal ordering'.
-     *
-     * @param evt The event that fired this action.
+     * 
+     * @param evt
+     *            The event that fired this action.
      */
-    private void weakTemporalMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_weakTemporalMenuItemActionPerformed
+    private void weakTemporalMenuItemActionPerformed(
+            final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_weakTemporalMenuItemActionPerformed
         strongTemporalOrderMenuItem.setSelected(false);
         setSheetLayout();
-}//GEN-LAST:event_weakTemporalMenuItemActionPerformed
+    }// GEN-LAST:event_weakTemporalMenuItemActionPerformed
 
     /**
      * The action to invoke when the user selects 'recent scripts' from the
      * scripting menu.
-     *
-     * @param evt The event that fired this action.
+     * 
+     * @param evt
+     *            The event that fired this action.
      */
-    private void populateRecentScripts(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_populateRecentScripts
+    private void populateRecentScripts(final javax.swing.event.MenuEvent evt) {// GEN-FIRST:event_populateRecentScripts
         // Flush the menu - excluding the top menu item.
         int size = runRecentScriptMenu.getMenuComponentCount();
         for (int i = 1; i < size; i++) {
@@ -836,17 +868,18 @@ public final class OpenSHAPAView extends FrameView {
         for (File f : lastScripts) {
             runRecentScriptMenu.add(createScriptMenuItemFromFile(f));
         }
-}//GEN-LAST:event_populateRecentScripts
+    }// GEN-LAST:event_populateRecentScripts
 
     /** The directory holding a users favourite scripts. */
     static final String FAV_DIR = "favourites";
 
     /**
      * The action to invoke when the user selects 'scripts' from the main menu.
-     *
-     * @param evt The event that fired this action.
+     * 
+     * @param evt
+     *            The event that fired this action.
      */
-    private void populateFavourites(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_populateFavourites
+    private void populateFavourites(final javax.swing.event.MenuEvent evt) {// GEN-FIRST:event_populateFavourites
         // Favourite script list starts after the 'favScripts' menu item - which
         // is just a stub for a starting point. Search for the favScripts as the
         // starting point for deleting existing scripts from the menu.
@@ -875,132 +908,150 @@ public final class OpenSHAPAView extends FrameView {
                 scriptMenu.add(createScriptMenuItemFromFile(f));
             }
         }
-    }//GEN-LAST:event_populateFavourites
+    }// GEN-LAST:event_populateFavourites
 
-    /**=
-     * Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL points.
-     * @param evt The event that triggered this action.
+    /**
+     * = Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL
+     * points.
+     * 
+     * @param evt
+     *            The event that triggered this action.
      */
-    private void zoomInMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomInMenuItemActionPerformed
+    private void zoomInMenuItemActionPerformed(
+            final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_zoomInMenuItemActionPerformed
         changeFontSize(ZOOM_INTERVAL);
-    }//GEN-LAST:event_zoomInMenuItemActionPerformed
+    }// GEN-LAST:event_zoomInMenuItemActionPerformed
 
     /**
      * Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL points.
+     * 
      * @param evt
      */
-    private void zoomOutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoomOutMenuItemActionPerformed
+    private void zoomOutMenuItemActionPerformed(
+            final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_zoomOutMenuItemActionPerformed
         changeFontSize(-ZOOM_INTERVAL);
-    }//GEN-LAST:event_zoomOutMenuItemActionPerformed
+    }// GEN-LAST:event_zoomOutMenuItemActionPerformed
 
     /**
      * Function to reset the zoom level to the default size.
-     * @param evt The event that triggered this action.
+     * 
+     * @param evt
+     *            The event that triggered this action.
      */
-    private void resetZoomMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetZoomMenuItemActionPerformed
+    private void resetZoomMenuItemActionPerformed(
+            final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_resetZoomMenuItemActionPerformed
 
         Configuration config = Configuration.getInstance();
         Font f = config.getSSDataFont();
 
         changeFontSize(ZOOM_DEFAULT_SIZE - f.getSize());
-    }//GEN-LAST:event_resetZoomMenuItemActionPerformed
+    }// GEN-LAST:event_resetZoomMenuItemActionPerformed
 
     /**
      * The method to invoke when the use selects the spreadsheet menu item.
-     *
-     * @param evt The event that triggered this action.
+     * 
+     * @param evt
+     *            The event that triggered this action.
      */
-    private void spreadsheetMenuMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_spreadsheetMenuMenuSelected
+    private void spreadsheetMenuMenuSelected(
+            final javax.swing.event.MenuEvent evt) {// GEN-FIRST:event_spreadsheetMenuMenuSelected
 
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                           .getContext().getResourceMap(OpenSHAPAView.class);
+        ResourceMap rMap =
+                Application.getInstance(OpenSHAPA.class).getContext()
+                        .getResourceMap(OpenSHAPAView.class);
         if (panel.getSelectedCols().size() == 0) {
-            this.deleteColumnMenuItem.setEnabled(false);
+            deleteColumnMenuItem.setEnabled(false);
         } else if (panel.getSelectedCols().size() == 1) {
             deleteColumnMenuItem.setText(rMap
-                                 .getString("deleteColumnMenuItemSingle.text"));
-            this.deleteColumnMenuItem.setEnabled(true);
+                    .getString("deleteColumnMenuItemSingle.text"));
+            deleteColumnMenuItem.setEnabled(true);
         } else {
             deleteColumnMenuItem.setText(rMap
-                                 .getString("deleteColumnMenuItemPlural.text"));
-            this.deleteColumnMenuItem.setEnabled(true);
+                    .getString("deleteColumnMenuItemPlural.text"));
+            deleteColumnMenuItem.setEnabled(true);
         }
 
         if (panel.getSelectedCells().size() == 0) {
-            this.deleteCellMenuItem.setEnabled(false);
+            deleteCellMenuItem.setEnabled(false);
         } else if (panel.getSelectedCells().size() == 1) {
             deleteCellMenuItem.setText(rMap
-                                   .getString("deleteCellMenuItemSingle.text"));
-            this.deleteCellMenuItem.setEnabled(true);
+                    .getString("deleteCellMenuItemSingle.text"));
+            deleteCellMenuItem.setEnabled(true);
         } else {
             deleteCellMenuItem.setText(rMap
-                                   .getString("deleteCellMenuItemPlural.text"));
-            this.deleteCellMenuItem.setEnabled(true);
+                    .getString("deleteCellMenuItemPlural.text"));
+            deleteCellMenuItem.setEnabled(true);
         }
 
         if (panel.getAdjacentSelectedCells(ArrayDirection.LEFT) == 0) {
-            this.newCellLeftMenuItem.setEnabled(false);
+            newCellLeftMenuItem.setEnabled(false);
         } else if (panel.getAdjacentSelectedCells(ArrayDirection.LEFT) == 1) {
-            this.newCellLeftMenuItem.setText(rMap
-                                  .getString("newCellLeftMenuItemSingle.text"));
-            this.newCellLeftMenuItem.setEnabled(true);
+            newCellLeftMenuItem.setText(rMap
+                    .getString("newCellLeftMenuItemSingle.text"));
+            newCellLeftMenuItem.setEnabled(true);
         } else {
-            this.newCellLeftMenuItem.setText(rMap
-                                  .getString("newCellLeftMenuItemPlural.text"));
-            this.newCellLeftMenuItem.setEnabled(true);
+            newCellLeftMenuItem.setText(rMap
+                    .getString("newCellLeftMenuItemPlural.text"));
+            newCellLeftMenuItem.setEnabled(true);
         }
 
         if (panel.getAdjacentSelectedCells(ArrayDirection.RIGHT) == 0) {
-            this.newCellRightMenuItem.setEnabled(false);
+            newCellRightMenuItem.setEnabled(false);
         } else if (panel.getAdjacentSelectedCells(ArrayDirection.RIGHT) == 1) {
-            this.newCellRightMenuItem.setText(rMap
-                                 .getString("newCellRightMenuItemSingle.text"));
-            this.newCellRightMenuItem.setEnabled(true);
+            newCellRightMenuItem.setText(rMap
+                    .getString("newCellRightMenuItemSingle.text"));
+            newCellRightMenuItem.setEnabled(true);
         } else {
-            this.newCellRightMenuItem.setText(rMap
-                                 .getString("newCellRightMenuItemPlural.text"));
-            this.newCellRightMenuItem.setEnabled(true);
+            newCellRightMenuItem.setText(rMap
+                    .getString("newCellRightMenuItemPlural.text"));
+            newCellRightMenuItem.setEnabled(true);
         }
-    }//GEN-LAST:event_spreadsheetMenuMenuSelected
+    }// GEN-LAST:event_spreadsheetMenuMenuSelected
 
     /**
      * The action to invoke when the user selects new cell from the menu.
-     *
-     * @param evt The event that fired this action.
+     * 
+     * @param evt
+     *            The event that fired this action.
      */
-    private void newCellMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellMenuItemActionPerformed
+    private void newCellMenuItemActionPerformed(
+            final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_newCellMenuItemActionPerformed
         new CreateNewCellC();
-}//GEN-LAST:event_newCellMenuItemActionPerformed
+    }// GEN-LAST:event_newCellMenuItemActionPerformed
 
     /**
      * The action to invoke when the user selects new cell to the left from the
      * menu.
-     *
-     * @param evt The event that fired this action.
+     * 
+     * @param evt
+     *            The event that fired this action.
      */
-    private void newCellLeftMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellLeftMenuItemActionPerformed
+    private void newCellLeftMenuItemActionPerformed(
+            final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_newCellLeftMenuItemActionPerformed
         new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.LEFT);
-    }//GEN-LAST:event_newCellLeftMenuItemActionPerformed
+    }// GEN-LAST:event_newCellLeftMenuItemActionPerformed
 
     /**
      * The action to invoke when the user selects new cell to the right from the
      * menu.
-     *
-     * @param evt The event that fired this action.
+     * 
+     * @param evt
+     *            The event that fired this action.
      */
-    private void newCellRightMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newCellRightMenuItemActionPerformed
+    private void newCellRightMenuItemActionPerformed(
+            final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_newCellRightMenuItemActionPerformed
         new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.RIGHT);
-    }//GEN-LAST:event_newCellRightMenuItemActionPerformed
+    }// GEN-LAST:event_newCellRightMenuItemActionPerformed
 
     /**
-     * Changes the font size by adding sizeDif to the current size.  Then it
-     * creates and revalidates a new panel to show the font update.
-     *
-     * This will not make the font smaller than smallestSize.
-     *
-     * @param sizeDif The number to add to the current font size.
+     * Changes the font size by adding sizeDif to the current size. Then it
+     * creates and revalidates a new panel to show the font update. This will
+     * not make the font smaller than smallestSize.
+     * 
+     * @param sizeDif
+     *            The number to add to the current font size.
      */
-    public void changeFontSize(int sizeDif) {
+    public void changeFontSize(final int sizeDif) {
         Configuration config = Configuration.getInstance();
         Font f = config.getSSDataFont();
         int size = f.getSize();
@@ -1016,15 +1067,17 @@ public final class OpenSHAPAView extends FrameView {
 
         config.setSSDataFont(biggerFont);
 
-        //Create and redraw fresh window pane so all of the fonts are new again.
+        // Create and redraw fresh window pane so all of the fonts are new
+        // again.
         panel.revalidate();
         panel.repaint();
     }
 
     /**
      * Creates a new menu item for running a named script.
-     *
-     * @param f The file to run when menu item is selected.
+     * 
+     * @param f
+     *            The file to run when menu item is selected.
      * @return The jmenuitem that can be added to a menu.
      */
     public JMenuItem createScriptMenuItemFromFile(final File f) {
@@ -1032,7 +1085,7 @@ public final class OpenSHAPAView extends FrameView {
         menuItem.setText(f.toString());
         menuItem.setName(f.toString());
         menuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(final java.awt.event.ActionEvent evt) {
                 runRecentScript(evt);
             }
         });
@@ -1042,15 +1095,17 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects a recent script to run.
-     *
-     * @param evt The event that triggered this action.
+     * 
+     * @param evt
+     *            The event that triggered this action.
      */
-    private void runRecentScript(java.awt.event.ActionEvent evt) {
+    private void runRecentScript(final java.awt.event.ActionEvent evt) {
         new RunScriptC(evt.getActionCommand());
     }
 
     /**
      * Returns SpreadsheetPanel
+     * 
      * @return SpreadsheetPanel panel
      */
     public SpreadsheetPanel getSpreadsheetPanel() {
@@ -1100,11 +1155,11 @@ public final class OpenSHAPAView extends FrameView {
     private javax.swing.JMenuItem zoomOutMenuItem;
     // End of variables declaration//GEN-END:variables
 
-    //Variable for the amount to raise the font size by when zooming.
+    // Variable for the amount to raise the font size by when zooming.
     public static final int ZOOM_INTERVAL = 4;
     public static final int ZOOM_DEFAULT_SIZE = 14;
 
-    //Variables to set the maximum zoom and minimum zoom.
+    // Variables to set the maximum zoom and minimum zoom.
     public static final int ZOOM_MAX_SIZE = 42;
     public static final int ZOOM_MIN_SIZE = 8;
 

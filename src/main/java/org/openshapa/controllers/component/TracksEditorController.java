@@ -55,7 +55,7 @@ public class TracksEditorController implements TrackMouseEventListener {
         return snapMarkerController.getView();
     }
 
-    public void setViewableModel(ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel viewableModel) {
         /*
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
@@ -74,13 +74,15 @@ public class TracksEditorController implements TrackMouseEventListener {
         snapMarkerController.setViewableModel(viewableModel);
     }
 
-    public void addNewTrack(String mediaPath, String trackName, long duration,
-            long offset, CarriageEventListener listener) {
+    public void addNewTrack(final String mediaPath, final String trackName,
+            final long duration, final long offset, final long bookmark,
+            final CarriageEventListener listener) {
         // TrackController
         TrackController trackController = new TrackController();
         trackController.setViewableModel(viewableModel);
         trackController.setTrackInformation(trackName, mediaPath, duration,
                 offset);
+        trackController.addBookmark(bookmark);
         if (duration < 0) {
             trackController.setErroneous(true);
         }
@@ -101,7 +103,8 @@ public class TracksEditorController implements TrackMouseEventListener {
         editingPanel.validate();
     }
 
-    public boolean removeTrack(String mediaPath, CarriageEventListener listener) {
+    public boolean removeTrack(final String mediaPath,
+            final CarriageEventListener listener) {
         Iterator<Track> allTracks = tracks.iterator();
         while (allTracks.hasNext()) {
             Track track = allTracks.next();
@@ -317,12 +320,12 @@ public class TracksEditorController implements TrackMouseEventListener {
     /**
      * @param allowSnap
      */
-    public void setAllowSnap(boolean allowSnap) {
+    public void setAllowSnap(final boolean allowSnap) {
         this.allowSnap = allowSnap;
     }
 
     // Handles a mouse released event on a track.
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(final MouseEvent e) {
         snapMarkerController.setMarkerTime(-1);
     }
 

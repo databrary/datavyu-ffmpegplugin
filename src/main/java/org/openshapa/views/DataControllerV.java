@@ -833,7 +833,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         openVideoButton.setMinimumSize(new java.awt.Dimension(90, 25));
         openVideoButton.setPreferredSize(new java.awt.Dimension(90, 25));
         openVideoButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(final java.awt.event.ActionEvent evt) {
                 openVideoButtonActionPerformed(evt);
             }
         });
@@ -932,7 +932,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         showTracksButton.setMinimumSize(new java.awt.Dimension(73, 45));
         showTracksButton.setPreferredSize(new java.awt.Dimension(73, 45));
         showTracksButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(final java.awt.event.ActionEvent evt) {
                 showTracksButtonActionPerformed(evt);
             }
         });
@@ -961,7 +961,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
      * @param evt
      *            The event that triggered this action.
      */
-    private void openVideoButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_openVideoButtonActionPerformed
+    private void openVideoButtonActionPerformed(
+            final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_openVideoButtonActionPerformed
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
         PluginManager pm = PluginManager.getInstance();
 
@@ -986,7 +987,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
      * @param evt
      *            The event that triggered this action.
      */
-    private void showTracksButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_showTracksButtonActionPerformed
+    private void showTracksButtonActionPerformed(
+            final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_showTracksButtonActionPerformed
         assert (evt.getSource() instanceof JButton);
         JButton button = (JButton) evt.getSource();
         ResourceMap resourceMap =
@@ -1014,12 +1016,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
     private void addDataViewer(final DataViewer viewer, final File f) {
         addViewer(viewer);
 
-        addDataViewerToProject(viewer.getClass().getName(),
-                f.getAbsolutePath(), viewer.getOffset());
+        addDataViewerToProject(viewer.getClass().getName(), f.getAbsolutePath());
 
         // Add the file to the tracks information panel
         addTrack(f.getAbsolutePath(), f.getName(), viewer.getDuration(), viewer
-                .getOffset());
+                .getOffset(), -1);
     }
 
     /**
@@ -1035,8 +1036,9 @@ public final class DataControllerV extends OpenSHAPADialog implements
      *            The time offset of the data feed in milliseconds.
      */
     public void addTrack(final String mediaPath, final String name,
-            final long duration, final long offset) {
-        mixerControllerV.addNewTrack(mediaPath, name, duration, offset);
+            final long duration, final long offset, final long bookmark) {
+        mixerControllerV.addNewTrack(mediaPath, name, duration, offset,
+                bookmark);
     }
 
     /**
@@ -1046,13 +1048,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
      *            Fully qualified plugin class name.
      * @param filePath
      *            Absolute file path to the data feed.
-     * @param offset
-     *            The time offset of the data feed in milliseconds.
      */
     public void addDataViewerToProject(final String pluginName,
-            final String filePath, final long offset) {
+            final String filePath) {
         Project project = OpenSHAPA.getProject();
-        project.addViewerSetting(pluginName, filePath, offset);
+        project.addNewViewerSetting(pluginName, filePath);
         OpenSHAPA.getApplication().updateTitle();
     }
 
@@ -1115,7 +1115,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
      * 
      * @param e
      */
-    public void tracksControllerChanged(TracksControllerEvent e) {
+    public void tracksControllerChanged(final TracksControllerEvent e) {
         switch (e.getTracksEvent()) {
         case NEEDLE_EVENT:
             handleNeedleEvent((NeedleEvent) e.getEventObject());
@@ -1138,7 +1138,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
      * @param e
      *            The Needle event that triggered this action.
      */
-    private void handleNeedleEvent(NeedleEvent e) {
+    private void handleNeedleEvent(final NeedleEvent e) {
         long newTime = e.getTime();
         if (newTime < windowPlayStart) {
             newTime = windowPlayStart;
@@ -1159,7 +1159,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
      * @param e
      *            The Marker Event that triggered this action.
      */
-    private void handleMarkerEvent(MarkerEvent e) {
+    private void handleMarkerEvent(final MarkerEvent e) {
         final long newWindowTime = e.getTime();
         final long tracksTime = mixerControllerV.getCurrentTime();
         switch (e.getMarker()) {
@@ -1198,60 +1198,77 @@ public final class DataControllerV extends OpenSHAPADialog implements
      * @param e
      *            The carriage event that triggered this action.
      */
-    private void handleCarriageEvent(CarriageEvent e) {
-        // Look through our data viewers and update the offset
-        Iterator<DataViewer> itOffset = viewers.iterator();
-        while (itOffset.hasNext()) {
-            DataViewer dv = itOffset.next();
-            File feed = dv.getDataFeed();
-            /*
-             * Found our data viewer, update the DV offset and the settings in
-             * the project file.
-             */
-            if (feed.getAbsolutePath().equals(e.getTrackId())) {
-                dv.setOffset(e.getOffset());
-                Project project = OpenSHAPA.getProject();
-                project.removeViewerSetting(e.getTrackId());
-                project.addViewerSetting(dv.getClass().getName(), e
-                        .getTrackId(), e.getOffset());
-                OpenSHAPA.getApplication().updateTitle();
+    private void handleCarriageEvent(final CarriageEvent e) {
+        switch (e.getEventType()) {
+        case OFFSET_CHANGE:
+            // Look through our data viewers and update the offset
+            Iterator<DataViewer> itOffset = viewers.iterator();
+            while (itOffset.hasNext()) {
+                DataViewer dv = itOffset.next();
+                File feed = dv.getDataFeed();
+                /*
+                 * Found our data viewer, update the DV offset and the settings
+                 * in the project file.
+                 */
+                if (feed.getAbsolutePath().equals(e.getTrackId())) {
+                    dv.setOffset(e.getOffset());
+                    Project project = OpenSHAPA.getProject();
+                    project.addViewerOffsetSetting(dv.getClass().getName(), e
+                            .getTrackId(), e.getOffset());
+                    OpenSHAPA.getApplication().updateTitle();
+                }
+            }
+
+            // Recalculate the maximum playback duration.
+            maxDuration = 0;
+            Iterator<DataViewer> itDuration = viewers.iterator();
+            while (itDuration.hasNext()) {
+                DataViewer dv = itDuration.next();
+                if (dv.getDuration() + dv.getOffset() > maxDuration) {
+                    maxDuration = dv.getDuration() + dv.getOffset();
+                }
+            }
+            mixerControllerV.setMaxEnd(maxDuration);
+
+            // Reset our playback windows
+            if (windowPlayEnd > maxDuration) {
+                windowPlayEnd = maxDuration;
+                mixerControllerV.setPlayRegionEnd(windowPlayEnd);
+            }
+
+            if (windowPlayStart > windowPlayEnd) {
+                windowPlayStart = 0;
+                mixerControllerV.setPlayRegionStart(windowPlayStart);
+            }
+
+            // Reset the time if needed
+            long tracksTime = mixerControllerV.getCurrentTime();
+            if (tracksTime < windowPlayStart) {
+                tracksTime = windowPlayStart;
+            }
+            if (tracksTime > windowPlayEnd) {
+                tracksTime = windowPlayEnd;
+            }
+            mixerControllerV.setCurrentTime(tracksTime);
+
+            clock.setTime(tracksTime);
+            clockStep(tracksTime);
+            break;
+        case BOOKMARK_CHANGED:
+            // Look through our data viewers and update the bookmark
+            Iterator<DataViewer> viewerIterator = viewers.iterator();
+            while (viewerIterator.hasNext()) {
+                DataViewer dv = viewerIterator.next();
+                File feed = dv.getDataFeed();
+
+                if (feed.getAbsolutePath().equals(e.getTrackId())) {
+                    Project project = OpenSHAPA.getProject();
+                    project.addViewerBookmarkSetting(dv.getClass().getName(), e
+                            .getTrackId(), e.getBookmark());
+                    OpenSHAPA.getApplication().updateTitle();
+                }
             }
         }
-
-        // Recalculate the maximum playback duration.
-        maxDuration = 0;
-        Iterator<DataViewer> itDuration = viewers.iterator();
-        while (itDuration.hasNext()) {
-            DataViewer dv = itDuration.next();
-            if (dv.getDuration() + dv.getOffset() > maxDuration) {
-                maxDuration = dv.getDuration() + dv.getOffset();
-            }
-        }
-        mixerControllerV.setMaxEnd(maxDuration);
-
-        // Reset our playback windows
-        if (windowPlayEnd > maxDuration) {
-            windowPlayEnd = maxDuration;
-            mixerControllerV.setPlayRegionEnd(windowPlayEnd);
-        }
-
-        if (windowPlayStart > windowPlayEnd) {
-            windowPlayStart = 0;
-            mixerControllerV.setPlayRegionStart(windowPlayStart);
-        }
-
-        // Reset the time if needed
-        long tracksTime = mixerControllerV.getCurrentTime();
-        if (tracksTime < windowPlayStart) {
-            tracksTime = windowPlayStart;
-        }
-        if (tracksTime > windowPlayEnd) {
-            tracksTime = windowPlayEnd;
-        }
-        mixerControllerV.setCurrentTime(tracksTime);
-
-        clock.setTime(tracksTime);
-        clockStep(tracksTime);
     }
 
     // --------------------------------------------------------------------------
