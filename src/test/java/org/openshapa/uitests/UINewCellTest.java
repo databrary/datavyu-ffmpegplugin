@@ -185,7 +185,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new TEXT cell with more advanced input.
      */
-    @Test
+    //@Test
     public void testNewAdvancedTextCell() {
         String varName = "t";
         String varRadio = "text";
@@ -371,7 +371,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    @Test
+    //@Test
     public void testNewMatrixCellSingleArgNominal() {
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
@@ -538,7 +538,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    @Test
+    //@Test
     public void testNewMatrixCellDoubleArgNominal() {
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
