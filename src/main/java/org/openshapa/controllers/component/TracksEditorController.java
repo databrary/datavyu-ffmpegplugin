@@ -195,6 +195,8 @@ public class TracksEditorController implements TrackMouseEventListener {
         List<Long> snapPoints = new LinkedList<Long>();
         Iterator<Track> allTracks = tracks.iterator();
 
+        long longestDuration = 0;
+
         // Compile track and candidate snap points
         while (allTracks.hasNext()) {
             Track track = allTracks.next();
@@ -216,7 +218,14 @@ public class TracksEditorController implements TrackMouseEventListener {
                 }
                 snapCandidates.add(offset + duration);
             }
+
+            if (duration > longestDuration) {
+                longestDuration = duration;
+            }
         }
+
+        // Calculate the snap threshold as a % of the longest track duration
+        final long threshold = (long) (0.02F * longestDuration);
 
         // Sort the candidate snap points
         Collections.sort(snapCandidates);
@@ -258,13 +267,13 @@ public class TracksEditorController implements TrackMouseEventListener {
             }
 
             // Check if the candidate snap points can be used
-            if (Math.abs(snapPoint - lowerSnapTime) <= 1000) {
+            if (Math.abs(snapPoint - lowerSnapTime) <= threshold) {
                 SnapPoint sp = new SnapPoint();
                 sp.snapOffset = lowerSnapTime - snapPoint;
                 sp.snapMarkerPosition = lowerSnapTime;
                 return sp;
             }
-            if (Math.abs(upperSnapTime - snapPoint) <= 1000) {
+            if (Math.abs(upperSnapTime - snapPoint) <= threshold) {
                 SnapPoint sp = new SnapPoint();
                 sp.snapOffset = upperSnapTime - snapPoint;
                 sp.snapMarkerPosition = upperSnapTime;
@@ -317,12 +326,12 @@ public class TracksEditorController implements TrackMouseEventListener {
         snapMarkerController.setMarkerTime(-1);
     }
 
-    private class Track {
+    private static class Track {
         public String mediaPath;
         public TrackController trackController;
     }
 
-    private class SnapPoint {
+    private static class SnapPoint {
         public long snapOffset;
         public long snapMarkerPosition;
     }
