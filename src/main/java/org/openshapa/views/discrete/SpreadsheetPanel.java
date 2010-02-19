@@ -185,6 +185,9 @@ implements ExternalColumnListListener, ComponentListener,
         columns.add(col);
     }
 
+    /**
+     * Remove all the columns from the spreadsheet panel.
+     */
     public void removeAll() {
         for (SpreadsheetColumn col : columns) {
             col.deregisterListeners();
@@ -290,13 +293,13 @@ implements ExternalColumnListListener, ComponentListener,
      *
      * @param db The database that the column has been removed from.
      * @param colID The id of the freshly removed column.
-     * @param old_cov The column order vector prior to the deletion.
-     * @param new_cov The column order vector after to the deletion.
+     * @param oldCov The column order vector prior to the deletion.
+     * @param newCov The column order vector after to the deletion.
      */
     public void colDeletion(final Database db,
                             final long colID,
-                            final Vector<Long> old_cov,
-                            final Vector<Long> new_cov) {
+                            final Vector<Long> oldCov,
+                            final Vector<Long> newCov) {
         deselectAll();
         removeColumn(colID);
         relayoutCells();
@@ -307,13 +310,13 @@ implements ExternalColumnListListener, ComponentListener,
      *
      * @param db The database that the column has been added to.
      * @param colID The id of the newly added column.
-     * @param old_cov The column order vector prior to the insertion.
-     * @param new_cov The column order vector after to the insertion.
+     * @param oldCov The column order vector prior to the insertion.
+     * @param newCov The column order vector after to the insertion.
      */
     public void colInsertion(final Database db,
                              final long colID,
-                             final Vector<Long> old_cov,
-                             final Vector<Long> new_cov) {
+                             final Vector<Long> oldCov,
+                             final Vector<Long> newCov) {
         deselectAll();
         addColumn(db, colID);
     }
@@ -323,12 +326,12 @@ implements ExternalColumnListListener, ComponentListener,
      * of the columns is changed without any insertions or deletions).
      *
      * @param db The database that the column has been added to.
-     * @param old_cov The column order vector prior to the insertion.
-     * @param new_cov The column order vector after to the insertion.
+     * @param oldCov The column order vector prior to the insertion.
+     * @param newCov The column order vector after to the insertion.
      */
     public void colOrderVectorEdited(final Database db,
-                                     final Vector<Long> old_cov,
-                                     final Vector<Long> new_cov) {
+                                     final Vector<Long> oldCov,
+                                     final Vector<Long> newCov) {
         // do nothing for now
         return;
     }
@@ -336,19 +339,19 @@ implements ExternalColumnListListener, ComponentListener,
     /**
      * Relayout the SpreadsheetCells in the spreadsheet.
      */
-    public final void relayoutCells() {
-        sheetLayout.relayoutCells(); 
+    public void relayoutCells() {
+        sheetLayout.relayoutCells();
         this.validate();
     }
 
     /**
      * @return Vector of the selected columns.
      */
-    public Vector <DataColumn> getSelectedCols() {
-        Vector <DataColumn> selcols = new Vector <DataColumn>();
+    public Vector<DataColumn> getSelectedCols() {
+        Vector<DataColumn> selcols = new Vector<DataColumn>();
 
         try {
-            Vector <DataColumn> cols = database.getDataColumns();
+            Vector<DataColumn> cols = database.getDataColumns();
             int numCols = cols.size();
             for (int i = 0; i < numCols; i++) {
                 DataColumn col = cols.elementAt(i);
@@ -376,8 +379,8 @@ implements ExternalColumnListListener, ComponentListener,
         int result = 0;
 
         try {
-            Vector <DataCell> selectedCells = this.getSelectedCells();
-            Vector <Long> columnOrder = database.getColOrderVector();
+            Vector<DataCell> selectedCells = this.getSelectedCells();
+            Vector<Long> columnOrder = database.getColOrderVector();
 
             // For each of the selected cells search to see if we have a column
             // to the left.
@@ -407,11 +410,11 @@ implements ExternalColumnListListener, ComponentListener,
     /**
      * @return Vector of the selected columns.
      */
-    public Vector <DataCell> getSelectedCells() {
-        Vector <DataCell> selcells = new Vector <DataCell>();
+    public Vector<DataCell> getSelectedCells() {
+        Vector<DataCell> selcells = new Vector<DataCell>();
 
         try {
-            Vector <DataColumn> cols = database.getDataColumns();
+            Vector<DataColumn> cols = database.getDataColumns();
             int numCols = cols.size();
             for (int i = 0; i < numCols; i++) {
                 DataColumn col = cols.elementAt(i);
@@ -430,6 +433,11 @@ implements ExternalColumnListListener, ComponentListener,
         return selcells;
     }
 
+    /**
+     * Mark a cell as highlighted in the spreadsheet panel.
+     *
+     * @param cellID The id of the cell to mark as highlighted.
+     */
     public void highlightCell(final long cellID) {
         for (SpreadsheetColumn col : this.getColumns()) {
             for (SpreadsheetCell cell : col.getCells()) {
@@ -617,6 +625,11 @@ implements ExternalColumnListListener, ComponentListener,
         }
     }
 
+    /**
+     * Add a cell to the current selection.
+     *
+     * @param cell The cell to add to the selection.
+     */
     public void addCellToSelection(SpreadsheetCell cell) {
         this.clearColumnSelection();
         if (highlightedCell != null) {
@@ -627,6 +640,11 @@ implements ExternalColumnListListener, ComponentListener,
         }
     }
 
+    /**
+     * Set the currently highlighted cell.
+     *
+     * @param cell The cell to highlight.
+     */
     public void setHighlightedCell(SpreadsheetCell cell) {
         if (highlightedCell != null) {
             highlightedCell.setSelected(false);
@@ -638,6 +656,9 @@ implements ExternalColumnListListener, ComponentListener,
         this.clearColumnSelection();
     }
 
+    /**
+     * Clears the current cell selection.
+     */
     public void clearCellSelection() {
         highlightedCell = null;
 
@@ -649,11 +670,19 @@ implements ExternalColumnListListener, ComponentListener,
         }
     }
 
+    /**
+     * Add a column to the current selection.
+     *
+     * @param column The column to add to the current selection.
+     */
     public void addColumnToSelection(SpreadsheetColumn column) {
         this.clearCellSelection();
         column.requestFocus();
     }
 
+    /**
+     * Clears the current column selection.
+     */
     public void clearColumnSelection() {
         for (SpreadsheetColumn col : this.getColumns()) {
             col.setSelected(false);

@@ -413,6 +413,12 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         stretcher.changeShape(d, d, d);
     }
 
+    /**
+     * Mark the cell as selected in the database.
+     *
+     * @param sel The selection state to use when marking the cell. True
+     * if the cell is selected, false otherwise.
+     */
     public void selectCellInDB(boolean sel) {
         // Set the selection within the database.
         try {
