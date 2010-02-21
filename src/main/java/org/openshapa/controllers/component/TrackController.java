@@ -443,18 +443,14 @@ public class TrackController {
                         (e.getX() * 1F) / viewableModel.getIntervalWidth()
                                 * viewableModel.getIntervalTime();
                 if (moveable) {
-                    // System.out.println("Moving");
-                    fireCarriageOffsetChangeEvent(Math.round(newOffset), Math
-                            .round(temporalPosition));
+                    fireCarriageOffsetChangeEvent((long) newOffset,
+                            (long) temporalPosition);
                 } else {
                     final long threshold =
                             (long) (0.05F * (viewableModel.getZoomWindowEnd() - viewableModel
                                     .getZoomWindowStart()));
                     if (Math.abs(newOffset - offsetInit) >= threshold) {
-                        // System.out.println("Moving enabled");
                         moveable = true;
-                        // fireCarriageOffsetChangeEvent(Math.round(newOffset),
-                        // Math.round(temporalPosition));
                     }
                 }
             }

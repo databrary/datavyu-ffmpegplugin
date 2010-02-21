@@ -152,29 +152,20 @@ public class TracksEditorController implements TrackMouseEventListener {
             Track track = allTracks.next();
             if (track.mediaPath.equals(mediaPath)) {
                 TrackController tc = track.trackController;
+                tc.setTrackOffset(newOffset);
+                snapMarkerController.setMarkerTime(-1);
                 if (allowSnap) {
                     SnapPoint snapPoint =
-                            snapOffset(mediaPath, snapTemporalPosition);
+                            snapOffset(mediaPath, snapTemporalPosition,
+                                    newOffset);
                     tc.setMoveable(snapPoint == null);
                     if (snapPoint == null) {
-                        tc.setNormalState();
-                        tc.setTrackOffset(newOffset);
                         snapMarkerController.setMarkerTime(-1);
                     } else {
                         snapMarkerController
                                 .setMarkerTime(snapPoint.snapMarkerPosition);
-                        tc.setTrackOffset(snapPoint.snapOffset + newOffset);
-                        // System.out.println("Marker: "
-                        // + snapPoint.snapMarkerPosition);
-                        // System.out.println("Snap: " + snapPoint.snapOffset);
-                        // System.out.println("Original:" + newOffset);
-                        // System.out.println("Proposed: "
-                        // + (snapPoint.snapOffset + newOffset));
+                        tc.setTrackOffset(newOffset + snapPoint.snapOffset);
                     }
-                } else {
-                    tc.setTrackOffset(newOffset);
-                    tc.setMoveable(true);
-                    snapMarkerController.setMarkerTime(-1);
                 }
                 return true;
             }
@@ -199,7 +190,7 @@ public class TracksEditorController implements TrackMouseEventListener {
      * @return
      */
     private SnapPoint snapOffset(final String mediaPath,
-            final long temporalSnapPosition) {
+            final long temporalSnapPosition, final long originalOffset) {
         List<Long> snapCandidates = new ArrayList<Long>();
         List<Long> snapPoints = new LinkedList<Long>();
         Iterator<Track> allTracks = tracks.iterator();
@@ -277,13 +268,15 @@ public class TracksEditorController implements TrackMouseEventListener {
                 lowerSnapTime = snapCandidates.get(candidateIndex - 1);
             }
 
-            // Check if the candidate snap points can be used
-            if (Math.abs(snapPoint - lowerSnapTime) <= threshold) {
-                SnapPoint sp = new SnapPoint();
-                sp.snapOffset = lowerSnapTime - snapPoint;
-                sp.snapMarkerPosition = lowerSnapTime;
-                return sp;
+            if (lowerSnapTime < snapPoint) {
+                if (Math.abs(snapPoint - lowerSnapTime) <= threshold) {
+                    SnapPoint sp = new SnapPoint();
+                    sp.snapOffset = lowerSnapTime - snapPoint;
+                    sp.snapMarkerPosition = lowerSnapTime;
+                    return sp;
+                }
             }
+            // Check if the candidate snap points can be used
             if (Math.abs(upperSnapTime - snapPoint) <= threshold) {
                 SnapPoint sp = new SnapPoint();
                 sp.snapOffset = upperSnapTime - snapPoint;

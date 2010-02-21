@@ -146,7 +146,7 @@ public class MixerControllerV implements NeedleEventListener,
             timescaleController.setConstraints(minStart, maxEnd,
                     zoomIntervals(1));
         }
-        layeredPane.add(timescaleView, new Integer(10));
+        layeredPane.add(timescaleView, Integer.valueOf(0));
 
         // Add the scroll pane
         tracksEditorController = new TracksEditorController();
@@ -168,7 +168,7 @@ public class MixerControllerV implements NeedleEventListener,
             tracksScrollPane.setPreferredSize(size);
             tracksScrollPane.setLocation(0, 39);
         }
-        layeredPane.add(tracksScrollPane, new Integer(0));
+        layeredPane.add(tracksScrollPane, Integer.valueOf(0));
 
         // Create the region markers
         regionController = new RegionController();
@@ -185,7 +185,7 @@ public class MixerControllerV implements NeedleEventListener,
         }
         regionController.addMarkerEventListener(this);
 
-        layeredPane.add(regionView, new Integer(20));
+        layeredPane.add(regionView, Integer.valueOf(20));
 
         // Create the timing needle
         needleController = new NeedleController();
@@ -200,7 +200,7 @@ public class MixerControllerV implements NeedleEventListener,
                     .getViewableModel());
         }
         needleController.addNeedleEventListener(this);
-        layeredPane.add(needleView, new Integer(30));
+        layeredPane.add(needleView, Integer.valueOf(30));
 
         // Create the snap marker
         JComponent markerView = tracksEditorController.getMarkerView();
@@ -210,7 +210,7 @@ public class MixerControllerV implements NeedleEventListener,
             markerView.setSize(size);
             markerView.setPreferredSize(size);
         }
-        layeredPane.add(markerView, new Integer(5));
+        layeredPane.add(markerView, Integer.valueOf(5));
 
         tracksScrollBar = new JScrollBar(Adjustable.HORIZONTAL);
         {
@@ -226,7 +226,7 @@ public class MixerControllerV implements NeedleEventListener,
         tracksScrollBar.addAdjustmentListener(this);
         tracksScrollBar.setValueIsAdjusting(false);
 
-        layeredPane.add(tracksScrollBar, new Integer(100));
+        layeredPane.add(tracksScrollBar, Integer.valueOf(100));
 
         tracksPanel.add(layeredPane, "span 5, w 785!, h 250!, wrap");
 
