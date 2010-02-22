@@ -32,7 +32,7 @@ begin
 
   # Create a data columns
   puts "Set up columns.."
-  colnames = ["matrixNominal1", "matrixFloat1", "matrixInteger1", "matrixNominal2", "matrixFloat2", "matrixInteger2", "matrixMixed1", "matrixMixed2"]
+  colnames = ["mN1", "mF1", "mI1", "mN2", "mF2", "mI2", "mM1", "mM2"]
 
   for cc in 0...colnames.length
     if !$db.col_name_in_use(colnames[cc])
@@ -55,7 +55,7 @@ begin
   #  matID1 = mve1.get_id()
 
   # 2. Check if matrix already defined
-  mve1 = $db.get_vocab_element("matrixNominal1")
+  mve1 = $db.get_vocab_element("mN1")
   if mve1.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve1 = MatrixVocabElement.new(mve1)
@@ -67,7 +67,7 @@ begin
   matID1 = mve1.get_id()
 
   # 3. Check if matrix already defined
-  mve3 = $db.get_vocab_element("matrixFloat1")
+  mve3 = $db.get_vocab_element("mF1")
   if mve3.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve3 = MatrixVocabElement.new(mve3)
@@ -80,7 +80,7 @@ begin
   matID3 = mve3.get_id()
 
   # 4. Check if matrix already defined
-  mve4 = $db.get_vocab_element("matrixInteger1")
+  mve4 = $db.get_vocab_element("mI1")
   if mve4.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve4 = MatrixVocabElement.new(mve4)
@@ -106,7 +106,7 @@ begin
   #  matID5 = mve5.get_id()
 
   # 6. Check if matrix already defined
-  mve6 = $db.get_vocab_element("matrixNominal2")
+  mve6 = $db.get_vocab_element("mN2")
   if mve6.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve6 = MatrixVocabElement.new(mve6)
@@ -120,7 +120,7 @@ begin
   matID6 = mve6.get_id()
 
   # 7. Check if matrix already defined
-  mve7 = $db.get_vocab_element("matrixFloat2")
+  mve7 = $db.get_vocab_element("mF2")
   if mve7.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve7 = MatrixVocabElement.new(mve7)
@@ -135,7 +135,7 @@ begin
   matID7 = mve7.get_id()
 
   # 8. Check if matrix already defined
-  mve8 = $db.get_vocab_element("matrixInteger2")
+  mve8 = $db.get_vocab_element("mI2")
   if mve8.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve8 = MatrixVocabElement.new(mve8)
@@ -150,7 +150,7 @@ begin
   matID8 = mve8.get_id()
 
   # 9. Check if matrix already defined
-  mve9 = $db.get_vocab_element("matrixMixed1")
+  mve9 = $db.get_vocab_element("mM1")
   if mve9.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve9 = MatrixVocabElement.new(mve9)
@@ -169,7 +169,7 @@ begin
   matID9 = mve9.get_id()
 
   # 10. Check if matrix already defined
-  mve0 = $db.get_vocab_element("matrixMixed2")
+  mve0 = $db.get_vocab_element("mM2")
   if mve0.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve0 = MatrixVocabElement.new(mve0)

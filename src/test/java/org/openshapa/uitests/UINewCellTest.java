@@ -294,28 +294,6 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT } };
 
-        // int[][] advancedInput =
-        // {
-        // { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
-        // { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT },
-        // { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
-        // { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
-        // KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
-        // KeyEvent.VK_DELETE, KeyEvent.VK_RIGHT },
-        // { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
-        // KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
-        // KeyEvent.VK_BACK_SPACE },
-        // { KeyEvent.VK_RIGHT },
-        // { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
-        // KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
-        // KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
-        // KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
-        // KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
-        // KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
-        // KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
-        // KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
-        // KeyEvent.VK_LEFT } };
-
         String[] expectedTestOutput =
                 {"-43.21019", "-43.289210", "2178.8", "7", "-87",
                         "589.138085", "-589.138085" };
@@ -383,7 +361,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    //@Test
+    @Test
     public void testNewMatrixCellSingleArgNominal() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Create new variables using script
@@ -416,7 +394,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * Test creating a new MATRIX cell.
      * BugzID:1198
      */
-    // @Test
+    @Test
     public void testNewMatrixCellSingleArgFloat() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Create new variables using script
@@ -449,7 +427,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * Test creating a new MATRIX cell.
      * BugzID:1199
      */
-    // @Test
+    @Test
     public void testNewMatrixCellSingleArgInteger() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Create new variables using script
@@ -481,9 +459,15 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * Test creating a new MATRIX cell.
      * BugzID:1199
      */
-    // @Test
+    @Test
     public void testNewMatrixCellDoubleArgInteger() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        /**
+         * Integer test input.
+         */
+        String[] integerTestInput = {"1a9", "10-432"};
+
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/matrix_tests.rb");
@@ -500,9 +484,11 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // 2. Test double cell type
         String varName = "mI2";
 
-        String[] expectedInt2TestOutput =
-                {"19", "-43210", "289", "178", "<int1>", "72",
-                        "999999999999999999", "3895", "<int1>", "0", "-123" };
+//        String[] expectedInt2TestOutput =
+//                {"19", "-43210", "289", "178", "<int1>", "72",
+//                        "999999999999999999", "3895", "<int1>", "0", "-123" };
+
+        String[] expectedInt2TestOutput = {"19", "-43210"};
 
         int numOfTests = integerTestInput.length;
 
@@ -520,9 +506,11 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 new String[expectedInt2TestOutput.length]
                 [expectedInt2TestOutput.length][2];
 
-        String[] expectedInt2bTempOutput =
-                {"19", "-43210", "289", "178", "<int1>", "72",
-                        "999999999999999999", "3895", "<int1>", "0", "-123" };
+//        String[] expectedInt2bTempOutput =
+//                {"19", "-43210", "289", "178", "<int1>", "72",
+//                        "999999999999999999", "3895", "<int1>", "0", "-123" };
+
+        String[] expectedInt2bTempOutput = {"19", "-43210"};
 
         String[][] expectedInt2bTestOutput =
                 new String[expectedInt2TestOutput.length]
@@ -554,9 +542,14 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    //@Test
+    @Test
     public void testNewMatrixCellDoubleArgNominal() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        /**
+         * Nominal test input.
+         */
+        String[] nominalTestInput = {"Subject stands )up ", "$10,432"};
+
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/matrix_tests.rb");
@@ -574,10 +567,12 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // 2a. Test nominal
         String varName = "mN2";
 
-        String[] expectedTestOutput =
-                {"Subject stands up", "$10432", "Hand me the manual!",
-                        "Tote_that_bale", "Jeune fille celebre",
-                        "If x7 then x2" };
+//        String[] expectedTestOutput =
+//                {"Subject stands up", "$10432", "Hand me the manual!",
+//                        "Tote_that_bale", "Jeune fille celebre",
+//                        "If x7 then x2" };
+
+          String[] expectedTestOutput = {"Subject stands up", "$10432"};
 
         int numOfTests = expectedTestOutput.length;
 
@@ -593,10 +588,12 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String[][][] testInput =
                 new String[nominalTestInput.length][nominalTestInput.length][2];
 
-        String[] expectedNominal2bTempOutput =
-                {"Subject stands up", "$10432", "Hand me the manual!",
-                        "Tote_that_bale", "Jeune fille celebre",
-                        "If x7 then x2" };
+//        String[] expectedNominal2bTempOutput =
+//                {"Subject stands up", "$10432", "Hand me the manual!",
+//                        "Tote_that_bale", "Jeune fille celebre",
+//                        "If x7 then x2" };
+
+        String[] expectedNominal2bTempOutput = {"Subject stands up", "$10432"};
 
         String[][] expectedNominal2bTestOutput =
                 new String[expectedNominal2bTempOutput.length]
@@ -632,9 +629,14 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    // @Test
+    @Test
     public void testNewMatrixCellDoubleArgFloat() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        /**
+         * Float test input.
+         */
+     String[] floatTestInput = {"1a.9", "10-43.2"};
+
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/matrix_tests.rb");
@@ -651,10 +653,12 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // 2. Test double cell type
         String varName = "mF2";
 
-        String[] expectedFloat2TestOutput =
-                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-                        "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-                        "-23.34", "0.34", "12.34", "-123" };
+//        String[] expectedFloat2TestOutput =
+//                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+//                        "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
+//                        "-23.34", "0.34", "12.34", "-123" };
+
+        String[] expectedFloat2TestOutput = {"1.9", "-43.21"};
 
         int numOfTests = floatTestInput.length;
 
@@ -664,18 +668,23 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                     "(" + expectedFloat2TestOutput[i] + ", <float2>)";
         }
 
-        runMatrixTest(varName, floatTestInput, expectedFloat2TestOutput,
-                "<float2>");
+//        runMatrixTest(varName, floatTestInput, expectedFloat2TestOutput,
+//                "<float2>");
+
+//        runStandardTest(varName, floatTestInput, expectedFloat2TestOutput,
+//                "(<float1>, <float2>)");
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
                 new String[expectedFloat2TestOutput.length]
                 [expectedFloat2TestOutput.length][2];
 
-        String[] expectedInt2bTempOutput =
-                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-                        "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-                        "-23.34", "0.34", "12.34", "-123" };
+//        String[] expectedInt2bTempOutput =
+//                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+//                        "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
+//                        "-23.34", "0.34", "12.34", "-123" };
+
+        String[] expectedInt2bTempOutput = {"1.9", "-43.21"};
 
         String[][] expectedInt2bTestOutput =
                 new String[expectedFloat2TestOutput.length]
@@ -1161,9 +1170,23 @@ public final class UINewCellTest extends OpenSHAPATestClass {
             // 4. Test different inputs as per specifications
             changeCellMatrixValue(varName, ordinal, testInput[ordinal - 1]);
 
-            Assert.assertTrue(cellHasValue(varName, ordinal,
-                    expectedTestOutput[ordinal - 1]),
-                    "Expecting different cell value");
+             JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+            String[] actualValues = UIUtils.getArgsFromMatrix(
+                    spreadsheet.column(varName).cell(ordinal).cellValue()
+                    .text());
+            String[] expectedValues = UIUtils.getArgsFromMatrix(
+                    expectedTestOutput[ordinal - 1]);
+            for (int i = 0; i < actualValues.length; i++) {
+                Assert.assertTrue(UIUtils.equalValues(actualValues[i],
+                        expectedValues[i]));
+            }
+//            Assert.assertTrue(cellHasValue(varName, ordinal,
+//                    expectedTestOutput[ordinal - 1]),
+//                    "Expecting different cell value");
         }
     }
 
@@ -1380,33 +1403,6 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     // assertTrueEqualValues(t.getText(), expectedTestOutput[i]);
     // }
     // }
-
-//    /** SHOULD BE DELETED
-//     * Creates a variable.
-//     * @param varName variable name
-//     * @param varType variable type
-//     */
-//    private void createNewVariable(final String varName, final String varType) {
-//        // 1. Create new variable
-//        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Variable")
-//                .click();
-//
-//        // 2. Enter variable name
-//        DialogFixture newVariableDialog = mainFrameFixture.dialog();
-//        newVariableDialog.requireVisible();
-//        JTextComponentFixture variableValueTextBox =
-//                newVariableDialog.textBox();
-//        variableValueTextBox.requireEmpty();
-//        variableValueTextBox.requireEditable();
-//        variableValueTextBox.enterText(varName);
-//
-//        // 3. Choose variable type
-//        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
-//                .click();
-//        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
-//                .requireSelected();
-//        newVariableDialog.button("okButton").click();
-//    }
 
     /**
      * @param varName
@@ -1651,7 +1647,12 @@ public final class UINewCellTest extends OpenSHAPATestClass {
             spreadsheet.column(varName).cell(ordinal).selectCell();
         }
 
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Cells")
+        if (numOfCells > 1) {
+            mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Cells")
                 .click();
+        } else if (numOfCells == 1) {
+            mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Cell")
+                .click();
+        }
     }
 }
