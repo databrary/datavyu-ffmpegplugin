@@ -55,12 +55,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                     "If x?7 then. x? 2 ", "589.138085638", "000389.5", "-0.1",
                     "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34",
                     "-123"};
-
-    /**
-     * The size of each dimesion of the advanced mixed matrix test.
-     */
-    private int matrixMixedNumTests = 6;
-
+    
     /**
      * Test creating a new NOMINAL cell.
      */
@@ -466,7 +461,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         /**
          * Integer test input.
          */
-        String[] integerTestInput = {"1a9", "10-432"};
+        String[] iTestInput = {"1a9", "10-432"};
 
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
@@ -484,13 +479,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // 2. Test double cell type
         String varName = "mI2";
 
-//        String[] expectedInt2TestOutput =
-//                {"19", "-43210", "289", "178", "<int1>", "72",
-//                        "999999999999999999", "3895", "<int1>", "0", "-123" };
-
         String[] expectedInt2TestOutput = {"19", "-43210"};
 
-        int numOfTests = integerTestInput.length;
+        int numOfTests = iTestInput.length;
 
         // 2a. Test integer, only first arg
         for (int i = 0; i < numOfTests; i++) {
@@ -498,7 +489,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                     "(" + expectedInt2TestOutput[i] + ", <int2>)";
         }
 
-        runStandardTest(varName, integerTestInput, expectedInt2TestOutput,
+        runStandardTest(varName, iTestInput, expectedInt2TestOutput,
                 "(<int1>, <int2>)");
 
         // 2b. Recursively test all permutations of test input
@@ -518,8 +509,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         for (int i = 0; i < numOfTests; i++) {
             for (int j = 0; j < numOfTests; j++) {
-                testInput[i][j][0] = integerTestInput[i];
-                testInput[i][j][1] = integerTestInput[j];
+                testInput[i][j][0] = iTestInput[i];
+                testInput[i][j][1] = iTestInput[j];
                 if (expectedInt2bTempOutput[i].equals("<int2>")) {
                     expectedInt2bTestOutput[i][j] =
                             "(<int1>" + ", " + expectedInt2bTempOutput[j] + ")";
@@ -548,7 +539,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         /**
          * Nominal test input.
          */
-        String[] nominalTestInput = {"Subject stands )up ", "$10,432"};
+        String[] nomTestInput = {"Subject stands )up ", "$10,432"};
 
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
@@ -567,12 +558,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // 2a. Test nominal
         String varName = "mN2";
 
-//        String[] expectedTestOutput =
-//                {"Subject stands up", "$10432", "Hand me the manual!",
-//                        "Tote_that_bale", "Jeune fille celebre",
-//                        "If x7 then x2" };
-
-          String[] expectedTestOutput = {"Subject stands up", "$10432"};
+        String[] expectedTestOutput = {"Subject stands up", "$10432"};
 
         int numOfTests = expectedTestOutput.length;
 
@@ -581,17 +567,12 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                     "(" + expectedTestOutput[i] + ", <nominal2>)";
         }
 
-        runStandardTest(varName, nominalTestInput, expectedTestOutput,
+        runStandardTest(varName, nomTestInput, expectedTestOutput,
                 "(<nominal1>, <nominal2>)");
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
-                new String[nominalTestInput.length][nominalTestInput.length][2];
-
-//        String[] expectedNominal2bTempOutput =
-//                {"Subject stands up", "$10432", "Hand me the manual!",
-//                        "Tote_that_bale", "Jeune fille celebre",
-//                        "If x7 then x2" };
+                new String[nomTestInput.length][nomTestInput.length][2];
 
         String[] expectedNominal2bTempOutput = {"Subject stands up", "$10432"};
 
@@ -601,8 +582,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         for (int i = 0; i < numOfTests; i++) {
             for (int j = 0; j < numOfTests; j++) {
-                testInput[i][j][0] = nominalTestInput[i];
-                testInput[i][j][1] = nominalTestInput[j];
+                testInput[i][j][0] = nomTestInput[i];
+                testInput[i][j][1] = nomTestInput[j];
                 if (expectedNominal2bTempOutput[i].equals("<nominal2>")) {
                     expectedNominal2bTestOutput[i][j] =
                             "(<nominal1>" + ", "
@@ -619,7 +600,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
             }
         }
 
-        numOfTests = nominalTestInput.length;
+        numOfTests = nomTestInput.length;
         for (int i = 0; i < numOfTests; i++) {
             runMatrixTest(varName, testInput[i],
                     expectedNominal2bTestOutput[i]);
@@ -635,7 +616,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         /**
          * Float test input.
          */
-     String[] floatTestInput = {"1a.9", "10-43.2"};
+        String[] fTestInput = {"1a.9", "10-43.2"};
 
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
@@ -653,14 +634,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // 2. Test double cell type
         String varName = "mF2";
 
-//        String[] expectedFloat2TestOutput =
-//                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-//                        "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-//                        "-23.34", "0.34", "12.34", "-123" };
-
         String[] expectedFloat2TestOutput = {"1.9", "-43.21"};
 
-        int numOfTests = floatTestInput.length;
+        int numOfTests = fTestInput.length;
 
         // 2a. Test integer, only first arg
         for (int i = 0; i < numOfTests; i++) {
@@ -668,21 +644,11 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                     "(" + expectedFloat2TestOutput[i] + ", <float2>)";
         }
 
-//        runMatrixTest(varName, floatTestInput, expectedFloat2TestOutput,
-//                "<float2>");
-
-//        runStandardTest(varName, floatTestInput, expectedFloat2TestOutput,
-//                "(<float1>, <float2>)");
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
                 new String[expectedFloat2TestOutput.length]
                 [expectedFloat2TestOutput.length][2];
-
-//        String[] expectedInt2bTempOutput =
-//                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-//                        "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
-//                        "-23.34", "0.34", "12.34", "-123" };
 
         String[] expectedInt2bTempOutput = {"1.9", "-43.21"};
 
@@ -692,8 +658,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         for (int i = 0; i < numOfTests; i++) {
             for (int j = 0; j < numOfTests; j++) {
-                testInput[i][j][0] = floatTestInput[i];
-                testInput[i][j][1] = floatTestInput[j];
+                testInput[i][j][0] = fTestInput[i];
+                testInput[i][j][1] = fTestInput[j];
                 if (expectedInt2bTempOutput[i].equals("<float2>")) {
                     expectedInt2bTestOutput[i][j] =
                             "(<float1>" + ", " + expectedInt2bTempOutput[j]
@@ -713,342 +679,6 @@ public final class UINewCellTest extends OpenSHAPATestClass {
             runMatrixTest(varName, testInput[i], expectedInt2bTestOutput[i]);
         }
     }
-
-    // /**
-    // * Test creating a new MATRIX cell.
-    // * @throws java.lang.Exception on any error
-    // */
-    // public void testNewAdvancedMatrixCellMixed() throws Exception {
-    //    
-    // System.err.println("testNewAdvancedMatrixCellMixed " +
-    // "still has commented out sections.");
-    //    
-    // // These are just variables and can be left uncommented.
-    // String [] expectedInt2bTempOutput = {"19", "-4321", "289", "178", "0",
-    // "72"};
-    //    
-    // String [] expectedNominal2bTempOutput = {"Subject stands up",
-    // "$10432", "Hand me the manual!", "Tote_that_bale",
-    // "Jeune fille celebre", "If x7 then x2"};
-    //    
-    // String[] expectedFloat2bTempOutput = {"1.9", "-43.210",
-    // "289", "178", "0)", "7.2"};
-    //    
-    // String varName = "matrixMixed1";
-    //    
-    // // Retrieve the components
-    // Window window = getMainWindow();
-    // MenuBar menuBar = window.getMenuBar();
-    //    
-    // Spreadsheet ss;
-    //    
-    // //1. Create new variables using script
-    // String root = System.getProperty("testPath");
-    // final File demoFile = new File(root + "/ui/matrix_tests.rb");
-    // assertTrue(demoFile.exists());
-    //    
-    // WindowInterceptor
-    // .init(menuBar.getMenu("Script").getSubMenu("Run script")
-    // .triggerClick())
-    // .process(FileChooserHandler.init()
-    // .assertAcceptsFilesOnly()
-    // .select(demoFile.getAbsolutePath()))
-    // .process(new WindowHandler() {
-    // public Trigger process(Window console) {
-    // return console.getButton("Close").triggerClick();
-    // }
-    // })
-    // .run();
-    //    
-    // // 1a. Check that database is populated
-    // ss = new Spreadsheet((SpreadsheetPanel)
-    // (window.getUIComponents(Spreadsheet.class)[0].getAwtComponent()));
-    // assertTrue(ss.getColumns().size() > 0);
-    //    
-    // // BugzID:584 - "Create advanced matrix tests"
-    // // **** UNFINISHED ADVANCED TEST HERE *******
-    // // **** FOR A SIMPLE TEST: SCROLL DOWN ******
-    // // Test with the simple test first.
-    //    
-    // /* Within this block, we have a large multi-dimensional matrix
-    // * of tests that can eventually be uncommented and tested, after
-    // * the simple test below this block is tested (and passes).
-    // *
-    //    
-    //    
-    // int numOfTests = matrixMixedNumTests;
-    //    
-    // String [] tmpExpect1 = new String[numOfTests];
-    // // String [] tmpExpect2 = new String[numOfTests];
-    // // String [] tmpExpect3 = new String[numOfTests];
-    // // String [] tmpExpect4 = new String[numOfTests];
-    //    
-    //    
-    // //2b. Recursively test all permutations of test input
-    // String [][][][][] testInput = new String [numOfTests]
-    // [numOfTests][numOfTests][numOfTests][4];
-    //    
-    //    
-    //    
-    //    
-    // String [][][][] expectedMixedTestOutput =
-    // new String [numOfTests]
-    // [numOfTests]
-    // [numOfTests]
-    // [numOfTests];
-    //    
-    //    
-    // for (int i = 0; i < numOfTests; i++) {
-    // for (int j = 0; j < numOfTests; j++) {
-    // for (int k = 0; k < numOfTests; k++) {
-    // for (int l = 0; l < numOfTests; l++) {
-    // testInput[i][j][k][l][0] = floatTestInput[i];
-    // testInput[i][j][k][l][1] = integerTestInput[j];
-    // testInput[i][j][k][l][2] = nominalTestInput[k];
-    // testInput[i][j][k][l][3] = textTestInput[l];
-    //    
-    // {
-    // expectedMixedTestOutput[i][j][k][l] = "("
-    // + expectedFloat2bTempOutput[i]
-    // + ", " + expectedInt2bTempOutput[j]
-    // + ", " + expectedNominal2bTempOutput[k]
-    // + ", " + textTestInput[l] + ")";
-    // }
-    // }
-    // }
-    // }
-    // }
-    //    
-    // numOfTests = nominalTestInput.length;
-    // for (int i = 0; i < numOfTests; i++) {
-    // for (int j = 0; j < numOfTests; j++) {
-    // for (int k = 0; k < numOfTests; k++) {
-    // runMatrixTest(varName, testInput[i][j][k],
-    // expectedMixedTestOutput[i][j][k]);
-    // }
-    // }
-    // }
-    //
-    // */
-    //
-    // // // ******* SIMPLE TEST BELOW **********
-    // //
-    // // // Below this line we have a very simple test which definitely runs,
-    // // // but will fail due to quote strings having the odd behaviour of only
-    // // // retaining the last character of input during UI testing (although
-    // // // strangely this does not occur when testing manually).
-    // //
-    // // String[] reducedTempTest = new String[4];
-    // // reducedTempTest[0] = floatTestInput[0];
-    // // reducedTempTest[1] = integerTestInput[0];
-    // // reducedTempTest[2] = nominalTestInput[0];
-    // // reducedTempTest[3] = "godzilla"; // textTestInput[0];
-    // // // **** By testing the string "godzilla" instead of a string with a
-    // // // trailing space, it can easily be seen that the current behaviour
-    // // // leaves the quote string field with just the last character entered,
-    // // // in this case being "a".
-    // //
-    // //
-    // //
-    // // ss.getSpreadsheetColumn(varName).requestFocus();
-    // // menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-    // // Cell c = ss.getSpreadsheetColumn(varName).getCells().elementAt(0);
-    // // c.enterMatrixText(reducedTempTest);
-    // //
-    // // TextBox t = c.getValue();
-    // // System.out.println("Textbox had " + t.getText());
-    // // int numOfArgs = getNumberofArgFromMatrix(t.getText());
-    // // String [] actualValues = getArgsFromMatrix(t.getText());
-    // // String [] expectedValues = new String[4];
-    // // expectedValues[0] = expectedFloat2bTempOutput[0];
-    // // expectedValues[1] = expectedInt2bTempOutput[0];
-    // // expectedValues[2] = expectedNominal2bTempOutput[0];
-    // // expectedValues[3] = textTestInput[0];
-    // //
-    // //
-    // //
-    // // for (int j = 0; j < numOfArgs; j++) {
-    // // System.out.println("Compare " + actualValues[j] + " and " +
-    // expectedValues[j]);
-    // // if (j == 3 && !actualValues[j].equals(expectedValues[j])) {
-    // //
-    // System.err.println("Test will fail here unless quote string behaviour has been fixed.");
-    // // }
-    // // assertTrueEqualValues(actualValues[j], expectedValues[j]);
-    // // }
-    //
-    //
-    //
-    // // Code below this line will be used later to augment the advanced test.
-    //
-    // // String xVarName = "textVar";
-    // // String varRadio = "text";
-    // //
-    // // //advanced Input will be provided between testInput
-    // // Key[][] advancedInput = {{KeyEvent.VK_LEFT, KeyEvent.VK_LEFT},
-    // // {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
-    // {KeyEvent.VK_BACK_SPACE,
-    // KeyEvent.VK_LEFT},
-    // // {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
-    // KeyEvent.VK_LEFT,
-    // KeyEvent.VK_DELETE,
-    // // KeyEvent.VK_RIGHT}, {KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT}};
-    // //
-    // // String[] advancedExpectedOutput = {"Subject stands u$10,432p ",
-    // // "$10,43Hand me the manual!2", "hand me the manuaTote_that_balel",
-    // // "Tote_that_aJeune fille celebrel",
-    // // "Jeune fille celebreIf x?7 then x? 2"};
-    // //
-    // // runAdvancedTest(xVarName, textTestInput, advancedInput,
-    // // advancedExpectedOutput);
-    //
-    // }
-    //
-    // /**
-    // * Test creating a new cell by pressing enter instead of clicking.
-    // * @throws java.lang.Exception on any error
-    // */
-    // public void testCreateNewCellWithEnter() throws Exception {
-    // String varName = "testVar";
-    // String varType = UIUtils.VAR_TYPES[(int) (Math.random()
-    // * UIUtils.VAR_TYPES.length)];
-    // String varRadio = varType.toLowerCase();
-    //
-    // // 1. Retrieve the components
-    // Window window = getMainWindow();
-    // MenuBar menuBar = window.getMenuBar();
-    // // 2. Create new variable,
-    // Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-    // "Spreadsheet").getSubMenu("New Variable").triggerClick());
-    // newVarWindow.getTextBox("nameField").insertText(varName, 0);
-    // newVarWindow.getRadioButton(varRadio).click();
-    // assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
-    // newVarWindow.getButton("Ok").click();
-    //
-    // Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-    // (window.getUIComponents(Spreadsheet.class)[0]
-    // .getAwtComponent()));
-    //
-    // //Create new cell
-    // //Instead of clicking, just press "Enter"
-    // /* Code to be written
-    // * Must click the column title
-    // * Then press enter on it
-    // */
-    // Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-    // // readyToExit = true;
-    // }
-    //
-
-    // // // ******* SIMPLE TEST BELOW **********
-    // //
-    // // // Below this line we have a very simple test which definitely runs,
-    // // // but will fail due to quote strings having the odd behaviour of only
-    // // // retaining the last character of input during UI testing (although
-    // // // strangely this does not occur when testing manually).
-    // //
-    // // String[] reducedTempTest = new String[4];
-    // // reducedTempTest[0] = floatTestInput[0];
-    // // reducedTempTest[1] = integerTestInput[0];
-    // // reducedTempTest[2] = nominalTestInput[0];
-    // // reducedTempTest[3] = "godzilla"; // textTestInput[0];
-    // // // **** By testing the string "godzilla" instead of a string with a
-    // // // trailing space, it can easily be seen that the current behaviour
-    // // // leaves the quote string field with just the last character entered,
-    // // // in this case being "a".
-    // //
-    // //
-    // //
-    // // ss.getSpreadsheetColumn(varName).requestFocus();
-    // // menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-    // // Cell c = ss.getSpreadsheetColumn(varName).getCells().elementAt(0);
-    // // c.enterMatrixText(reducedTempTest);
-    // //
-    // // TextBox t = c.getValue();
-    // // System.out.println("Textbox had " + t.getText());
-    // // int numOfArgs = getNumberofArgFromMatrix(t.getText());
-    // // String [] actualValues = getArgsFromMatrix(t.getText());
-    // // String [] expectedValues = new String[4];
-    // // expectedValues[0] = expectedFloat2bTempOutput[0];
-    // // expectedValues[1] = expectedInt2bTempOutput[0];
-    // // expectedValues[2] = expectedNominal2bTempOutput[0];
-    // // expectedValues[3] = textTestInput[0];
-    // //
-    // //
-    // //
-    // // for (int j = 0; j < numOfArgs; j++) {
-    // // System.out.println("Compare " + actualValues[j] + " and " +
-    // expectedValues[j]);
-    // // if (j == 3 && !actualValues[j].equals(expectedValues[j])) {
-    // //
-    // System.err.println("Test will fail here unless quote string behaviour has been fixed.");
-    // // }
-    // // assertTrueEqualValues(actualValues[j], expectedValues[j]);
-    // // }
-    //    
-    //    
-    //    
-    // // Code below this line will be used later to augment the advanced test.
-    //    
-    // // String xVarName = "textVar";
-    // // String varRadio = "text";
-    // //
-    // // //advanced Input will be provided between testInput
-    // // Key[][] advancedInput = {{KeyEvent.VK_LEFT, KeyEvent.VK_LEFT},
-    // // {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
-    // {KeyEvent.VK_BACK_SPACE,
-    // KeyEvent.VK_LEFT},
-    // // {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
-    // KeyEvent.VK_LEFT,
-    // KeyEvent.VK_DELETE,
-    // // KeyEvent.VK_RIGHT}, {KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT}};
-    // //
-    // // String[] advancedExpectedOutput = {"Subject stands u$10,432p ",
-    // // "$10,43Hand me the manual!2", "hand me the manuaTote_that_balel",
-    // // "Tote_that_aJeune fille celebrel",
-    // // "Jeune fille celebreIf x?7 then x? 2"};
-    // //
-    // // runAdvancedTest(xVarName, textTestInput, advancedInput,
-    // // advancedExpectedOutput);
-    //    
-    // }
-
-    //
-    // /**
-    // * Test creating a new cell by pressing enter instead of clicking.
-    // * @throws java.lang.Exception on any error
-    // */
-    // public void testCreateNewCellWithEnter() throws Exception {
-    // String varName = "testVar";
-    // String varType = UIUtils.VAR_TYPES[(int) (Math.random()
-    // * UIUtils.VAR_TYPES.length)];
-    // String varRadio = varType.toLowerCase();
-    //
-    // // 1. Retrieve the components
-    // Window window = getMainWindow();
-    // MenuBar menuBar = window.getMenuBar();
-    // // 2. Create new variable,
-    // Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-    // "Spreadsheet").getSubMenu("New Variable").triggerClick());
-    // newVarWindow.getTextBox("nameField").insertText(varName, 0);
-    // newVarWindow.getRadioButton(varRadio).click();
-    // assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
-    // newVarWindow.getButton("Ok").click();
-    //
-    // Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-    // (window.getUIComponents(Spreadsheet.class)[0]
-    // .getAwtComponent()));
-    //
-    // //Create new cell
-    // //Instead of clicking, just press "Enter"
-    // /* Code to be written
-    // * Must click the column title
-    // * Then press enter on it
-    // */
-    // Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-    // // readyToExit = true;
-    // }
-    //
 
     /**
      * Runs advanced tests.
@@ -1092,55 +722,6 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         }
     }
 
-    // ORIGINAL:
-    // /**
-    // * Runs advanced tests.
-    // * @param varName name of variable and therefore column header name
-    // * @param testInput array of test input
-    // * @param advancedInput extra advanced input
-    // * @param expectedTestOutput expected test output
-    // * @throws SystemErrorException on system error exception
-    // */
-    // private void runAdvancedTest(final String varName,
-    // final String[] testInput, final Key[][] advancedInput,
-    // final String[] expectedTestOutput) throws SystemErrorException {
-    // // Retrieve the components and set variable
-    // Window window = getMainWindow();
-    // MenuBar menuBar = window.getMenuBar();
-    // Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-    // window.getUIComponents(Spreadsheet.class)[0]
-    // .getAwtComponent()));
-    //
-    // int numOfTests = testInput.length;
-    // //2. Create new cells, check that they have been created
-    // for (int i = 0; i < numOfTests; i++) {
-    // menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-    // }
-    // Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-    // assertTrue(cells.size() == numOfTests);
-    // for (int i = 0; i < numOfTests - 1; i++) {
-    // assertTrue(cells.elementAt(i).getOrd() == i + 1);
-    // assertTrue((cells.elementAt(i).getOnset().getText()).equals(
-    // "00:00:00:000"));
-    // assertTrue((cells.elementAt(i).getOffset().getText()).equals(
-    // "00:00:00:000"));
-    // assertTrue(cells.elementAt(i).getValue().getText().equals("<val>"));
-    // //4. Test different inputs as per specifications
-    // Cell c = cells.elementAt(i);
-    // TextBox t = c.getValue();
-    //
-    // Vector<TextItem> vti = new Vector<TextItem>();
-    // vti.add(new StringItem(testInput[i]));
-    // vti.add(new KeysItem(advancedInput[i]));
-    // vti.add(new StringItem(testInput[i + 1]));
-    //
-    // c.enterText(Cell.VALUE, vti);
-    //
-    // assertTrueEqualValues(t.getText(), expectedTestOutput[i]);
-    // }
-    // }
-    //
-
     /**
      * Runs a double argument matrix test.
      * @param varName
@@ -1170,8 +751,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
             // 4. Test different inputs as per specifications
             changeCellMatrixValue(varName, ordinal, testInput[ordinal - 1]);
 
-             JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet =
+            JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+            SpreadsheetPanelFixture spreadsheet =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
                         (SpreadsheetPanel) jPanel.component());
 
@@ -1184,57 +765,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 Assert.assertTrue(UIUtils.equalValues(actualValues[i],
                         expectedValues[i]));
             }
-//            Assert.assertTrue(cellHasValue(varName, ordinal,
-//                    expectedTestOutput[ordinal - 1]),
-//                    "Expecting different cell value");
         }
     }
-
-    // /**
-    // * Runs a double argument matrix test.
-    // *
-    // * @param varName
-    // * name of variable and therefore column header name
-    // * @param testInput
-    // * Array of arguments for matrix
-    // * @param expectedTestOutput
-    // * expected test output
-    // */
-    // private void runMatrixTest(final String varName,
-    // final String[][] testInput, final String[] expectedTestOutput) {
-    // // Retrieve the components and set variable
-    // Window window = getMainWindow();
-    // MenuBar menuBar = window.getMenuBar();
-    // Spreadsheet ss =
-    // new Spreadsheet((SpreadsheetPanel) (window
-    // .getUIComponents(Spreadsheet.class)[0]
-    // .getAwtComponent()));
-    //
-    // int numOfTests = testInput.length;
-    // ss.getSpreadsheetColumn(varName).requestFocus();
-    // // 2. Create new cells, check that they have been created
-    // for (int i = 0; i < numOfTests; i++) {
-    // menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-    // }
-    // Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-    // for (int i = 0; i < numOfTests - 1; i++) {
-    // assertTrue((cells.elementAt(i).getOnset().getText())
-    // .equals("00:00:00:000"));
-    // assertTrue((cells.elementAt(i).getOffset().getText())
-    // .equals("00:00:00:000"));
-    // // 4. Test different inputs as per specifications
-    // Cell c = cells.elementAt(i);
-    // TextBox t = c.getValue();
-    // c.enterMatrixText(testInput[i]);
-    // int numOfArgs = UIUtils.getNumberofArgFromMatrix(t.getText());
-    // String[] actualValues = UIUtils.getArgsFromMatrix(t.getText());
-    // String[] expectedValues =
-    // UIUtils.getArgsFromMatrix(expectedTestOutput[i]);
-    // for (int j = 0; j < numOfArgs; j++) {
-    // assertTrueEqualValues(actualValues[j], expectedValues[j]);
-    // }
-    // }
-    // }
 
     //
     /**
