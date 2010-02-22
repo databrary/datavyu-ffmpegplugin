@@ -8,6 +8,7 @@ import java.awt.Polygon;
 
 import javax.swing.JComponent;
 
+import org.openshapa.Configuration;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
 
@@ -24,12 +25,10 @@ public class TrackPainter extends JComponent {
     /**
      * Color schemes
      */
-    private static final Color NORMAL_CARRIAGE_COLOR = new Color(169, 218, 248);
-    private static final Color NORMAL_OUTLINE_COLOR = new Color(129, 167, 188);
-    private static final Color SELECTED_CARRIAGE_COLOR =
-            new Color(138, 223, 162);
-    private static final Color SELECTED_OUTLINE_COLOR =
-            new Color(105, 186, 128);
+    private final Color normalCarriageColor;
+    private final Color normalOutlineColor;
+    private final Color selectedCarriageColor;
+    private final Color selectedOutlineColor;
 
     /** Painted region of the carriage */
     private Polygon carriagePolygon;
@@ -40,6 +39,12 @@ public class TrackPainter extends JComponent {
 
     public TrackPainter() {
         super();
+        Configuration config = Configuration.getInstance();
+        normalCarriageColor = config.getMixerInterfaceNormalCarriageColour();
+        normalOutlineColor = config.getMixerInterfaceNormalOutlineColour();
+        selectedCarriageColor =
+                config.getMixerInterfaceSelectedCarriageColour();
+        selectedOutlineColor = config.getMixerInterfaceSelectedOutlineColour();
     }
 
     public TrackModel getTrackModel() {
@@ -114,18 +119,18 @@ public class TrackPainter extends JComponent {
 
         // Paint the carriage
         if (trackModel.isSelected()) {
-            g.setColor(SELECTED_CARRIAGE_COLOR);
+            g.setColor(selectedCarriageColor);
         } else {
-            g.setColor(NORMAL_CARRIAGE_COLOR);
+            g.setColor(normalCarriageColor);
         }
 
         g.fillPolygon(carriagePolygon);
 
         // Paint the carriage outlines
         if (trackModel.isSelected()) {
-            g.setColor(SELECTED_OUTLINE_COLOR);
+            g.setColor(selectedOutlineColor);
         } else {
-            g.setColor(NORMAL_OUTLINE_COLOR);
+            g.setColor(normalOutlineColor);
         }
 
         g.drawPolygon(carriagePolygon);
@@ -155,14 +160,14 @@ public class TrackPainter extends JComponent {
         bookmarkDiamond.addPoint(bookmarkXPos - 5, carriageYOffset - 5);
 
         if (trackModel.isSelected()) {
-            g.setColor(SELECTED_CARRIAGE_COLOR);
+            g.setColor(selectedCarriageColor);
             g.fillPolygon(bookmarkDiamond);
-            g.setColor(SELECTED_OUTLINE_COLOR);
+            g.setColor(selectedOutlineColor);
             g.drawPolygon(bookmarkDiamond);
         } else {
-            g.setColor(NORMAL_CARRIAGE_COLOR);
+            g.setColor(normalCarriageColor);
             g.fillPolygon(bookmarkDiamond);
-            g.setColor(NORMAL_OUTLINE_COLOR);
+            g.setColor(normalOutlineColor);
             g.drawPolygon(bookmarkDiamond);
         }
 

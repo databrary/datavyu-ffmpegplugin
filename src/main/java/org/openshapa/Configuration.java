@@ -1,12 +1,14 @@
 package org.openshapa;
 
-import com.usermetrix.jclient.UserMetrix;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
+
 import org.jdesktop.application.LocalStorage;
 import org.openshapa.util.ConfigProperties;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * Singleton object containing global configuration definitions for the user
@@ -38,6 +40,22 @@ public final class Configuration {
     /** The default spreadsheet overlap colour. */
     private static final Color DEFAULT_OVERLAP = Color.RED;
 
+    /** Fill colour of a carriage in the unselected/normal state */
+    private static final Color DEFAULT_NORMAL_CARRIAGE_COLOR =
+            new Color(169, 218, 248);
+
+    /** Outline colour of a carriage in the unselected/normal state */
+    private static final Color DEFAULT_NORMAL_OUTLINE_COLOR =
+            new Color(129, 167, 188);
+
+    /** Fill colour of a carriage in the selected state */
+    private static final Color DEFAULT_SELECTED_CARRIAGE_COLOR =
+            new Color(138, 223, 162);
+
+    /** Outline colour of a carriage in the selected state */
+    private static final Color DEFAULT_SELECTED_OUTLINE_COLOR =
+            new Color(105, 186, 128);
+
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(Configuration.class);
 
@@ -55,118 +73,188 @@ public final class Configuration {
     /**
      * Sets and saves (to the config file) the data font to use on the
      * spreadsheet.
-     *
-     * @param font The new data font to use on the spreadsheet.
+     * 
+     * @param font
+     *            The new data font to use on the spreadsheet.
      */
     public void setSSDataFont(final Font font) {
-        this.properties.setSSDataFont(font);
-        this.save();
+        properties.setSSDataFont(font);
+        save();
     }
 
     /**
      * @return The data font to use for the spreadsheet.
      */
     public Font getSSDataFont() {
-        return this.properties.getSSDataFont();
+        return properties.getSSDataFont();
     }
 
     /**
      * Sets and saves (to the config file) the background colour of the
      * spreadsheet.
-     *
-     * @param colour The new colour to use for the spreadsheet background.
+     * 
+     * @param colour
+     *            The new colour to use for the spreadsheet background.
      */
     public void setSSBackgroundColour(final Color colour) {
-        this.properties.setSSBackgroundColour(colour);
-        this.save();
+        properties.setSSBackgroundColour(colour);
+        save();
     }
 
     /**
      * @return The background colour for the spreadsheet.
      */
     public Color getSSBackgroundColour() {
-        return this.properties.getSSBackgroundColour();
+        return properties.getSSBackgroundColour();
     }
 
     /**
      * Sets and saves (to the config file) the foreground colour of the
      * spreadsheet.
-     *
-     * @param colour The new colour to use for the spreadsheet foreground.
+     * 
+     * @param colour
+     *            The new colour to use for the spreadsheet foreground.
      */
     public void setSSForegroundColour(final Color colour) {
-        this.properties.setSSForegroundColour(colour);
-        this.save();
+        properties.setSSForegroundColour(colour);
+        save();
     }
 
     /**
      * @return The foreground colour of the spreadsheet.
      */
     public Color getSSForegroundColour() {
-        return this.properties.getSSForegroundColour();
+        return properties.getSSForegroundColour();
     }
 
     /**
      * Sets and saves (to the config file) the selected colour of the
      * spreadsheet.
-     *
-     * @param colour The new colour to use for spreadsheet selections.
+     * 
+     * @param colour
+     *            The new colour to use for spreadsheet selections.
      */
     public void setSSSelectedColour(final Color colour) {
-        this.properties.setSSSelectedColour(colour);
-        this.save();
+        properties.setSSSelectedColour(colour);
+        save();
     }
 
     /**
      * @return The selected colour of the spreadsheet.
      */
     public Color getSSSelectedColour() {
-        return this.properties.getSSSelectedColour();
+        return properties.getSSSelectedColour();
     }
 
     /**
      * Sets and saves (to the config file) the overlap colour of the
      * spreadsheet.
-     *
-     * @param colour The new colour to use for spreadsheet overlaps.
+     * 
+     * @param colour
+     *            The new colour to use for spreadsheet overlaps.
      */
     public void setSSOverlapColour(final Color colour) {
-        this.properties.setSSOverlapColour(colour);
-        this.save();
+        properties.setSSOverlapColour(colour);
+        save();
     }
 
     /**
      * @return The overlap colour of the spreadsheet.
      */
     public Color getSSOverlapColour() {
-        return this.properties.getSSOverlapColour();
+        return properties.getSSOverlapColour();
     }
 
     /**
      * Sets and saves (to the config file) the last directory the user navigated
      * too in a chooser.
-     *
-     * @param location The last location that the user navigated too.
+     * 
+     * @param location
+     *            The last location that the user navigated too.
      */
     public void setLCDirectory(final File location) {
-        this.properties.setLCDirectory(location.toString());
-        this.save();
+        properties.setLCDirectory(location.toString());
+        save();
     }
 
     /**
      * @return The last directory the user navigated too in a file chooser.
      */
     public File getLCDirectory() {
-        return new File(this.properties.getLCDirectory());
+        return new File(properties.getLCDirectory());
     }
 
     public void setCanSendLogs(final Boolean send) {
-        this.properties.setCanSendLogs(send);
-        this.save();
+        properties.setCanSendLogs(send);
+        save();
     }
 
     public Boolean getCanSendLogs() {
-        return this.properties.getCanSendLogs();
+        return properties.getCanSendLogs();
+    }
+
+    /**
+     * @return the mixerInterfaceSelectedCarriageColour
+     */
+    public Color getMixerInterfaceSelectedCarriageColour() {
+        return properties.getMixerInterfaceSelectedCarriageColour();
+    }
+
+    /**
+     * @param newColour
+     *            the mixerInterfaceSelectedCarriageColour to set
+     */
+    public void setMixerInterfaceSelectedCarriageColour(final Color newColour) {
+        properties.setMixerInterfaceSelectedCarriageColour(newColour);
+        save();
+    }
+
+    /**
+     * @return the mixerInterfaceSelectedOutlineColour
+     */
+    public Color getMixerInterfaceSelectedOutlineColour() {
+        return properties.getMixerInterfaceSelectedOutlineColour();
+    }
+
+    /**
+     * @param newColour
+     *            the mixerInterfaceSelectedOutlineColour to set
+     */
+    public void setMixerInterfaceSelectedOutlineColour(final Color newColour) {
+        properties.setMixerInterfaceSelectedOutlineColour(newColour);
+        save();
+    }
+
+    /**
+     * @return the mixerInterfaceNormalCarriageColour
+     */
+    public Color getMixerInterfaceNormalCarriageColour() {
+        return properties.getMixerInterfaceNormalCarriageColour();
+    }
+
+    /**
+     * @param newColour
+     *            the mixerInterfaceNormalCarriageColour to set
+     */
+    public void setMixerInterfaceNormalCarriageColour(final Color newColour) {
+        properties.setMixerInterfaceNormalCarriageColour(newColour);
+        save();
+    }
+
+    /**
+     * @return the mixerInterfaceNormalOutlineColour
+     */
+    public Color getMixerInterfaceNormalOutlineColour() {
+        return properties.getMixerInterfaceNormalOutlineColour();
+    }
+
+    /**
+     * @param newColour
+     *            the mixerInterfaceNormalOutlineColour to set
+     */
+    public void setMixerInterfaceNormalOutlineColour(final Color newColour) {
+        properties.setMixerInterfaceNormalOutlineColour(newColour);
+        save();
     }
 
     /**
@@ -177,11 +265,11 @@ public final class Configuration {
 
         // Try to load the configuration properties from disk.
         try {
-            LocalStorage ls = OpenSHAPA.getApplication()
-                                       .getContext().getLocalStorage();
+            LocalStorage ls =
+                    OpenSHAPA.getApplication().getContext().getLocalStorage();
             properties = (ConfigProperties) ls.load(CONFIG_FILE);
 
-        // Oh-noes, can't load configuration file from disk.
+            // Oh-noes, can't load configuration file from disk.
         } catch (IOException e) {
             logger.error("Unable to load configuration file from dis", e);
         }
@@ -194,20 +282,41 @@ public final class Configuration {
             properties.setSSForegroundColour(DEFAULT_FOREGROUND);
             properties.setSSSelectedColour(DEFAULT_SELECTED);
             properties.setSSOverlapColour(DEFAULT_OVERLAP);
+            properties
+                    .setMixerInterfaceNormalCarriageColour(DEFAULT_NORMAL_CARRIAGE_COLOR);
+            properties
+                    .setMixerInterfaceNormalOutlineColour(DEFAULT_NORMAL_OUTLINE_COLOR);
+            properties
+                    .setMixerInterfaceSelectedCarriageColour(DEFAULT_SELECTED_CARRIAGE_COLOR);
+            properties
+                    .setMixerInterfaceSelectedOutlineColour(DEFAULT_SELECTED_OUTLINE_COLOR);
 
-            this.save();
+            save();
         }
 
         if (properties.getLCDirectory() == null) {
             properties.setLCDirectory(System.getProperty("user.home"));
-            this.save();
+            save();
         }
 
         if (properties.getSSOverlapColour() == null) {
             // Assume that user wants their selected colour overridden too.
             properties.setSSSelectedColour(DEFAULT_SELECTED);
             properties.setSSOverlapColour(DEFAULT_OVERLAP);
-            this.save();
+            save();
+        }
+
+        // If one property is null, just reset all.
+        if (properties.getMixerInterfaceNormalCarriageColour() == null) {
+            properties
+                    .setMixerInterfaceNormalCarriageColour(DEFAULT_NORMAL_CARRIAGE_COLOR);
+            properties
+                    .setMixerInterfaceNormalOutlineColour(DEFAULT_NORMAL_OUTLINE_COLOR);
+            properties
+                    .setMixerInterfaceSelectedCarriageColour(DEFAULT_SELECTED_CARRIAGE_COLOR);
+            properties
+                    .setMixerInterfaceSelectedOutlineColour(DEFAULT_SELECTED_OUTLINE_COLOR);
+            save();
         }
     }
 
@@ -218,15 +327,14 @@ public final class Configuration {
     private void save() {
         // Try to save the configuration properties to disk.
         try {
-            LocalStorage ls = OpenSHAPA.getApplication()
-                                       .getContext().getLocalStorage();
+            LocalStorage ls =
+                    OpenSHAPA.getApplication().getContext().getLocalStorage();
             ls.save(properties, CONFIG_FILE);
 
-        // Oh-noes, can't save configuration file to disk.
+            // Oh-noes, can't save configuration file to disk.
         } catch (IOException e) {
             logger.error("Unable to save configuration to disk", e);
         }
     }
-
 
 }
