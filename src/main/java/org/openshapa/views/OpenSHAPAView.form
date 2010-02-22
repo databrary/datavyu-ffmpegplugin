@@ -366,14 +366,6 @@
                 <AuxValue name="JavaCodeGenerator_AddingCodePre" type="java.lang.String" value="if (OpenSHAPA.getPlatform() != Platform.MAC) {"/>
               </AuxValues>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="contentsMenuItem">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="org.openshapa.views.OpenSHAPAView" id="runTests" methodName="runTests"/>
-                </Property>
-                <Property name="name" type="java.lang.String" value="contentsMenuItem" noResource="true"/>
-              </Properties>
-            </MenuItem>
           </SubComponents>
         </Menu>
       </SubComponents>
