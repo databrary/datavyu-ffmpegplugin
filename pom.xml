@@ -358,28 +358,6 @@
         </configuration>
       </plugin>
 
-      <!-- Add the unit tests to the source code so that we can package the
-           tests with the application so that end users can perform them. -->
-      <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>build-helper-maven-plugin</artifactId>
-          <version>1.1</version>
-          <executions>
-              <execution>
-                  <id>add-source</id>
-                  <phase>generate-sources</phase>
-                  <goals>
-                      <goal>add-source</goal>
-                  </goals>
-                  <configuration>
-                      <sources>
-                          <source>src/test/java</source>
-                      </sources>
-                  </configuration>
-              </execution>
-          </executions>
-      </plugin>
-
       <!-- BugzID:571 - Insert build ID into properties file. -->
       <plugin>
         <dependencies>
@@ -491,10 +469,6 @@
             </jre>
             <classPath>
               <mainClass>org.openshapa.OpenSHAPA</mainClass>
-                <preCp>junit-4.3.jar</preCp>
-                <preCp>junit-addons-1.4.jar</preCp>
-                <preCp>xercesImpl-2.6.2.jar</preCp>
-                <preCp>xmlParserAPIs-2.6.2.jar</preCp>
                 <preCp>script-api-1.1.jar</preCp>
                 <preCp>jruby-engine-1.1.6.jar</preCp>
                 <preCp>jruby-complete-1.4.0.jar</preCp>
@@ -502,8 +476,6 @@
                 <preCp>appframework-1.0.3.jar</preCp>
                 <preCp>swing-worker-1.1.jar</preCp>
                 <preCp>QTJava-7.jar</preCp>
-                <preCp>uispec4j-v2.1-B.jar</preCp>
-                <preCp>asm-3.1.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
                 <preCp>openshapa-lib-0.0.4.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
@@ -540,17 +512,12 @@
       <version>1.4</version>
       <scope>test</scope>
     </dependency>
-
+        
     <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.3</version>
-    </dependency>
-
-    <dependency>
-        <groupId>junit-addons</groupId>
-        <artifactId>junit-addons</artifactId>
-        <version>1.4</version>
+      <groupId>org.uispec4j</groupId>
+      <artifactId>uispec4j</artifactId>
+      <version>v2.1-E</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -601,12 +568,6 @@
       <groupId>quicktime</groupId>
       <artifactId>QTJava</artifactId>
       <version>7</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uispec4j</groupId>
-      <artifactId>uispec4j</artifactId>
-      <version>v2.1-E</version>
     </dependency>
 
     <dependency>
