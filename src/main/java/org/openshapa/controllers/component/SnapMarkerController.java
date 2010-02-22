@@ -22,6 +22,7 @@ public class SnapMarkerController {
         snapMarkerModel = new SnapMarkerModel();
         snapMarkerModel.setPaddingTop(0);
         snapMarkerModel.setPaddingLeft(101);
+        snapMarkerModel.setMarkerTime(-1);
 
         viewableModel = new ViewableModel();
 
@@ -34,7 +35,7 @@ public class SnapMarkerController {
      * 
      * @param currentTime
      */
-    public void setMarkerTime(long currentTime) {
+    public void setMarkerTime(final long currentTime) {
         snapMarkerModel.setMarkerTime(currentTime);
         view.setSnapMarkerModel(snapMarkerModel);
     }
@@ -59,7 +60,7 @@ public class SnapMarkerController {
      * 
      * @param viewableModel
      */
-    public void setViewableModel(ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel viewableModel) {
         /*
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
