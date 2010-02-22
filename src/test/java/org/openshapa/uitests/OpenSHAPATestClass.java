@@ -5,6 +5,7 @@
 
 package org.openshapa.uitests;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.TimeUnit;
 
@@ -13,8 +14,8 @@ import javax.swing.JDialog;
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
+import org.fest.swing.fixture.OpenSHAPAFrameFixture;
 import org.fest.swing.launcher.ApplicationLauncher;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
@@ -26,14 +27,15 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 
 /**
- * GUI Test class for OpenSHAPA.
- * All OpenSHAPA Fest tests must extend this class.
+ * GUI Test class for OpenSHAPA. All OpenSHAPA Fest tests must extend this
+ * class.
+ * 
  * @author mmuthukrishna
  */
 public class OpenSHAPATestClass {
 
     /** Main Frame fixture for use by all tests. */
-    protected FrameFixture mainFrameFixture;
+    protected OpenSHAPAFrameFixture mainFrameFixture;
 
     /** Constructor nulls the mainFrame Fixture. */
     public OpenSHAPATestClass() {
@@ -46,11 +48,11 @@ public class OpenSHAPATestClass {
     @BeforeSuite
     protected final void startApplication() {
         System.err.println("Starting Application.");
-        FrameFixture fixture;
+        OpenSHAPAFrameFixture fixture;
 
         // Launch OpenSHAPA, this happens once per test class.
         ApplicationLauncher.application(OpenSHAPA.class).start();
-        fixture = new FrameFixture("mainFrame");
+        fixture = new OpenSHAPAFrameFixture("mainFrame");
         fixture.robot.waitForIdle();
         fixture.requireVisible();
         fixture.maximize();
@@ -61,8 +63,7 @@ public class OpenSHAPATestClass {
     }
 
     /**
-     * Restarts the application between tests.
-     * Achieves this by using File->New
+     * Restarts the application between tests. Achieves this by using File->New
      */
     @AfterMethod
     protected final void restartApplication() {
@@ -72,7 +73,7 @@ public class OpenSHAPATestClass {
         // Create a new project, this is for the discard changes dialog.
         if (Platform.isOSX()) {
             mainFrameFixture.pressAndReleaseKey(KeyPressInfo.keyCode(
-                    KeyEvent.VK_N).modifiers(KeyEvent.META_MASK));
+                    KeyEvent.VK_N).modifiers(InputEvent.META_MASK));
         } else {
             mainFrameFixture.menuItemWithPath("File", "New").click();
         }
@@ -86,8 +87,9 @@ public class OpenSHAPATestClass {
         }
 
         // Get New Database dialog
-        DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
-                new GenericTypeMatcher<JDialog>(JDialog.class) {
+        DialogFixture newDatabaseDialog =
+                mainFrameFixture.dialog(new GenericTypeMatcher<JDialog>(
+                        JDialog.class) {
                     @Override
                     protected boolean isMatching(final JDialog dialog) {
                         return dialog.getClass().equals(NewProjectV.class);
