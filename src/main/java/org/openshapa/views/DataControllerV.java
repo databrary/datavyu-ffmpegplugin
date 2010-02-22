@@ -1257,7 +1257,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
             clock.setTime(tracksTime);
             clockStep(tracksTime);
             break;
-        case BOOKMARK_CHANGED:
+        case BOOKMARK_CHANGED: {
             // Look through our data viewers and update the bookmark
             Iterator<DataViewer> viewerIterator = viewers.iterator();
             while (viewerIterator.hasNext()) {
@@ -1271,6 +1271,22 @@ public final class DataControllerV extends OpenSHAPADialog implements
                     OpenSHAPA.getApplication().updateTitle();
                 }
             }
+        }
+        case BOOKMARK_SAVE: {
+            // Look through our data viewers and update the bookmark
+            Iterator<DataViewer> viewerIterator = viewers.iterator();
+            while (viewerIterator.hasNext()) {
+                DataViewer dv = viewerIterator.next();
+                File feed = dv.getDataFeed();
+
+                if (feed.getAbsolutePath().equals(e.getTrackId())) {
+                    Project project = OpenSHAPA.getProject();
+                    project.addViewerBookmarkSetting(dv.getClass().getName(), e
+                            .getTrackId(), e.getBookmark());
+                    OpenSHAPA.getApplication().updateTitle();
+                }
+            }
+        }
         }
     }
 

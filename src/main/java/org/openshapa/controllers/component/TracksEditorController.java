@@ -300,6 +300,7 @@ public class TracksEditorController implements TrackMouseEventListener {
             TrackController track = allTracks.next().trackController;
             if (track.isSelected()) {
                 track.addTemporalBookmark(position);
+                track.saveBookmark();
             }
         }
     }

@@ -590,6 +590,15 @@ public class MixerControllerV implements NeedleEventListener,
     }
 
     /**
+     * Track is requesting for bookmark to be saved.
+     * 
+     * @param e
+     */
+    public void saveBookmark(final CarriageEvent e) {
+        fireTracksControllerEvent(TracksEvent.CARRIAGE_EVENT, e);
+    }
+
+    /**
      * A track's selection state was changed.
      */
     public void selectionChanged(final CarriageEvent e) {

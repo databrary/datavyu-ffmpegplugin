@@ -13,7 +13,8 @@ public class CarriageEvent extends EventObject {
     private static final long serialVersionUID = 4009420871939032673L;
 
     public enum EventType {
-        BOOKMARK_CHANGED, BOOKMARK_REQUEST, CARRIAGE_SELECTION, OFFSET_CHANGE
+        BOOKMARK_CHANGED, BOOKMARK_REQUEST, BOOKMARK_SAVE, CARRIAGE_SELECTION,
+        OFFSET_CHANGE
     }
 
     /** Track identifier */

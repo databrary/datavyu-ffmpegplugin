@@ -251,6 +251,10 @@ public class TrackController {
         moveable = canMove;
     }
 
+    public void saveBookmark() {
+        fireCarriageBookmarkSaveEvent();
+    }
+
     private void setBookmarkAction() {
         fireCarriageBookmarkRequestEvent();
         /*
@@ -362,6 +366,28 @@ public class TrackController {
         for (int i = 0; i < listeners.length; i += 2) {
             if (listeners[i] == CarriageEventListener.class) {
                 ((CarriageEventListener) listeners[i + 1]).requestBookmark(e);
+            }
+        }
+    }
+
+    /**
+     * Used to inform listeners about a bookmark request event
+     * 
+     * @param offset
+     */
+    private synchronized void fireCarriageBookmarkSaveEvent() {
+        CarriageEvent e =
+                new CarriageEvent(this, trackModel.getTrackId(), trackModel
+                        .getOffset(), trackModel.getBookmark(), trackModel
+                        .getDuration(), 0, EventType.BOOKMARK_SAVE);
+        Object[] listeners = listenerList.getListenerList();
+        /*
+         * The listener list contains the listening class and then the listener
+         * instance.
+         */
+        for (int i = 0; i < listeners.length; i += 2) {
+            if (listeners[i] == CarriageEventListener.class) {
+                ((CarriageEventListener) listeners[i + 1]).saveBookmark(e);
             }
         }
     }

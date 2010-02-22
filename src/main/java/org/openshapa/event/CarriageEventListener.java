@@ -23,6 +23,13 @@ public interface CarriageEventListener extends EventListener {
     public void requestBookmark(CarriageEvent e);
 
     /**
+     * Event handler for a track requesting bookmark saving
+     * 
+     * @param e
+     */
+    public void saveBookmark(CarriageEvent e);
+
+    /**
      * Event handler for a track's selected state change
      * 
      * @param e
