@@ -22,6 +22,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
 
     /**
      * Initialiser called before each unit test.
+     * 
      * @throws java.lang.Exception
      *             When unable to initialise test
      */
@@ -53,7 +54,9 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
 
     /**
      * Tests modifiying the spreadsheet with a script.
-     * @throws IOException if file read issues.
+     * 
+     * @throws IOException
+     *             if file read issues.
      */
     @Test
     public void testModifySpreadsheet() throws IOException {
@@ -67,7 +70,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
         Assert.assertTrue(modifyFile.exists(),
                 "Expecting find_and_replace.rb to exist.");
 
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
         mainFrameFixture.fileChooser().selectFile(demoFile).approve();
 
         // Close script console
@@ -86,7 +89,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
          * 2. Perform a find and replace; replace all instances of "moo" with
          * "frog"
          */
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
         mainFrameFixture.fileChooser().selectFile(modifyFile).approve();
 
         // Close script console
@@ -96,7 +99,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
         // 3. Save the database
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
-        mainFrameFixture.menuItemWithPath("File", "Save As...").click();
+        mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
         mainFrameFixture.fileChooser().component().setFileFilter(
                 new CSVFilter());
         File savedCSV = new File(tempFolder + "/" + "savedCSV.csv");

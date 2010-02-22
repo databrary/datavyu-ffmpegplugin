@@ -24,7 +24,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
         String varName = "text var";
         String varType = "TEXT";
 
-        //check that column has no cells
+        // check that column has no cells
         validateVariableType(varName, varType);
     }
 
@@ -37,7 +37,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
         String varName = "pred var";
         String varType = "PREDICATE";
 
-        //check that column has no cells
+        // check that column has no cells
         validateVariableType(varName, varType);
     }
 
@@ -50,7 +50,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
         String varName = "int var";
         String varType = "INTEGER";
 
-        //check that column has no cells
+        // check that column has no cells
         validateVariableType(varName, varType);
     }
 
@@ -63,7 +63,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
         String varName = "nom var";
         String varType = "NOMINAL";
 
-        //check that column has no cells
+        // check that column has no cells
         validateVariableType(varName, varType);
     }
 
@@ -76,7 +76,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
         String varName = "matrix var";
         String varType = "MATRIX";
 
-        //check that column has no cells
+        // check that column has no cells
         validateVariableType(varName, varType);
     }
 
@@ -89,28 +89,30 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
         String varName = "float var";
         String varType = "FLOAT";
 
-        //check that column has no cells
+        // check that column has no cells
         validateVariableType(varName, varType);
     }
 
     /**
      * Creates a new variable and checks that it has been created.
-     * @param varName variable name
-     * @param varType variable type
+     * 
+     * @param varName
+     *            variable name
+     * @param varType
+     *            variable type
      */
-    private void validateVariableType(final String varName,
-            final String varType) {
+    private void validateVariableType(final String varName, final String varType) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
 
         // 1. Create new variable
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Variable")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");
         DialogFixture newVariableDialog = mainFrameFixture.dialog();
         newVariableDialog.requireVisible();
-        JTextComponentFixture variableValueTextBox = newVariableDialog
-                .textBox();
+        JTextComponentFixture variableValueTextBox =
+                newVariableDialog.textBox();
         variableValueTextBox.requireEmpty();
         variableValueTextBox.requireEditable();
         variableValueTextBox.enterText(varName);
@@ -120,12 +122,12 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
                 .requireSelected();
         newVariableDialog.button("okButton").click();
 
-        //2. Check that column has been created
+        // 2. Check that column has been created
         SpreadsheetColumnFixture col = ssPanel.column(varName);
         Assert.assertNotNull(col);
         Assert.assertEquals(col.getColumnType(), varType);
 
-        //3. Check that column has no cells
+        // 3. Check that column has no cells
         Assert.assertTrue(col.numOfCells() == 0);
     }
 }

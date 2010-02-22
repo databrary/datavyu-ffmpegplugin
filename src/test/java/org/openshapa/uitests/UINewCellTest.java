@@ -28,34 +28,32 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * Nominal test input.
      */
     private String[] nominalTestInput =
-            {"Subject stands )up ", "$10,432", "Hand me (the manual!",
-                    "Tote_that_bale", "Jeune; fille celebre",
-                    "If x>7 then x|2"};
+            { "Subject stands )up ", "$10,432", "Hand me (the manual!",
+                    "Tote_that_bale", "Jeune; fille celebre", "If x>7 then x|2" };
 
     /**
      * Text test input.
      */
     private String[] textTestInput =
-            {"Subject stands up ", "$10,432", "Hand me the manual!",
-                    "Tote_that_bale", "Jeune fille celebre",
-                    "If x?7 then x? 2" };
+            { "Subject stands up ", "$10,432", "Hand me the manual!",
+                    "Tote_that_bale", "Jeune fille celebre", "If x?7 then x? 2" };
 
     /**
      * Integer test input.
      */
     private String[] integerTestInput =
-            {"1a9", "10-432", "!28.9(", "178&", "~~~)", "If x?7 then x? 2 ",
-                    "99999999999999999999", "000389.5", "-", "-0", "-123"};
+            { "1a9", "10-432", "!28.9(", "178&", "~~~)", "If x?7 then x? 2 ",
+                    "99999999999999999999", "000389.5", "-", "-0", "-123" };
 
     /**
      * Float test input.
      */
     private String[] floatTestInput =
-            {"1a.9", "10-43.2", "!289(", "178.&", "0~~~)",
+            { "1a.9", "10-43.2", "!289(", "178.&", "0~~~)",
                     "If x?7 then. x? 2 ", "589.138085638", "000389.5", "-0.1",
                     "0.2", "-0.0", "-", "-0", "-.34", "-23.34", ".34", "12.34",
-                    "-123"};
-    
+                    "-123" };
+
     /**
      * Test creating a new NOMINAL cell.
      */
@@ -66,9 +64,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varType = "nominal";
 
         String[] expectedNominalTestOutput =
-                {"Subject stands up", "$10432", "Hand me the manual!",
+                { "Subject stands up", "$10432", "Hand me the manual!",
                         "Tote_that_bale", "Jeune fille celebre",
-                        "If x7 then x2"};
+                        "If x7 then x2" };
 
         // 1. Create new variable
         UIUtils.createNewVariable(mainFrameFixture, varName, varType);
@@ -86,17 +84,16 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varRadio = "nominal";
 
         String[] expectedNominalTestOutput =
-                {"Subject stands up ", "$10432", "Hand me the manual!",
+                { "Subject stands up ", "$10432", "Hand me the manual!",
                         "Tote_that_bale", "Jeune fille celebre",
-                        "If x7 then x2"};
+                        "If x7 then x2" };
 
         pasteTest(varName, varRadio, nominalTestInput,
                 expectedNominalTestOutput);
     }
 
     /**
-     * Test creating a new NOMINAL cell with more advanced input.
-     * BugzID:1203
+     * Test creating a new NOMINAL cell with more advanced input. BugzID:1203
      */
     @Test
     public void testNewAdvancedNominalCell() {
@@ -107,13 +104,13 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // advanced Input will be provided between testInput
         int[][] advancedInput =
                 {
-                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
-                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
-                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
-                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
+                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
+                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT },
+                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
+                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_DELETE, KeyEvent.VK_RIGHT },
-                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
+                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
@@ -128,7 +125,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                                 KeyEvent.VK_BACK_SPACE } };
 
         String[] expectedTestOutput =
-                {"Subject stands u$10432p ", "$1043Hand me the manual!2",
+                { "Subject stands u$10432p ", "$1043Hand me the manual!2",
                         "Hand me the manuaTote_that_balel",
                         "Tote_that_aJeune fille celebrel", "If x7 then x2" };
 
@@ -178,7 +175,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varRadio = "integer";
 
         String[] expectedTestOutput =
-                {"19", "-43210", "289", "178", "<val>", "72",
+                { "19", "-43210", "289", "178", "<val>", "72",
                         "999999999999999999", "3895", "-", "0", "-123" };
         pasteTest(varName, varRadio, integerTestInput, expectedTestOutput);
     }
@@ -195,16 +192,16 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // advanced Input will be provided between testInput
         int[][] advancedInput =
                 {
-                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
-                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
-                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
-                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
+                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
+                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT },
+                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
+                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_DELETE, KeyEvent.VK_RIGHT },
-                        {KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT } };
+                        { KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT } };
 
         String[] advancedExpectedOutput =
-                {"Subject stands u$10,432p ", "$10,43Hand me the manual!2",
+                { "Subject stands u$10,432p ", "$10,43Hand me the manual!2",
                         "Hand me the manuaTote_that_balel",
                         "Tote_that_aJeune fille celebrel",
                         "Jeune fille celebreIf x?7 then x? 2" };
@@ -217,6 +214,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Test creating a new FLOAT cell.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -227,7 +225,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varRadio = "float";
 
         String[] expectedTestOutput =
-                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+                { "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
                         "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
                         "-23.34", "0.34", "12.34", "-123" };
 
@@ -246,7 +244,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varRadio = "float";
 
         String[] expectedTestOutput =
-                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+                { "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
                         "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
                         "-23.34", "0.34", "12.34", "-123" };
 
@@ -254,8 +252,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test creating a new FLOAT cell with advanced input.
-     * BugzID:1201
+     * Test creating a new FLOAT cell with advanced input. BugzID:1201
      */
     @Test
     public void testNewAdvancedFloatCell() {
@@ -264,22 +261,22 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varRadio = "float";
 
         String[] testInput =
-                {"1a.9", "10-43.2", "!289(", "178.&", "0~~~)",
+                { "1a.9", "10-43.2", "!289(", "178.&", "0~~~)",
                         "If x?7 then.- x? 8", "-589.138085638", "12.3" };
 
         int[][] advancedInput =
                 {
-                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
-                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
-                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
-                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
+                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
+                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT },
+                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
+                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_DELETE, KeyEvent.VK_RIGHT },
-                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
+                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE },
-                        {KeyEvent.VK_RIGHT },
-                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
+                        { KeyEvent.VK_RIGHT },
+                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
@@ -290,7 +287,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                                 KeyEvent.VK_LEFT } };
 
         String[] expectedTestOutput =
-                {"-43.21019", "-43.289210", "2178.8", "7", "-87",
+                { "-43.21019", "-43.289210", "2178.8", "7", "-87",
                         "589.138085", "-589.138085" };
 
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
@@ -308,7 +305,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varRadio = "integer";
 
         String[] expectedTestOutput =
-                {"19", "-43210", "289", "178", "<val>", "72",
+                { "19", "-43210", "289", "178", "<val>", "72",
                         "999999999999999999", "3895", "<val>", "0", "-123" };
 
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
@@ -317,8 +314,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test creating a new INTEGER cell with advanced input.
-     * BugzID:1202
+     * Test creating a new INTEGER cell with advanced input. BugzID:1202
      */
     @Test
     public void testNewAdvancedIntegerCell() {
@@ -327,26 +323,26 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varRadio = "integer";
 
         String[] testInput =
-                {"1a9", "10-432", "!289(", "178&", "If x?7. then x? 2",
+                { "1a9", "10-432", "!289(", "178&", "If x?7. then x? 2",
                         "17-8&", "()12.3" };
 
         // advanced Input will be provided between testInput
         int[][] advancedInput =
                 {
-                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
-                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
-                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
-                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
+                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT },
+                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT },
+                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT },
+                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_DELETE, KeyEvent.VK_RIGHT },
-                        {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
+                        { KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
                                 KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
-                                KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE},
-                        {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
+                                KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE },
+                        { KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
                                 KeyEvent.VK_LEFT } };
 
         String[] expectedTestOutput =
-                {"-4321019", "-43289210", "21788", "772", "-817", "-817" };
+                { "-4321019", "-43289210", "21788", "772", "-817", "-817" };
 
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
@@ -365,7 +361,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
         mainFrameFixture.fileChooser().selectFile(demoFile).approve();
 
         // Close script console
@@ -377,7 +373,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varName = "mN1";
 
         String[] expectedNominalTestOutput =
-                {"Subject stands up", "$10432", "Hand me the manual!",
+                { "Subject stands up", "$10432", "Hand me the manual!",
                         "Tote_that_bale", "Jeune fille celebre",
                         "If x7 then x2" };
 
@@ -386,8 +382,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test creating a new MATRIX cell.
-     * BugzID:1198
+     * Test creating a new MATRIX cell. BugzID:1198
      */
     @Test
     public void testNewMatrixCellSingleArgFloat() {
@@ -398,7 +393,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
         mainFrameFixture.fileChooser().selectFile(demoFile).approve();
 
         // Close script console
@@ -410,7 +405,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varName = "mF1";
 
         String[] expectedFloatTestOutput =
-                {"1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+                { "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
                         "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34",
                         "-23.34", "0.34", "12.34", "-123" };
 
@@ -419,8 +414,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test creating a new MATRIX cell.
-     * BugzID:1199
+     * Test creating a new MATRIX cell. BugzID:1199
      */
     @Test
     public void testNewMatrixCellSingleArgInteger() {
@@ -431,7 +425,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
         mainFrameFixture.fileChooser().selectFile(demoFile).approve();
 
         // Close script console
@@ -443,7 +437,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varName = "mI1";
 
         String[] expectedIntTestOutput =
-                {"19", "-43210", "289", "178", "<int>", "72",
+                { "19", "-43210", "289", "178", "<int>", "72",
                         "999999999999999999", "3895", "<int>", "0", "-123" };
 
         runStandardTest(varName, integerTestInput, expectedIntTestOutput,
@@ -451,8 +445,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test creating a new MATRIX cell.
-     * BugzID:1199
+     * Test creating a new MATRIX cell. BugzID:1199
      */
     @Test
     public void testNewMatrixCellDoubleArgInteger() {
@@ -461,7 +454,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         /**
          * Integer test input.
          */
-        String[] iTestInput = {"1a9", "10-432"};
+        String[] iTestInput = { "1a9", "10-432" };
 
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
@@ -469,7 +462,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
         mainFrameFixture.fileChooser().selectFile(demoFile).approve();
 
         // Close script console
@@ -479,7 +472,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // 2. Test double cell type
         String varName = "mI2";
 
-        String[] expectedInt2TestOutput = {"19", "-43210"};
+        String[] expectedInt2TestOutput = { "19", "-43210" };
 
         int numOfTests = iTestInput.length;
 
@@ -494,18 +487,16 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
-                new String[expectedInt2TestOutput.length]
-                [expectedInt2TestOutput.length][2];
+                new String[expectedInt2TestOutput.length][expectedInt2TestOutput.length][2];
 
-//        String[] expectedInt2bTempOutput =
-//                {"19", "-43210", "289", "178", "<int1>", "72",
-//                        "999999999999999999", "3895", "<int1>", "0", "-123" };
+        // String[] expectedInt2bTempOutput =
+        // {"19", "-43210", "289", "178", "<int1>", "72",
+        // "999999999999999999", "3895", "<int1>", "0", "-123" };
 
-        String[] expectedInt2bTempOutput = {"19", "-43210"};
+        String[] expectedInt2bTempOutput = { "19", "-43210" };
 
         String[][] expectedInt2bTestOutput =
-                new String[expectedInt2TestOutput.length]
-                [expectedInt2TestOutput.length];
+                new String[expectedInt2TestOutput.length][expectedInt2TestOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
             for (int j = 0; j < numOfTests; j++) {
@@ -539,7 +530,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         /**
          * Nominal test input.
          */
-        String[] nomTestInput = {"Subject stands )up ", "$10,432"};
+        String[] nomTestInput = { "Subject stands )up ", "$10,432" };
 
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
@@ -547,7 +538,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
         mainFrameFixture.fileChooser().selectFile(demoFile).approve();
 
         // Close script console
@@ -558,7 +549,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // 2a. Test nominal
         String varName = "mN2";
 
-        String[] expectedTestOutput = {"Subject stands up", "$10432"};
+        String[] expectedTestOutput = { "Subject stands up", "$10432" };
 
         int numOfTests = expectedTestOutput.length;
 
@@ -574,11 +565,11 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String[][][] testInput =
                 new String[nomTestInput.length][nomTestInput.length][2];
 
-        String[] expectedNominal2bTempOutput = {"Subject stands up", "$10432"};
+        String[] expectedNominal2bTempOutput =
+                { "Subject stands up", "$10432" };
 
         String[][] expectedNominal2bTestOutput =
-                new String[expectedNominal2bTempOutput.length]
-                [expectedNominal2bTempOutput.length];
+                new String[expectedNominal2bTempOutput.length][expectedNominal2bTempOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
             for (int j = 0; j < numOfTests; j++) {
@@ -602,8 +593,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         numOfTests = nomTestInput.length;
         for (int i = 0; i < numOfTests; i++) {
-            runMatrixTest(varName, testInput[i],
-                    expectedNominal2bTestOutput[i]);
+            runMatrixTest(varName, testInput[i], expectedNominal2bTestOutput[i]);
         }
     }
 
@@ -616,7 +606,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         /**
          * Float test input.
          */
-        String[] fTestInput = {"1a.9", "10-43.2"};
+        String[] fTestInput = { "1a.9", "10-43.2" };
 
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
@@ -624,7 +614,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
         mainFrameFixture.fileChooser().selectFile(demoFile).approve();
 
         // Close script console
@@ -634,7 +624,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // 2. Test double cell type
         String varName = "mF2";
 
-        String[] expectedFloat2TestOutput = {"1.9", "-43.21"};
+        String[] expectedFloat2TestOutput = { "1.9", "-43.21" };
 
         int numOfTests = fTestInput.length;
 
@@ -644,17 +634,14 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                     "(" + expectedFloat2TestOutput[i] + ", <float2>)";
         }
 
-
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
-                new String[expectedFloat2TestOutput.length]
-                [expectedFloat2TestOutput.length][2];
+                new String[expectedFloat2TestOutput.length][expectedFloat2TestOutput.length][2];
 
-        String[] expectedInt2bTempOutput = {"1.9", "-43.21"};
+        String[] expectedInt2bTempOutput = { "1.9", "-43.21" };
 
         String[][] expectedInt2bTestOutput =
-                new String[expectedFloat2TestOutput.length]
-                [expectedFloat2TestOutput.length];
+                new String[expectedFloat2TestOutput.length][expectedFloat2TestOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
             for (int j = 0; j < numOfTests; j++) {
@@ -682,6 +669,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Runs advanced tests.
+     * 
      * @param varName
      *            name of variable and therefore column header name
      * @param testInput
@@ -724,6 +712,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Runs a double argument matrix test.
+     * 
      * @param varName
      *            name of variable and therefore column header name
      * @param testInput
@@ -753,14 +742,14 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
             JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
             SpreadsheetPanelFixture spreadsheet =
-                new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                        (SpreadsheetPanel) jPanel.component());
+                    new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                            (SpreadsheetPanel) jPanel.component());
 
-            String[] actualValues = UIUtils.getArgsFromMatrix(
-                    spreadsheet.column(varName).cell(ordinal).cellValue()
-                    .text());
-            String[] expectedValues = UIUtils.getArgsFromMatrix(
-                    expectedTestOutput[ordinal - 1]);
+            String[] actualValues =
+                    UIUtils.getArgsFromMatrix(spreadsheet.column(varName).cell(
+                            ordinal).cellValue().text());
+            String[] expectedValues =
+                    UIUtils.getArgsFromMatrix(expectedTestOutput[ordinal - 1]);
             for (int i = 0; i < actualValues.length; i++) {
                 Assert.assertTrue(UIUtils.equalValues(actualValues[i],
                         expectedValues[i]));
@@ -771,6 +760,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     //
     /**
      * matrix test exclusively for single argument matrix tests.
+     * 
      * @param varName
      *            name of variable and therefore column header name
      * @param testInput
@@ -792,6 +782,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Runs standard tests without advanced input, default custom blank used.
+     * 
      * @param varName
      *            name of variable and therefore column header name
      * @param testInput
@@ -806,6 +797,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Runs standard tests without advanced input.
+     * 
      * @param varName
      *            name of variable and therefore column header name
      * @param testInput
@@ -845,6 +837,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Tests for pasting.
+     * 
      * @param varName
      *            variable name
      * @param varRadio
@@ -954,7 +947,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
             spreadsheet.column(varName).cell(numCells).selectCell();
         }
 
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
     }
 
     /**
@@ -1056,6 +1049,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Change cell values using a string as the target value.
+     * 
      * @param varName
      *            name of column that contains the cell, assumes that the column
      *            already exists.
@@ -1076,6 +1070,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Change cell value using a list of inputs as the target value.
+     * 
      * @param varName
      *            name of column that contains the cell, assumes that the column
      *            already exists.
@@ -1103,6 +1098,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Change cell value using a string array of inputs as the target value,
      * where each input is separated by the key press defined as separator.
+     * 
      * @param varName
      *            name of column that contains the cell, assumes that the column
      *            already exists.
@@ -1164,7 +1160,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
     /**
      * Deletes all cells in a particular column.
-     * @param varName variable name.
+     * 
+     * @param varName
+     *            variable name.
      */
     private void deleteAllCells(final String varName) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
@@ -1180,11 +1178,11 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         }
 
         if (numOfCells > 1) {
-            mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Cells")
-                .click();
+            mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                    "Delete Cells");
         } else if (numOfCells == 1) {
-            mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Cell")
-                .click();
+            mainFrameFixture
+                    .clickMenuItemWithPath("Spreadsheet", "Delete Cell");
         }
     }
 }

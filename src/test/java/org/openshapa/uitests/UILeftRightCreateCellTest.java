@@ -39,7 +39,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
         spreadsheet.column("C").clickHeader();
 
         // 2. Make a new cell - using menu because numpad enter doesn't work
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
         // 3. Check if the new cell has been created.
         Assert.assertTrue(cellExists("C", 1),
@@ -57,8 +57,8 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
         clickCell("C", 1);
 
         // 2. Make a new cell to the left of the center cell
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell to Left")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                "New Cell to Left");
 
         // 3. Check if the new cell has been created.
         Assert.assertTrue(cellExists("L", 1),
@@ -77,8 +77,8 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
         clickCell("C", 1);
 
         // 2. Make a new cell to the left of the center cell
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell to Right")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                "New Cell to Right");
 
         // 3. Check if the new cell has been created.
         Assert.assertTrue(cellExists("R", 1),
@@ -162,7 +162,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      *            Should be in the format HH:mm:ss:SSS
      */
     private void changeOffset(final String varName, final int id,
-            String offset) {
+            final String offset) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
@@ -206,8 +206,11 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
 
     /**
      * Creates a new variable and checks that it has been created.
-     * @param varName variable name
-     * @param varType variable type
+     * 
+     * @param varName
+     *            variable name
+     * @param varType
+     *            variable type
      */
     private void validateVariable(final String varName, final String varType) {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
@@ -226,13 +229,15 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
 
     /**
      * Creates a variable.
-     * @param varName variable name
-     * @param varType variable type
+     * 
+     * @param varName
+     *            variable name
+     * @param varType
+     *            variable type
      */
     private void createVariable(final String varName, final String varType) {
         // 1. Create new variable
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Variable")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");
 
         // 2. Enter variable name
         DialogFixture newVariableDialog = mainFrameFixture.dialog();

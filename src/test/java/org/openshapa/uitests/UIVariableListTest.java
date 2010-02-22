@@ -1,9 +1,12 @@
 package org.openshapa.uitests;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+
 import javax.swing.JDialog;
+
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.data.TableCell;
@@ -27,15 +30,14 @@ import org.testng.annotations.Test;
 
 /**
  * Test the creation of a new database.
- *
  */
 public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Resource map to access error messages in resources.
      */
-    private ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                      .getContext()
-                                      .getResourceMap(NewDatabaseV.class);
+    private ResourceMap rMap =
+            Application.getInstance(OpenSHAPA.class).getContext()
+                    .getResourceMap(NewDatabaseV.class);
 
     /**
      * Test adding new variables with a script.
@@ -47,26 +49,26 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        //1. Run script to populate
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        // 1. Run script to populate
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
         JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
         jfcf.selectFile(demoFile).approve();
 
-        //Close script console
+        // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
         scriptConsole.button("closeButton").click();
 
-        //2. Check that variable list is populated with correct data
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List")
-                .click();
+        // 2. Check that variable list is populated with correct data
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
 
         DialogFixture vlDialog = mainFrameFixture.dialog();
 
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
 
         Assert.assertEquals(vlDialog.table().rowCount(), ssPanel.allColumns()
                 .size());
@@ -85,21 +87,21 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     @Test
     public void testAddingVariablesManually() {
         System.err.println("testAddingVariablesManually");
-        String [] varNames = {"t", "p", "i", "n", "m", "f"};
-        String [] varTypes = {"text", "predicate", "integer", "nominal",
-        "matrix", "float"};
+        String[] varNames = { "t", "p", "i", "n", "m", "f" };
+        String[] varTypes =
+                { "text", "predicate", "integer", "nominal", "matrix", "float" };
 
-        //1. Create a new variable, then check that variable list is
-        //populated with correct data
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List")
-                .click();
+        // 1. Create a new variable, then check that variable list is
+        // populated with correct data
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
 
         DialogFixture vlDialog = mainFrameFixture.dialog();
 
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
 
         int numCols = 0;
 
@@ -107,7 +109,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
             UIUtils.createNewVariable(mainFrameFixture, varNames[i],
                     varTypes[i]);
             numCols++;
-            //Check that variable list is populated with correct data
+            // Check that variable list is populated with correct data
             Assert.assertEquals(ssPanel.allColumns().size(), numCols);
             Assert.assertEquals(vlDialog.table().rowCount(), ssPanel
                     .allColumns().size());
@@ -131,36 +133,36 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        //1. Run script to populate
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        // 1. Run script to populate
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
         JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
         jfcf.selectFile(demoFile).approve();
 
-        //Close script console
+        // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
         scriptConsole.button("closeButton").click();
 
-        //2. Check that variable list is populated
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List")
-                .click();
+        // 2. Check that variable list is populated
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
 
         DialogFixture vlDialog = mainFrameFixture.dialog();
 
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
 
         Assert.assertEquals(vlDialog.table().rowCount(), ssPanel.allColumns()
                 .size());
 
-        //3. Create new database (and discard unsaved changes)
+        // 3. Create new database (and discard unsaved changes)
         if (Platform.isOSX()) {
             mainFrameFixture.pressAndReleaseKey(KeyPressInfo.keyCode(
-                    KeyEvent.VK_N).modifiers(KeyEvent.META_MASK));
+                    KeyEvent.VK_N).modifiers(InputEvent.META_MASK));
         } else {
-            mainFrameFixture.menuItemWithPath("File", "New").click();
+            mainFrameFixture.clickMenuItemWithPath("File", "New");
         }
 
         try {
@@ -171,8 +173,9 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
             // Do nothing
         }
 
-        DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
-                new GenericTypeMatcher<JDialog>(JDialog.class) {
+        DialogFixture newDatabaseDialog =
+                mainFrameFixture.dialog(new GenericTypeMatcher<JDialog>(
+                        JDialog.class) {
                     @Override
                     protected boolean isMatching(final JDialog dialog) {
                         return dialog.getClass().equals(NewProjectV.class);
@@ -183,22 +186,24 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
 
         newDatabaseDialog.button("okButton").click();
 
-        //4. Check that variable list is empty
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Variable List")
-                .click();
+        // 4. Check that variable list is empty
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
 
         vlDialog = mainFrameFixture.dialog();
         Assert.assertTrue(vlDialog.table().rowCount() == 0);
 
-
     }
 
     /**
-     * Because variable list is not in order, checks if String is in a
-     * Table column.
-     * @param item String to find
-     * @param t Table to look in
-     * @param col Column number
+     * Because variable list is not in order, checks if String is in a Table
+     * column.
+     * 
+     * @param item
+     *            String to find
+     * @param t
+     *            Table to look in
+     * @param col
+     *            Column number
      * @return true if found, else false
      */
     private Boolean inTable(final String item, final JTableFixture t,

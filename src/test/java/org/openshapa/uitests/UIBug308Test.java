@@ -1,7 +1,5 @@
 package org.openshapa.uitests;
 
-
-
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JPanelFixture;
@@ -22,8 +20,8 @@ public final class UIBug308Test extends OpenSHAPATestClass {
     /**
      * Different cell variable types.
      */
-    private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-            "NOMINAL", "MATRIX", "FLOAT"};
+    private static final String[] VAR_TYPES =
+            { "TEXT", "PREDICATE", "INTEGER", "NOMINAL", "MATRIX", "FLOAT" };
 
     /**
      * Test creating a new variable. Then try to create variable with same name.
@@ -41,21 +39,20 @@ public final class UIBug308Test extends OpenSHAPATestClass {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
         // Find our new column header
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
         Assert.assertNotNull(ssPanel.column(varName));
 
-
         // 3. Create variable with same name
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Variable")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");
         // Find the new variable dialog
         DialogFixture newVariableDialog = mainFrameFixture.dialog();
         // Check if the new variable dialog is actually visible
         newVariableDialog.requireVisible();
         // Get the variable value text box
-        JTextComponentFixture variableValueTextBox = newVariableDialog
-                .textBox();
+        JTextComponentFixture variableValueTextBox =
+                newVariableDialog.textBox();
         // The variable value box should have no text in it
         variableValueTextBox.requireEmpty();
         // It should be editable

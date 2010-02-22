@@ -1,12 +1,13 @@
 package org.openshapa.uitests;
 
-import org.fest.swing.util.Platform;
 import java.awt.event.KeyEvent;
+
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.core.matcher.JTextComponentMatcher;
 import org.fest.swing.fixture.JLabelFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.util.Platform;
 import org.openshapa.util.UIUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -27,13 +28,14 @@ public final class UIBug493Test extends OpenSHAPATestClass {
         String varType = "TEXT";
         String varRadio = varType.toLowerCase() + "TypeButton";
 
-        String[] testInput = {"Subject stands up ", "$10,432",
-            "Hand me the manual!", "Tote_that_bale", "Jeune fille celebre",
-            "If x?7 then x? 2"};
+        String[] testInput =
+                { "Subject stands up ", "$10,432", "Hand me the manual!",
+                        "Tote_that_bale", "Jeune fille celebre",
+                        "If x?7 then x? 2" };
 
         String[] expectedTestOutput = testInput;
 
-        //1. Create new TEXT variable
+        // 1. Create new TEXT variable
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
         // 2. Check that a column has been created
@@ -42,25 +44,25 @@ public final class UIBug493Test extends OpenSHAPATestClass {
         // Find our new column header
         JLabelFixture column = ssPanel.panel("headerView").label();
 
-        //3. Create cell, paste text and press enter, for each testInput
+        // 3. Create cell, paste text and press enter, for each testInput
         for (int i = 0; i < testInput.length; i++) {
-            //a. Create cell
+            // a. Create cell
             column.click();
-            mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell")
-                    .click();
+            mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-            //b. Paste text
+            // b. Paste text
             UIUtils.setClipboard(testInput[i]);
-            JTextComponentFixture cell = mainFrameFixture.textBox(
-                    JTextComponentMatcher.withText("<val>"));
+            JTextComponentFixture cell =
+                    mainFrameFixture.textBox(JTextComponentMatcher
+                            .withText("<val>"));
             cell.click();
-            cell.pressAndReleaseKey(KeyPressInfo.keyCode(
-                    KeyEvent.VK_V).modifiers(Platform.controlOrCommandMask()));
+            cell.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V)
+                    .modifiers(Platform.controlOrCommandMask()));
 
-            //c. Press Enter
+            // c. Press Enter
             mainFrameFixture.robot.pressKey(KeyEvent.VK_ENTER);
 
-            //d. Check text
+            // d. Check text
             Assert.assertEquals(cell.text(), expectedTestOutput[i] + "\n");
         }
     }

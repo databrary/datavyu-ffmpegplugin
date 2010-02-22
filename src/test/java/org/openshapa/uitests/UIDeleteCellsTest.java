@@ -32,7 +32,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
         JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
         scriptFileChooser.selectFile(demoFile).approve();
@@ -63,8 +63,8 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
                 cell.selectCell();
             }
             // Delete selected cells
-            mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Cells")
-                    .click();
+            mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                    "Delete Cells");
 
             // Verify all cells in the column are deleted
             jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
@@ -99,7 +99,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
         JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
         scriptFileChooser.selectFile(demoFile).approve();
@@ -137,8 +137,8 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
                 SpreadsheetCellFixture cell =
                         spreadsheet.column(numColumns).cell(1);
                 cell.selectCell();
-                mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Cell")
-                        .click();
+                mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                        "Delete Cell");
                 numCells--;
             }
             numColumns--;
@@ -166,7 +166,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
         JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
         scriptFileChooser.selectFile(demoFile).approve();
@@ -196,8 +196,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         }
 
         // 4. Delete all cells
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Delete Cells")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Delete Cells");
 
         // 5. Verify that all cells have been deleted
         jPanel = UIUtils.getSpreadsheet(mainFrameFixture);

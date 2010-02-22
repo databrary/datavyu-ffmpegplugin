@@ -1,21 +1,21 @@
 package org.openshapa.uitests;
 
-import org.fest.swing.util.Platform;
 import java.awt.event.KeyEvent;
+
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.core.matcher.JTextComponentMatcher;
 import org.fest.swing.fixture.JLabelFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.util.Platform;
 import org.openshapa.util.UIUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Bug 497:
- * Allows you to paste values greate than max integer and also multiple "-".
- * Example: 999999999999999999-239839231-2398392310820831
- * Pressing -ve on such a number results in unpredictable behaviour.
+ * Bug 497: Allows you to paste values greate than max integer and also multiple
+ * "-". Example: 999999999999999999-239839231-2398392310820831 Pressing -ve on
+ * such a number results in unpredictable behaviour.
  */
 public final class UIBug497Test extends OpenSHAPATestClass {
 
@@ -32,30 +32,30 @@ public final class UIBug497Test extends OpenSHAPATestClass {
         String testInput = "999999999999999999-239839231-2398392310820831";
         String expectedTestOutput = "2999999999999999999";
 
-
         // 1. Get spreadsheet
         JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        //2. Create new TEXT variable
+        // 2. Create new TEXT variable
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
         // Find column header
         JLabelFixture column = ssPanel.panel("headerView").label();
 
-        //3. Create cell, paste text
-        //a. Create cell
+        // 3. Create cell, paste text
+        // a. Create cell
         column.click();
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        //b. Paste text
+        // b. Paste text
         UIUtils.setClipboard(testInput);
-        JTextComponentFixture cell = mainFrameFixture.textBox(
-                JTextComponentMatcher.withText("<val>"));
+        JTextComponentFixture cell =
+                mainFrameFixture.textBox(JTextComponentMatcher
+                        .withText("<val>"));
         cell.click();
-        cell.pressAndReleaseKey(KeyPressInfo.keyCode(
-                KeyEvent.VK_V).modifiers(Platform.controlOrCommandMask()));
+        cell.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V).modifiers(
+                Platform.controlOrCommandMask()));
 
-        //c. Check text
+        // c. Check text
         Assert.assertEquals(cell.text(), expectedTestOutput);
     }
 
@@ -72,30 +72,30 @@ public final class UIBug497Test extends OpenSHAPATestClass {
         String testInput = "999999999999999999-239839231-2398392310820831";
         String expectedTestOutput = "999999999999999.0";
 
-
         // 1. Get spreadsheet
         JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        //2. Create new TEXT variable
+        // 2. Create new TEXT variable
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
         // Find column header
         JLabelFixture column = ssPanel.panel("headerView").label();
 
-        //3. Create cell, paste text
-        //a. Create cell
+        // 3. Create cell, paste text
+        // a. Create cell
         column.click();
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        //b. Paste text
+        // b. Paste text
         UIUtils.setClipboard(testInput);
-        JTextComponentFixture cell = mainFrameFixture.textBox(
-                JTextComponentMatcher.withText("<val>"));
+        JTextComponentFixture cell =
+                mainFrameFixture.textBox(JTextComponentMatcher
+                        .withText("<val>"));
         cell.click();
-        cell.pressAndReleaseKey(KeyPressInfo.keyCode(
-                KeyEvent.VK_V).modifiers(Platform.controlOrCommandMask()));
+        cell.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V).modifiers(
+                Platform.controlOrCommandMask()));
 
-        //c. Check text
+        // c. Check text
         Assert.assertEquals(cell.text(), expectedTestOutput);
     }
 }

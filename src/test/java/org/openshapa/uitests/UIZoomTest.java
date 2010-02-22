@@ -33,7 +33,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
         JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
         scriptFileChooser.selectFile(demoFile).approve();
@@ -56,8 +56,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         }
 
         // 3. Reset the zoom size, and get the initial zoom size
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Reset Zoom")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                "Reset Zoom");
 
         final int initialSize =
                 spreadsheet.column(1).cell(1).cellValue().font().target()
@@ -70,8 +70,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
 
         // 4. Zoom in
         while (previousSize < OpenSHAPAView.ZOOM_MAX_SIZE) {
-            mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom In")
-                    .click();
+            mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                    "Zoom In");
             /*
              * Test the font sizes of the first cell only because as the zoom
              * size increases, cells may be pushed out of view. When this
@@ -90,8 +90,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
                 "Maximum zoom size not achieved.");
 
         // 5. Reset zoom, check reset.
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Reset Zoom")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                "Reset Zoom");
 
         final int resetSize =
                 spreadsheet.column(1).cell(1).cellValue().font().target()
@@ -118,8 +118,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
 
         // 7. Zoom in
         while (previousSize < MAX_FONT_SIZE) {
-            mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom In")
-                    .click();
+            mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                    "Zoom In");
             /*
              * Test the font sizes of the first cell only because as the zoom
              * size increases, cells may be pushed out of view. When this
@@ -133,8 +133,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
                     spreadsheet.column(1).cell(1).cellValue().font().target()
                             .getSize();
         }
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom In")
-                .click();
+        mainFrameFixture
+                .clickMenuItemWithPath("Spreadsheet", "Zoom", "Zoom In");
 
         previousSize =
                 spreadsheet.column(1).cell(1).cellValue().font().target()
@@ -155,7 +155,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
         JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
         scriptFileChooser.selectFile(demoFile).approve();
@@ -178,8 +178,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         }
 
         // 3. Reset the zoom size, and get the initial zoom size
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Reset Zoom")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                "Reset Zoom");
 
         final int initialSize =
                 spreadsheet.column(1).cell(1).cellValue().font().target()
@@ -191,16 +191,17 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         int previousSize = initialSize;
 
         // 4. Zoom out
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom Out")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                "Zoom Out");
         previousSize =
                 spreadsheet.column(1).cell(1).cellValue().font().target()
                         .getSize();
         Assert.assertTrue(previousSize == OpenSHAPAView.ZOOM_DEFAULT_SIZE
                 - OpenSHAPAView.ZOOM_INTERVAL);
 
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom Out")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                "Zoom Out");
+
         previousSize =
                 spreadsheet.column(1).cell(1).cellValue().font().target()
                         .getSize();
@@ -208,8 +209,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
 
         // 5. Zoom in all the way
         while (previousSize < OpenSHAPAView.ZOOM_MAX_SIZE) {
-            mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom In")
-                    .click();
+            mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                    "Zoom In");
 
             previousSize =
                     spreadsheet.column(1).cell(1).cellValue().font().target()
@@ -232,8 +233,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
                             .getSize();
         }
 
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom Out")
-                .click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                "Zoom Out");
         previousSize =
                 spreadsheet.column(1).cell(1).cellValue().font().target()
                         .getSize();

@@ -57,6 +57,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a database with Save As.
+     * 
      * @param fileName
      *            fileName to save as
      * @param extension
@@ -74,7 +75,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
                 "Expecting demo_data_to_csv.rb to exist");
 
         // 1. Run script to populate database
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
         JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
         scriptFileChooser.selectFile(demoFile).approve();
@@ -86,7 +87,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // TODO Need to check the window title - asterisk present
 
         // 2. Save the file
-        mainFrameFixture.menuItemWithPath("File", "Save As...").click();
+        mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
         if (extension.equals("shapa")) {
             mainFrameFixture.fileChooser().component().setFileFilter(
                     new SHAPAFilter());
@@ -119,6 +120,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a database to a file with Save.
+     * 
      * @param fileName
      *            file name to save
      * @param extension
@@ -131,7 +133,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
         // 1. Click save on empty project. Expecting it to act like Save As
-        mainFrameFixture.menuItemWithPath("File", "Save").click();
+        mainFrameFixture.clickMenuItemWithPath("File", "Save");
 
         if (extension.equals("shapa")) {
             mainFrameFixture.fileChooser().component().setFileFilter(
@@ -157,7 +159,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(justSaved.exists(), "Expecting saved file to exist.");
 
         // 2. Run script to populate database
-        mainFrameFixture.menuItemWithPath("Script", "Run script").click();
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
         JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
         scriptFileChooser.selectFile(demoFile).approve();
@@ -169,7 +171,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // TODO Need to check the title - asterisk present
 
         // 3. Save project file. Not expecting anything except a save
-        mainFrameFixture.menuItemWithPath("File", "Save").click();
+        mainFrameFixture.clickMenuItemWithPath("File", "Save");
 
         // TODO Need to check the title - asterisk not present
 
@@ -187,6 +189,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Run a load test for specified input and expected output files.
+     * 
      * @param inputFile
      *            The input CSV file to open before saving.
      * @param expectedOutputFile
@@ -220,7 +223,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         fileWriter.close();
 
         // 3. Now load the newly created project in openshapa
-        mainFrameFixture.menuItemWithPath("File", "Open...").click();
+        mainFrameFixture.clickMenuItemWithPath("File", "Open...");
 
         try {
             JOptionPaneFixture warning = mainFrameFixture.optionPane();
@@ -237,7 +240,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // 4. Save the contents as a separate project file
         File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
 
-        mainFrameFixture.menuItemWithPath("File", "Save As...").click();
+        mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
         mainFrameFixture.fileChooser().component().setFileFilter(
                 new SHAPAFilter());
         mainFrameFixture.fileChooser().selectFile(savedSHAPA).approve();
@@ -257,6 +260,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test loading a database from a version 1 CSV file.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -267,6 +271,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test loading a database from a version 2 CSV file.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -277,6 +282,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save As, no extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -287,6 +293,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save As, no extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -297,6 +304,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save As, extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -307,6 +315,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save As, extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -317,6 +326,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save As, wrong extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -327,6 +337,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save As, wrong entension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -338,6 +349,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     /*********************** SAVE TESTS ***************************/
     /**
      * Test saving a SHAPA database with Save, no extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -348,6 +360,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, no extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -358,6 +371,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save, extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -368,6 +382,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -378,6 +393,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save, wrong extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -388,6 +404,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, wrong entension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
