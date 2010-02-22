@@ -1,9 +1,11 @@
 package org.openshapa.controllers.component;
 
-import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Polygon;
 import java.awt.event.MouseEvent;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.SimpleTimeZone;
 
 import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
@@ -29,6 +31,14 @@ public class NeedleController {
     /** Listeners interested in needle painter events */
     private EventListenerList listenerList;
 
+    /** Format for representing time. */
+    private static final DateFormat CLOCK_FORMAT;
+    static {
+        // initialize standard date format for clock display.
+        CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
+        CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
+    }
+
     public NeedleController() {
         view = new NeedlePainter();
 
@@ -53,7 +63,8 @@ public class NeedleController {
      * 
      * @param listener
      */
-    public synchronized void addNeedleEventListener(NeedleEventListener listener) {
+    public synchronized void addNeedleEventListener(
+            final NeedleEventListener listener) {
         listenerList.add(NeedleEventListener.class, listener);
     }
 
@@ -63,7 +74,7 @@ public class NeedleController {
      * @param listener
      */
     public synchronized void removeNeedleEventListener(
-            NeedleEventListener listener) {
+            final NeedleEventListener listener) {
         listenerList.remove(NeedleEventListener.class, listener);
     }
 
@@ -72,7 +83,7 @@ public class NeedleController {
      * 
      * @param newTime
      */
-    private synchronized void fireNeedleEvent(long newTime) {
+    private synchronized void fireNeedleEvent(final long newTime) {
         NeedleEvent e = new NeedleEvent(this, newTime);
         Object[] listeners = listenerList.getListenerList();
         /*
@@ -91,8 +102,9 @@ public class NeedleController {
      * 
      * @param currentTime
      */
-    public void setCurrentTime(long currentTime) {
+    public void setCurrentTime(final long currentTime) {
         needleModel.setCurrentTime(currentTime);
+        view.setToolTipText(CLOCK_FORMAT.format(new Date(currentTime)));
         view.setNeedleModel(needleModel);
     }
 
@@ -116,7 +128,7 @@ public class NeedleController {
      * 
      * @param viewableModel
      */
-    public void setViewableModel(ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel viewableModel) {
         /*
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
@@ -141,82 +153,54 @@ public class NeedleController {
      * Inner class used to handle intercepted events.
      */
     private class NeedleListener extends MouseInputAdapter {
-        private boolean onNeedle;
-
         private final Cursor eastResizeCursor =
                 Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
-        public NeedleListener() {
-            onNeedle = false;
+        @Override
+        public void mouseEntered(final MouseEvent e) {
+            JComponent source = (JComponent) e.getSource();
+            source.setCursor(eastResizeCursor);
         }
 
         @Override
-        public void mouseEntered(MouseEvent e) {
-            Polygon p = view.getNeedleMarker();
-            Component source = (Component) e.getSource();
-            if (p.contains(e.getPoint())) {
-                source.setCursor(eastResizeCursor);
-            } else {
-                source.setCursor(defaultCursor);
-            }
+        public void mouseExited(final MouseEvent e) {
+            JComponent source = (JComponent) e.getSource();
+            source.setCursor(defaultCursor);
         }
 
         @Override
-        public void mouseMoved(MouseEvent e) {
+        public void mouseMoved(final MouseEvent e) {
             mouseEntered(e);
         }
 
         @Override
-        public void mousePressed(MouseEvent e) {
-            Polygon p = view.getNeedleMarker();
-            Component source = (Component) e.getSource();
-            if (p.contains(e.getPoint())) {
-                // Mouse is pressed on the needle.
-                onNeedle = true;
-                source.setCursor(eastResizeCursor);
-            } else {
-                onNeedle = false;
-                source.setCursor(defaultCursor);
+        public void mouseDragged(final MouseEvent e) {
+            int x = e.getX();
+            // Bound the x values
+            if (x < 0) {
+                x = 0;
             }
-        }
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            if (onNeedle) {
-                int x = e.getX();
-                // Bound the x values
-                if (x < 0) {
-                    x = 0;
-                }
-                if (x > view.getSize().width) {
-                    x = view.getSize().width;
-                }
-
-                // Calculate the time represented by the new location
-                float ratio =
-                        viewableModel.getIntervalWidth()
-                                / viewableModel.getIntervalTime();
-                float newTime =
-                        (x - needleModel.getPaddingLeft() + viewableModel
-                                .getZoomWindowStart()
-                                * ratio)
-                                / ratio;
-                if (newTime < 0) {
-                    newTime = 0;
-                }
-                if (newTime > viewableModel.getZoomWindowEnd()) {
-                    newTime = viewableModel.getZoomWindowEnd();
-                }
-                fireNeedleEvent(Math.round(newTime));
+            if (x > view.getSize().width) {
+                x = view.getSize().width;
             }
-        }
 
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            onNeedle = false;
-            Component source = (Component) e.getSource();
-            source.setCursor(defaultCursor);
+            // Calculate the time represented by the new location
+            float ratio =
+                    viewableModel.getIntervalWidth()
+                            / viewableModel.getIntervalTime();
+            float newTime =
+                    (x - needleModel.getPaddingLeft() + viewableModel
+                            .getZoomWindowStart()
+                            * ratio)
+                            / ratio;
+            if (newTime < 0) {
+                newTime = 0;
+            }
+            if (newTime > viewableModel.getZoomWindowEnd()) {
+                newTime = viewableModel.getZoomWindowEnd();
+            }
+            fireNeedleEvent(Math.round(newTime));
         }
 
     }
