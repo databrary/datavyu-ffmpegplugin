@@ -99,7 +99,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
             && !isReserved(e.getKeyChar())) {
             this.removeSelectedText();
             StringBuffer currentValue = new StringBuffer(getText());
-
+            
             // If we have a delete or backspace key - do not insert.
             if (!(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                   && e.getKeyChar() == '\u007F') &&

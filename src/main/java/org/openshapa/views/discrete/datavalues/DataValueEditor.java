@@ -238,8 +238,15 @@ public abstract class DataValueEditor extends EditorComponent {
     public void keyPressed(final KeyEvent e) {
         switch (e.getKeyCode()) {
         case KeyEvent.VK_BACK_SPACE:
+            if (!getModel().isEmpty()) {
+                removeBehindCaret();
+            }
+            e.consume();
+            break;
         case KeyEvent.VK_DELETE:
-            // Ignore - handled when the key is typed.
+            if (!getModel().isEmpty()) {
+                removeAheadOfCaret();
+            }
             e.consume();
             break;
 
@@ -332,26 +339,26 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        // The backspace key removes digits from behind the caret.
-        if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                && e.getKeyChar() == '\u0008') {
-
-            // Can't delete an empty data value.
-            if (!getModel().isEmpty()) {
-                removeBehindCaret();
-                e.consume();
-            }
-
-            // The delete key removes digits ahead of the caret.
-        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                && e.getKeyChar() == '\u007F') {
-
-            // Can't delete an empty data value.
-            if (!getModel().isEmpty()) {
-                removeAheadOfCaret();
-                e.consume();
-            }
-        }
+//        // The backspace key removes digits from behind the caret.
+//        if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+//                && e.getKeyChar() == '\u0008') {
+//
+//            // Can't delete an empty data value.
+//            if (!getModel().isEmpty()) {
+//                removeBehindCaret();
+//                e.consume();
+//            }
+//
+//            // The delete key removes digits ahead of the caret.
+//        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+//                && e.getKeyChar() == '\u007F') {
+//
+//            // Can't delete an empty data value.
+//            if (!getModel().isEmpty()) {
+//                removeAheadOfCaret();
+//                e.consume();
+//            }
+//        }
     }
 
     /**

@@ -66,6 +66,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     @Test
     public void testNewNominalCell() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "n";
         String varType = "nominal";
 
@@ -85,6 +86,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     @Test
     public void testNominalPasting() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "n";
         String varRadio = "nominal";
 
@@ -101,8 +103,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * Test creating a new NOMINAL cell with more advanced input.
      * BugzID:1203
      */
-    //@Test
+    @Test
     public void testNewAdvancedNominalCell() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "n";
         String varRadio = "nominal";
 
@@ -145,6 +148,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     @Test
     public void testNewTextCell() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "t";
         String varRadio = "text";
 
@@ -161,6 +165,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     @Test
     public void testTextPasting() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "t";
         String varRadio = "text";
 
@@ -173,6 +178,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     @Test
     public void testIntegerPasting() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "i";
         String varRadio = "integer";
 
@@ -185,8 +191,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new TEXT cell with more advanced input.
      */
-    //@Test
+    @Test
     public void testNewAdvancedTextCell() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "t";
         String varRadio = "text";
 
@@ -220,6 +227,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     @Test
     public void testNewFloatCell() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "f";
         String varRadio = "float";
 
@@ -238,6 +246,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     @Test
     public void testFloatPasting() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "f";
         String varRadio = "float";
 
@@ -253,8 +262,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * Test creating a new FLOAT cell with advanced input.
      * BugzID:1201
      */
-    // @Test
+    @Test
     public void testNewAdvancedFloatCell() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "f";
         String varRadio = "float";
 
@@ -320,6 +330,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     @Test
     public void testNewIntegerCell() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "i";
         String varRadio = "integer";
 
@@ -336,8 +347,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * Test creating a new INTEGER cell with advanced input.
      * BugzID:1202
      */
-    // @Test
+    @Test
     public void testNewAdvancedIntegerCell() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "i";
         String varRadio = "integer";
 
@@ -373,6 +385,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     //@Test
     public void testNewMatrixCellSingleArgNominal() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/matrix_tests.rb");
@@ -405,6 +418,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     // @Test
     public void testNewMatrixCellSingleArgFloat() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/matrix_tests.rb");
@@ -437,6 +451,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     // @Test
     public void testNewMatrixCellSingleArgInteger() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/matrix_tests.rb");
@@ -468,6 +483,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     // @Test
     public void testNewMatrixCellDoubleArgInteger() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/matrix_tests.rb");
@@ -540,6 +556,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     //@Test
     public void testNewMatrixCellDoubleArgNominal() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/matrix_tests.rb");
@@ -617,6 +634,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     // @Test
     public void testNewMatrixCellDoubleArgFloat() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/matrix_tests.rb");
