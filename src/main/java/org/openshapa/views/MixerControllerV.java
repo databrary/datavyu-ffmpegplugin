@@ -96,7 +96,12 @@ public class MixerControllerV implements NeedleEventListener,
         tracksPanel.setBackground(Color.WHITE);
 
         // Menu buttons
-        JButton lockButton = new JButton("Lock");
+        JToggleButton lockToggle = new JToggleButton("Lock");
+        lockToggle.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                lockToggleHandler(e);
+            }
+        });
 
         bookmarkButton = new JButton("Add Bookmark");
         bookmarkButton.addActionListener(new ActionListener() {
@@ -129,7 +134,7 @@ public class MixerControllerV implements NeedleEventListener,
             }
         });
 
-        tracksPanel.add(lockButton);
+        tracksPanel.add(lockToggle);
         tracksPanel.add(bookmarkButton);
         tracksPanel.add(snapToggleButton);
         tracksPanel.add(zoomInButton);
@@ -512,13 +517,24 @@ public class MixerControllerV implements NeedleEventListener,
      */
     private void snapToggleHandler(final ActionEvent e) {
         JToggleButton toggle = (JToggleButton) e.getSource();
-        if (toggle.isSelected()) {
-            tracksEditorController.setAllowSnap(true);
-        } else {
-            tracksEditorController.setAllowSnap(false);
-        }
+        tracksEditorController.setAllowSnap(toggle.isSelected());
     }
 
+    /**
+     * Handles the event for toggling movement of tracks on and off.
+     * 
+     * @param e
+     */
+    private void lockToggleHandler(final ActionEvent e) {
+        JToggleButton toggle = (JToggleButton) e.getSource();
+        tracksEditorController.setLockedState(toggle.isSelected());
+    }
+
+    /**
+     * Handles the event for scrolling the tracks interface horizontally.
+     * 
+     * @param e
+     */
     public void adjustmentValueChanged(final AdjustmentEvent e) {
         int startValue = tracksScrollBar.getValue();
         int endValue = startValue + tracksScrollBar.getVisibleAmount();

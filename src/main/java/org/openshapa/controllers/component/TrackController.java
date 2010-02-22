@@ -49,10 +49,14 @@ public class TrackController {
      */
     private EventListenerList listenerList;
     /** States */
-    private boolean moveable;
+    // can the carriage be moved using the mouse when snap is switched on
+    private boolean isMoveable;
+    // can the carriage be moved using the mouse
+    private boolean isLocked;
 
     public TrackController() {
-        moveable = true;
+        isMoveable = true;
+        isLocked = false;
 
         view = new JPanel();
         view.setLayout(new MigLayout("ins 0", "[]0[]"));
@@ -173,21 +177,6 @@ public class TrackController {
         addBookmark(position - trackModel.getOffset());
     }
 
-    public void setNormalState() {
-        trackModel.setState(TrackState.NORMAL);
-        trackPainter.setTrackModel(trackModel);
-    }
-
-    public void setSnappedState() {
-        trackModel.setState(TrackState.SNAPPED);
-        trackPainter.setTrackModel(trackModel);
-    }
-
-    public void setSelectedState() {
-        trackModel.setState(TrackState.SELECTED);
-        trackPainter.setTrackModel(trackModel);
-    }
-
     private void setState(final TrackState state) {
         trackModel.setState(state);
         trackPainter.setTrackModel(trackModel);
@@ -200,14 +189,25 @@ public class TrackController {
         return trackModel.isSelected();
     }
 
+    /**
+     * @return Offset in milliseconds.
+     */
     public long getOffset() {
         return trackModel.getOffset();
     }
 
+    /**
+     * @return Returns the duration of the track in milliseconds. Does not take
+     *         into account any offsets.
+     */
     public long getDuration() {
         return trackModel.getDuration();
     }
 
+    /**
+     * @return Bookmarked position in milliseconds. Does not take into account
+     *         any offsets.
+     */
     public long getBookmark() {
         return trackModel.getBookmark();
     }
@@ -247,14 +247,35 @@ public class TrackController {
         view.repaint();
     }
 
+    /**
+     * Set if the track carriage can be moved while the snap functionality is
+     * switched on
+     * 
+     * @param canMove
+     */
     public void setMoveable(final boolean canMove) {
-        moveable = canMove;
+        isMoveable = canMove;
     }
 
+    /**
+     * Set if the track carriage can be moved
+     * 
+     * @param lock
+     */
+    public void setLocked(final boolean lock) {
+        isLocked = lock;
+    }
+
+    /**
+     * Used to request bookmark saving
+     */
     public void saveBookmark() {
         fireCarriageBookmarkSaveEvent();
     }
 
+    /**
+     * Request a bookmark
+     */
     private void setBookmarkAction() {
         fireCarriageBookmarkRequestEvent();
         /*
@@ -264,6 +285,9 @@ public class TrackController {
         changeSelected();
     }
 
+    /**
+     * Remove the track's bookmark
+     */
     private void clearBookmarkAction() {
         trackModel.setBookmark(-1);
         trackPainter.setTrackModel(trackModel);
@@ -274,6 +298,9 @@ public class TrackController {
         changeSelected();
     }
 
+    /**
+     * Invert selection state
+     */
     private void changeSelected() {
         if (trackModel.isSelected()) {
             trackModel.setSelected(false);
@@ -459,6 +486,9 @@ public class TrackController {
 
         @Override
         public void mouseDragged(final MouseEvent e) {
+            if (isLocked) {
+                return;
+            }
             if (inCarriage) {
                 int xNet = e.getX() - xInit;
                 // Calculate the total amount of time we offset by
@@ -468,7 +498,7 @@ public class TrackController {
                 final float temporalPosition =
                         (e.getX() * 1F) / viewableModel.getIntervalWidth()
                                 * viewableModel.getIntervalTime();
-                if (moveable) {
+                if (isMoveable) {
                     fireCarriageOffsetChangeEvent((long) newOffset,
                             (long) temporalPosition);
                 } else {
@@ -476,7 +506,7 @@ public class TrackController {
                             (long) (0.05F * (viewableModel.getZoomWindowEnd() - viewableModel
                                     .getZoomWindowStart()));
                     if (Math.abs(newOffset - offsetInit) >= threshold) {
-                        moveable = true;
+                        isMoveable = true;
                     }
                 }
             }
@@ -484,7 +514,7 @@ public class TrackController {
 
         @Override
         public void mouseReleased(final MouseEvent e) {
-            moveable = true;
+            isMoveable = true;
             inCarriage = false;
             Component source = (Component) e.getSource();
             source.setCursor(defaultCursor);
