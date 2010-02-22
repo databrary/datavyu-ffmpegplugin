@@ -77,8 +77,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         UIUtils.createNewVariable(mainFrameFixture, varName, varType);
 
         // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.menuItemWithPath("Controller",
-                "Data Viewer Controller").click();
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+                "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(300, 300));
         DataControllerFixture fix =
                 new DataControllerFixture(mainFrameFixture.robot,
@@ -87,7 +87,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 3. Create new cell - so we have something to send key to because
         SpreadsheetColumnFixture column = ssPanel.column(varName);
         column.header().click();
-        mainFrameFixture.menuItemWithPath("Spreadsheet", "New Cell").click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
         // 4. Test Jogging back and forth.
         for (int i = 0; i < 5; i++) {

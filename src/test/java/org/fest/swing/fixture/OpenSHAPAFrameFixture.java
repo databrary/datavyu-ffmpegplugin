@@ -25,9 +25,8 @@ public class OpenSHAPAFrameFixture extends FrameFixture {
         super(robot, name);
     }
 
-    @Override
-    public JMenuItemFixture menuItemWithPath(final String... path) {
-        JMenuItemFixture result = super.menuItemWithPath(path);
+    public JMenuItemFixture clickMenuItemWithPath(final String... path) {
+        JMenuItemFixture result = super.menuItemWithPath(path).click();
         this.click();
         return result;
     }

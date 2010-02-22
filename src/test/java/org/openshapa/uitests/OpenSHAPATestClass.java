@@ -14,7 +14,6 @@ import javax.swing.JDialog;
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.OpenSHAPAFrameFixture;
 import org.fest.swing.launcher.ApplicationLauncher;
@@ -36,7 +35,7 @@ import org.testng.annotations.BeforeSuite;
 public class OpenSHAPATestClass {
 
     /** Main Frame fixture for use by all tests. */
-    protected FrameFixture mainFrameFixture;
+    protected OpenSHAPAFrameFixture mainFrameFixture;
 
     /** Constructor nulls the mainFrame Fixture. */
     public OpenSHAPATestClass() {
@@ -49,7 +48,7 @@ public class OpenSHAPATestClass {
     @BeforeSuite
     protected final void startApplication() {
         System.err.println("Starting Application.");
-        FrameFixture fixture;
+        OpenSHAPAFrameFixture fixture;
 
         // Launch OpenSHAPA, this happens once per test class.
         ApplicationLauncher.application(OpenSHAPA.class).start();

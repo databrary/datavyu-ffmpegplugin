@@ -1,13 +1,13 @@
 package org.openshapa.uitests;
 
-import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.OpenSHAPAFrameFixture;
 
 /**
  * Singleton of OpenSHAPA to be used for all Fest tests.
  */
 public final class OpenSHAPAInstance {
     /** Main Frame fixture. */
-    private FrameFixture mainFrameFixture;
+    private OpenSHAPAFrameFixture mainFrameFixture;
 
     /** Singleton. */
     private static OpenSHAPAInstance instance;
@@ -18,19 +18,21 @@ public final class OpenSHAPAInstance {
 
     /**
      * Set fixture for instance.
-     * @param f FrameFixture
+     * 
+     * @param fixture
+     *            FrameFixture
      */
-    static void setFixture(final FrameFixture f) {
+    static void setFixture(final OpenSHAPAFrameFixture fixture) {
         if (instance == null) {
             instance = new OpenSHAPAInstance();
         }
-        instance.mainFrameFixture = f;
+        instance.mainFrameFixture = fixture;
     }
 
     /**
      * @return FrameFixture of OpenSHAPA instance.
      */
-    static FrameFixture getFixture() {
+    static OpenSHAPAFrameFixture getFixture() {
         if (instance == null) {
             instance = new OpenSHAPAInstance();
         }
