@@ -1,13 +1,9 @@
 package org.openshapa.models.db;
 
-import java.io.PrintStream;
-import java.util.Vector;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 /**
  *
@@ -17,12 +13,12 @@ public class VocabElementTest {
     public VocabElementTest() {
     }
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public void setUpClass() {
     }
 
-    @After
-    public void tearDown() {
+    @AfterClass
+    public void tearDownClass() {
     }
 
     @Test

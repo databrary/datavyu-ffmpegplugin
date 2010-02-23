@@ -2,11 +2,12 @@ package org.openshapa.models.db;
 
 import java.io.PrintStream;
 import junitx.util.PrivateAccessor;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.openshapa.util.FloatUtils;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  * Junit test cases for the class FloatDataValue.
@@ -47,9 +48,9 @@ public class FloatDataValueTest extends DataValueTest {
      * Sets up the test fixture (i.e. the data available to all tests), this is
      * performed before each test case.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
 
@@ -77,7 +78,7 @@ public class FloatDataValueTest extends DataValueTest {
      * Tears down the test fixture (i.e. the data available to all tests), this
      * is performed after each test case.
      */
-    @After
+    @AfterMethod
     public void tearDown() {
     }
 
@@ -101,7 +102,7 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test 1 arg constructor, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test1ArgConstructor() throws SystemErrorException {
@@ -118,7 +119,7 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test 2 argument constructor, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {
@@ -147,9 +148,9 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test0 of 2 arg constructor failre, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure0() throws SystemErrorException {
         FloatDataValue float_value = new FloatDataValue(null, ffa.getID());
     }
@@ -157,9 +158,9 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test1 of 2 arg constructor failre, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure1() throws SystemErrorException {
         FloatDataValue float_value = new FloatDataValue(db, DBIndex.INVALID_ID);
     }
@@ -167,9 +168,9 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test2 of 2 arg constructor failre, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure2() throws SystemErrorException {
         FloatDataValue float_value = new FloatDataValue(db, floatMve.getID());
     }
@@ -177,7 +178,7 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test of 3 arg constructor, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test3ArgConstructor() throws SystemErrorException {
@@ -215,9 +216,9 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test0 of 3Arg constructor failure, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure0() throws SystemErrorException {
         FloatDataValue f_value = new FloatDataValue(null, ffa.getID(), 1.0);
     }
@@ -225,9 +226,9 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test1 of 3Arg constructor failure, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure1() throws SystemErrorException {
         FloatDataValue f_value =
                                 new FloatDataValue(db, DBIndex.INVALID_ID, 1.0);
@@ -236,9 +237,9 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test2 of 3Arg constructor failure, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure2() throws SystemErrorException {
         FloatDataValue f_value = new FloatDataValue(db, floatMve.getID(), 1.0);
     }
@@ -246,7 +247,7 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testCopyConstructor() throws SystemErrorException {
@@ -266,9 +267,9 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor failure, of class FloatDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void testCopyConstructorFailure() throws SystemErrorException {
         FloatDataValue f_value = new FloatDataValue((FloatDataValue) null);
     }
@@ -276,7 +277,7 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test of getItsValue method, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testGetItsValue() throws SystemErrorException {
@@ -288,7 +289,7 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test of setItsValue method, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testSetItsValue() throws SystemErrorException {
@@ -301,7 +302,7 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test of toString method, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testToString() throws SystemErrorException {
@@ -332,7 +333,7 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test of coerceToRange method, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testCoerceToRange() throws SystemErrorException {
@@ -350,7 +351,7 @@ public class FloatDataValueTest extends DataValueTest {
     /**
      * Test of Construct method, of class FloatDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testConstruct() throws SystemErrorException {

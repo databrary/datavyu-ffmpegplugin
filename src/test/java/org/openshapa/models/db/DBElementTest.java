@@ -1,8 +1,9 @@
 package org.openshapa.models.db;
 
 import junitx.util.PrivateAccessor;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  * Abstract test class for the abstract DBElement class.

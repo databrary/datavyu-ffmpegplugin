@@ -1,241 +1,219 @@
 package org.openshapa.uitests;
 
+import java.awt.event.KeyEvent;
 import java.util.Vector;
-import junitx.util.PrivateAccessor;
-import org.openshapa.Configuration;
-import org.openshapa.util.ConfigProperties;
+
+import javax.swing.text.BadLocationException;
+
+import org.fest.swing.core.KeyPressInfo;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.fixture.SpreadsheetCellFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.util.Platform;
 import org.openshapa.util.UIUtils;
-import org.uispec4j.interception.WindowInterceptor;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.Cell;
-import org.uispec4j.Clipboard;
-import org.uispec4j.Key;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.TextBox;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Test for the New Cells.
- *
- * @todo After bugs resolved, add more advanced cell tests involving
- * left/right caret movement
+ * 
+ * @todo After bugs resolved, add more advanced cell tests involving left/right
+ *       caret movement
  */
-public final class UITimestampTest extends OpenSHAPAUISpecTestCase {
-    static {
-        try {
-            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
-            p.setCanSendLogs(false);
-        } catch (Exception e) {
-            System.err.println("Unable to overide sending usage logs");
-        }
-        UISpec4J.setWindowInterceptionTimeLimit(120000);
-        UISpec4J.init();
-    }
-
+public final class UITimestampTest extends OpenSHAPATestClass {
     /**
      * Test editing the onset and offset timestamps.
-     * @throws java.lang.Exception on any error
      */
-    public void testTimestampEditing() throws Exception {
-        TextBox onset, offset;
+    @Test
+    public void testTimestampEditing() {
+        JTextComponentFixture onset, offset;
 
-        String[] testInput = {"123456789", "6789", "a13", "12:34:56:789",
-            "4.43", "127893999", "12:78:93:999", "12:34", "12:34:56"};
+        String[] testInput =
+                { "123456789", "6789", "a13", "12:34:56:789", "4.43",
+                        "127893999", "12:78:93:999", "12:34", "12:34:56" };
 
         int numOfTests = testInput.length;
 
-        String[] expectedTestOutput = {"12:34:56:789", "68:29:00:000",
-            "13:00:00:000", "12:34:56:789", "44:30:00:000", "13:19:33:999",
-            "13:19:33:999", "12:34:00:000", "12:34:56:000"};
+        String[] expectedTestOutput =
+                { "12:34:56:789", "68:29:00:000", "13:00:00:000",
+                        "12:34:56:789", "44:30:00:000", "13:19:33:999",
+                        "13:19:33:999", "12:34:00:000", "12:34:56:000" };
 
-        Vector<Cell> c = createNewCells(numOfTests);
+        Vector<SpreadsheetCellFixture> c = createNewCells(numOfTests);
 
         for (int i = 0; i < numOfTests; i++) {
-            onset = c.elementAt(i).getOnset();
-            offset = c.elementAt(i).getOffset();
-            c.elementAt(i).enterText(Cell.ONSET, testInput[i]);
-            c.elementAt(i).enterText(Cell.OFFSET, testInput[i]);
+            onset = c.elementAt(i).onsetTimestamp();
+            offset = c.elementAt(i).offsetTimestamp();
+            onset.enterText(testInput[i]);
+            offset.enterText(testInput[i]);
 
-            assertTrue(c.elementAt(i).getOnset().getText().equals(
-                    expectedTestOutput[i]));
-            assertTrue(c.elementAt(i).getOffset().getText().equals(
-                    expectedTestOutput[i]));
+            Assert.assertEquals(onset.text(), expectedTestOutput[i]);
+            Assert.assertEquals(offset.text(), expectedTestOutput[i]);
         }
     }
 
     /**
      * Test advanced editing the onset and offset timestamps.
-     * @throws java.lang.Exception on any error
-     *//* BugzID:540
-    public void testTimestampAdvancedEditing() throws Exception {
-        String[] testInput = {"123456789", "1234", "a13", "12:34:56:789",
-                              "4.43", "12:34", "12:78:93:999", "12:34"};
-
-        int numOfTests = testInput.length;
-
-        //advanced Input will be provided between testInput
-        Key[][] advancedInput = {{Key.LEFT, Key.LEFT},
-           {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.LEFT},
-           {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE, Key.RIGHT},
-           {Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE,
-                Key.BACKSPACE, Key.BACKSPACE}, {Key.LEFT, Key.LEFT,
-                Key.LEFT, Key.LEFT}};
-
-        String[] expectedTestOutput = {"12:34:56:712", "12:31:30:000",
-                                       "12:34:56:789", "12:34:50:744",
-                                       "44:31:23:400", "12:78:93:999",
-                                       "12:78:91:234"};
-
-        Vector<Cell> c = createNewCells(numOfTests);
-
-        for (int i = 0; i < numOfTests - 1; i++) {
-            TextBox onset = c.elementAt(i).getOnset();
-            TextBox offset = c.elementAt(i).getOffset();
-            c.elementAt(i).enterText(Cell.ONSET, testInput[i], advancedInput[i],
-                    testInput[i+1]);
-            c.elementAt(i).enterText(Cell.OFFSET, testInput[i],
-                    advancedInput[i], testInput[i+1]);
-
-            assertTrue(c.elementAt(i).getOnset().getText().equals(
-                    expectedTestOutput[i]));
-            assertTrue(c.elementAt(i).getOffset().getText().equals(
-                    expectedTestOutput[i]));
-        }
-    }*/
+     * 
+     * @throws java.lang.Exception
+     *             on any error NEEDS TO BE REWRITTEN FOR FEST AFTER BUG IS
+     *             FIXED.
+     */
+    /*
+     * BugzID:540 public void testTimestampAdvancedEditing() throws Exception {
+     * String[] testInput = {"123456789", "1234", "a13", "12:34:56:789", "4.43",
+     * "12:34", "12:78:93:999", "12:34"}; int numOfTests = testInput.length;
+     * //advanced Input will be provided between testInput Key[][] advancedInput
+     * = {{Key.LEFT, Key.LEFT}, {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE,
+     * Key.LEFT}, {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE,
+     * Key.RIGHT}, {Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE,
+     * Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE}, {Key.LEFT, Key.LEFT,
+     * Key.LEFT, Key.LEFT}}; String[] expectedTestOutput = {"12:34:56:712",
+     * "12:31:30:000", "12:34:56:789", "12:34:50:744", "44:31:23:400",
+     * "12:78:93:999", "12:78:91:234"}; Vector<Cell> c =
+     * createNewCells(numOfTests); for (int i = 0; i < numOfTests - 1; i++) {
+     * TextBox onset = c.elementAt(i).getOnset(); TextBox offset =
+     * c.elementAt(i).getOffset(); c.elementAt(i).enterText(Cell.ONSET,
+     * testInput[i], advancedInput[i], testInput[i+1]);
+     * c.elementAt(i).enterText(Cell.OFFSET, testInput[i], advancedInput[i],
+     * testInput[i+1]); assertTrue(c.elementAt(i).getOnset().getText().equals(
+     * expectedTestOutput[i]));
+     * assertTrue(c.elementAt(i).getOffset().getText().equals(
+     * expectedTestOutput[i])); } }
+     */
 
     /**
      * Test pasting the onset and offset timestamps.
-     *
-     * @throws java.lang.Exception on any error
      */
-    public void testTimestampPasting() throws Exception {
-        TextBox onset, offset;
+    @Test
+    public void testTimestampPasting() {
+        JTextComponentFixture onset, offset;
 
-        String[] testInput = {"123456789", "6789", "a13", "12:34:56:789",
-            "4.43", "127893999", "12:78:93:999", "12:34", "12:34:56"};
+        String[] testInput =
+                { "123456789", "6789", "a13", "12:34:56:789", "4.43",
+                        "127893999", "12:78:93:999", "12:34", "12:34:56" };
 
         int numOfTests = testInput.length;
 
-        String[] expectedTestOutput = {"12:34:56:789", "68:29:00:000",
-            "13:00:00:000", "12:34:56:789", "44:30:00:000", "13:19:33:999",
-            "13:19:33:999", "12:34:00:000", "12:34:56:000"};
+        String[] expectedTestOutput =
+                { "12:34:56:789", "68:29:00:000", "13:00:00:000",
+                        "12:34:56:789", "44:30:00:000", "13:19:33:999",
+                        "13:19:33:999", "12:34:00:000", "12:34:56:000" };
 
-        Vector<Cell> c = createNewCells(numOfTests);
+        Vector<SpreadsheetCellFixture> c = createNewCells(numOfTests);
+
         for (int i = 0; i < numOfTests; i++) {
-            onset = c.elementAt(i).getOnset();
-            offset = c.elementAt(i).getOffset();
-            Clipboard.putText(testInput[i]);
+            onset = c.elementAt(i).onsetTimestamp();
+            offset = c.elementAt(i).offsetTimestamp();
+            UIUtils.setClipboard(testInput[i]);
 
-            // Paste doesn't seem to request focus correctly.
+            // Select all and paste
             onset.selectAll();
-            onset.pasteFromClipboard();
+            onset.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V)
+                    .modifiers(Platform.controlOrCommandMask()));
 
             offset.selectAll();
-            offset.pasteFromClipboard();
+            offset.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V)
+                    .modifiers(Platform.controlOrCommandMask()));
 
-            assertTrue(onset.getText().equalsIgnoreCase(
-                    expectedTestOutput[i]));
-            assertTrue(offset.getText().equalsIgnoreCase(
-                    expectedTestOutput[i]));
-       }
+            Assert.assertEquals(onset.text(), expectedTestOutput[i]);
+            Assert.assertEquals(offset.text(), expectedTestOutput[i]);
+        }
     }
 
     /**
      * Test deleting the onset and offset timestamps.
-     *
-     * @throws java.lang.Exception on any error
      */
-    public void testTimestampDeletion() throws Exception {
-        String[] testInput = {"123456789", "12:34:56:789", "127893999",
-        "12:78:93:999"};
+    @Test
+    public void testTimestampDeletion() throws BadLocationException {
+        String[] testInput =
+                { "123456789", "12:34:56:789", "127893999", "12:78:93:999" };
 
         int numOfTests = testInput.length;
 
-        Vector<Cell> cells = createNewCells(numOfTests);
+        Vector<SpreadsheetCellFixture> cells = createNewCells(numOfTests);
         for (int i = 0; i < numOfTests; i++) {
-            cells.elementAt(i).enterText(Cell.ONSET, testInput[i]);
-            cells.elementAt(i).enterText(Cell.OFFSET, testInput[i]);
+            cells.elementAt(i).onsetTimestamp().enterText(testInput[i]);
+            cells.elementAt(i).offsetTimestamp().enterText(testInput[i]);
         }
 
-        //highlight and backspace test
-        Cell c = cells.elementAt(0);
-        c.selectAllAndTypeKey(Cell.ONSET, Key.BACKSPACE);
-        assertTrue(c.getOnset().getText().equals("00:00:00:000"));
-        c.selectAllAndTypeKey(Cell.OFFSET, Key.BACKSPACE);
-        assertTrue(c.getOffset().getText().equals("00:00:00:000"));
+        // highlight and backspace test
+        SpreadsheetCellFixture c = cells.elementAt(0);
+        c.onsetTimestamp().selectAll();
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
+        Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
 
-        //highlight and delete test
+        c.offsetTimestamp().selectAll();
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
+        Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
+
+        // highlight and delete test
         c = cells.elementAt(1);
-        c.selectAllAndTypeKey(Cell.ONSET, Key.DELETE);
-        assertTrue(c.getOnset().getText().equals("00:00:00:000"));
-        c.selectAllAndTypeKey(Cell.OFFSET, Key.DELETE);
-        assertTrue(c.getOffset().getText().equals("00:00:00:000"));
+        c.onsetTimestamp().selectAll();
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
+        Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
 
-        //backspace all
+        c.offsetTimestamp().selectAll();
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
+        Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
+
+        // backspace all
         c = cells.elementAt(2);
-        c.pressKeys(Cell.ONSET, new Key [] {Key.END});
-        int temp = c.getOnset().getText().length();
-        for (int i = 0; i < temp + 1; i++) {
-            c.enterText(Cell.ONSET, "\u0008");
+        int tsLength = c.onsetTimestamp().text().length();
+        c.clickToCharPos(SpreadsheetCellFixture.ONSET, tsLength, 1);
+        for (int i = 0; i < tsLength + 1; i++) {
+            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
         }
-        assertTrue(c.getOnset().getText().equals("00:00:00:000"));
+        Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
 
-        c.pressKeys(Cell.OFFSET, new Key [] {Key.END});
-        temp = c.getOnset().getText().length();
-        for (int i = 0; i < temp + 1; i++) {
-            c.enterText(Cell.OFFSET, "\u0008");
+        c.clickToCharPos(SpreadsheetCellFixture.OFFSET, tsLength, 1);
+        for (int i = 0; i < tsLength + 1; i++) {
+            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
         }
-        assertTrue(c.getOffset().getText().equals("00:00:00:000"));
+        Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
 
-        //delete key all
+        // delete key all
         c = cells.elementAt(3);
-        c.pressKeys(Cell.ONSET, new Key [] {Key.HOME});
-        temp = c.getOnset().getText().length();
-        for (int i = 0; i < temp + 1; i++) {
-            c.enterText(Cell.ONSET, "\u007f");
+        c.clickToCharPos(SpreadsheetCellFixture.ONSET, 0, 1);
+        for (int i = 0; i < tsLength + 1; i++) {
+            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
         }
-        assertTrue(c.getOnset().getText().equals("00:00:00:000"));
+        Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
 
-        c.pressKeys(Cell.OFFSET, new Key [] {Key.HOME});
-        temp = c.getOnset().getText().length();
-        for (int i = 0; i < temp + 1; i++) {
-            c.enterText(Cell.OFFSET, "\u007f");
+        c.clickToCharPos(SpreadsheetCellFixture.OFFSET, 0, 1);
+        for (int i = 0; i < tsLength + 1; i++) {
+            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
         }
-        assertTrue(c.getOffset().getText().equals("00:00:00:000"));
+        Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
     }
 
     /**
      * Create new cells.
-     * @throws java.lang.Exception on any error
      */
-    private Vector<Cell> createNewCells(int amount) throws Exception {
-        String varName = "testVar";
-        String varType = UIUtils.VAR_TYPES[(int) (Math.random()
-                * UIUtils.VAR_TYPES.length)];
+    private Vector<SpreadsheetCellFixture> createNewCells(final int amount) {
+        String varName = "t";
+        String varType =
+                UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
         String varRadio = varType.toLowerCase();
 
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2. Create new variable,
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
-        newVarWindow.getButton("Ok").click();
+        // 1. Create new variable
+        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-                window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        //Create new cell
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+        Assert.assertNotNull(ssPanel.column(varName));
+        ssPanel.column(varName).click();
+
+        // 2. Create new cells
         for (int i = 0; i < amount; i++) {
-            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
+            mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
         }
-        return ss.getSpreadsheetColumn(varName).getCells();
+
+        return ssPanel.column(varName).allCells();
     }
 }

@@ -1,10 +1,11 @@
 package org.openshapa.models.db;
 
 import java.io.PrintStream;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  * Junit test cases for the class TextStringDataValue.
@@ -37,9 +38,9 @@ public class TextStringDataValueTest extends DataValueTest {
      * Sets up the test fixture (i.e. the data available to all tests), this is
      * performed before each test case.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
 
@@ -64,7 +65,7 @@ public class TextStringDataValueTest extends DataValueTest {
      * Tears down the test fixture (i.e. the data available to all tests), this
      * is performed after each test case.
      */
-    @After
+    @AfterMethod
     public void tearDown() {
     }
 
@@ -90,7 +91,7 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test 1 arg constructor, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test1ArgConstructor() throws SystemErrorException {
@@ -106,9 +107,9 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test 1 argument constructor failure, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test1ArgConstructorFailure() throws SystemErrorException {
         TextStringDataValue t_value = new TextStringDataValue((Database) null);
     }
@@ -116,7 +117,7 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test 2 argument constructor, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {
@@ -135,9 +136,9 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test0 of 2 arg constructor failre, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure0() throws SystemErrorException {
         TextStringDataValue t_value = new TextStringDataValue((Database) null,
                                                               tfa.getID());
@@ -146,9 +147,9 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test1 of 2 arg constructor failre, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure1() throws SystemErrorException {
         TextStringDataValue t_value = new TextStringDataValue(db,
                                                             DBIndex.INVALID_ID);
@@ -157,9 +158,9 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test2 of 2 arg constructor failre, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure2() throws SystemErrorException {
         TextStringDataValue t_value = new TextStringDataValue(db,
                                                               txt_mve.getID());
@@ -168,7 +169,7 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test of 3 argument constructor, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test3ArgConstructor() throws SystemErrorException {
@@ -188,9 +189,9 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test0 of 3 argument constructor failure, of class TextStringDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure0() throws SystemErrorException {
         TextStringDataValue t_value = new TextStringDataValue((Database) null,
                                                               tfa.getID(),
@@ -200,9 +201,9 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test1 of 3 argument constructor failure, of class TextStringDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure1() throws SystemErrorException {
         TextStringDataValue t_value = new TextStringDataValue(db,
                                                              DBIndex.INVALID_ID,
@@ -212,9 +213,9 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test2 of 3 argument constructor failure, of class TextStringDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure2() throws SystemErrorException {
         TextStringDataValue t_value = new TextStringDataValue(db,
                                                               txt_mve.getID(),
@@ -224,9 +225,9 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test3 of 3 argument constructor failure, of class TextStringDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure3() throws SystemErrorException {
         TextStringDataValue t_value = new TextStringDataValue(db,
                                                               tfa.getID(),
@@ -236,7 +237,7 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testCopyConstructor() throws SystemErrorException {
@@ -257,9 +258,9 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor failure, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void testCopyConstructorFailure() throws SystemErrorException {
         TextStringDataValue t_value =
                             new TextStringDataValue((TextStringDataValue) null);
@@ -268,7 +269,7 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test of getItsValue method, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testGetItsValue() throws SystemErrorException {
@@ -281,7 +282,7 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test of setItsValue method, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testSetItsValue() throws SystemErrorException {
@@ -295,7 +296,7 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test of toString method, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testToString() throws SystemErrorException {
@@ -312,7 +313,7 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test of toDBString method, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     /*
     @Test
@@ -345,7 +346,7 @@ public class TextStringDataValueTest extends DataValueTest {
     /**
      * Test of Construct method, of class TextStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testConstruct() throws SystemErrorException {

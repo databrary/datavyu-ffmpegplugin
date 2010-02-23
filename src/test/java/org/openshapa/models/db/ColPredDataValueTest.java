@@ -2,10 +2,11 @@ package org.openshapa.models.db;
 
 import java.io.PrintStream;
 import java.util.Vector;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  * Junit test cases for the class ColPredDataValue.
@@ -36,9 +37,9 @@ public class ColPredDataValueTest extends DataValueTest {
      * Sets up the test fixture (i.e. the data available to all tests), this is
      * performed before each test case.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
 
@@ -91,7 +92,7 @@ public class ColPredDataValueTest extends DataValueTest {
      * Tears down the test fixture (i.e. the data available to all tests), this
      * is performed after each test case.
      */
-    @After
+    @AfterMethod
     public void tearDown() {
     }
 
@@ -114,7 +115,7 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test 1 arg constructor, of class ColPredDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test1ArgConstructor() throws SystemErrorException {
@@ -127,7 +128,7 @@ public class ColPredDataValueTest extends DataValueTest {
         assertEquals(cpdv.itsValue.getMveID(), DBIndex.INVALID_ID);
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test1ArgConstructorFailure() throws SystemErrorException {
         ColPredDataValue cpdb = new ColPredDataValue((Database) null);
     }
@@ -135,7 +136,7 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test 2 argument constructor, of class ColPredDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {
@@ -177,9 +178,9 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test0 of 2 arg constructor failre, of class ColPredDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure0() throws SystemErrorException {
         ColPredDataValue cpdv2 = new ColPredDataValue((Database) null,
                                                      untypedFarg.getID());
@@ -188,9 +189,9 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test1 of 2 arg constructor failre, of class ColPredDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure1() throws SystemErrorException {
         ColPredDataValue cpdv2 = new ColPredDataValue(db, DBIndex.INVALID_ID);
     }
@@ -198,9 +199,9 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test2 of 2 arg constructor failre, of class ColPredDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure2() throws SystemErrorException {
         ColPredDataValue cpdv2 = new ColPredDataValue(db, matrix_mve.getID());
     }
@@ -208,7 +209,7 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test3 of 2 arg constructor failre, of class ColPredDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test3ArgConstructor() throws SystemErrorException {

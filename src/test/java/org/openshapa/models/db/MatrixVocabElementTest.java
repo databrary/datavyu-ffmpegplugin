@@ -2,10 +2,10 @@ package org.openshapa.models.db;
 
 import org.openshapa.models.db.MatrixVocabElement.MatrixType;
 import java.io.PrintStream;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import static org.testng.AssertJUnit.*;
 
 /**
  *
@@ -18,14 +18,14 @@ public class MatrixVocabElementTest {
     public MatrixVocabElementTest() {
     }
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public void setUpClass() {
         outStream = System.out;
         verbose = true;
     }
 
-    @After
-    public void tearDown() {
+    @AfterClass
+    public void tearDownClass() {
     }
 
     /**

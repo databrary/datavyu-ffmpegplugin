@@ -430,6 +430,14 @@ public final class VocabEditorV extends OpenSHAPADialog {
     }
 
     /**
+     * Returns vector of VocabElementVs
+     * @return veViews Vector of VocabElementVs
+     */
+    public Vector<VocabElementV> getVocabElements() {
+        return veViews;
+    }
+
+    /**
      * Method to update the visual state of the dialog to match the underlying
      * model.
      */

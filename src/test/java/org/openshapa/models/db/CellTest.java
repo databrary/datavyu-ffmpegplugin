@@ -1,8 +1,5 @@
 package org.openshapa.models.db;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 /**
  *
  */

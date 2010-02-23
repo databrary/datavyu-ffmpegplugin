@@ -1,39 +1,47 @@
 package org.openshapa.util;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
-import org.uispec4j.MenuBar;
-import org.uispec4j.Panel;
-import org.uispec4j.VocabElement;
-import org.uispec4j.Window;
-import org.uispec4j.interception.WindowInterceptor;
+
+import javax.swing.JPanel;
+
+import org.fest.swing.core.GenericTypeMatcher;
+import org.fest.swing.finder.WindowFinder;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
+import org.openshapa.views.NewVariableV;
+import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
  *
  */
 public class UIUtils {
 
-     /**
+    /**
      * Different cell variable types.
      */
-    public static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
-    };
+    public static final String[] VAR_TYPES =
+            { "TEXT", "PREDICATE", "INTEGER", "NOMINAL", "MATRIX", "FLOAT" };
 
     /**
      * Checks if two text files are equal.
-     *
-     * @param file1 First file
-     * @param file2 Second file
-     *
-     * @throws IOException on file read error
+     * 
+     * @param file1
+     *            First file
+     * @param file2
+     *            Second file
+     * @throws IOException
+     *             on file read error
      * @return true if equal, else false
      */
     public static Boolean areFilesSame(final File file1, final File file2)
-    throws IOException {
+            throws IOException {
         FileReader fr1 = new FileReader(file1);
         FileReader fr2 = new FileReader(file2);
 
@@ -64,89 +72,92 @@ public class UIUtils {
         return true;
     }
 
-        /**
-     * Create a new variable.
-     *
-     * @param window MainWindow of OpenSHAPA
-     * @param varName String for the name of the variable
-     * @param varType String for the variable type
-     * @param varRadio String for the corresponding radio button to click
-     *
-     * @throws java.lang.Exception on any error
-     */
-    public static void createNewVariable(final Window mainWindow,
-            final String varName, final String varRadio)
-            throws Exception {
-        MenuBar menuBar = mainWindow.getMenuBar();
-        // 2a. Create new variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        newVarWindow.getButton("Ok").click();
+    public static JPanelFixture getSpreadsheet(final FrameFixture ff) {
+        return ff.panel(new GenericTypeMatcher<JPanel>(JPanel.class) {
+
+            @Override
+            protected boolean isMatching(JPanel panel) {
+                return panel.getClass().equals(SpreadsheetPanel.class);
+            }
+        });
     }
 
-
-     /**
-     * returns array of VocabElements from a Panel.
-     * @param panel Panel with vocabElements
-     * @return array of VocabElements
-     */
-    public static VocabElement[] getVocabElements(final Panel panel) {
-
-        int numOfElements = panel.getUIComponents(VocabElement.class).length;
-
-        VocabElement [] veArray = new VocabElement[numOfElements];
-
-        for (int i = 0; i < numOfElements; i++) {
-            veArray[i] = new VocabElement((VocabElementV) (panel.
-                    getUIComponents(VocabElement.class)[i].getAwtComponent()));
+    public static void createNewVariable(FrameFixture ff, String varName,
+            String varRadio) {
+        String varRadioCompName;
+        if (varRadio.endsWith("TypeButton")) {
+            varRadioCompName = varRadio;
+        } else {
+            varRadioCompName = varRadio + "TypeButton";
         }
-        return veArray;
+        // 1. Create new variable
+        ff.menuItemWithPath("Spreadsheet", "New Variable").click();
+        // DialogFixture newVariableDialog = ff.dialog();
+        DialogFixture newVariableDialog =
+                WindowFinder.findDialog(NewVariableV.class).withTimeout(10000)
+                        .using(ff.robot);
+        // Check if the new variable dialog is actually visible
+        newVariableDialog.requireVisible();
+        // Get the variable value text box
+        JTextComponentFixture variableValueTextBox =
+                newVariableDialog.textBox();
+        // The variable value box should have no text in it
+        variableValueTextBox.requireEmpty();
+        // It should be editable
+        variableValueTextBox.requireEditable();
+        // Type in some text.
+        variableValueTextBox.enterText(varName);
+        // Get the radio button for text variables
+        newVariableDialog.radioButton(varRadioCompName).click();
+        // Check that it is selected
+        newVariableDialog.radioButton(varRadioCompName).requireSelected();
+        // Click "OK"
+        newVariableDialog.button("okButton").click();
     }
 
-    /**
-      * Parses a matrix value and returns an arg.
-      * @param matrixCellValue matrix cell value
-      * @param arg argument number
-      * @return argument as a string
-      */
-     public static String getArgFromMatrix(final String matrixCellValue,
-             final int arg) {
-         String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 2);
+    public static void setClipboard(String str) {
+        StringSelection ss = new StringSelection(str);
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+    }
 
-         String [] tokens = argList.split(", ");
+    public static boolean equalValues(final String value1, final String value2) {
+        if ((value1.startsWith("<") && value1.endsWith(">"))
+                || (value2.startsWith("<") && value2.endsWith(">"))) {
+            // boolean result = value1.equalsIgnoreCase(value2);
+            //
+            // if (!result) {
+            // System.out.println(value1 + "\n" + value2 + "\n");
+            // }
 
-         return tokens[arg];
-     }
+            return value1.equalsIgnoreCase(value2);
+        } else {
+            try {
+                // Handle doubles
+                // boolean result =
+                // FloatUtils.closeEnough(Double.parseDouble(value1),
+                // Double.parseDouble(value2));
+                //
+                // if (!result) {
+                // System.out.println(value1 + "\n" + value2 + "\n");
+                // }
 
-          /**
-      * Parses a matrix value and returns an arg.
-      * @param matrixCellValue matrix cell value
-      * @return int number of arguments
-      */
-     public static int getNumberofArgFromMatrix(final String matrixCellValue) {
-         String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 1);
+                return FloatUtils.closeEnough(Double.parseDouble(value1),
+                        Double.parseDouble(value2));
+            } catch (NumberFormatException nfe) {
+                // Handle other variable types
+                // boolean result = value1.equalsIgnoreCase(value2);
+                //
+                // if (!result) {
+                // System.out.println(value1 + "\n" + value2 + "\n");
+                // }
 
-         String [] tokens = argList.split(", ");
+                return value1.equalsIgnoreCase(value2);
+            }
+        }
+    }
 
-         return tokens.length;
-     }
-
-     /**
-      * Parses a matrix value and returns array of arguments.
-      * @param matrixCellValue matrix cell value
-      * @return arguments in an array
-      */
-     public static String [] getArgsFromMatrix(final String matrixCellValue) {
-         String argList = matrixCellValue.substring(1,
-                 matrixCellValue.length() - 1);
-
-         String [] tokens = argList.split(", ");
-
-         return tokens;
-     }
+    public static String[] getArgsFromMatrix(final String values) {
+        String argList = values.substring(1, values.length() - 1);
+        return argList.split(", ", -1);
+    }
 }

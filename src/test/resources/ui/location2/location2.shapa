@@ -1,0 +1,7 @@
+!project
+dbDir: C:\Development\openshapa_fest\src\test\resources\ui\location2
+dbFile: location2-40eab207f8.csv
+description: null
+name: location2
+version: 1
+viewerSettings: {}

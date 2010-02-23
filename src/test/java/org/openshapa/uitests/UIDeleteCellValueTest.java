@@ -1,303 +1,235 @@
 package org.openshapa.uitests;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
-import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 import java.util.Vector;
-import junitx.util.PrivateAccessor;
-import org.openshapa.Configuration;
-import org.openshapa.util.ConfigProperties;
-import org.uispec4j.Cell;
-import org.uispec4j.Column;
-import org.uispec4j.Key;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.TextBox;
-import org.uispec4j.Trigger;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
-import org.uispec4j.interception.FileChooserHandler;
-import org.uispec4j.interception.WindowHandler;
+
+import javax.swing.text.BadLocationException;
+
+import org.fest.swing.core.KeyPressInfo;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.SpreadsheetCellFixture;
+import org.fest.swing.fixture.SpreadsheetColumnFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.openshapa.util.UIUtils;
+import org.openshapa.views.discrete.SpreadsheetPanel;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Test for the New Cells.
  */
-public final class UIDeleteCellValueTest extends OpenSHAPAUISpecTestCase {
-    static {
-        try {
-            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
-            p.setCanSendLogs(false);
-        } catch (Exception e) {
-            System.err.println("Unable to overide sending usage logs");
-        }
-
-        UISpec4J.setWindowInterceptionTimeLimit(120000);
-        UISpec4J.init();
+public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
+    /**
+     * Tests for deleting the cell value.
+     * 
+     * @param type
+     *            type of column
+     * @throws BadLocationException
+     *             if can't click on a particular caret pos
+     */
+    private void testDeleteCellValue(final String type)
+            throws BadLocationException {
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/all_column_types.rb");
+        Assert.assertTrue(demoFile.exists());
+        // 1. Run script to populate
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+        jfcf.selectFile(demoFile).approve();
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        scriptConsole.button("closeButton").click();
+        // 2. Open spreadsheet and check that script has data
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+        Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
+        Assert.assertTrue(cols.size() > 0);
+        highlightAndBackspaceTest(ssPanel, 1, type);
+        highlightAndDeleteTest(ssPanel, 2, type);
+        backSpaceAllTest(ssPanel, 3, type);
+        deleteAllTest(ssPanel, 4, type);
     }
-
-
-
-
 
     /**
      * Test deleting values from nominal cells.
-     * @throws java.lang.Exception on any error
+     * 
+     * @throws java.lang.Exception
+     *             on any error
      */
+    @Test
     public void testDeleteNominalCell() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String type = "NOMINAL";
-
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/all_column_types.rb");
-        assertTrue(demoFile.exists());
-
-        // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-
-        // 1. Open and run script to populate database
-        WindowInterceptor.init(menuBar.getMenu("Script").getSubMenu(
-                "Run script").triggerClick()).process(FileChooserHandler.init()
-                .assertIsOpenDialog().assertAcceptsFilesOnly().select(demoFile))
-                .process(new WindowHandler() {
-
-            public Trigger process(Window console) {
-                return console.getButton("Close").triggerClick();
-            }
-        }).run();
-
-        //2. Open spreadsheet and check that script has data
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) (
-                window.getUIComponents(
-                Spreadsheet.class)[0].getAwtComponent())));
-        assertTrue(ss.getColumns().size() > 0);
-
-        highlightAndBackspaceTest(ss, type);
-        highlightAndDeleteTest(ss, type);
-        backSpaceAllTest(ss, type);
-        deleteAllTest(ss, type);
+        testDeleteCellValue(type);
     }
 
     /**
      * Test deleting values from float cells.
-     * @throws java.lang.Exception on any error
+     * 
+     * @throws java.lang.Exception
+     *             on any error
      */
+    // BugzID:1351
+    // @Test
     public void testDeleteFloatCell() throws Exception {
         String type = "FLOAT";
-
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/all_column_types.rb");
-        assertTrue(demoFile.exists());
-
-        // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-
-        // 1. Open and run script to populate database
-        WindowInterceptor.init(menuBar.getMenu("Script").getSubMenu(
-                "Run script").triggerClick()).process(FileChooserHandler.init().
-                assertIsOpenDialog().assertAcceptsFilesOnly().select(demoFile)).
-                process(new WindowHandler() {
-
-            public Trigger process(Window console) {
-                return console.getButton("Close").triggerClick();
-            }
-        }).run();
-
-        //2. Open spreadsheet and check that script has data
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) (
-                window.getUIComponents(
-                Spreadsheet.class)[0].getAwtComponent())));
-        assertTrue(ss.getColumns().size() > 0);
-
-        highlightAndBackspaceTest(ss, type);
-        highlightAndDeleteTest(ss, type);
-        backSpaceAllTest(ss, type);
-        deleteAllTest(ss, type);
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        testDeleteCellValue(type);
     }
 
     /**
      * Test deleting values from integer cells.
-     * @throws java.lang.Exception on any error
+     * 
+     * @throws java.lang.Exception
+     *             on any error
      */
+    @Test
     public void testDeleteIntCell() throws Exception {
         String type = "INTEGER";
-
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/all_column_types.rb");
-        assertTrue(demoFile.exists());
-
-        // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-
-        // 1. Open and run script to populate database
-        WindowInterceptor.init(menuBar.getMenu("Script").getSubMenu(
-                "Run script").triggerClick()).process(FileChooserHandler.init().
-                assertIsOpenDialog().assertAcceptsFilesOnly().select(demoFile)).
-                process(new WindowHandler() {
-
-            public Trigger process(Window console) {
-                return console.getButton("Close").triggerClick();
-            }
-        }).run();
-
-        //2. Open spreadsheet and check that script has data
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) (
-                window.getUIComponents(
-                Spreadsheet.class)[0].getAwtComponent())));
-        assertTrue(ss.getColumns().size() > 0);
-
-        highlightAndBackspaceTest(ss, type);
-        highlightAndDeleteTest(ss, type);
-        backSpaceAllTest(ss, type);
-        deleteAllTest(ss, type);
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        testDeleteCellValue(type);
     }
 
     /**
      * Test deleting values from text cells.
-     * @throws java.lang.Exception on any error
+     * 
+     * @throws java.lang.Exception
+     *             on any error
      */
+    @Test
     public void testDeleteTextCell() throws Exception {
         String type = "TEXT";
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/all_column_types.rb");
-        assertTrue(demoFile.exists());
-
-        // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-
-        // 1. Open and run script to populate database
-        WindowInterceptor.init(menuBar.getMenu("Script").getSubMenu(
-                "Run script").triggerClick()).process(FileChooserHandler.init().
-                assertIsOpenDialog().assertAcceptsFilesOnly().select(demoFile)).
-                process(new WindowHandler() {
-
-            public Trigger process(Window console) {
-                return console.getButton("Close").triggerClick();
-            }
-        }).run();
-
-        //2. Open spreadsheet and check that script has data
-        Spreadsheet ss = new Spreadsheet(((SpreadsheetPanel) (
-                window.getUIComponents(
-                Spreadsheet.class)[0].getAwtComponent())));
-        assertTrue(ss.getColumns().size() > 0);
-
-    /*BugzID629:highlightAndBackspaceTest(ss, type);
-    highlightAndDeleteTest(ss, type);
-    backSpaceAllTest(ss, type);
-    deleteAllTest(ss, type);*/
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        testDeleteCellValue(type);
     }
-
-
 
     /**
      * Tests deletion by selecting all and pressing backspace.
-     * @param ss Spreadsheet
-     * @param type column type to test
+     * 
+     * @param ss
+     *            Spreadsheet
+     * @param type
+     *            column type to test
      */
-    private void highlightAndBackspaceTest(final Spreadsheet ss,
-            final String type) {
-        Vector<Cell> cells = null;
-        //1. Get cells for test type
-        for (Column col : ss.getColumns()) {
-            if (col.getHeaderType().equalsIgnoreCase(type)) {
-                cells = col.getCells();
+    private void highlightAndBackspaceTest(final SpreadsheetPanelFixture ss,
+            final int cellWithID, final String type)
+            throws BadLocationException {
+        SpreadsheetCellFixture cell = null;
+        // 1. Get cell for test type
+        for (SpreadsheetColumnFixture col : ss.allColumns()) {
+            if (col.getColumnType().equalsIgnoreCase(type)) {
+                cell = col.cell(cellWithID);
                 break;
             }
         }
-        //2. Test different inputs as per specifications
-        Cell c = cells.elementAt(0);
-        TextBox t = c.getValue();
-        t.selectAll();
-        c.selectAllAndTypeKey(Cell.VALUE, Key.BACKSPACE);
-        assertTrue(t.getText().equals("<val>"));
+
+        // 2. Test different inputs as per specifications
+        cell.select(SpreadsheetCellFixture.VALUE, 0, cell.cellValue().text()
+                .length());
+        cell.cellValue().pressAndReleaseKey(
+                KeyPressInfo.keyCode(KeyEvent.VK_BACK_SPACE));
+        Assert.assertEquals(cell.cellValue().text(), "<val>");
     }
 
-     /**
+    /**
      * Tests deletion by selecting all and pressing delete.
-     * @param ss Spreadsheet
-     * @param type column type to test
+     * 
+     * @param ss
+     *            Spreadsheet
+     * @param type
+     *            column type to test
      */
-    private void highlightAndDeleteTest(final Spreadsheet ss,
-            final String type) {
-        Vector<Cell> cells = null;
-
-        //1. Get cells for test type
-        for (Column col : ss.getColumns()) {
-            if (col.getHeaderType().equalsIgnoreCase(type)) {
-                cells = col.getCells();
+    private void highlightAndDeleteTest(final SpreadsheetPanelFixture ss,
+            final int cellWithID, final String type)
+            throws BadLocationException {
+        SpreadsheetCellFixture cell = null;
+        // 1. Get cell for test type
+        for (SpreadsheetColumnFixture col : ss.allColumns()) {
+            if (col.getColumnType().equalsIgnoreCase(type)) {
+                cell = col.cell(cellWithID);
                 break;
             }
         }
 
-        //2. Test different inputs as per specifications
-        Cell c = cells.elementAt(1);
-        TextBox t = c.getValue();
-        t.selectAll();
-        c.selectAllAndTypeKey(Cell.VALUE, Key.DELETE);
-        assertTrue(t.getText().equals("<val>"));
+        // 2. Test different inputs as per specifications
+        cell.select(SpreadsheetCellFixture.VALUE, 0, cell.cellValue().text()
+                .length());
+        cell.cellValue().pressAndReleaseKey(
+                KeyPressInfo.keyCode(KeyEvent.VK_DELETE));
+        Assert.assertEquals(cell.cellValue().text(), "<val>");
     }
 
     /**
      * Tests deletion by backspacing all.
-     * @param ss Spreadsheet
-     * @param type column type to test
+     * 
+     * @param ss
+     *            Spreadsheet
+     * @param type
+     *            column type to test
      */
-    private void backSpaceAllTest(final Spreadsheet ss, final String type) {
-        Vector<Cell> cells = null;
-
-        //1. Get cells for test type
-        for (Column col : ss.getColumns()) {
-            if (col.getHeaderType().equalsIgnoreCase(type)) {
-                cells = col.getCells();
+    private void backSpaceAllTest(final SpreadsheetPanelFixture ss,
+            final int cellWithID, final String type)
+            throws BadLocationException {
+        SpreadsheetCellFixture cell = null;
+        // 1. Get cell for test type
+        for (SpreadsheetColumnFixture col : ss.allColumns()) {
+            if (col.getColumnType().equalsIgnoreCase(type)) {
+                cell = col.cell(cellWithID);
                 break;
             }
         }
 
-        //2. Test different inputs as per specifications
-        Cell c = cells.elementAt(2);
-        TextBox t = c.getValue();
-        c.pressKeys(Cell.VALUE, new Key [] {Key.END});
-        int temp = c.getValueText().length();
-        for (int i = 0; i < temp + 1; i++) {
-            c.enterTextKeepFocus(Cell.VALUE, "\u0008");
+        // 2. Test different input as per specifications
+        int strLen = cell.cellValue().text().length();
+
+        cell.clickToCharPos(SpreadsheetCellFixture.VALUE, strLen, 1);
+        // Forced to do this because of BugzID:1350
+        for (int i = 0; i < strLen; i++) {
+            cell.cellValue().pressAndReleaseKey(
+                    KeyPressInfo.keyCode(KeyEvent.VK_RIGHT));
         }
-        assertTrue(t.getText().equals("<val>"));
+        for (int i = 0; i < strLen; i++) {
+            cell.cellValue().pressAndReleaseKey(
+                    KeyPressInfo.keyCode(KeyEvent.VK_BACK_SPACE));
+        }
+        Assert.assertEquals(cell.cellValue().text(), "<val>");
     }
 
     /**
      * Tests deletion by pressing delete.
-     * @param ss Spreadsheet
-     * @param type column type to test
+     * 
+     * @param ss
+     *            Spreadsheet
+     * @param type
+     *            column type to test
      */
-    private void deleteAllTest (final Spreadsheet ss, final String type) {
-
-        Vector<Cell> cells = null;
-
-        //1. Get cells for test type
-        for (Column col : ss.getColumns()) {
-            if (col.getHeaderType().equalsIgnoreCase(type)) {
-                cells = col.getCells();
+    private void deleteAllTest(final SpreadsheetPanelFixture ss,
+            final int cellWithID, final String type)
+            throws BadLocationException {
+        SpreadsheetCellFixture cell = null;
+        // 1. Get cell for test type
+        for (SpreadsheetColumnFixture col : ss.allColumns()) {
+            if (col.getColumnType().equalsIgnoreCase(type)) {
+                cell = col.cell(cellWithID);
                 break;
             }
         }
 
-        //2. Test different inputs as per specifications
-        Cell c = cells.elementAt(2);
-        TextBox t = c.getValue();
-        c.pressKeys(Cell.VALUE, new Key [] {Key.HOME});
-        int temp = c.getValueText().length();
-        for (int i = 0; i < temp + 1; i++) {
-            c.enterTextKeepFocus(Cell.VALUE, "\u007f");
+        // 2. Test different input as per specifications
+        int strLen = cell.cellValue().text().length();
+
+        cell.clickToCharPos(SpreadsheetCellFixture.VALUE, 0, 1);
+        for (int i = 0; i < strLen; i++) {
+            cell.cellValue().pressAndReleaseKey(
+                    KeyPressInfo.keyCode(KeyEvent.VK_DELETE));
         }
-        assertTrue(t.getText().equals("<val>"));
+        Assert.assertEquals(cell.cellValue().text(), "<val>");
     }
 
 }
-
-
-

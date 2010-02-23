@@ -1,10 +1,11 @@
 package org.openshapa.models.db;
 
 import java.io.PrintStream;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  *
@@ -33,9 +34,9 @@ public class TimeStampDataValueTest extends DataValueTest {
      * Sets up the test fixture (i.e. the data available to all tests), this is
      * performed before each test case.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
 
@@ -57,7 +58,7 @@ public class TimeStampDataValueTest extends DataValueTest {
      * Tears down the test fixture (i.e. the data available to all tests), this
      * is performed after each test case.
      */
-    @After
+    @AfterMethod
     public void tearDown() {
     }
 
@@ -80,7 +81,7 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test 1 arg constructor, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test1ArgConstructor() throws SystemErrorException {
@@ -96,9 +97,9 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test 1 argument constructor failure, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test1ArgConstructorFailure() throws SystemErrorException {
         TimeStampDataValue t_value = new TimeStampDataValue((Database) null);
     }
@@ -106,7 +107,7 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test 2 argument constructor, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {
@@ -124,9 +125,9 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test0 of 2 arg constructor failre, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure0() throws SystemErrorException {
         TimeStampDataValue t_value = new TimeStampDataValue((Database) null,
                                                               tfa.getID());
@@ -135,9 +136,9 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test1 of 2 arg constructor failre, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure1() throws SystemErrorException {
         TimeStampDataValue t_value = new TimeStampDataValue(db,
                                                             DBIndex.INVALID_ID);
@@ -146,7 +147,7 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test of 3 argument constructor, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test3ArgConstructor() throws SystemErrorException {
@@ -165,9 +166,9 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test0 of 3 argument constructor failure, of class TimeStampDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure0() throws SystemErrorException {
         TimeStampDataValue t_value = new TimeStampDataValue((Database) null,
                                                               tfa.getID(),
@@ -177,9 +178,9 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test1 of 3 argument constructor failure, of class TimeStampDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure1() throws SystemErrorException {
         TimeStampDataValue t_value = new TimeStampDataValue(db,
                                                              DBIndex.INVALID_ID,
@@ -189,7 +190,7 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testCopyConstructor() throws SystemErrorException {
@@ -210,9 +211,9 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor failure, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void testCopyConstructorFailure() throws SystemErrorException {
         TimeStampDataValue t_value =
                             new TimeStampDataValue((TimeStampDataValue) null);
@@ -221,7 +222,7 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test of getItsValue method, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testGetItsValue() throws SystemErrorException {
@@ -234,7 +235,7 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test of setItsValue method, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testSetItsValue() throws SystemErrorException {
@@ -248,7 +249,7 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test of toString method, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testToString() throws SystemErrorException {
@@ -267,7 +268,7 @@ public class TimeStampDataValueTest extends DataValueTest {
     /**
      * Test of Construct method, of class TimeStampDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testConstruct() throws SystemErrorException {

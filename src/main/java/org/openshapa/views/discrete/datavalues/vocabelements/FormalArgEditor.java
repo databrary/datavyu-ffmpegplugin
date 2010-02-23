@@ -102,37 +102,7 @@ public final class FormalArgEditor extends EditorComponent {
      */
     @Override
     public void keyTyped(KeyEvent e) {
-
-        // The backspace key removes digits from behind the caret.
-        if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-            && e.getKeyChar() == '\u0008') {
-
-            try {
-                removeBehindCaret();
-                model.setFargName("<" + getText() + ">");
-                vocabElement.replaceFormalArg(model, argIndex);
-                parentView.setHasChanged(true);
-                parentView.getParentDialog().updateDialogState();
-            } catch (SystemErrorException se) {
-                logger.error("Unable to backspace from predicate name", se);
-            }
-
-        // The delete key removes digits ahead of the caret.
-        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                   && e.getKeyChar() == '\u007F') {
-
-            try {
-                removeAheadOfCaret();
-                model.setFargName("<" + getText() + ">");
-                vocabElement.replaceFormalArg(model, argIndex);
-                parentView.setHasChanged(true);
-                parentView.getParentDialog().updateDialogState();
-            } catch (SystemErrorException se) {
-                logger.error("Unable to delete from predicate name", se);
-            }
-
-        // If the character is not reserved - add it to the name of the pred
-        } else if (!this.isReserved(e.getKeyChar())) {
+            if (!this.isReserved(e.getKeyChar())) {
 
             try {
                 removeSelectedText();
@@ -174,8 +144,27 @@ public final class FormalArgEditor extends EditorComponent {
     public void keyPressed(final KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
+                try {
+                removeBehindCaret();
+                model.setFargName("<" + getText() + ">");
+                vocabElement.replaceFormalArg(model, argIndex);
+                parentView.setHasChanged(true);
+                parentView.getParentDialog().updateDialogState();
+            } catch (SystemErrorException se) {
+                logger.error("Unable to backspace from predicate name", se);
+            }
+                e.consume();
+                break;
             case KeyEvent.VK_DELETE:
-                // Ignore - handled when the key is typed.
+                try {
+                removeAheadOfCaret();
+                model.setFargName("<" + getText() + ">");
+                vocabElement.replaceFormalArg(model, argIndex);
+                parentView.setHasChanged(true);
+                parentView.getParentDialog().updateDialogState();
+            } catch (SystemErrorException se) {
+                logger.error("Unable to delete from predicate name", se);
+            }
                 e.consume();
                 break;
             default:

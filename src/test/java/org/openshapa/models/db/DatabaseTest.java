@@ -3,11 +3,11 @@ package org.openshapa.models.db;
 import java.io.PrintStream;
 import java.util.Vector;
 import junitx.util.PrivateAccessor;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
+import static org.testng.AssertJUnit.*;
 
 /**
  *
@@ -73,7 +73,7 @@ public abstract class DatabaseTest {
         assertTrue(Database.IsValidFargName("<pqrstuvwxyz{\174}~>"));
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestIsValidFargNameNull() throws SystemErrorException {
 
         assertFalse(Database.IsValidFargName(null));
@@ -104,7 +104,7 @@ public abstract class DatabaseTest {
         assertFalse(Database.IsValidFloat(new Double[] {0.0, 1.0}));
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestIsValidFloatNull() throws SystemErrorException {
 
         assertFalse(Database.IsValidFloat(null));
@@ -141,7 +141,7 @@ public abstract class DatabaseTest {
         assertFalse(Database.IsValidInt(new Double[] {0.0, 1.0}));
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestIsValidIntNull() throws SystemErrorException {
 
         assertFalse(Database.IsValidInt(null));
@@ -194,7 +194,7 @@ public abstract class DatabaseTest {
         assertTrue(Database.IsValidNominal("a"));
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestIsValidNominalNull() throws SystemErrorException {
 
         assertFalse(Database.IsValidNominal(null));
@@ -238,7 +238,7 @@ public abstract class DatabaseTest {
         assertFalse(Database.IsValidPredName("embedded\rcarriage_return"));
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestIsValidPredNameNull() throws SystemErrorException {
 
         assertFalse(Database.IsValidPredName(null));
@@ -283,7 +283,7 @@ public abstract class DatabaseTest {
     }
 
 
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestIsValidSVarNameNull() throws SystemErrorException {
 
         assertFalse(Database.IsValidSVarName(null));
@@ -330,7 +330,7 @@ public abstract class DatabaseTest {
     }
 
 
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestIsValidTextStringNull() throws SystemErrorException {
 
         assertFalse(Database.IsValidTextString(null));
@@ -367,7 +367,7 @@ public abstract class DatabaseTest {
         assertTrue(Database.IsValidTimeStamp(new TimeStamp(60,120)));
     }
 
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestIsValidTimeStampNull() throws SystemErrorException {
 
         assertFalse(Database.IsValidTimeStamp(null));
@@ -422,7 +422,7 @@ public abstract class DatabaseTest {
     }
 
 
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void TestIsValidQuoteStringNull() throws SystemErrorException {
 
         assertFalse(Database.IsValidQuoteString(null));

@@ -1,10 +1,11 @@
 package org.openshapa.models.db;
 
 import java.io.PrintStream;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  * Junit test cases for the class QuoteStringDataValue.
@@ -39,9 +40,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
      * Sets up the test fixture (i.e. the data available to all tests), this is
      * performed before each test case.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         qs_mve = new MatrixVocabElement(db, "qs_mve");
@@ -76,11 +77,11 @@ public class QuoteStringDataValueTest extends DataValueTest {
      * Tears down the test fixture (i.e. the data available to all tests), this
      * is performed after each test case.
      */
-    @After
+    @AfterMethod
     public void tearDown() {
     }
 
-        /**
+    /**
      * Test of updateForFargChange method, of class IntDataValue.
      */
     @Test
@@ -99,7 +100,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test 1 arg constructor, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test1ArgConstructor() throws SystemErrorException {
@@ -117,9 +118,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test 1 argument constructor failure, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test1ArgConstructorFailure() throws SystemErrorException {
         QuoteStringDataValue qv = new QuoteStringDataValue((Database) null);
     }
@@ -127,7 +128,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test 2 argument constructor, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {
@@ -164,9 +165,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test0 of 2 arg constructor failre, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure0() throws SystemErrorException {
         QuoteStringDataValue qv = new QuoteStringDataValue((Database)null,
                                                         qsfa.getID());
@@ -175,9 +176,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test1 of 2 arg constructor failre, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure1() throws SystemErrorException {
         QuoteStringDataValue qv
                             = new QuoteStringDataValue(db, DBIndex.INVALID_ID);
@@ -186,9 +187,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test2 of 2 arg constructor failre, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure2() throws SystemErrorException {
         QuoteStringDataValue qv
                                 = new QuoteStringDataValue(db, qs_mve.getID());
@@ -197,7 +198,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test of 3 argument constructor, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test3ArgConstructor() throws SystemErrorException {
@@ -235,9 +236,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test0 of 3 argument constructor failure, of class QuoteStringDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure0() throws SystemErrorException {
         QuoteStringDataValue qv = new QuoteStringDataValue((Database) null,
                                                         qsfa.getID(), "alpha");
@@ -246,9 +247,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test1 of 3 argument constructor failure, of class QuoteStringDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure1() throws SystemErrorException {
         QuoteStringDataValue qv
                    = new QuoteStringDataValue(db, DBIndex.INVALID_ID, "alpha");
@@ -257,9 +258,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test2 of 3 argument constructor failure, of class QuoteStringDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure2() throws SystemErrorException {
         QuoteStringDataValue qv
                        = new QuoteStringDataValue(db, qs_mve.getID(), "alpha");
@@ -268,9 +269,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test3 of 3 argument constructor failure, of class QuoteStringDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure3() throws SystemErrorException {
         QuoteStringDataValue qv
               = new QuoteStringDataValue(db, qsfa.getID(), "invalid \" string");
@@ -279,7 +280,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * TestAccessors()
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
 
     @Test
@@ -290,7 +291,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testCopyConstructor() throws SystemErrorException {
@@ -311,9 +312,9 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor failure, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void testCopyConstructorFailure() throws SystemErrorException {
         QuoteStringDataValue qv
                         = new QuoteStringDataValue((QuoteStringDataValue)null);
@@ -322,7 +323,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test of getItsValue method, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testGetItsValue() throws SystemErrorException {
@@ -335,7 +336,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test of setItsValue method, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testSetItsValue() throws SystemErrorException {
@@ -349,7 +350,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test of toString method, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testToString() throws SystemErrorException {
@@ -365,7 +366,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test of toDBString method, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     /*
     @Test
@@ -398,7 +399,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test of coerceToRange method, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testCoerceToRange() throws Exception {
@@ -414,7 +415,7 @@ public class QuoteStringDataValueTest extends DataValueTest {
     /**
      * Test of Construct method, of class QuoteStringDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testConstruct() throws SystemErrorException {

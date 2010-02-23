@@ -3,10 +3,10 @@ package org.openshapa.models.db;
 import java.io.PrintStream;
 import junitx.util.PrivateAccessor;
 import java.util.Vector;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
+import static org.testng.AssertJUnit.*;
 /**
  * Test class for Matrix.
  */
@@ -32,7 +32,7 @@ public class MatrixTest {
     /**
      * @throws SystemErrorException if trouble
      */
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         testdb = new ODBCDatabase();
 

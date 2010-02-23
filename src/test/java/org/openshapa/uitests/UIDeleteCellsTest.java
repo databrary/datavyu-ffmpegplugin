@@ -1,242 +1,212 @@
 package org.openshapa.uitests;
 
-
 import java.io.File;
-import java.util.Vector;
-import junitx.util.PrivateAccessor;
-import org.openshapa.Configuration;
-import org.openshapa.util.ConfigProperties;
-import org.uispec4j.interception.WindowInterceptor;
+
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.SpreadsheetCellFixture;
+import org.fest.swing.fixture.SpreadsheetColumnFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.Cell;
-import org.uispec4j.Column;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.Trigger;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
-import org.uispec4j.interception.FileChooserHandler;
-import org.uispec4j.interception.WindowHandler;
-
-
-
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Test for the Deletion of cells.
- *
  */
-public final class UIDeleteCellsTest extends OpenSHAPAUISpecTestCase {
-
-    static {
-        try {
-            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
-            p.setCanSendLogs(false);
-        } catch (Exception e) {
-            System.err.println("Unable to overide sending usage logs");
-        }
-        UISpec4J.init();
-    }
+public final class UIDeleteCellsTest extends OpenSHAPATestClass {
 
     /**
-     * Test for Bug 713.
-     * Bug 713: If an extended selection includes the last (bottom) cell
-     * and Delete Cells is selected:
-     * Expected: All cells are deleted and all related graphics are removed
-     * Actual: All cells appear to be deleted but the cell graphics for
-     * the last cell are not removed.
-     * @throws java.lang.Exception on any error
+     * Test for Bug 713. Bug 713: If an extended selection includes the last
+     * (bottom) cell and Delete Cells is selected: Expected: All cells are
+     * deleted and all related graphics are removed Actual: All cells appear to
+     * be deleted but the cell graphics for the last cell are not removed.
+     * Select cells in one column, delete, repeat.
      */
-    public void testBug713() throws Exception {
+    @Test
+    public void testBug713() {
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
-        assertTrue(demoFile.exists());
+        Assert.assertTrue(demoFile.exists());
 
-         // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
+        // 1. Run script to populate
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+        JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
+        scriptFileChooser.selectFile(demoFile).approve();
 
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        scriptConsole.button("closeButton").click();
 
-        // 2. For each column, select all cells and press delete
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
+        // 2. Get the spreadsheet, check that cells do exist
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
 
-        Vector<Column> cols = ss.getColumns();
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0,
+                "Expecting columns to exist.");
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            Assert.assertTrue(column.numOfCells() > 0,
+                    "Expecting cells to exist.");
+        }
 
-
-        //Hack algorithm to get around UISpec4J not detecting deleted cells
-        for (int i = 0; i < cols.size(); i++) {
-            ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-
-            cols = ss.getColumns();
-            Column col = cols.elementAt(i);
-            for (Cell cell : col.getCells()) {
-                cell.setSelected(true);
+        // 3. Delete cells one column at a time
+        int numColumns = spreadsheet.numOfColumns();
+        while (numColumns > 0) {
+            // Select all cells in a column
+            for (SpreadsheetCellFixture cell : spreadsheet.column(numColumns)
+                    .allCells()) {
+                cell.selectCell();
             }
-            menuBar.getMenu("Spreadsheet").getSubMenu("Delete Cell").click();
+            // Delete selected cells
+            mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                    "Delete Cells");
 
-            Spreadsheet ss2 = null;
-            ss2 = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-            String colName = col.getHeaderName();
-            Column col2 = null;
-            col2 = ss2.getSpreadsheetColumn(colName);
+            // Verify all cells in the column are deleted
+            jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+            spreadsheet =
+                    new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                            (SpreadsheetPanel) jPanel.component());
 
-            assertTrue(col2.getCells().isEmpty());
-
+            Assert.assertFalse(spreadsheet.column(numColumns).numOfCells() > 0,
+                    "Expecting no cells in the column.");
+            numColumns--;
         }
 
-        //Proper algorithm, but doesn't work because of UISpec4J problems
-//        for (Column col : cols) {
-//            for (Cell cell : col.getCells()) {
-//                cell.setSelected(true);
-//            }
-//            //Delete
-//            menuBar.getMenu("Spreadsheet").getSubMenu("Delete Cell").click();
-//            //Assert deleted
-//            assertTrue(col.getCells().isEmpty());
-//        }
-    }
+        // 4. Verify that all cells have been deleted
+        jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
 
-    /**
-     * Select all cells in spreadsheet and delete at once.
-     * @throws java.lang.Exception on any error
-     */
-    public void testDeleteAllCellsInSpreadsheet() throws Exception {
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
-        assertTrue(demoFile.exists());
-
-         // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-
-        // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
-
-
-        // 2. Select all cells and press delete
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-
-        Vector<Column> cols = ss.getColumns();
-
-
-        //Hack algorithm to get around UISpec4J not detecting deleted cells
-        for (int i = 0; i < cols.size(); i++) {
-            ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-
-            cols = ss.getColumns();
-            Column col = cols.elementAt(i);
-            for (Cell cell : col.getCells()) {
-                cell.setSelected(true);
-            }            
-        }
-        menuBar.getMenu("Spreadsheet").getSubMenu("Delete Cell").click();
-
-        Spreadsheet ss2 = null;
-        ss2 = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-        Vector<Column> cols2 = ss2.getColumns();
-        for (Column col : cols2) {
-            assertTrue(col.getCells().isEmpty());
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            Assert.assertFalse(column.numOfCells() > 0,
+                    "Expecting no cells to exist.");
         }
     }
 
     /**
-     * Delete all cells one at a time.
-     * @throws java.lang.Exception on any error
+     * Select one cell, delete, repeat.
      */
-    public void testDeleteSingleCells() throws Exception {
+    @Test
+    public void testDeleteSingleCells() {
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
-        assertTrue(demoFile.exists());
+        Assert.assertTrue(demoFile.exists());
 
-         // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
+        // 1. Run script to populate
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+        JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
+        scriptFileChooser.selectFile(demoFile).approve();
 
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        scriptConsole.button("closeButton").click();
 
-        // 2. For each column, select all cells and press delete
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
+        // 2. Get the spreadsheet, check that cells do exist
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
 
-        Vector<Column> cols = ss.getColumns();
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0,
+                "Expecting columns to exist.");
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            Assert.assertTrue(column.numOfCells() > 0,
+                    "Expecting cells to exist.");
+        }
 
-
-        //Hack algorithm to get around UISpec4J not detecting deleted cells
-        for (int i = 0; i < cols.size(); i++) {
-            ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-
-            cols = ss.getColumns();
-            Column col = cols.elementAt(i);
-            int numOfCells = col.getCells().size();
-            for (int j = 0; j < numOfCells; j++) {
-                Cell cell = col.getCells().elementAt(j);
-                cell.setSelected(true);
-                menuBar.getMenu("Spreadsheet").getSubMenu("Delete Cell")
-                        .click();
-                Spreadsheet ss2 = null;
-                ss2 = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-                Column col2 = ss2.getColumns().elementAt(i);
-                assertTrue(col2.getCells().size()
-                        == (col.getCells().size() - (j + 1)));
+        // 3. Delete every cell
+        int numColumns = spreadsheet.numOfColumns();
+        while (numColumns > 0) {
+            jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+            spreadsheet =
+                    new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                            (SpreadsheetPanel) jPanel.component());
+            int numCells = spreadsheet.column(numColumns).allCells().size();
+            while (numCells > 0) {
+                jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+                spreadsheet =
+                        new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                                (SpreadsheetPanel) jPanel.component());
+                SpreadsheetCellFixture cell =
+                        spreadsheet.column(numColumns).cell(1);
+                cell.selectCell();
+                mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                        "Delete Cell");
+                numCells--;
             }
+            numColumns--;
+        }
+
+        // 4. Verify that all cells have been deleted
+        jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            Assert.assertFalse(column.numOfCells() > 0,
+                    "Expecting no cells to exist.");
+        }
+    }
+
+    /**
+     * Select all cells, then delete.
+     */
+    @Test
+    public void testDeleteAllCellsInSpreadsheet() {
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data.rb");
+        Assert.assertTrue(demoFile.exists());
+
+        // 1. Run script to populate
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+        JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
+        scriptFileChooser.selectFile(demoFile).approve();
+
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        scriptConsole.button("closeButton").click();
+
+        // 2. Get the spreadsheet, check that cells do exist
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0,
+                "Expecting columns to exist.");
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            Assert.assertTrue(column.numOfCells() > 0,
+                    "Expecting cells to exist.");
+        }
+
+        // 3. Select every cell
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            for (SpreadsheetCellFixture cell : column.allCells()) {
+                cell.selectCell();
+            }
+        }
+
+        // 4. Delete all cells
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Delete Cells");
+
+        // 5. Verify that all cells have been deleted
+        jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            Assert.assertFalse(column.numOfCells() > 0,
+                    "Expecting no cells to exist.");
         }
     }
 }

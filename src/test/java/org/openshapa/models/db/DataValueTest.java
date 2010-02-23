@@ -1,8 +1,9 @@
 package org.openshapa.models.db;
 
 import org.openshapa.models.db.FormalArgument.FArgType;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  * Unit tests for the data value class.
@@ -56,7 +57,7 @@ public abstract class DataValueTest extends DBElementTest {
     /**
      * Test of setItsCellID method, of class DataValue.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void testSetItsCellID() throws Exception {
         DataValue instance = getInstance();
         final long ID = 5;
@@ -66,7 +67,7 @@ public abstract class DataValueTest extends DBElementTest {
     /**
      * Test of setItsFargID method, of class DataValue.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void testSetItsFargID() throws Exception {
         DataValue instance = getInstance();
         instance.setItsFargID(DBIndex.INVALID_ID);
@@ -75,7 +76,7 @@ public abstract class DataValueTest extends DBElementTest {
     /**
      * Test of setItsPredID method, of class DataValue.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void testSetItsPredID() throws Exception {
         DataValue instance = getInstance();
         instance.setItsPredID(DBIndex.INVALID_ID);
@@ -84,7 +85,7 @@ public abstract class DataValueTest extends DBElementTest {
     /**
      * Test of insertInIndex method, of class DataValue.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void testInsertInIndex() throws Exception {
         DataValue instance = getInstance();
         final long ID = 5;
@@ -94,7 +95,7 @@ public abstract class DataValueTest extends DBElementTest {
     /**
      * Test of removeFromIndex method, of class DataValue.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void testRemoveFromIndex() throws Exception {
         DataValue instance = getInstance();
         final long ID = 5;
@@ -104,7 +105,7 @@ public abstract class DataValueTest extends DBElementTest {
     /**
      * Test of replaceInIndex method, of class DataValue.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void testReplaceInIndex() throws Exception {
         DataValue original = getInstance();
         original.replaceInIndex(original, 5, false, false, 5, false, false, 5);

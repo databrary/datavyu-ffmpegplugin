@@ -500,27 +500,6 @@
   -->
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.3</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>junit-addons</groupId>
-      <artifactId>junit-addons</artifactId>
-      <version>1.4</version>
-      <scope>test</scope>
-    </dependency>
-        
-    <dependency>
-      <groupId>org.uispec4j</groupId>
-      <artifactId>uispec4j</artifactId>
-      <version>v2.1-E</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
         <groupId>javax.script</groupId>
         <artifactId>script-api</artifactId>
         <version>1.1</version>
@@ -537,14 +516,6 @@
         <artifactId>jruby-complete</artifactId>
         <version>1.4.0</version>
     </dependency>
-
-<!--
-    <dependency>
-      <groupId>org.apache</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.14</version>
-    </dependency>
-    -->
 
     <dependency>
       <groupId>org.swinglabs</groupId>
@@ -589,10 +560,30 @@
     </dependency>
 
     <dependency>
+        <groupId>org.easytesting</groupId>
+        <artifactId>fest-swing-testng</artifactId>
+        <version>1.2a4</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>5.10</version>
+        <classifier>jdk15</classifier>
+    </dependency>
+
+    <dependency>
+        <groupId>junit-addons</groupId>
+        <artifactId>junit-addons</artifactId>
+        <version>1.4</version>
+    </dependency>
+
+    <dependency>
         <groupId>com.usermetrix</groupId>
         <artifactId>UserMetrix-jclient</artifactId>
         <version>0.0.2</version>
     </dependency>
+
     <dependency>
     	<groupId>com.miglayout</groupId>
     	<artifactId>miglayout</artifactId>

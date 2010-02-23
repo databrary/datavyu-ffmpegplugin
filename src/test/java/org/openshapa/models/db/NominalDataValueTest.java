@@ -1,10 +1,11 @@
 package org.openshapa.models.db;
 
 import java.io.PrintStream;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 /**
  * Junit test cases for the class NominalDataValue.
@@ -39,9 +40,9 @@ public class NominalDataValueTest extends DataValueTest {
      * Sets up the test fixture (i.e. the data available to all tests), this is
      * performed before each test case.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Before
+    @BeforeMethod
     public void setUp() throws SystemErrorException {
         db = new ODBCDatabase();
         nom_mve = new MatrixVocabElement(db, "nom_mve");
@@ -75,7 +76,7 @@ public class NominalDataValueTest extends DataValueTest {
      * Tears down the test fixture (i.e. the data available to all tests), this
      * is performed after each test case.
      */
-    @After
+    @AfterMethod
     public void tearDown() {
     }
 
@@ -98,7 +99,7 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test 1 arg constructor, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test1ArgConstructor() throws SystemErrorException {
@@ -114,9 +115,9 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test 1 argument constructor failure, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test1ArgConstructorFailure() throws SystemErrorException {
         NominalDataValue n_value = new NominalDataValue((Database) null);
     }
@@ -124,7 +125,7 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test 2 argument constructor, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {
@@ -152,9 +153,9 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test0 of 2 arg constructor failre, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure0() throws SystemErrorException {
         NominalDataValue n_value = new NominalDataValue((Database)null,
                                                         nfa.getID());
@@ -163,9 +164,9 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test1 of 2 arg constructor failre, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure1() throws SystemErrorException {
         NominalDataValue n_value = new NominalDataValue(db, DBIndex.INVALID_ID);
     }
@@ -173,9 +174,9 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test2 of 2 arg constructor failre, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure2() throws SystemErrorException {
         NominalDataValue n_value = new NominalDataValue(db, nom_mve.getID());
     }
@@ -183,7 +184,7 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test of 3 argument constructor, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void test3ArgConstructor() throws SystemErrorException {
@@ -217,9 +218,9 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test0 of 3 argument constructor failure, of class NominalDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure0() throws SystemErrorException {
         NominalDataValue n_value = new NominalDataValue((Database) null,
                                                         nfa.getID(), "alpha");
@@ -228,9 +229,9 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test1 of 3 argument constructor failure, of class NominalDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure1() throws SystemErrorException {
         NominalDataValue n_value = new NominalDataValue(db, DBIndex.INVALID_ID,
                                                         "alpha");
@@ -239,9 +240,9 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test2 of 3 argument constructor failure, of class NominalDataValue
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure2() throws SystemErrorException {
         NominalDataValue n_value = new NominalDataValue(db, nom_mve.getID(),
                                                         "alpha");
@@ -250,7 +251,7 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testCopyConstructor() throws SystemErrorException {
@@ -271,9 +272,9 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor failure, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
-    @Test (expected = SystemErrorException.class)
+    @Test (expectedExceptions = SystemErrorException.class)
     public void testCopyConstructorFailure() throws SystemErrorException {
         NominalDataValue n_value = new NominalDataValue((NominalDataValue)null);
     }
@@ -281,7 +282,7 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test of getItsValue method, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testGetItsValue() throws SystemErrorException {
@@ -294,7 +295,7 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test of setItsValue method, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testSetItsValue() throws SystemErrorException {
@@ -308,7 +309,7 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test of toString method, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testToString() throws SystemErrorException {
@@ -324,7 +325,7 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test of toDBString method, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     /*
     @Test
@@ -357,7 +358,7 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test of coerceToRange method, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testCoerceToRange() throws Exception {
@@ -377,7 +378,7 @@ public class NominalDataValueTest extends DataValueTest {
 //    /**
 //     * Test of isQueryVar method, of class NominalDataValue.
 //     *
-//     * @throws org.openshapa.db.SystemErrorException on failure.
+//     * @throws org.openshapa.models.db.SystemErrorException on failure.
 //     */
 //    @Test
 //    public void testIsQueryVar() throws SystemErrorException {
@@ -395,7 +396,7 @@ public class NominalDataValueTest extends DataValueTest {
     /**
      * Test of Construct method, of class NominalDataValue.
      *
-     * @throws org.openshapa.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.SystemErrorException on failure.
      */
     @Test
     public void testConstruct() throws SystemErrorException {

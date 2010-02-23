@@ -1,11 +1,9 @@
-package org.uispec4j;
+package org.openshapa.util;
 
-import java.awt.Component;
-import org.uispec4j.utils.KeyUtils;
+import org.fest.swing.fixture.ComponentFixture;
 
 /**
  * TextItem of type key.
- *
  */
 public class StringItem extends TextItem {
 
@@ -16,14 +14,16 @@ public class StringItem extends TextItem {
 
     /**
      * TextVector constructor.
-     * @param s String
+     * 
+     * @param s
+     *            String
      */
     public StringItem(final String s) {
         str = s;
     }
 
     @Override
-    public void enterItem(final Component c) {
-        KeyUtils.enterString(c, str);
+    public void enterItem(final ComponentFixture cf) {
+        cf.robot.enterText(str);
     }
 }

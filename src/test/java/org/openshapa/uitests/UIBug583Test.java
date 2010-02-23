@@ -1,86 +1,58 @@
 package org.openshapa.uitests;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
-import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.views.discrete.SpreadsheetPanel;
-import java.util.Vector;
-import junitx.util.PrivateAccessor;
-import org.openshapa.Configuration;
-import org.openshapa.util.ConfigProperties;
-import org.uispec4j.Cell;
-import org.uispec4j.Key;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.TextBox;
-import org.uispec4j.Trigger;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
-import org.uispec4j.interception.FileChooserHandler;
-import org.uispec4j.interception.WindowHandler;
+
+import org.fest.swing.core.KeyPressInfo;
+import org.fest.swing.core.matcher.JTextComponentMatcher;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
- * Bug 583.
- * Highlighting float value and pressing zero changes to "."
+ * Bug 583. Highlighting float value and pressing zero changes to "."
  */
-public final class UIBug583Test extends OpenSHAPAUISpecTestCase {
-
-    static {
-        try {
-            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
-            p.setCanSendLogs(false);
-        } catch (Exception e) {
-            System.err.println("Unable to overide sending usage logs");
-        }
-        UISpec4J.init();
-    }
+public final class UIBug583Test extends OpenSHAPATestClass {
 
     /**
      * Bug 583 test with a range of values, including 0.
-     *
-     * @throws java.lang.Exception on any error
      */
-    public void testBug583() throws Exception {
-        String varName = "float";
-        String varType = "FLOAT";
+    @Test
+    public void testBug583() {
+        /**
+         * Different cell variable types.
+         */
+        System.err.println("testBug583");
+
+        String[] floatCellValues =
+                {/* BugzID:747-"0.000000", */"0.123400", "0.246800",
+                        "0.370200", "0.493600", "0.617000", "0.740400",
+                        "0.863800", "0.987200", "1.110600" };
 
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
-        assertTrue(demoFile.exists());
+        Assert.assertTrue(demoFile.exists());
 
-         // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
+        // 1. Run script to populate
+        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+        jfcf.selectFile(demoFile).approve();
 
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        scriptConsole.button("closeButton").click();
 
-        // 2. Get float column
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-
-        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-        assertTrue(cells.size() > 0);
-        // 3. Select all and press 0 for each cell.
-        for (Cell c : cells) {
-            c.selectAllAndTypeKey(Cell.VALUE, Key.d0);
-            TextBox t = c.getValue();
-            //BugzID:747 - assertTrue(t.getText().equalsIgnoreCase("0.0"));
+        // 2. Get each float cell
+        for (String floatVal : floatCellValues) {
+            JTextComponentFixture cellValue =
+                    mainFrameFixture.textBox(JTextComponentMatcher
+                            .withText(floatVal));
+            cellValue.selectAll();
+            cellValue.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_0));
+            Assert.assertEquals(cellValue.text(), "0.0");
         }
     }
 }
-

@@ -1,150 +1,259 @@
 package org.openshapa.uitests;
 
-import java.io.File;
-import java.util.Vector;
-import junitx.util.PrivateAccessor;
-import org.openshapa.Configuration;
-import org.openshapa.util.ConfigProperties;
-import org.uispec4j.interception.WindowInterceptor;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.fixture.SpreadsheetColumnFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.Cell;
-import org.uispec4j.Column;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.Trigger;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
-import org.uispec4j.interception.FileChooserHandler;
-import org.uispec4j.interception.WindowHandler;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Tests creating cells to left and right of a cell.
  */
-public final class UILeftRightCreateCellTest extends OpenSHAPAUISpecTestCase {
+public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
+
+    @Test
+    public void testCreateCellLeftRight() {
+        // Left column
+        createVariable("L", "TEXT");
+        validateVariable("L", "TEXT");
+        // Center column
+        createVariable("C", "TEXT");
+        validateVariable("C", "TEXT");
+        // Right column
+        createVariable("R", "TEXT");
+        validateVariable("R", "TEXT");
+
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        /*
+         * Create a cell in the center column
+         */
+        // 1. Click on the center column
+        spreadsheet.column("C").click();
+
+        // 2. Make a new cell - using menu because numpad enter doesn't work
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
+        // 3. Check if the new cell has been created.
+        Assert.assertTrue(cellExists("C", 1),
+                "Expecting centre cell to be created.");
+
+        final String centerOnset = "11:23:58:132";
+        final String centerOffset = "12:34:56:789";
+        changeOnset("C", 1, centerOnset);
+        changeOffset("C", 1, centerOffset);
+
+        /*
+         * Create a cell to the left of the new center cell
+         */
+        // 1. Click on the center cell
+        clickCell("C", 1);
+
+        // 2. Make a new cell to the left of the center cell
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                "New Cell to Left");
+
+        // 3. Check if the new cell has been created.
+        Assert.assertTrue(cellExists("L", 1),
+                "Expecting left cell to be created.");
+
+        // 4. Check that onset and offset values have been inherited
+        Assert.assertTrue(cellHasOnset("L", 1, centerOnset),
+                "Expecting left cell to inherit centre cell onset value.");
+        Assert.assertTrue(cellHasOffset("L", 1, centerOffset),
+                "Expecting left cell to inherit centre cell offset value.");
+
+        /*
+         * Create a cell to the right of the center cell
+         */
+        // 1. Click on the center cell
+        clickCell("C", 1);
+
+        // 2. Make a new cell to the left of the center cell
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                "New Cell to Right");
+
+        // 3. Check if the new cell has been created.
+        Assert.assertTrue(cellExists("R", 1),
+                "Expecting right cell to be created.");
+
+        // 4. Check that onset and offset values have been inherited
+        Assert.assertTrue(cellHasOnset("R", 1, centerOnset),
+                "Expecting right cell to inherit centre cell onset value.");
+        Assert.assertTrue(cellHasOffset("R", 1, centerOffset),
+                "Expecting right cell to inherit centre cell offset value.");
+    }
 
     /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
+     * @param varName
+     *            name of column that contains the cell, assumes that the column
+     *            already exists.
+     * @param id
+     *            cell ordinal value, assumes that the cell already exists
+     * @param onset
+     *            Should be in the format HH:mm:ss:SSS
+     * @return boolean - true if has onset
      */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
+    private boolean cellHasOnset(final String varName, final int id,
+            final String onset) {
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
 
-     /**
-     * Called after each test.
-     * @throws Exception on any error
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+        return spreadsheet.column(varName).cell(id).onsetTimestamp().text()
+                .equals(onset);
     }
-
-    static {
-        try {
-            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
-            p.setCanSendLogs(false);
-        } catch (Exception e) {
-            System.err.println("Unable to overide sending usage logs");
-        }
-        UISpec4J.init();
-    }
-
 
     /**
-     * Test creating a cell to the left and right.
-     * @throws java.lang.Exception on any error
+     * @param varName
+     *            name of column that contains the cell, assumes that the column
+     *            already exists.
+     * @param id
+     *            cell ordinal value, assumes that the cell already exists
+     * @param offset
+     *            Should be in the format HH:mm:ss:SSS
+     * @return boolean - true if has offset
      */
-    public void testCreateCellLeftRight() throws Exception {
-        // Retrieve the components and set variable
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
+    private boolean cellHasOffset(final String varName, final int id,
+            final String offset) {
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
 
-        // 1. Open and run script to populate database
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
-        assertTrue(demoFile.exists());
-
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile.getAbsolutePath()))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
-
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-                window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-        Vector<Column> cols = ss.getColumns();
-
-        //2. Select 4th left most cell
-        Cell c0 = cols.elementAt(0).getCells().elementAt(3);
-        String onset = c0.getOnsetTime().toString();
-        String offset = c0.getOffsetTime().toString();
-        c0.setSelected(true);
-
-        //Click create right
-        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell to Right").click();
-        c0.setSelected(false);
-
-        //Check cell exists
-        //At the moment this checks the last cell. In the future, may need to
-        //change to check actual position
-        Cell newCell = cols.elementAt(1).getCells().lastElement();
-        assertTrue(newCell.getOnsetTime().equals(onset));
-        assertTrue(newCell.getOffsetTime().equals(offset));
-        newCell.setSelected(false);
-
-        //Do left and right for middle columns
-        for (int i = 1; i < cols.size() - 1; i++) {
-            Cell thisCell = cols.elementAt(i).getCells().elementAt(3);
-            thisCell.setSelected(true);
-            onset = thisCell.getOnsetTime().toString();
-            offset = thisCell.getOffsetTime().toString();
-
-            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell to Left")
-                    .click();
-            Cell leftCell = cols.elementAt(i - 1).getCells().lastElement();
-            assertTrue(leftCell.getOnsetTime().equals(onset));
-            assertTrue(leftCell.getOffsetTime().equals(offset));
-            leftCell.setSelected(false);
-            thisCell.setSelected(true);
-
-            menuBar.getMenu("Spreadsheet").getSubMenu("New Cell to Right")
-                    .click();
-            Cell rightCell = cols.elementAt(i + 1).getCells().lastElement();
-            assertTrue(rightCell.getOnsetTime().equals(onset));
-            assertTrue(rightCell.getOffsetTime().equals(offset));
-
-            rightCell.setSelected(false);
-            thisCell.setSelected(false);
-        }
-
-        //Do right most cell
-        //2. Select 4th left most cell
-        Cell cLast = cols.lastElement().getCells().elementAt(3);
-        onset = cLast.getOnsetTime().toString();
-        offset = cLast.getOffsetTime().toString();
-        cLast.setSelected(true);
-
-        //Click create right
-        menuBar.getMenu("Spreadsheet").getSubMenu("New Cell to Left").click();
-        cLast.setSelected(false);
-
-        //Check cell exists
-        //At the moment this checks the last cell. In the future, may need to
-        //change to check actual position
-        newCell = cols.elementAt(cols.size() - 2).getCells().lastElement();
-        assertTrue(newCell.getOnsetTime().equals(onset));
-        assertTrue(newCell.getOffsetTime().equals(offset));
+        return spreadsheet.column(varName).cell(id).offsetTimestamp().text()
+                .equals(offset);
     }
+
+    /**
+     * @param varName
+     *            name of column that contains the cell, assumes that the column
+     *            already exists.
+     * @param id
+     *            cell ordinal value, assumes that the cell already exists
+     * @param onset
+     *            Should be in the format HH:mm:ss:SSS
+     */
+    private void changeOnset(final String varName, final int id,
+            final String onset) {
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        spreadsheet.column(varName).cell(id).onsetTimestamp().enterText(onset);
+    }
+
+    /**
+     * @param varName
+     *            name of column that contains the cell, assumes that the column
+     *            already exists.
+     * @param id
+     *            cell ordinal value, assumes that the cell already exists
+     * @param offset
+     *            Should be in the format HH:mm:ss:SSS
+     */
+    private void changeOffset(final String varName, final int id,
+            final String offset) {
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        spreadsheet.column(varName).cell(id).offsetTimestamp()
+                .enterText(offset);
+    }
+
+    /**
+     * @param varName
+     *            name of column that contains the cell, assumes that the column
+     *            already exists.
+     * @param id
+     *            cell ordinal value, assumes that the cell already exists
+     */
+    private void clickCell(final String varName, final int id) {
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        spreadsheet.column(varName).cell(id).selectCell();
+    }
+
+    /**
+     * @param varName
+     *            column to test against, assumes that the column already exists
+     * @param id
+     *            cell ordinal value
+     * @return true if the cell with ordinal 'id' exists, false otherwise
+     */
+    private boolean cellExists(final String varName, final int id) {
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        return id <= spreadsheet.column(varName).numOfCells();
+    }
+
+    /**
+     * Creates a new variable and checks that it has been created.
+     * 
+     * @param varName
+     *            variable name
+     * @param varType
+     *            variable type
+     */
+    private void validateVariable(final String varName, final String varType) {
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        // 1. Check that the column exists.
+        SpreadsheetColumnFixture col = ssPanel.column(varName);
+        Assert.assertNotNull(col, "Expecting column to exist.");
+        Assert.assertEquals(col.getColumnType(), varType);
+
+        // 2. Check that column has no cells
+        Assert.assertTrue(col.numOfCells() == 0, "Expecting no cells.");
+    }
+
+    /**
+     * Creates a variable.
+     * 
+     * @param varName
+     *            variable name
+     * @param varType
+     *            variable type
+     */
+    private void createVariable(final String varName, final String varType) {
+        // 1. Create new variable
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");
+
+        // 2. Enter variable name
+        DialogFixture newVariableDialog = mainFrameFixture.dialog();
+        newVariableDialog.requireVisible();
+        JTextComponentFixture variableValueTextBox =
+                newVariableDialog.textBox();
+        variableValueTextBox.requireEmpty();
+        variableValueTextBox.requireEditable();
+        variableValueTextBox.enterText(varName);
+
+        // 3. Choose variable type
+        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
+                .click();
+        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
+                .requireSelected();
+        newVariableDialog.button("okButton").click();
+    }
+
 }

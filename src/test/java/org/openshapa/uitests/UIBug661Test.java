@@ -1,82 +1,87 @@
 package org.openshapa.uitests;
 
 import java.io.File;
-import junitx.util.PrivateAccessor;
-import org.openshapa.Configuration;
-import org.openshapa.util.ConfigProperties;
-import org.uispec4j.interception.WindowInterceptor;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
-import org.uispec4j.interception.FileChooserHandler;
+
+import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JOptionPaneFixture;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
- * Bug 661 Test
- * Make sure that the open dialog remembers previous open location.
+ * Bug 661 Test Make sure that the open dialog remembers previous open location.
+ * In the FEST port, this was changed to a generic file dialog location test
  */
-public final class UIBug661Test extends OpenSHAPAUISpecTestCase {
-
-    static {
-        try {
-            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(Configuration.getInstance(), "properties");
-            p.setCanSendLogs(false);
-        } catch (Exception e) {
-            System.err.println("Unable to overide sending usage logs");
-        }
-        UISpec4J.init();
-    }
-
+public final class UIBug661Test extends OpenSHAPATestClass {
     /**
      * Open a file and maybe check what open dialog opens to.
-     * @param openFile file to open
-     * @param currDirectory currDirectory or null if not testing
-     * @throws Exception on any error
+     * 
+     * @param openFile
+     *            file to open
+     * @param currDirectory
+     *            currDirectory or null if not testing
      */
-    private void openFileAndTest(final String openFile,
-            final File currDirectory) throws Exception {
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-
+    private void fileLocationTest(final String openFile,
+            final String currDirectory) {
         String root = System.getProperty("testPath") + "ui/";
         File openCSV = new File(root + openFile);
-        assertTrue(openCSV.exists());
+        Assert.assertTrue(openCSV.exists());
 
-        // 2. Open file in new location
+        // Open file if we're not checking anything, else check we're in the
+        // right directory, by saving and checking file
         if (currDirectory == null) {
-            WindowInterceptor
-                    .init(menuBar.getMenu("File").getSubMenu("Open...")
-                    .triggerClick())
-                    .process(FileChooserHandler.init()
-                        .assertIsOpenDialog()
-                        .select(openCSV))
-                    .run();
+            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
+            try {
+                JOptionPaneFixture warning = mainFrameFixture.optionPane();
+                warning.requireTitle("Unsaved changes");
+                warning.buttonWithText("OK").click();
+            } catch (Exception e) {
+                // Do nothing
+            }
+            JFileChooserFixture openDialog = mainFrameFixture.fileChooser();
+
+            openDialog.selectFile(openCSV).approve();
         } else {
-            WindowInterceptor
-                    .init(menuBar.getMenu("File").getSubMenu("Open...")
-                    .triggerClick())
-                    .process(FileChooserHandler.init()
-                        .assertIsOpenDialog()
-                        .assertCurrentDirEquals(currDirectory)
-                        .select(openCSV))
-                    .run();
+            mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+            JFileChooserFixture saveDialog = mainFrameFixture.fileChooser();
+            saveDialog.fileNameTextBox().enterText(currDirectory);
+            saveDialog.approve();
+            // This is the location check
+            mainFrameFixture.optionPane().requireTitle("Confirm overwrite")
+                    .buttonWithText("Overwrite").click();
+
+            // Open location2
+            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
+            try {
+                JOptionPaneFixture warning = mainFrameFixture.optionPane();
+                warning.requireTitle("Unsaved changes");
+                warning.buttonWithText("OK").click();
+            } catch (Exception e) {
+                // Do nothing
+            }
+            JFileChooserFixture openDialog = mainFrameFixture.fileChooser();
+            openDialog.selectFile(openCSV).approve();
         }
     }
 
     /**
      * Tests open dialog location.
-     * @throws Exception on any error
      */
-    public void testOpenDialogLocation() throws Exception {
+    @Test
+    public void testDialogLocation() {
+        System.err.println("testDialogLocation");
+        // Delete confounding files from previous test
         String root = System.getProperty("testPath");
-        File location1 = new File(root + "ui/location1");
-        File location2 = new File(root + "ui/location2");
+        File location1 = new File(root + "ui/location1/location2.shapa");
+        File location2 = new File(root + "ui/location2/location1.shapa");
+        location1.delete();
+        location2.delete();
+        Assert.assertFalse(location1.exists());
+        Assert.assertFalse(location2.exists());
 
-        openFileAndTest("location1/test.shapa", null);
-        //At this point it should remember location1
-        openFileAndTest("location2/test.shapa", location1);
-        //At this point it should remember location2
-        openFileAndTest("location1/test.shapa", location2);
+        fileLocationTest("location1/test.shapa", null);
+        // At this point it should remember location1
+        fileLocationTest("location2/location2.shapa", "location1");
+        // At this point it should remember location2
+        fileLocationTest("location1/location1.shapa", "location2");
     }
 }
