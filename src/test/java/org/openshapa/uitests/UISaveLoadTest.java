@@ -8,7 +8,11 @@ import java.io.IOException;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
+import org.fest.swing.util.Platform;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.controllers.OpenProjectC;
+import org.openshapa.controllers.RunScriptC;
+import org.openshapa.controllers.SaveC;
 import org.openshapa.models.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.UIUtils;
@@ -74,11 +78,14 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting demo_data_to_csv.rb to exist");
 
-        // 1. Run script to populate database
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
-        scriptFileChooser.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -87,16 +94,25 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // TODO Need to check the window title - asterisk present
 
         // 2. Save the file
-        mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
-        if (extension.equals("shapa")) {
-            mainFrameFixture.fileChooser().component().setFileFilter(
-                    new SHAPAFilter());
-        } else if (extension.equals("csv")) {
-            mainFrameFixture.fileChooser().component().setFileFilter(
-                    new CSVFilter());
+        if (Platform.isOSX()) {
+            if (extension.equals("shapa")) {
+                SaveC.getInstance().saveAsProject(tempFolder, fileName);
+            } else if (extension.equals("csv")) {
+                SaveC.getInstance().saveAsDatabase(tempFolder, fileName,
+                        new CSVFilter());
+            }
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+            if (extension.equals("shapa")) {
+                mainFrameFixture.fileChooser().component().setFileFilter(
+                        new SHAPAFilter());
+            } else if (extension.equals("csv")) {
+                mainFrameFixture.fileChooser().component().setFileFilter(
+                        new CSVFilter());
+            }
+            File toSave = new File(tempFolder + "/" + fileName);
+            mainFrameFixture.fileChooser().selectFile(toSave).approve();
         }
-        File toSave = new File(tempFolder + "/" + fileName);
-        mainFrameFixture.fileChooser().selectFile(toSave).approve();
 
         String justSavedPath = tempFolder + "/" + fileName;
         if (!justSavedPath.endsWith(extension)) {
@@ -132,18 +148,26 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             throws IOException {
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
-        // 1. Click save on empty project. Expecting it to act like Save As
-        mainFrameFixture.clickMenuItemWithPath("File", "Save");
-
-        if (extension.equals("shapa")) {
-            mainFrameFixture.fileChooser().component().setFileFilter(
-                    new SHAPAFilter());
-        } else if (extension.equals("csv")) {
-            mainFrameFixture.fileChooser().component().setFileFilter(
-                    new CSVFilter());
+        // 1. Click save on empty project. Expecting it to act like Save As        
+        if (Platform.isOSX()) {
+            if (extension.equals("shapa")) {
+                SaveC.getInstance().saveAsProject(tempFolder, fileName);
+            } else if (extension.equals("csv")) {
+                SaveC.getInstance().saveAsDatabase(tempFolder, fileName,
+                        new CSVFilter());
+            }
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Save");
+            if (extension.equals("shapa")) {
+                mainFrameFixture.fileChooser().component().setFileFilter(
+                        new SHAPAFilter());
+            } else if (extension.equals("csv")) {
+                mainFrameFixture.fileChooser().component().setFileFilter(
+                        new CSVFilter());
+            }
+            File toSave = new File(tempFolder + "/" + fileName);
+            mainFrameFixture.fileChooser().selectFile(toSave).approve();
         }
-        File toSave = new File(tempFolder + "/" + fileName);
-        mainFrameFixture.fileChooser().selectFile(toSave).approve();
 
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
@@ -159,10 +183,14 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(justSaved.exists(), "Expecting saved file to exist.");
 
         // 2. Run script to populate database
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture scriptFileChooser = mainFrameFixture.fileChooser();
-        scriptFileChooser.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -223,27 +251,35 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         fileWriter.close();
 
         // 3. Now load the newly created project in openshapa
-        mainFrameFixture.clickMenuItemWithPath("File", "Open...");
+        if (Platform.isOSX()) {
+            (new OpenProjectC()).open(newSHAPA);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
 
-        try {
-            JOptionPaneFixture warning = mainFrameFixture.optionPane();
-            warning.requireTitle("Unsaved changes");
-            warning.buttonWithText("OK").click();
-        } catch (Exception e) {
-            // Do nothing
+            try {
+                JOptionPaneFixture warning = mainFrameFixture.optionPane();
+                warning.requireTitle("Unsaved changes");
+                warning.buttonWithText("OK").click();
+            } catch (Exception e) {
+                // Do nothing
+            }
+
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                    new SHAPAFilter());
+            mainFrameFixture.fileChooser().selectFile(newSHAPA).approve();
         }
-
-        mainFrameFixture.fileChooser().component().setFileFilter(
-                new SHAPAFilter());
-        mainFrameFixture.fileChooser().selectFile(newSHAPA).approve();
 
         // 4. Save the contents as a separate project file
         File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
 
-        mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
-        mainFrameFixture.fileChooser().component().setFileFilter(
-                new SHAPAFilter());
-        mainFrameFixture.fileChooser().selectFile(savedSHAPA).approve();
+        if (Platform.isOSX()) {
+            SaveC.getInstance().saveAsProject(tempFolder, "savedSHAPA.shapa");
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                    new SHAPAFilter());
+            mainFrameFixture.fileChooser().selectFile(savedSHAPA).approve();
+        }
 
         // 5. Check that CSV file is correct
         File testOutputCSV = new File(root + expectedOutputFile);

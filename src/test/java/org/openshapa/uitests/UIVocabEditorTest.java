@@ -17,6 +17,8 @@ import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.fixture.VocabEditorDialogFixture;
 import org.fest.swing.fixture.VocabElementFixture;
+import org.fest.swing.util.Platform;
+import org.openshapa.controllers.RunScriptC;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.VocabEditorV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
@@ -62,10 +64,14 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -322,10 +328,14 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -390,10 +400,14 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -527,10 +541,14 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -827,10 +845,14 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -893,10 +915,14 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -933,10 +959,14 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();

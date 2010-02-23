@@ -5,8 +5,12 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 
 import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.util.Platform;
+import org.openshapa.controllers.RunScriptC;
+import org.openshapa.controllers.SaveC;
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.views.discrete.SpreadsheetPanel;
@@ -70,8 +74,14 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
         Assert.assertTrue(modifyFile.exists(),
                 "Expecting find_and_replace.rb to exist.");
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-        mainFrameFixture.fileChooser().selectFile(demoFile).approve();
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -89,8 +99,14 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
          * 2. Perform a find and replace; replace all instances of "moo" with
          * "frog"
          */
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-        mainFrameFixture.fileChooser().selectFile(modifyFile).approve();
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         scriptConsole = mainFrameFixture.dialog();
@@ -98,12 +114,17 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
 
         // 3. Save the database
         final String tempFolder = System.getProperty("java.io.tmpdir");
-
-        mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
-        mainFrameFixture.fileChooser().component().setFileFilter(
-                new CSVFilter());
         File savedCSV = new File(tempFolder + "/" + "savedCSV.csv");
-        mainFrameFixture.fileChooser().selectFile(savedCSV).approve();
+
+        if (Platform.isOSX()) {
+            SaveC.getInstance().saveAsDatabase(tempFolder, "savedCSV.csv",
+                    new CSVFilter());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                    new CSVFilter());
+            mainFrameFixture.fileChooser().selectFile(savedCSV).approve();
+        }
 
         // 4. - compare it to the reference .csv
         File testCSV = new File(root + "/ui/modify-test-out.csv");

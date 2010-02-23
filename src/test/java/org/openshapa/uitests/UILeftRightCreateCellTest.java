@@ -54,6 +54,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
          * Create a cell to the left of the new center cell
          */
         // 1. Click on the center cell
+        spreadsheet.column("C").click();
         clickCell("C", 1);
 
         // 2. Make a new cell to the left of the center cell
@@ -74,6 +75,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
          * Create a cell to the right of the center cell
          */
         // 1. Click on the center cell
+        spreadsheet.column("C").click();
         clickCell("C", 1);
 
         // 2. Make a new cell to the left of the center cell

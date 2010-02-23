@@ -6,6 +6,8 @@ import java.util.Vector;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.util.Platform;
+import org.openshapa.controllers.RunScriptC;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import org.openshapa.views.discrete.SpreadsheetPanel;
@@ -29,10 +31,14 @@ public final class UIBug65Test extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();

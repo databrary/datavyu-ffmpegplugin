@@ -80,7 +80,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         mainFrameFixture.clickMenuItemWithPath("Controller",
                 "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(300, 300));
-        DataControllerFixture fix =
+        DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
                         (DataControllerV) mainFrameFixture.dialog().component());
 
@@ -93,12 +93,12 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         for (int i = 0; i < 5; i++) {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD3);
         }
-        Assert.assertEquals("00:00:05:000", fix.getCurrentTime());
+        Assert.assertEquals("00:00:05:000", dcf.getCurrentTime());
 
         for (int i = 0; i < 2; i++) {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD1);
         }
-        Assert.assertEquals(fix.getCurrentTime(), "00:00:03:000");
+        Assert.assertEquals(dcf.getCurrentTime(), "00:00:03:000");
 
         // 5. Test Create New Cell with Onset.
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
@@ -124,14 +124,14 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         for (int i = 0; i < 5; i++) {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD3);
         }
-        Assert.assertEquals(fix.getCurrentTime(), "00:00:08:000");
+        Assert.assertEquals(dcf.getCurrentTime(), "00:00:08:000");
 
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD3);
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_DIVIDE);
         Assert.assertEquals(cell2.onsetTimestamp().text(), "00:00:09:000");
 
         // 8. Change cell offset.
-        fix.pressSetOffsetButton();
+        dcf.pressSetOffsetButton();
         Assert.assertEquals(cell2.offsetTimestamp().text(), "00:00:09:000");
 
         // 9. Jog back and forward, then create a new cell with onset
@@ -139,7 +139,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD1);
         }
 
-        Assert.assertEquals(fix.getCurrentTime(), "00:00:07:000");
+        Assert.assertEquals(dcf.getCurrentTime(), "00:00:07:000");
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
 
         SpreadsheetCellFixture cell3 = column.cell(3);
@@ -151,21 +151,22 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 10. Test data controller view onset, offset and find.
         for (int cellId = 1; cellId <= column.numOfCells(); cellId++) {
             cell1 = column.cell(cellId);
-            ssPanel.deselectAll();
+            //ssPanel.deselectAll();
+            column.click();
             cell1.selectCell();
-            Assert.assertEquals(fix.getFindOnset(), cell1.onsetTimestamp()
+            Assert.assertEquals(dcf.getFindOnset(), cell1.onsetTimestamp()
                     .text());
-            Assert.assertEquals(fix.getFindOffset(), cell1.offsetTimestamp()
+            Assert.assertEquals(dcf.getFindOffset(), cell1.offsetTimestamp()
                     .text());
-            fix.pressFindButton();
-            Assert.assertEquals(fix.getCurrentTime(), cell1.onsetTimestamp()
+            dcf.pressFindButton();
+            Assert.assertEquals(dcf.getCurrentTime(), cell1.onsetTimestamp()
                     .text());
-            fix.pressShiftFindButton();
-            Assert.assertEquals(fix.getCurrentTime(), cell1.offsetTimestamp()
+            dcf.pressShiftFindButton();
+            Assert.assertEquals(dcf.getCurrentTime(), cell1.offsetTimestamp()
                     .text());
         }
 
-        fix.close();
+        dcf.close();
     }
 
     /**

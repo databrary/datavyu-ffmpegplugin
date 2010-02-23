@@ -21,6 +21,7 @@ import org.fest.swing.util.Platform;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.controllers.RunScriptC;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.NewDatabaseV;
 import org.openshapa.views.NewProjectV;
@@ -50,10 +51,14 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -134,10 +139,14 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();

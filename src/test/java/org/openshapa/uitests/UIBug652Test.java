@@ -7,6 +7,8 @@ import javax.swing.text.JTextComponent;
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.util.Platform;
+import org.openshapa.controllers.RunScriptC;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -79,10 +81,14 @@ public final class UIBug652Test extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();

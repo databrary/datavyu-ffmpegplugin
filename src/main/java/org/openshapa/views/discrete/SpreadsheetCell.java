@@ -207,11 +207,13 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         onset.setToolTipText(rMap.getString("onset.tooltip"));
         onset.addFocusListener(this);
         onset.addMouseListener(this);
+        onset.setName("onsetTextField");
 
         offset = new TimeStampTextField(dc, TimeStampSource.Offset);
         offset.setToolTipText(rMap.getString("offset.tooltip"));
         offset.addFocusListener(this);
         offset.addMouseListener(this);
+        offset.setName("offsetTextField");
 
         dataPanel = new MatrixRootView(dc, null);
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
@@ -219,6 +221,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         dataPanel.setOpaque(false);
         dataPanel.addFocusListener(this);
         dataPanel.addMouseListener(this);
+        dataPanel.setName("cellValue");
 
         // Set the appearance of the spreadsheet cell.
         cellPanel.setBackground(Configuration.getInstance()

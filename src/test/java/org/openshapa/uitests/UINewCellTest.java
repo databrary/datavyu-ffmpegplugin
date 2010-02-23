@@ -7,11 +7,13 @@ import java.util.List;
 
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
+import org.openshapa.controllers.RunScriptC;
 import org.openshapa.util.KeysItem;
 import org.openshapa.util.StringItem;
 import org.openshapa.util.TextItem;
@@ -361,8 +363,14 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-        mainFrameFixture.fileChooser().selectFile(demoFile).approve();
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -393,8 +401,14 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-        mainFrameFixture.fileChooser().selectFile(demoFile).approve();
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -425,8 +439,14 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-        mainFrameFixture.fileChooser().selectFile(demoFile).approve();
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -462,8 +482,14 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-        mainFrameFixture.fileChooser().selectFile(demoFile).approve();
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -538,8 +564,14 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-        mainFrameFixture.fileChooser().selectFile(demoFile).approve();
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -614,8 +646,14 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
                 "Expecting matrix_tests.rb to exist.");
 
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-        mainFrameFixture.fileChooser().selectFile(demoFile).approve();
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -944,6 +982,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         if (numCells == 0) {
             spreadsheet.column(varName).click();
         } else {
+            spreadsheet.column(varName).click();
             spreadsheet.column(varName).cell(numCells).selectCell();
         }
 
@@ -1170,19 +1209,22 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
                         (SpreadsheetPanel) jPanel.component());
 
-        spreadsheet.column(varName).click();
-
         int numOfCells = spreadsheet.column(varName).numOfCells();
-        for (int ordinal = 1; ordinal <= numOfCells; ordinal++) {
-            spreadsheet.column(varName).cell(ordinal).selectCell();
-        }
+        if (numOfCells > 0) {
+            spreadsheet.column(varName).click();
 
-        if (numOfCells > 1) {
-            mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
-                    "Delete Cells");
-        } else if (numOfCells == 1) {
-            mainFrameFixture
-                    .clickMenuItemWithPath("Spreadsheet", "Delete Cell");
+
+            for (int ordinal = 1; ordinal <= numOfCells; ordinal++) {
+                spreadsheet.column(varName).cell(ordinal).selectCell();
+            }
+
+            if (numOfCells > 1) {
+                mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                        "Delete Cells");
+            } else if (numOfCells == 1) {
+                mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                        "Delete Cell");
+            }
         }
     }
 }

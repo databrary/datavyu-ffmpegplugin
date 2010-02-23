@@ -13,6 +13,8 @@ import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.util.Platform;
+import org.openshapa.controllers.RunScriptC;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.testng.Assert;
@@ -36,9 +38,14 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/all_column_types.rb");
         Assert.assertTrue(demoFile.exists());
         // 1. Run script to populate
-        mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-        JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-        jfcf.selectFile(demoFile).approve();
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
         scriptConsole.button("closeButton").click();
