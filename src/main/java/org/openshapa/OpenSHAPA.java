@@ -77,12 +77,12 @@ public final class OpenSHAPA extends SingleFrameApplication implements
              */
             case KeyEvent.VK_EQUALS:
                 if (modifiers == keyMask) {
-                    view.changeFontSize(OpenSHAPAView.ZOOM_INTERVAL);
+                    VIEW.changeFontSize(OpenSHAPAView.ZOOM_INTERVAL);
                 }
                 return true;
             case KeyEvent.VK_MINUS:
                 if (modifiers == keyMask) {
-                    view.changeFontSize(-OpenSHAPAView.ZOOM_INTERVAL);
+                    VIEW.changeFontSize(-OpenSHAPAView.ZOOM_INTERVAL);
                 }
                 return true;
             default:
@@ -434,13 +434,13 @@ public final class OpenSHAPA extends SingleFrameApplication implements
         }
 
         // Make view the new view so we can keep track of it for hotkeys.
-        view = new OpenSHAPAView(this);
-        show(view);
+        VIEW = new OpenSHAPAView(this);
+        show(VIEW);
 
         // Now that openshapa is up - we may need to ask the user if can send
         // gather logs.
         if (Configuration.getInstance().getCanSendLogs() == null) {
-            show(new UserMetrixV(view.getFrame(), true));
+            show(new UserMetrixV(VIEW.getFrame(), true));
         }
 
         // BugzID:435 - Correct size if a small size is detected.
@@ -470,13 +470,13 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      * Used between tests to release all memory.
      */
     public void cleanUpForTests() {
-        view.getSpreadsheetPanel().removeAll();
+        VIEW.getSpreadsheetPanel().removeAll();
         consoleOutputStream = null;
         consoleWriter = null;
         listVarView = null;
         dataController = null;
         aboutWindow = null;
-        view = null;
+        VIEW = null;
         rubyEngine.getContext().setWriter(null);
         rubyEngine.getContext().setReader(null);
         rubyEngine = null;
@@ -502,8 +502,8 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      * Asks the main frame to update its title.
      */
     public void updateTitle() {
-        if (view != null) {
-            view.updateTitle();
+        if (VIEW != null) {
+            VIEW.updateTitle();
         }
     }
 
@@ -683,6 +683,10 @@ public final class OpenSHAPA extends SingleFrameApplication implements
         }
     }
 
+    public static OpenSHAPAView getView() {
+        return VIEW;
+    }
+
     /** The scripting engine that we use with OpenSHAPA. */
     private ScriptEngine rubyEngine;
 
@@ -730,7 +734,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      * keyboard shortcuts to it while the QTController is in focus. It actually
      * get initialized in startup().
      */
-    private OpenSHAPAView view;
+    private static OpenSHAPAView VIEW;
 
     /** The current project file. */
     private Project project;

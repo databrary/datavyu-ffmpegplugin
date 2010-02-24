@@ -123,33 +123,33 @@ public class UIUtils {
     public static boolean equalValues(final String value1, final String value2) {
         if ((value1.startsWith("<") && value1.endsWith(">"))
                 || (value2.startsWith("<") && value2.endsWith(">"))) {
-            // boolean result = value1.equalsIgnoreCase(value2);
-            //
-            // if (!result) {
-            // System.out.println(value1 + "\n" + value2 + "\n");
-            // }
+             boolean result = value1.equalsIgnoreCase(value2);
+            
+             if (!result) {
+             System.out.println(value1 + "\n" + value2 + "\n");
+             }
 
             return value1.equalsIgnoreCase(value2);
         } else {
             try {
                 // Handle doubles
-                // boolean result =
-                // FloatUtils.closeEnough(Double.parseDouble(value1),
-                // Double.parseDouble(value2));
-                //
-                // if (!result) {
-                // System.out.println(value1 + "\n" + value2 + "\n");
-                // }
+                 boolean result =
+                 FloatUtils.closeEnough(Double.parseDouble(value1),
+                 Double.parseDouble(value2));
+                
+                 if (!result) {
+                 System.out.println(value1 + "\n" + value2 + "\n");
+                 }
 
                 return FloatUtils.closeEnough(Double.parseDouble(value1),
                         Double.parseDouble(value2));
             } catch (NumberFormatException nfe) {
                 // Handle other variable types
-                // boolean result = value1.equalsIgnoreCase(value2);
-                //
-                // if (!result) {
-                // System.out.println(value1 + "\n" + value2 + "\n");
-                // }
+                 boolean result = value1.equalsIgnoreCase(value2);
+                
+                 if (!result) {
+                 System.out.println(value1 + "\n" + value2 + "\n");
+                 }
 
                 return value1.equalsIgnoreCase(value2);
             }

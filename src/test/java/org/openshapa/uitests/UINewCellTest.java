@@ -1128,6 +1128,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         JTextComponentFixture text =
                 spreadsheet.column(varName).cell(id).cellValue();
 
+        text.click();
+
         for (TextItem input : inputs) {
             input.enterItem(text);
         }

@@ -147,7 +147,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
                 SpreadsheetCellFixture cell =
                         spreadsheet.column(numColumns).cell(1);
                 cell.selectCell();
-                mainFrameFixture.clickMenuItemWithPath("Spreadsheet");
+                mainFrameFixture.menuItemWithPath("Spreadsheet").click();
                 mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
                         "Delete Cell");
                 numCells--;

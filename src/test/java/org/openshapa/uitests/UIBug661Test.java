@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
+import org.fest.swing.util.Platform;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -68,6 +69,10 @@ public final class UIBug661Test extends OpenSHAPATestClass {
      */
     @Test
     public void testDialogLocation() {
+        if (Platform.isOSX()) {
+            return;
+        }
+
         System.err.println("testDialogLocation");
         // Delete confounding files from previous test
         String root = System.getProperty("testPath");

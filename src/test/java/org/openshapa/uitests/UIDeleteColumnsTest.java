@@ -50,14 +50,14 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
         SpreadsheetPanelFixture ssPanel =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
                         (SpreadsheetPanel) jPanel.component());
+        
 
         Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
         for (SpreadsheetColumnFixture col : cols) {
             col.click();
-            mainFrameFixture.clickMenuItemWithPath("Spreadsheet");
+            mainFrameFixture.menuItemWithPath("Spreadsheet").click();
             mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
                     "Delete Variable");
-
             // Confirm column no longer exists
             Assert.assertNull(ssPanel.column(col.getColumnName()));
         }
@@ -98,10 +98,12 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
         Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
 
         for (SpreadsheetColumnFixture col : cols) {
-            mainFrameFixture.pressKey(KeyEvent.VK_CONTROL);
+//            mainFrameFixture.pressKey(KeyEvent.VK_CONTROL);
+            mainFrameFixture.pressKey(Platform.controlOrCommandKey());
             col.click();
         }
-        mainFrameFixture.releaseKey(KeyEvent.VK_CONTROL);
+//        mainFrameFixture.releaseKey(KeyEvent.VK_CONTROL);
+        mainFrameFixture.releaseKey(Platform.controlOrCommandKey());
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
                 "Delete Variables");
         Assert.assertTrue(ssPanel.numOfColumns() == 0);

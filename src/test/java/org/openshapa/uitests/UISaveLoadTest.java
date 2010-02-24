@@ -1,5 +1,7 @@
 package org.openshapa.uitests;
 
+import static org.fest.reflect.core.Reflection.method;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
@@ -10,14 +12,15 @@ import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.util.Platform;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.controllers.OpenProjectC;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
+import org.openshapa.views.OpenSHAPAFileChooser;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -95,12 +98,19 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         // 2. Save the file
         if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
             if (extension.equals("shapa")) {
-                SaveC.getInstance().saveAsProject(tempFolder, fileName);
+                fc.setFileFilter(new SHAPAFilter());
             } else if (extension.equals("csv")) {
-                SaveC.getInstance().saveAsDatabase(tempFolder, fileName,
-                        new CSVFilter());
+                fc.setFileFilter(new CSVFilter());
             }
+            File toSave = new File(tempFolder + "/" + fileName);
+
+            fc.setSelectedFile(toSave);
+
+            method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                    OpenSHAPA.getView()).invoke(fc);
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
             if (extension.equals("shapa")) {
@@ -126,9 +136,11 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Project project = OpenSHAPA.getProject();
         File outputCSV =
                 new File(project.getDatabaseDir(), project.getDatabaseFile());
+        Assert.assertTrue(outputCSV.exists(), "Expecting output CSV to exist.");
 
         File expectedOutputCSV = new File(root + "/ui/test-v2-out.csv");
-        Assert.assertTrue(expectedOutputCSV.exists(), "");
+        Assert.assertTrue(expectedOutputCSV.exists(),
+                "Expecting reference output CSV to exist.");
 
         Assert.assertTrue(UIUtils.areFilesSame(outputCSV, expectedOutputCSV),
                 "Expecting CSV files to be the same.");
@@ -148,14 +160,22 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             throws IOException {
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
-        // 1. Click save on empty project. Expecting it to act like Save As        
+        // 1. Click save on empty project. Expecting it to act like Save As
+
         if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
             if (extension.equals("shapa")) {
-                SaveC.getInstance().saveAsProject(tempFolder, fileName);
+                fc.setFileFilter(new SHAPAFilter());
             } else if (extension.equals("csv")) {
-                SaveC.getInstance().saveAsDatabase(tempFolder, fileName,
-                        new CSVFilter());
+                fc.setFileFilter(new CSVFilter());
             }
+            File toSave = new File(tempFolder + "/" + fileName);
+
+            fc.setSelectedFile(toSave);
+
+            method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                    OpenSHAPA.getView()).invoke(fc);
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save");
             if (extension.equals("shapa")) {
@@ -207,9 +227,11 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Project project = OpenSHAPA.getProject();
         File outputCSV =
                 new File(project.getDatabaseDir(), project.getDatabaseFile());
+        Assert.assertTrue(outputCSV.exists(), "Expecting output CSV to exist.");
 
         File expectedOutputCSV = new File(root + "/ui/test-v2-out.csv");
-        Assert.assertTrue(expectedOutputCSV.exists(), "");
+        Assert.assertTrue(expectedOutputCSV.exists(),
+                "Expecting reference output CSV to exist.");
 
         Assert.assertTrue(UIUtils.areFilesSame(outputCSV, expectedOutputCSV),
                 "Expecting CSV files to be the same.");
@@ -224,6 +246,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      *            The expected output of saving the above file.
      * @throws IOException
      *             If unable to save file.
+     * @throws SystemErrorException
      */
     private void loadTest(final String inputFile,
             final String expectedOutputFile) throws IOException {
@@ -252,7 +275,14 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         // 3. Now load the newly created project in openshapa
         if (Platform.isOSX()) {
-            (new OpenProjectC()).open(newSHAPA);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+            fc.setFileFilter(new SHAPAFilter());
+            fc.setSelectedFile(newSHAPA);
+
+            method("openProject")
+                    .withParameterTypes(OpenSHAPAFileChooser.class).in(
+                            OpenSHAPA.getView()).invoke(fc);
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Open...");
 

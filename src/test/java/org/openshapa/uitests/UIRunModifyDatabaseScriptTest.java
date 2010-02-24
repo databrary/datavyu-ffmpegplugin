@@ -1,5 +1,7 @@
 package org.openshapa.uitests;
 
+import static org.fest.reflect.core.Reflection.method;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -9,10 +11,11 @@ import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.RunScriptC;
-import org.openshapa.controllers.SaveC;
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
+import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -100,12 +103,12 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
          * "frog"
          */
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            new RunScriptC(modifyFile.toString());
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
             JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
+            jfcf.selectFile(modifyFile).approve();
         }
 
         // Close script console
@@ -117,8 +120,13 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
         File savedCSV = new File(tempFolder + "/" + "savedCSV.csv");
 
         if (Platform.isOSX()) {
-            SaveC.getInstance().saveAsDatabase(tempFolder, "savedCSV.csv",
-                    new CSVFilter());
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+            fc.setFileFilter(new CSVFilter());
+            fc.setSelectedFile(savedCSV);
+
+            method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                    OpenSHAPA.getView()).invoke(fc);
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
             mainFrameFixture.fileChooser().component().setFileFilter(
