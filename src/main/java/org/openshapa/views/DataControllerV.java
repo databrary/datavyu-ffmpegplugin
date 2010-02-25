@@ -188,8 +188,9 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         maxDuration = 0;
 
+        // TODO: This should really come from the region controller.
         windowPlayStart = 0;
-        windowPlayEnd = 0;
+        windowPlayEnd = 60000;
 
         mixerControllerV = new MixerControllerV();
         tracksPanel.add(mixerControllerV.getTracksPanel());
@@ -1326,7 +1327,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         syncVideoButton.doClick();
     }
 
-    // --------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // Playback actions
     //
     /**
@@ -1557,7 +1558,14 @@ public final class DataControllerV extends OpenSHAPADialog implements
         if (ctrlMask) {
             mul = CTRLSHIFTJOG;
         }
-        jump((long) (mul * (-ONE_SECOND) / currentFPS));
+
+        /* Bug1361: Do not allow jog to skip past the region boundaries. */
+        long nextTime = (long) (mul * (-ONE_SECOND) / currentFPS);
+        if (clock.getTime() + nextTime > windowPlayStart) {
+            jump(nextTime);
+        } else {
+            jumpTo(windowPlayStart);
+        }
     }
 
     /**
@@ -1572,10 +1580,17 @@ public final class DataControllerV extends OpenSHAPADialog implements
         if (ctrlMask) {
             mul = CTRLSHIFTJOG;
         }
-        jump((long) ((mul * ONE_SECOND) / currentFPS));
+
+        /* Bug1361: Do not allow jog to skip past the region boundaries. */
+        long nextTime = (long) (mul * (ONE_SECOND) / currentFPS);
+        if (clock.getTime() + nextTime < windowPlayEnd) {
+            jump(nextTime);
+        } else {
+            jumpTo(windowPlayEnd);
+        }
     }
 
-    // --------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // [private] play back action helper functions
     //
     /**
