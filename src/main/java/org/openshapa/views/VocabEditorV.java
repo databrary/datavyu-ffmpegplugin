@@ -647,7 +647,9 @@ public final class VocabEditorV extends OpenSHAPADialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
         getContentPane().add(deleteButton, gridBagConstraints);
 
+        currentVocabList.setMinimumSize(new java.awt.Dimension(23, 200));
         currentVocabList.setName("currentVocabList"); // NOI18N
+        currentVocabList.setPreferredSize(new java.awt.Dimension(2, 200));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;

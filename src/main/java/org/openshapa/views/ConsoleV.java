@@ -73,6 +73,7 @@ public class ConsoleV extends OpenSHAPADialog {
 
         console.setColumns(20);
         console.setRows(5);
+        console.setMinimumSize(new java.awt.Dimension(200, 150));
         console.setName("console"); // NOI18N
         jScrollPane1.setViewportView(console);
 

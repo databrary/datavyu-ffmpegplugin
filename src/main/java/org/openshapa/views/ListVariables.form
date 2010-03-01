@@ -4,6 +4,7 @@
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" resourceKey="variableListDialog.title"/>
+    <Property name="modal" type="boolean" value="true"/>
     <Property name="name" type="java.lang.String" value="variableListDialog" noResource="true"/>
   </Properties>
   <SyntheticProperties>
@@ -55,6 +56,9 @@
         <Component class="javax.swing.JTable" name="variableList">
           <Properties>
             <Property name="enabled" type="boolean" value="false" postCode="variableList.setModel(tableModel);"/>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[400, 200]"/>
+            </Property>
             <Property name="name" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection code="&quot;variableList&quot;" type="code"/>
             </Property>
