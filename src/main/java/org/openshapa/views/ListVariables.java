@@ -203,7 +203,6 @@ implements ExternalColumnListListener {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(ListVariables.class);
         setTitle(resourceMap.getString("variableListDialog.title")); // NOI18N
-        setModal(true);
         setName("variableListDialog"); // NOI18N
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
