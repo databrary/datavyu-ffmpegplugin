@@ -51,15 +51,15 @@ public class TimescaleController {
         int majorWidth = effectiveWidth / timescaleModel.getMajorIntervals();
         timescaleModel.setMajorWidth(majorWidth);
 
-        viewableModel.setIntervalWidth((majorWidth * 1F) / (intervals * 1F));
-        viewableModel.setIntervalTime((end - start) * 1F
-                / (timescaleModel.getMajorIntervals() * intervals * 1F));
+        viewableModel.setIntervalWidth((float) majorWidth / (float) intervals);
+        viewableModel.setIntervalTime((float) (end - start)
+                / (float) (timescaleModel.getMajorIntervals() * intervals));
 
         view.setViewableModel(viewableModel);
         view.setTimescaleModel(timescaleModel);
     }
 
-    public void setViewableModel(ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel viewableModel) {
         /*
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.

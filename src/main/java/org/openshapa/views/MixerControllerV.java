@@ -225,9 +225,9 @@ public class MixerControllerV implements NeedleEventListener,
             tracksScrollBar.setPreferredSize(size);
             tracksScrollBar.setLocation(85, 234);
         }
-        tracksScrollBar.setValues(0, 100000, 0, 100000);
-        tracksScrollBar.setUnitIncrement(1000);
-        tracksScrollBar.setBlockIncrement(10000);
+        tracksScrollBar.setValues(0, Integer.MAX_VALUE, 0, Integer.MAX_VALUE);
+        tracksScrollBar.setUnitIncrement(Integer.MAX_VALUE / 100);
+        tracksScrollBar.setBlockIncrement(Integer.MAX_VALUE / 10);
         tracksScrollBar.addAdjustmentListener(this);
         tracksScrollBar.setValueIsAdjusting(false);
 
@@ -492,13 +492,14 @@ public class MixerControllerV implements NeedleEventListener,
          * video lengths are longs.
          */
         int startValue =
-                (int) (((1F * model.getZoomWindowStart()) / (1F * model
-                        .getEnd())) * 100000F);
+                (int) (((float) model.getZoomWindowStart() / (float) model
+                        .getEnd()) * Integer.MAX_VALUE);
         int extentValue =
-                (int) (((1F * (model.getZoomWindowEnd() - model
-                        .getZoomWindowStart())) / (1F * model.getEnd())) * 100000F);
+                (int) (((float) (model.getZoomWindowEnd() - model
+                        .getZoomWindowStart()) / (float) model.getEnd()) * Integer.MAX_VALUE);
 
-        tracksScrollBar.setValues(startValue, extentValue, 0, 100000);
+        tracksScrollBar
+                .setValues(startValue, extentValue, 0, Integer.MAX_VALUE);
     }
 
     /**
@@ -542,9 +543,10 @@ public class MixerControllerV implements NeedleEventListener,
         ViewableModel model = timescaleController.getViewableModel();
         // Calculate the new window start and end
         long newWindowStart =
-                (long) ((1F * startValue) / (100000F) * (1F * model.getEnd()));
+                (long) ((startValue / (float) Integer.MAX_VALUE) * model
+                        .getEnd());
         long newWindowEnd =
-                (long) ((1F * endValue) / (100000F) * (1F * model.getEnd()));
+                (long) ((endValue / (float) Integer.MAX_VALUE) * model.getEnd());
         model.setZoomWindowStart(newWindowStart);
         model.setZoomWindowEnd(newWindowEnd);
 

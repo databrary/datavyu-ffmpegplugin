@@ -28,7 +28,7 @@ public class TimescalePainter extends JComponent {
         return timescaleModel;
     }
 
-    public void setTimescaleModel(TimescaleModel timescaleModel) {
+    public void setTimescaleModel(final TimescaleModel timescaleModel) {
         this.timescaleModel = timescaleModel;
         this.repaint();
     }
@@ -37,7 +37,7 @@ public class TimescalePainter extends JComponent {
         return viewableModel;
     }
 
-    public void setViewableModel(ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel viewableModel) {
         this.viewableModel = viewableModel;
         this.repaint();
     }
@@ -57,7 +57,7 @@ public class TimescalePainter extends JComponent {
      * @param g
      */
     @Override
-    public void paint(Graphics g) {
+    public void paint(final Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         Dimension size = getSize();
 
