@@ -1,10 +1,10 @@
 package org.openshapa.views.continuous.sound;
 
+import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileFilter;
+
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
-import org.openshapa.views.continuous.quicktime.QTDataViewer;
-
 
 public class SoundPlugin implements Plugin {
 
@@ -24,7 +24,7 @@ public class SoundPlugin implements Plugin {
 
     /**
      * @return The file filter to use when looking for files that the Quicktime
-     * plugin supports.
+     *         plugin supports.
      */
     public FileFilter getFileFilter() {
         return filter;
@@ -32,4 +32,9 @@ public class SoundPlugin implements Plugin {
 
     /** The filter to use when looking for files that this plugin supports. */
     private SoundFilter filter;
+
+    public ImageIcon getTypeIcon() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
