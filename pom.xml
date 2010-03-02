@@ -351,7 +351,7 @@
           </execution>
         </executions>
         <configuration>
-          <format>{0,date,yyyyMMddHH}</format>
+          <format>{0,date,yyyyMMdd}</format>
           <items>
             <item>timestamp</item>
           </items>
