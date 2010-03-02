@@ -82,7 +82,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         mainFrameFixture.dialog().moveTo(new Point(300, 300));
         DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
-                        (DataControllerV) mainFrameFixture.dialog().component());
+                        (DataControllerV) mainFrameFixture.dialog()
+                        .component());
 
         // 3. Create new cell - so we have something to send key to because
         SpreadsheetColumnFixture column = ssPanel.column(varName);
@@ -188,5 +189,27 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // Nominal
         standardSequence1("n", "nominal", nominalTestInput,
                 expectedNominalTestOutput);
+    }
+
+    @Test
+    public void testBug720() {
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller and get starting time
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+                "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        DataControllerFixture dcf =
+                new DataControllerFixture(mainFrameFixture.robot,
+                        (DataControllerV) mainFrameFixture.dialog()
+                        .component());
+
+        // 3. Confirm that Go Back text field is 00:00:05:000
+        Assert.assertEquals("00:00:05:000", 
+                dcf.textBox("goBackTextField").text());
     }
 }
