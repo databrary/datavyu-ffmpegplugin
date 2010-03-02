@@ -287,7 +287,9 @@ public final class DataControllerV extends OpenSHAPADialog implements
                          * Only synchronise the data viewers if we have a
                          * noticable drift.
                          */
-                        if (Math.abs(v.getCurrentTime() - time) > thresh) {
+                        if (v.isPlaying()
+                                && Math.abs(v.getCurrentTime()
+                                        - (time - v.getOffset())) > thresh) {
                             v.seekTo(time - v.getOffset());
                         }
                     }
@@ -465,7 +467,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
      */
     // <editor-fold defaultstate="collapsed"
     // <editor-fold defaultstate="collapsed"
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed"
+    // desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -502,7 +505,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         tracksPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
+        org.jdesktop.application.ResourceMap resourceMap =
+                org.jdesktop.application.Application.getInstance(
+                        org.openshapa.OpenSHAPA.class).getContext()
+                        .getResourceMap(DataControllerV.class);
         setTitle(resourceMap.getString("title")); // NOI18N
         setName(""); // NOI18N
         setResizable(false);
@@ -534,15 +540,23 @@ public final class DataControllerV extends OpenSHAPADialog implements
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(syncButton, gridBagConstraints);
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(DataControllerV.class, this);
+        javax.swing.ActionMap actionMap =
+                org.jdesktop.application.Application.getInstance(
+                        org.openshapa.OpenSHAPA.class).getContext()
+                        .getActionMap(DataControllerV.class, this);
         setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction")); // NOI18N
-        setCellOnsetButton.setIcon(resourceMap.getIcon("setCellOnsetButton.icon")); // NOI18N
+        setCellOnsetButton.setIcon(resourceMap
+                .getIcon("setCellOnsetButton.icon")); // NOI18N
         setCellOnsetButton.setFocusPainted(false);
         setCellOnsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
         setCellOnsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
         setCellOnsetButton.setName("setCellOnsetButton"); // NOI18N
         setCellOnsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        setCellOnsetButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/set-cell-onset-selected.png"))); // NOI18N
+        setCellOnsetButton
+                .setPressedIcon(new javax.swing.ImageIcon(
+                        getClass()
+                                .getResource(
+                                        "/icons/DataController/eng/set-cell-onset-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
@@ -550,13 +564,18 @@ public final class DataControllerV extends OpenSHAPADialog implements
         gridButtonPanel.add(setCellOnsetButton, gridBagConstraints);
 
         setCellOffsetButton.setAction(actionMap.get("setCellOffsetAction")); // NOI18N
-        setCellOffsetButton.setIcon(resourceMap.getIcon("setCellOffsetButton.icon")); // NOI18N
+        setCellOffsetButton.setIcon(resourceMap
+                .getIcon("setCellOffsetButton.icon")); // NOI18N
         setCellOffsetButton.setFocusPainted(false);
         setCellOffsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
         setCellOffsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
         setCellOffsetButton.setName("setCellOffsetButton"); // NOI18N
         setCellOffsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        setCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/set-cell-offset-selected.png"))); // NOI18N
+        setCellOffsetButton
+                .setPressedIcon(new javax.swing.ImageIcon(
+                        getClass()
+                                .getResource(
+                                        "/icons/DataController/eng/set-cell-offset-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
@@ -570,7 +589,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
         rewindButton.setMinimumSize(new java.awt.Dimension(45, 45));
         rewindButton.setName("rewindButton"); // NOI18N
         rewindButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        rewindButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/rewind-selected.png"))); // NOI18N
+        rewindButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
+                .getResource("/icons/DataController/eng/rewind-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -584,7 +604,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
         playButton.setMinimumSize(new java.awt.Dimension(45, 45));
         playButton.setName("playButton"); // NOI18N
         playButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        playButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/play-selected.png"))); // NOI18N
+        playButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
+                .getResource("/icons/DataController/eng/play-selected.png"))); // NOI18N
         playButton.setRequestFocusEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -599,7 +620,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
         forwardButton.setMinimumSize(new java.awt.Dimension(45, 45));
         forwardButton.setName("forwardButton"); // NOI18N
         forwardButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        forwardButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/fast-forward-selected.png"))); // NOI18N
+        forwardButton
+                .setPressedIcon(new javax.swing.ImageIcon(
+                        getClass()
+                                .getResource(
+                                        "/icons/DataController/eng/fast-forward-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
@@ -613,7 +638,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
         goBackButton.setMinimumSize(new java.awt.Dimension(45, 45));
         goBackButton.setName("goBackButton"); // NOI18N
         goBackButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        goBackButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/go-back-selected.png"))); // NOI18N
+        goBackButton
+                .setPressedIcon(new javax.swing.ImageIcon(
+                        getClass()
+                                .getResource(
+                                        "/icons/DataController/eng/go-back-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 2;
@@ -621,13 +650,18 @@ public final class DataControllerV extends OpenSHAPADialog implements
         gridButtonPanel.add(goBackButton, gridBagConstraints);
 
         shuttleBackButton.setAction(actionMap.get("shuttleBackAction")); // NOI18N
-        shuttleBackButton.setIcon(resourceMap.getIcon("shuttleBackButton.icon")); // NOI18N
+        shuttleBackButton
+                .setIcon(resourceMap.getIcon("shuttleBackButton.icon")); // NOI18N
         shuttleBackButton.setFocusPainted(false);
         shuttleBackButton.setMaximumSize(new java.awt.Dimension(45, 45));
         shuttleBackButton.setMinimumSize(new java.awt.Dimension(45, 45));
         shuttleBackButton.setName("shuttleBackButton"); // NOI18N
         shuttleBackButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        shuttleBackButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/shuttle-backward-selected.png"))); // NOI18N
+        shuttleBackButton
+                .setPressedIcon(new javax.swing.ImageIcon(
+                        getClass()
+                                .getResource(
+                                        "/icons/DataController/eng/shuttle-backward-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -641,7 +675,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
         pauseButton.setMinimumSize(new java.awt.Dimension(45, 45));
         pauseButton.setName("pauseButton"); // NOI18N
         pauseButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        pauseButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/pause-selected.png"))); // NOI18N
+        pauseButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
+                .getResource("/icons/DataController/eng/pause-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -649,13 +684,18 @@ public final class DataControllerV extends OpenSHAPADialog implements
         gridButtonPanel.add(pauseButton, gridBagConstraints);
 
         shuttleForwardButton.setAction(actionMap.get("shuttleForwardAction")); // NOI18N
-        shuttleForwardButton.setIcon(resourceMap.getIcon("shuttleForwardButton.icon")); // NOI18N
+        shuttleForwardButton.setIcon(resourceMap
+                .getIcon("shuttleForwardButton.icon")); // NOI18N
         shuttleForwardButton.setFocusPainted(false);
         shuttleForwardButton.setMaximumSize(new java.awt.Dimension(45, 45));
         shuttleForwardButton.setMinimumSize(new java.awt.Dimension(45, 45));
         shuttleForwardButton.setName("shuttleForwardButton"); // NOI18N
         shuttleForwardButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        shuttleForwardButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/shuttle-forward-selected.png"))); // NOI18N
+        shuttleForwardButton
+                .setPressedIcon(new javax.swing.ImageIcon(
+                        getClass()
+                                .getResource(
+                                        "/icons/DataController/eng/shuttle-forward-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
@@ -669,7 +709,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
         findButton.setMinimumSize(new java.awt.Dimension(45, 45));
         findButton.setName("findButton"); // NOI18N
         findButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        findButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/find-selected.png"))); // NOI18N
+        findButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
+                .getResource("/icons/DataController/eng/find-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 3;
@@ -683,7 +724,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
         jogBackButton.setMinimumSize(new java.awt.Dimension(45, 45));
         jogBackButton.setName("jogBackButton"); // NOI18N
         jogBackButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        jogBackButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/jog-backward-selected.png"))); // NOI18N
+        jogBackButton
+                .setPressedIcon(new javax.swing.ImageIcon(
+                        getClass()
+                                .getResource(
+                                        "/icons/DataController/eng/jog-backward-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -697,21 +742,31 @@ public final class DataControllerV extends OpenSHAPADialog implements
         stopButton.setMinimumSize(new java.awt.Dimension(45, 45));
         stopButton.setName("stopButton"); // NOI18N
         stopButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        stopButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/stop-selected.png"))); // NOI18N
+        stopButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
+                .getResource("/icons/DataController/eng/stop-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(stopButton, gridBagConstraints);
 
-        createNewCellSettingOffset.setAction(actionMap.get("createNewCellAction")); // NOI18N
-        createNewCellSettingOffset.setIcon(resourceMap.getIcon("createNewCellButton.icon")); // NOI18N
+        createNewCellSettingOffset.setAction(actionMap
+                .get("createNewCellAction")); // NOI18N
+        createNewCellSettingOffset.setIcon(resourceMap
+                .getIcon("createNewCellButton.icon")); // NOI18N
         createNewCellSettingOffset.setFocusPainted(false);
-        createNewCellSettingOffset.setMaximumSize(new java.awt.Dimension(90, 45));
-        createNewCellSettingOffset.setMinimumSize(new java.awt.Dimension(90, 45));
+        createNewCellSettingOffset
+                .setMaximumSize(new java.awt.Dimension(90, 45));
+        createNewCellSettingOffset
+                .setMinimumSize(new java.awt.Dimension(90, 45));
         createNewCellSettingOffset.setName("newCellAndOnsetButton"); // NOI18N
-        createNewCellSettingOffset.setPreferredSize(new java.awt.Dimension(90, 45));
-        createNewCellSettingOffset.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/create-new-cell-and-set-onset-selected.png"))); // NOI18N
+        createNewCellSettingOffset.setPreferredSize(new java.awt.Dimension(90,
+                45));
+        createNewCellSettingOffset
+                .setPressedIcon(new javax.swing.ImageIcon(
+                        getClass()
+                                .getResource(
+                                        "/icons/DataController/eng/create-new-cell-and-set-onset-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
@@ -727,7 +782,9 @@ public final class DataControllerV extends OpenSHAPADialog implements
         jogForwardButton.setMinimumSize(new java.awt.Dimension(45, 45));
         jogForwardButton.setName("jogForwardButton"); // NOI18N
         jogForwardButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        jogForwardButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/jog-forward-selected.png"))); // NOI18N
+        jogForwardButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
+                .getResource(
+                        "/icons/DataController/eng/jog-forward-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 4;
@@ -735,20 +792,25 @@ public final class DataControllerV extends OpenSHAPADialog implements
         gridButtonPanel.add(jogForwardButton, gridBagConstraints);
 
         setNewCellOffsetButton.setAction(actionMap.get("setNewCellStopTime")); // NOI18N
-        setNewCellOffsetButton.setIcon(resourceMap.getIcon("setNewCellOnsetButton.icon")); // NOI18N
+        setNewCellOffsetButton.setIcon(resourceMap
+                .getIcon("setNewCellOnsetButton.icon")); // NOI18N
         setNewCellOffsetButton.setFocusPainted(false);
         setNewCellOffsetButton.setMaximumSize(new java.awt.Dimension(45, 45));
         setNewCellOffsetButton.setMinimumSize(new java.awt.Dimension(45, 45));
         setNewCellOffsetButton.setName("newCellOffsetButton"); // NOI18N
         setNewCellOffsetButton.setPreferredSize(new java.awt.Dimension(45, 45));
-        setNewCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/set-new-cell-offset-selected.png"))); // NOI18N
+        setNewCellOffsetButton
+                .setPressedIcon(new javax.swing.ImageIcon(
+                        getClass()
+                                .getResource(
+                                        "/icons/DataController/eng/set-new-cell-offset-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(setNewCellOffsetButton, gridBagConstraints);
 
-        goBackTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
         goBackTextField.setText("00:00:05:000");
         goBackTextField.setMaximumSize(new java.awt.Dimension(80, 45));
         goBackTextField.setMinimumSize(new java.awt.Dimension(80, 45));
@@ -760,7 +822,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(goBackTextField, gridBagConstraints);
 
-        findTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        findTextField.setHorizontalAlignment(SwingConstants.CENTER);
         findTextField.setText("00:00:00:000");
         findTextField.setMaximumSize(new java.awt.Dimension(80, 45));
         findTextField.setMinimumSize(new java.awt.Dimension(80, 45));
@@ -791,7 +853,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         openVideoButton.setMinimumSize(new java.awt.Dimension(90, 25));
         openVideoButton.setPreferredSize(new java.awt.Dimension(90, 25));
         openVideoButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(final java.awt.event.ActionEvent evt) {
                 openVideoButtonActionPerformed(evt);
             }
         });
@@ -802,9 +864,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
         gridButtonPanel.add(openVideoButton, gridBagConstraints);
 
         timestampLabel.setFont(new java.awt.Font("Tahoma", 1, 11));
-        timestampLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        timestampLabel
+                .setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         timestampLabel.setText("00:00:00:000");
-        timestampLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        timestampLabel
+                .setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         timestampLabel.setName("timestampLabel"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
@@ -817,7 +881,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         lblSpeed.setFont(new java.awt.Font("Tahoma", 1, 11));
         lblSpeed.setText("0");
-        lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 2));
+        lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1,
+                2));
         topPanel.add(lblSpeed, java.awt.BorderLayout.LINE_END);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -831,12 +896,17 @@ public final class DataControllerV extends OpenSHAPADialog implements
         createNewCell.setText(resourceMap.getString("createNewCell.text")); // NOI18N
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setFocusPainted(false);
-        createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        createNewCell
+                .setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setMaximumSize(new java.awt.Dimension(45, 90));
         createNewCell.setMinimumSize(new java.awt.Dimension(45, 90));
         createNewCell.setName("createNewCellButton"); // NOI18N
         createNewCell.setPreferredSize(new java.awt.Dimension(45, 90));
-        createNewCell.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/DataController/eng/create-new-cell-selected.png"))); // NOI18N
+        createNewCell
+                .setPressedIcon(new javax.swing.ImageIcon(
+                        getClass()
+                                .getResource(
+                                        "/icons/DataController/eng/create-new-cell-selected.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 4;
@@ -861,9 +931,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridButtonPanel.add(jLabel2, gridBagConstraints);
 
-        findOffsetField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        findOffsetField.setHorizontalAlignment(SwingConstants.CENTER);
         findOffsetField.setText("00:00:00:000");
-        findOffsetField.setToolTipText(resourceMap.getString("findOffsetField.toolTipText")); // NOI18N
+        findOffsetField.setToolTipText(resourceMap
+                .getString("findOffsetField.toolTipText")); // NOI18N
         findOffsetField.setEnabled(false);
         findOffsetField.setMaximumSize(new java.awt.Dimension(80, 45));
         findOffsetField.setMinimumSize(new java.awt.Dimension(80, 45));
@@ -876,13 +947,14 @@ public final class DataControllerV extends OpenSHAPADialog implements
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(findOffsetField, gridBagConstraints);
 
-        showTracksButton.setIcon(resourceMap.getIcon("showTracksButton.show.icon")); // NOI18N
+        showTracksButton.setIcon(resourceMap
+                .getIcon("showTracksButton.show.icon")); // NOI18N
         showTracksButton.setMaximumSize(new java.awt.Dimension(73, 45));
         showTracksButton.setMinimumSize(new java.awt.Dimension(73, 45));
         showTracksButton.setName("showTracksButton"); // NOI18N
         showTracksButton.setPreferredSize(new java.awt.Dimension(73, 45));
         showTracksButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(final java.awt.event.ActionEvent evt) {
                 showTracksButtonActionPerformed(evt);
             }
         });
@@ -893,7 +965,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         gridButtonPanel.add(showTracksButton, gridBagConstraints);
-        showTracksButton.getAccessibleContext().setAccessibleName("Show Tracks");
+        showTracksButton.getAccessibleContext()
+                .setAccessibleName("Show Tracks");
 
         getContentPane().add(gridButtonPanel, java.awt.BorderLayout.WEST);
 
