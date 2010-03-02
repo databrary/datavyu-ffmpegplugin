@@ -46,6 +46,7 @@ import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
 import org.openshapa.views.continuous.DataViewer;
+import org.openshapa.views.continuous.Plugin;
 import org.openshapa.views.continuous.PluginManager;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -446,10 +447,14 @@ public final class OpenSHAPAView extends FrameView {
             boolean showController = false;
             for (ViewerSetting setting : viewerSettings) {
                 showController = true;
+
                 File file = new File(setting.getFilePath());
-                DataViewer viewer =
-                        pm.buildDataViewer(setting.getPluginName(), file);
+                Plugin plugin = pm.getAssociatedPlugin(setting.getPluginName());
+
+                DataViewer viewer = plugin.getNewDataViewer();
+                viewer.setDataFeed(file);
                 viewer.setOffset(setting.getOffset());
+
                 dataController.addViewer(viewer, setting.getOffset());
                 dataController.addTrack(file.getAbsolutePath(), file.getName(),
                         viewer.getDuration(), setting.getOffset(), setting
