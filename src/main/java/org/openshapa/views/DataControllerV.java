@@ -98,6 +98,19 @@ public final class DataControllerV extends OpenSHAPADialog implements
     /** The jump multiplier for ctrl-shift-jogging. */
     private static final int CTRLSHIFTJOG = 10;
 
+    private void openVideo(OpenSHAPAFileChooser jd) {
+        PluginManager pm = PluginManager.getInstance();
+
+        File f = jd.getSelectedFile();
+        FileFilter ff = jd.getFileFilter();
+        Plugin plugin = pm.getAssociatedPlugin(ff);
+        if (plugin != null) {
+            DataViewer dataViewer = plugin.getNewDataViewer();
+            dataViewer.setDataFeed(f);
+            addDataViewer(plugin.getTypeIcon(), dataViewer, f);
+        }
+    }
+
     /**
      * Enumeration of shuttle directions.
      */
@@ -795,6 +808,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         openVideoButton.setFocusPainted(false);
         openVideoButton.setMaximumSize(new java.awt.Dimension(90, 25));
         openVideoButton.setMinimumSize(new java.awt.Dimension(90, 25));
+        openVideoButton.setName("addDataButton"); // NOI18N
         openVideoButton.setPreferredSize(new java.awt.Dimension(90, 25));
         openVideoButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -925,19 +939,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         for (FileFilter f : pm.getPluginFileFilters()) {
             jd.addChoosableFileFilter(f);
         }
-
         if (JFileChooser.APPROVE_OPTION == jd.showOpenDialog(this)) {
-            File f = jd.getSelectedFile();
-            FileFilter ff = jd.getFileFilter();
-
-            Plugin plugin = pm.getAssociatedPlugin(ff);
-            if (plugin != null) {
-                DataViewer dataViewer = plugin.getNewDataViewer();
-                dataViewer.setDataFeed(f);
-                addDataViewer(plugin.getTypeIcon(), dataViewer, f);
-            }
+            openVideo(jd);
         }
-    }// GEN-LAST:event_openVideoButtonActionPerformed
+    }
 
     /**
      * Action to invoke when the user clicks the show tracks button.

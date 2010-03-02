@@ -193,6 +193,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
     @Test
     public void testBug720() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture ssPanel =

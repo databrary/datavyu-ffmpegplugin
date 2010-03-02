@@ -42,6 +42,7 @@ public class OpenSHAPATestClass {
 
     static {
         try {
+
             ConfigProperties p = (ConfigProperties) PrivateAccessor
                 .getField(Configuration.getInstance(), "properties");
             p.setCanSendLogs(false);
