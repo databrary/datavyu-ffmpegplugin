@@ -7,10 +7,13 @@ import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.fixture.VocabEditorDialogFixture;
+import org.fest.swing.fixture.VocabElementFixture;
 import org.fest.swing.util.Platform;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.OpenSHAPAView;
+import org.openshapa.views.VocabEditorV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -250,5 +253,103 @@ public final class UIZoomTest extends OpenSHAPATestClass {
                         .getSize();
         Assert.assertTrue(previousSize == OpenSHAPAView.ZOOM_MIN_SIZE);
 
+    }
+
+    /**
+     * Test to ensure vocab editor contents is not being zoomed.
+     */
+    @Test
+    public void testBug635() {
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data.rb");
+        Assert.assertTrue(demoFile.exists());
+
+        // 1. Run script to populate
+        if (Platform.isOSX()) {
+            new RunScriptC(demoFile.toString());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
+
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        scriptConsole.button("closeButton").click();
+
+        // 2. Get the spreadsheet, check that cells do exist
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0,
+                "Expecting columns to exist.");
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            Assert.assertTrue(column.numOfCells() > 0,
+                    "Expecting cells to exist.");
+        }
+
+        // 3. Reset the zoom size, and get the initial zoom size
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                "Reset Zoom");
+
+        final int initialSize =
+                spreadsheet.column(1).cell(1).cellValue().font().target()
+                        .getSize();
+
+        Assert.assertTrue(initialSize == OpenSHAPAView.ZOOM_DEFAULT_SIZE,
+                "Initial zoom size incorrect.");
+
+        int previousSize = initialSize;
+
+        //3a. Get initial zoom size of vocab editor window
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
+        VocabEditorDialogFixture veDialog =
+                new VocabEditorDialogFixture(mainFrameFixture.robot,
+                        (VocabEditorV) mainFrameFixture.dialog().component());
+        int veFontSize = veDialog.allVocabElements().firstElement().value()
+                .font().target().getSize();
+        //Confirm that all VEs are the same size.
+        for (VocabElementFixture v : veDialog.allVocabElements()) {
+            Assert.assertEquals(veFontSize, v.value().font().target()
+                    .getSize());
+        }
+
+        // 4. Zoom in
+        previousSize =
+                    spreadsheet.column(1).cell(1).cellValue().font().target()
+                            .getSize();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                    "Zoom In");
+            /*
+             * Test the font sizes of the first cell only because as the zoom
+             * size increases, cells may be pushed out of view. When this
+             * happens, Swing does not update the hidden cells, causing tests to
+             * fail.
+             */
+        spreadsheet.column(1).cell(1).cellValue().font().requireSize(
+                previousSize + OpenSHAPAView.ZOOM_INTERVAL);
+
+        for (VocabElementFixture v : veDialog.allVocabElements()) {
+            Assert.assertEquals(veFontSize, v.value().font().target()
+                    .getSize());
+        }
+
+       // 5. Zoom out
+        previousSize = spreadsheet.column(1).cell(1).cellValue().font()
+                .target().getSize();
+
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom Out")
+                .click();
+
+        spreadsheet.column(1).cell(1).cellValue().font().requireSize(
+                previousSize - OpenSHAPAView.ZOOM_INTERVAL);
+
+        for (VocabElementFixture v : veDialog.allVocabElements()) {
+            Assert.assertEquals(veFontSize, v.value().font().target()
+                    .getSize());
+        }
     }
 }
