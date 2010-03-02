@@ -1,6 +1,7 @@
 package org.fest.swing.fixture;
 
 import java.awt.Frame;
+import java.awt.Point;
 
 import org.fest.swing.core.Robot;
 
@@ -27,7 +28,9 @@ public class OpenSHAPAFrameFixture extends FrameFixture {
 
     public JMenuItemFixture clickMenuItemWithPath(final String... path) {
         JMenuItemFixture result = super.menuItemWithPath(path).click();
-        this.click();
+        Point edgeOfWindow = new Point(this.component().getWidth() - 25,
+                this.component().getHeight() - 25);
+        this.robot.click(target, edgeOfWindow);
         return result;
     }
 

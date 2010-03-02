@@ -177,5 +177,9 @@ public class SpreadsheetCellFixture extends JPanelFixture {
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
+    public boolean isSelected() {
+        return ((SpreadsheetCell) target).isSelected();
+    }
+
 
 }
