@@ -1,7 +1,5 @@
-
 package org.openshapa.views.continuous;
 
-import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -17,9 +15,13 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 import javax.swing.filechooser.FileFilter;
+
 import org.jdesktop.application.LocalStorage;
 import org.openshapa.OpenSHAPA;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * This class manages and wrangles all the viewer plugins currently availble to
@@ -29,26 +31,26 @@ import org.openshapa.OpenSHAPA;
  */
 public final class PluginManager {
 
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
     //
     //
 
     /** The default plugin to present to the user when loading data. */
     private static final String DEFAULT_VIEW =
-                        "org.openshapa.views.continuous.quicktime.QTDataViewer";
+            "org.openshapa.views.continuous.quicktime.QTDataViewer";
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(PluginManager.class);
 
     /** A reference to the interface that plugins must override. */
-    private static final Class PLUGIN_CLASS;
+    private static final Class<?> PLUGIN_CLASS;
     static {
         try {
-            PLUGIN_CLASS
-                    = Class.forName("org.openshapa.views.continuous.Plugin");
+            PLUGIN_CLASS =
+                    Class.forName("org.openshapa.views.continuous.Plugin");
         } catch (ClassNotFoundException ex) {
-            UserMetrix.getInstance(PluginManager.class)
-                      .error("Unable to init plugin class");
+            UserMetrix.getInstance(PluginManager.class).error(
+                    "Unable to init plugin class");
             throw new RuntimeException(ex);
         }
     }
@@ -60,8 +62,7 @@ public final class PluginManager {
     /** The single instance of the PluginManager for OpenSHAPA. */
     private static final PluginManager INSTANCE = new PluginManager();
 
-
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
     //
     //
 
@@ -69,23 +70,22 @@ public final class PluginManager {
     private Map<FileFilter, Plugin> plugins = new HashMap<FileFilter, Plugin>();
 
     /** The list of plugins associated with data viewer class name. */
-    private Map<String, Plugin> viewLookup = new HashMap<String, Plugin>();
+    private Map<String, Plugin> pluginLookup = new HashMap<String, Plugin>();
 
-
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
     //
     //
 
     /**
      * @return The single instance of the PluginManager object in OpenSHAPA.
      */
-    public static PluginManager getInstance() { return INSTANCE; }
+    public static PluginManager getInstance() {
+        return INSTANCE;
+    }
 
     /**
-     * Default constructor.
-     *
-     * Searches for valid plugins ... currently scans the classpath looking for
-     * classes that implement the plugin interface.
+     * Default constructor. Searches for valid plugins ... currently scans the
+     * classpath looking for classes that implement the plugin interface.
      */
     private PluginManager() {
         initialize();
@@ -123,10 +123,12 @@ public final class PluginManager {
                     }
                 }
 
-            // The classloader references a bunch of .class files on disk,
-            // recusively inspect contents of each of the resources. If it is
-            // a directory at it to our workStack, otherwise check to see if it
-            // is a concrete plugin.
+                // The classloader references a bunch of .class files on disk,
+                // recusively inspect contents of each of the resources. If it
+                // is
+                // a directory at it to our workStack, otherwise check to see if
+                // it
+                // is a concrete plugin.
             } else {
                 Stack<File> workStack = new Stack<File>();
                 workStack.push(new File(resource.getFile()));
@@ -142,8 +144,8 @@ public final class PluginManager {
                     // Plugins or more directories to recurse inside.
                     String[] files = dir.list();
                     for (int i = 0; i < files.length; i++) {
-                        File file = new File(dir.getAbsolutePath() + "/"
-                                             + files[i]);
+                        File file =
+                                new File(dir.getAbsolutePath() + "/" + files[i]);
                         if (file == null) {
                             throw new ClassNotFoundException("Null file");
                         }
@@ -153,8 +155,9 @@ public final class PluginManager {
                             workStack.push(file);
                             packages.push(pkgName + file.getName() + ".");
 
-                        // If we are dealling with a class file - attempt to add
-                        // it to our list of plugins.
+                            // If we are dealling with a class file - attempt to
+                            // add
+                            // it to our list of plugins.
                         } else if (files[i].endsWith(".class")) {
                             addPlugin(pkgName.concat(files[i]));
                         }
@@ -165,10 +168,10 @@ public final class PluginManager {
             // We have scaned the OpenSHAPA classpath - but we should also look
             // in the "plugins" directory for jar files that correctly conform
             // to the OpenSHAPA plugin interface.
-            LocalStorage ls = OpenSHAPA.getApplication()
-                                       .getContext().getLocalStorage();
-            File pluginDir = new File(ls.getDirectory().toString()
-                                      + "/plugins");
+            LocalStorage ls =
+                    OpenSHAPA.getApplication().getContext().getLocalStorage();
+            File pluginDir =
+                    new File(ls.getDirectory().toString() + "/plugins");
             // Unable to find plugin directory or any entries within the plugin
             // directory - don't bother attempting to add more plugins to
             // OpenSHAPA.
@@ -183,9 +186,9 @@ public final class PluginManager {
                 if (file == null) {
                     throw new ClassNotFoundException("Null file");
 
-                // File is a jar file - crack it open and look for plugins!
+                    // File is a jar file - crack it open and look for plugins!
                 } else if (file.endsWith(".jar")) {
-                    this.injectPlugin(f);
+                    injectPlugin(f);
                     JarFile jar = new JarFile(f);
 
                     // For each file in the jar file check to see if it could be
@@ -202,7 +205,7 @@ public final class PluginManager {
                 }
             }
 
-        // Whoops, something went bad. Chuck a spaz.
+            // Whoops, something went bad. Chuck a spaz.
         } catch (ClassNotFoundException e) {
             logger.error("Unable to build Plugin", e);
         } catch (IOException ie) {
@@ -214,57 +217,54 @@ public final class PluginManager {
 
     /**
      * Injects A plugin into the classpath.
-     *
-     * @param f The jar file to inject into the classpath.
-     *
-     * @throws IOException If unable to inject the plugin into the class path.
+     * 
+     * @param f
+     *            The jar file to inject into the classpath.
+     * @throws IOException
+     *             If unable to inject the plugin into the class path.
      */
     private void injectPlugin(final File f) throws IOException {
-        URLClassLoader sysLoader = (URLClassLoader) ClassLoader
-                                                    .getSystemClassLoader();
-        Class sysclass = URLClassLoader.class;
+        URLClassLoader sysLoader =
+                (URLClassLoader) ClassLoader.getSystemClassLoader();
+        Class<?> sysclass = URLClassLoader.class;
 
         try {
-            Class[] parameters = new Class[]{URL.class};
+            Class<?>[] parameters = new Class[] { URL.class };
             Method method = sysclass.getDeclaredMethod("addURL", parameters);
             method.setAccessible(true);
-            method.invoke(sysLoader, new Object[] {f.toURL()});
+            method.invoke(sysLoader, new Object[] { f.toURL() });
         } catch (Throwable t) {
             logger.error("Unable to inject class into class path.", t);
         }
     }
 
     /**
-     * Attempts to add an instance of the supplied class name as a plugin to
-     * the plugin manager. Will only add the class if it implements the plugin
+     * Attempts to add an instance of the supplied class name as a plugin to the
+     * plugin manager. Will only add the class if it implements the plugin
      * interface.
-     *
-     * @param className The fully qualified class name to attempt to add to
-     * the list of plugins.
+     * 
+     * @param className
+     *            The fully qualified class name to attempt to add to the list
+     *            of plugins.
      */
     private void addPlugin(final String className) {
         try {
-            String cName = className.replaceAll("\\.class$", "")
-                                    .replace('/', '.');
+            String cName =
+                    className.replaceAll("\\.class$", "").replace('/', '.');
 
             // Ignore UI tests - when they load they mess everything up (the
             // uispec4j interceptor kicks in and the UI stops working.
             if (!cName.contains("org.uispec4j")
-                && !cName.contains("org.openshapa.uitests")) {
+                    && !cName.contains("org.openshapa.uitests")) {
 
-                Class testClass = Class.forName(cName);
-                Class[] implInterfaces = testClass.getInterfaces();
-                for (Class c : implInterfaces) {
-                    if (PLUGIN_CLASS.isAssignableFrom(testClass)) {
-                        Plugin p = (Plugin) testClass.newInstance();
-                        plugins.put(p.getFileFilter(), p);
-                        viewLookup.put(p.getNewDataViewer().getClass()
-                                        .getName(), p);
-
-                        break;
-                    }
+                Class<?> testClass = Class.forName(cName);
+                if (PLUGIN_CLASS.isAssignableFrom(testClass)) {
+                    Plugin p = (Plugin) testClass.newInstance();
+                    plugins.put(p.getFileFilter(), p);
+                    pluginLookup.put(p.getNewDataViewer().getClass().getName(),
+                            p);
                 }
-             }
+            }
         } catch (InstantiationException e) {
             logger.error("Unable to instantiate plugin", e);
         } catch (IllegalAccessException e) {
@@ -277,10 +277,11 @@ public final class PluginManager {
     /**
      * @return A list of all the filefilters representing viewer plugins.
      */
-    public List<FileFilter> getPluginFileFilters() {
+    public Iterable<FileFilter> getPluginFileFilters() {
         // Sort the file filters to create a default filter.
         List<FileFilter> result = new ArrayList<FileFilter>();
-        FileFilter defaultFilter = viewLookup.get(DEFAULT_VIEW).getFileFilter();
+        FileFilter defaultFilter =
+                pluginLookup.get(DEFAULT_VIEW).getFileFilter();
 
         for (FileFilter f : plugins.keySet()) {
             // BugzID:749 - force movie filter to be default filter.
@@ -295,35 +296,23 @@ public final class PluginManager {
     }
 
     /**
-     * @param dataViewer The fully-qualified class name of the data viewer
-     * implementation
-     * @param f The file to use as a data feed to the data viewer
-     * @return Initialized data viewer
+     * @param dataViewer
+     *            The fully-qualified class name of the data viewer
+     *            implementation
+     * @return The {@link Plugin} used to build the data viewer if it exists,
+     *         {@code null} otherwise.
      */
-    public DataViewer buildDataViewer(final String dataViewer, final File f) {
-        Plugin p = this.viewLookup.get(dataViewer);
-        DataViewer result = p.getNewDataViewer();
-        result.setDataFeed(f);
-        return result;
+    public Plugin getAssociatedPlugin(final String dataViewer) {
+        return pluginLookup.get(dataViewer);
     }
 
     /**
-     * Creates the correct kind of viewer from the supplied file. This will
-     * prompt the user to clarify, if multiple viewers are availble for a single
-     * file type (i.e. many viewers may support CSV files.)
-     *
-     * @param ff file filter used to identify plugin type
-     * @param f data stream file
-     * @return initialized data viewers
+     * @param ff
+     *            file filter used to identify plugin type
+     * @return A {@link Plugin} if the given file filter is associated with a
+     *         registered plugin, {@code null} otherwise.
      */
-    public Iterable<DataViewer> buildDataViewers(final FileFilter ff,
-                                                 final File f) {
-        List<DataViewer> dvs = new ArrayList<DataViewer>();
-        Plugin plugin = plugins.get(ff);
-        DataViewer dataViewer = plugin.getNewDataViewer();
-        dataViewer.setDataFeed(f);
-        dvs.add(dataViewer);
-
-        return dvs;
+    public Plugin getAssociatedPlugin(final FileFilter ff) {
+        return plugins.get(ff);
     }
 }

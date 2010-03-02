@@ -33,6 +33,7 @@ import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer.ClockListener;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
+import org.openshapa.views.continuous.Plugin;
 import org.openshapa.views.continuous.PluginManager;
 
 import com.usermetrix.jclient.UserMetrix;
@@ -928,8 +929,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
             File f = jd.getSelectedFile();
             FileFilter ff = jd.getFileFilter();
 
-            for (DataViewer viewer : pm.buildDataViewers(ff, f)) {
-                addDataViewer(viewer, f);
+            Plugin plugin = pm.getAssociatedPlugin(ff);
+            if (plugin != null) {
+                DataViewer dataViewer = plugin.getNewDataViewer();
+                dataViewer.setDataFeed(f);
+                addDataViewer(dataViewer, f);
             }
         }
     }// GEN-LAST:event_openVideoButtonActionPerformed
