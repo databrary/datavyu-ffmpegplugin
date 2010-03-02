@@ -39,15 +39,18 @@ public class SpreadsheetCellFixture extends JPanelFixture {
     /**
      * Selects the cell.
      */
-    public final void selectCell() {
-        JLabel ordinalLabel = ordinalLabel().target;
-        Point labelPosition = ordinalLabel.getLocation();
-        Point clickPosition =
-                new Point(labelPosition.x + ImageObserver.WIDTH + 25,
-                        labelPosition.y + 5);
-        robot.pressKey(KeyEvent.VK_SHIFT);
-        robot.click(component(), clickPosition);
-        robot.releaseKey(KeyEvent.VK_SHIFT);
+    public final void selectCell(boolean select) {
+        if ((select && !((SpreadsheetCell) target).isSelected()) ||
+        (!select && ((SpreadsheetCell) target).isSelected())) {
+            JLabel ordinalLabel = ordinalLabel().target;
+            Point labelPosition = ordinalLabel.getLocation();
+            Point clickPosition =
+                    new Point(labelPosition.x + ImageObserver.WIDTH + 25,
+                    labelPosition.y + 5);
+            robot.pressKey(KeyEvent.VK_SHIFT);
+            robot.click(component(), clickPosition);
+            robot.releaseKey(KeyEvent.VK_SHIFT);
+        }
     }
 
     /**

@@ -66,7 +66,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
             // Select all cells in a column
             for (SpreadsheetCellFixture cell : spreadsheet.column(numColumns)
                     .allCells()) {
-                cell.selectCell();
+                cell.selectCell(true);
             }
             // Delete selected cells
             mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
@@ -146,7 +146,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
                                 (SpreadsheetPanel) jPanel.component());
                 SpreadsheetCellFixture cell =
                         spreadsheet.column(numColumns).cell(1);
-                cell.selectCell();
+                cell.selectCell(true);
                 mainFrameFixture.menuItemWithPath("Spreadsheet").click();
                 mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
                         "Delete Cell");
@@ -206,7 +206,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         // 3. Select every cell
         for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
             for (SpreadsheetCellFixture cell : column.allCells()) {
-                cell.selectCell();
+                cell.selectCell(true);
             }
         }
 

@@ -5,6 +5,7 @@ import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.util.Platform;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.testng.Assert;
@@ -15,7 +16,7 @@ import org.testng.annotations.Test;
  */
 public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
 
-    @Test
+    //@Test
     public void testCreateCellLeftRight() {
         // Left column
         createVariable("L", "TEXT");
@@ -91,6 +92,74 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
                 "Expecting right cell to inherit centre cell onset value.");
         Assert.assertTrue(cellHasOffset("R", 1, centerOffset),
                 "Expecting right cell to inherit centre cell offset value.");
+    }
+
+    @Test
+    public void testBug698() {
+        // Left column
+        createVariable("L", "TEXT");
+        validateVariable("L", "TEXT");
+        // Center column
+        createVariable("C", "TEXT");
+        validateVariable("C", "TEXT");
+        // Right column
+        createVariable("R", "TEXT");
+        validateVariable("R", "TEXT");
+
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        /*
+         * Create a cell in the each column column
+         */
+        for (SpreadsheetColumnFixture col : spreadsheet.allColumns()) {
+            mainFrameFixture.pressKey(Platform.controlOrCommandKey());
+            col.click();
+        }
+
+        mainFrameFixture.releaseKey(Platform.controlOrCommandKey());
+        
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
+        /*
+         * Select all cells and try to create a cell to the left.
+         */
+        spreadsheet.column("L").cell(1).selectCell(true);
+        spreadsheet.column("C").cell(1).selectCell(true);
+        spreadsheet.column("R").cell(1).selectCell(true);
+
+        // 2. Make a new cells to the left
+        mainFrameFixture.menuItemWithPath("Spreadsheet").click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                "New Cells to Left");
+
+        // 3. Check that new cells have been created
+        Assert.assertEquals(spreadsheet.column("L").allCells().size(), 2);
+        Assert.assertEquals(spreadsheet.column("C").allCells().size(), 2);
+        Assert.assertEquals(spreadsheet.column("R").allCells().size(), 1);
+
+        /*
+         * Select all cells and try to create a cell to the right.
+         */
+        spreadsheet.deselectAll();
+        // 1. Select all cells
+        spreadsheet.column("L").cell(1).selectCell(true);
+        spreadsheet.column("C").cell(1).selectCell(true);
+        spreadsheet.column("R").cell(1).selectCell(true);
+        spreadsheet.column("L").cell(2).selectCell(true);
+        spreadsheet.column("C").cell(2).selectCell(true);
+
+        // 2. Make a new cell to the right
+        mainFrameFixture.menuItemWithPath("Spreadsheet").click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+                "New Cells to Right");
+
+        // 3. Check that new cells have been created
+        Assert.assertEquals(spreadsheet.column("L").allCells().size(), 2);
+        Assert.assertEquals(spreadsheet.column("C").allCells().size(), 4);
+        Assert.assertEquals(spreadsheet.column("R").allCells().size(), 3);
     }
 
     /**
@@ -187,7 +256,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
                         (SpreadsheetPanel) jPanel.component());
 
-        spreadsheet.column(varName).cell(id).selectCell();
+        spreadsheet.column(varName).cell(id).selectCell(true);
     }
 
     /**
