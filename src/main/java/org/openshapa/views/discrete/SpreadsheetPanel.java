@@ -130,7 +130,7 @@ implements ExternalColumnListListener, ComponentListener,
         // Set up the add new variable button
         newVar.setBorder(BorderFactory
                          .createMatteBorder(0, 0, 0, 1, Color.black));
-        newVar.setName(rMap.getString("add.name"));
+        newVar.setName("newVarPlusButton");
         newVar.setToolTipText(rMap.getString("add.tooltip"));
 
         ActionMap aMap = Application.getInstance(OpenSHAPA.class)

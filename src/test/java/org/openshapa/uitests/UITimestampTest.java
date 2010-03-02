@@ -195,7 +195,8 @@ public final class UITimestampTest extends OpenSHAPATestClass {
     private Vector<SpreadsheetCellFixture> createNewCells(final int amount) {
         String varName = "t";
         String varType =
-                UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
+                UIUtils.VAR_TYPES[(int) (Math.random()
+                * UIUtils.VAR_TYPES.length)];
         String varRadio = varType.toLowerCase();
 
         // 1. Create new variable
