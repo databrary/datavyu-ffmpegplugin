@@ -450,6 +450,9 @@ public final class OpenSHAPAView extends FrameView {
 
                 File file = new File(setting.getFilePath());
                 Plugin plugin = pm.getAssociatedPlugin(setting.getPluginName());
+                if (plugin == null) {
+                    continue;
+                }
 
                 DataViewer viewer = plugin.getNewDataViewer();
                 viewer.setDataFeed(file);
