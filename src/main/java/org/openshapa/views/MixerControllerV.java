@@ -10,6 +10,7 @@ import java.awt.event.AdjustmentListener;
 import java.util.EventObject;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
@@ -272,6 +273,8 @@ public class MixerControllerV implements NeedleEventListener,
     /**
      * Add a new track to the interface.
      * 
+     * @param icon
+     *            icon associated with the track
      * @param trackName
      *            name of the track
      * @param duration
@@ -279,8 +282,9 @@ public class MixerControllerV implements NeedleEventListener,
      * @param offset
      *            the amount of playback offset in milliseconds
      */
-    public void addNewTrack(final String mediaPath, final String trackName,
-            final long duration, final long offset, final long bookmark) {
+    public void addNewTrack(final ImageIcon icon, final String mediaPath,
+            final String trackName, final long duration, final long offset,
+            final long bookmark) {
         // Check if the scale needs to be updated.
         if (duration + offset > maxEnd) {
             maxEnd = duration + offset;
@@ -294,8 +298,8 @@ public class MixerControllerV implements NeedleEventListener,
             updateTracksScrollBar();
         }
 
-        tracksEditorController.addNewTrack(mediaPath, trackName, duration,
-                offset, bookmark, this);
+        tracksEditorController.addNewTrack(icon, mediaPath, trackName,
+                duration, offset, bookmark, this);
 
         tracksScrollPane.validate();
     }

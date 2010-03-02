@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.SwingConstants;
@@ -933,7 +934,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
             if (plugin != null) {
                 DataViewer dataViewer = plugin.getNewDataViewer();
                 dataViewer.setDataFeed(f);
-                addDataViewer(dataViewer, f);
+                addDataViewer(plugin.getTypeIcon(), dataViewer, f);
             }
         }
     }// GEN-LAST:event_openVideoButtonActionPerformed
@@ -970,19 +971,22 @@ public final class DataControllerV extends OpenSHAPADialog implements
      * @param f
      *            The parent file that the viewer represents.
      */
-    private void addDataViewer(final DataViewer viewer, final File f) {
+    private void addDataViewer(final ImageIcon icon, final DataViewer viewer,
+            final File f) {
         addViewer(viewer, 0);
 
         addDataViewerToProject(viewer.getClass().getName(), f.getAbsolutePath());
 
         // Add the file to the tracks information panel
-        addTrack(f.getAbsolutePath(), f.getName(), viewer.getDuration(), viewer
-                .getOffset(), -1);
+        addTrack(icon, f.getAbsolutePath(), f.getName(), viewer.getDuration(),
+                viewer.getOffset(), -1);
     }
 
     /**
      * Adds a track to the tracks panel.
      * 
+     * @param icon
+     *            Icon associated with the track
      * @param mediaPath
      *            Absolute file path to the media file.
      * @param name
@@ -992,9 +996,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
      * @param offset
      *            The time offset of the data feed in milliseconds.
      */
-    public void addTrack(final String mediaPath, final String name,
-            final long duration, final long offset, final long bookmark) {
-        mixerControllerV.addNewTrack(mediaPath, name, duration, offset,
+    public void addTrack(final ImageIcon icon, final String mediaPath,
+            final String name, final long duration, final long offset,
+            final long bookmark) {
+        mixerControllerV.addNewTrack(icon, mediaPath, name, duration, offset,
                 bookmark);
     }
 

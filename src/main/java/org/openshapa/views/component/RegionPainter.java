@@ -36,7 +36,7 @@ public class RegionPainter extends JComponent {
         return regionModel;
     }
 
-    public void setRegionModel(RegionModel regionModel) {
+    public void setRegionModel(final RegionModel regionModel) {
         this.regionModel = regionModel;
         this.repaint();
     }
@@ -45,7 +45,7 @@ public class RegionPainter extends JComponent {
         return viewableModel;
     }
 
-    public void setViewableModel(ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel viewableModel) {
         this.viewableModel = viewableModel;
         this.repaint();
     }
@@ -59,18 +59,18 @@ public class RegionPainter extends JComponent {
     }
 
     @Override
-    public boolean contains(Point p) {
+    public boolean contains(final Point p) {
         return startMarkerPolygon.contains(p) || endMarkerPolygon.contains(p);
     }
 
     @Override
-    public boolean contains(int x, int y) {
+    public boolean contains(final int x, final int y) {
         return startMarkerPolygon.contains(x, y)
                 || endMarkerPolygon.contains(x, y);
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paint(final Graphics g) {
         if (regionModel == null || viewableModel == null) {
             return;
         }
@@ -155,7 +155,7 @@ public class RegionPainter extends JComponent {
 
             // Gray
             g.setColor(new Color(63, 63, 63, 100));
-            g.fillRect(startPos, markerHeight, (int) (endXPos - startPos),
+            g.fillRect(startPos, markerHeight + 1, (int) (endXPos - startPos),
                     size.height);
         }
         if (regionEnd < viewableModel.getZoomWindowEnd()) {
@@ -174,7 +174,7 @@ public class RegionPainter extends JComponent {
                             + regionModel.getPaddingLeft() + 4;
 
             g.setColor(new Color(63, 63, 63, 100));
-            g.fillRect(startXPos, markerHeight, endXPos - startXPos,
+            g.fillRect(startXPos, markerHeight + 1, endXPos - startXPos,
                     size.height);
         }
 

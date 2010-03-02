@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,7 +36,9 @@ import org.openshapa.views.component.TrackPainter;
 public class TrackController {
     /** View components */
     private JPanel view;
+    private JPanel header;
     private JLabel trackLabel;
+    private JLabel iconLabel;
     private TrackPainter trackPainter;
     private PopupMenu menu;
     /** Models */
@@ -99,12 +102,19 @@ public class TrackController {
 
         trackPainter.add(menu);
 
-        // Create the Header panel
+        // Create the Header panel and its components
         trackLabel = new JLabel("", SwingConstants.CENTER);
-        trackLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1,
-                new Color(73, 73, 73)));
+        iconLabel = new JLabel("", SwingConstants.CENTER);
 
-        view.add(trackLabel, "w 100!, h 75!");
+        header = new JPanel(new MigLayout("ins 0, wrap 3"));
+        header.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+                .createMatteBorder(0, 0, 0, 1, new Color(73, 73, 73)),
+                BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+
+        header.add(trackLabel, "w 96!, span 3");
+        header.add(iconLabel, "span 3, w 96!, h 32!");
+
+        view.add(header, "w 100!, h 75!");
 
         // Create the Carriage panel
         view.add(trackPainter, "w 662!, h 75!");
@@ -113,6 +123,10 @@ public class TrackController {
     /**
      * Sets the track information to use.
      * 
+     * @param icon
+     *            Icon to use with this track. {@code null} if no icon.
+     * @param trackName
+     *            Name of this track
      * @param trackId
      *            Absolute path to the track's data feed
      * @param duration
@@ -120,8 +134,12 @@ public class TrackController {
      * @param offset
      *            Offset of the data feed in milliseconds
      */
-    public void setTrackInformation(final String trackName,
-            final String trackId, final long duration, final long offset) {
+    public void setTrackInformation(final ImageIcon icon,
+            final String trackName, final String trackId, final long duration,
+            final long offset) {
+        if (icon != null) {
+            iconLabel.setIcon(icon);
+        }
         trackModel.setTrackName(trackName);
         trackModel.setTrackId(trackId);
         trackModel.setDuration(duration);

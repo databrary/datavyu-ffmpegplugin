@@ -459,9 +459,10 @@ public final class OpenSHAPAView extends FrameView {
                 viewer.setOffset(setting.getOffset());
 
                 dataController.addViewer(viewer, setting.getOffset());
-                dataController.addTrack(file.getAbsolutePath(), file.getName(),
-                        viewer.getDuration(), setting.getOffset(), setting
-                                .getBookmark());
+                dataController.addTrack(plugin.getTypeIcon(), file
+                        .getAbsolutePath(), file.getName(), viewer
+                        .getDuration(), setting.getOffset(), setting
+                        .getBookmark());
             }
 
             // Show the data controller

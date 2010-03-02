@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -97,6 +98,8 @@ public class TracksEditorController implements TrackMouseEventListener {
     /**
      * Adds a new track to the interface.
      * 
+     * @param icon
+     *            icon associated with the track
      * @param mediaPath
      *            absolute path to the media file
      * @param trackName
@@ -111,14 +114,14 @@ public class TracksEditorController implements TrackMouseEventListener {
      *            register the listener interested in {@link CarriageEvent}.
      *            null if uninterested.
      */
-    public void addNewTrack(final String mediaPath, final String trackName,
-            final long duration, final long offset, final long bookmark,
-            final CarriageEventListener listener) {
+    public void addNewTrack(final ImageIcon icon, final String mediaPath,
+            final String trackName, final long duration, final long offset,
+            final long bookmark, final CarriageEventListener listener) {
         // TrackController
         TrackController trackController = new TrackController();
         trackController.setViewableModel(viewableModel);
-        trackController.setTrackInformation(trackName, mediaPath, duration,
-                offset);
+        trackController.setTrackInformation(icon, trackName, mediaPath,
+                duration, offset);
         trackController.addBookmark(bookmark);
         if (duration < 0) {
             trackController.setErroneous(true);
