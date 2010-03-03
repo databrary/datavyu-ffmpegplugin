@@ -988,6 +988,14 @@ public final class DataControllerV extends OpenSHAPADialog implements
     }
 
     /**
+     * Returns set of dataviewers
+     * @return set of dataviewers.
+     */
+    public Set<DataViewer> getDataViewers() {
+        return viewers;
+    }
+
+    /**
      * Adds a track to the tracks panel.
      * 
      * @param icon

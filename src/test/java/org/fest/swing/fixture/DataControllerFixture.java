@@ -1,11 +1,13 @@
 package org.fest.swing.fixture;
 
 import java.awt.event.KeyEvent;
+import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import org.fest.swing.core.Robot;
 import org.openshapa.views.DataControllerV;
+import org.openshapa.views.continuous.DataViewer;
 
 /**
  * Fixture for OpenSHAPA DataController.
@@ -71,5 +73,13 @@ public class DataControllerFixture extends DialogFixture {
     public final String getFindOffset() {
         return new JTextComponentFixture(robot,
             findByName("findOffsetLabel", JTextField.class)).text();
+    }
+
+    /**
+     * Returns set of all dataviewers.
+     * @return Set<DataViewers> dataviewers
+     */
+    public final Set<DataViewer> getDataViewers() {
+        return ((DataControllerV) target).getDataViewers();
     }
 }
