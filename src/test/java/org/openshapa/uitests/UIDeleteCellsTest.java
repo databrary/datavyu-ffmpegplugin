@@ -30,7 +30,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
     @Test
     public void testBug713() {
         String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        File demoFile = new File(root + "/ui/demo_data_small.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -101,7 +101,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
     @Test
     public void testDeleteSingleCells() {
         String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        File demoFile = new File(root + "/ui/demo_data_small.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -173,7 +173,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
     @Test
     public void testDeleteAllCellsInSpreadsheet() {
         String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        File demoFile = new File(root + "/ui/demo_data_small.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
