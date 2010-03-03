@@ -29,6 +29,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
      */
     @Test
     public void testBug713() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data_small.rb");
         Assert.assertTrue(demoFile.exists());
@@ -66,7 +67,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
             // Select all cells in a column
             for (SpreadsheetCellFixture cell : spreadsheet.column(numColumns)
                     .allCells()) {
-                cell.selectCell(true);
+                cell.fillSelectCell(true);
             }
             // Delete selected cells
             mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
@@ -100,6 +101,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
      */
     @Test
     public void testDeleteSingleCells() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data_small.rb");
         Assert.assertTrue(demoFile.exists());
@@ -146,7 +148,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
                                 (SpreadsheetPanel) jPanel.component());
                 SpreadsheetCellFixture cell =
                         spreadsheet.column(numColumns).cell(1);
-                cell.selectCell(true);
+                cell.fillSelectCell(true);
                 mainFrameFixture.menuItemWithPath("Spreadsheet").click();
                 mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
                         "Delete Cell");
@@ -172,6 +174,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
      */
     @Test
     public void testDeleteAllCellsInSpreadsheet() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data_small.rb");
         Assert.assertTrue(demoFile.exists());
@@ -206,7 +209,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         // 3. Select every cell
         for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
             for (SpreadsheetCellFixture cell : column.allCells()) {
-                cell.selectCell(true);
+                cell.fillSelectCell(true);
             }
         }
 

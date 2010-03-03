@@ -16,7 +16,7 @@ import org.testng.annotations.Test;
  */
 public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
 
-    //@Test
+    @Test
     public void testCreateCellLeftRight() {
         // Left column
         createVariable("L", "TEXT");
@@ -126,9 +126,9 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
         /*
          * Select all cells and try to create a cell to the left.
          */
-        spreadsheet.column("L").cell(1).selectCell(true);
-        spreadsheet.column("C").cell(1).selectCell(true);
-        spreadsheet.column("R").cell(1).selectCell(true);
+        spreadsheet.column("L").cell(1).fillSelectCell(true);
+        spreadsheet.column("C").cell(1).fillSelectCell(true);
+        spreadsheet.column("R").cell(1).fillSelectCell(true);
 
         // 2. Make a new cells to the left
         mainFrameFixture.menuItemWithPath("Spreadsheet").click();
@@ -145,11 +145,11 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
          */
         spreadsheet.deselectAll();
         // 1. Select all cells
-        spreadsheet.column("L").cell(1).selectCell(true);
-        spreadsheet.column("C").cell(1).selectCell(true);
-        spreadsheet.column("R").cell(1).selectCell(true);
-        spreadsheet.column("L").cell(2).selectCell(true);
-        spreadsheet.column("C").cell(2).selectCell(true);
+        spreadsheet.column("L").cell(1).fillSelectCell(true);
+        spreadsheet.column("C").cell(1).fillSelectCell(true);
+        spreadsheet.column("R").cell(1).fillSelectCell(true);
+        spreadsheet.column("L").cell(2).fillSelectCell(true);
+        spreadsheet.column("C").cell(2).fillSelectCell(true);
 
         // 2. Make a new cell to the right
         mainFrameFixture.menuItemWithPath("Spreadsheet").click();
@@ -256,7 +256,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
                         (SpreadsheetPanel) jPanel.component());
 
-        spreadsheet.column(varName).cell(id).selectCell(true);
+        spreadsheet.column(varName).cell(id).fillSelectCell(true);
     }
 
     /**

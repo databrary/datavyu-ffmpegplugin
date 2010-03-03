@@ -16,13 +16,6 @@ import org.testng.annotations.Test;
  * to fix the problem.
  */
 public final class UIBug308Test extends OpenSHAPATestClass {
-
-    /**
-     * Different cell variable types.
-     */
-    private static final String[] VAR_TYPES =
-            { "TEXT", "PREDICATE", "INTEGER", "NOMINAL", "MATRIX", "FLOAT" };
-
     /**
      * Test creating a new variable. Then try to create variable with same name.
      * Type is selected randomly since it should not affect this.
@@ -31,7 +24,8 @@ public final class UIBug308Test extends OpenSHAPATestClass {
     public void testDuplicateName() {
         System.err.println("testDuplicateName");
         String varName = "v";
-        String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
+        String varType = UIUtils.VAR_TYPES[(int) (Math.random()
+                * UIUtils.VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 

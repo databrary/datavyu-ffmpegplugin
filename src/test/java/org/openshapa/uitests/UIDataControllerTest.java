@@ -119,7 +119,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         Assert.assertEquals(cell1.cellValue().text(), testExpectedArray[0]);
         Assert.assertEquals(cell2.cellValue().text(), testExpectedArray[1]);
-        cell2.selectCell(true);
+        cell2.fillSelectCell(true);
 
         // 7. Jog forward 5 times and change cell onset.
         for (int i = 0; i < 5; i++) {
@@ -154,7 +154,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             cell1 = column.cell(cellId);
             //ssPanel.deselectAll();
             column.click();
-            cell1.selectCell(true);
+            cell1.fillSelectCell(true);
             Assert.assertEquals(dcf.getFindOnset(), cell1.onsetTimestamp()
                     .text());
             Assert.assertEquals(dcf.getFindOffset(), cell1.offsetTimestamp()

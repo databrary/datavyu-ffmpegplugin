@@ -983,7 +983,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
             spreadsheet.column(varName).click();
         } else {
             spreadsheet.column(varName).click();
-            spreadsheet.column(varName).cell(numCells).selectCell(true);
+            spreadsheet.column(varName).cell(numCells).fillSelectCell(true);
         }
 
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
@@ -1002,7 +1002,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
                         (SpreadsheetPanel) jPanel.component());
 
-        spreadsheet.column(varName).cell(id).selectCell(true);
+        spreadsheet.column(varName).cell(id).fillSelectCell(true);
     }
 
     /**
@@ -1159,7 +1159,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         JTextComponentFixture textField = cell.cellValue();
 
         for (int inputColumn = 1; inputColumn <= values.length; inputColumn++) {
-            cell.selectCell(true);
+            cell.fillSelectCell(true);
 
             // Tab to the cell value
             for (int positions = 2 + inputColumn; positions > 0; positions--) {
@@ -1217,7 +1217,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
 
             for (int ordinal = 1; ordinal <= numOfCells; ordinal++) {
-                spreadsheet.column(varName).cell(ordinal).selectCell(true);
+                spreadsheet.column(varName).cell(ordinal).fillSelectCell(true);
             }
 
             if (numOfCells > 1) {

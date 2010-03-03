@@ -486,6 +486,16 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     }
 
     /**
+     * @return True if the cell is filled, false otherwise.
+     */
+    public boolean isFilled() {
+        if (!this.highlighted && this.selected) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Set this cell as selected, a selected cell has a different appearance to
      * an unselcted one (typically colour).
      *
