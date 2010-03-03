@@ -125,41 +125,43 @@ public final class PluginManager {
 
                 // The classloader references a bunch of .class files on disk,
                 // recusively inspect contents of each of the resources. If it
-                // is
-                // a directory at it to our workStack, otherwise check to see if
-                // it
-                // is a concrete plugin.
+                // is a directory add it to our workStack, otherwise check to
+                // see if it is a concrete plugin.
             } else {
-                Stack<File> workStack = new Stack<File>();
-                workStack.push(new File(resource.getFile()));
+                // If we are running from a test we need to look in more than
+                // one place for classes - add all these places to the workstack
+                Enumeration<URL> resources = loader.getResources("");
+                while (resources.hasMoreElements()) {
+                    Stack<File> workStack = new Stack<File>();
+                    workStack.push(new File(resources.nextElement().getFile()));
 
-                Stack<String> packages = new Stack<String>();
-                packages.push("");
+                    Stack<String> packages = new Stack<String>();
+                    packages.push("");
 
-                while (!workStack.empty()) {
-                    File dir = workStack.pop();
-                    String pkgName = packages.pop();
+                    while (!workStack.empty()) {
+                        File dir = workStack.pop();
+                        String pkgName = packages.pop();
 
-                    // For each of the children of the directory - look for
-                    // Plugins or more directories to recurse inside.
-                    String[] files = dir.list();
-                    for (int i = 0; i < files.length; i++) {
-                        File file =
-                                new File(dir.getAbsolutePath() + "/" + files[i]);
-                        if (file == null) {
-                            throw new ClassNotFoundException("Null file");
-                        }
+                        // For each of the children of the directory - look for
+                        // Plugins or more directories to recurse inside.
+                        String[] files = dir.list();
+                        for (int i = 0; i < files.length; i++) {
+                            File file = new File(dir.getAbsolutePath()
+                                                 + "/" + files[i]);
+                            if (file == null) {
+                                throw new ClassNotFoundException("Null file");
+                            }
 
-                        // If the file is a directory - add it to our work list.
-                        if (file.isDirectory()) {
-                            workStack.push(file);
-                            packages.push(pkgName + file.getName() + ".");
+                            // If the file is a directory, add to work list.
+                            if (file.isDirectory()) {
+                                workStack.push(file);
+                                packages.push(pkgName + file.getName() + ".");
 
-                            // If we are dealling with a class file - attempt to
-                            // add
-                            // it to our list of plugins.
-                        } else if (files[i].endsWith(".class")) {
-                            addPlugin(pkgName.concat(files[i]));
+                                // If we are dealling with a class file -
+                                // attempt to add it to our list of plugins.
+                            } else if (files[i].endsWith(".class")) {
+                                addPlugin(pkgName.concat(files[i]));
+                            }
                         }
                     }
                 }
