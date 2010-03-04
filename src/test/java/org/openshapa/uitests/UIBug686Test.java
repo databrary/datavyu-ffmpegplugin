@@ -78,18 +78,9 @@ public final class UIBug686Test extends OpenSHAPATestClass {
             JFileChooserFixture jfcf = dcf.fileChooser();
             jfcf.selectFile(videoFile).approve();
         }
-        //By using the EDT we ensure that the video has loaded before we
-        //continue.
-        GuiActionRunner.execute(new GuiTask() {
+        while(dcf.getDataViewers().size() < 1) {
 
-            public void executeInEDT() {
-                Iterator it = dcf.getDataViewers().iterator();
-
-                Frame vid = ((Frame) it.next());
-                FrameFixture vidWindow =
-                        new FrameFixture(mainFrameFixture.robot, vid);
-            }
-        });
+        }
 
         // 2. Jog forward and check
         dcf.button("jogForwardButton").click();
