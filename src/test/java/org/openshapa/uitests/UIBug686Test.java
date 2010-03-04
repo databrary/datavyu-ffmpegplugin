@@ -1,19 +1,17 @@
 package org.openshapa.uitests;
 
-import java.awt.Frame;
 import static org.fest.reflect.core.Reflection.method;
 
 import java.awt.Point;
 import java.io.File;
-import java.util.Iterator;
 import javax.swing.filechooser.FileFilter;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
 import org.fest.swing.fixture.DataControllerFixture;
-import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.DataControllerV;
@@ -74,8 +72,7 @@ public final class UIBug686Test extends OpenSHAPATestClass {
             });
         } else {
             dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
         while(dcf.getDataViewers().size() < 1) {

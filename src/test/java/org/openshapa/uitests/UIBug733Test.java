@@ -14,12 +14,12 @@ import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.continuous.PluginManager;
-import org.openshapa.views.continuous.quicktime.QTDataViewer;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -77,7 +77,7 @@ public final class UIBug733Test extends OpenSHAPATestClass {
         } else {
             dcf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
