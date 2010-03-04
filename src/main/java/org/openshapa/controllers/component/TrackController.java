@@ -12,6 +12,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,6 +35,7 @@ import org.openshapa.views.component.TrackPainter;
  * TrackPainterController is responsible for managing a TrackPainter.
  */
 public class TrackController {
+
     /** View components */
     private JPanel view;
     private JPanel header;
@@ -41,9 +43,16 @@ public class TrackController {
     private JLabel iconLabel;
     private TrackPainter trackPainter;
     private PopupMenu menu;
+    private JButton lockUnlockButton;
+    private final ImageIcon unlockIcon =
+            new ImageIcon(getClass().getResource("/icons/track-unlock.png"));
+    private final ImageIcon lockIcon =
+            new ImageIcon(getClass().getResource("/icons/track-lock.png"));
+
     /** Models */
     private ViewableModel viewableModel;
     private TrackModel trackModel;
+
     /** Listens to mouse events */
     private TrackPainterListener trackPainterListener;
     /**
@@ -51,6 +60,7 @@ public class TrackController {
      * the track
      */
     private EventListenerList listenerList;
+
     /** States */
     // can the carriage be moved using the mouse when snap is switched on
     private boolean isMoveable;
@@ -113,6 +123,18 @@ public class TrackController {
 
         header.add(trackLabel, "w 96!, span 3");
         header.add(iconLabel, "span 3, w 96!, h 32!");
+
+        // Set up the button used for locking/unlocking track movement
+        lockUnlockButton = new JButton(unlockIcon);
+        lockUnlockButton.setContentAreaFilled(false);
+        lockUnlockButton.setBorderPainted(false);
+        lockUnlockButton.setVisible(false);
+        lockUnlockButton.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                handleLockUnlockButtonEvent(e);
+            }
+        });
+        header.add(lockUnlockButton, "w 20!, h 20!");
 
         view.add(header, "w 100!, h 75!");
 
@@ -318,7 +340,7 @@ public class TrackController {
     }
 
     /**
-     * Invert selection state
+     * Invert selection state.
      */
     private void changeSelected() {
         if (trackModel.isSelected()) {
@@ -330,10 +352,34 @@ public class TrackController {
         fireCarriageSelectionChangeEvent();
     }
 
+    /**
+     * Handles the event for locking and unlocking the track's movement.
+     * 
+     * @param e
+     */
+    private void handleLockUnlockButtonEvent(final ActionEvent e) {
+        isLocked = !isLocked;
+        if (isLocked) {
+            lockUnlockButton.setIcon(lockIcon);
+        } else {
+            lockUnlockButton.setIcon(unlockIcon);
+        }
+    }
+
+    /**
+     * Register a mouse listener.
+     * 
+     * @param listener
+     */
     public void addMouseListener(final MouseListener listener) {
         view.addMouseListener(listener);
     }
 
+    /**
+     * Remove the mouse listener.
+     * 
+     * @param listener
+     */
     public void removeMouseListener(final MouseListener listener) {
         view.removeMouseListener(listener);
     }
@@ -358,11 +404,22 @@ public class TrackController {
         listenerList.remove(CarriageEventListener.class, listener);
     }
 
+    /**
+     * Register the listener interested in mouse events on the track's carriage.
+     * 
+     * @param listener
+     */
     public synchronized void addTrackMouseEventListener(
             final TrackMouseEventListener listener) {
         listenerList.add(TrackMouseEventListener.class, listener);
     }
 
+    /**
+     * Remove the listener from being notified of mouse events on the track's
+     * carriage.
+     * 
+     * @param listener
+     */
     public synchronized void removeTrackMouseEventListener(
             final TrackMouseEventListener listener) {
         listenerList.remove(TrackMouseEventListener.class, listener);
@@ -438,6 +495,9 @@ public class TrackController {
         }
     }
 
+    /**
+     * Used to inform listeners about track selection event.
+     */
     private synchronized void fireCarriageSelectionChangeEvent() {
         CarriageEvent e =
                 new CarriageEvent(this, trackModel.getTrackId(), trackModel
@@ -455,6 +515,12 @@ public class TrackController {
         }
     }
 
+    /**
+     * Used to inform listeners about the mouse release event on the track's
+     * carriage.
+     * 
+     * @param e
+     */
     private synchronized void fireMouseReleasedEvent(final MouseEvent e) {
         Object[] listeners = listenerList.getListenerList();
         /*
@@ -469,7 +535,7 @@ public class TrackController {
     }
 
     /**
-     * Inner listener used to handle mouse eventss
+     * Inner listener used to handle mouse events.
      */
     private class TrackPainterListener extends MouseInputAdapter {
 
