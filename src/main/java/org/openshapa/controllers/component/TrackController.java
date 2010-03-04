@@ -146,6 +146,7 @@ public class TrackController {
         trackModel.setOffset(offset);
         trackModel.setErroneous(false);
         trackLabel.setText(trackName);
+        trackLabel.setToolTipText(trackName);
         trackPainter.setTrackModel(trackModel);
     }
 
