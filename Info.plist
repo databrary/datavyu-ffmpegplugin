@@ -44,7 +44,7 @@
         <string>$JAVAROOT/repo/org/openshapa/openhashtable/0.1/openhashtable-0.1.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.5/openshapa-lib-0.0.5.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.5/snakeyaml-1.5.jar</string>
-        <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.2/UserMetrix-jclient-0.0.2.jar</string>
+        <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.3/UserMetrix-jclient-0.0.3.jar</string>
         <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.2/miglayout-3.7.2-swing.jar</string>
       </array>
     </dict>
