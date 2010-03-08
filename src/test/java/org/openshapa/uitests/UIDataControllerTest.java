@@ -2,22 +2,20 @@ package org.openshapa.uitests;
 
 import static org.fest.reflect.core.Reflection.method;
 
-import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.Iterator;
 import javax.swing.filechooser.FileFilter;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
 
 import org.fest.swing.fixture.DataControllerFixture;
-import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.DataControllerV;
@@ -81,7 +79,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      */
     private void standardSequence1(final String varName, final String varType,
             final String[] testInputArray, final String[] testExpectedArray) {
-
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture ssPanel =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
@@ -92,27 +90,24 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 2. Open Data Viewer Controller and get starting time
         mainFrameFixture.clickMenuItemWithPath("Controller",
                 "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
         DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
                         (DataControllerV) mainFrameFixture.dialog()
                         .component());
-
         // 3. Create new cell - so we have something to send key to because
         SpreadsheetColumnFixture column = ssPanel.column(varName);
         column.click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
-
         // 4. Test Jogging back and forth.
         for (int i = 0; i < 5; i++) {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD3);
         }
-        Assert.assertEquals("00:00:05:000", dcf.getCurrentTime());
+        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:200");
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 2; i++) {        
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD1);
         }
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:03:000");
+        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:120");
 
         // 5. Test Create New Cell with Onset.
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
@@ -121,9 +116,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         Assert.assertEquals(column.numOfCells(), 2);
         Assert.assertEquals(cell1.onsetTimestamp().text(), "00:00:00:000");
-        Assert.assertEquals(cell1.offsetTimestamp().text(), "00:00:02:999");
+        Assert.assertEquals(cell1.offsetTimestamp().text(), "00:00:00:119");
 
-        Assert.assertEquals(cell2.onsetTimestamp().text(), "00:00:03:000");
+        Assert.assertEquals(cell2.onsetTimestamp().text(), "00:00:00:120");
         Assert.assertEquals(cell2.offsetTimestamp().text(), "00:00:00:000");
 
         // 6. Insert text into both cells.
@@ -138,29 +133,29 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         for (int i = 0; i < 5; i++) {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD3);
         }
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:08:000");
+        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:320");
 
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD3);
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_DIVIDE);
-        Assert.assertEquals(cell2.onsetTimestamp().text(), "00:00:09:000");
+        Assert.assertEquals(cell2.onsetTimestamp().text(), "00:00:00:360");
 
         // 8. Change cell offset.
         dcf.pressSetOffsetButton();
-        Assert.assertEquals(cell2.offsetTimestamp().text(), "00:00:09:000");
+        Assert.assertEquals(cell2.offsetTimestamp().text(), "00:00:00:360");
 
         // 9. Jog back and forward, then create a new cell with onset
         for (int i = 0; i < 2; i++) {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD1);
         }
 
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:07:000");
+        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:280");
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
 
         SpreadsheetCellFixture cell3 = column.cell(3);
         Assert.assertEquals(column.numOfCells(), 3);
-        Assert.assertEquals(cell2.offsetTimestamp().text(), "00:00:09:000");
+        Assert.assertEquals(cell2.offsetTimestamp().text(), "00:00:00:360");
         Assert.assertEquals(cell3.offsetTimestamp().text(), "00:00:00:000");
-        Assert.assertEquals(cell3.onsetTimestamp().text(), "00:00:07:000");
+        Assert.assertEquals(cell3.onsetTimestamp().text(), "00:00:00:280");
 
         // 10. Test data controller view onset, offset and find.
         for (int cellId = 1; cellId <= column.numOfCells(); cellId++) {
@@ -192,6 +187,40 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      */
     @Test
     public void testStandardSequence1() throws Exception {
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+                "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        final DataControllerFixture dcf =
+                new DataControllerFixture(mainFrameFixture.robot,
+                        (DataControllerV) mainFrameFixture.dialog()
+                        .component());
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                public void executeInEDT() {
+                    OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                    fc.setVisible(false);
+                    for (FileFilter f : pm.getPluginFileFilters()) {
+                        fc.addChoosableFileFilter(f);
+                    }
+                    fc.setSelectedFile(videoFile);
+                    method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class)
+                            .in((DataControllerV) dcf.component()).invoke(fc);
+                }
+            });
+        } else {
+            dcf.button("addDataButton").click();
+            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
+            jfcf.selectFile(videoFile).approve();
+        }
+        dcf.close();
         // Text
         standardSequence1("t", "text", textTestInput, textTestInput);
         // Integer

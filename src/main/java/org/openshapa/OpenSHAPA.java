@@ -41,6 +41,7 @@ import org.openshapa.views.UserMetrixV;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.views.continuous.PluginManager;
 
 /**
  * The main class of the application.
@@ -427,6 +428,9 @@ public final class OpenSHAPA extends SingleFrameApplication implements
             // when setTicks is fully implemented.
             db.setTicks(Constants.TICKS_PER_SECOND);
 
+            //Initialize plugin manager
+            PluginManager.getInstance();
+
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
         } catch (IOException e) {
@@ -464,26 +468,6 @@ public final class OpenSHAPA extends SingleFrameApplication implements
                 new DataControllerV(OpenSHAPA.getApplication().getMainFrame(),
                         false);
 
-    }
-
-    /**
-     * Used between tests to release all memory.
-     */
-    public void cleanUpForTests() {
-        VIEW.getSpreadsheetPanel().removeAll();
-        consoleOutputStream = null;
-        consoleWriter = null;
-        listVarView = null;
-        dataController = null;
-        aboutWindow = null;
-        VIEW = null;
-        rubyEngine.getContext().setWriter(null);
-        rubyEngine.getContext().setReader(null);
-        rubyEngine = null;
-        m2 = null;
-        m = null;
-        closeOpenedWindows();
-        getMainFrame().dispose();
     }
 
     /**
@@ -670,6 +654,11 @@ public final class OpenSHAPA extends SingleFrameApplication implements
         }
         windows.push(frame);
         super.show(frame);
+    }
+
+    public void resetApp() {
+        this.dataController.setCurrentTime(0);
+        this.closeOpenedWindows();
     }
 
     public void closeOpenedWindows() {

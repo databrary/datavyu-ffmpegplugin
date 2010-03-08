@@ -196,7 +196,7 @@ public final class NewProjectV extends OpenSHAPADialog {
         } catch (Throwable ex) {
             logger.error("Unable to clean up the new project view.");
         }
-        OpenSHAPA.getApplication().closeOpenedWindows();
+        OpenSHAPA.getApplication().resetApp();
 }//GEN-LAST:event_okButtonActionPerformed
 
     private boolean isValidProjectName(final String name) {

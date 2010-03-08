@@ -82,12 +82,6 @@ public final class UIBug733Test extends OpenSHAPATestClass {
         }
 
         // 2. Get window
-        //By using the EDT we ensure that the video has loaded before we
-        //continue.
-        while(dcf.getDataViewers().size() < 1) {
-            
-        }
-
         Iterator it = dcf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());

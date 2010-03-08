@@ -286,7 +286,7 @@ public final class OpenSHAPAView extends FrameView {
             int result = jd.showOpenDialog(getComponent());
 
             if (result == JFileChooser.APPROVE_OPTION) {
-                OpenSHAPA.getApplication().closeOpenedWindows();
+                OpenSHAPA.getApplication().resetApp();
 
                 FileFilter filter = jd.getFileFilter();
 

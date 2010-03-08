@@ -75,9 +75,6 @@ public final class UIBug686Test extends OpenSHAPATestClass {
             JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
-        while(dcf.getDataViewers().size() < 1) {
-
-        }
 
         // 2. Jog forward and check
         dcf.button("jogForwardButton").click();
