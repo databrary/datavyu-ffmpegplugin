@@ -1,6 +1,7 @@
 package org.openshapa.controllers;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.util.ArrayList;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
@@ -116,11 +117,28 @@ public final class CreateNewCellC {
             if (OpenSHAPA.getProject().getLastCreatedCellId() != 0) {
                 DataCell dc = (DataCell) model
                     .getCell(OpenSHAPA.getProject().getLastCreatedCellId());
-                TimeStamp ts = dc.getOffset();
-                if (ts.getTime() == 0) {
-                    ts.setTime(Math.max(0, (milliseconds - 1)));
-                    dc.setOffset(ts);
-                    model.replaceCell(dc);
+
+                // BugzID:1285 - Only update the last created cell if it is in
+                // the same column as the newly created cell.
+                ArrayList<Long> matchingColumns = new ArrayList<Long>();
+                for (DataColumn col : view.getSelectedCols()) {
+                    matchingColumns.add(col.getID());
+                }
+
+                if (matchingColumns.size() == 0) {
+                    matchingColumns.add(OpenSHAPA.getProject()
+                                                 .getLastCreatedColId());
+                }
+
+                for (Long colID : matchingColumns) {
+                    if (colID == dc.getItsColID()) {
+                        TimeStamp ts = dc.getOffset();
+                        if (ts.getTime() == 0) {
+                            ts.setTime(Math.max(0, (milliseconds - 1)));
+                            dc.setOffset(ts);
+                            model.replaceCell(dc);
+                        }
+                    }
                 }
             }
 

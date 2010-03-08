@@ -88,6 +88,16 @@
     </developer>
 
     <developer>
+      <id>Jesse</id>
+      <name>Jesse Lingeman</name>
+      <email>jml654@_no_spam_nyu.edu</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>-5</timezone>
+    </developer>
+
+    <developer>
       <id>stephen</id>
       <name>Stephen Whitcher</name>
       <email>Stephen.whitcher@_no_spam_nicta.com.au</email>
@@ -97,16 +107,6 @@
         <role>Developer</role>
       </roles>
       <timezone>+10</timezone>
-    </developer>
-
-    <developer>
-      <id>Jesse</id>
-      <name>Jesse Lingeman</name>
-      <email>jml654@_no_spam_nyu.edu</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>-5</timezone>
     </developer>
 
     <developer>
