@@ -4,19 +4,14 @@ import java.awt.event.KeyEvent;
 import static org.fest.reflect.core.Reflection.method;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.util.Platform;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.RunScriptC;
-import org.openshapa.controllers.SaveC;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.models.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
@@ -26,13 +21,10 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.yaml.snakeyaml.Dumper;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
 /**
  * Bug838: File extension not shown in spreadsheet header when
- * using apple+s to save to disk
+ * using apple+s to save to disk.
  */
 public final class UIBug838Test extends OpenSHAPATestClass {
 
@@ -66,7 +58,6 @@ public final class UIBug838Test extends OpenSHAPATestClass {
 
      /**
      * Test saving a database to a file with Save.
-     * 
      * @param fileName
      *            file name to save
      * @param extension
@@ -111,8 +102,8 @@ public final class UIBug838Test extends OpenSHAPATestClass {
 
         //Check that title has extension
         Assert.assertTrue(mainFrameFixture.component()
-                .getTitle().endsWith("." + extension) ||
-                mainFrameFixture.component()
+                .getTitle().endsWith("." + extension)
+                || mainFrameFixture.component()
                 .getTitle().endsWith("." + extension + "*"));
 
         String root = System.getProperty("testPath");
@@ -150,8 +141,8 @@ public final class UIBug838Test extends OpenSHAPATestClass {
 
         //Check that title has extension
         Assert.assertTrue(mainFrameFixture.component()
-                .getTitle().endsWith("." + extension) ||
-                mainFrameFixture.component()
+                .getTitle().endsWith("." + extension)
+                || mainFrameFixture.component()
                 .getTitle().endsWith("." + extension + "*"));
 
         // 4. Check that the generated CSV file is correct
@@ -168,69 +159,62 @@ public final class UIBug838Test extends OpenSHAPATestClass {
                 "Expecting CSV files to be the same.");
     }
 
-    
     /**
      * Test saving a SHAPA database with Save, no extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveSHAPA1() throws Exception {
         saveTest("savedSHAPA", "shapa");
     }
 
     /**
      * Test saving a CSV database with Save, no extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveCSV1() throws Exception {
         saveTest("savedCSV", "csv");
     }
 
     /**
      * Test saving a SHAPA database with Save, extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveSHAPA2() throws Exception {
         saveTest("savedSHAPA.shapa", "shapa");
     }
 
     /**
      * Test saving a CSV database with Save, extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveCSV2() throws Exception {
         saveTest("savedCSV.csv", "csv");
     }
 
     /**
      * Test saving a SHAPA database with Save, wrong extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveSHAPA3() throws Exception {
         saveTest("savedSHAPA.csv", "shapa");
     }
 
     /**
      * Test saving a CSV database with Save, wrong entension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveCSV3() throws Exception {
         saveTest("savedCSV.shapa", "csv");
     }
