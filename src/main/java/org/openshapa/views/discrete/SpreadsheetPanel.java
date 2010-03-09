@@ -14,8 +14,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
 import java.util.Vector;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -36,7 +39,7 @@ import org.openshapa.util.ArrayDirection;
  */
 public final class SpreadsheetPanel extends JPanel
 implements ExternalColumnListListener, ComponentListener,
-           CellSelectionListener, ColumnSelectionListener {
+           CellSelectionListener, ColumnSelectionListener, KeyEventDispatcher {
 
     /** Scrollable view inserted into the JScrollPane. */
     private SpreadsheetView mainView;
@@ -142,6 +145,26 @@ implements ExternalColumnListListener, ComponentListener,
         newVar.setSize(newVar.getWidth(),
                        SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
         headerView.add(newVar);
+    }
+
+    /**
+     * Registers this column data panel with everything that needs to notify
+     * this class of events.
+     */
+    public void registerListeners() {
+        KeyboardFocusManager m = KeyboardFocusManager
+                                 .getCurrentKeyboardFocusManager();
+        m.addKeyEventDispatcher(this);
+    }
+
+    /**
+     * Deregisters this column data panel with everything that is currently
+     * notiying it of events.
+     */
+    public void deregisterListeners() {
+        KeyboardFocusManager m = KeyboardFocusManager
+                                 .getCurrentKeyboardFocusManager();
+        m.removeKeyEventDispatcher(this);
     }
 
     /**
@@ -342,6 +365,85 @@ implements ExternalColumnListListener, ComponentListener,
     public void relayoutCells() {
         sheetLayout.relayoutCells();
         this.validate();
+    }
+
+    /** To use when navigating left. */
+    static final int LEFT_DIR = -1;
+
+    /** To use when navigating right. */
+    static final int RIGHT_DIR = 1;
+
+    /**
+     * Dispatches the key event to the desired components.
+     *
+     * @param e The key event to dispatch.
+     *
+     * @return true if the event has been consumed by this dispatch, false
+     * otherwise
+     */
+    public boolean dispatchKeyEvent(KeyEvent e) {
+        // Quick filter - if we aren't dealing with a key press and left or
+        // right arrow. Forget about it - just chuck it back to Java to deal
+        // with.
+        if (e.getID() == KeyEvent.KEY_PRESSED
+            && (e.getKeyCode() == KeyEvent.VK_LEFT
+                || e.getKeyCode() == KeyEvent.VK_RIGHT)) {
+
+            // User is attempting to move to the column to the left.
+            if (e.getKeyCode() == KeyEvent.VK_LEFT
+                && e.getModifiers() == KeyEvent.ALT_MASK) {
+                highlightAdjacentCell(LEFT_DIR);
+                e.consume();
+                return true;
+
+            // User is attempting to move to the column to the right.
+            } else if (e.getKeyCode() == KeyEvent.VK_RIGHT
+                       && e.getModifiers() == KeyEvent.ALT_MASK) {
+                highlightAdjacentCell(RIGHT_DIR);
+                e.consume();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Highlights a cell in an adjacent column.
+     *
+     * @param direction The direction in which you wish to highlight an
+     * adjacent column.
+     */
+    private void highlightAdjacentCell(final int direction) {
+        for (int colID = 0; colID < columns.size(); colID++) {
+            for (int cellID = 0; cellID < columns.get(colID).getCells().size();
+                 cellID++) {
+
+                // For each of the cells in the columns - look for the
+                // highlighted cell.
+                SpreadsheetCell cell = columns.get(colID)
+                                              .getCells().get(cellID);
+
+                if (cell.getCellID() == highlightedCell.getCellID()) {
+
+                    // Find column in the desired direction
+                    int newColID = colID + direction;
+                    if (newColID >= 0 && newColID < columns.size()) {
+
+                        // Find the most appopriate cell in the new
+                        // column.
+                        int newCellID = Math.min(cellID,
+                            (columns.get(newColID).getCells().size() - 1));
+
+                        SpreadsheetCell newCell = columns.get(newColID)
+                                                  .getCells().get(newCellID);
+                        newCell.requestFocus();
+                        newCell.setHighlighted(true);
+                        setHighlightedCell(newCell);
+                    }
+                }
+            }
+        }
     }
 
     /**
