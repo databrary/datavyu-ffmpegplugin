@@ -137,7 +137,11 @@ public final class OpenSHAPAView extends FrameView {
         newCellRightMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_R, keyMask));
 
+        if (panel != null) {
+            panel.deregisterListeners();
+        }
         panel = new SpreadsheetPanel(OpenSHAPA.getProject().getDB());
+        panel.registerListeners();
         setComponent(panel);
 
     }
@@ -353,7 +357,11 @@ public final class OpenSHAPAView extends FrameView {
         panel.removeAll();
 
         // Create a fresh spreadsheet component and redraw the component.
+        if (panel != null) {
+            panel.deregisterListeners();
+        }
         panel = new SpreadsheetPanel(OpenSHAPA.getProject().getDB());
+        panel.registerListeners();
         setComponent(panel);
         getComponent().revalidate();
         getComponent().resetKeyboardActions();
