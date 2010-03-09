@@ -185,7 +185,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * @throws Exception
      *             any exception
      */
-    @Test
+    //@Test
     public void testStandardSequence1() throws Exception {
         mainFrameFixture.clickMenuItemWithPath("Controller",
                 "Data Viewer Controller");
@@ -238,7 +238,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Bug720.
      * Go Back should contain default value of 00:00:05:000.
      */
-    @Test
+    //@Test
     public void testBug720() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
@@ -269,7 +269,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * resulting in multiple forward shuttle presses being necessary to get
      * a positive playback speed again.
      */
-    @Test
+    //@Test
     public void testBug778() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
@@ -354,7 +354,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * do), press shuttle forward again. I often see this going to 1/16x for
      * some reason.
      */
-    @Test
+    //@Test
     public void testBug794() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
@@ -422,5 +422,101 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         //4. Press shuttle and check that it continues at 8
         dcf.pressShuttleForwardButton();
         Assert.assertEquals(dcf.getSpeed(), "8");
+    }
+
+    /**
+     * Bug798.
+     * Set playback speed to any value, using say shuttle to 4x.
+     * Pause the movie. Now rewind it past zero (causing a forced stop).
+     * Pressing the pause/unpause button will now restore the saved speed;
+     * this is bad! If you for example save a negative playback speed,
+     * pause/unpause will not work at all. To reproduce this behaviour:
+     * play the movie as per normal, then shuttle to a negative speed.
+     * Pause the movie. Rewind past zero (forcing a stop).
+     * Unpause/play the movie, voila, cannot play the movie
+     * using that button anymore. 
+     */
+    @Test
+    public void testBug798() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller and get starting time
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+                "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        final DataControllerFixture dcf =
+                new DataControllerFixture(mainFrameFixture.robot,
+                        (DataControllerV) mainFrameFixture.dialog()
+                        .component());
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                public void executeInEDT() {
+                    OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                    fc.setVisible(false);
+                    for (FileFilter f : pm.getPluginFileFilters()) {
+                        fc.addChoosableFileFilter(f);
+                    }
+                    fc.setSelectedFile(videoFile);
+                    method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class)
+                            .in((DataControllerV) dcf.component()).invoke(fc);
+                }
+            });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // 2. Shuttle forward to 4x
+        while(!dcf.getSpeed().equals("4")) {
+            String preSpeed = dcf.getSpeed();
+            dcf.pressShuttleForwardButton();
+            String postSpeed = dcf.getSpeed();
+
+            Assert.assertNotSame(preSpeed, postSpeed);
+        }
+        //Using Thread.sleep to wait for 4 seconds.
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UIDataControllerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        //3. Press pause
+        dcf.pressPauseButton();
+        Assert.assertEquals(dcf.getSpeed(), "[4]");
+
+        //4. Press rewind to zero
+        dcf.pressRewindButton();
+        //Using Thread.sleep to wait for 4 seconds.
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UIDataControllerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        //Check that its 0 time and speed
+        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
+        Assert.assertEquals(dcf.getSpeed(), "0");
+
+        //5. Press pause and ensure it does nothing
+        dcf.pressPauseButton();
+        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
+        Assert.assertEquals(dcf.getSpeed(), "0");
     }
 }
