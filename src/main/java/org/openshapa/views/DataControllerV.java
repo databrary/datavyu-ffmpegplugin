@@ -840,9 +840,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         topPanel.setBackground(java.awt.Color.white);
         topPanel.setLayout(new java.awt.BorderLayout());
 
-        lblSpeed.setFont(new java.awt.Font("Tahoma", 1, 11));
+        lblSpeed.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         lblSpeed.setText("0");
         lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 2));
+        lblSpeed.setName("lblSpeed"); // NOI18N
         topPanel.add(lblSpeed, java.awt.BorderLayout.LINE_END);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -878,7 +879,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 0);
         gridButtonPanel.add(jLabel1, gridBagConstraints);
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11));
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel2.setText("x");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
