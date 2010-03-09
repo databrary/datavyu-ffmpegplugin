@@ -440,6 +440,7 @@ implements ExternalColumnListListener, ComponentListener,
                         newCell.requestFocus();
                         newCell.setHighlighted(true);
                         setHighlightedCell(newCell);
+                        return;
                     }
                 }
             }
