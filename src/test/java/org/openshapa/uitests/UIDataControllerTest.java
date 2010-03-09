@@ -32,42 +32,41 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     /**
      * Nominal test input.
      */
-    private String[] nominalTestInput = { "Subject stands )up ", "$10,432" };
+    private String[] nominalTestInput = {"Subject stands )up ", "$10,432" };
 
     /**
      * Nominal test output.
      */
     private String[] expectedNominalTestOutput =
-            { "Subject stands up", "$10432" };
+            {"Subject stands up", "$10432"};
 
     /**
      * Text test input.
      */
-    private String[] textTestInput = { "Subject stands up ", "$10,432" };
+    private String[] textTestInput = {"Subject stands up ", "$10,432"};
 
     /**
      * Integer test input.
      */
-    private String[] integerTestInput = { "1a9", "10-432" };
+    private String[] integerTestInput = {"1a9", "10-432"};
 
     /**
      * Integer test output.
      */
-    private String[] expectedIntegerTestOutput = { "19", "-43210" };
+    private String[] expectedIntegerTestOutput = {"19", "-43210"};
 
     /**
      * Float test input.
      */
-    private String[] floatTestInput = { "1a.9", "10-43.2" };
+    private String[] floatTestInput = {"1a.9", "10-43.2"};
 
     /**
      * Float test output.
      */
-    private String[] expectedFloatTestOutput = { "1.90", "-43.2100" };
+    private String[] expectedFloatTestOutput = {"1.90", "-43.2100"};
 
     /**
      * Standard test sequence focussing on jogging.
-     * 
      * @param varName
      *            variable name
      * @param varType
@@ -104,7 +103,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         }
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:200");
 
-        for (int i = 0; i < 2; i++) {        
+        for (int i = 0; i < 2; i++) {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD1);
         }
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:120");
@@ -181,7 +180,6 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     /**
      * Runs standardsequence1 for different variable types (except matrix and
      * predicate), side by side.
-     * 
      * @throws Exception
      *             any exception
      */
@@ -227,7 +225,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         standardSequence1("i", "integer", integerTestInput,
                 expectedIntegerTestOutput);
         // Float
-        standardSequence1("f", "float", floatTestInput, expectedFloatTestOutput);
+        standardSequence1("f", "float", floatTestInput,
+                expectedFloatTestOutput);
         // Nominal
         standardSequence1("n", "nominal", nominalTestInput,
                 expectedNominalTestOutput);
@@ -256,7 +255,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
                         .component());
 
         // 3. Confirm that Go Back text field is 00:00:05:000
-        Assert.assertEquals("00:00:05:000", 
+        Assert.assertEquals("00:00:05:000",
                 dcf.textBox("goBackTextField").text());
     }
 
