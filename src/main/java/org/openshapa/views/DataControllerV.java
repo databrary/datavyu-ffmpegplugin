@@ -519,11 +519,16 @@ public final class DataControllerV extends OpenSHAPADialog implements
         showTracksButton = new javax.swing.JButton();
         tracksPanel = new javax.swing.JPanel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
         setTitle(resourceMap.getString("title")); // NOI18N
         setName(""); // NOI18N
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         gridButtonPanel.setBackground(new java.awt.Color(255, 255, 255));
         gridButtonPanel.setMinimumSize(new java.awt.Dimension(282, 274));
@@ -923,6 +928,15 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     * Action to invoke when the user closes the data controller.
+     *
+     * @param evt The event that triggered this action.
+     */
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        this.setVisible(false);
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * Action to invoke when the user clicks on the open button.

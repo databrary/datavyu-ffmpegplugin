@@ -332,7 +332,7 @@ public final class OpenSHAPAView extends FrameView {
      */
     @Action
     public void showQTVideoController() {
-        OpenSHAPA.getApplication().showQTVideoController();
+        OpenSHAPA.getApplication().showDataController();
     }
 
     /**
@@ -467,7 +467,7 @@ public final class OpenSHAPAView extends FrameView {
 
             // Show the data controller
             if (showController) {
-                OpenSHAPA.getApplication().showQTVideoController();
+                OpenSHAPA.getApplication().showDataController();
             }
         }
     }

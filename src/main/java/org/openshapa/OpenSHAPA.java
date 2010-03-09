@@ -202,9 +202,9 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     }
 
     /**
-     * Action for showing the quicktime video controller.
+     * Action for showing the data controller.
      */
-    public void showQTVideoController() {
+    public void showDataController() {
         OpenSHAPA.getApplication().show(dataController);
     }
 
@@ -657,8 +657,11 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     }
 
     public void resetApp() {
-        this.dataController.setCurrentTime(0);
         this.closeOpenedWindows();
+        this.dataController.dispose();
+        this.dataController = new DataControllerV(
+            OpenSHAPA.getApplication().getMainFrame(),
+            false);
     }
 
     public void closeOpenedWindows() {
