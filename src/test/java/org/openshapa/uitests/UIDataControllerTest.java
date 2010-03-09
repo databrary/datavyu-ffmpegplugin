@@ -346,4 +346,81 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         dcf.pressShuttleForwardButton();
         Assert.assertEquals(dcf.getSpeed(), "1/32");
     }
+
+    /**
+     * Bug794.
+     * Steps to reproduce: open a movie, shuttle forwards to a rate of say 4x,
+     * pause the movie. Now instead of pressing unpause (as you might normally
+     * do), press shuttle forward again. I often see this going to 1/16x for
+     * some reason.
+     */
+    @Test
+    public void testBug794() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller and get starting time
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+                "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        final DataControllerFixture dcf =
+                new DataControllerFixture(mainFrameFixture.robot,
+                        (DataControllerV) mainFrameFixture.dialog()
+                        .component());
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                public void executeInEDT() {
+                    OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                    fc.setVisible(false);
+                    for (FileFilter f : pm.getPluginFileFilters()) {
+                        fc.addChoosableFileFilter(f);
+                    }
+                    fc.setSelectedFile(videoFile);
+                    method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class)
+                            .in((DataControllerV) dcf.component()).invoke(fc);
+                }
+            });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // 2. Shuttle forward to 4x
+        while(!dcf.getSpeed().equals("4")) {
+            String preSpeed = dcf.getSpeed();
+            dcf.pressShuttleForwardButton();
+            String postSpeed = dcf.getSpeed();
+
+            Assert.assertNotSame(preSpeed, postSpeed);
+        }
+        //Using Thread.sleep to wait for 4 seconds.
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UIDataControllerTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        //3. Press pause
+        dcf.pressPauseButton();
+        Assert.assertEquals(dcf.getSpeed(), "[4]");
+
+        //4. Press shuttle and check that it continues at 8
+        dcf.pressShuttleForwardButton();
+        Assert.assertEquals(dcf.getSpeed(), "8");
+    }
 }
