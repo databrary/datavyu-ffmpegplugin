@@ -47,7 +47,7 @@ public final class UIBug733Test extends OpenSHAPATestClass {
         // b. Open Data Viewer Controller
         mainFrameFixture.clickMenuItemWithPath("Controller",
                 "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        mainFrameFixture.dialog().moveTo(new Point(0, 0));
         final DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
                         (DataControllerV) mainFrameFixture.dialog()
@@ -87,7 +87,9 @@ public final class UIBug733Test extends OpenSHAPATestClass {
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.resizeHeightTo(400);
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 0));
+
+        vidWindow.resizeHeightTo(600);
 
         // 3. Get aspect window dimensions
         int beforeResizeWidth = vidWindow.component().getWidth();
