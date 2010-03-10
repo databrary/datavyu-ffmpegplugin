@@ -420,6 +420,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
         // 3. Shuttle forward to 4x
+        dcf.pressPlayButton();
         while(!dcf.getSpeed().equals("4")) {
             String preSpeed = dcf.getSpeed();
             dcf.pressShuttleForwardButton();
