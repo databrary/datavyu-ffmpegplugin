@@ -1,5 +1,6 @@
 package org.openshapa.uitests;
 
+import java.awt.Frame;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.fest.reflect.core.Reflection.method;
@@ -7,11 +8,13 @@ import static org.fest.reflect.core.Reflection.method;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.Iterator;
 import javax.swing.filechooser.FileFilter;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
 
 import org.fest.swing.fixture.DataControllerFixture;
+import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
@@ -185,7 +188,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * @throws Exception
      *             any exception
      */
-    //@Test
+    @Test
     public void testStandardSequence1() throws Exception {
         mainFrameFixture.clickMenuItemWithPath("Controller",
                 "Data Viewer Controller");
@@ -238,7 +241,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Bug720.
      * Go Back should contain default value of 00:00:05:000.
      */
-    //@Test
+    @Test
     public void testBug720() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
@@ -250,7 +253,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 2. Open Data Viewer Controller and get starting time
         mainFrameFixture.clickMenuItemWithPath("Controller",
                 "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
         DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
                         (DataControllerV) mainFrameFixture.dialog()
@@ -269,7 +272,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * resulting in multiple forward shuttle presses being necessary to get
      * a positive playback speed again.
      */
-    //@Test
+    @Test
     public void testBug778() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
@@ -281,7 +284,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 2. Open Data Viewer Controller and get starting time
         mainFrameFixture.clickMenuItemWithPath("Controller",
                 "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
         final DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
                         (DataControllerV) mainFrameFixture.dialog()
@@ -315,7 +318,15 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             jfcf.selectFile(videoFile).approve();
         }
 
-        // 2. Play movie for 5 seconds
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        // 3. Play movie for 5 seconds
         dcf.pressPlayButton();
         //Using Thread.sleep to wait for 5 seconds.
         try {
@@ -354,7 +365,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * do), press shuttle forward again. I often see this going to 1/16x for
      * some reason.
      */
-    //@Test
+    @Test
     public void testBug794() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
@@ -366,7 +377,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 2. Open Data Viewer Controller and get starting time
         mainFrameFixture.clickMenuItemWithPath("Controller",
                 "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
         final DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
                         (DataControllerV) mainFrameFixture.dialog()
@@ -400,7 +411,15 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             jfcf.selectFile(videoFile).approve();
         }
 
-        // 2. Shuttle forward to 4x
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        // 3. Shuttle forward to 4x
         while(!dcf.getSpeed().equals("4")) {
             String preSpeed = dcf.getSpeed();
             dcf.pressShuttleForwardButton();
@@ -448,7 +467,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 2. Open Data Viewer Controller and get starting time
         mainFrameFixture.clickMenuItemWithPath("Controller",
                 "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
         final DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
                         (DataControllerV) mainFrameFixture.dialog()
@@ -481,6 +500,14 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             JFileChooserFixture jfcf = dcf.fileChooser();
             jfcf.selectFile(videoFile).approve();
         }
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
         // 2. Shuttle forward to 4x
         while(!dcf.getSpeed().equals("4")) {
