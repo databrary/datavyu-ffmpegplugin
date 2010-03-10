@@ -14,6 +14,10 @@ while ($file = readdir($dh)) {
             $date[0] = $date[0]."0000";
         }
 
+        if (strlen($date[0]) == 8) {
+            $date[0] = $date[0]."000000";
+        }
+
         if ($files[$date[0]] == null) {
             $files[$date[0]] = array();
         }

@@ -326,16 +326,30 @@ implements KeyEventDispatcher {
                 if (e.getKeyCode() == KeyEvent.VK_UP && i > 0) {
                     try {
                         // Determine if we are at the top of a multi-lined cell,
-                        // ff we are not on the top line - pressing up should
+                        // if we are not on the top line - pressing up should
                         // select the line above.
                         JTextArea a = (JTextArea) ec.getParentComponent();
                         if (a.getLineOfOffset(a.getCaretPosition()) == 0) {
                             sc = (SpreadsheetCell) components[i - 1];
-
                             et = sc.getDataView().getEdTracker();
                             ec = et.findEditor(absolutePos);
                             et.setEditor(ec);
-                            ec.setCaretPosition(relativePos);
+
+                            a = (JTextArea) ec.getParentComponent();
+
+                            // Determine the line start and end points.
+                            int lastLine = (a.getLineCount() - 1);
+                            int lineEnd = a.getLineEndOffset(lastLine);
+                            int lineStart = a.getLineStartOffset(lastLine);
+
+                            // We take either the position or the last element
+                            // in the line
+                            int newPos = Math.min(relativePos + lineStart,
+                                                  lineEnd);
+
+                            // Set the caret position in the newly focused
+                            // editor.
+                            ec.setCaretPosition(newPos);
                             components[i - 1].requestFocus();
                             sc.setHighlighted(true);
                             this.cellSelectionL.setHighlightedCell(sc);
