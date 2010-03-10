@@ -99,7 +99,9 @@ public final class UIBug733Test extends OpenSHAPATestClass {
         vidWindow.resizeHeightTo(beforeResizeHeight / 4);
         //a. Check that ratio remains the same
         Assert.assertTrue(Math.abs(
-                vidWindow.component().getWidth() - beforeResizeWidth / 4) < 3);
+                vidWindow.component().getWidth() - beforeResizeWidth / 4) < 3,
+                "" + Math.abs(vidWindow.component().getWidth()
+                - beforeResizeWidth / 4));
 
         //5. Make window a triple height
         beforeResizeWidth = vidWindow.component().getWidth();
@@ -107,7 +109,9 @@ public final class UIBug733Test extends OpenSHAPATestClass {
         vidWindow.resizeHeightTo(beforeResizeHeight * 3);
         //a. Check that ratio remains the same
         Assert.assertTrue(Math.abs(
-                vidWindow.component().getWidth() - beforeResizeWidth * 3) < 3);
+                vidWindow.component().getWidth() - beforeResizeWidth * 3) < 3,
+                "" + Math.abs(
+                vidWindow.component().getWidth() - beforeResizeWidth * 3));
 
         /* BugzID:1452
         //6. Make window half the width
