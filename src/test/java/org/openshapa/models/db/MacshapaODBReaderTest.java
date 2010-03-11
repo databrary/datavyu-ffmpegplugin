@@ -19,7 +19,6 @@ import org.testng.annotations.Test;
 
 /**
  *
- * @author mainzer
  */
 public class MacshapaODBReaderTest {
 

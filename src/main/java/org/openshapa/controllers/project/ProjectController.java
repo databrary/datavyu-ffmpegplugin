@@ -18,8 +18,6 @@ import org.openshapa.views.continuous.PluginManager;
 
 /**
  * This class is responsible for managing a project.
- * 
- * @author Douglas Teoh
  */
 public class ProjectController {
 

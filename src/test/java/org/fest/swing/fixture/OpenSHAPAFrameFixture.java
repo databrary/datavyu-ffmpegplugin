@@ -7,7 +7,7 @@ import org.fest.swing.core.Robot;
 import org.fest.swing.util.Platform;
 
 /**
- * @author dteoh
+ *
  */
 public class OpenSHAPAFrameFixture extends FrameFixture {
 

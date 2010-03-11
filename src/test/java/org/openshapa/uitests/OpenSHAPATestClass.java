@@ -32,8 +32,6 @@ import org.testng.annotations.BeforeSuite;
 /**
  * GUI Test class for OpenSHAPA. All OpenSHAPA Fest tests must extend this
  * class.
- * 
- * @author mmuthukrishna
  */
 public class OpenSHAPATestClass {
 
