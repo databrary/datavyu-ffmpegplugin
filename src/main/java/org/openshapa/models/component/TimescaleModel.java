@@ -4,7 +4,7 @@ package org.openshapa.models.component;
  * This model provides information used to render the time scale on the tracks
  * interface.
  */
-public class TimescaleModel {
+public class TimescaleModel implements Cloneable {
 
     /** The number of major intervals to paint on the scale */
     private int majorIntervals;
@@ -20,12 +20,12 @@ public class TimescaleModel {
     public TimescaleModel() {
     }
 
-    protected TimescaleModel(TimescaleModel other) {
-        majorIntervals  = other.majorIntervals;
-        paddingLeft     = other.paddingLeft;
-        paddingRight    = other.paddingRight;
-        majorWidth      = other.majorWidth;
-        effectiveWidth  = other.effectiveWidth;
+    protected TimescaleModel(final TimescaleModel other) {
+        majorIntervals = other.majorIntervals;
+        paddingLeft = other.paddingLeft;
+        paddingRight = other.paddingRight;
+        majorWidth = other.majorWidth;
+        effectiveWidth = other.effectiveWidth;
     }
 
     /**
@@ -37,14 +37,15 @@ public class TimescaleModel {
 
     /**
      * Sets the width in pixels between major interval markings
+     * 
      * @param majorWidth
      */
-    public void setMajorWidth(float majorWidth) {
+    public void setMajorWidth(final float majorWidth) {
         this.majorWidth = majorWidth;
     }
 
     /**
-     * @return The effective width of the scale, i.e. after padding applied 
+     * @return The effective width of the scale, i.e. after padding applied
      */
     public int getEffectiveWidth() {
         return effectiveWidth;
@@ -52,9 +53,10 @@ public class TimescaleModel {
 
     /**
      * Sets the effective width of the scale, i.e. after padding applied
+     * 
      * @param effectiveWidth
      */
-    public void setEffectiveWidth(int effectiveWidth) {
+    public void setEffectiveWidth(final int effectiveWidth) {
         this.effectiveWidth = effectiveWidth;
     }
 
@@ -67,9 +69,10 @@ public class TimescaleModel {
 
     /**
      * Sets the number of major intervals to paint on the scale
+     * 
      * @param majorIntervals
      */
-    public void setMajorIntervals(int majorIntervals) {
+    public void setMajorIntervals(final int majorIntervals) {
         this.majorIntervals = majorIntervals;
     }
 
@@ -82,9 +85,10 @@ public class TimescaleModel {
 
     /**
      * Set the scale padding from the left by this many pixels
+     * 
      * @param paddingLeft
      */
-    public void setPaddingLeft(int paddingLeft) {
+    public void setPaddingLeft(final int paddingLeft) {
         this.paddingLeft = paddingLeft;
     }
 
@@ -97,14 +101,15 @@ public class TimescaleModel {
 
     /**
      * Set the scale padding from the right by this many pixels
+     * 
      * @param paddingRight
      */
-    public void setPaddingRight(int paddingRight) {
+    public void setPaddingRight(final int paddingRight) {
         this.paddingRight = paddingRight;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
         }
@@ -112,19 +117,19 @@ public class TimescaleModel {
             return false;
         }
         final TimescaleModel other = (TimescaleModel) obj;
-        if (this.majorIntervals != other.majorIntervals) {
+        if (majorIntervals != other.majorIntervals) {
             return false;
         }
-        if (this.paddingLeft != other.paddingLeft) {
+        if (paddingLeft != other.paddingLeft) {
             return false;
         }
-        if (this.paddingRight != other.paddingRight) {
+        if (paddingRight != other.paddingRight) {
             return false;
         }
-        if (this.majorWidth != other.majorWidth) {
+        if (majorWidth != other.majorWidth) {
             return false;
         }
-        if (this.effectiveWidth != other.effectiveWidth) {
+        if (effectiveWidth != other.effectiveWidth) {
             return false;
         }
         return true;
@@ -133,17 +138,17 @@ public class TimescaleModel {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 71 * hash + this.majorIntervals;
-        hash = 71 * hash + this.paddingLeft;
-        hash = 71 * hash + this.paddingRight;
-        hash = 71 * hash + Float.floatToIntBits(this.majorWidth);
-        hash = 71 * hash + this.effectiveWidth;
+        hash = 71 * hash + majorIntervals;
+        hash = 71 * hash + paddingLeft;
+        hash = 71 * hash + paddingRight;
+        hash = 71 * hash + Float.floatToIntBits(majorWidth);
+        hash = 71 * hash + effectiveWidth;
         return hash;
     }
 
     @Override
-    public Object clone() {
+    public TimescaleModel clone() {
         return new TimescaleModel(this);
     }
-    
+
 }

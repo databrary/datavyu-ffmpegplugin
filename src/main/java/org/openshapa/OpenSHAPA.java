@@ -27,6 +27,7 @@ import org.jdesktop.application.LocalStorage;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
+import org.openshapa.controllers.project.ProjectController;
 import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
@@ -38,10 +39,10 @@ import org.openshapa.views.DataControllerV;
 import org.openshapa.views.ListVariables;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
+import org.openshapa.views.continuous.PluginManager;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.UserMetrix;
-import org.openshapa.views.continuous.PluginManager;
 
 /**
  * The main class of the application.
@@ -202,7 +203,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     }
 
     /**
-     * Action for showing the data controller.
+     * Action for showing the quicktime video controller.
      */
     public void showDataController() {
         OpenSHAPA.getApplication().show(dataController);
@@ -213,9 +214,10 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      */
     public void showVariableList() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        listVarView = new ListVariables(mainFrame, false, project.getDB());
+        listVarView =
+                new ListVariables(mainFrame, false, projectController.getDB());
         try {
-            project.getDB().registerColumnListListener(listVarView);
+            projectController.getDB().registerColumnListListener(listVarView);
         } catch (SystemErrorException e) {
             logger.error("Unable register column list listener: ", e);
         }
@@ -276,7 +278,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
                 Application.getInstance(OpenSHAPA.class).getContext()
                         .getResourceMap(OpenSHAPA.class);
 
-        if (project.isChanged()) {
+        if (projectController.isChanged()) {
 
             String cancel = "Cancel";
             String ok = "OK";
@@ -410,7 +412,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
             }
 
             // Make a new project
-            project = new Project();
+            projectController = new ProjectController();
 
             // Build output streams for the scripting engine.
             consoleOutputStream = new PipedInputStream();
@@ -422,13 +424,13 @@ public final class OpenSHAPA extends SingleFrameApplication implements
             MacshapaDatabase db = new MacshapaDatabase();
             // BugzID:449 - Set default database name.
             db.setName("Database1");
-            project.setDatabase(db);
+            projectController.setDatabase(db);
 
             // TODO- BugzID:79 This needs to move above showSpreadsheet,
             // when setTicks is fully implemented.
             db.setTicks(Constants.TICKS_PER_SECOND);
 
-            //Initialize plugin manager
+            // Initialize plugin manager
             PluginManager.getInstance();
 
         } catch (SystemErrorException e) {
@@ -528,19 +530,26 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      * 
      * @return The single project in use with this instance of OpenSHAPA
      */
-    public static Project getProject() {
-        return OpenSHAPA.getApplication().project;
+    public static ProjectController getProjectController() {
+        return OpenSHAPA.getApplication().projectController;
     }
 
     /**
-     * Sets the single instance project associated with the currently running
-     * with OpenSHAPA.
+     * Creates a new project controller.
+     */
+    public static void newProjectController() {
+        OpenSHAPA.getApplication().projectController = new ProjectController();
+    }
+
+    /**
+     * Creates a new project controller, using the given project as the
+     * underlying project.
      * 
      * @param project
-     *            The new project instance to use
      */
-    public static void setProject(final Project project) {
-        OpenSHAPA.getApplication().project = project;
+    public static void newProjectController(final Project project) {
+        OpenSHAPA.getApplication().projectController =
+                new ProjectController(project);
     }
 
     /**
@@ -728,8 +737,8 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      */
     private static OpenSHAPAView VIEW;
 
-    /** The current project file. */
-    private Project project;
+    /** The current project */
+    private ProjectController projectController;
 
     /** Opened windows. */
     private Stack<Window> windows;

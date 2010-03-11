@@ -1,8 +1,8 @@
 package org.openshapa.uitests;
 
-import java.awt.event.KeyEvent;
 import static org.fest.reflect.core.Reflection.method;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.util.Platform;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.RunScriptC;
-import org.openshapa.models.project.Project;
+import org.openshapa.controllers.project.ProjectController;
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
@@ -23,8 +23,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
- * Bug838: File extension not shown in spreadsheet header when
- * using apple+s to save to disk.
+ * Bug838: File extension not shown in spreadsheet header when using apple+s to
+ * save to disk.
  */
 public final class UIBug838Test extends OpenSHAPATestClass {
 
@@ -56,8 +56,9 @@ public final class UIBug838Test extends OpenSHAPATestClass {
         }
     }
 
-     /**
+    /**
      * Test saving a database to a file with Save.
+     * 
      * @param fileName
      *            file name to save
      * @param extension
@@ -72,7 +73,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
         // 1. Click save on empty project. Expecting it to act like Save As
 
         if (Platform.isOSX()) {
-            //Can't really test this properly on OSX.
+            // Can't really test this properly on OSX.
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
             if (extension.equals("shapa")) {
@@ -87,8 +88,8 @@ public final class UIBug838Test extends OpenSHAPATestClass {
             method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
                     OpenSHAPA.getView()).invoke(fc);
         } else {
-            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_S,
-                    Platform.controlOrCommandMask());
+            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_S, Platform
+                    .controlOrCommandMask());
             if (extension.equals("shapa")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
                         new SHAPAFilter());
@@ -100,11 +101,11 @@ public final class UIBug838Test extends OpenSHAPATestClass {
             mainFrameFixture.fileChooser().selectFile(toSave).approve();
         }
 
-        //Check that title has extension
-        Assert.assertTrue(mainFrameFixture.component()
-                .getTitle().endsWith("." + extension)
-                || mainFrameFixture.component()
-                .getTitle().endsWith("." + extension + "*"));
+        // Check that title has extension
+        Assert.assertTrue(mainFrameFixture.component().getTitle().endsWith(
+                "." + extension)
+                || mainFrameFixture.component().getTitle().endsWith(
+                        "." + extension + "*"));
 
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
@@ -136,19 +137,19 @@ public final class UIBug838Test extends OpenSHAPATestClass {
         // TODO Need to check the title - asterisk present
 
         // 3. Save project file. Not expecting anything except a save
-        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_S,
-                    Platform.controlOrCommandKey());
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_S, Platform
+                .controlOrCommandKey());
 
-        //Check that title has extension
-        Assert.assertTrue(mainFrameFixture.component()
-                .getTitle().endsWith("." + extension)
-                || mainFrameFixture.component()
-                .getTitle().endsWith("." + extension + "*"));
+        // Check that title has extension
+        Assert.assertTrue(mainFrameFixture.component().getTitle().endsWith(
+                "." + extension)
+                || mainFrameFixture.component().getTitle().endsWith(
+                        "." + extension + "*"));
 
         // 4. Check that the generated CSV file is correct
-        Project project = OpenSHAPA.getProject();
+        ProjectController pc = OpenSHAPA.getProjectController();
         File outputCSV =
-                new File(project.getDatabaseDir(), project.getDatabaseFile());
+                new File(pc.getProjectDirectory(), pc.getDatabaseFileName());
         Assert.assertTrue(outputCSV.exists(), "Expecting output CSV to exist.");
 
         File expectedOutputCSV = new File(root + "/ui/test-v2-out.csv");
@@ -161,6 +162,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save, no extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -171,6 +173,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, no extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -181,6 +184,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save, extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -191,6 +195,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -201,6 +206,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save, wrong extension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -211,6 +217,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, wrong entension in file name.
+     * 
      * @throws java.lang.Exception
      *             on any error
      */

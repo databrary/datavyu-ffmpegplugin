@@ -4,7 +4,7 @@ package org.openshapa.models.component;
  * This model provides information used to render a timing needle on the tracks
  * interface.
  */
-public class NeedleModel {
+public class NeedleModel implements Cloneable {
 
     /** Amount of padding for this component from the top */
     private int paddingTop;
@@ -16,8 +16,8 @@ public class NeedleModel {
     public NeedleModel() {
     }
 
-    protected NeedleModel(NeedleModel other) {
-        paddingTop  = other.paddingTop;
+    protected NeedleModel(final NeedleModel other) {
+        paddingTop = other.paddingTop;
         paddingLeft = other.paddingLeft;
         currentTime = other.currentTime;
     }
@@ -31,9 +31,10 @@ public class NeedleModel {
 
     /**
      * Set the current time represented by the needle
+     * 
      * @param currentTime
      */
-    public void setCurrentTime(long currentTime) {
+    public void setCurrentTime(final long currentTime) {
         this.currentTime = currentTime;
     }
 
@@ -46,9 +47,10 @@ public class NeedleModel {
 
     /**
      * Set the amount of padding for this component from the left
+     * 
      * @param paddingLeft
      */
-    public void setPaddingLeft(int paddingLeft) {
+    public void setPaddingLeft(final int paddingLeft) {
         this.paddingLeft = paddingLeft;
     }
 
@@ -61,14 +63,15 @@ public class NeedleModel {
 
     /**
      * Set the amount of padding for this component from the top
+     * 
      * @param paddingTop
      */
-    public void setPaddingTop(int paddingTop) {
+    public void setPaddingTop(final int paddingTop) {
         this.paddingTop = paddingTop;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
         }
@@ -76,13 +79,13 @@ public class NeedleModel {
             return false;
         }
         final NeedleModel other = (NeedleModel) obj;
-        if (this.paddingTop != other.paddingTop) {
+        if (paddingTop != other.paddingTop) {
             return false;
         }
-        if (this.paddingLeft != other.paddingLeft) {
+        if (paddingLeft != other.paddingLeft) {
             return false;
         }
-        if (this.currentTime != other.currentTime) {
+        if (currentTime != other.currentTime) {
             return false;
         }
         return true;
@@ -91,15 +94,15 @@ public class NeedleModel {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 83 * hash + this.paddingTop;
-        hash = 83 * hash + this.paddingLeft;
-        hash = 83 * hash + (int) (this.currentTime ^ (this.currentTime >>> 32));
+        hash = 83 * hash + paddingTop;
+        hash = 83 * hash + paddingLeft;
+        hash = 83 * hash + (int) (currentTime ^ (currentTime >>> 32));
         return hash;
     }
 
     @Override
-    public Object clone() {
+    public NeedleModel clone() {
         return new NeedleModel(this);
     }
-    
+
 }

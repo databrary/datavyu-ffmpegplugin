@@ -396,6 +396,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         super.dispose();
     }
 
+    public MixerControllerV getMixerController() {
+        return mixerControllerV;
+    }
+
     // --------------------------------------------------------------------------
     //
     //
@@ -464,8 +468,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
             clockStep(tracksTime);
 
             // Remove the data viewer from the project
-            OpenSHAPA.getProject().removeViewerSetting(
-                    viewer.getDataFeed().getAbsolutePath());
+            OpenSHAPA.getProjectController().projectChanged();
+
             // Remove the data viewer from the tracks panel
             mixerControllerV
                     .removeTrack(viewer.getDataFeed().getAbsolutePath());
@@ -483,7 +487,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
     // <editor-fold defaultstate="collapsed"
     // <editor-fold defaultstate="collapsed"
     // <editor-fold defaultstate="collapsed"
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed"
+    // desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -519,8 +524,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
         showTracksButton = new javax.swing.JButton();
         tracksPanel = new javax.swing.JPanel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(DataControllerV.class);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        org.jdesktop.application.ResourceMap resourceMap =
+                org.jdesktop.application.Application.getInstance(
+                        org.openshapa.OpenSHAPA.class).getContext()
+                        .getResourceMap(DataControllerV.class);
         setTitle(resourceMap.getString("title")); // NOI18N
         setName(""); // NOI18N
         setResizable(false);
@@ -1004,6 +1012,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Returns set of dataviewers
+     * 
      * @return set of dataviewers.
      */
     public Set<DataViewer> getDataViewers() {
@@ -1041,8 +1050,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
      */
     public void addDataViewerToProject(final String pluginName,
             final String filePath) {
-        Project project = OpenSHAPA.getProject();
-        project.addNewViewerSetting(pluginName, filePath);
+        OpenSHAPA.getProjectController().projectChanged();
         OpenSHAPA.getApplication().updateTitle();
     }
 
@@ -1204,9 +1212,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
                  */
                 if (feed.getAbsolutePath().equals(e.getTrackId())) {
                     dv.setOffset(e.getOffset());
-                    Project project = OpenSHAPA.getProject();
-                    project.addViewerOffsetSetting(dv.getClass().getName(), e
-                            .getTrackId(), e.getOffset());
+                    OpenSHAPA.getProjectController().projectChanged();
                     OpenSHAPA.getApplication().updateTitle();
                 }
             }
@@ -1254,9 +1260,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
                 File feed = dv.getDataFeed();
 
                 if (feed.getAbsolutePath().equals(e.getTrackId())) {
-                    Project project = OpenSHAPA.getProject();
-                    project.addViewerBookmarkSetting(dv.getClass().getName(), e
-                            .getTrackId(), e.getBookmark());
+                    OpenSHAPA.getProjectController().projectChanged();
                     OpenSHAPA.getApplication().updateTitle();
                 }
             }
@@ -1269,9 +1273,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
                 File feed = dv.getDataFeed();
 
                 if (feed.getAbsolutePath().equals(e.getTrackId())) {
-                    Project project = OpenSHAPA.getProject();
-                    project.addViewerBookmarkSetting(dv.getClass().getName(), e
-                            .getTrackId(), e.getBookmark());
+                    OpenSHAPA.getProjectController().projectChanged();
                     OpenSHAPA.getApplication().updateTitle();
                 }
             }

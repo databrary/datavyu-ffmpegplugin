@@ -4,7 +4,7 @@ package org.openshapa.models.component;
  * This model provides parameters used for determining what can be viewed on the
  * tracks information panel.
  */
-public class ViewableModel {
+public class ViewableModel implements Cloneable {
 
     /** The end time of the longest track (offset included) in milliseconds */
     private long end;
@@ -20,7 +20,7 @@ public class ViewableModel {
     public ViewableModel() {
     }
 
-    protected ViewableModel(ViewableModel other) {
+    protected ViewableModel(final ViewableModel other) {
         end = other.end;
         intervalWidth = other.intervalWidth;
         intervalTime = other.intervalTime;
@@ -41,7 +41,7 @@ public class ViewableModel {
      * 
      * @param end
      */
-    public void setEnd(long end) {
+    public void setEnd(final long end) {
         this.end = end;
     }
 
@@ -57,7 +57,7 @@ public class ViewableModel {
      * 
      * @param intervalTime
      */
-    public void setIntervalTime(float intervalTime) {
+    public void setIntervalTime(final float intervalTime) {
         this.intervalTime = intervalTime;
     }
 
@@ -73,7 +73,7 @@ public class ViewableModel {
      * 
      * @param intervalWidth
      */
-    public void setIntervalWidth(float intervalWidth) {
+    public void setIntervalWidth(final float intervalWidth) {
         this.intervalWidth = intervalWidth;
     }
 
@@ -89,7 +89,7 @@ public class ViewableModel {
      * 
      * @param zoomWindowEnd
      */
-    public void setZoomWindowEnd(long zoomWindowEnd) {
+    public void setZoomWindowEnd(final long zoomWindowEnd) {
         this.zoomWindowEnd = zoomWindowEnd;
     }
 
@@ -107,12 +107,12 @@ public class ViewableModel {
      * 
      * @param zoomWindowStart
      */
-    public void setZoomWindowStart(long zoomWindowStart) {
+    public void setZoomWindowStart(final long zoomWindowStart) {
         this.zoomWindowStart = zoomWindowStart;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
         }
@@ -150,7 +150,7 @@ public class ViewableModel {
     }
 
     @Override
-    public Object clone() {
+    public ViewableModel clone() {
         return new ViewableModel(this);
     }
 

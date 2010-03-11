@@ -1,13 +1,5 @@
 package org.openshapa.controllers;
 
-import com.usermetrix.jclient.UserMetrix;
-import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.DataColumn;
-import org.openshapa.models.db.LogicErrorException;
-import org.openshapa.models.db.MacshapaDatabase;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.util.FileFilters.CSVFilter;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,15 +7,26 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Vector;
+
 import javax.swing.filechooser.FileFilter;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.openshapa.OpenSHAPA;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
 import org.openshapa.models.db.FormalArgument;
+import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.MatrixVocabElement;
-import org.openshapa.models.db.MatrixVocabElement.MatrixType;
 import org.openshapa.models.db.PredicateVocabElement;
+import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.MatrixVocabElement.MatrixType;
+import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.MODBFilter;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * Controller for saving the database to disk.
@@ -35,14 +38,16 @@ public final class SaveDatabaseC {
 
     /**
      * Constructor.
-     *
-     * @param destinationFile The destination to use when saving the c
+     * 
+     * @param destinationFile
+     *            The destination to use when saving the c
      */
     public SaveDatabaseC(final File destinationFile) {
         // We bypass any overwrite checks here.
         String outputFile = destinationFile.getName().toLowerCase();
-        String extension = outputFile.substring(outputFile.lastIndexOf('.'),
-                                                outputFile.length());
+        String extension =
+                outputFile.substring(outputFile.lastIndexOf('.'), outputFile
+                        .length());
 
         try {
             if (extension.equals(".csv")) {
@@ -57,12 +62,14 @@ public final class SaveDatabaseC {
 
     /**
      * Constructor.
-     *
-     * @param destinationFile The destination to use when saving the database.
-     * @param fileFilter The selected filter to use when saving the database.
+     * 
+     * @param destinationFile
+     *            The destination to use when saving the database.
+     * @param fileFilter
+     *            The selected filter to use when saving the database.
      */
     public SaveDatabaseC(final String destinationFile,
-                         final FileFilter fileFilter) {
+            final FileFilter fileFilter) {
 
         String outputFile = destinationFile.toLowerCase();
 
@@ -85,9 +92,9 @@ public final class SaveDatabaseC {
         // be the same as the file specified.
         try {
             // Check for existence; if so, confirm overwrite.
-            if ((outFile.exists()
-                 && OpenSHAPA.getApplication().overwriteExisting())
-                 || !outFile.exists()) {
+            if ((outFile.exists() && OpenSHAPA.getApplication()
+                    .overwriteExisting())
+                    || !outFile.exists()) {
 
                 if (fileFilter.getClass() == CSVFilter.class) {
                     saveAsCSV(outputFile);
@@ -98,13 +105,14 @@ public final class SaveDatabaseC {
 
                 String dbName;
                 if (outFile.getName().lastIndexOf('.') != -1) {
-                    dbName = outFile.getName().substring(0, outFile.getName()
-                                                             .lastIndexOf('.'));
+                    dbName =
+                            outFile.getName().substring(0,
+                                    outFile.getName().lastIndexOf('.'));
                 } else {
                     dbName = outFile.getName();
                 }
-                OpenSHAPA.getProject().getDB().setName(dbName);
-                OpenSHAPA.getProject().getDB().setSourceFile(outFile);
+                OpenSHAPA.getProjectController().getDB().setName(dbName);
+                OpenSHAPA.getProjectController().getDB().setSourceFile(outFile);
 
                 // Update the name of the window to include the name we just
                 // set in the database.
@@ -119,37 +127,39 @@ public final class SaveDatabaseC {
 
     /**
      * Saves the database to the specified destination in a MacSHAPA format.
-     *
-     * @param outFile The path of the file to use when writing to disk.
-     *
-     * @throws LogicErrorException When unable to save the database as a
-     * macshapa database to disk (usually because of permissions errors).
+     * 
+     * @param outFile
+     *            The path of the file to use when writing to disk.
+     * @throws LogicErrorException
+     *             When unable to save the database as a macshapa database to
+     *             disk (usually because of permissions errors).
      */
     public void saveAsMacSHAPADB(final String outFile)
-    throws LogicErrorException {
+            throws LogicErrorException {
 
         try {
             PrintStream outStream = new PrintStream(outFile);
-            OpenSHAPA.getProject().getDB().toMODBFile(outStream, "\r");
+            OpenSHAPA.getProjectController().getDB()
+                    .toMODBFile(outStream, "\r");
             outStream.close();
 
-            Database db = OpenSHAPA.getProject().getDB();
+            Database db = OpenSHAPA.getProjectController().getDB();
 
             // BugzID:743 - Here we update the GUI to indicate successful save
             db.saveDatabase();
 
         } catch (FileNotFoundException e) {
-            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                          .getContext()
-                                          .getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString("UnableToSave.message",
-                                          outFile), e);
+            ResourceMap rMap =
+                    Application.getInstance(OpenSHAPA.class).getContext()
+                            .getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString(
+                    "UnableToSave.message", outFile), e);
         } catch (IOException e) {
-            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                          .getContext()
-                                          .getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString("UnableToSave.message",
-                                          outFile), e);
+            ResourceMap rMap =
+                    Application.getInstance(OpenSHAPA.class).getContext()
+                            .getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString(
+                    "UnableToSave.message", outFile), e);
         } catch (SystemErrorException e) {
             logger.error("Can't write macshapa db file '" + outFile + "'", e);
         }
@@ -157,14 +167,15 @@ public final class SaveDatabaseC {
 
     /**
      * Saves the database to the specified destination in a CSV format.
-     *
-     * @param outFile The path of the file to use when writing to disk.
-     *
-     * @throws LogicErrorException When unable to save the database as a CSV
-     * to disk (usually because of permissions errors).
+     * 
+     * @param outFile
+     *            The path of the file to use when writing to disk.
+     * @throws LogicErrorException
+     *             When unable to save the database as a CSV to disk (usually
+     *             because of permissions errors).
      */
     public void saveAsCSV(final String outFile) throws LogicErrorException {
-        MacshapaDatabase db = OpenSHAPA.getProject().getDB();
+        MacshapaDatabase db = OpenSHAPA.getProjectController().getDB();
 
         try {
             FileWriter fileWriter = new FileWriter(outFile);
@@ -182,8 +193,9 @@ public final class SaveDatabaseC {
                     out.write(counter + ":" + pve.getName() + "-");
                     for (int j = 0; j < pve.getNumFormalArgs(); j++) {
                         FormalArgument fa = pve.getFormalArgCopy(j);
-                        String name = fa.getFargName()
-                                   .substring(1, fa.getFargName().length() - 1);
+                        String name =
+                                fa.getFargName().substring(1,
+                                        fa.getFargName().length() - 1);
                         out.write(name + "|" + fa.getFargType().toString());
 
                         if (j < pve.getNumFormalArgs() - 1) {
@@ -210,8 +222,9 @@ public final class SaveDatabaseC {
                     out.write("-");
                     for (int j = 0; j < mve.getNumFormalArgs(); j++) {
                         FormalArgument fa = mve.getFormalArgCopy(j);
-                        String name = fa.getFargName()
-                                   .substring(1, fa.getFargName().length() - 1);
+                        String name =
+                                fa.getFargName().substring(1,
+                                        fa.getFargName().length() - 1);
                         out.write(name + "|" + fa.getFargType().toString());
 
                         if (j < mve.getNumFormalArgs() - 1) {
@@ -243,17 +256,17 @@ public final class SaveDatabaseC {
             db.saveDatabase();
 
         } catch (FileNotFoundException e) {
-            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                          .getContext()
-                                          .getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString("UnableToSave.message",
-                                          outFile), e);
+            ResourceMap rMap =
+                    Application.getInstance(OpenSHAPA.class).getContext()
+                            .getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString(
+                    "UnableToSave.message", outFile), e);
         } catch (IOException e) {
-            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                          .getContext()
-                                          .getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString("UnableToSave.message",
-                                          outFile), e);
+            ResourceMap rMap =
+                    Application.getInstance(OpenSHAPA.class).getContext()
+                            .getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString(
+                    "UnableToSave.message", outFile), e);
         } catch (SystemErrorException se) {
             logger.error("Unable to save database as CSV file", se);
         }

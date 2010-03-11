@@ -38,6 +38,7 @@ import org.openshapa.event.TracksControllerEvent;
 import org.openshapa.event.TracksControllerListener;
 import org.openshapa.event.CarriageEvent.EventType;
 import org.openshapa.event.TracksControllerEvent.TracksEvent;
+import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
 
 /**
@@ -73,7 +74,7 @@ public class MixerControllerV implements NeedleEventListener,
     private NeedleController needleController;
     /** Controller responsible for managing a selected region */
     private RegionController regionController;
-    /** */
+    /** Controller responsible for managing tracks */
     private TracksEditorController tracksEditorController;
 
     private JButton bookmarkButton;
@@ -304,6 +305,12 @@ public class MixerControllerV implements NeedleEventListener,
         tracksScrollPane.validate();
     }
 
+    public void setTrackInterfaceSettings(final String mediaPath,
+            final long bookmark, final boolean lock) {
+        tracksEditorController.setBookmarkPosition(mediaPath, bookmark);
+        tracksEditorController.setMovementLock(mediaPath, lock);
+    }
+
     /**
      * @param time
      *            Set the current time in milliseconds to use.
@@ -434,6 +441,13 @@ public class MixerControllerV implements NeedleEventListener,
         tracksPanel.repaint();
 
         updateTracksScrollBar();
+    }
+
+    /**
+     * @return all track models used to represent the UI.
+     */
+    public Iterable<TrackModel> getAllTrackModels() {
+        return tracksEditorController.getAllTrackModels();
     }
 
     /**

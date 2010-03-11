@@ -3,7 +3,7 @@ package org.openshapa.models.project;
 /**
  * Stores user settings for a data viewer
  */
-public class ViewerSetting {
+public class ViewerSetting implements Cloneable {
 
     /** Fully qualified name of the plugin */
     private String pluginName;
@@ -11,18 +11,26 @@ public class ViewerSetting {
     private String filePath;
     /** Playback offset in milliseconds */
     private long offset;
-    /** Bookmark position in milliseconds */
-    private long bookmark;
 
     public ViewerSetting() {
-        bookmark = -1;
+    }
+
+    /**
+     * Private copy constructor.
+     * 
+     * @param other
+     */
+    private ViewerSetting(final ViewerSetting other) {
+        pluginName = other.pluginName;
+        filePath = other.filePath;
+        offset = other.offset;
     }
 
     public String getFilePath() {
         return filePath;
     }
 
-    public void setFilePath(String filePath) {
+    public void setFilePath(final String filePath) {
         this.filePath = filePath;
     }
 
@@ -30,7 +38,7 @@ public class ViewerSetting {
         return offset;
     }
 
-    public void setOffset(long offset) {
+    public void setOffset(final long offset) {
         this.offset = offset;
     }
 
@@ -38,23 +46,13 @@ public class ViewerSetting {
         return pluginName;
     }
 
-    public void setPluginName(String pluginName) {
+    public void setPluginName(final String pluginName) {
         this.pluginName = pluginName;
     }
 
-    /**
-     * @return the bookmark
-     */
-    public long getBookmark() {
-        return bookmark;
-    }
-
-    /**
-     * @param bookmark
-     *            the bookmark to set
-     */
-    public void setBookmark(long bookmark) {
-        this.bookmark = bookmark;
+    @Override
+    public ViewerSetting clone() {
+        return new ViewerSetting(this);
     }
 
 }

@@ -1,97 +1,69 @@
 package org.openshapa.models.project;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.openshapa.models.db.MacshapaDatabase;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class represents a project in OpenSHAPA. A project manages the different
  * files used by OpenSHAPA, such as database files and media files.
  */
-public final class Project {
+public final class Project implements Cloneable {
 
     /** Project specification version. */
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
     /** Name of this project. */
     private String projectName;
-    /** Project description. */
-    private String projectDescription;
-    /** Directory the database and project is stored. */
-    private String databaseDir;
     /** Database file name. */
-    private String databaseFile;
-    /** The current database we are working on. */
-    private MacshapaDatabase db;
-    /** The id of the last datacell that was created. */
-    private long lastCreatedCellID;
-    /** The id of the last selected cell. */
-    private long lastSelectedCellID;
-    /** The id of the last datacell that was created. */
-    private long lastCreatedColID;
+    private String databaseFileName;
+    /** The directory that the project file resides in */
+    private String projectDirectory;
 
-    /**
-     * Key : file path Value : viewer settings for the medial file
-     */
-    private Map<String, ViewerSetting> viewerSettings;
-    /** has this project been changed since it was created. */
-    private boolean changed;
-    /** Is this a new project? */
-    private boolean newProject;
+    private List<ViewerSetting> viewerSettings;
+
+    private List<TrackSettings> interfaceSettings;
 
     /**
      * Constructor.
      */
     public Project() {
-        viewerSettings = new HashMap();
-        changed = false;
-        newProject = true;
-        lastCreatedCellID = 0;
-        lastCreatedColID = 0;
-        lastSelectedCellID = 0;
+        viewerSettings = new LinkedList<ViewerSetting>();
+        interfaceSettings = new LinkedList<TrackSettings>();
     }
 
     /**
-     * Sets the database associated with this project.
+     * Private copy constructor.
      * 
-     * @param newDB
-     *            The new database to use with this project.
+     * @param other
      */
-    public void setDatabase(final MacshapaDatabase newDB) {
-        db = newDB;
+    private Project(final Project other) {
+        projectName = other.projectName;
+        databaseFileName = other.databaseFileName;
+        projectDirectory = other.projectDirectory;
+
+        viewerSettings = new LinkedList<ViewerSetting>();
+        for (ViewerSetting vs : other.viewerSettings) {
+            viewerSettings.add(vs.clone());
+        }
+
+        interfaceSettings = new LinkedList<TrackSettings>();
+        for (TrackSettings is : other.interfaceSettings) {
+            interfaceSettings.add(is.clone());
+        }
     }
 
     /**
-     * Gets the database associated with this project.
-     * 
-     * @return The single database to use with this project.
+     * @return The database file name. Does not include directory.
      */
-    public MacshapaDatabase getDB() {
-        return db;
+    public String getDatabaseFileName() {
+        return databaseFileName;
     }
 
-    public void setDatabasePath(final String directory, final String filename) {
-        databaseDir = directory;
-        databaseFile = filename;
-        changed = true;
-    }
-
-    public String getDatabaseDir() {
-        return databaseDir;
-    }
-
-    public String getDatabaseFile() {
-        return databaseFile;
-    }
-
-    public void setDatabaseDir(final String databaseDir) {
-        this.databaseDir = databaseDir;
-        changed = true;
-    }
-
-    public void setDatabaseFile(final String databaseFile) {
-        this.databaseFile = databaseFile;
-        changed = true;
+    /**
+     * @param fileName
+     *            the database file name. Does not include directory.
+     */
+    public void setDatabaseFileName(final String fileName) {
+        databaseFileName = fileName;
     }
 
     /**
@@ -102,235 +74,64 @@ public final class Project {
     }
 
     /**
-     * @return True if a change has been made to either the project or the
-     *         database, false otherwise.
-     */
-    public boolean isChanged() {
-        return (changed || (db != null && db.isChanged()));
-    }
-
-    /**
-     * Mark the project as changed.
-     * 
-     * @param isChanged
-     *            The state to use for the change status of the project. true =
-     *            project has changed, false = project is unchanged.
-     */
-    public void setChanged(final boolean isChanged) {
-        changed = isChanged;
-    }
-
-    /**
      * Sets the name of the project.
      * 
      * @param newProjectName
      *            The new name to use for this project.
      */
     public void setProjectName(final String newProjectName) {
-        // Check Pre-conditions.
-        assert (newProjectName != null);
-
-        // Set the name of the project.
-        String name = newProjectName;
-        int match = name.lastIndexOf(".shapa");
-        if (match != -1) {
-            name = name.substring(0, match);
-        }
-        if (name.equals("")) {
-            name = "Project1";
-        }
-        projectName = name;
-        changed = true;
+        projectName = newProjectName;
     }
 
-    public void setViewerSettings(
-            final Map<String, ViewerSetting> viewerSettings) {
+    public void setViewerSettings(final Iterable<ViewerSetting> viewerSettings) {
         if (viewerSettings != null) {
-            this.viewerSettings = viewerSettings;
-            changed = true;
+            this.viewerSettings = new LinkedList<ViewerSetting>();
+            for (ViewerSetting viewerSetting : viewerSettings) {
+                this.viewerSettings.add(viewerSetting);
+            }
+        }
+    }
+
+    public void setTrackSettings(
+            final Iterable<TrackSettings> interfaceSettings) {
+        if (interfaceSettings != null) {
+            this.interfaceSettings = new LinkedList<TrackSettings>();
+            for (TrackSettings interfaceSetting : interfaceSettings) {
+                this.interfaceSettings.add(interfaceSetting);
+            }
         }
     }
 
     /**
-     * @return The media files being managed by OpenSHAPA.
+     * @return Viewer settings used for each media file being managed by
+     *         OpenSHAPA.
      */
-    public Iterable<String> getMediaFiles() {
-        return viewerSettings.keySet();
-    }
-
-    /**
-     * @return Collection of viewer settings used for each media file being
-     *         managed by OpenSHAPA.
-     */
-    public Iterable<ViewerSetting> getMediaViewerSettings() {
-        return viewerSettings.values();
-    }
-
-    public Map<String, ViewerSetting> getViewerSettings() {
+    public Iterable<ViewerSetting> getViewerSettings() {
         return viewerSettings;
     }
 
-    /**
-     * @return The description of this project.
-     */
-    public String getProjectDescription() {
-        return projectDescription;
-    }
-
-    public void setProjectDescription(final String projectDescription) {
-        this.projectDescription = projectDescription;
+    public Iterable<TrackSettings> getTrackSettings() {
+        return interfaceSettings;
     }
 
     /**
-     * Add a new viewer for the project to manage.
-     * 
-     * @param pluginName
-     *            The name of the plugin used to manage the media file
-     * @param filePath
-     *            The absolute path to the media file
+     * @return the projectDirectory
      */
-    public void addNewViewerSetting(final String pluginName,
-            final String filePath) {
-        ViewerSetting vs = new ViewerSetting();
-        vs.setPluginName(pluginName);
-        vs.setFilePath(filePath);
-
-        viewerSettings.put(filePath, vs);
-
-        changed = true;
+    public String getProjectDirectory() {
+        return projectDirectory;
     }
 
     /**
-     * Modify the offset setting of a data viewer.
-     * 
-     * @param pluginName
-     *            The name of the plugin used to manage the media file
-     * @param filePath
-     *            The absolute path to the media file
-     * @param offset
-     *            The playback offset of the media file
+     * @param projectDirectory
+     *            the projectDirectory to set
      */
-    public void addViewerOffsetSetting(final String pluginName,
-            final String filePath, final long offset) {
-        ViewerSetting vs = viewerSettings.get(filePath);
-        if (vs == null) {
-            return;
-        }
-
-        vs.setOffset(offset);
-
-        changed = true;
+    public void setProjectDirectory(final String projectDirectory) {
+        this.projectDirectory = projectDirectory;
     }
 
-    /**
-     * Modify the bookmark setting of a data viewer.
-     * 
-     * @param pluginName
-     *            The name of the plugin used to manage the media file
-     * @param filePath
-     *            The absolute path to the media file
-     * @param bookmark
-     *            The bookmark position of the media file
-     */
-    public void addViewerBookmarkSetting(final String pluginName,
-            final String filePath, final long bookmark) {
-        ViewerSetting vs = viewerSettings.get(filePath);
-        if (vs == null) {
-            return;
-        }
-
-        vs.setBookmark(bookmark);
-
-        changed = true;
+    @Override
+    public Project clone() {
+        return new Project(this);
     }
 
-    /**
-     * Remove a media file from the project.
-     * 
-     * @param filePath
-     *            The absolute path to the media file
-     * @return the removed media file's viewer settings if it exists, null
-     *         otherwise.
-     */
-    public ViewerSetting removeViewerSetting(final String filePath) {
-        ViewerSetting vs = viewerSettings.remove(filePath);
-        if (vs != null) {
-            changed = true;
-        }
-        return vs;
-    }
-
-    /**
-     * @return True if the project is new, false otherwise.
-     */
-    public boolean isNewProject() {
-        return newProject;
-    }
-
-    /**
-     * Sets the new state of this project.
-     * 
-     * @param isNewProject
-     *            The new state to use for this project: True if the project is
-     *            new, false otherwise.
-     */
-    public void setNewProject(final boolean isNewProject) {
-        newProject = isNewProject;
-    }
-
-    public void saveProject() {
-        changed = false;
-        newProject = false;
-    }
-
-    /**
-     * @return The id of the last created cell.
-     */
-    public long getLastCreatedCellId() {
-        return lastCreatedCellID;
-    }
-
-    /**
-     * Sets the id of the last created cell to the specified parameter.
-     * 
-     * @param newId
-     *            The Id of the newly created cell.
-     */
-    public void setLastCreatedCellId(final long newId) {
-        lastCreatedCellID = newId;
-    }
-
-    /**
-     * @return The id of the last selected cell.
-     */
-    public long getLastSelectedCellId() {
-        return lastSelectedCellID;
-    }
-
-    /**
-     * Sets the id of the last selected cell to the specified parameter.
-     * 
-     * @param newId
-     *            The id of hte newly selected cell.
-     */
-    public void setLastSelectedCellId(final long newId) {
-        lastSelectedCellID = newId;
-    }
-
-    /**
-     * @return The id of the last created column.
-     */
-    public long getLastCreatedColId() {
-        return lastCreatedColID;
-    }
-
-    /**
-     * Sets the id of the last created column to the specified parameter.
-     * 
-     * @param newId
-     *            The Id of the newly created column.
-     */
-    public void setLastCreatedColId(final long newId) {
-        lastCreatedColID = newId;
-    }
 }

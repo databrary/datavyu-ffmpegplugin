@@ -16,6 +16,7 @@ import net.miginfocom.swing.MigLayout;
 import org.openshapa.event.CarriageEvent;
 import org.openshapa.event.CarriageEventListener;
 import org.openshapa.event.TrackMouseEventListener;
+import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
 
 /**
@@ -388,10 +389,8 @@ public class TracksEditorController implements TrackMouseEventListener {
      *            true if carriages are not allowed to move, false otherwise.
      */
     public void setLockedState(final boolean lockState) {
-        Iterator<Track> allTracks = tracks.iterator();
-        while (allTracks.hasNext()) {
-            TrackController track = allTracks.next().trackController;
-            track.setLocked(lockState);
+        for (Track track : tracks) {
+            track.trackController.setLocked(lockState);
         }
     }
 
@@ -402,6 +401,33 @@ public class TracksEditorController implements TrackMouseEventListener {
      */
     public void mouseReleased(final MouseEvent e) {
         snapMarkerController.setMarkerTime(-1);
+    }
+
+    public void setBookmarkPosition(final String mediaPath, final long position) {
+        for (Track track : tracks) {
+            if (track.mediaPath.equals(mediaPath)) {
+                track.trackController.addBookmark(position);
+            }
+        }
+    }
+
+    /**
+     * @return A clone of all track models currently in uses.
+     */
+    public Iterable<TrackModel> getAllTrackModels() {
+        List<TrackModel> models = new LinkedList<TrackModel>();
+        for (Track track : tracks) {
+            models.add(track.trackController.getTrackModel());
+        }
+        return models;
+    }
+
+    public void setMovementLock(final String mediaPath, final boolean lock) {
+        for (Track track : tracks) {
+            if (track.mediaPath.equals(mediaPath)) {
+                track.trackController.setLocked(lock);
+            }
+        }
     }
 
     /**

@@ -1,19 +1,22 @@
 package org.openshapa.controllers;
 
-import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.LinkedList;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.swing.JFileChooser;
+
 import org.openshapa.OpenSHAPA;
 import org.openshapa.util.FileFilters.RBFilter;
 import org.openshapa.views.ConsoleV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.OpenSHAPAView;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * Controller for running scripts.
@@ -29,8 +32,8 @@ public final class RunScriptC {
     public RunScriptC() {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
         jd.addChoosableFileFilter(new RBFilter());
-        int result = jd.showOpenDialog(OpenSHAPA.getApplication()
-                                                .getMainFrame());
+        int result =
+                jd.showOpenDialog(OpenSHAPA.getApplication().getMainFrame());
 
         if (result == JFileChooser.APPROVE_OPTION) {
             runScript(jd.getSelectedFile());
@@ -39,8 +42,9 @@ public final class RunScriptC {
 
     /**
      * Constructs and invokes the runscript controller.
-     *
-     * @param file The absolute path to the script file you wish to invoke.
+     * 
+     * @param file
+     *            The absolute path to the script file you wish to invoke.
      */
     public RunScriptC(final String file) {
         File rubyFile = new File(file);
@@ -49,8 +53,9 @@ public final class RunScriptC {
 
     /**
      * Action for running a script.
-     *
-     * @param rubyFile The file of the ruby script to run.
+     * 
+     * @param rubyFile
+     *            The file of the ruby script to run.
      */
     public void runScript(final File rubyFile) {
 
@@ -74,7 +79,7 @@ public final class RunScriptC {
             rubyEngine.getContext().setWriter(OpenSHAPA.getConsoleWriter());
 
             // Place a reference to the database within the scripting engine.
-            rubyEngine.put("db", OpenSHAPA.getProject().getDB());
+            rubyEngine.put("db", OpenSHAPA.getProjectController().getDB());
 
             FileReader reader = new FileReader(rubyFile);
             rubyEngine.eval(reader);
@@ -87,7 +92,7 @@ public final class RunScriptC {
             PrintWriter consoleWriter = OpenSHAPA.getConsoleWriter();
             consoleWriter.println("***** SCRIPT ERRROR *****");
             consoleWriter.println("@Line " + e.getLineNumber() + ":'"
-                                 + e.getMessage() + "'");
+                    + e.getMessage() + "'");
             consoleWriter.println("*************************");
             consoleWriter.flush();
 
@@ -97,8 +102,8 @@ public final class RunScriptC {
         }
 
         // Display any changes.
-        OpenSHAPAView view = (OpenSHAPAView) OpenSHAPA.getApplication()
-                                                      .getMainView();
+        OpenSHAPAView view =
+                (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
         view.showSpreadsheet();
     }
 

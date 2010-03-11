@@ -64,12 +64,9 @@ public class TrackController {
     /** States */
     // can the carriage be moved using the mouse when snap is switched on
     private boolean isMoveable;
-    // can the carriage be moved using the mouse
-    private boolean isLocked;
 
     public TrackController() {
         isMoveable = true;
-        isLocked = false;
 
         view = new JPanel();
         view.setLayout(new MigLayout("ins 0", "[]0[]"));
@@ -82,8 +79,8 @@ public class TrackController {
         viewableModel = new ViewableModel();
         trackModel = new TrackModel();
         trackModel.setState(TrackState.NORMAL);
-        trackModel.setSnapMarkerPosition(-1);
         trackModel.setBookmark(-1);
+        trackModel.setLocked(false);
 
         trackPainter.setViewableModel(viewableModel);
         trackPainter.setTrackModel(trackModel);
@@ -128,7 +125,6 @@ public class TrackController {
         lockUnlockButton = new JButton(unlockIcon);
         lockUnlockButton.setContentAreaFilled(false);
         lockUnlockButton.setBorderPainted(false);
-        lockUnlockButton.setVisible(false);
         lockUnlockButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
                 handleLockUnlockButtonEvent(e);
@@ -289,6 +285,13 @@ public class TrackController {
     }
 
     /**
+     * @return a clone of the track model used by the controller
+     */
+    public TrackModel getTrackModel() {
+        return trackModel.clone();
+    }
+
+    /**
      * Set if the track carriage can be moved while the snap functionality is
      * switched on
      * 
@@ -304,7 +307,7 @@ public class TrackController {
      * @param lock
      */
     public void setLocked(final boolean lock) {
-        isLocked = lock;
+        trackModel.setLocked(lock);
     }
 
     /**
@@ -358,7 +361,9 @@ public class TrackController {
      * @param e
      */
     private void handleLockUnlockButtonEvent(final ActionEvent e) {
+        boolean isLocked = trackModel.isLocked();
         isLocked = !isLocked;
+        trackModel.setLocked(isLocked);
         if (isLocked) {
             lockUnlockButton.setIcon(lockIcon);
         } else {
@@ -571,7 +576,7 @@ public class TrackController {
 
         @Override
         public void mouseDragged(final MouseEvent e) {
-            if (isLocked) {
+            if (trackModel.isLocked()) {
                 return;
             }
             if (inCarriage) {

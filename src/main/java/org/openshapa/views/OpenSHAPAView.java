@@ -36,18 +36,14 @@ import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.SetSheetLayoutC;
 import org.openshapa.controllers.VocabEditorC;
+import org.openshapa.controllers.project.ProjectController;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.models.project.Project;
-import org.openshapa.models.project.ViewerSetting;
 import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.Constants;
 import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
-import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.continuous.Plugin;
-import org.openshapa.views.continuous.PluginManager;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
@@ -140,7 +136,7 @@ public final class OpenSHAPAView extends FrameView {
         if (panel != null) {
             panel.deregisterListeners();
         }
-        panel = new SpreadsheetPanel(OpenSHAPA.getProject().getDB());
+        panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
         panel.registerListeners();
         setComponent(panel);
 
@@ -159,9 +155,9 @@ public final class OpenSHAPAView extends FrameView {
                 OpenSHAPA.getApplication().getContext().getResourceMap(
                         OpenSHAPA.class);
         String postFix = "";
-        Project project = OpenSHAPA.getProject();
+        ProjectController projectController = OpenSHAPA.getProjectController();
 
-        if (project.isChanged() || project.isNewProject()) {
+        if (projectController.isChanged() || projectController.isNewProject()) {
             postFix = "*";
         }
 
@@ -176,7 +172,7 @@ public final class OpenSHAPAView extends FrameView {
             extension = ".odb";
         }
 
-        String projectName = project.getProjectName();
+        String projectName = projectController.getProjectName();
         if (projectName != null) {
             mainFrame.setTitle(rMap.getString("Application.title") + " - "
                     + projectName + extension + postFix);
@@ -213,11 +209,11 @@ public final class OpenSHAPAView extends FrameView {
     public void save() {
         // If the user has not saved before - invoke the saveAs() controller to
         // force the user to nominate a destination file.
-        Project openShapaProject = OpenSHAPA.getProject();
+        ProjectController openShapaProject = OpenSHAPA.getProjectController();
         if (openShapaProject.isNewProject()
                 || openShapaProject.getProjectName() == null) {
             saveAs();
-        } else if (openShapaProject.getDatabaseFile() == null) {
+        } else if (openShapaProject.getDatabaseFileName() == null) {
             saveAs();
         } else {
             SaveC.getInstance().save();
@@ -360,7 +356,7 @@ public final class OpenSHAPAView extends FrameView {
         if (panel != null) {
             panel.deregisterListeners();
         }
-        panel = new SpreadsheetPanel(OpenSHAPA.getProject().getDB());
+        panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
         panel.registerListeners();
         setComponent(panel);
         getComponent().revalidate();
@@ -393,12 +389,12 @@ public final class OpenSHAPAView extends FrameView {
 
     private void openDatabase(final OpenSHAPAFileChooser jd) {
         // Make a project for the new database.
-        Project newProject = new Project();
-        OpenSHAPA.setProject(newProject);
+        OpenSHAPA.newProjectController();
+        ProjectController projectController = OpenSHAPA.getProjectController();
 
         try {
             MacshapaDatabase newDB = new MacshapaDatabase();
-            OpenSHAPA.getProject().setDatabase(newDB);
+            projectController.setDatabase(newDB);
             OpenSHAPAView s =
                     (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
             s.showSpreadsheet();
@@ -413,25 +409,23 @@ public final class OpenSHAPAView extends FrameView {
         String dir = jd.getSelectedFile().getAbsolutePath();
         int match = dir.lastIndexOf(jd.getSelectedFile().getName());
         dir = dir.substring(0, match);
-        newProject.setDatabaseDir(dir);
-        newProject.setDatabaseFile(jd.getSelectedFile().getName());
-        newProject.setProjectName(OpenSHAPA.getProject().getDB().getName());
+
+        projectController.setProjectName(projectController.getDB().getName());
 
         OpenSHAPA.getApplication().updateTitle();
     }
 
     private void openProject(final OpenSHAPAFileChooser jd) {
-        Project newProject = new Project();
-        OpenSHAPA.setProject(newProject);
         OpenProjectC opc = new OpenProjectC();
 
         if (opc.open(jd.getSelectedFile())) {
             // Successfully loaded the project file
-            Project openedProject = OpenSHAPA.getProject();
+            ProjectController projectController =
+                    OpenSHAPA.getProjectController();
 
             try {
                 MacshapaDatabase newDB = new MacshapaDatabase();
-                OpenSHAPA.getProject().setDatabase(newDB);
+                projectController.setDatabase(newDB);
                 OpenSHAPAView s =
                         (OpenSHAPAView) OpenSHAPA.getApplication()
                                 .getMainView();
@@ -442,41 +436,10 @@ public final class OpenSHAPAView extends FrameView {
             }
 
             // Load the database
-            new OpenDatabaseC(new File(openedProject.getDatabaseDir(),
-                    openedProject.getDatabaseFile()));
+            new OpenDatabaseC(new File(jd.getSelectedFile().getParent(),
+                    projectController.getDatabaseFileName()));
 
-            // Use the plugin manager to load up the data viewers
-            PluginManager pm = PluginManager.getInstance();
-            DataControllerV dataController = OpenSHAPA.getDataController();
-
-            // Load the plugins required for each media file
-            Iterable<ViewerSetting> viewerSettings =
-                    openedProject.getMediaViewerSettings();
-            boolean showController = false;
-            for (ViewerSetting setting : viewerSettings) {
-                showController = true;
-
-                File file = new File(setting.getFilePath());
-                Plugin plugin = pm.getAssociatedPlugin(setting.getPluginName());
-                if (plugin == null) {
-                    continue;
-                }
-
-                DataViewer viewer = plugin.getNewDataViewer();
-                viewer.setDataFeed(file);
-                viewer.setOffset(setting.getOffset());
-
-                dataController.addViewer(viewer, setting.getOffset());
-                dataController.addTrack(plugin.getTypeIcon(), file
-                        .getAbsolutePath(), file.getName(), viewer
-                        .getDuration(), setting.getOffset(), setting
-                        .getBookmark());
-            }
-
-            // Show the data controller
-            if (showController) {
-                OpenSHAPA.getApplication().showDataController();
-            }
+            projectController.loadProject();
         }
     }
 
@@ -486,14 +449,16 @@ public final class OpenSHAPAView extends FrameView {
     private void setSheetLayout() {
         try {
             SheetLayoutType type = SheetLayoutType.Ordinal;
-            OpenSHAPA.getProject().getDB().setTemporalOrdering(false);
+            OpenSHAPA.getProjectController().getDB().setTemporalOrdering(false);
 
             if (weakTemporalOrderMenuItem.isSelected()) {
                 type = SheetLayoutType.WeakTemporal;
-                OpenSHAPA.getProject().getDB().setTemporalOrdering(true);
+                OpenSHAPA.getProjectController().getDB().setTemporalOrdering(
+                        true);
             } else if (strongTemporalOrderMenuItem.isSelected()) {
                 type = SheetLayoutType.StrongTemporal;
-                OpenSHAPA.getProject().getDB().setTemporalOrdering(true);
+                OpenSHAPA.getProjectController().getDB().setTemporalOrdering(
+                        true);
             }
 
             new SetSheetLayoutC(type);

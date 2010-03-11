@@ -4,7 +4,7 @@ package org.openshapa.models.component;
  * This model provides information used to render a snap marker on the tracks
  * interface.
  */
-public class SnapMarkerModel {
+public class SnapMarkerModel implements Cloneable {
 
     /** Amount of padding for this component from the top */
     private int paddingTop;
@@ -16,7 +16,7 @@ public class SnapMarkerModel {
     public SnapMarkerModel() {
     }
 
-    protected SnapMarkerModel(SnapMarkerModel other) {
+    protected SnapMarkerModel(final SnapMarkerModel other) {
         paddingTop = other.paddingTop;
         paddingLeft = other.paddingLeft;
         markerTime = other.markerTime;
@@ -50,7 +50,7 @@ public class SnapMarkerModel {
      * 
      * @param paddingLeft
      */
-    public void setPaddingLeft(int paddingLeft) {
+    public void setPaddingLeft(final int paddingLeft) {
         this.paddingLeft = paddingLeft;
     }
 
@@ -66,12 +66,12 @@ public class SnapMarkerModel {
      * 
      * @param paddingTop
      */
-    public void setPaddingTop(int paddingTop) {
+    public void setPaddingTop(final int paddingTop) {
         this.paddingTop = paddingTop;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
         }
@@ -101,7 +101,7 @@ public class SnapMarkerModel {
     }
 
     @Override
-    public Object clone() {
+    public SnapMarkerModel clone() {
         return new SnapMarkerModel(this);
     }
 

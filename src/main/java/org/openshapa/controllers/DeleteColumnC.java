@@ -1,13 +1,15 @@
 package org.openshapa.controllers;
 
-import com.usermetrix.jclient.UserMetrix;
 import java.util.Vector;
+
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetPanel;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * Controller for deleting cells from the database.
@@ -19,15 +21,16 @@ public final class DeleteColumnC {
 
     /**
      * Constructor.
-     *
-     * @param colsToDelete The columns to remove from the database/spreadsheet.
+     * 
+     * @param colsToDelete
+     *            The columns to remove from the database/spreadsheet.
      */
     public DeleteColumnC(final Vector<DataColumn> colsToDelete) {
         // The spreadsheet is the view for this controller.
-        SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
-                                                            .getMainView()
-                                                            .getComponent();
-        MacshapaDatabase model = OpenSHAPA.getProject().getDB();
+        SpreadsheetPanel view =
+                (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
+                        .getComponent();
+        MacshapaDatabase model = OpenSHAPA.getProjectController().getDB();
 
         try {
             // Deselect everything.
@@ -40,19 +43,24 @@ public final class DeleteColumnC {
 
                     // Check if the cell we are deleting is the last created
                     // cell... Default this back to 0.
-                    if (c.getID() == OpenSHAPA.getProject().getLastCreatedCellId()) {
-                        OpenSHAPA.getProject().setLastCreatedCellId(0);
+                    if (c.getID() == OpenSHAPA.getProjectController()
+                            .getLastCreatedCellId()) {
+                        OpenSHAPA.getProjectController()
+                                .setLastCreatedCellId(0);
                     }
 
-                    OpenSHAPA.getProject().getDB().removeCell(c.getID());
-                    dc = OpenSHAPA.getProject().getDB()
-                                  .getDataColumn(dc.getID());
+                    OpenSHAPA.getProjectController().getDB().removeCell(
+                            c.getID());
+                    dc =
+                            OpenSHAPA.getProjectController().getDB()
+                                    .getDataColumn(dc.getID());
                 }
 
                 // Check if the column we are deleting was the last created
                 // column... Default this back to 0 if it is.
-                if (dc.getID() == OpenSHAPA.getProject().getLastCreatedColId()) {
-                    OpenSHAPA.getProject().setLastCreatedColId(0);
+                if (dc.getID() == OpenSHAPA.getProjectController()
+                        .getLastCreatedColId()) {
+                    OpenSHAPA.getProjectController().setLastCreatedColId(0);
                 }
 
                 // All cells in the column removed - now delete the column.

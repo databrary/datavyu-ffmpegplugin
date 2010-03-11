@@ -1,18 +1,6 @@
 package org.openshapa.views.discrete;
 
-import com.usermetrix.jclient.UserMetrix;
 import java.awt.BorderLayout;
-import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.Cell;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.Database;
-import org.openshapa.models.db.ExternalDataCellListener;
-import org.openshapa.models.db.Matrix;
-import org.openshapa.models.db.ReferenceCell;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.models.db.TimeStamp;
-import org.openshapa.Configuration;
-import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -23,25 +11,40 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Box.Filler;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.MatteBorder;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
+import org.openshapa.Configuration;
+import org.openshapa.OpenSHAPA;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.ExternalDataCellListener;
+import org.openshapa.models.db.Matrix;
+import org.openshapa.models.db.ReferenceCell;
+import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.TimeStamp;
+import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
+import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * Visual representation of a spreadsheet cell.
  */
-public class SpreadsheetCell extends JPanel
-implements ExternalDataCellListener, MouseListener, FocusListener {
+public class SpreadsheetCell extends JPanel implements
+        ExternalDataCellListener, MouseListener, FocusListener {
 
     /** The panel that displays the cell. */
     private JPanel cellPanel;
@@ -82,12 +85,16 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /** strut creates the gap between this cell and the previous cell. */
     private Filler strut;
 
-    /** The Y location of the visible portion of the cell requested by
-     * the active SheetLayout. */
+    /**
+     * The Y location of the visible portion of the cell requested by the active
+     * SheetLayout.
+     */
     private int layoutPreferredY;
 
-    /** The height of the visible portion of the cell requested by
-     * the active SheetLayout. */
+    /**
+     * The height of the visible portion of the cell requested by the active
+     * SheetLayout.
+     */
     private int layoutPreferredHeight;
 
     /** Onset has been processed and layout position calculated. */
@@ -101,82 +108,78 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     /** Border to use when a cell is highlighted. */
     private static final Border HIGHLIGHT_BORDER =
-        new CompoundBorder(
-            new MatteBorder(0, 0, 1, 0, Color.BLACK),
-            new MatteBorder(3, 3, 3, 3,
-                Configuration.getInstance().getSSSelectedColour()));
+            new CompoundBorder(new MatteBorder(0, 0, 1, 0, Color.BLACK),
+                    new MatteBorder(3, 3, 3, 3, Configuration.getInstance()
+                            .getSSSelectedColour()));
 
     /** Border to use when a cell is highlighted and overlapping cell. */
     private static final Border HIGHLIGHT_OVERLAP_BORDER =
-         new CompoundBorder(new CompoundBorder(
-            new MatteBorder(0, 0, 1, 0, Color.BLACK),
-            new MatteBorder(0, 0, 3, 0,
-                Configuration.getInstance().getSSOverlapColour())),
-            new MatteBorder(3, 3, 0, 3,
-                Configuration.getInstance().getSSSelectedColour()));
+            new CompoundBorder(new CompoundBorder(new MatteBorder(0, 0, 1, 0,
+                    Color.BLACK), new MatteBorder(0, 0, 3, 0, Configuration
+                    .getInstance().getSSOverlapColour())), new MatteBorder(3,
+                    3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
 
     /** Border to use when a cell is selected. */
     private static final Border FILL_BORDER =
-        new CompoundBorder(new CompoundBorder(
-            new MatteBorder(0, 0, 1, 0, Color.BLACK),
-            new MatteBorder(0, 0, 3, 0,
-                Configuration.getInstance().getSSSelectedColour())),
-            new MatteBorder(3, 3, 0, 3,
-                Configuration.getInstance().getSSSelectedColour()));
+            new CompoundBorder(new CompoundBorder(new MatteBorder(0, 0, 1, 0,
+                    Color.BLACK), new MatteBorder(0, 0, 3, 0, Configuration
+                    .getInstance().getSSSelectedColour())), new MatteBorder(3,
+                    3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
 
     /** Border to use when a cell is selected. */
     private static final Border FILL_OVERLAP_BORDER = HIGHLIGHT_OVERLAP_BORDER;
 
     /** Border to use for normal cell. No extra information to show. */
     private static final Border NORMAL_BORDER =
-        new CompoundBorder(new CompoundBorder(
-            new MatteBorder(0, 0, 1, 0, Color.BLACK),
-            new MatteBorder(0, 0, 3, 0,
-                Configuration.getInstance().getSSBackgroundColour())),
-            new MatteBorder(3, 3, 0, 3,
-                Configuration.getInstance().getSSBackgroundColour()));
+            new CompoundBorder(new CompoundBorder(new MatteBorder(0, 0, 1, 0,
+                    Color.BLACK), new MatteBorder(0, 0, 3, 0, Configuration
+                    .getInstance().getSSBackgroundColour())), new MatteBorder(
+                    3, 3, 0, 3, Configuration.getInstance()
+                            .getSSBackgroundColour()));
 
     /** Border to use if cell overlaps with another. */
     public static final Border OVERLAP_BORDER =
-        new CompoundBorder(new CompoundBorder(
-            new MatteBorder(0, 0, 1, 0, Color.BLACK),
-            new MatteBorder(0, 0, 3, 0,
-                Configuration.getInstance().getSSOverlapColour())),
-            new MatteBorder(3, 3, 0, 3,
-                Configuration.getInstance().getSSBackgroundColour()));
+            new CompoundBorder(new CompoundBorder(new MatteBorder(0, 0, 1, 0,
+                    Color.BLACK), new MatteBorder(0, 0, 3, 0, Configuration
+                    .getInstance().getSSOverlapColour())), new MatteBorder(3,
+                    3, 0, 3, Configuration.getInstance()
+                            .getSSBackgroundColour()));
 
     /** Border to use for normal cell if there is no strut (abuts prev cell). */
     public static final Border STRUT_BORDER =
-        BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK);
+            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK);
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(SpreadsheetCell.class);
 
     /**
      * Creates new form SpreadsheetCell.
-     *
-     * @param cellDB Database the cell is in
-     * @param cell Cell to display
-     * @param listener The spreadsheet cell selection listener to notify of
-     * changes to cell selection.
-     *
-     * @throws SystemErrorException if trouble with db calls
+     * 
+     * @param cellDB
+     *            Database the cell is in
+     * @param cell
+     *            Cell to display
+     * @param listener
+     *            The spreadsheet cell selection listener to notify of changes
+     *            to cell selection.
+     * @throws SystemErrorException
+     *             if trouble with db calls
      */
-    public SpreadsheetCell(final Database cellDB,
-                           final Cell cell,
-                           final CellSelectionListener listener)
-    throws SystemErrorException {
+    public SpreadsheetCell(final Database cellDB, final Cell cell,
+            final CellSelectionListener listener) throws SystemErrorException {
         db = cellDB;
         cellID = cell.getID();
         setName(this.getClass().getSimpleName());
 
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                      .getContext()
-                                      .getResourceMap(SpreadsheetCell.class);
+        ResourceMap rMap =
+                Application.getInstance(OpenSHAPA.class).getContext()
+                        .getResourceMap(SpreadsheetCell.class);
 
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
-        DataCell dc = (DataCell) OpenSHAPA.getProject().getDB().getCell(cellID);
+        DataCell dc =
+                (DataCell) OpenSHAPA.getProjectController().getDB().getCell(
+                        cellID);
 
         // Check the selected state of the datacell
         // If it is already selected in the database, we need to inform
@@ -186,10 +189,11 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
         cellPanel = new JPanel();
         cellPanel.addMouseListener(this);
-        strut = new Filler(new Dimension(0,0), new Dimension(0,0),
-                                            new Dimension(Short.MAX_VALUE, 0));
+        strut =
+                new Filler(new Dimension(0, 0), new Dimension(0, 0),
+                        new Dimension(Short.MAX_VALUE, 0));
 
-        this.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
         this.add(strut, BorderLayout.NORTH);
         this.add(cellPanel, BorderLayout.CENTER);
 
@@ -225,14 +229,14 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
         // Set the appearance of the spreadsheet cell.
         cellPanel.setBackground(Configuration.getInstance()
-                                                      .getSSBackgroundColour());
+                .getSSBackgroundColour());
         cellPanel.setBorder(HIGHLIGHT_BORDER);
         cellPanel.setLayout(new BorderLayout());
 
         // Set the apperance of the top panel and add child elements (ord, onset
         // and offset).
         topPanel.setOpaque(false);
-        topPanel.setBorder(BorderFactory.createEmptyBorder(0,0,2,0));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         cellPanel.add(topPanel, BorderLayout.NORTH);
         topPanel.add(ord);
@@ -277,30 +281,37 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     /**
      * Set the ordinal value.
-     *
-     * @param ord The new ordinal value to use with this cell.
+     * 
+     * @param ord
+     *            The new ordinal value to use with this cell.
      */
-    private void setOrdinal(Integer ordInt) {
+    private void setOrdinal(final Integer ordInt) {
         ord.setText(ordInt.toString());
     }
 
     /**
      * Get the onset ticks
+     * 
      * @return Onset time as a long.
      * @throws SystemErrorException
      */
     public long getOnsetTicks() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getProject().getDB().getCell(cellID);
+        DataCell dc =
+                (DataCell) OpenSHAPA.getProjectController().getDB().getCell(
+                        cellID);
         return dc.getOnset().getTime();
     }
 
     /**
      * Get the offset ticks
+     * 
      * @return Offset ticks as a long.
      * @throws SystemErrorException
      */
     public long getOffsetTicks() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getProject().getDB().getCell(cellID);
+        DataCell dc =
+                (DataCell) OpenSHAPA.getProjectController().getDB().getCell(
+                        cellID);
         return dc.getOffset().getTime();
     }
 
@@ -308,14 +319,18 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
     public long getOrdinal() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getProject().getDB().getCell(cellID);
+        DataCell dc =
+                (DataCell) OpenSHAPA.getProjectController().getDB().getCell(
+                        cellID);
         return dc.getOrd();
     }
 
     /**
-     * Allow a layout to set a preferred y location for the cell.
-     * Set to 0 if layout wants default behaviour. (e.g. Ordinal layout)
-     * @param y Preferred Y location for the visible portion of the cell.
+     * Allow a layout to set a preferred y location for the cell. Set to 0 if
+     * layout wants default behaviour. (e.g. Ordinal layout)
+     * 
+     * @param y
+     *            Preferred Y location for the visible portion of the cell.
      */
     public final void setLayoutPreferredY(final int y) {
         layoutPreferredY = y;
@@ -324,22 +339,27 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     /**
      * Allow a layout to set a preferred y location for the cell.
-     * @param y Preferred Y location for the visible portion of the cell.
-     * @param prev SpreadsheetCell previous to this cell.
+     * 
+     * @param y
+     *            Preferred Y location for the visible portion of the cell.
+     * @param prev
+     *            SpreadsheetCell previous to this cell.
      */
-    public final void setLayoutPreferredY(final int y, SpreadsheetCell prev) {
+    public final void setLayoutPreferredY(final int y,
+            final SpreadsheetCell prev) {
         layoutPreferredY = y;
         int strutHeight = y;
         if (prev != null) {
-            strutHeight -= (prev.getLayoutPreferredY()
-                                            + prev.getLayoutPreferredHeight());
+            strutHeight -=
+                    (prev.getLayoutPreferredY() + prev
+                            .getLayoutPreferredHeight());
         }
         setOnsetvGap(strutHeight);
     }
 
     /**
      * @return The active layouts preferred Y location for the visible portion
-     * of this cell.
+     *         of this cell.
      */
     public final int getLayoutPreferredY() {
         return layoutPreferredY;
@@ -347,7 +367,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     /**
      * @return The active layouts preferred height for the visible portion of
-     * this cell.
+     *         this cell.
      */
     public final int getLayoutPreferredHeight() {
         return layoutPreferredHeight;
@@ -361,8 +381,8 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     }
 
     /**
-     * @return the calculated preferred height for the SpreadsheetCell
-     * not including the strut component.
+     * @return the calculated preferred height for the SpreadsheetCell not
+     *         including the strut component.
      */
     public final int getPreferredHeight() {
         Dimension mysize = super.getPreferredSize();
@@ -374,15 +394,17 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /**
      * Override Maximum size to return the preferred size or the active layouts
      * preferred height, whichever is greater.
+     * 
      * @return the maximum size of the cell.
      */
     @Override
     public final Dimension getMaximumSize() {
         Dimension mysize = super.getPreferredSize();
-        if (mysize != null && mysize.height <
-                                  (layoutPreferredHeight + strut.getHeight())) {
-            mysize = new Dimension(mysize.width,
-                                   (layoutPreferredHeight + strut.getHeight()));
+        if (mysize != null
+                && mysize.height < (layoutPreferredHeight + strut.getHeight())) {
+            mysize =
+                    new Dimension(mysize.width, (layoutPreferredHeight + strut
+                            .getHeight()));
         }
         return mysize;
     }
@@ -390,6 +412,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /**
      * Override Preferred size to return the maximum size (which takes into
      * account the super.preferred size. See getMaximumSize.
+     * 
      * @return the preferred size of the cell.
      */
     @Override
@@ -400,6 +423,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /**
      * Override Minimum size to return the maximum size (which takes into
      * account the super.preferred size. See getMaximumSize.
+     * 
      * @return the minimum size of the cell.
      */
     @Override
@@ -409,29 +433,33 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     /**
      * Set the width of the SpreadsheetCell.
-     * @param width New width of the SpreadsheetCell.
+     * 
+     * @param width
+     *            New width of the SpreadsheetCell.
      */
-    public void setWidth(int width) {
+    public void setWidth(final int width) {
         Dimension d = new Dimension(width, 0);
         stretcher.changeShape(d, d, d);
     }
 
     /**
      * Mark the cell as selected in the database.
-     *
-     * @param sel The selection state to use when marking the cell. True
-     * if the cell is selected, false otherwise.
+     * 
+     * @param sel
+     *            The selection state to use when marking the cell. True if the
+     *            cell is selected, false otherwise.
      */
-    public void selectCellInDB(boolean sel) {
+    public void selectCellInDB(final boolean sel) {
         // Set the selection within the database.
         try {
-            Cell cell = db.getCell(this.cellID);
+            Cell cell = db.getCell(cellID);
             DataCell dcell = null;
             if (cell instanceof DataCell) {
-                dcell = (DataCell)db.getCell(cell.getID());
+                dcell = (DataCell) db.getCell(cell.getID());
             } else {
-                dcell = (DataCell)db.getCell(((ReferenceCell)cell)
-                                                                .getTargetID());
+                dcell =
+                        (DataCell) db.getCell(((ReferenceCell) cell)
+                                .getTargetID());
             }
             dcell.setSelected(sel);
             cell.getDB().replaceCell(dcell);
@@ -439,38 +467,41 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
             if (sel) {
                 // method names don't reflect usage - we didn't really create
                 // this cell just now.
-                OpenSHAPA.getProject().setLastCreatedColId(cell.getItsColID());
-                OpenSHAPA.getProject().setLastSelectedCellId(cell.getID());
-                OpenSHAPA.getDataController()
-                         .setFindTime(dcell.getOnset().getTime());
-                OpenSHAPA.getDataController()
-                         .setFindOffsetField(dcell.getOffset().getTime());
+                OpenSHAPA.getProjectController().setLastCreatedColId(
+                        cell.getItsColID());
+                OpenSHAPA.getProjectController().setLastSelectedCellId(
+                        cell.getID());
+                OpenSHAPA.getDataController().setFindTime(
+                        dcell.getOnset().getTime());
+                OpenSHAPA.getDataController().setFindOffsetField(
+                        dcell.getOffset().getTime());
             }
         } catch (SystemErrorException e) {
-           logger.error("Failed selected cell in SpreadsheetCell.", e);
+            logger.error("Failed selected cell in SpreadsheetCell.", e);
         }
     }
 
     /**
      * Set this cell as highlighted, a highlighted cell has a difference
      * appearance to unselected (or fill selected) cell.
-     *
-     * @param isHighlighted The highlighted state of the cell, true when
-     * the cell is highlighted false otherwise.
+     * 
+     * @param isHighlighted
+     *            The highlighted state of the cell, true when the cell is
+     *            highlighted false otherwise.
      */
-    public void setHighlighted(boolean sel) {
+    public void setHighlighted(final boolean sel) {
         highlighted = sel;
-        this.selectCellInDB(highlighted);
+        selectCellInDB(highlighted);
 
         // Update the visual representation of the SpreadsheetCell.
         if (highlighted) {
-            if (this.cellOverlap) {
+            if (cellOverlap) {
                 cellPanel.setBorder(HIGHLIGHT_OVERLAP_BORDER);
             } else {
                 cellPanel.setBorder(HIGHLIGHT_BORDER);
             }
         } else {
-            if (this.cellOverlap) {
+            if (cellOverlap) {
                 cellPanel.setBorder(OVERLAP_BORDER);
             } else {
                 cellPanel.setBorder(NORMAL_BORDER);
@@ -482,14 +513,14 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * @return True if the cell is highlighted, false otherwise.
      */
     public boolean isHighlighted() {
-        return this.highlighted;
+        return highlighted;
     }
 
     /**
      * @return True if the cell is filled, false otherwise.
      */
     public boolean isFilled() {
-        if (!this.highlighted && this.selected) {
+        if (!highlighted && selected) {
             return true;
         }
         return false;
@@ -498,31 +529,32 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /**
      * Set this cell as selected, a selected cell has a different appearance to
      * an unselcted one (typically colour).
-     *
-     * @param sel The selection state of the cell, when true the cell is
-     * selected false otherwise.
+     * 
+     * @param sel
+     *            The selection state of the cell, when true the cell is
+     *            selected false otherwise.
      */
-    public void setSelected(boolean sel) {
+    public void setSelected(final boolean sel) {
         selected = sel;
-        this.selectCellInDB(selected);
+        selectCellInDB(selected);
 
         // Update the visual representation of the SpreadsheetCell.
         if (selected) {
-            if (this.cellOverlap) {
+            if (cellOverlap) {
                 cellPanel.setBorder(FILL_OVERLAP_BORDER);
             } else {
                 cellPanel.setBorder(FILL_BORDER);
             }
             cellPanel.setBackground(Configuration.getInstance()
-                                                 .getSSSelectedColour());
+                    .getSSSelectedColour());
         } else {
-            if (this.cellOverlap) {
+            if (cellOverlap) {
                 cellPanel.setBorder(OVERLAP_BORDER);
             } else {
                 cellPanel.setBorder(NORMAL_BORDER);
             }
             cellPanel.setBackground(Configuration.getInstance()
-                                                 .getSSBackgroundColour());
+                    .getSSBackgroundColour());
         }
     }
 
@@ -534,33 +566,22 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     }
 
     /**
-     * Called if the DataCell of interest is changed.
-     * see ExternalDataCellListener.
+     * Called if the DataCell of interest is changed. see
+     * ExternalDataCellListener.
      */
-    public void DCellChanged(Database db,
-                             long colID,
-                             long cellID,
-                             boolean ordChanged,
-                             int oldOrd,
-                             int newOrd,
-                             boolean onsetChanged,
-                             TimeStamp oldOnset,
-                             TimeStamp newOnset,
-                             boolean offsetChanged,
-                             TimeStamp oldOffset,
-                             TimeStamp newOffset,
-                             boolean valChanged,
-                             Matrix oldVal,
-                             Matrix newVal,
-                             boolean selectedChanged,
-                             boolean oldSelected,
-                             boolean newSelected,
-                             boolean commentChanged,
-                             String oldComment,
-                             String newComment) {
+    public void DCellChanged(final Database db, final long colID,
+            final long cellID, final boolean ordChanged, final int oldOrd,
+            final int newOrd, final boolean onsetChanged,
+            final TimeStamp oldOnset, final TimeStamp newOnset,
+            final boolean offsetChanged, final TimeStamp oldOffset,
+            final TimeStamp newOffset, final boolean valChanged,
+            final Matrix oldVal, final Matrix newVal,
+            final boolean selectedChanged, final boolean oldSelected,
+            final boolean newSelected, final boolean commentChanged,
+            final String oldComment, final String newComment) {
 
         if (ordChanged) {
-            this.setOrdinal(newOrd);
+            setOrdinal(newOrd);
         }
 
         if (onsetChanged) {
@@ -576,126 +597,135 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         }
 
         if (selectedChanged) {
-            this.selected = newSelected;
+            selected = newSelected;
         }
 
-        this.revalidate();
+        revalidate();
     }
 
     /**
      * Called if the DataCell of interest is deleted.
      */
-    public void DCellDeleted(Database db,
-                             long colID,
-                             long cellID) {
+    public void DCellDeleted(final Database db, final long colID,
+            final long cellID) {
         // TODO - Figure out how to work with cells that are deleted.
     }
 
     /**
      * The action to invoke when the mouse enters this component.
-     *
-     * @param me The mouse event that triggered this action.
+     * 
+     * @param me
+     *            The mouse event that triggered this action.
      */
     public void mouseEntered(final MouseEvent me) {
     }
 
     /**
      * The action to invoke when the mouse exits this component.
-     *
-     * @param me The mouse event that triggered this action.
+     * 
+     * @param me
+     *            The mouse event that triggered this action.
      */
     public void mouseExited(final MouseEvent me) {
     }
 
     /**
      * The action to invoke when a mouse button is pressed.
-     *
-     * @param me The mouse event that triggered this action.
+     * 
+     * @param me
+     *            The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-        boolean groupSel = ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0
-                         || (me.getModifiers() & keyMask) != 0);
+        boolean groupSel =
+                ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0 || (me
+                        .getModifiers() & keyMask) != 0);
 
         Class source = me.getSource().getClass();
-        boolean isEditorSrc = (source.equals(TimeStampTextField.class)
-                              || (source.equals(MatrixRootView.class)));
+        boolean isEditorSrc =
+                (source.equals(TimeStampTextField.class) || (source
+                        .equals(MatrixRootView.class)));
 
         // User has clicked in magic spot, without modifier. Clear
         // currently selected cells and select this cell.
         if (!isEditorSrc && !groupSel) {
-            this.ord.requestFocus();
-            this.cellSelL.clearCellSelection();
-            this.setSelected(!this.isSelected());
-            if (this.isSelected()) {
-                this.cellSelL.addCellToSelection(this);
+            ord.requestFocus();
+            cellSelL.clearCellSelection();
+            setSelected(!isSelected());
+            if (isSelected()) {
+                cellSelL.addCellToSelection(this);
             }
 
-        // User has clicked on editor or magic spot with modifier. Add
-        // this cell to the current selection.
+            // User has clicked on editor or magic spot with modifier. Add
+            // this cell to the current selection.
         } else if (groupSel) {
-            this.ord.requestFocus();
-            this.setSelected(!this.isSelected());
-            if (this.isSelected()) {
-                this.cellSelL.addCellToSelection(this);
+            ord.requestFocus();
+            setSelected(!isSelected());
+            if (isSelected()) {
+                cellSelL.addCellToSelection(this);
             }
 
-        // User has clicked somewhere in the cell without modifier. This
-        // cell needs to be highlighted.
+            // User has clicked somewhere in the cell without modifier. This
+            // cell needs to be highlighted.
         } else {
             // BugzID:320 - Deselect cells before selected cell contents.
-            this.cellSelL.clearCellSelection();
-            this.setHighlighted(true);
-            this.cellSelL.setHighlightedCell(this);
+            cellSelL.clearCellSelection();
+            setHighlighted(true);
+            cellSelL.setHighlightedCell(this);
         }
     }
 
     /**
      * The action to invoke when a mouse button is released.
-     *
-     * @param me The mouse event that triggered this action.
+     * 
+     * @param me
+     *            The mouse event that triggered this action.
      */
     public void mouseReleased(final MouseEvent me) {
     }
 
     /**
      * The action to invoke when a mouse button is clicked.
-     *
-     * @param me The mouse event that triggered this action.
+     * 
+     * @param me
+     *            The mouse event that triggered this action.
      */
-    public void mouseClicked(MouseEvent me) {
+    public void mouseClicked(final MouseEvent me) {
     }
 
     /**
      * The action to invoke when the focus is gained on this component.
-     *
-     * @param e The focus event that triggered this action.
+     * 
+     * @param e
+     *            The focus event that triggered this action.
      */
-    public void focusGained(FocusEvent e) {
-        if (highlighted && (this.cellPanel.getBorder().equals(NORMAL_BORDER)
-             || this.cellPanel.getBorder().equals(OVERLAP_BORDER))) {
-            this.selectCellInDB(true);
+    public void focusGained(final FocusEvent e) {
+        if (highlighted
+                && (cellPanel.getBorder().equals(NORMAL_BORDER) || cellPanel
+                        .getBorder().equals(OVERLAP_BORDER))) {
+            selectCellInDB(true);
         }
     }
 
     /**
      * The action to invoke when the focus is lost from this component.
-     *
-     * @param e The focus event that triggered this action.
+     * 
+     * @param e
+     *            The focus event that triggered this action.
      */
-    public void focusLost(FocusEvent e) {
+    public void focusLost(final FocusEvent e) {
         // BugzID: 718 - Make sure content is deselected.
-        this.dataPanel.select(0, 0);
+        dataPanel.select(0, 0);
     }
 
     /**
      * @return True if this matrix view is the current focus owner, false
-     * otherwise.
+     *         otherwise.
      */
     @Override
     public boolean isFocusOwner() {
-        return (this.onset.isFocusOwner() || this.offset.isFocusOwner()
-                || this.dataPanel.isFocusOwner());
+        return (onset.isFocusOwner() || offset.isFocusOwner() || dataPanel
+                .isFocusOwner());
     }
 
     /**
@@ -703,12 +733,12 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      */
     @Override
     public void requestFocus() {
-        this.dataPanel.requestFocus();
+        dataPanel.requestFocus();
     }
 
     /**
      * @return True if onset been processed and the layout position calculated.
-     * False otherwise.
+     *         False otherwise.
      */
     public boolean isOnsetProcessed() {
         return onsetProcessed;
@@ -716,10 +746,12 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     /**
      * Set if onset has been processed. Used in the temporal layout algorithm.
-     * @param onsetProcessed True to mark that the onset has been processed.
-     * False otherwise.
+     * 
+     * @param onsetProcessed
+     *            True to mark that the onset has been processed. False
+     *            otherwise.
      */
-    public void setOnsetProcessed(boolean onsetProcessed) {
+    public void setOnsetProcessed(final boolean onsetProcessed) {
         this.onsetProcessed = onsetProcessed;
         if (!onsetProcessed) {
             setStrutHeight(0);
@@ -729,9 +761,11 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /**
      * Set the vertical location for the SpreadsheetCell. Sets the
      * onsetProcessed flag also. Used in the temporal layout algorithm.
-     * @param vPos The vertical location in pixels for this cell.
+     * 
+     * @param vPos
+     *            The vertical location in pixels for this cell.
      */
-    public void setOnsetvGap(int vGap) {
+    public void setOnsetvGap(final int vGap) {
         setStrutHeight(vGap);
         setOnsetProcessed(true);
     }
@@ -739,35 +773,35 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /**
      * Set the strut height for the SpreadsheetCell.
      */
-    private void setStrutHeight(int height) {
+    private void setStrutHeight(final int height) {
         if (height == 0) {
             strut.setBorder(null);
         } else {
             strut.setBorder(STRUT_BORDER);
         }
-        strut.changeShape(new Dimension(0, height),
-                            new Dimension(0, height),
-                            new Dimension(Short.MAX_VALUE, height));
-        this.validate();
+        strut.changeShape(new Dimension(0, height), new Dimension(0, height),
+                new Dimension(Short.MAX_VALUE, height));
+        validate();
     }
 
     /**
      * Set the border of the cell.
-     *
-     * @param overlap true if the cell overlaps with the following cell,
-     * false otherwise.
+     * 
+     * @param overlap
+     *            true if the cell overlaps with the following cell, false
+     *            otherwise.
      */
     public void setOverlapBorder(final boolean overlap) {
-        this.cellOverlap = overlap;
+        cellOverlap = overlap;
 
-        if (this.cellOverlap) {
-            if (this.highlighted) {
+        if (cellOverlap) {
+            if (highlighted) {
                 cellPanel.setBorder(HIGHLIGHT_OVERLAP_BORDER);
             } else {
                 cellPanel.setBorder(OVERLAP_BORDER);
             }
         } else {
-            if (this.highlighted) {
+            if (highlighted) {
                 cellPanel.setBorder(HIGHLIGHT_BORDER);
             } else {
                 cellPanel.setBorder(NORMAL_BORDER);
@@ -784,10 +818,11 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     /**
      * Method to call when painting the component.
+     * 
      * @param g
      */
     @Override
-    public void paint(Graphics g) {
+    public void paint(final Graphics g) {
         // BugzID:474 - Set the size at paint time - somewhere else may have
         // altered the font.
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());

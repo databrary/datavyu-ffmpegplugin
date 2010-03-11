@@ -1,6 +1,5 @@
 package org.openshapa.views.discrete;
 
-import com.usermetrix.jclient.UserMetrix;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -11,12 +10,14 @@ import java.awt.event.KeyEvent;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Vector;
+
 import javax.swing.BorderFactory;
-import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.Box.Filler;
 import javax.swing.text.BadLocationException;
+
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
@@ -25,11 +26,12 @@ import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
+import com.usermetrix.jclient.UserMetrix;
+
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
  */
-public final class ColumnDataPanel extends JPanel
-implements KeyEventDispatcher {
+public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher {
 
     /** Width of the column. */
     private int columnWidth;
@@ -50,19 +52,21 @@ implements KeyEventDispatcher {
 
     /**
      * Creates a new ColumnDataPanel.
-     *
-     * @param width The width of the new column data panel in pixels.
-     * @param model The Data Column that this panel represents.
-     * @param cellSelL Spreadsheet cell selection listener.
+     * 
+     * @param width
+     *            The width of the new column data panel in pixels.
+     * @param model
+     *            The Data Column that this panel represents.
+     * @param cellSelL
+     *            Spreadsheet cell selection listener.
      */
-    public ColumnDataPanel(final int width,
-                           final DataColumn model,
-                           final CellSelectionListener cellSelL) {
+    public ColumnDataPanel(final int width, final DataColumn model,
+            final CellSelectionListener cellSelL) {
         super();
 
         // Store member variables.
         columnWidth = width;
-        this.cells = new Vector<SpreadsheetCell>();
+        cells = new Vector<SpreadsheetCell>();
         cellSelectionL = cellSelL;
 
         // Create visual container for spreadsheet cells.
@@ -74,7 +78,7 @@ implements KeyEventDispatcher {
         this.add(bottomStrut, -1);
 
         // Populate the data column with spreadsheet cells.
-        this.buildDataPanelCells(model, cellSelL);
+        buildDataPanelCells(model, cellSelL);
     }
 
     /**
@@ -82,8 +86,8 @@ implements KeyEventDispatcher {
      * this class of events.
      */
     public void registerListeners() {
-        KeyboardFocusManager m = KeyboardFocusManager
-                                 .getCurrentKeyboardFocusManager();
+        KeyboardFocusManager m =
+                KeyboardFocusManager.getCurrentKeyboardFocusManager();
         m.addKeyEventDispatcher(this);
     }
 
@@ -92,29 +96,30 @@ implements KeyEventDispatcher {
      * notiying it of events.
      */
     public void deregisterListeners() {
-        KeyboardFocusManager m = KeyboardFocusManager
-                                 .getCurrentKeyboardFocusManager();
+        KeyboardFocusManager m =
+                KeyboardFocusManager.getCurrentKeyboardFocusManager();
         m.removeKeyEventDispatcher(this);
     }
 
     /**
      * Build the SpreadsheetCells and add to the DataPanel.
-     *
-     * @param dbColumn DataColumn to display.
-     * @param cellSelL Spreadsheet listener to notify about cell
-     * selection changes.
+     * 
+     * @param dbColumn
+     *            DataColumn to display.
+     * @param cellSelL
+     *            Spreadsheet listener to notify about cell selection changes.
      */
     private void buildDataPanelCells(final DataColumn dbColumn,
-                                     final CellSelectionListener cellSelL) {
+            final CellSelectionListener cellSelL) {
         try {
             // traverse and build the cells
             for (int j = 1; j <= dbColumn.getNumCells(); j++) {
-                DataCell dc = (DataCell) dbColumn.getDB()
-                                    .getCell(dbColumn.getID(), j);
+                DataCell dc =
+                        (DataCell) dbColumn.getDB()
+                                .getCell(dbColumn.getID(), j);
 
-                SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(),
-                                                         dc,
-                                                         cellSelL);
+                SpreadsheetCell sc =
+                        new SpreadsheetCell(dbColumn.getDB(), dc, cellSelL);
                 dbColumn.getDB().registerDataCellListener(dc.getID(), sc);
 
                 // add cell to the JPanel
@@ -123,7 +128,7 @@ implements KeyEventDispatcher {
                 cells.add(sc);
             }
         } catch (SystemErrorException e) {
-           logger.error("Failed to populate Spreadsheet.", e);
+            logger.error("Failed to populate Spreadsheet.", e);
         }
     }
 
@@ -134,8 +139,8 @@ implements KeyEventDispatcher {
         try {
             for (SpreadsheetCell cell : cells) {
                 // Need to deregister data cell listener here.
-                OpenSHAPA.getProject().getDB()
-                         .deregisterDataCellListener(cell.getCellID(), cell);
+                OpenSHAPA.getProjectController().getDB()
+                        .deregisterDataCellListener(cell.getCellID(), cell);
                 this.remove(cell);
             }
 
@@ -147,15 +152,16 @@ implements KeyEventDispatcher {
 
     /**
      * Find and delete SpreadsheetCell by its ID.
-     *
-     * @param cellID ID of cell to find and delete.
+     * 
+     * @param cellID
+     *            ID of cell to find and delete.
      */
     public void deleteCellByID(final long cellID) {
         try {
             for (SpreadsheetCell cell : cells) {
                 if (cell.getCellID() == cellID) {
-                    OpenSHAPA.getProject().getDB()
-                             .deregisterDataCellListener(cellID, cell);
+                    OpenSHAPA.getProjectController().getDB()
+                            .deregisterDataCellListener(cellID, cell);
                     cells.remove(cell);
                     this.remove(cell);
                     break;
@@ -168,16 +174,18 @@ implements KeyEventDispatcher {
 
     /**
      * Insert a new SpreadsheetCell given the cells ID.
-     *
-     * @param db The database holding the cell that is being inserted into this
-     * column data panel.
-     * @param cellID ID of cell to create and insert.
-     * @param cellSelL SpreadsheetCellSelectionListener to notify of changes in
-     * selection.
+     * 
+     * @param db
+     *            The database holding the cell that is being inserted into this
+     *            column data panel.
+     * @param cellID
+     *            ID of cell to create and insert.
+     * @param cellSelL
+     *            SpreadsheetCellSelectionListener to notify of changes in
+     *            selection.
      */
-    public void insertCellByID(final Database db,
-                               final long cellID,
-                               final CellSelectionListener cellSelL) {
+    public void insertCellByID(final Database db, final long cellID,
+            final CellSelectionListener cellSelL) {
         try {
             DataCell dc = (DataCell) db.getCell(cellID);
             SpreadsheetCell nCell = new SpreadsheetCell(db, dc, cellSelL);
@@ -199,22 +207,25 @@ implements KeyEventDispatcher {
 
     /**
      * resetLayout changes the layout manager depending on the SheetLayoutType.
-     * @param type SheetLayoutType
+     * 
+     * @param type
+     *            SheetLayoutType
      */
     public void resetLayoutManager(final SheetLayoutType type) {
         if (type != SheetLayoutType.StrongTemporal) {
             setLayout(boxLayout);
-            this.setPreferredSize(null);
+            setPreferredSize(null);
         } else {
             setLayout(null);
         }
     }
 
     /**
-     * Adds the specified component to this container at the given
-     * position.
+     * Adds the specified component to this container at the given position.
      * Overridden to keep the bottomStrut as the last component in the column.
-     * @param comp Component to add.
+     * 
+     * @param comp
+     *            Component to add.
      * @return Component added.
      */
     @Override
@@ -225,7 +236,9 @@ implements KeyEventDispatcher {
 
     /**
      * Set the width of the SpreadsheetCell.
-     * @param width New width of the SpreadsheetCell.
+     * 
+     * @param width
+     *            New width of the SpreadsheetCell.
      */
     public void setWidth(final int width) {
         columnWidth = width;
@@ -233,6 +246,7 @@ implements KeyEventDispatcher {
 
     /**
      * Override Maximum size to fix the width.
+     * 
      * @return the maximum size of the data column.
      */
     @Override
@@ -242,6 +256,7 @@ implements KeyEventDispatcher {
 
     /**
      * Override Minimum size to fix the width.
+     * 
      * @return the minimum size of the data column.
      */
     @Override
@@ -251,6 +266,7 @@ implements KeyEventDispatcher {
 
     /**
      * Override Preferred size to fix the width.
+     * 
      * @return the preferred size of the data column.
      */
     @Override
@@ -271,7 +287,7 @@ implements KeyEventDispatcher {
      */
     public AbstractList<SpreadsheetCell> getSelectedCells() {
         AbstractList<SpreadsheetCell> selectedCells =
-            new ArrayList<SpreadsheetCell>();
+                new ArrayList<SpreadsheetCell>();
 
         for (SpreadsheetCell c : selectedCells) {
             if (c.isSelected()) {
@@ -284,23 +300,22 @@ implements KeyEventDispatcher {
 
     /**
      * Dispatches the key event to the desired components.
-     *
-     * @param e The key event to dispatch.
-     *
+     * 
+     * @param e
+     *            The key event to dispatch.
      * @return true if the event has been consumed by this dispatch, false
-     * otherwise
+     *         otherwise
      */
-    public boolean dispatchKeyEvent(KeyEvent e) {
+    public boolean dispatchKeyEvent(final KeyEvent e) {
 
         // Quick filter - if we aren't dealing with a key press or up and down
         // arrow. Forget about it - just chuck it back to Java to deal with.
         if (e.getID() != KeyEvent.KEY_PRESSED
-            && (e.getKeyCode() != KeyEvent.VK_UP
-                || e.getKeyCode() != KeyEvent.VK_DOWN)) {
+                && (e.getKeyCode() != KeyEvent.VK_UP || e.getKeyCode() != KeyEvent.VK_DOWN)) {
             return false;
         }
 
-        Component[] components = this.getComponents();
+        Component[] components = getComponents();
         int numCells = getComponentCount() - 1;
 
         // For each of the cells in the column - see if one has focus.
@@ -308,7 +323,7 @@ implements KeyEventDispatcher {
 
             // The current cell has focus.
             if (components[i].isFocusOwner()
-                && components[i].getClass().equals(SpreadsheetCell.class)) {
+                    && components[i].getClass().equals(SpreadsheetCell.class)) {
 
                 // Get the current editor tracker and component for the cell
                 // that has focus.
@@ -352,7 +367,7 @@ implements KeyEventDispatcher {
                             ec.setCaretPosition(newPos);
                             components[i - 1].requestFocus();
                             sc.setHighlighted(true);
-                            this.cellSelectionL.setHighlightedCell(sc);
+                            cellSelectionL.setHighlightedCell(sc);
 
                             e.consume();
                             return true;
@@ -371,8 +386,8 @@ implements KeyEventDispatcher {
                         // cell, if we are not on the bottom line - pressing
                         // down should select the line below.
                         JTextArea a = (JTextArea) ec.getParentComponent();
-                        if (a.getLineOfOffset(a.getCaretPosition()) + 1
-                            >= a.getLineCount()) {
+                        if (a.getLineOfOffset(a.getCaretPosition()) + 1 >= a
+                                .getLineCount()) {
                             components[i + 1].requestFocus();
                             sc = (SpreadsheetCell) components[i + 1];
 
@@ -381,7 +396,7 @@ implements KeyEventDispatcher {
                             et.setEditor(ec);
                             ec.setCaretPosition(relativePos);
                             sc.setHighlighted(true);
-                            this.cellSelectionL.setHighlightedCell(sc);
+                            cellSelectionL.setHighlightedCell(sc);
 
                             e.consume();
                             return true;

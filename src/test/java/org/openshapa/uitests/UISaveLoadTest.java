@@ -14,8 +14,9 @@ import org.fest.swing.util.Platform;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
+import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
+import org.openshapa.controllers.project.ProjectController;
 import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.models.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
@@ -133,9 +134,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(justSaved.exists(), "Expecting saved file to exist.");
 
         // 3. Check that the generated CSV file is correct
-        Project project = OpenSHAPA.getProject();
+        ProjectController pc = OpenSHAPA.getProjectController();
         File outputCSV =
-                new File(project.getDatabaseDir(), project.getDatabaseFile());
+                new File(pc.getProjectDirectory(), pc.getDatabaseFileName());
         Assert.assertTrue(outputCSV.exists(), "Expecting output CSV to exist.");
 
         File expectedOutputCSV = new File(root + "/ui/test-v2-out.csv");
@@ -224,9 +225,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // TODO Need to check the title - asterisk not present
 
         // 4. Check that the generated CSV file is correct
-        Project project = OpenSHAPA.getProject();
+        ProjectController pc = OpenSHAPA.getProjectController();
         File outputCSV =
-                new File(project.getDatabaseDir(), project.getDatabaseFile());
+                new File(pc.getProjectDirectory(), pc.getDatabaseFileName());
         Assert.assertTrue(outputCSV.exists(), "Expecting output CSV to exist.");
 
         File expectedOutputCSV = new File(root + "/ui/test-v2-out.csv");
@@ -254,12 +255,11 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
         File testCSV = new File(root + inputFile);
-        Assert.assertTrue(testCSV.exists(), "Expecting input file to e");
+        Assert.assertTrue(testCSV.exists(), "Expecting input file to exist.");
 
         // 1. Make a new project, set it up
         Project loadedProject = new Project();
-        loadedProject.setDatabaseDir(root);
-        loadedProject.setDatabaseFile(root + inputFile);
+        loadedProject.setDatabaseFileName(inputFile);
         loadedProject.setProjectName("newSHAPA");
 
         // 2. Write the project out
@@ -316,9 +316,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(testOutputCSV.exists(),
                 "Expected output reference file missing.");
 
-        Project project = OpenSHAPA.getProject();
+        ProjectController pc = OpenSHAPA.getProjectController();
         File savedDB =
-                new File(project.getDatabaseDir(), project.getDatabaseFile());
+                new File(pc.getProjectDirectory(), pc.getDatabaseFileName());
 
         Assert.assertTrue(UIUtils.areFilesSame(testOutputCSV, savedDB),
                 "Expecting CSV files to be the same.");

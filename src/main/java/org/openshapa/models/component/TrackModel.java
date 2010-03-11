@@ -4,7 +4,7 @@ package org.openshapa.models.component;
  * This model provides data feed information used to render a carriage on the
  * tracks interface.
  */
-public class TrackModel {
+public class TrackModel implements Cloneable {
     /** The duration of the track in milliseconds */
     private long duration;
     /** The offset of the track in milliseconds */
@@ -13,14 +13,14 @@ public class TrackModel {
     private long bookmark;
     /** Is there an error with track information */
     private boolean erroneous;
-    /** Track snap position in milliseconds */
-    private long snapPosition;
     /** Track identifier, this is currently just the track's absolute file path */
     private String trackId;
     /** Name of this track */
     private String trackName;
     /** State of the track */
     private TrackState state;
+    /** Is the track's movement locked */
+    private boolean locked;
 
     public enum TrackState {
         NORMAL, SELECTED, SNAPPED
@@ -29,7 +29,7 @@ public class TrackModel {
     public TrackModel() {
     }
 
-    protected TrackModel(TrackModel other) {
+    protected TrackModel(final TrackModel other) {
         duration = other.duration;
         offset = other.offset;
         bookmark = other.bookmark;
@@ -37,7 +37,22 @@ public class TrackModel {
         trackId = other.trackId;
         trackName = other.trackName;
         state = other.state;
-        snapPosition = other.snapPosition;
+        locked = other.locked;
+    }
+
+    /**
+     * @return the locked
+     */
+    public boolean isLocked() {
+        return locked;
+    }
+
+    /**
+     * @param locked
+     *            the locked to set
+     */
+    public void setLocked(final boolean locked) {
+        this.locked = locked;
     }
 
     /**
@@ -52,7 +67,7 @@ public class TrackModel {
      * 
      * @param duration
      */
-    public void setDuration(long duration) {
+    public void setDuration(final long duration) {
         this.duration = duration;
     }
 
@@ -68,7 +83,7 @@ public class TrackModel {
      * 
      * @param offset
      */
-    public void setOffset(long offset) {
+    public void setOffset(final long offset) {
         this.offset = offset;
     }
 
@@ -86,7 +101,7 @@ public class TrackModel {
      * 
      * @param trackId
      */
-    public void setTrackId(String trackId) {
+    public void setTrackId(final String trackId) {
         this.trackId = trackId;
     }
 
@@ -102,7 +117,7 @@ public class TrackModel {
      * 
      * @param erroneous
      */
-    public void setErroneous(boolean erroneous) {
+    public void setErroneous(final boolean erroneous) {
         this.erroneous = erroneous;
     }
 
@@ -117,7 +132,7 @@ public class TrackModel {
      * @param bookmark
      *            the bookmark to set
      */
-    public void setBookmark(long bookmark) {
+    public void setBookmark(final long bookmark) {
         this.bookmark = bookmark;
     }
 
@@ -132,7 +147,7 @@ public class TrackModel {
      * @param trackName
      *            the trackName to set
      */
-    public void setTrackName(String trackName) {
+    public void setTrackName(final String trackName) {
         this.trackName = trackName;
     }
 
@@ -147,7 +162,7 @@ public class TrackModel {
      * @param selected
      *            the selected to set
      */
-    public void setSelected(boolean selected) {
+    public void setSelected(final boolean selected) {
         if (selected) {
             state = TrackState.SELECTED;
         } else {
@@ -163,21 +178,6 @@ public class TrackModel {
         return state;
     }
 
-    /**
-     * @return the snapPosition
-     */
-    public long getSnapPosition() {
-        return snapPosition;
-    }
-
-    /**
-     * @param snapPosition
-     *            the snapPosition to set
-     */
-    public void setSnapMarkerPosition(long snapPosition) {
-        this.snapPosition = snapPosition;
-    }
-
     /*
      * (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -189,8 +189,8 @@ public class TrackModel {
         result = prime * result + (int) (bookmark ^ (bookmark >>> 32));
         result = prime * result + (int) (duration ^ (duration >>> 32));
         result = prime * result + (erroneous ? 1231 : 1237);
+        result = prime * result + (locked ? 1231 : 1237);
         result = prime * result + (int) (offset ^ (offset >>> 32));
-        result = prime * result + (int) (snapPosition ^ (snapPosition >>> 32));
         result = prime * result + ((state == null) ? 0 : state.hashCode());
         result = prime * result + ((trackId == null) ? 0 : trackId.hashCode());
         result =
@@ -204,7 +204,7 @@ public class TrackModel {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -224,10 +224,10 @@ public class TrackModel {
         if (erroneous != other.erroneous) {
             return false;
         }
-        if (offset != other.offset) {
+        if (locked != other.locked) {
             return false;
         }
-        if (snapPosition != other.snapPosition) {
+        if (offset != other.offset) {
             return false;
         }
         if (state == null) {
@@ -255,7 +255,7 @@ public class TrackModel {
     }
 
     @Override
-    public Object clone() {
+    public TrackModel clone() {
         return new TrackModel(this);
     }
 }

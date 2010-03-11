@@ -1,7 +1,11 @@
-package org.openshapa.models.project;
+package org.openshapa.controllers.project;
 
+import java.util.List;
 import java.util.Map;
 
+import org.openshapa.models.project.Project;
+import org.openshapa.models.project.TrackSettings;
+import org.openshapa.models.project.ViewerSetting;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
@@ -18,10 +22,11 @@ public class OpenSHAPAProjectConstructor extends Constructor {
     public OpenSHAPAProjectConstructor() {
         yamlConstructors.put("!vs", new ConstructViewerSetting());
         yamlConstructors.put("!project", new ConstructProject());
+        yamlConstructors.put("!ts", new ConstructTrackSettings());
     }
 
     /**
-     * Used to construct the Project class.
+     * Used to construct the {@link Project} class.
      */
     private class ConstructProject extends AbstractConstruct {
 
@@ -30,19 +35,22 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             Map values = constructMapping(mnode);
             Project project = new Project();
             project.setProjectName((String) values.get("name"));
-            project.setProjectDescription((String) values.get("description"));
-            project.setDatabaseDir((String) values.get("dbDir"));
-            project.setDatabaseFile((String) values.get("dbFile"));
-            project.setViewerSettings((Map) values.get("viewerSettings"));
-            project.setChanged(false);
-            project.setNewProject(false);
+            project.setDatabaseFileName((String) values.get("dbFile"));
+            final int projectVersion = (Integer) values.get("version");
+            if (projectVersion <= 2) {
+                Map vs = (Map) values.get("viewerSettings");
+                vs.values();
+                project.setViewerSettings(vs.values());
+            } else {
+                project.setViewerSettings((List) values.get("viewerSettings"));
+                project.setTrackSettings((List) values.get("trackSettings"));
+            }
             return project;
         }
-
     }
 
     /**
-     * Used to construct the ViewerSetting class.
+     * Used to construct the {@link ViewerSetting} class.
      */
     private class ConstructViewerSetting extends AbstractConstruct {
 
@@ -54,11 +62,24 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             vs.setPluginName((String) values.get("plugin"));
             // WARNING: SnakeYAML refuses to parse this as a Long.
             vs.setOffset(Long.parseLong((String) values.get("offset")));
-            String bookmark = (String) values.get("bookmark");
-            if (bookmark != null) {
-                vs.setBookmark(Long.parseLong(bookmark));
-            }
             return vs;
+        }
+    }
+
+    /**
+     * Used to construct the {@link TrackSettings} class.
+     */
+    private class ConstructTrackSettings extends AbstractConstruct {
+
+        public Object construct(final Node node) {
+            MappingNode mnode = (MappingNode) node;
+            Map values = constructMapping(mnode);
+            TrackSettings is = new TrackSettings();
+            is.setFilePath((String) values.get("feed"));
+            is.setLocked((Boolean) values.get("locked"));
+            is.setBookmarkPosition(Long.parseLong((String) values
+                    .get("bookmark")));
+            return is;
         }
     }
 
