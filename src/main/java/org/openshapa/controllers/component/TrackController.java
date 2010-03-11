@@ -261,7 +261,7 @@ public class TrackController {
      */
     public ViewableModel getViewableModel() {
         // return a clone to avoid model tainting
-        return (ViewableModel) viewableModel.clone();
+        return viewableModel.clone();
     }
 
     /**
@@ -308,6 +308,11 @@ public class TrackController {
      */
     public void setLocked(final boolean lock) {
         trackModel.setLocked(lock);
+        if (lock) {
+            lockUnlockButton.setIcon(lockIcon);
+        } else {
+            lockUnlockButton.setIcon(unlockIcon);
+        }
     }
 
     /**
