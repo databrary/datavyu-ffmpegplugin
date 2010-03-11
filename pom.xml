@@ -218,6 +218,14 @@
       <url>http://openshapa.org/maven2</url>
       <layout>default</layout>
     </pluginRepository>
+
+    <pluginRepository>
+        <id>mc-release</id>
+        <name>Local Maven repository of releases</name>
+        <url>http://mc-repo.googlecode.com/svn/maven2/releases</url>
+        <snapshots><enabled>false</enabled></snapshots>
+        <releases><enabled>true</enabled></releases>
+    </pluginRepository>
   </pluginRepositories>
 
   <!-- Use an optimized build for releases. -->
@@ -258,6 +266,23 @@
   <!-- Build properties. -->
   <build>
     <plugins>
+
+      <!-- BugzID:137 - Checks and Adds license header to source. -->
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <configuration>
+          <includes>
+            <include>src/main/java/**</include>
+            <include>src/test/java/**</include>
+          </includes>
+          <excludes>
+              <exclude>**/*.form</exclude>
+          </excludes>
+          <header>src/main/resources/GPL-header.txt</header>
+        </configuration>
+      </plugin>
+
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
         <configuration>

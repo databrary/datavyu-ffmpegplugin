@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
-import org.openshapa.controllers.project.ProjectController;
 import org.openshapa.models.project.Project;
 import org.yaml.snakeyaml.Dumper;
 import org.yaml.snakeyaml.DumperOptions;
@@ -23,14 +22,15 @@ public final class SaveProjectC {
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(SaveProjectC.class);
 
-    public void save(final String outFile) {
-        ProjectController projectController = OpenSHAPA.getProjectController();
-        projectController.updateProject();
-        Project project = projectController.getProject();
-
-        Dumper dumper =
-                new Dumper(new OpenSHAPAProjectRepresenter(),
-                        new DumperOptions());
+    /**
+     * Saves the OpenSHAPA project to disk.
+     *
+     * @param outFile The output file to use for the project.
+     * @param project The project you wish to save to disk.
+     */
+    public void save(final String outFile, final Project project) {
+        Dumper dumper = new Dumper(new OpenSHAPAProjectRepresenter(),
+                                   new DumperOptions());
         Yaml yaml = new Yaml(dumper);
 
         String fileName = outFile;
@@ -47,8 +47,6 @@ public final class SaveProjectC {
 
             out.close();
             fileWriter.close();
-
-            projectController.saveProject();
 
             OpenSHAPA.getApplication().updateTitle();
         } catch (IOException ex) {

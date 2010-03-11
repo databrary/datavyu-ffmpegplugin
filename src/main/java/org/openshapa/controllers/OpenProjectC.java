@@ -16,40 +16,18 @@ import com.usermetrix.jclient.UserMetrix;
 /**
  * Controller for opening and loading OpenSHAPA project files that are on disk.
  */
-public class OpenProjectC {
+public final class OpenProjectC {
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(OpenProjectC.class);
 
     /**
      * Opens and loads a project file from disk.
-     * 
+     *
      * @param inFile
      *            The project file to open and load, absolute path
      * @return true of the file was opened and loaded, false otherwise.
      */
-    public boolean open(final String inFile) {
-        Yaml yaml = new Yaml(new Loader(new OpenSHAPAProjectConstructor()));
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(inFile));
-            Object o = yaml.load(in);
-
-            // Make sure the de-serialised object is a project file
-            if (!(o instanceof Project)) {
-                logger.error("Not an OpenSHAPA project file");
-                return false;
-            }
-
-            Project project = (Project) o;
-            OpenSHAPA.newProjectController(project);
-
-            return true;
-        } catch (FileNotFoundException ex) {
-            logger.error("Cannot open project file: " + inFile, ex);
-        }
-        return false;
-    }
-
     public boolean open(final File inFile) {
         Yaml yaml = new Yaml(new Loader(new OpenSHAPAProjectConstructor()));
         try {
@@ -74,5 +52,4 @@ public class OpenProjectC {
         }
         return false;
     }
-
 }

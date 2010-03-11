@@ -93,6 +93,7 @@ public class SaveC {
         // Update the project data
         projectController.setDatabaseFileName(databaseFileName);
 
+
         // Save the database
         File dbFile =
                 new File(projectController.getProjectDirectory() + "/"
@@ -100,8 +101,10 @@ public class SaveC {
         new SaveDatabaseC(dbFile);
 
         // Now save the project
+        projectController.updateProject();
         new SaveProjectC().save(projectController.getProjectDirectory() + "/"
-                + projectName);
+                + projectName, projectController.getProject());
+        projectController.saveProject();
 
         // Update the application title
         OpenSHAPA.getApplication().updateTitle();
@@ -174,7 +177,10 @@ public class SaveC {
         new SaveDatabaseC(new File(directory, databaseFileName));
 
         // Save the project
-        new SaveProjectC().save(directory + "/" + newProjectName);
+        projectController.updateProject();
+        new SaveProjectC().save(directory + "/" + newProjectName,
+                                projectController.getProject());
+        projectController.saveProject();
     }
 
     /**
