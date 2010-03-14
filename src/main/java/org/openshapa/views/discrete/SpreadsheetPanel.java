@@ -1,15 +1,11 @@
 package org.openshapa.views.discrete;
 
 import com.usermetrix.jclient.UserMetrix;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
 import org.openshapa.models.db.ExternalColumnListListener;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.layouts.SheetLayout;
-import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
-import org.openshapa.controllers.NewVariableC;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -31,7 +27,12 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.OpenSHAPA.Platform;
+import org.openshapa.controllers.NewVariableC;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.DataColumn;
 import org.openshapa.util.ArrayDirection;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
@@ -391,14 +392,14 @@ implements ExternalColumnListListener, ComponentListener,
 
             // User is attempting to move to the column to the left.
             if (e.getKeyCode() == KeyEvent.VK_LEFT
-                && e.getModifiers() == KeyEvent.ALT_MASK) {
+                && platformCellMovementMask(e)) {
                 highlightAdjacentCell(LEFT_DIR);
                 e.consume();
                 return true;
 
             // User is attempting to move to the column to the right.
             } else if (e.getKeyCode() == KeyEvent.VK_RIGHT
-                       && e.getModifiers() == KeyEvent.ALT_MASK) {
+                       && platformCellMovementMask(e)) {
                 highlightAdjacentCell(RIGHT_DIR);
                 e.consume();
                 return true;
@@ -790,5 +791,16 @@ implements ExternalColumnListListener, ComponentListener,
         for (SpreadsheetColumn col : this.getColumns()) {
             col.setSelected(false);
         }
+    }
+
+    private boolean platformCellMovementMask(KeyEvent e) {
+        if (OpenSHAPA.getPlatform() == Platform.MAC
+                && e.getModifiers() == KeyEvent.ALT_MASK) {
+            return true;
+        } else if (OpenSHAPA.getPlatform() == Platform.WINDOWS
+                && e.getModifiers() == KeyEvent.CTRL_MASK) {
+            return true;
+        }
+        return false;
     }
 }
