@@ -131,11 +131,13 @@ public final class PluginManager {
                 // If we are running from a test we need to look in more than
                 // one place for classes - add all these places to the workstack
                 Enumeration<URL> resources = loader.getResources("");
+                Stack<File> workStack = new Stack<File>();
+                Stack<String> packages = new Stack<String>();
                 while (resources.hasMoreElements()) {
-                    Stack<File> workStack = new Stack<File>();
+                    workStack.clear();
                     workStack.push(new File(resources.nextElement().getFile()));
 
-                    Stack<String> packages = new Stack<String>();
+                    packages.clear();
                     packages.push("");
 
                     while (!workStack.empty()) {
@@ -146,8 +148,9 @@ public final class PluginManager {
                         // Plugins or more directories to recurse inside.
                         String[] files = dir.list();
                         for (int i = 0; i < files.length; i++) {
-                            File file = new File(dir.getAbsolutePath()
-                                                 + "/" + files[i]);
+                            File file =
+                                    new File(dir.getAbsolutePath() + "/"
+                                            + files[i]);
                             if (file == null) {
                                 throw new ClassNotFoundException("Null file");
                             }
@@ -231,10 +234,10 @@ public final class PluginManager {
         Class<?> sysclass = URLClassLoader.class;
 
         try {
-            Class<?>[] parameters = new Class[] { URL.class };
+            Class<?>[] parameters = new Class[] {URL.class};
             Method method = sysclass.getDeclaredMethod("addURL", parameters);
             method.setAccessible(true);
-            method.invoke(sysLoader, new Object[] { f.toURL() });
+            method.invoke(sysLoader, new Object[] {f.toURL()});
         } catch (Throwable t) {
             logger.error("Unable to inject class into class path.", t);
         }
