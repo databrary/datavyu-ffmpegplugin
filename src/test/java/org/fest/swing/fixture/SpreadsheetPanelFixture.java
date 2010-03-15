@@ -35,11 +35,11 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
         Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();
 
         int count = 0;
-        for (SpreadsheetColumn c : ssCols) {
-            count++;
+        for (SpreadsheetColumn c : ssCols) {            
             if (count == column) {
                 return new SpreadsheetColumnFixture(robot, c);
             }
+            count++;
         }
         return null;
     }

@@ -16,11 +16,12 @@ import com.usermetrix.jclient.UserMetrix;
 /**
  * Master controller for handling project and database file saving logic.
  */
-public class SaveC {
+public final class SaveC {
 
-    private static SaveC INSTANCE = new SaveC();
+    private final static SaveC INSTANCE = new SaveC();
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SaveC.class);
+    private transient final UserMetrix logger =
+            UserMetrix.getInstance(SaveC.class);
     /** Last option used for saving */
     private FileFilter lastSaveOption;
 

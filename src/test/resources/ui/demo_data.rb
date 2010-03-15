@@ -32,14 +32,10 @@ begin
 
   # Create a data columns
   puts "Set up columns.."
-  colnames = ["float", "int", "text", "nominal", "predicate", "matrix"]
+  colnames = ["text"]
   coltypes = [
-    MatrixVocabElement::MatrixType::FLOAT,
-    MatrixVocabElement::MatrixType::INTEGER,
-    MatrixVocabElement::MatrixType::TEXT,
-    MatrixVocabElement::MatrixType::NOMINAL,
-    MatrixVocabElement::MatrixType::PREDICATE,
-    MatrixVocabElement::MatrixType::MATRIX ]
+    MatrixVocabElement::MatrixType::TEXT
+    ]
 
   for cc in 0...colnames.length
     if !$db.col_name_in_use(colnames[cc])

@@ -17,4 +17,6 @@ test-output/
 .project
 .settings/
 .fbprefs
+.pmd
+.checkstyle
 cop.sh

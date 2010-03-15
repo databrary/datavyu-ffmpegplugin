@@ -198,13 +198,13 @@ public final class OpenDatabaseC {
             for (int i = 0; i < line.length(); i++) {
                 if (i < line.length() - 1) {
                     if (line.charAt(i) == '\\' && line.charAt(i + 1) == '\\') {
-                        char[] buff = { '\\' };
+                        char[] buff = {'\\'};
                         result = result.concat(new String(buff));
                         // Move over the escape character.
                         i++;
                     } else if (line.charAt(i) == '\\'
                             && line.charAt(i + 1) == ',') {
-                        char[] buff = { ',' };
+                        char[] buff = {','};
                         result = result.concat(new String(buff));
                         // Move over the escape character.
                         i++;
@@ -862,7 +862,7 @@ public final class OpenDatabaseC {
 
             // BugzID:722 - Only populate the value if we have one from the file
             if (tokens.length > DATA_INDEX) {
-                String text = new String("");
+                String text = "";
                 for (int i = DATA_INDEX; i < tokens.length; i++) {
                     text = text.concat(tokens[i]);
 
