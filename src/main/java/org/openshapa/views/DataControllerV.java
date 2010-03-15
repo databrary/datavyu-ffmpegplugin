@@ -1378,6 +1378,13 @@ public final class DataControllerV extends OpenSHAPADialog implements
      */
     @Action
     public void playAction() {
+        // BugzID:464 - When stopped at the end of the region of interest.
+        // pressing play jumps the stream back to the start of the video before
+        // starting to play again.
+        if (this.getCurrentTime() >= windowPlayEnd && this.clock.isStopped()) {
+            this.jumpTo(windowPlayStart);
+        }
+
         playAt(PLAY_RATE);
     }
 
