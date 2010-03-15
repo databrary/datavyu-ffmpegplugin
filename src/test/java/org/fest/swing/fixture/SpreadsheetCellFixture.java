@@ -59,7 +59,7 @@ public class SpreadsheetCellFixture extends JPanelFixture {
     public final void borderSelectCell(boolean select) {
         if ((select && !((SpreadsheetCell) target).isHighlighted()) ||
         (!select && ((SpreadsheetCell) target).isHighlighted())) {
-           cellValue().focus();
+           cellValue().click();
         }
     }
 
