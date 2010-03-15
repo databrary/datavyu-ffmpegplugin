@@ -18,47 +18,20 @@ import com.usermetrix.jclient.UserMetrix;
  */
 public final class SaveC {
 
-    private final static SaveC INSTANCE = new SaveC();
     /** The logger for this class. */
-    private transient final UserMetrix logger =
-            UserMetrix.getInstance(SaveC.class);
-    /** Last option used for saving */
-    private FileFilter lastSaveOption;
+    private final transient UserMetrix logger = UserMetrix
+        .getInstance(SaveC.class);
 
-    /**
-     * Singleton.
-     */
-    private SaveC() {
-    }
-
-    /**
-     * @return only instance of this class.
-     */
-    public static SaveC getInstance() {
-        return INSTANCE;
-    }
-
-    /**
-     * Set the last save option used. This affects the "Save" functionality.
-     * 
-     * @param saveOption
-     */
-    public void setLastSaveOption(final FileFilter saveOption) {
-        lastSaveOption = saveOption;
-    }
-
-    public FileFilter getLastSaveOption() {
-        if (lastSaveOption == null) {
-            return new SHAPAFilter();
-        }
-        return lastSaveOption;
-    }
+    /** The length of the SHA-1 sum to put at the end of CSV files. */
+    private static final int HASH_LENGTH = 10;
 
     /**
      * Saves what is being worked on using the last save option.
      */
     public void save() {
-        if (lastSaveOption instanceof SHAPAFilter) {
+        ProjectController projectController = OpenSHAPA.getProjectController();
+
+        if (projectController.getLastSaveOption() instanceof SHAPAFilter) {
             saveProject();
         } else {
             saveDatabase();
@@ -80,7 +53,7 @@ public final class SaveC {
             md.update(projectName.getBytes());
             byte[] digest = md.digest();
             String stringDigest = HashUtils.convertToHex(digest);
-            databaseFileName += "-" + stringDigest.substring(0, 10);
+            databaseFileName += "-" + stringDigest.substring(0, HASH_LENGTH);
             databaseFileName = databaseFileName.concat(".csv");
         } catch (NoSuchAlgorithmException ex) {
             logger.error("Could not get SHA-1 implementation", ex);
@@ -156,7 +129,7 @@ public final class SaveC {
             md.update(newProjectName.getBytes());
             byte[] digest = md.digest();
             String stringDigest = HashUtils.convertToHex(digest);
-            databaseFileName += "-" + stringDigest.substring(0, 10);
+            databaseFileName += "-" + stringDigest.substring(0, HASH_LENGTH);
             databaseFileName = databaseFileName.concat(".csv");
         } catch (NoSuchAlgorithmException ex) {
             logger.error("Could not get SHA-1 implementation", ex);
@@ -171,8 +144,7 @@ public final class SaveC {
         projectController.setProjectName(newProjectName);
         projectController.setProjectDirectory(directory);
         projectController.setDatabaseFileName(databaseFileName);
-
-        setLastSaveOption(new SHAPAFilter());
+        projectController.setLastSaveOption(new SHAPAFilter());
 
         // Save the database
         new SaveDatabaseC(new File(directory, databaseFileName));
@@ -195,8 +167,8 @@ public final class SaveC {
     }
 
     /**
-     * Save what is worked on as a new database
-     * 
+     * Save what is worked on as a new database.
+     *
      * @param directory
      * @param file
      * @param saveFormat
@@ -226,10 +198,8 @@ public final class SaveC {
         projectController.setProjectDirectory(directory);
         projectController.setDatabaseFileName(file);
         projectController.saveProject();
-
-        setLastSaveOption(saveFormat);
+        projectController.setLastSaveOption(saveFormat);
 
         new SaveDatabaseC(directory + "/" + file, saveFormat);
     }
-
 }

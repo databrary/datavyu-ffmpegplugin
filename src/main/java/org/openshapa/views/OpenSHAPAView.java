@@ -162,8 +162,7 @@ public final class OpenSHAPAView extends FrameView {
         }
 
         String extension = "";
-        SaveC saveController = SaveC.getInstance();
-        final FileFilter lastSaveOption = saveController.getLastSaveOption();
+        final FileFilter lastSaveOption = projectController.getLastSaveOption();
         if (lastSaveOption instanceof SHAPAFilter) {
             extension = ".shapa";
         } else if (lastSaveOption instanceof CSVFilter) {
@@ -216,12 +215,13 @@ public final class OpenSHAPAView extends FrameView {
         } else if (openShapaProject.getDatabaseFileName() == null) {
             saveAs();
         } else {
-            SaveC.getInstance().save();
+            SaveC saveController = new SaveC();
+            saveController.save();
         }
     }
 
     private void save(final OpenSHAPAFileChooser fc) {
-        SaveC saveC = SaveC.getInstance();
+        SaveC saveC = new SaveC();
 
         FileFilter filter = fc.getFileFilter();
         // Save as a project
@@ -291,12 +291,12 @@ public final class OpenSHAPAView extends FrameView {
                 FileFilter filter = jd.getFileFilter();
 
                 // Opening a project file
+                OpenSHAPA.getProjectController().setLastSaveOption(filter);
                 if (filter instanceof SHAPAFilter) {
-                    SaveC.getInstance().setLastSaveOption(filter);
                     openProject(jd);
-                    // Opening a database file
+
+                // Opening a database file
                 } else {
-                    SaveC.getInstance().setLastSaveOption(filter);
                     openDatabase(jd);
                 }
             }

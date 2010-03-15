@@ -303,7 +303,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
 
         if (Platform.isOSX()) {
-            SaveC.getInstance().saveAsProject(tempFolder, "savedSHAPA.shapa");
+            SaveC saveController = new SaveC();
+            saveController.saveAsProject(tempFolder, "savedSHAPA.shapa");
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
             mainFrameFixture.fileChooser().component().setFileFilter(

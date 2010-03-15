@@ -3,6 +3,7 @@ package org.openshapa.controllers.project;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.filechooser.FileFilter;
 
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.component.TrackModel;
@@ -38,9 +39,14 @@ public class ProjectController {
      */
     /** has the project been changed since it was created. */
     private boolean changed;
-    /** Is the project new */
+    /** Is the project new? */
     private boolean newProject;
+    /** Last option used for saving. */
+    private FileFilter lastSaveOption;
 
+    /**
+     * Default constructor.
+     */
     public ProjectController() {
         project = new Project();
         changed = false;
@@ -51,6 +57,22 @@ public class ProjectController {
         this.project = project;
         changed = false;
         newProject = false;
+    }
+
+    /**
+     * Set the last save option used. This affects the "Save" functionality.
+     *
+     * @param saveOption The latest option used for "saving".
+     */
+    public void setLastSaveOption(final FileFilter saveOption) {
+        lastSaveOption = saveOption;
+    }
+
+    /**
+     * @return The last "saved" option used when saving.
+     */
+    public FileFilter getLastSaveOption() {
+        return lastSaveOption;
     }
 
     public void createNewProject(final String name) {

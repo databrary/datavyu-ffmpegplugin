@@ -15,7 +15,7 @@ public final class Project implements Cloneable {
     private String projectName;
     /** Database file name. */
     private String databaseFileName;
-    /** The directory that the project file resides in */
+    /** The directory that the project file resides in. */
     private String projectDirectory;
 
     private List<ViewerSetting> viewerSettings;
