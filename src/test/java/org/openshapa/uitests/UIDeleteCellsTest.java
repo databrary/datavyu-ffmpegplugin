@@ -65,8 +65,8 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         int numColumns = spreadsheet.numOfColumns();
         while (numColumns > 0) {
             // Select all cells in a column
-            for (SpreadsheetCellFixture cell : spreadsheet.column(numColumns)
-                    .allCells()) {
+            for (SpreadsheetCellFixture cell : spreadsheet.column(
+                    numColumns - 1).allCells()) {
                 cell.fillSelectCell(true);
             }
             // Delete selected cells
@@ -79,7 +79,8 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
                     new SpreadsheetPanelFixture(mainFrameFixture.robot,
                             (SpreadsheetPanel) jPanel.component());
 
-            Assert.assertFalse(spreadsheet.column(numColumns).numOfCells() > 0,
+            Assert.assertFalse(
+                    spreadsheet.column(numColumns - 1).numOfCells() > 0,
                     "Expecting no cells in the column.");
             numColumns--;
         }
@@ -140,14 +141,14 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
             spreadsheet =
                     new SpreadsheetPanelFixture(mainFrameFixture.robot,
                             (SpreadsheetPanel) jPanel.component());
-            int numCells = spreadsheet.column(numColumns).allCells().size();
+            int numCells = spreadsheet.column(numColumns - 1).allCells().size();
             while (numCells > 0) {
                 jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
                 spreadsheet =
                         new SpreadsheetPanelFixture(mainFrameFixture.robot,
                                 (SpreadsheetPanel) jPanel.component());
                 SpreadsheetCellFixture cell =
-                        spreadsheet.column(numColumns).cell(1);
+                        spreadsheet.column(numColumns - 1).cell(1);
                 cell.fillSelectCell(true);
                 mainFrameFixture.menuItemWithPath("Spreadsheet").click();
                 mainFrameFixture.clickMenuItemWithPath("Spreadsheet",

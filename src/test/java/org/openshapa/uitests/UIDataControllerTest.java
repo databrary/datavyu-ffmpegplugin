@@ -22,11 +22,13 @@ import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.continuous.PluginManager;
 import org.openshapa.views.discrete.SpreadsheetPanel;
+import org.openshapa.models.db.TimeStamp;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -332,7 +334,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UIDataControllerTest.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
 
         //3. Press shuttle back 7 times and ensure its negative
@@ -346,7 +349,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         try {
             Thread.sleep(4000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UIDataControllerTest.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
 
         //4. Check that speed has returned to 0 and time is 0
@@ -436,7 +440,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         try {
             Thread.sleep(4000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UIDataControllerTest.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
 
         //3. Press pause
@@ -515,6 +520,11 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
         // 2. Shuttle forward to 4x
+        dcf.pressPlayButton();
+        //Wait for it to actually start playing
+        while (dcf.getCurrentTime().equals("00:00:00:000")) {
+            System.err.println("Waiting...");
+        }
         while(!dcf.getSpeed().equals("4")) {
             String preSpeed = dcf.getSpeed();
             dcf.pressShuttleForwardButton();
@@ -526,7 +536,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         try {
             Thread.sleep(4000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UIDataControllerTest.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
 
         //3. Press pause
@@ -539,7 +550,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         try {
             Thread.sleep(4000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UIDataControllerTest.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
 
         //Check that its 0 time and speed
@@ -550,5 +562,89 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         dcf.pressPauseButton();
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         Assert.assertEquals(dcf.getSpeed(), "0");
+    }
+
+    /**
+     * Bug464.
+     * When a video finishes playing, hitting play does nothing.
+     * I expected it to play again.
+     */
+    @Test
+    public void testBug464() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller and get starting time
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+                "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+        final DataControllerFixture dcf =
+                new DataControllerFixture(mainFrameFixture.robot,
+                        (DataControllerV) mainFrameFixture.dialog()
+                        .component());
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                public void executeInEDT() {
+                    OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                    fc.setVisible(false);
+                    for (FileFilter f : pm.getPluginFileFilters()) {
+                        fc.addChoosableFileFilter(f);
+                    }
+                    fc.setSelectedFile(videoFile);
+                    method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class)
+                            .in((DataControllerV) dcf.component()).invoke(fc);
+                }
+            });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        // 2. Fast forward video to end and confirm you've reached end (1min)
+        dcf.pressFastForwardButton();
+        //Using Thread.sleep to wait for 5 seconds.
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UIDataControllerTest.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+        //Check time
+        Assert.assertEquals(dcf.getCurrentTime(), "00:01:00:000");
+
+        //3. Press play, should start playing again
+        dcf.pressPlayButton();
+        String currTime = dcf.getCurrentTime();
+        try {
+            TimeStamp currTS = new TimeStamp(currTime);
+            TimeStamp oneMin = new TimeStamp("00:01:00:000");
+            Assert.assertTrue(currTS.le(oneMin));
+        } catch (SystemErrorException ex) {
+            Logger.getLogger(UIDataControllerTest.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
     }
 }

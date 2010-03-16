@@ -6,8 +6,10 @@ import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.core.matcher.JTextComponentMatcher;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
 import org.openshapa.util.UIUtils;
+import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -31,15 +33,19 @@ public final class UIBug496Test extends OpenSHAPATestClass {
         String varRadio = varType.toLowerCase() + "TypeButton";
         String testInput = "2398392310820831";
 
-        // Retrieve the components
-        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        //Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
 
         // 1. Create new INTEGER variable, open spreadsheet and check that it's
         // there.
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
-        ssPanel.panel("headerView").label().text().startsWith(varName);
+        Assert.assertNotNull(spreadsheet.column(varName));
 
-        // Create new variable.
+        // Create new cell.
+        spreadsheet.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
         // b. Paste text
