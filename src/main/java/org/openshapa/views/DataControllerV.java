@@ -539,10 +539,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
         });
 
         gridButtonPanel.setBackground(Color.WHITE);
-        gridButtonPanel.setLayout(new MigLayout("wrap 5"));
+        gridButtonPanel.setLayout(new MigLayout("wrap 5, ins 15 2 15 2"));
 
         // Add data button
         addDataButton.setText(resourceMap.getString("addDataButton.text"));
+        addDataButton.setFont(new Font("Tahoma", 1, 11));
         addDataButton.setFocusPainted(false);
         addDataButton.setName("addDataButton");
         addDataButton.addActionListener(new ActionListener() {
