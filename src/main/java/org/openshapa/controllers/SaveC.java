@@ -72,7 +72,8 @@ public final class SaveC {
         File dbFile =
                 new File(projectController.getProjectDirectory() + "/"
                         + databaseFileName);
-        new SaveDatabaseC(dbFile);
+        new SaveDatabaseC(dbFile, projectController.getDB());
+        projectController.getDB().saveDatabase();
 
         // Now save the project
         projectController.updateProject();
@@ -86,9 +87,9 @@ public final class SaveC {
 
     /**
      * Save what is being worked on as a new project.
-     * 
-     * @param directory
-     * @param file
+     *
+     * @param directory The directory to save the project too.
+     * @param file The file to save the project too.
      */
     public void saveAsProject(final String directory, final String file) {
         /*
@@ -147,7 +148,9 @@ public final class SaveC {
         projectController.setLastSaveOption(new SHAPAFilter());
 
         // Save the database
-        new SaveDatabaseC(new File(directory, databaseFileName));
+        new SaveDatabaseC(new File(directory, databaseFileName),
+                          projectController.getDB());
+        projectController.getDB().saveDatabase();
 
         // Save the project
         projectController.updateProject();
@@ -163,18 +166,21 @@ public final class SaveC {
         ProjectController projectController = OpenSHAPA.getProjectController();
         projectController.saveProject();
         new SaveDatabaseC(new File(projectController.getProjectDirectory(),
-                projectController.getDatabaseFileName()));
+                                   projectController.getDatabaseFileName()),
+                          projectController.getDB());
+        projectController.getDB().saveDatabase();
     }
 
     /**
      * Save what is worked on as a new database.
      *
-     * @param directory
-     * @param file
-     * @param saveFormat
+     * @param directory The directory to save the database too.
+     * @param file The name of the file to save the database too.
+     * @param saveFormat The format to use when saving the database.
      */
-    public void saveAsDatabase(final String directory, final String file,
-            final FileFilter saveFormat) {
+    public void saveAsDatabase(final String directory,
+                               final String file,
+                               final FileFilter saveFormat) {
         /*
          * Even though the user explicitly chooses to save as a database, we
          * will still need to update the project information, just in case the
@@ -200,6 +206,9 @@ public final class SaveC {
         projectController.saveProject();
         projectController.setLastSaveOption(saveFormat);
 
-        new SaveDatabaseC(directory + "/" + file, saveFormat);
+        new SaveDatabaseC(directory + "/" + file,
+                          saveFormat,
+                          projectController.getDB());
+        projectController.getDB().saveDatabase();
     }
 }
