@@ -113,6 +113,8 @@ public class TrackController {
         trackLabel = new JLabel("", SwingConstants.CENTER);
         iconLabel = new JLabel("", SwingConstants.CENTER);
 
+        trackLabel.setName("trackLabel");
+
         header = new JPanel(new MigLayout("ins 0, wrap 3"));
         header.setBorder(BorderFactory.createCompoundBorder(BorderFactory
                 .createMatteBorder(0, 0, 0, 1, new Color(73, 73, 73)),
@@ -131,6 +133,7 @@ public class TrackController {
             }
         });
         header.add(lockUnlockButton, "w 20!, h 20!");
+        lockUnlockButton.setName("lockUnlockButton");
 
         view.add(header, "w 100!, h 75!");
 
@@ -227,6 +230,13 @@ public class TrackController {
     }
 
     /**
+     * @return True if the track is locked, false otherwise.
+     */
+    public boolean isLocked() {
+        return trackModel.isLocked();
+    }
+
+    /**
      * @return Offset in milliseconds.
      */
     public long getOffset() {
@@ -247,6 +257,13 @@ public class TrackController {
      */
     public long getBookmark() {
         return trackModel.getBookmark();
+    }
+
+    /**
+     * @return track name, i.e. file name.
+     */
+    public String getTrackName() {
+        return trackLabel.getText();
     }
 
     /**

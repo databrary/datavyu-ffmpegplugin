@@ -104,6 +104,7 @@ public class MixerControllerV implements NeedleEventListener,
                 lockToggleHandler(e);
             }
         });
+        lockToggle.setName("lockToggleButton");
 
         bookmarkButton = new JButton("Add Bookmark");
         bookmarkButton.addActionListener(new ActionListener() {
@@ -112,6 +113,7 @@ public class MixerControllerV implements NeedleEventListener,
             }
         });
         bookmarkButton.setEnabled(false);
+        bookmarkButton.setName("bookmarkButton");
 
         JToggleButton snapToggleButton = new JToggleButton("Snap");
         snapToggleButton.addActionListener(new ActionListener() {
@@ -119,6 +121,7 @@ public class MixerControllerV implements NeedleEventListener,
                 snapToggleHandler(e);
             }
         });
+        snapToggleButton.setName("snapToggleButton");
 
         JButton zoomInButton = new JButton("( + )");
         zoomInButton.addActionListener(new ActionListener() {
@@ -127,6 +130,7 @@ public class MixerControllerV implements NeedleEventListener,
                 zoomTracks(e);
             }
         });
+        zoomInButton.setName("zoomInButton");
 
         JButton zoomOutButton = new JButton("( - )");
         zoomOutButton.addActionListener(new ActionListener() {
@@ -135,6 +139,7 @@ public class MixerControllerV implements NeedleEventListener,
                 zoomTracks(e);
             }
         });
+        zoomOutButton.setName("zoomOutButton");
 
         tracksPanel.add(lockToggle);
         tracksPanel.add(bookmarkButton);
@@ -448,6 +453,34 @@ public class MixerControllerV implements NeedleEventListener,
      */
     public Iterable<TrackModel> getAllTrackModels() {
         return tracksEditorController.getAllTrackModels();
+    }
+
+    /**
+     * @return NeedleController.
+     */
+    public NeedleController getNeedleController() {
+        return needleController;
+    }
+
+    /**
+     * @return RegionController.
+     */
+    public RegionController getRegionController() {
+        return regionController;
+    }
+
+    /**
+     * @return TimescaleController.
+     */
+    public TimescaleController getTimescaleController() {
+        return timescaleController;
+    }
+
+    /**
+     * @return TracksEditorController.
+     */
+    public TracksEditorController getTracksEditorController() {
+        return tracksEditorController;
     }
 
     /**

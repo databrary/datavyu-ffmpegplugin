@@ -17,7 +17,7 @@ import org.openshapa.models.component.ViewableModel;
 import org.openshapa.views.component.RegionPainter;
 
 /**
- * RegionController is responsible for managing a RegionPainter
+ * RegionController is responsible for managing a RegionPainter.
  */
 public class RegionController {
     /** View */
@@ -96,6 +96,14 @@ public class RegionController {
     public ViewableModel getViewableModel() {
         // return a clone to avoid model tainting
         return (ViewableModel) viewableModel.clone();
+    }
+
+     /**
+     * @return returns a clone of the region model
+     */
+    public RegionModel getRegionModel() {
+        // return a clone to avoid model tainting
+        return regionModel.clone();
     }
 
     /**

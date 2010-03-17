@@ -6,6 +6,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.SimpleTimeZone;
 
 import javax.swing.JPanel;
 
@@ -28,6 +31,15 @@ public class UIUtils {
      */
     public static final String[] VAR_TYPES =
             { "TEXT", "PREDICATE", "INTEGER", "NOMINAL", "MATRIX", "FLOAT" };
+
+    /** Format for representing time. */
+    private static final DateFormat CLOCK_FORMAT;
+
+    // initialize standard date format for clock display.
+    static {
+        CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
+        CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
+    }
 
     /**
      * Checks if two text files are equal.
@@ -159,5 +171,9 @@ public class UIUtils {
     public static String[] getArgsFromMatrix(final String values) {
         String argList = values.substring(1, values.length() - 1);
         return argList.split(", ", -1);
+    }
+
+    public static String millisecondsToTimestamp(long milliseconds) {
+        return CLOCK_FORMAT.format(milliseconds);
     }
 }
