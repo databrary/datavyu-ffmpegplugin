@@ -121,4 +121,11 @@ public class TrackFixture extends ComponentFixture {
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
+    /**
+     * @return int width of track in pixels
+     */
+    public int getWidthInPixels() {
+        return target.getWidth();
+    }
+
 }
