@@ -35,7 +35,7 @@ public class NeedlePainter extends JComponent {
         return needleModel;
     }
 
-    public void setNeedleModel(NeedleModel needleModel) {
+    public void setNeedleModel(final NeedleModel needleModel) {
         this.needleModel = needleModel;
         this.repaint();
     }
@@ -44,27 +44,23 @@ public class NeedlePainter extends JComponent {
         return viewableModel;
     }
 
-    public void setViewableModel(ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel viewableModel) {
         this.viewableModel = viewableModel;
         this.repaint();
     }
 
-    public Polygon getNeedleMarker() {
-        return needleMarker;
-    }
-
     @Override
-    public boolean contains(Point p) {
+    public boolean contains(final Point p) {
         return needleMarker.contains(p);
     }
 
     @Override
-    public boolean contains(int x, int y) {
+    public boolean contains(final int x, final int y) {
         return needleMarker.contains(x, y);
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paint(final Graphics g) {
         if (needleModel == null || viewableModel == null) {
             return;
         }

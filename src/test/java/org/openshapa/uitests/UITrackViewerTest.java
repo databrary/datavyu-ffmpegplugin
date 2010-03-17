@@ -1,34 +1,31 @@
 package org.openshapa.uitests;
 
-import java.awt.Frame;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static org.fest.reflect.core.Reflection.method;
 
+import java.awt.Frame;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.filechooser.FileFilter;
+
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
-
 import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.fixture.SpreadsheetCellFixture;
-import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.TimeStamp;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.continuous.PluginManager;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.openshapa.models.db.TimeStamp;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,8 +33,8 @@ import org.testng.annotations.Test;
  * Test for the Track View in the Data Controller.
  */
 public final class UITrackViewerTest extends OpenSHAPATestClass {
-    
-     /**
+
+    /**
      * Test needle movement to ensure needle time is the same as the clock time.
      */
     @Test
@@ -55,10 +52,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
         final DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
-                        (DataControllerV) mainFrameFixture.dialog()
-                        .component());
+                        (DataControllerV) mainFrameFixture.dialog().component());
 
-        //3. Open track view
+        // 3. Open track view
         dcf.pressShowTracksButton();
 
         // c. Open video
@@ -70,6 +66,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             final PluginManager pm = PluginManager.getInstance();
 
             GuiActionRunner.execute(new GuiTask() {
+                @Override
                 public void executeInEDT() {
                     OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
                     fc.setVisible(false);
@@ -78,8 +75,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                     }
                     fc.setSelectedFile(videoFile);
                     method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class)
-                            .in((DataControllerV) dcf.component()).invoke(fc);
+                            OpenSHAPAFileChooser.class).in(dcf.component())
+                            .invoke(fc);
                 }
             });
         } else {
@@ -97,7 +94,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
-        //4. Move needle to 9 seconds on data controller time.
+        // 4. Move needle to 9 seconds on data controller time.
         boolean lessThan9seconds = true;
         while (lessThan9seconds) {
             TimeStamp currTS;
@@ -106,24 +103,22 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                 currTS = new TimeStamp(dcf.getCurrentTime());
                 lessThan9seconds = currTS.lt(new TimeStamp("00:00:09:000"));
             } catch (SystemErrorException ex) {
-                Logger.getLogger(UITrackViewerTest.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            }            
+                Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                        Level.SEVERE, null, ex);
+            }
         }
-        
-        Assert.assertEquals(dcf.getCurrentTime(), 
-                dcf.getTrackMixerController()
+
+        Assert.assertEquals(dcf.getCurrentTime(), dcf.getTrackMixerController()
                 .getNeedle().getCurrentTimeAsTimeStamp());
     }
 
     /**
-     * Bug794.
-     * Steps to reproduce: open a movie, shuttle forwards to a rate of say 4x,
-     * pause the movie. Now instead of pressing unpause (as you might normally
-     * do), press shuttle forward again. I often see this going to 1/16x for
-     * some reason.
+     * Bug794. Steps to reproduce: open a movie, shuttle forwards to a rate of
+     * say 4x, pause the movie. Now instead of pressing unpause (as you might
+     * normally do), press shuttle forward again. I often see this going to
+     * 1/16x for some reason.
      */
-    //@Test
+    // @Test
     public void testBug794() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
@@ -138,8 +133,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
         final DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
-                        (DataControllerV) mainFrameFixture.dialog()
-                        .component());
+                        (DataControllerV) mainFrameFixture.dialog().component());
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -150,6 +144,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             final PluginManager pm = PluginManager.getInstance();
 
             GuiActionRunner.execute(new GuiTask() {
+                @Override
                 public void executeInEDT() {
                     OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
                     fc.setVisible(false);
@@ -158,8 +153,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                     }
                     fc.setSelectedFile(videoFile);
                     method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class)
-                            .in((DataControllerV) dcf.component()).invoke(fc);
+                            OpenSHAPAFileChooser.class).in(dcf.component())
+                            .invoke(fc);
                 }
             });
         } else {
@@ -179,7 +174,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         // 3. Shuttle forward to 4x
         dcf.pressPlayButton();
-        //Wait for it to actually start playing
+        // Wait for it to actually start playing
         while (dcf.getCurrentTime().equals("00:00:00:000")) {
             System.err.println("Waiting...");
         }
@@ -190,36 +185,34 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
             Assert.assertNotSame(preSpeed, postSpeed);
         }
-        //Using Thread.sleep to wait for 4 seconds.
+        // Using Thread.sleep to wait for 4 seconds.
         try {
             Thread.sleep(4000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UITrackViewerTest.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                    Level.SEVERE, null, ex);
         }
 
-        //3. Press pause
+        // 3. Press pause
         dcf.pressPauseButton();
         Assert.assertEquals(dcf.getSpeed(), "[4]");
 
-        //4. Press shuttle and check that it continues at 8
+        // 4. Press shuttle and check that it continues at 8
         dcf.pressShuttleForwardButton();
         Assert.assertEquals(dcf.getSpeed(), "8");
     }
 
     /**
-     * Bug798.
-     * Set playback speed to any value, using say shuttle to 4x.
-     * Pause the movie. Now rewind it past zero (causing a forced stop).
-     * Pressing the pause/unpause button will now restore the saved speed;
-     * this is bad! If you for example save a negative playback speed,
-     * pause/unpause will not work at all. To reproduce this behaviour:
-     * play the movie as per normal, then shuttle to a negative speed.
-     * Pause the movie. Rewind past zero (forcing a stop).
-     * Unpause/play the movie, voila, cannot play the movie
-     * using that button anymore. 
+     * Bug798. Set playback speed to any value, using say shuttle to 4x. Pause
+     * the movie. Now rewind it past zero (causing a forced stop). Pressing the
+     * pause/unpause button will now restore the saved speed; this is bad! If
+     * you for example save a negative playback speed, pause/unpause will not
+     * work at all. To reproduce this behaviour: play the movie as per normal,
+     * then shuttle to a negative speed. Pause the movie. Rewind past zero
+     * (forcing a stop). Unpause/play the movie, voila, cannot play the movie
+     * using that button anymore.
      */
-    //@Test
+    // @Test
     public void testBug798() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
@@ -234,8 +227,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
         final DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
-                        (DataControllerV) mainFrameFixture.dialog()
-                        .component());
+                        (DataControllerV) mainFrameFixture.dialog().component());
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -246,6 +238,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             final PluginManager pm = PluginManager.getInstance();
 
             GuiActionRunner.execute(new GuiTask() {
+                @Override
                 public void executeInEDT() {
                     OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
                     fc.setVisible(false);
@@ -254,8 +247,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                     }
                     fc.setSelectedFile(videoFile);
                     method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class)
-                            .in((DataControllerV) dcf.component()).invoke(fc);
+                            OpenSHAPAFileChooser.class).in(dcf.component())
+                            .invoke(fc);
                 }
             });
         } else {
@@ -275,55 +268,54 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         // 2. Shuttle forward to 4x
         dcf.pressPlayButton();
-        //Wait for it to actually start playing
+        // Wait for it to actually start playing
         while (dcf.getCurrentTime().equals("00:00:00:000")) {
             System.err.println("Waiting...");
         }
-        while(!dcf.getSpeed().equals("4")) {
+        while (!dcf.getSpeed().equals("4")) {
             String preSpeed = dcf.getSpeed();
             dcf.pressShuttleForwardButton();
             String postSpeed = dcf.getSpeed();
 
             Assert.assertNotSame(preSpeed, postSpeed);
         }
-        //Using Thread.sleep to wait for 4 seconds.
+        // Using Thread.sleep to wait for 4 seconds.
         try {
             Thread.sleep(4000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UITrackViewerTest.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                    Level.SEVERE, null, ex);
         }
 
-        //3. Press pause
+        // 3. Press pause
         dcf.pressPauseButton();
         Assert.assertEquals(dcf.getSpeed(), "[4]");
 
-        //4. Press rewind to zero
+        // 4. Press rewind to zero
         dcf.pressRewindButton();
-        //Using Thread.sleep to wait for 4 seconds.
+        // Using Thread.sleep to wait for 4 seconds.
         try {
             Thread.sleep(4000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UITrackViewerTest.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                    Level.SEVERE, null, ex);
         }
 
-        //Check that its 0 time and speed
+        // Check that its 0 time and speed
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         Assert.assertEquals(dcf.getSpeed(), "0");
 
-        //5. Press pause and ensure it does nothing
+        // 5. Press pause and ensure it does nothing
         dcf.pressPauseButton();
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         Assert.assertEquals(dcf.getSpeed(), "0");
     }
 
     /**
-     * Bug464.
-     * When a video finishes playing, hitting play does nothing.
-     * I expected it to play again.
+     * Bug464. When a video finishes playing, hitting play does nothing. I
+     * expected it to play again.
      */
-    //@Test
+    // @Test
     public void testBug464() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
@@ -338,8 +330,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
         final DataControllerFixture dcf =
                 new DataControllerFixture(mainFrameFixture.robot,
-                        (DataControllerV) mainFrameFixture.dialog()
-                        .component());
+                        (DataControllerV) mainFrameFixture.dialog().component());
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -350,6 +341,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             final PluginManager pm = PluginManager.getInstance();
 
             GuiActionRunner.execute(new GuiTask() {
+                @Override
                 public void executeInEDT() {
                     OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
                     fc.setVisible(false);
@@ -358,8 +350,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                     }
                     fc.setSelectedFile(videoFile);
                     method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class)
-                            .in((DataControllerV) dcf.component()).invoke(fc);
+                            OpenSHAPAFileChooser.class).in(dcf.component())
+                            .invoke(fc);
                 }
             });
         } else {
@@ -379,17 +371,17 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         // 2. Fast forward video to end and confirm you've reached end (1min)
         dcf.pressFastForwardButton();
-        //Using Thread.sleep to wait for 5 seconds.
+        // Using Thread.sleep to wait for 5 seconds.
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UITrackViewerTest.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                    Level.SEVERE, null, ex);
         }
-        //Check time
+        // Check time
         Assert.assertEquals(dcf.getCurrentTime(), "00:01:00:000");
 
-        //3. Press play, should start playing again
+        // 3. Press play, should start playing again
         dcf.pressPlayButton();
         String currTime = dcf.getCurrentTime();
         try {
@@ -397,8 +389,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             TimeStamp oneMin = new TimeStamp("00:01:00:000");
             Assert.assertTrue(currTS.le(oneMin));
         } catch (SystemErrorException ex) {
-            Logger.getLogger(UITrackViewerTest.class.getName())
-                    .log(Level.SEVERE, null, ex);
+            Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                    Level.SEVERE, null, ex);
         }
     }
 }

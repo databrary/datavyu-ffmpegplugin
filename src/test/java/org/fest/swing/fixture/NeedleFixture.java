@@ -1,14 +1,16 @@
 package org.fest.swing.fixture;
 
+import static org.fest.reflect.core.Reflection.field;
+
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Polygon;
+
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
 import org.openshapa.controllers.component.NeedleController;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.component.NeedlePainter;
-import org.testng.Assert;
 
 /**
  * Fixture for OpenSHAPA NeedlePainter.
@@ -19,10 +21,13 @@ public class NeedleFixture extends ComponentFixture {
 
     /**
      * Constructor.
-     * @param robot mainframe robot
-     * @param target NeedleController
+     * 
+     * @param robot
+     *            mainframe robot
+     * @param target
+     *            NeedleController
      */
-    public NeedleFixture(final Robot robot,final NeedleController target) {
+    public NeedleFixture(final Robot robot, final NeedleController target) {
         super(robot, target.getView());
         needleC = target;
     }
@@ -42,23 +47,25 @@ public class NeedleFixture extends ComponentFixture {
     }
 
     public boolean isMouseOnNeedleHead() {
-        return ((NeedlePainter)target).contains(MouseInfo.getPointerInfo()
+        return ((NeedlePainter) target).contains(MouseInfo.getPointerInfo()
                 .getLocation());
     }
 
     /**
      * Drag number of pixels left (negative) or right (positive)
+     * 
      * @param pixels
      */
-    public void drag(int pixels) {
-        //Hold down left mouse button
+    public void drag(final int pixels) {
+        // Hold down left mouse button
         robot.pressMouse(getCenterOfMarker(), MouseButton.LEFT_BUTTON);
 
-        //Move mouse to new position
-        Point to = new Point(getCenterOfMarker().x + pixels, getCenterOfMarker().y);
+        // Move mouse to new position
+        Point to =
+                new Point(getCenterOfMarker().x + pixels, getCenterOfMarker().y);
         robot.moveMouse(to);
 
-        //Release mouse
+        // Release mouse
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
@@ -68,15 +75,18 @@ public class NeedleFixture extends ComponentFixture {
          * because it has a slightly flat base (1pixel). We ignore the 4th
          * point.
          */
-        Polygon needleMarker = ((NeedlePainter)target).getNeedleMarker();
+        Polygon needleMarker =
+                field("needleMarker").ofType(Polygon.class).in(target).get();
 
-        //Find middle x position
-        int xPos = needleMarker.xpoints[2]  +
-                ((NeedlePainter) target).getLocationOnScreen().x;
+        // Find middle x position
+        int xPos =
+                needleMarker.xpoints[2]
+                        + ((NeedlePainter) target).getLocationOnScreen().x;
 
-        int yPos = (Math.max(Math.max(needleMarker.ypoints[0],
-                needleMarker.ypoints[1]), needleMarker.ypoints[2]) / 2) +
-                ((NeedlePainter) target).getLocationOnScreen().y;
+        int yPos =
+                (Math.max(Math.max(needleMarker.ypoints[0],
+                        needleMarker.ypoints[1]), needleMarker.ypoints[2]) / 2)
+                        + ((NeedlePainter) target).getLocationOnScreen().y;
 
         Point centrePoint = new Point(xPos, yPos);
 

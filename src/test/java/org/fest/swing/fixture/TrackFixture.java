@@ -1,6 +1,7 @@
 package org.fest.swing.fixture;
 
 import java.awt.Point;
+
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
 import org.openshapa.controllers.component.TrackController;
@@ -16,10 +17,13 @@ public class TrackFixture extends ComponentFixture {
 
     /**
      * Constructor.
-     * @param robot mainframe robot
-     * @param target TracksEditorController
+     * 
+     * @param robot
+     *            mainframe robot
+     * @param target
+     *            TracksEditorController
      */
-    public TrackFixture(final Robot robot,final TrackController target) {
+    public TrackFixture(final Robot robot, final TrackController target) {
         super(robot, target.getView());
         trackC = target;
     }
@@ -93,31 +97,32 @@ public class TrackFixture extends ComponentFixture {
     public String getTrackName() {
         return new JLabelFixture(robot, "trackLabel").text();
     }
-    
+
     /**
      * Drag number of pixels left (negative) or right (positive)
+     * 
      * @param pixels
      */
-    public void drag(int pixels) {
-        //Hold down left mouse button
-        //Start position should leave enough room to move pixels
-        Point topLeft = ((TrackPainter)target).getLocationOnScreen();
+    public void drag(final int pixels) {
+        // Hold down left mouse button
+        // Start position should leave enough room to move pixels
+        Point topLeft = ((TrackPainter) target).getLocationOnScreen();
         Point startClick;
         if (pixels >= 0) {
-            startClick = new Point (topLeft.x + 5, topLeft.y + 5);
+            startClick = new Point(topLeft.x + 5, topLeft.y + 5);
         } else {
-            startClick = new Point (topLeft.x +
-                    ((TrackPainter)target).getWidth() - 5,
-                    topLeft.y +
-                    ((TrackPainter)target).getHeight() - 5);
+            startClick =
+                    new Point(topLeft.x + ((TrackPainter) target).getWidth()
+                            - 5, topLeft.y
+                            + ((TrackPainter) target).getHeight() - 5);
         }
         robot.pressMouse(startClick, MouseButton.LEFT_BUTTON);
 
-        //Move mouse to new position
-        Point to = new Point(startClick.x,startClick.y + pixels);
+        // Move mouse to new position
+        Point to = new Point(startClick.x, startClick.y + pixels);
         robot.moveMouse(to);
 
-        //Release mouse
+        // Release mouse
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
