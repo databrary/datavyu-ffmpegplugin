@@ -1,7 +1,12 @@
 package org.fest.swing.fixture;
 
+import static org.fest.reflect.core.Reflection.method;
+
+import java.util.List;
 import java.util.Vector;
+
 import javax.swing.JPanel;
+
 import org.fest.swing.core.Robot;
 import org.openshapa.controllers.component.TrackController;
 import org.openshapa.controllers.component.TracksEditorController;
@@ -15,11 +20,15 @@ public class TracksEditorFixture extends JPanelFixture {
 
     /**
      * Constructor.
-     * @param robot mainframe robot
-     * @param target TracksEditorController
+     * 
+     * @param robot
+     *            mainframe robot
+     * @param target
+     *            TracksEditorController
      */
-    public TracksEditorFixture(final Robot robot,final TracksEditorController target) {
-        super(robot, (JPanel)target.getView());
+    public TracksEditorFixture(final Robot robot,
+            final TracksEditorController target) {
+        super(robot, (JPanel) target.getView());
         tracksEditorC = target;
     }
 
@@ -28,8 +37,13 @@ public class TracksEditorFixture extends JPanelFixture {
      */
     public Vector<TrackFixture> getTracks() {
         Vector<TrackFixture> tracks = new Vector<TrackFixture>();
-        Vector<TrackController> trackControllers
-                = tracksEditorC.getAllTrackControllers();
+
+        method("getAllTrackControllers").withReturnType(List.class).in(
+                tracksEditorC).invoke();
+
+        List<TrackController> trackControllers =
+                method("getAllTrackControllers").withReturnType(List.class).in(
+                        tracksEditorC).invoke();
 
         for (TrackController tc : trackControllers) {
             tracks.add(new TrackFixture(robot, tc));
@@ -39,27 +53,31 @@ public class TracksEditorFixture extends JPanelFixture {
     }
 
     /**
-     * @param Track number, starting from 0 at the top.
+     * @param Track
+     *            number, starting from 0 at the top.
      * @return track at track number.
      */
-    public TrackFixture getTrack(int n) {
+    public TrackFixture getTrack(final int n) {
         TrackFixture track;
-        Vector<TrackController> trackControllers
-                = tracksEditorC.getAllTrackControllers();
+        List<TrackController> trackControllers =
+                method("getAllTrackControllers").withReturnType(List.class).in(
+                        tracksEditorC).invoke();
 
-        track = new TrackFixture(robot, trackControllers.elementAt(n));
+        track = new TrackFixture(robot, trackControllers.get(n));
 
         return track;
     }
 
     /**
-     * @param trackName name of the track, i.e. the file name.
+     * @param trackName
+     *            name of the track, i.e. the file name.
      * @return track with trackname, else null.
      */
-    public TrackFixture getTrack(String trackName) {
+    public TrackFixture getTrack(final String trackName) {
         TrackFixture track;
-        Vector<TrackController> trackControllers
-                = tracksEditorC.getAllTrackControllers();
+        List<TrackController> trackControllers =
+                method("getAllTrackControllers").withReturnType(List.class).in(
+                        tracksEditorC).invoke();
 
         for (TrackController tc : trackControllers) {
             if (tc.getTrackName().equalsIgnoreCase(trackName)) {

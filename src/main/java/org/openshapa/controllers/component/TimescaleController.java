@@ -11,10 +11,10 @@ import org.openshapa.views.component.TimescalePainter;
  */
 public class TimescaleController {
     /** View */
-    private TimescalePainter view;
+    private transient final TimescalePainter view;
     /** Models */
-    private TimescaleModel timescaleModel;
-    private ViewableModel viewableModel;
+    private transient final TimescaleModel timescaleModel;
+    private transient final ViewableModel viewableModel;
 
     public TimescaleController() {
         view = new TimescalePainter();
@@ -43,12 +43,13 @@ public class TimescaleController {
         viewableModel.setZoomWindowStart(start);
         viewableModel.setZoomWindowEnd(end);
 
-        int effectiveWidth =
+        final int effectiveWidth =
                 view.getWidth() - timescaleModel.getPaddingLeft()
                         - timescaleModel.getPaddingRight();
         timescaleModel.setEffectiveWidth(effectiveWidth);
 
-        int majorWidth = effectiveWidth / timescaleModel.getMajorIntervals();
+        final int majorWidth =
+                effectiveWidth / timescaleModel.getMajorIntervals();
         timescaleModel.setMajorWidth(majorWidth);
 
         viewableModel.setIntervalWidth((float) majorWidth / (float) intervals);
@@ -78,7 +79,7 @@ public class TimescaleController {
      */
     public ViewableModel getViewableModel() {
         // return a clone to avoid model tainting
-        return (ViewableModel) viewableModel.clone();
+        return viewableModel.clone();
     }
 
     /**

@@ -22,22 +22,12 @@ import org.openshapa.views.component.NeedlePainter;
  */
 public class NeedleController {
     /** View */
-    private NeedlePainter view;
+    private transient final NeedlePainter view;
     /** Models */
-    private NeedleModel needleModel;
-    private ViewableModel viewableModel;
-    /** Inner listener for handling intercepted events */
-    private NeedleListener needleListener;
+    private transient final NeedleModel needleModel;
+    private final ViewableModel viewableModel;
     /** Listeners interested in needle painter events */
-    private EventListenerList listenerList;
-
-    /** Format for representing time. */
-    private static final DateFormat CLOCK_FORMAT;
-    static {
-        // initialize standard date format for clock display.
-        CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
-        CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
-    }
+    private transient final EventListenerList listenerList;
 
     public NeedleController() {
         view = new NeedlePainter();
@@ -51,7 +41,7 @@ public class NeedleController {
         view.setViewableModel(viewableModel);
         view.setNeedleModel(needleModel);
 
-        needleListener = new NeedleListener();
+        final NeedleListener needleListener = new NeedleListener();
         view.addMouseListener(needleListener);
         view.addMouseMotionListener(needleListener);
 
@@ -63,9 +53,10 @@ public class NeedleController {
      * 
      * @param listener
      */
-    public synchronized void addNeedleEventListener(
-            final NeedleEventListener listener) {
-        listenerList.add(NeedleEventListener.class, listener);
+    public void addNeedleEventListener(final NeedleEventListener listener) {
+        synchronized (this) {
+            listenerList.add(NeedleEventListener.class, listener);
+        }
     }
 
     /**
@@ -73,9 +64,10 @@ public class NeedleController {
      * 
      * @param listener
      */
-    public synchronized void removeNeedleEventListener(
-            final NeedleEventListener listener) {
-        listenerList.remove(NeedleEventListener.class, listener);
+    public void removeNeedleEventListener(final NeedleEventListener listener) {
+        synchronized (this) {
+            listenerList.remove(NeedleEventListener.class, listener);
+        }
     }
 
     /**
@@ -83,16 +75,18 @@ public class NeedleController {
      * 
      * @param newTime
      */
-    private synchronized void fireNeedleEvent(final long newTime) {
-        NeedleEvent e = new NeedleEvent(this, newTime);
-        Object[] listeners = listenerList.getListenerList();
-        /*
-         * The listener list contains the listening class and then the listener
-         * instance.
-         */
-        for (int i = 0; i < listeners.length; i += 2) {
-            if (listeners[i] == NeedleEventListener.class) {
-                ((NeedleEventListener) listeners[i + 1]).needleMoved(e);
+    private void fireNeedleEvent(final long newTime) {
+        synchronized (this) {
+            NeedleEvent e = new NeedleEvent(this, newTime);
+            Object[] listeners = listenerList.getListenerList();
+            /*
+             * The listener list contains the listening class and then the
+             * listener instance.
+             */
+            for (int i = 0; i < listeners.length; i += 2) {
+                if (listeners[i] == NeedleEventListener.class) {
+                    ((NeedleEventListener) listeners[i + 1]).needleMoved(e);
+                }
             }
         }
     }
@@ -103,8 +97,11 @@ public class NeedleController {
      * @param currentTime
      */
     public void setCurrentTime(final long currentTime) {
+        /** Format for representing time. */
+        DateFormat df = new SimpleDateFormat("HH:mm:ss:SSS");
+        df.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
         needleModel.setCurrentTime(currentTime);
-        view.setToolTipText(CLOCK_FORMAT.format(new Date(currentTime)));
+        view.setToolTipText(df.format(new Date(currentTime)));
         view.setNeedleModel(needleModel);
     }
 
@@ -120,7 +117,7 @@ public class NeedleController {
      */
     public ViewableModel getViewableModel() {
         // return a clone to avoid model tainting
-        return (ViewableModel) viewableModel.clone();
+        return viewableModel.clone();
     }
 
     /**
@@ -153,9 +150,10 @@ public class NeedleController {
      * Inner class used to handle intercepted events.
      */
     private class NeedleListener extends MouseInputAdapter {
-        private final Cursor eastResizeCursor =
+        private transient final Cursor eastResizeCursor =
                 Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
-        private final Cursor defaultCursor = Cursor.getDefaultCursor();
+        private transient final Cursor defaultCursor =
+                Cursor.getDefaultCursor();
 
         @Override
         public void mouseEntered(final MouseEvent e) {

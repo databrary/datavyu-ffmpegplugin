@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -31,17 +30,17 @@ public class TracksEditorController implements TrackMouseEventListener {
     /**
      * Views
      */
-    private JPanel editingPanel;
-    private final SnapMarkerController snapMarkerController;
+    private transient JPanel editingPanel;
+    private transient final SnapMarkerController snapMarkerController;
     /**
      * Models
      */
-    private List<Track> tracks;
-    private ViewableModel viewableModel;
+    private transient final List<Track> tracks;
+    private transient final ViewableModel viewableModel;
     /**
      * Controller states
      */
-    private boolean allowSnap;
+    private transient boolean allowSnap;
 
     public TracksEditorController() {
         tracks = new LinkedList<Track>();
@@ -120,7 +119,7 @@ public class TracksEditorController implements TrackMouseEventListener {
             final String trackName, final long duration, final long offset,
             final long bookmark, final CarriageEventListener listener) {
         // TrackController
-        TrackController trackController = new TrackController();
+        final TrackController trackController = new TrackController();
         trackController.setViewableModel(viewableModel);
         trackController.setTrackInformation(icon, trackName, mediaPath,
                 duration, offset);
@@ -135,7 +134,7 @@ public class TracksEditorController implements TrackMouseEventListener {
 
         trackController.addTrackMouseEventListener(this);
 
-        Track track = new Track();
+        final Track track = new Track();
         track.mediaPath = mediaPath;
         track.trackController = trackController;
 
@@ -155,9 +154,9 @@ public class TracksEditorController implements TrackMouseEventListener {
      */
     public boolean removeTrack(final String mediaPath,
             final CarriageEventListener listener) {
-        Iterator<Track> allTracks = tracks.iterator();
+        final Iterator<Track> allTracks = tracks.iterator();
         while (allTracks.hasNext()) {
-            Track track = allTracks.next();
+            final Track track = allTracks.next();
             if (track.mediaPath.equals(mediaPath)) {
                 editingPanel.remove(track.trackController.getView());
                 track.trackController.removeCarriageEventListener(listener);
@@ -200,17 +199,16 @@ public class TracksEditorController implements TrackMouseEventListener {
      */
     public boolean setTrackOffset(final String mediaPath, final long newOffset,
             final long snapTemporalPosition) {
-        Iterator<Track> allTracks = tracks.iterator();
+        final Iterator<Track> allTracks = tracks.iterator();
         while (allTracks.hasNext()) {
-            Track track = allTracks.next();
+            final Track track = allTracks.next();
             if (track.mediaPath.equals(mediaPath)) {
-                TrackController tc = track.trackController;
+                final TrackController tc = track.trackController;
                 tc.setTrackOffset(newOffset);
                 snapMarkerController.setMarkerTime(-1);
                 if (allowSnap) {
-                    SnapPoint snapPoint =
-                            snapOffset(mediaPath, snapTemporalPosition,
-                                    newOffset);
+                    final SnapPoint snapPoint =
+                            snapOffset(mediaPath, snapTemporalPosition);
                     tc.setMoveable(snapPoint == null);
                     if (snapPoint == null) {
                         snapMarkerController.setMarkerTime(-1);
@@ -243,20 +241,20 @@ public class TracksEditorController implements TrackMouseEventListener {
      * @return
      */
     private SnapPoint snapOffset(final String mediaPath,
-            final long temporalSnapPosition, final long originalOffset) {
-        List<Long> snapCandidates = new ArrayList<Long>();
-        List<Long> snapPoints = new LinkedList<Long>();
-        Iterator<Track> allTracks = tracks.iterator();
+            final long temporalSnapPosition) {
+        final List<Long> snapCandidates = new ArrayList<Long>();
+        final List<Long> snapPoints = new LinkedList<Long>();
+        final Iterator<Track> allTracks = tracks.iterator();
 
         long longestDuration = 0;
 
         // Compile track and candidate snap points
         while (allTracks.hasNext()) {
-            Track track = allTracks.next();
-            TrackController trackController = track.trackController;
-            long offset = trackController.getOffset();
-            long bookmark = trackController.getBookmark();
-            long duration = trackController.getDuration();
+            final Track track = allTracks.next();
+            final TrackController trackController = track.trackController;
+            final long offset = trackController.getOffset();
+            final long bookmark = trackController.getBookmark();
+            final long duration = trackController.getDuration();
 
             if (track.mediaPath.equals(mediaPath)) {
                 snapPoints.add(offset);
@@ -292,7 +290,7 @@ public class TracksEditorController implements TrackMouseEventListener {
         if (nearestIndex >= snapPoints.size()) {
             nearestIndex = snapPoints.size() - 1;
         }
-        long rightSnapTime = snapPoints.get(nearestIndex);
+        final long rightSnapTime = snapPoints.get(nearestIndex);
         long leftSnapTime = rightSnapTime;
         if (nearestIndex > 0) {
             leftSnapTime = snapPoints.get(nearestIndex - 1);
@@ -315,23 +313,22 @@ public class TracksEditorController implements TrackMouseEventListener {
                 candidateIndex = snapCandidates.size() - 1;
             }
 
-            long upperSnapTime = snapCandidates.get(candidateIndex);
+            final long upperSnapTime = snapCandidates.get(candidateIndex);
             long lowerSnapTime = upperSnapTime;
             if (candidateIndex > 0) {
                 lowerSnapTime = snapCandidates.get(candidateIndex - 1);
             }
 
-            if (lowerSnapTime < snapPoint) {
-                if (Math.abs(snapPoint - lowerSnapTime) <= threshold) {
-                    SnapPoint sp = new SnapPoint();
-                    sp.snapOffset = lowerSnapTime - snapPoint;
-                    sp.snapMarkerPosition = lowerSnapTime;
-                    return sp;
-                }
+            if ((lowerSnapTime < snapPoint)
+                    && (Math.abs(snapPoint - lowerSnapTime) <= threshold)) {
+                final SnapPoint sp = new SnapPoint();
+                sp.snapOffset = lowerSnapTime - snapPoint;
+                sp.snapMarkerPosition = lowerSnapTime;
+                return sp;
             }
             // Check if the candidate snap points can be used
             if (Math.abs(upperSnapTime - snapPoint) <= threshold) {
-                SnapPoint sp = new SnapPoint();
+                final SnapPoint sp = new SnapPoint();
                 sp.snapOffset = upperSnapTime - snapPoint;
                 sp.snapMarkerPosition = upperSnapTime;
                 return sp;
@@ -348,9 +345,9 @@ public class TracksEditorController implements TrackMouseEventListener {
      *            temporal position in milliseconds
      */
     public void addTemporalBookmarkToSelected(final long position) {
-        Iterator<Track> allTracks = tracks.iterator();
+        final Iterator<Track> allTracks = tracks.iterator();
         while (allTracks.hasNext()) {
-            TrackController track = allTracks.next().trackController;
+            final TrackController track = allTracks.next().trackController;
             if (track.isSelected()) {
                 track.addTemporalBookmark(position);
                 track.saveBookmark();
@@ -362,9 +359,9 @@ public class TracksEditorController implements TrackMouseEventListener {
      * @return True if at least one track is selected, false otherwise.s
      */
     public boolean hasSelectedTracks() {
-        Iterator<Track> allTracks = tracks.iterator();
+        final Iterator<Track> allTracks = tracks.iterator();
         while (allTracks.hasNext()) {
-            TrackController track = allTracks.next().trackController;
+            final TrackController track = allTracks.next().trackController;
             if (track.isSelected()) {
                 return true;
             }
@@ -416,7 +413,7 @@ public class TracksEditorController implements TrackMouseEventListener {
      * @return A clone of all track models currently in uses.
      */
     public Iterable<TrackModel> getAllTrackModels() {
-        List<TrackModel> models = new LinkedList<TrackModel>();
+        final List<TrackModel> models = new LinkedList<TrackModel>();
         for (Track track : tracks) {
             models.add(track.trackController.getTrackModel());
         }
@@ -426,8 +423,9 @@ public class TracksEditorController implements TrackMouseEventListener {
     /**
      * @return All track controllers.
      */
-    public Vector<TrackController> getAllTrackControllers() {
-        Vector<TrackController> controllers = new Vector<TrackController>();
+    private List<TrackController> getAllTrackControllers() {
+        final List<TrackController> controllers =
+                new ArrayList<TrackController>();
         for (Track track : tracks) {
             controllers.add(track.trackController);
         }
