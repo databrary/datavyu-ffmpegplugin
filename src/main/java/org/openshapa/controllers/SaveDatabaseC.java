@@ -45,7 +45,7 @@ public final class SaveDatabaseC {
      */
     public SaveDatabaseC(final File destinationFile,
                          final MacshapaDatabase db) {
-        this.saveDatabse(destinationFile.getName(), db);
+        this.saveDatabase(destinationFile, db);
     }
 
     /**
@@ -58,7 +58,7 @@ public final class SaveDatabaseC {
      */
     public SaveDatabaseC(final String destinationFile,
                          final MacshapaDatabase db) {
-        this.saveDatabse(destinationFile, db);
+        this.saveDatabase(new File(destinationFile), db);
     }
 
     /**
@@ -139,10 +139,10 @@ public final class SaveDatabaseC {
      * @param db
      *      The
      */
-    public void saveDatabse(final String destinationFile,
-                            final MacshapaDatabase db) {
+    public void saveDatabase(final File destinationFile,
+                             final MacshapaDatabase db) {
         // We bypass any overwrite checks here.
-        String outputFile = destinationFile.toLowerCase();
+        String outputFile = destinationFile.getName().toLowerCase();
         String extension =
                 outputFile.substring(outputFile.lastIndexOf('.'), outputFile
                         .length());
