@@ -1404,10 +1404,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
             if ((newWindowTime < maxDuration)
                     && (newWindowTime < windowPlayEnd)) {
                 windowPlayStart = newWindowTime;
-            } else if (newWindowTime >= maxDuration) {
-                windowPlayStart = maxDuration;
-            } else {
+            } else if (newWindowTime >= windowPlayEnd) {
                 windowPlayStart = windowPlayEnd;
+            } else {
+                windowPlayStart = maxDuration;
             }
             mixerControllerV.setPlayRegionStart(windowPlayStart);
             if (tracksTime < windowPlayStart) {
