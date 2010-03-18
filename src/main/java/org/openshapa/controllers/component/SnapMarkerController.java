@@ -11,10 +11,10 @@ import org.openshapa.views.component.SnapMarkerPainter;
  */
 public class SnapMarkerController {
     /** View */
-    private SnapMarkerPainter view;
+    private transient final SnapMarkerPainter view;
     /** Models */
-    private SnapMarkerModel snapMarkerModel;
-    private ViewableModel viewableModel;
+    private transient final SnapMarkerModel snapMarkerModel;
+    private transient final ViewableModel viewableModel;
 
     public SnapMarkerController() {
         view = new SnapMarkerPainter();
@@ -52,7 +52,7 @@ public class SnapMarkerController {
      */
     public ViewableModel getViewableModel() {
         // return a clone to avoid model tainting
-        return (ViewableModel) viewableModel.clone();
+        return viewableModel.clone();
     }
 
     /**

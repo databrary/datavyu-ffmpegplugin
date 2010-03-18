@@ -21,14 +21,12 @@ import org.openshapa.views.component.RegionPainter;
  */
 public class RegionController {
     /** View */
-    private RegionPainter view;
+    private transient final RegionPainter view;
     /** Models */
-    private RegionModel regionModel;
-    private ViewableModel viewableModel;
-    /** Inner listener for handling intercepted events */
-    private RegionMarkerListener regionMarkerListener;
+    private transient final RegionModel regionModel;
+    private transient final ViewableModel viewableModel;
     /** Listeners interested in changes to the playback region */
-    private EventListenerList listenerList;
+    private transient final EventListenerList listenerList;
 
     public RegionController() {
         view = new RegionPainter();
@@ -42,9 +40,9 @@ public class RegionController {
         view.setViewableModel(viewableModel);
         view.setRegionModel(regionModel);
 
-        regionMarkerListener = new RegionMarkerListener();
-        view.addMouseListener(regionMarkerListener);
-        view.addMouseMotionListener(regionMarkerListener);
+        final RegionMarkerListener markerListener = new RegionMarkerListener();
+        view.addMouseListener(markerListener);
+        view.addMouseMotionListener(markerListener);
 
         listenerList = new EventListenerList();
     }
@@ -130,9 +128,10 @@ public class RegionController {
      * 
      * @param listener
      */
-    public synchronized void addMarkerEventListener(
-            final MarkerEventListener listener) {
-        listenerList.add(MarkerEventListener.class, listener);
+    public void addMarkerEventListener(final MarkerEventListener listener) {
+        synchronized (this) {
+            listenerList.add(MarkerEventListener.class, listener);
+        }
     }
 
     /**
@@ -140,9 +139,10 @@ public class RegionController {
      * 
      * @param listener
      */
-    public synchronized void removeMarkerEventListener(
-            final MarkerEventListener listener) {
-        listenerList.remove(MarkerEventListener.class, listener);
+    public void removeMarkerEventListener(final MarkerEventListener listener) {
+        synchronized (this) {
+            listenerList.remove(MarkerEventListener.class, listener);
+        }
     }
 
     /**
@@ -151,17 +151,18 @@ public class RegionController {
      * @param marker
      * @param time
      */
-    private synchronized void fireMarkerEvent(final Marker marker,
-            final long time) {
-        MarkerEvent e = new MarkerEvent(this, marker, time);
-        Object[] listeners = listenerList.getListenerList();
-        /*
-         * The listener list contains the listening class and then the listener
-         * instance.
-         */
-        for (int i = 0; i < listeners.length; i += 2) {
-            if (listeners[i] == MarkerEventListener.class) {
-                ((MarkerEventListener) listeners[i + 1]).markerMoved(e);
+    private void fireMarkerEvent(final Marker marker, final long time) {
+        synchronized (this) {
+            final MarkerEvent e = new MarkerEvent(this, marker, time);
+            final Object[] listeners = listenerList.getListenerList();
+            /*
+             * The listener list contains the listening class and then the
+             * listener instance.
+             */
+            for (int i = 0; i < listeners.length; i += 2) {
+                if (listeners[i] == MarkerEventListener.class) {
+                    ((MarkerEventListener) listeners[i + 1]).markerMoved(e);
+                }
             }
         }
     }
@@ -170,21 +171,23 @@ public class RegionController {
      * Inner class used to handle intercepted events.
      */
     private class RegionMarkerListener extends MouseInputAdapter {
-        private boolean onStartMarker;
-        private boolean onEndMarker;
+        private transient boolean onStartMarker;
+        private transient boolean onEndMarker;
 
-        private final Cursor eastResizeCursor =
+        private transient final Cursor eastResizeCursor =
                 Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
-        private final Cursor defaultCursor = Cursor.getDefaultCursor();
+        private transient final Cursor defaultCursor =
+                Cursor.getDefaultCursor();
 
         public RegionMarkerListener() {
+            super();
             onStartMarker = false;
             onEndMarker = false;
         }
 
         @Override
         public void mouseEntered(final MouseEvent e) {
-            JComponent source = (JComponent) e.getSource();
+            final JComponent source = (JComponent) e.getSource();
             final Polygon startMarker = view.getStartMarkerPolygon();
             final Polygon endMarker = view.getEndMarkerPolygon();
             if (startMarker.contains(e.getPoint())) {
@@ -203,7 +206,7 @@ public class RegionController {
 
         @Override
         public void mousePressed(final MouseEvent e) {
-            Component source = (Component) e.getSource();
+            final Component source = (Component) e.getSource();
             final Polygon startMarker = view.getStartMarkerPolygon();
             final Polygon endMarker = view.getEndMarkerPolygon();
             if (startMarker.contains(e.getPoint())) {
@@ -233,7 +236,7 @@ public class RegionController {
                 }
 
                 // Calculate the time represented by the new location
-                float ratio =
+                final float ratio =
                         viewableModel.getIntervalWidth()
                                 / viewableModel.getIntervalTime();
                 float newTime =
@@ -256,10 +259,10 @@ public class RegionController {
                 }
 
                 // Calculate the time represented by the new location
-                float ratio =
+                final float ratio =
                         viewableModel.getIntervalWidth()
                                 / viewableModel.getIntervalTime();
-                float newTime =
+                final float newTime =
                         (x - regionModel.getPaddingLeft() + viewableModel
                                 .getZoomWindowStart()
                                 * ratio)
@@ -272,7 +275,7 @@ public class RegionController {
         public void mouseReleased(final MouseEvent e) {
             onStartMarker = false;
             onEndMarker = false;
-            JComponent source = (JComponent) e.getSource();
+            final JComponent source = (JComponent) e.getSource();
             source.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
     }

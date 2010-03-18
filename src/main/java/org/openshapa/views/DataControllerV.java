@@ -1020,11 +1020,12 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         // Find button
         findButton.setAction(actionMap.get("findAction"));
-        findButton.setIcon(resourceMap.getIcon("findButton.icon"));
+        findButton.setIcon(new ImageIcon(getClass().getResource(
+                "/icons/DataController/eng/find-win.png")));
         findButton.setFocusPainted(false);
         findButton.setName("findButton");
-        findButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource("/icons/DataController/eng/find-selected.png")));
+        findButton.setPressedIcon(new ImageIcon(getClass().getResource(
+                "/icons/DataController/eng/find-win-selected.png")));
         gridButtonPanel.add(findButton, "span 1 2, w 45!, h 95!");
 
         // Go back text field
@@ -1404,10 +1405,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
             if ((newWindowTime < maxDuration)
                     && (newWindowTime < windowPlayEnd)) {
                 windowPlayStart = newWindowTime;
-            } else if (newWindowTime >= maxDuration) {
-                windowPlayStart = maxDuration;
-            } else {
+            } else if (newWindowTime >= windowPlayEnd) {
                 windowPlayStart = windowPlayEnd;
+            } else {
+                windowPlayStart = maxDuration;
             }
             mixerControllerV.setPlayRegionStart(windowPlayStart);
             if (tracksTime < windowPlayStart) {
