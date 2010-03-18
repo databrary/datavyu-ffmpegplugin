@@ -114,7 +114,7 @@ public class RegionFixture extends ComponentFixture {
     }
 
     /**
-     * @return
+     * @return a Point in the EndMarker.
      */
     public Point getPointInEndMarker() {
         /*

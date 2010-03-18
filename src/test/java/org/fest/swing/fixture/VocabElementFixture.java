@@ -79,12 +79,14 @@ public class VocabElementFixture extends JPanelFixture {
         return argPos + 1;
     }
 
-    public void enterTextInArg(final int arg, final String text) throws BadLocationException {
+    public void enterTextInArg(final int arg, final String text)
+            throws BadLocationException {
         clickToCharPos(getArgStartIndex(arg), 1);
         value().enterText(text);
     }
 
-    public void replaceTextInArg(final int arg, final String text) throws BadLocationException {
+    public void replaceTextInArg(final int arg, final String text)
+            throws BadLocationException {
         clickToCharPos(getArgStartIndex(arg), 2);
         value().enterText(text);
     }
@@ -103,7 +105,8 @@ public class VocabElementFixture extends JPanelFixture {
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
-    public void clickToCharPos(int charPos, int times) throws BadLocationException {
+    public void clickToCharPos(int charPos, int times)
+            throws BadLocationException {
         Point charPoint = centerOf(ve.getDataView().modelToView(charPos));
         for (int i = 0; i < times; i++) {
             robot.click(ve.getDataView(), charPoint);
