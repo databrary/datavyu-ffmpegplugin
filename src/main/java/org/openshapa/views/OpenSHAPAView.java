@@ -48,6 +48,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.project.Project;
 
 /**
  * The main FrameView, representing the interface for OpenSHAPA the user will
@@ -417,11 +418,15 @@ public final class OpenSHAPAView extends FrameView {
 
     private void openProject(final OpenSHAPAFileChooser jd) {
         OpenProjectC opc = new OpenProjectC();
+        Project p = opc.open(jd.getSelectedFile());
 
-        if (opc.open(jd.getSelectedFile())) {
+        if (p != null) {
             // Successfully loaded the project file
+            OpenSHAPA.newProjectController(p);
             ProjectController projectController =
-                    OpenSHAPA.getProjectController();
+                              OpenSHAPA.getProjectController();
+            projectController.setProjectDirectory(jd.getSelectedFile()
+                                                    .getParent());
 
             try {
                 MacshapaDatabase newDB = new MacshapaDatabase();

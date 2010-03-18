@@ -20,7 +20,7 @@ public class TracksEditorFixture extends JPanelFixture {
 
     /**
      * Constructor.
-     * 
+     *
      * @param robot
      *            mainframe robot
      * @param target
