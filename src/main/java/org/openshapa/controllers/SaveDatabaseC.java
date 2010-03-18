@@ -38,7 +38,7 @@ public final class SaveDatabaseC {
 
     /**
      * Constructor.
-     * 
+     *
      * @param destinationFile
      *            The destination to use when saving the c
      */
@@ -62,7 +62,7 @@ public final class SaveDatabaseC {
 
     /**
      * Constructor.
-     * 
+     *
      * @param destinationFile
      *            The destination to use when saving the database.
      * @param fileFilter
@@ -112,7 +112,6 @@ public final class SaveDatabaseC {
                     dbName = outFile.getName();
                 }
                 OpenSHAPA.getProjectController().getDB().setName(dbName);
-                OpenSHAPA.getProjectController().getDB().setSourceFile(outFile);
 
                 // Update the name of the window to include the name we just
                 // set in the database.
@@ -127,7 +126,7 @@ public final class SaveDatabaseC {
 
     /**
      * Saves the database to the specified destination in a MacSHAPA format.
-     * 
+     *
      * @param outFile
      *            The path of the file to use when writing to disk.
      * @throws LogicErrorException
@@ -167,7 +166,7 @@ public final class SaveDatabaseC {
 
     /**
      * Saves the database to the specified destination in a CSV format.
-     * 
+     *
      * @param outFile
      *            The path of the file to use when writing to disk.
      * @throws LogicErrorException

@@ -59,7 +59,7 @@ public final class OpenDatabaseC {
 
     /**
      * Constructor.
-     * 
+     *
      * @param sourceFile
      *            The source file to use when opening a database from disk.
      */
@@ -86,7 +86,8 @@ public final class OpenDatabaseC {
                 String dbName = sourceFile.getName();
                 dbName = dbName.substring(0, dbName.lastIndexOf('.'));
                 db.setName(dbName);
-                db.setSourceFile(sourceFile);
+                OpenSHAPA.getProjectController()
+                        .setDatabaseFileName(sourceFile.getName());
             }
 
             // Calling this will erase the "modified" variable and update
@@ -99,15 +100,15 @@ public final class OpenDatabaseC {
 
         // Display any changes to the database.
         SpreadsheetPanel view =
-                (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
-                        .getComponent();
+            (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
+            .getComponent();
         view.relayoutCells();
     }
 
     /**
      * This method treats a file as a MacSHAPA database file and attempts to
      * populate the database with data.
-     * 
+     *
      * @param sFile
      *            The source file to use when populating the database.
      */
@@ -119,7 +120,7 @@ public final class OpenDatabaseC {
             PrintStream errorStream = new PrintStream(new File("error.log"));
 
             MacshapaODBReader modbr =
-                    new MacshapaODBReader(sourceStream, listStream, errorStream);
+                new MacshapaODBReader(sourceStream, listStream, errorStream);
             OpenSHAPA.getProjectController().setDatabase(modbr.readDB());
             OpenSHAPA.getProjectController().setProjectDirectory(
                     sFile.getParent());
@@ -137,7 +138,7 @@ public final class OpenDatabaseC {
     /**
      * This method parses a CSV file and populates the database (and
      * spreadsheet) with data.
-     * 
+     *
      * @param sFile
      *            The source file to use when populating the database.
      */
@@ -185,7 +186,7 @@ public final class OpenDatabaseC {
 
     /**
      * Strips escape characters from a line of text.
-     * 
+     *
      * @param line
      *            The line of text to strip escape characters from.
      * @return The line free fo escape characters, i.e. '\'.
@@ -203,7 +204,7 @@ public final class OpenDatabaseC {
                         // Move over the escape character.
                         i++;
                     } else if (line.charAt(i) == '\\'
-                            && line.charAt(i + 1) == ',') {
+                        && line.charAt(i + 1) == ',') {
                         char[] buff = {','};
                         result = result.concat(new String(buff));
                         // Move over the escape character.
@@ -223,7 +224,7 @@ public final class OpenDatabaseC {
     /**
      * Method to invoke when we encounter a block of text in the CSV file that
      * is the contents of a predicate variable.
-     * 
+     *
      * @param csvFile
      *            The csvFile we are currently parsing.
      * @param dc
@@ -249,7 +250,7 @@ public final class OpenDatabaseC {
 
             // Create the data cell from line in the CSV file.
             DataCell cell =
-                    new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
+                new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
 
             // Set the onset and offset from tokens in the line.
             cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
@@ -267,11 +268,11 @@ public final class OpenDatabaseC {
                 // plow ahead and add the predicate to the database.
             } else {
                 PredicateVocabElement pve =
-                        dc.getDB().getPredVE(tokens[DATA_INDEX]);
+                    dc.getDB().getPredVE(tokens[DATA_INDEX]);
 
                 Predicate p =
-                        new Predicate(dc.getDB(), pve.getID(), parseFormalArgs(
-                                tokens, DATA_INDEX + 1, dc, pve));
+                    new Predicate(dc.getDB(), pve.getID(), parseFormalArgs(
+                            tokens, DATA_INDEX + 1, dc, pve));
                 PredDataValue pdv = new PredDataValue(dc.getDB());
                 pdv.setItsValue(p);
 
@@ -293,7 +294,7 @@ public final class OpenDatabaseC {
 
     /**
      * Method to create data values for the formal arguments of a vocab element.
-     * 
+     *
      * @param tokens
      *            The array of string tokens.
      * @param startI
@@ -371,7 +372,7 @@ public final class OpenDatabaseC {
     /**
      * Method to invoke when we encounter a block of text in the CSV file that
      * is the contents of a predicate variable.
-     * 
+     *
      * @param csvFile
      *            The csvFile we are currently parsing.
      * @param dc
@@ -390,7 +391,7 @@ public final class OpenDatabaseC {
      */
     private String parseMatrixVariable(final BufferedReader csvFile,
             final DataColumn dc, final MatrixVocabElement mve)
-            throws IOException, SystemErrorException {
+    throws IOException, SystemErrorException {
         String line = csvFile.readLine();
 
         while (line != null && Character.isDigit(line.charAt(0))) {
@@ -399,7 +400,7 @@ public final class OpenDatabaseC {
 
             // Create the data cell from line in the CSV file.
             DataCell cell =
-                    new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
+                new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
 
             // Set the onset and offset from tokens in the line.
             cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
@@ -407,15 +408,15 @@ public final class OpenDatabaseC {
 
             // Strip the brackets from the first and last argument.
             tokens[DATA_INDEX] =
-                    tokens[DATA_INDEX]
-                            .substring(1, tokens[DATA_INDEX].length());
+                tokens[DATA_INDEX]
+                       .substring(1, tokens[DATA_INDEX].length());
 
             int end = tokens.length - 1;
             tokens[end] = tokens[end].substring(0, tokens[end].length() - 1);
 
             Matrix m =
-                    new Matrix(dc.getDB(), mve.getID(), parseFormalArgs(tokens,
-                            DATA_INDEX, dc, mve));
+                new Matrix(dc.getDB(), mve.getID(), parseFormalArgs(tokens,
+                        DATA_INDEX, dc, mve));
             cell.setVal(m);
 
             // Add the populated cell to the database.
@@ -431,14 +432,14 @@ public final class OpenDatabaseC {
     /**
      * Method to invoke when we encounter a block of text in the CSV file that
      * is the contents of a variable.
-     * 
+     *
      * @param csvFile
      *            The csvFile we are currently parsing.
      * @param dc
      *            The datacolumn that we will be adding cells too.
-     * @param The
-     *            populator to use when converting the contents of the cell into
-     *            a datavalue that can be inserted into the spreadsheet.
+     * @param populator
+     *            The populator to use when converting the contents of the cell
+     *            into a datavalue that can be inserted into the spreadsheet.
      * @return The next line in the file that is not part of the block of text
      *         in the CSV file.
      * @throws IOException
@@ -449,7 +450,7 @@ public final class OpenDatabaseC {
      */
     private String parseEntries(final BufferedReader csvFile,
             final DataColumn dc, final EntryPopulator populator)
-            throws IOException, SystemErrorException {
+    throws IOException, SystemErrorException {
 
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
@@ -472,7 +473,7 @@ public final class OpenDatabaseC {
 
             // Create the data cell from line in the CSV file.
             DataCell cell =
-                    new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
+                new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
 
             // Set the onset and offset from tokens in the line.
             cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
@@ -481,8 +482,8 @@ public final class OpenDatabaseC {
             // Insert the datavalue in the cell.
             long mveId = dc.getDB().getMatrixVE(dc.getItsMveID()).getID();
             Matrix m =
-                    Matrix.Construct(dc.getDB(), mveId, populator
-                            .createValue(tokens));
+                Matrix.Construct(dc.getDB(), mveId, populator
+                        .createValue(tokens));
             cell.setVal(m);
 
             // Add the populated cell to the database.
@@ -497,7 +498,7 @@ public final class OpenDatabaseC {
 
     /**
      * Parses the predicate definitions from the CSV file.
-     * 
+     *
      * @param csvFile
      *            The buffered reader containing the contents of the CSV file we
      *            are trying parse.
@@ -535,7 +536,7 @@ public final class OpenDatabaseC {
 
     /**
      * Method to build a formal argument.
-     * 
+     *
      * @param content
      *            The string holding the formal argument content to be parsed.
      * @param db
@@ -576,7 +577,7 @@ public final class OpenDatabaseC {
 
     /**
      * Method to invoke when we encounter a block of text that is a variable.
-     * 
+     *
      * @param csvFile
      *            The CSV file we are currently reading.
      * @param line
@@ -613,18 +614,21 @@ public final class OpenDatabaseC {
             return parseEntries(csvFile, dc, new PopulateText(dc.getDB()));
 
             // Read nominal variable.
-        } else if (getVarType(varType) == MatrixVocabElement.MatrixType.NOMINAL) {
+        } else if (getVarType(varType)
+                == MatrixVocabElement.MatrixType.NOMINAL) {
             return parseEntries(csvFile, dc, new PopulateNominal(dc.getDB()));
 
             // Read integer variable.
-        } else if (getVarType(varType) == MatrixVocabElement.MatrixType.INTEGER) {
+        } else if (getVarType(varType)
+                == MatrixVocabElement.MatrixType.INTEGER) {
             return parseEntries(csvFile, dc, new PopulateInteger(dc.getDB()));
 
         } else if (getVarType(varType) == MatrixVocabElement.MatrixType.FLOAT) {
             return parseEntries(csvFile, dc, new PopulateFloat(dc.getDB()));
 
             // Read matrix variable.
-        } else if (getVarType(varType) == MatrixVocabElement.MatrixType.MATRIX) {
+        } else if (getVarType(varType)
+                == MatrixVocabElement.MatrixType.MATRIX) {
             // Build vocab for matrix.
             String[] vocabString = tokens[1].split("-");
 
@@ -644,7 +648,8 @@ public final class OpenDatabaseC {
             return parseMatrixVariable(csvFile, dc, mve);
 
             // Read predicate variable.
-        } else if (getVarType(varType) == MatrixVocabElement.MatrixType.PREDICATE) {
+        } else if (getVarType(varType)
+                == MatrixVocabElement.MatrixType.PREDICATE) {
             return parsePredicateVariable(csvFile, dc);
         }
 
@@ -685,11 +690,12 @@ public final class OpenDatabaseC {
      * database spreadsheet cells.
      */
     private abstract class EntryPopulator {
+        /** The database. */
         private Database db;
 
         /**
          * Constructor.
-         * 
+         *
          * @param targetDB
          *            The destination database for data values.
          */
@@ -706,7 +712,7 @@ public final class OpenDatabaseC {
 
         /**
          * Creates a DataValue from the supplied array of tokens.
-         * 
+         *
          * @param tokens
          *            The tokens to use when building a DataValue.
          * @return A DataValue that can be used for a new SpreadsheetCell.
@@ -715,7 +721,7 @@ public final class OpenDatabaseC {
          *             array of tokens.
          */
         abstract DataValue createValue(final String[] tokens)
-                throws SystemErrorException;
+        throws SystemErrorException;
     }
 
     /**
@@ -725,7 +731,7 @@ public final class OpenDatabaseC {
 
         /**
          * Constructor.
-         * 
+         *
          * @param targetDB
          *            The destination database for integer data values.
          */
@@ -735,7 +741,7 @@ public final class OpenDatabaseC {
 
         /**
          * Creates a IntDataValue from the supplied array of tokens.
-         * 
+         *
          * @param tokens
          *            The tokens to use when building a IntDataValue
          * @return A IntDataValue that can be used in a SpreadsheetCell.
@@ -745,7 +751,7 @@ public final class OpenDatabaseC {
          */
         @Override
         public DataValue createValue(final String[] tokens)
-                throws SystemErrorException {
+        throws SystemErrorException {
             IntDataValue idv = new IntDataValue(getDatabase());
 
             // BugzID:722 - Only populate the value if we have one from the file
@@ -763,7 +769,7 @@ public final class OpenDatabaseC {
 
         /**
          * Constructor.
-         * 
+         *
          * @param targetDB
          *            The destination database for float data values.
          */
@@ -773,7 +779,7 @@ public final class OpenDatabaseC {
 
         /**
          * Creates a FloatDataValue from the supplied array of tokens.
-         * 
+         *
          * @param tokens
          *            The tokens to use when building a FloatDataValue.
          * @return A FloatDataValue that can be used in a SpreadsheetCell.
@@ -783,7 +789,7 @@ public final class OpenDatabaseC {
          */
         @Override
         public DataValue createValue(final String[] tokens)
-                throws SystemErrorException {
+        throws SystemErrorException {
             FloatDataValue fdv = new FloatDataValue(getDatabase());
 
             // BugzID:722 - Only populate the value if we have one from the file
@@ -800,7 +806,7 @@ public final class OpenDatabaseC {
     private class PopulateNominal extends EntryPopulator {
         /**
          * Constructor.
-         * 
+         *
          * @param targetDB
          *            The destination database for nominal data values.
          */
@@ -810,7 +816,7 @@ public final class OpenDatabaseC {
 
         /**
          * Creates a NominalDataValue from the supplied array of tokens.
-         * 
+         *
          * @param tokens
          *            The tokens to use when building a NominalDataValue.
          * @return A NominalDataValue that can be used in a SpreadsheetCell.
@@ -820,7 +826,7 @@ public final class OpenDatabaseC {
          */
         @Override
         public DataValue createValue(final String[] tokens)
-                throws SystemErrorException {
+        throws SystemErrorException {
             NominalDataValue ndv = new NominalDataValue(getDatabase());
 
             // BugzID:722 - Only populate the value if we have one from the file
@@ -837,7 +843,7 @@ public final class OpenDatabaseC {
     private class PopulateText extends EntryPopulator {
         /**
          * Constructor.
-         * 
+         *
          * @param targetDB
          *            The destination database for the text data values.
          */
@@ -847,7 +853,7 @@ public final class OpenDatabaseC {
 
         /**
          * Creates a TextStringDataValue from the supplied array of tokens.
-         * 
+         *
          * @param tokens
          *            The tokens to use when building a TextStringDataValue.
          * @return A TextStringDataValue that can be used in a SpreadsheetCell.
@@ -857,7 +863,7 @@ public final class OpenDatabaseC {
          */
         @Override
         public DataValue createValue(final String[] tokens)
-                throws SystemErrorException {
+        throws SystemErrorException {
             TextStringDataValue tsdv = new TextStringDataValue(getDatabase());
 
             // BugzID:722 - Only populate the value if we have one from the file
