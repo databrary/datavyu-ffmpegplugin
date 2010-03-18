@@ -1404,23 +1404,32 @@ public final class DataControllerV extends OpenSHAPADialog implements
             if ((newWindowTime < maxDuration)
                     && (newWindowTime < windowPlayEnd)) {
                 windowPlayStart = newWindowTime;
-                mixerControllerV.setPlayRegionStart(windowPlayStart);
-                if (tracksTime < windowPlayStart) {
-                    mixerControllerV.setCurrentTime(windowPlayStart);
-                    clock.setTime(windowPlayStart);
-                    clockStep(windowPlayStart);
-                }
+            } else if (newWindowTime >= maxDuration) {
+                windowPlayStart = maxDuration;
+            } else {
+                windowPlayStart = windowPlayEnd;
+            }
+            mixerControllerV.setPlayRegionStart(windowPlayStart);
+            if (tracksTime < windowPlayStart) {
+                mixerControllerV.setCurrentTime(windowPlayStart);
+                clock.setTime(windowPlayStart);
+                clockStep(windowPlayStart);
             }
             break;
         case END_MARKER:
-            if ((e.getTime() <= maxDuration) && (e.getTime() > windowPlayStart)) {
-                windowPlayEnd = e.getTime();
-                mixerControllerV.setPlayRegionEnd(windowPlayEnd);
-                if (tracksTime > windowPlayEnd) {
-                    mixerControllerV.setCurrentTime(windowPlayEnd);
-                    clock.setTime(windowPlayEnd);
-                    clockStep(windowPlayEnd);
-                }
+            if ((newWindowTime <= maxDuration)
+                    && (newWindowTime > windowPlayStart)) {
+                windowPlayEnd = newWindowTime;
+            } else if (newWindowTime > maxDuration) {
+                windowPlayEnd = maxDuration;
+            } else {
+                windowPlayEnd = windowPlayStart;
+            }
+            mixerControllerV.setPlayRegionEnd(windowPlayEnd);
+            if (tracksTime > windowPlayEnd) {
+                mixerControllerV.setCurrentTime(windowPlayEnd);
+                clock.setTime(windowPlayEnd);
+                clockStep(windowPlayEnd);
             }
             break;
         default:

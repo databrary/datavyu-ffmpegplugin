@@ -32,7 +32,7 @@ public class NeedlePainter extends JComponent {
     }
 
     public NeedleModel getNeedleModel() {
-        return needleModel;
+        return needleModel.clone();
     }
 
     public void setNeedleModel(final NeedleModel needleModel) {
@@ -41,7 +41,7 @@ public class NeedlePainter extends JComponent {
     }
 
     public ViewableModel getViewableModel() {
-        return viewableModel;
+        return viewableModel.clone();
     }
 
     public void setViewableModel(final ViewableModel viewableModel) {
