@@ -113,6 +113,9 @@ public class RegionFixture extends ComponentFixture {
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
+    /**
+     * @return
+     */
     public Point getPointInEndMarker() {
         /*
          * The start marker is a trapezoid, where the first point is the top

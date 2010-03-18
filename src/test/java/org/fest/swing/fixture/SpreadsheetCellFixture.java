@@ -2,7 +2,6 @@ package org.fest.swing.fixture;
 
 import java.awt.Component;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.image.ImageObserver;
 
@@ -11,6 +10,7 @@ import javax.swing.text.BadLocationException;
 import org.fest.swing.core.MouseButton;
 
 import org.fest.swing.core.Robot;
+import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
@@ -143,8 +143,8 @@ public class SpreadsheetCellFixture extends JPanelFixture {
         Component c;
         switch (component) {
         case VALUE:
-            startPoint = UIUtils.centerOf(((SpreadsheetCell) target).getDataView()
-                    .modelToView(startPos));
+            startPoint = UIUtils.centerOf(((SpreadsheetCell) target)
+                    .getDataView().modelToView(startPos));
             endPoint = UIUtils.centerOf(((SpreadsheetCell) target).getDataView()
                     .modelToView(endPos));
             c = ((SpreadsheetCell) target).getDataView();
@@ -164,8 +164,8 @@ public class SpreadsheetCellFixture extends JPanelFixture {
             c = ((SpreadsheetCell) target).getOffset();
             break;
         default:
-            startPoint = UIUtils.centerOf(((SpreadsheetCell) target).getDataView()
-                    .modelToView(startPos));
+            startPoint = UIUtils.centerOf(((SpreadsheetCell) target)
+                    .getDataView().modelToView(startPos));
             endPoint = UIUtils.centerOf(((SpreadsheetCell) target).getDataView()
                     .modelToView(endPos));
             c = ((SpreadsheetCell) target).getDataView();
