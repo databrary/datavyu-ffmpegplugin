@@ -7,7 +7,6 @@
 
 package org.openshapa.models.db;
 
-import java.io.File;
 import org.openshapa.OpenSHAPA;
 
 /**
@@ -55,10 +54,6 @@ public abstract class Database
     /** Whether we are keeping all columns sorted by time automatically. */
     protected boolean temporalOrdering = false;
 
-//    /** Database change listeners */
-//    java.util.Vector<DatabaseChangeListener> changeListeners =
-//            new java.util.Vector<DatabaseChangeListener>();
-
     /** Current database user UID. */
     protected int curUID = 0;
 
@@ -73,10 +68,6 @@ public abstract class Database
 
     /** Cascade Listeners. */
     private CascadeListeners listeners = null;
-
-    /** The source file for this database - if this database is not sourced from
-     *  a file - this is null. */
-    private File sourceFile = null;
 
     /** Boolean which keeps track of whether edits have occurred since
      *  the database was last saved. */
@@ -355,26 +346,6 @@ public abstract class Database
     /*************************************************************************/
     /***************************** Accessors: ********************************/
     /*************************************************************************/
-
-    // getSourceFile()
-    /**
-     * @return The source file that this database is bound too - null if not
-     * bound to a file.
-     */
-    public File getSourceFile() {
-        return this.sourceFile;
-    }
-
-    // setSourceFile()
-    /**
-     * Sets the source file that this database is bound too - set to null if you
-     * want to remove the bind to a source file.
-     *
-     * @param The new sourceFile to bind this database too.
-     */
-    public void setSourceFile(final File newSource) {
-        this.sourceFile = newSource;
-    }
 
     // getCurUID()
     /**
