@@ -34,7 +34,6 @@ import org.testng.annotations.Test;
  * Test for the Track View in the Data Controller.
  */
 public final class UITrackViewerTest extends OpenSHAPATestClass {
-    
      /**
      * Test needle movement to ensure needle time is the same as the clock time.
      */
@@ -106,10 +105,10 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             } catch (SystemErrorException ex) {
                 Logger.getLogger(UITrackViewerTest.class.getName())
                         .log(Level.SEVERE, null, ex);
-            }            
+            }
         }
-        
-        Assert.assertEquals(dcf.getCurrentTime(), 
+
+        Assert.assertEquals(dcf.getCurrentTime(),
                 dcf.getTrackMixerController()
                 .getNeedle().getCurrentTimeAsTimeStamp());
     }
@@ -262,7 +261,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         region.dragEndMarker(-1 * widthOfTrack);
         Assert.assertEquals(region.getEndTimeAsTimeStamp(), "00:00:00:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:000");
-        
+
         // TEST2. Right region beyond end + need stays same
         region.dragEndMarker(widthOfTrack);
         Assert.assertEquals(region.getEndTimeAsTimeStamp(), "00:01:00:000");
@@ -277,7 +276,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         region.dragStartMarker(-1 * widthOfTrack);
         Assert.assertEquals(region.getStartTimeAsTimeStamp(), "00:00:00:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:01:00:000");
-        
+
         // TEST5. Right region to middle + needle moves with it
         region.dragEndMarker(-1 * widthOfTrack / 4);
         TimeStamp endTS = null;
@@ -306,24 +305,20 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         TimeStamp startTS = null;
         try {
             startTS = new TimeStamp(region.getStartTimeAsTimeStamp());
-            Assert.assertTrue((startTS.ge(new TimeStamp("00:00:10:000"))) &&
-                (startTS.le(new TimeStamp("00:00:30:000"))));
+            Assert.assertTrue((startTS.ge(new TimeStamp("00:00:10:000")))
+                    && (startTS.le(new TimeStamp("00:00:30:000"))));
         } catch (SystemErrorException ex) {
             Logger.getLogger(UITrackViewerTest.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
                 endTS.toHMSFString());
-        
+
         // TEST7. Right region can't cross left
         region.dragEndMarker(-1 * widthOfTrack);
         Assert.assertEquals(region.getEndTimeAsTimeStamp(),
                 startTS.toHMSFString());
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
                 startTS.toHMSFString());
-
-        
-
-
     }
 }
