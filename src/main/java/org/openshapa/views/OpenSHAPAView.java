@@ -405,7 +405,8 @@ public final class OpenSHAPAView extends FrameView {
         } catch (SystemErrorException se) {
             logger.error("Unable to create new database on open", se);
         }
-        new OpenDatabaseC(jd.getSelectedFile());
+        OpenDatabaseC odc = new OpenDatabaseC();
+        odc.open(jd.getSelectedFile());
 
         String dir = jd.getSelectedFile().getAbsolutePath();
         int match = dir.lastIndexOf(jd.getSelectedFile().getName());
@@ -441,8 +442,9 @@ public final class OpenSHAPAView extends FrameView {
             }
 
             // Load the database
-            new OpenDatabaseC(new File(jd.getSelectedFile().getParent(),
-                    projectController.getDatabaseFileName()));
+            OpenDatabaseC odc = new OpenDatabaseC();
+            odc.open(new File(jd.getSelectedFile().getParent(),
+                              projectController.getDatabaseFileName()));
 
             projectController.loadProject();
         }

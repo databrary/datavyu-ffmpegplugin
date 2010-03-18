@@ -115,6 +115,24 @@ public abstract class Database
 
     } /* Database::Database() */
 
+    /**
+     * Constructor.
+     *
+     * @param ticksPerSecond The ticks per second to use with the new database.
+     *
+     * @throws SystemErrorException If unable to create database.
+     */
+    public Database(final int ticksPerSecond) throws SystemErrorException {
+        super();
+
+        this.idx = new DBIndex(this);
+        this.vl = new VocabList(this);
+        this.cl = new ColumnList(this);
+        this.listeners = new CascadeListeners(this);
+
+        this.tps = ticksPerSecond;
+    }
+
 
     /*************************************************************************/
     /******************* Abstract Method Declarations: ***********************/

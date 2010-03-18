@@ -36,9 +36,10 @@ import org.openshapa.models.db.TimeStamp;
 import org.openshapa.models.db.UnTypedFormalArg;
 import org.openshapa.models.db.UndefinedDataValue;
 import org.openshapa.models.db.VocabElement;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.util.Constants;
 
 /**
  * Controller for opening a database from disk.
@@ -58,71 +59,87 @@ public final class OpenDatabaseC {
     private static final int DATA_INDEX = 2;
 
     /**
-     * Constructor.
-     * 
-     * @param sourceFile
-     *            The source file to use when opening a database from disk.
+     * Opens a database.
+     *
+     * @param sourceFile The source file to open.
+     *
+     * @return populated MacshapaDatabase on success, null otherwise.
      */
-    public OpenDatabaseC(final File sourceFile) {
+    public MacshapaDatabase open(final String sourceFile) {
+        return this.open(new File(sourceFile));
+    }
+
+    /**
+     * Opens a database.
+     *
+     * @param sourceFile The source file to open.
+     *
+     * @return populated MacshapaDatabase on success, null otherwise.
+     */
+    public MacshapaDatabase open(final File sourceFile) {
+        MacshapaDatabase db;
         String inputFile = sourceFile.toString().toLowerCase();
 
         // If the file ends with CSV - treat it as a comma seperated file.
         if (inputFile.endsWith(".csv")) {
-            openAsCSV(sourceFile);
+            db = openAsCSV(sourceFile);
 
-            // Otherwise treat it as a macshapa database file.
+        // Otherwise treat it as a macshapa database file.
         } else {
-            openAsMacSHAPADB(sourceFile);
+            db = openAsMacSHAPADB(sourceFile);
         }
 
         // BugzID:449 - Set filename in spreadsheet window and database if the
         // database name is undefined.
         try {
-            Database db = OpenSHAPA.getProjectController().getDB();
-            OpenSHAPA.getProjectController().setProjectDirectory(
-                    sourceFile.getParent());
+            if (db != null) {
+                OpenSHAPA.getProjectController().setDatabase(db);
+                db = OpenSHAPA.getProjectController().getDB();
+                OpenSHAPA.getProjectController().setProjectDirectory(
+                        sourceFile.getParent());
 
-            if (db.getName().equals("Undefined")) {
-                String dbName = sourceFile.getName();
-                dbName = dbName.substring(0, dbName.lastIndexOf('.'));
-                db.setName(dbName);
-                db.setSourceFile(sourceFile);
+                if (db.getName().equals("Undefined")) {
+                    String dbName = sourceFile.getName();
+                    dbName = dbName.substring(0, dbName.lastIndexOf('.'));
+                    db.setName(dbName);
+                    db.setSourceFile(sourceFile);
+                }
+
+                // Calling this will erase the "modified" variable and update
+                // the title, not actuall save the database.
+                db.saveDatabase();
             }
-
-            // Calling this will erase the "modified" variable and update
-            // the title, not actuall save the database.
-            db.saveDatabase();
 
         } catch (SystemErrorException se) {
             logger.error("Can't set db name to the name of the CSV file.", se);
         }
 
         // Display any changes to the database.
-        SpreadsheetPanel view =
-                (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
-                        .getComponent();
-        view.relayoutCells();
+        OpenSHAPA.getView().showSpreadsheet();
+        return db;
     }
 
     /**
      * This method treats a file as a MacSHAPA database file and attempts to
      * populate the database with data.
-     * 
+     *
      * @param sFile
      *            The source file to use when populating the database.
+     *
+     * @return popluated database on success, null otherwise.
      */
-    public void openAsMacSHAPADB(final File sFile) {
+    public MacshapaDatabase openAsMacSHAPADB(final File sFile) {
         try {
             FileReader sReader = new FileReader(sFile);
             BufferedReader sourceStream = new BufferedReader(sReader);
             PrintStream listStream = new PrintStream(new File("read_list.log"));
             PrintStream errorStream = new PrintStream(new File("error.log"));
 
-            MacshapaODBReader modbr =
-                    new MacshapaODBReader(sourceStream, listStream, errorStream);
-            OpenSHAPA.getProjectController().setDatabase(modbr.readDB());
-            OpenSHAPA.getProjectController().setProjectDirectory(
-                    sFile.getParent());
+            MacshapaODBReader modbr = new MacshapaODBReader(sourceStream,
+                                                            listStream,
+                                                            errorStream);
+
+            return modbr.readDB();
         } catch (FileNotFoundException e) {
             logger.error("Unable to load macshapa database:'" + sFile + "'", e);
         } catch (SystemErrorException e) {
@@ -132,20 +149,24 @@ public final class OpenDatabaseC {
         } catch (LogicErrorException e) {
             OpenSHAPA.getApplication().showWarningDialog(e);
         }
+
+        // Error occured - return null.
+        return null;
     }
 
     /**
      * This method parses a CSV file and populates the database (and
      * spreadsheet) with data.
-     * 
+     *
      * @param sFile
      *            The source file to use when populating the database.
+     *
+     * @return populated database on sucess, null otherwise.
      */
-    public void openAsCSV(final File sFile) {
+    public MacshapaDatabase openAsCSV(final File sFile) {
         try {
-            Database db = OpenSHAPA.getProjectController().getDB();
-            OpenSHAPA.getProjectController().setProjectDirectory(
-                    sFile.getParent());
+            MacshapaDatabase db = new MacshapaDatabase(Constants
+                                                       .TICKS_PER_SECOND);
             BufferedReader csvFile = new BufferedReader(new FileReader(sFile));
 
             // Read each line of the CSV file.
@@ -162,16 +183,17 @@ public final class OpenDatabaseC {
                     line = parseVariable(csvFile, line, db);
                 }
 
-                // Use the original schema to load the file - just variables,
-                // and no
-                // escape characters.
             } else {
+
+                // Use the original schema to load the file - just variables,
+                // and no escape characters.
                 while (line != null) {
                     line = parseVariable(csvFile, line, db);
                 }
             }
 
             csvFile.close();
+            return db;
         } catch (FileNotFoundException e) {
             logger.error("Unable to load CSV file.", e);
         } catch (IOException e) {
@@ -181,11 +203,14 @@ public final class OpenDatabaseC {
         } catch (LogicErrorException e) {
             logger.error("Corrupted CSV file", e);
         }
+
+        // Error encountered - return null.
+        return null;
     }
 
     /**
      * Strips escape characters from a line of text.
-     * 
+     *
      * @param line
      *            The line of text to strip escape characters from.
      * @return The line free fo escape characters, i.e. '\'.
@@ -223,7 +248,7 @@ public final class OpenDatabaseC {
     /**
      * Method to invoke when we encounter a block of text in the CSV file that
      * is the contents of a predicate variable.
-     * 
+     *
      * @param csvFile
      *            The csvFile we are currently parsing.
      * @param dc
@@ -260,12 +285,11 @@ public final class OpenDatabaseC {
                 // Add the populated cell to the database.
                 dc.getDB().appendCell(cell);
 
-                // Non empty predicate - need to check if we need to add an
-                // entry to
-                // the vocab, and create it if it doesn't exist. Otherwise we
-                // just
-                // plow ahead and add the predicate to the database.
             } else {
+                // Non empty predicate - need to check if we need to add an
+                // entry to the vocab, and create it if it doesn't exist.
+                // Otherwise we just plow ahead and add the predicate to the
+                // database.
                 PredicateVocabElement pve =
                         dc.getDB().getPredVE(tokens[DATA_INDEX]);
 
@@ -293,7 +317,7 @@ public final class OpenDatabaseC {
 
     /**
      * Method to create data values for the formal arguments of a vocab element.
-     * 
+     *
      * @param tokens
      *            The array of string tokens.
      * @param startI
@@ -371,7 +395,7 @@ public final class OpenDatabaseC {
     /**
      * Method to invoke when we encounter a block of text in the CSV file that
      * is the contents of a predicate variable.
-     * 
+     *
      * @param csvFile
      *            The csvFile we are currently parsing.
      * @param dc
@@ -431,7 +455,7 @@ public final class OpenDatabaseC {
     /**
      * Method to invoke when we encounter a block of text in the CSV file that
      * is the contents of a variable.
-     * 
+     *
      * @param csvFile
      *            The csvFile we are currently parsing.
      * @param dc
@@ -497,7 +521,7 @@ public final class OpenDatabaseC {
 
     /**
      * Parses the predicate definitions from the CSV file.
-     * 
+     *
      * @param csvFile
      *            The buffered reader containing the contents of the CSV file we
      *            are trying parse.
@@ -535,7 +559,7 @@ public final class OpenDatabaseC {
 
     /**
      * Method to build a formal argument.
-     * 
+     *
      * @param content
      *            The string holding the formal argument content to be parsed.
      * @param db
@@ -554,20 +578,20 @@ public final class OpenDatabaseC {
         if (formalArgument[1].equalsIgnoreCase("quote_string")) {
             fa = new QuoteStringFormalArg(db, "<" + formalArgument[0] + ">");
 
-            // Add nominal formal argument.
         } else if (formalArgument[1].equalsIgnoreCase("nominal")) {
+            // Add nominal formal argument.
             fa = new NominalFormalArg(db, "<" + formalArgument[0] + ">");
 
-            // Add integer formal argument.
         } else if (formalArgument[1].equalsIgnoreCase("integer")) {
+            // Add integer formal argument.
             fa = new IntFormalArg(db, "<" + formalArgument[0] + ">");
 
-            // Add float formal argument.
         } else if (formalArgument[1].equalsIgnoreCase("float")) {
+            // Add float formal argument.
             fa = new FloatFormalArg(db, "<" + formalArgument[0] + ">");
 
-            // Not sure what it is - add undefined formal argument.
         } else {
+            // Not sure what it is - add undefined formal argument.
             fa = new UnTypedFormalArg(db, "<" + formalArgument[0] + ">");
         }
 
@@ -576,7 +600,7 @@ public final class OpenDatabaseC {
 
     /**
      * Method to invoke when we encounter a block of text that is a variable.
-     * 
+     *
      * @param csvFile
      *            The CSV file we are currently reading.
      * @param line
@@ -612,20 +636,22 @@ public final class OpenDatabaseC {
         if (getVarType(varType) == MatrixVocabElement.MatrixType.TEXT) {
             return parseEntries(csvFile, dc, new PopulateText(dc.getDB()));
 
+        } else if (getVarType(varType)
+                   == MatrixVocabElement.MatrixType.NOMINAL) {
             // Read nominal variable.
-        } else if (getVarType(varType) == MatrixVocabElement.MatrixType.NOMINAL) {
             return parseEntries(csvFile, dc, new PopulateNominal(dc.getDB()));
 
+        } else if (getVarType(varType)
+                   == MatrixVocabElement.MatrixType.INTEGER) {
             // Read integer variable.
-        } else if (getVarType(varType) == MatrixVocabElement.MatrixType.INTEGER) {
             return parseEntries(csvFile, dc, new PopulateInteger(dc.getDB()));
 
         } else if (getVarType(varType) == MatrixVocabElement.MatrixType.FLOAT) {
             return parseEntries(csvFile, dc, new PopulateFloat(dc.getDB()));
 
-            // Read matrix variable.
-        } else if (getVarType(varType) == MatrixVocabElement.MatrixType.MATRIX) {
-            // Build vocab for matrix.
+        } else if (getVarType(varType)
+                   == MatrixVocabElement.MatrixType.MATRIX) {
+            // Read matrix variable - Build vocab for matrix.
             String[] vocabString = tokens[1].split("-");
 
             // Get the vocab element for the matrix and clean it up to be
@@ -644,7 +670,8 @@ public final class OpenDatabaseC {
             return parseMatrixVariable(csvFile, dc, mve);
 
             // Read predicate variable.
-        } else if (getVarType(varType) == MatrixVocabElement.MatrixType.PREDICATE) {
+        } else if (getVarType(varType)
+                   == MatrixVocabElement.MatrixType.PREDICATE) {
             return parsePredicateVariable(csvFile, dc);
         }
 
@@ -689,7 +716,7 @@ public final class OpenDatabaseC {
 
         /**
          * Constructor.
-         * 
+         *
          * @param targetDB
          *            The destination database for data values.
          */
@@ -706,7 +733,7 @@ public final class OpenDatabaseC {
 
         /**
          * Creates a DataValue from the supplied array of tokens.
-         * 
+         *
          * @param tokens
          *            The tokens to use when building a DataValue.
          * @return A DataValue that can be used for a new SpreadsheetCell.
@@ -725,7 +752,7 @@ public final class OpenDatabaseC {
 
         /**
          * Constructor.
-         * 
+         *
          * @param targetDB
          *            The destination database for integer data values.
          */
@@ -735,7 +762,7 @@ public final class OpenDatabaseC {
 
         /**
          * Creates a IntDataValue from the supplied array of tokens.
-         * 
+         *
          * @param tokens
          *            The tokens to use when building a IntDataValue
          * @return A IntDataValue that can be used in a SpreadsheetCell.
@@ -763,7 +790,7 @@ public final class OpenDatabaseC {
 
         /**
          * Constructor.
-         * 
+         *
          * @param targetDB
          *            The destination database for float data values.
          */
@@ -773,7 +800,7 @@ public final class OpenDatabaseC {
 
         /**
          * Creates a FloatDataValue from the supplied array of tokens.
-         * 
+         *
          * @param tokens
          *            The tokens to use when building a FloatDataValue.
          * @return A FloatDataValue that can be used in a SpreadsheetCell.
@@ -800,7 +827,7 @@ public final class OpenDatabaseC {
     private class PopulateNominal extends EntryPopulator {
         /**
          * Constructor.
-         * 
+         *
          * @param targetDB
          *            The destination database for nominal data values.
          */
@@ -810,7 +837,7 @@ public final class OpenDatabaseC {
 
         /**
          * Creates a NominalDataValue from the supplied array of tokens.
-         * 
+         *
          * @param tokens
          *            The tokens to use when building a NominalDataValue.
          * @return A NominalDataValue that can be used in a SpreadsheetCell.
@@ -837,7 +864,7 @@ public final class OpenDatabaseC {
     private class PopulateText extends EntryPopulator {
         /**
          * Constructor.
-         * 
+         *
          * @param targetDB
          *            The destination database for the text data values.
          */
@@ -847,7 +874,7 @@ public final class OpenDatabaseC {
 
         /**
          * Creates a TextStringDataValue from the supplied array of tokens.
-         * 
+         *
          * @param tokens
          *            The tokens to use when building a TextStringDataValue.
          * @return A TextStringDataValue that can be used in a SpreadsheetCell.
