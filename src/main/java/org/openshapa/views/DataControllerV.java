@@ -50,9 +50,9 @@ import com.usermetrix.jclient.UserMetrix;
  * Quicktime video controller.
  */
 public final class DataControllerV extends OpenSHAPADialog implements
-        ClockListener, TracksControllerListener, DataController {
+ClockListener, TracksControllerListener, DataController {
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // [static]
     //
     /** The logger for this class. */
@@ -105,6 +105,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
     /** The jump multiplier for ctrl-shift-jogging. */
     private static final int CTRLSHIFTJOG = 10;
 
+    /**
+     * Handles opening a data source.
+     *
+     * @param jd The file chooser used to open the data source.
+     */
     private void openVideo(final OpenSHAPAFileChooser jd) {
         PluginManager pm = PluginManager.getInstance();
 
@@ -133,7 +138,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         /**
          * Sets the shuttle direction.
-         * 
+         *
          * @param p
          *            The new shuttle direction.
          */
@@ -156,7 +161,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     //
     //
     /** The list of viewers associated with this controller. */
@@ -186,12 +191,12 @@ public final class DataControllerV extends OpenSHAPADialog implements
     /** The controller for manipulating tracks. */
     private MixerControllerV mixerControllerV;
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // [initialization]
     //
     /**
      * Constructor. Creates a new DataControllerV.
-     * 
+     *
      * @param parent
      *            The parent of this form.
      * @param modal
@@ -215,9 +220,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         maxDuration = 0;
 
-        // TODO: This should really come from the region controller.
+        final int defaultEndTime = 60000;
+
+        // TODO This should really come from the region controller.
         windowPlayStart = 0;
-        windowPlayEnd = 60000;
+        windowPlayEnd = defaultEndTime;
 
         mixerControllerV = new MixerControllerV();
         tracksPanel.add(mixerControllerV.getTracksPanel());
@@ -228,7 +235,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Tells the Data Controller if shift is being held or not.
-     * 
+     *
      * @param shift
      *            True for shift held; false otherwise.
      */
@@ -238,7 +245,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Tells the Data Controller if ctrl is being held or not.
-     * 
+     *
      * @param ctrl
      *            True for ctrl held; false otherwise.
      */
@@ -246,7 +253,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         ctrlMask = ctrl;
     }
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // [interface] org.openshapa.util.ClockTimer.Listener
     //
     /**
@@ -297,7 +304,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
                 // Synchronise viewers only if we have exceded our pulse time.
                 if ((time - lastSync) > (SYNC_PULSE * clock.getRate())) {
                     long thresh =
-                            (long) (SYNC_THRESH * Math.abs(clock.getRate()));
+                        (long) (SYNC_THRESH * Math.abs(clock.getRate()));
                     lastSync = time;
 
                     for (DataViewer v : viewers) {
@@ -408,16 +415,16 @@ public final class DataControllerV extends OpenSHAPADialog implements
         super.dispose();
     }
 
+    /**
+     * @return the mixer controller.
+     */
     public MixerControllerV getMixerController() {
         return mixerControllerV;
     }
 
-    // --------------------------------------------------------------------------
-    //
-    //
     /**
      * Set time location for data streams.
-     * 
+     *
      * @param milliseconds
      *            The millisecond time.
      */
@@ -429,7 +436,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Get the current master clock time for the controller.
-     * 
+     *
      * @return Time in milliseconds.
      */
     private long getCurrentTime() {
@@ -438,7 +445,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Remove the specifed viewer from the controller.
-     * 
+     *
      * @param viewer
      *            The viewer to shutdown.
      * @return True if the controller contained this viewer.
@@ -484,7 +491,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
             // Remove the data viewer from the tracks panel
             mixerControllerV
-                    .removeTrack(viewer.getDataFeed().getAbsolutePath());
+            .removeTrack(viewer.getDataFeed().getAbsolutePath());
             OpenSHAPA.getApplication().updateTitle();
         }
 
@@ -527,12 +534,14 @@ public final class DataControllerV extends OpenSHAPADialog implements
         showTracksButton = new javax.swing.JButton();
         tracksPanel = new javax.swing.JPanel();
 
+        final int fontSize = 11;
+
         setLayout(new MigLayout("hidemode 3"));
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap =
-                org.jdesktop.application.Application.getInstance(
-                        org.openshapa.OpenSHAPA.class).getContext()
-                        .getResourceMap(DataControllerV.class);
+            org.jdesktop.application.Application.getInstance(
+                    org.openshapa.OpenSHAPA.class).getContext()
+                    .getResourceMap(DataControllerV.class);
         setTitle(resourceMap.getString("title"));
         setName("");
         setResizable(false);
@@ -548,7 +557,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         // Add data button
         addDataButton.setText(resourceMap.getString("addDataButton.text"));
-        addDataButton.setFont(new Font("Tahoma", Font.PLAIN, 11));
+        addDataButton.setFont(new Font("Tahoma", Font.PLAIN, fontSize));
         addDataButton.setFocusPainted(false);
         addDataButton.setName("addDataButton");
         addDataButton.addActionListener(new ActionListener() {
@@ -560,11 +569,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         // Timestamp panel
         JPanel timestampPanel =
-                new JPanel(new MigLayout("", "push[][][]0![]push"));
+            new JPanel(new MigLayout("", "push[][][]0![]push"));
         timestampPanel.setOpaque(false);
 
         // Timestamp label
-        timestampLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+        timestampLabel.setFont(new Font("Tahoma", Font.BOLD, fontSize));
         timestampLabel.setHorizontalAlignment(SwingConstants.CENTER);
         timestampLabel.setText("00:00:00:000");
         timestampLabel.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -574,14 +583,14 @@ public final class DataControllerV extends OpenSHAPADialog implements
         jLabel1.setText("@");
         timestampPanel.add(jLabel1);
 
-        lblSpeed.setFont(new Font("Tahoma", Font.BOLD, 11));
+        lblSpeed.setFont(new Font("Tahoma", Font.BOLD, fontSize));
         lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1,
                 2));
         lblSpeed.setName("lblSpeed");
         lblSpeed.setText("0");
         timestampPanel.add(lblSpeed);
 
-        jLabel2.setFont(new Font("Tahoma", Font.BOLD, 11));
+        jLabel2.setFont(new Font("Tahoma", Font.BOLD, fontSize));
         jLabel2.setText("x");
         timestampPanel.add(jLabel2);
 
@@ -599,19 +608,19 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         // Set cell onset button
         javax.swing.ActionMap actionMap =
-                org.jdesktop.application.Application.getInstance(
-                        org.openshapa.OpenSHAPA.class).getContext()
-                        .getActionMap(DataControllerV.class, this);
+            org.jdesktop.application.Application.getInstance(
+                    org.openshapa.OpenSHAPA.class).getContext()
+                    .getActionMap(DataControllerV.class, this);
         setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction"));
         setCellOnsetButton.setIcon(resourceMap
                 .getIcon("setCellOnsetButton.icon"));
         setCellOnsetButton.setFocusPainted(false);
         setCellOnsetButton.setName("setCellOnsetButton");
         setCellOnsetButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/set-cell-onset-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/set-cell-onset-selected.png")));
         gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
 
         // Set cell offset button
@@ -621,10 +630,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         setCellOffsetButton.setFocusPainted(false);
         setCellOffsetButton.setName("setCellOffsetButton");
         setCellOffsetButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/set-cell-offset-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/set-cell-offset-selected.png")));
         gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
 
         // Sync video button
@@ -657,10 +666,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         forwardButton.setFocusPainted(false);
         forwardButton.setName("forwardButton");
         forwardButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/fast-forward-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/fast-forward-selected.png")));
         gridButtonPanel.add(forwardButton, "w 45!, h 45!");
 
         // Go back button
@@ -669,10 +678,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         goBackButton.setFocusPainted(false);
         goBackButton.setName("goBackButton");
         goBackButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/go-back-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/go-back-selected.png")));
         gridButtonPanel.add(goBackButton, "w 45!, h 45!");
 
         // Go back text field
@@ -684,14 +693,14 @@ public final class DataControllerV extends OpenSHAPADialog implements
         // Shuttle back button
         shuttleBackButton.setAction(actionMap.get("shuttleBackAction"));
         shuttleBackButton
-                .setIcon(resourceMap.getIcon("shuttleBackButton.icon"));
+        .setIcon(resourceMap.getIcon("shuttleBackButton.icon"));
         shuttleBackButton.setFocusPainted(false);
         shuttleBackButton.setName("shuttleBackButton");
         shuttleBackButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/shuttle-backward-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/shuttle-backward-selected.png")));
         gridButtonPanel.add(shuttleBackButton, "w 45!, h 45!");
 
         // Stop button
@@ -710,10 +719,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         shuttleForwardButton.setFocusPainted(false);
         shuttleForwardButton.setName("shuttleForwardButton");
         shuttleForwardButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/shuttle-forward-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/shuttle-forward-selected.png")));
         gridButtonPanel.add(shuttleForwardButton, "w 45!, h 45!");
 
         // Find button
@@ -737,10 +746,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         jogBackButton.setFocusPainted(false);
         jogBackButton.setName("jogBackButton");
         jogBackButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/jog-backward-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/jog-backward-selected.png")));
         gridButtonPanel.add(jogBackButton, "w 45!, h 45!");
 
         // Pause button
@@ -759,7 +768,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         jogForwardButton.setName("jogForwardButton");
         jogForwardButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
                 .getResource(
-                        "/icons/DataController/eng/jog-forward-selected.png")));
+                "/icons/DataController/eng/jog-forward-selected.png")));
         gridButtonPanel.add(jogForwardButton, "w 45!, h 45!");
 
         // Create new cell button
@@ -769,13 +778,13 @@ public final class DataControllerV extends OpenSHAPADialog implements
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setFocusPainted(false);
         createNewCell
-                .setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        .setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setName("createNewCellButton");
         createNewCell
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/create-new-cell-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/create-new-cell-selected.png")));
         gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 92!");
 
         // Find offset field
@@ -795,10 +804,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
         createNewCellSettingOffset.setFocusPainted(false);
         createNewCellSettingOffset.setName("newCellAndOnsetButton");
         createNewCellSettingOffset
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/create-new-cell-and-set-onset-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                    "/icons/DataController/eng/"
+                    + "create-new-cell-and-set-onset-selected.png")));
         gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 92!, h 45!");
 
         // Set new cell offset button
@@ -808,10 +818,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         setNewCellOffsetButton.setFocusPainted(false);
         setNewCellOffsetButton.setName("newCellOffsetButton");
         setNewCellOffsetButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/set-new-cell-offset-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/set-new-cell-offset-selected.png")));
         gridButtonPanel.add(setNewCellOffsetButton, "w 45!, h 45!");
 
         // Show tracks button
@@ -819,7 +829,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
                 .getIcon("showTracksButton.show.icon"));
         showTracksButton.setName("showTracksButton");
         showTracksButton.getAccessibleContext()
-                .setAccessibleName("Show Tracks");
+        .setAccessibleName("Show Tracks");
         showTracksButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent evt) {
                 showTracksButtonActionPerformed(evt);
@@ -872,12 +882,14 @@ public final class DataControllerV extends OpenSHAPADialog implements
         showTracksButton = new javax.swing.JButton();
         tracksPanel = new javax.swing.JPanel();
 
+        final int fontSize = 11;
+
         setLayout(new MigLayout("hidemode 3"));
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap =
-                org.jdesktop.application.Application.getInstance(
-                        org.openshapa.OpenSHAPA.class).getContext()
-                        .getResourceMap(DataControllerV.class);
+            org.jdesktop.application.Application.getInstance(
+                    org.openshapa.OpenSHAPA.class).getContext()
+                    .getResourceMap(DataControllerV.class);
         setTitle(resourceMap.getString("title"));
         setName("");
         setResizable(false);
@@ -893,7 +905,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         // Add data button
         addDataButton.setText(resourceMap.getString("addDataButton.text"));
-        addDataButton.setFont(new Font("Tahoma", Font.PLAIN, 11));
+        addDataButton.setFont(new Font("Tahoma", Font.PLAIN, fontSize));
         addDataButton.setFocusPainted(false);
         addDataButton.setName("addDataButton");
         addDataButton.addActionListener(new ActionListener() {
@@ -905,11 +917,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         // Timestamp panel
         JPanel timestampPanel =
-                new JPanel(new MigLayout("", "push[][][]0![]push"));
+            new JPanel(new MigLayout("", "push[][][]0![]push"));
         timestampPanel.setOpaque(false);
 
         // Timestamp label
-        timestampLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+        timestampLabel.setFont(new Font("Tahoma", Font.BOLD, fontSize));
         timestampLabel.setHorizontalAlignment(SwingConstants.CENTER);
         timestampLabel.setText("00:00:00:000");
         timestampLabel.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -919,14 +931,14 @@ public final class DataControllerV extends OpenSHAPADialog implements
         jLabel1.setText("@");
         timestampPanel.add(jLabel1);
 
-        lblSpeed.setFont(new Font("Tahoma", Font.BOLD, 11));
+        lblSpeed.setFont(new Font("Tahoma", Font.BOLD, fontSize));
         lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1,
                 2));
         lblSpeed.setName("lblSpeed");
         lblSpeed.setText("0");
         timestampPanel.add(lblSpeed);
 
-        jLabel2.setFont(new Font("Tahoma", Font.BOLD, 11));
+        jLabel2.setFont(new Font("Tahoma", Font.BOLD, fontSize));
         jLabel2.setText("x");
         timestampPanel.add(jLabel2);
 
@@ -942,19 +954,19 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
         // Set cell onset button
         javax.swing.ActionMap actionMap =
-                org.jdesktop.application.Application.getInstance(
-                        org.openshapa.OpenSHAPA.class).getContext()
-                        .getActionMap(DataControllerV.class, this);
+            org.jdesktop.application.Application.getInstance(
+                    org.openshapa.OpenSHAPA.class).getContext()
+                    .getActionMap(DataControllerV.class, this);
         setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction"));
         setCellOnsetButton.setIcon(resourceMap
                 .getIcon("setCellOnsetButton.icon"));
         setCellOnsetButton.setFocusPainted(false);
         setCellOnsetButton.setName("setCellOnsetButton");
         setCellOnsetButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/set-cell-onset-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/set-cell-onset-selected.png")));
         gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
 
         // Set cell offset button
@@ -964,10 +976,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         setCellOffsetButton.setFocusPainted(false);
         setCellOffsetButton.setName("setCellOffsetButton");
         setCellOffsetButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/set-cell-offset-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/set-cell-offset-selected.png")));
         gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
 
         // Go back button
@@ -976,10 +988,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         goBackButton.setFocusPainted(false);
         goBackButton.setName("goBackButton");
         goBackButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/go-back-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/go-back-selected.png")));
         gridButtonPanel.add(goBackButton, "w 45!, h 45!");
 
         // Sync video button
@@ -1012,20 +1024,20 @@ public final class DataControllerV extends OpenSHAPADialog implements
         forwardButton.setFocusPainted(false);
         forwardButton.setName("forwardButton");
         forwardButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/fast-forward-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/fast-forward-selected.png")));
         gridButtonPanel.add(forwardButton, "w 45!, h 45!");
 
         // Find button
         findButton.setAction(actionMap.get("findAction"));
         findButton.setIcon(new ImageIcon(getClass().getResource(
-                "/icons/DataController/eng/find-win.png")));
+        "/icons/DataController/eng/find-win.png")));
         findButton.setFocusPainted(false);
         findButton.setName("findButton");
         findButton.setPressedIcon(new ImageIcon(getClass().getResource(
-                "/icons/DataController/eng/find-win-selected.png")));
+        "/icons/DataController/eng/find-win-selected.png")));
         gridButtonPanel.add(findButton, "span 1 2, w 45!, h 95!");
 
         // Go back text field
@@ -1037,14 +1049,14 @@ public final class DataControllerV extends OpenSHAPADialog implements
         // Shuttle back button
         shuttleBackButton.setAction(actionMap.get("shuttleBackAction"));
         shuttleBackButton
-                .setIcon(resourceMap.getIcon("shuttleBackButton.icon"));
+        .setIcon(resourceMap.getIcon("shuttleBackButton.icon"));
         shuttleBackButton.setFocusPainted(false);
         shuttleBackButton.setName("shuttleBackButton");
         shuttleBackButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/shuttle-backward-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/shuttle-backward-selected.png")));
         gridButtonPanel.add(shuttleBackButton, "w 45!, h 45!");
 
         // Stop button
@@ -1063,10 +1075,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         shuttleForwardButton.setFocusPainted(false);
         shuttleForwardButton.setName("shuttleForwardButton");
         shuttleForwardButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/shuttle-forward-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/shuttle-forward-selected.png")));
         gridButtonPanel.add(shuttleForwardButton, "w 45!, h 45!");
 
         // Find text field
@@ -1081,10 +1093,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         jogBackButton.setFocusPainted(false);
         jogBackButton.setName("jogBackButton");
         jogBackButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/jog-backward-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/jog-backward-selected.png")));
         gridButtonPanel.add(jogBackButton, "w 45!, h 45!");
 
         // Pause button
@@ -1103,7 +1115,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         jogForwardButton.setName("jogForwardButton");
         jogForwardButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
                 .getResource(
-                        "/icons/DataController/eng/jog-forward-selected.png")));
+                "/icons/DataController/eng/jog-forward-selected.png")));
         gridButtonPanel.add(jogForwardButton, "w 45!, h 45!");
 
         // Create new cell button
@@ -1113,13 +1125,13 @@ public final class DataControllerV extends OpenSHAPADialog implements
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setFocusPainted(false);
         createNewCell
-                .setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        .setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         createNewCell.setName("createNewCellButton");
         createNewCell
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/create-new-cell-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/create-new-cell-selected.png")));
         gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 95!");
 
         // Find offset field
@@ -1139,10 +1151,11 @@ public final class DataControllerV extends OpenSHAPADialog implements
         createNewCellSettingOffset.setFocusPainted(false);
         createNewCellSettingOffset.setName("newCellAndOnsetButton");
         createNewCellSettingOffset
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/create-new-cell-and-set-onset-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                        "/icons/DataController/eng/"
+                        + "create-new-cell-and-set-onset-selected.png")));
         gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 95!, h 45!");
 
         // Set new cell offset button
@@ -1152,10 +1165,10 @@ public final class DataControllerV extends OpenSHAPADialog implements
         setNewCellOffsetButton.setFocusPainted(false);
         setNewCellOffsetButton.setName("newCellOffsetButton");
         setNewCellOffsetButton
-                .setPressedIcon(new javax.swing.ImageIcon(
-                        getClass()
-                                .getResource(
-                                        "/icons/DataController/eng/set-new-cell-offset-selected.png")));
+        .setPressedIcon(new javax.swing.ImageIcon(
+                getClass()
+                .getResource(
+                "/icons/DataController/eng/set-new-cell-offset-selected.png")));
         gridButtonPanel.add(setNewCellOffsetButton, "w 45!, h 45!");
 
         // Show tracks button
@@ -1163,7 +1176,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
                 .getIcon("showTracksButton.show.icon"));
         showTracksButton.setName("showTracksButton");
         showTracksButton.getAccessibleContext()
-                .setAccessibleName("Show Tracks");
+        .setAccessibleName("Show Tracks");
         showTracksButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent evt) {
                 showTracksButtonActionPerformed(evt);
@@ -1182,7 +1195,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Action to invoke when the user closes the data controller.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
@@ -1192,7 +1205,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Action to invoke when the user clicks on the open button.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
@@ -1212,7 +1225,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Action to invoke when the user clicks the show tracks button.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
@@ -1221,8 +1234,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
         assert (evt.getSource() instanceof JButton);
         JButton button = (JButton) evt.getSource();
         ResourceMap resourceMap =
-                Application.getInstance(org.openshapa.OpenSHAPA.class)
-                        .getContext().getResourceMap(DataControllerV.class);
+            Application.getInstance(org.openshapa.OpenSHAPA.class)
+            .getContext().getResourceMap(DataControllerV.class);
         if (tracksPanelEnabled) {
             // Panel is being displayed, hide it
             button.setIcon(resourceMap.getIcon("showTracksButton.show.icon"));
@@ -1236,7 +1249,9 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Adds a data viewer to this data controller.
-     * 
+     *
+     * @param icon
+     *            The icon associated with the data viewer.
      * @param viewer
      *            The new viewer that we are adding to the data controller.
      * @param f
@@ -1246,7 +1261,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
             final File f) {
         addViewer(viewer, 0);
 
-        addDataViewerToProject(viewer.getClass().getName(), f.getAbsolutePath());
+        addDataViewerToProject(viewer.getClass().getName(),
+                f.getAbsolutePath());
 
         // Add the file to the tracks information panel
         addTrack(icon, f.getAbsolutePath(), f.getName(), viewer.getDuration(),
@@ -1254,8 +1270,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
     }
 
     /**
-     * Returns set of dataviewers
-     * 
+     * Returns set of dataviewers.
+     *
      * @return set of dataviewers.
      */
     public Set<DataViewer> getDataViewers() {
@@ -1264,7 +1280,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Adds a track to the tracks panel.
-     * 
+     *
      * @param icon
      *            Icon associated with the track
      * @param mediaPath
@@ -1275,6 +1291,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
      *            The duration of the data feed in milliseconds.
      * @param offset
      *            The time offset of the data feed in milliseconds.
+     * @param bookmark
+     *            The snap bookmark in milliseconds.
      */
     public void addTrack(final ImageIcon icon, final String mediaPath,
             final String name, final long duration, final long offset,
@@ -1285,7 +1303,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Add the data viewer to the current project.
-     * 
+     *
      * @param pluginName
      *            Fully qualified plugin class name.
      * @param filePath
@@ -1297,6 +1315,12 @@ public final class DataControllerV extends OpenSHAPADialog implements
         OpenSHAPA.getApplication().updateTitle();
     }
 
+    /**
+     * Add a viewer to the data controller with the given offset.
+     *
+     * @param viewer The data viewer to add.
+     * @param offset The offset value in milliseconds.
+     */
     public void addViewer(final DataViewer viewer, final long offset) {
         // Add the QTDataViewer to the list of viewers we are controlling.
         viewers.add(viewer);
@@ -1350,8 +1374,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Handler for a TracksControllerEvent.
-     * 
-     * @param e
+     *
+     * @param e event
      */
     public void tracksControllerChanged(final TracksControllerEvent e) {
         switch (e.getTracksEvent()) {
@@ -1372,7 +1396,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
     /**
      * Handles a NeedleEvent (when the timing needle changes due to user
      * interaction).
-     * 
+     *
      * @param e
      *            The Needle event that triggered this action.
      */
@@ -1393,7 +1417,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
     /**
      * Handles a MarkerEvent (when one of the region marker changes due to user
      * interaction).
-     * 
+     *
      * @param e
      *            The Marker Event that triggered this action.
      */
@@ -1441,7 +1465,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
     /**
      * Handles a CarriageEvent (when the carriage moves due to user
      * interaction).
-     * 
+     *
      * @param e
      *            The carriage event that triggered this action.
      */
@@ -1499,7 +1523,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
             clock.setTime(tracksTime);
             clockStep(tracksTime);
             break;
-        case BOOKMARK_CHANGED: {
+        case BOOKMARK_CHANGED:
             // Look through our data viewers and update the bookmark
             Iterator<DataViewer> viewerIterator = viewers.iterator();
             while (viewerIterator.hasNext()) {
@@ -1511,12 +1535,12 @@ public final class DataControllerV extends OpenSHAPADialog implements
                     OpenSHAPA.getApplication().updateTitle();
                 }
             }
-        }
-        case BOOKMARK_SAVE: {
+            break;
+        case BOOKMARK_SAVE:
             // Look through our data viewers and update the bookmark
-            Iterator<DataViewer> viewerIterator = viewers.iterator();
-            while (viewerIterator.hasNext()) {
-                DataViewer dv = viewerIterator.next();
+            Iterator<DataViewer> saveIterator = viewers.iterator();
+            while (saveIterator.hasNext()) {
+                DataViewer dv = saveIterator.next();
                 File feed = dv.getDataFeed();
 
                 if (feed.getAbsolutePath().equals(e.getTrackId())) {
@@ -1524,11 +1548,13 @@ public final class DataControllerV extends OpenSHAPADialog implements
                     OpenSHAPA.getApplication().updateTitle();
                 }
             }
-        }
+        default:
+            logger.error("Unknown event");
+            break;
         }
     }
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Simulated clicks (for numpad calls)
     //
 
@@ -1684,13 +1710,14 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Action to invoke when the user clicks on the shuttle forward button.
-     * 
+     *
      * @todo proper behaviour for reversing shuttle direction?
      */
     @Action
     public void shuttleForwardAction() {
         if (clock.getTime() <= 0
-                && (shuttleRate != 0 || shuttleDirection != ShuttleDirection.UNDEFINED)) {
+                && (shuttleRate != 0 || shuttleDirection
+                != ShuttleDirection.UNDEFINED)) {
             shuttleRate = 0;
             pauseRate = 0;
             shuttleDirection = ShuttleDirection.UNDEFINED;
@@ -1715,7 +1742,8 @@ public final class DataControllerV extends OpenSHAPADialog implements
     @Action
     public void shuttleBackAction() {
         if (clock.getTime() <= 0
-                && (shuttleRate != 0 || shuttleDirection != ShuttleDirection.UNDEFINED)) {
+                && (shuttleRate != 0 || shuttleDirection
+                != ShuttleDirection.UNDEFINED)) {
             shuttleRate = 0;
             pauseRate = 0;
             shuttleDirection = ShuttleDirection.UNDEFINED;
@@ -1736,7 +1764,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
     /**
      * Searches the shuttle rates array for the given rate, and returns the
      * index.
-     * 
+     *
      * @param pRate
      *            The rate to search for.
      * @return The index of the rate, or -1 if not found.
@@ -1755,7 +1783,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Populates the find time in the controller.
-     * 
+     *
      * @param milliseconds
      *            The time to use when populating the find field.
      */
@@ -1765,7 +1793,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
 
     /**
      * Populates the find offset time in the controller.
-     * 
+     *
      * @param milliseconds
      *            The time to use when populating the find field.
      */
@@ -1807,9 +1835,9 @@ public final class DataControllerV extends OpenSHAPADialog implements
     public void setRegionOfInterestAction() {
         try {
             final long newWindowPlayStart =
-                    CLOCK_FORMAT.parse(findTextField.getText()).getTime();
+                CLOCK_FORMAT.parse(findTextField.getText()).getTime();
             final long newWindowPlayEnd =
-                    CLOCK_FORMAT.parse(findOffsetField.getText()).getTime();
+                CLOCK_FORMAT.parse(findOffsetField.getText()).getTime();
 
             windowPlayStart = newWindowPlayStart;
             mixerControllerV.setPlayRegionStart(newWindowPlayStart);
@@ -1962,7 +1990,7 @@ public final class DataControllerV extends OpenSHAPADialog implements
         clock.setTime(time);
     }
 
-    // --------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     //
     //
     /**
@@ -1997,37 +2025,66 @@ public final class DataControllerV extends OpenSHAPADialog implements
     public void syncVideoAction() {
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    /** */
     private javax.swing.JButton createNewCell;
+    /** */
     private javax.swing.JButton createNewCellSettingOffset;
+    /** */
     private javax.swing.JButton findButton;
+    /** */
     private javax.swing.JTextField findOffsetField;
+    /** */
     private javax.swing.JTextField findTextField;
+    /** */
     private javax.swing.JButton forwardButton;
+    /** */
     private javax.swing.JButton goBackButton;
+    /** */
     private javax.swing.JTextField goBackTextField;
+    /** */
     private javax.swing.JPanel gridButtonPanel;
+    /** */
     private javax.swing.JLabel jLabel1;
+    /** */
     private javax.swing.JLabel jLabel2;
+    /** */
     private javax.swing.JButton jogBackButton;
+    /** */
     private javax.swing.JButton jogForwardButton;
+    /** */
     private javax.swing.JLabel lblSpeed;
+    /** */
     private javax.swing.JButton addDataButton;
+    /** */
     private javax.swing.JButton pauseButton;
+    /** */
     private javax.swing.JButton playButton;
+    /** */
     private javax.swing.JButton rewindButton;
+    /** */
     private javax.swing.JButton setCellOffsetButton;
+    /** */
     private javax.swing.JButton setCellOnsetButton;
+    /** */
     private javax.swing.JButton setNewCellOffsetButton;
+    /** */
     private javax.swing.JButton showTracksButton;
+    /** */
     private javax.swing.JButton shuttleBackButton;
+    /** */
     private javax.swing.JButton shuttleForwardButton;
+    /** */
     private javax.swing.JButton stopButton;
+    /** */
     private javax.swing.JButton syncButton;
+    /** */
     private javax.swing.JButton syncCtrlButton;
+    /** */
     private javax.swing.JButton syncVideoButton;
+    /** */
     private javax.swing.JLabel timestampLabel;
+    /** */
     private javax.swing.JPanel topPanel;
+    /** */
     private javax.swing.JPanel tracksPanel;
-    // End of variables declaration//GEN-END:variables
 }

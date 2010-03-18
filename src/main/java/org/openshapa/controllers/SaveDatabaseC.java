@@ -116,7 +116,6 @@ public final class SaveDatabaseC {
                     dbName = outFile.getName();
                 }
                 OpenSHAPA.getProjectController().getDB().setName(dbName);
-                OpenSHAPA.getProjectController().getDB().setSourceFile(outFile);
 
                 // Update the name of the window to include the name we just
                 // set in the database.
