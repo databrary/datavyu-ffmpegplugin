@@ -1,5 +1,7 @@
 package org.openshapa.util;
 
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
@@ -168,5 +170,13 @@ public class UIUtils {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss:SSS");
         sdf.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
         return sdf.format(milliseconds);
+    }
+
+     /**
+     * @param r rectange to find centre of
+     * @return point at centre of rectange.
+     */
+    public static Point centerOf(final Rectangle r) {
+        return new Point(r.x + r.width / 2, r.y + r.height / 2);
     }
 }

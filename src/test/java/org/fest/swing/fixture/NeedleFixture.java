@@ -82,7 +82,7 @@ public class NeedleFixture extends ComponentFixture {
         int xPos =
                 needleMarker.xpoints[2]
                         + ((NeedlePainter) target).getLocationOnScreen().x;
-
+        // Find middle y position
         int yPos =
                 (Math.max(Math.max(needleMarker.ypoints[0],
                         needleMarker.ypoints[1]), needleMarker.ypoints[2]) / 2)
