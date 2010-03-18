@@ -102,7 +102,8 @@ public final class OpenDatabaseC {
                     String dbName = sourceFile.getName();
                     dbName = dbName.substring(0, dbName.lastIndexOf('.'));
                     db.setName(dbName);
-                    db.setSourceFile(sourceFile);
+                    OpenSHAPA.getProjectController()
+                             .setDatabaseFileName(sourceFile.getName());
                 }
 
                 // Calling this will erase the "modified" variable and update
