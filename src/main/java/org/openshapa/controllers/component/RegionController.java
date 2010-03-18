@@ -57,7 +57,7 @@ public class RegionController {
      * @param end
      *            end of the playback region in milliseconds
      */
-    public void setPlaybackRegion(long start, long end) {
+    public void setPlaybackRegion(final long start, final long end) {
         regionModel.setRegionStart(start);
         regionModel.setRegionEnd(end);
         view.setRegionModel(regionModel);
@@ -68,7 +68,7 @@ public class RegionController {
      * 
      * @param start
      */
-    public void setPlaybackRegionStart(long start) {
+    public void setPlaybackRegionStart(final long start) {
         regionModel.setRegionStart(start);
         view.setRegionModel(regionModel);
     }
@@ -78,7 +78,7 @@ public class RegionController {
      * 
      * @param end
      */
-    public void setPlaybackRegionEnd(long end) {
+    public void setPlaybackRegionEnd(final long end) {
         regionModel.setRegionEnd(end);
         view.setRegionModel(regionModel);
     }
@@ -95,10 +95,10 @@ public class RegionController {
      */
     public ViewableModel getViewableModel() {
         // return a clone to avoid model tainting
-        return (ViewableModel) viewableModel.clone();
+        return viewableModel.clone();
     }
 
-     /**
+    /**
      * @return returns a clone of the region model
      */
     public RegionModel getRegionModel() {
@@ -111,7 +111,7 @@ public class RegionController {
      * 
      * @param viewableModel
      */
-    public void setViewableModel(ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel viewableModel) {
         /*
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
@@ -130,7 +130,8 @@ public class RegionController {
      * 
      * @param listener
      */
-    public synchronized void addMarkerEventListener(MarkerEventListener listener) {
+    public synchronized void addMarkerEventListener(
+            final MarkerEventListener listener) {
         listenerList.add(MarkerEventListener.class, listener);
     }
 
@@ -140,7 +141,7 @@ public class RegionController {
      * @param listener
      */
     public synchronized void removeMarkerEventListener(
-            MarkerEventListener listener) {
+            final MarkerEventListener listener) {
         listenerList.remove(MarkerEventListener.class, listener);
     }
 
@@ -150,7 +151,8 @@ public class RegionController {
      * @param marker
      * @param time
      */
-    private synchronized void fireMarkerEvent(Marker marker, long time) {
+    private synchronized void fireMarkerEvent(final Marker marker,
+            final long time) {
         MarkerEvent e = new MarkerEvent(this, marker, time);
         Object[] listeners = listenerList.getListenerList();
         /*
@@ -181,7 +183,7 @@ public class RegionController {
         }
 
         @Override
-        public void mouseEntered(MouseEvent e) {
+        public void mouseEntered(final MouseEvent e) {
             JComponent source = (JComponent) e.getSource();
             final Polygon startMarker = view.getStartMarkerPolygon();
             final Polygon endMarker = view.getEndMarkerPolygon();
@@ -195,12 +197,12 @@ public class RegionController {
         }
 
         @Override
-        public void mouseMoved(MouseEvent e) {
+        public void mouseMoved(final MouseEvent e) {
             mouseEntered(e);
         }
 
         @Override
-        public void mousePressed(MouseEvent e) {
+        public void mousePressed(final MouseEvent e) {
             Component source = (Component) e.getSource();
             final Polygon startMarker = view.getStartMarkerPolygon();
             final Polygon endMarker = view.getEndMarkerPolygon();
@@ -219,7 +221,7 @@ public class RegionController {
         }
 
         @Override
-        public void mouseDragged(MouseEvent e) {
+        public void mouseDragged(final MouseEvent e) {
             if (onStartMarker) {
                 int x = e.getX();
                 // Bound the x values
@@ -242,14 +244,6 @@ public class RegionController {
                 if (newTime < 0) {
                     newTime = 0;
                 }
-                // Make sure the marker doesn't get dragged out of view
-                if (newTime > viewableModel.getZoomWindowEnd()) {
-                    newTime = viewableModel.getZoomWindowEnd();
-                }
-                // Make sure the marker doesn't get dragged past the end marker
-                if (newTime > regionModel.getRegionEnd()) {
-                    newTime = regionModel.getRegionEnd();
-                }
                 fireMarkerEvent(Marker.START_MARKER, Math.round(newTime));
             } else if (onEndMarker) {
                 int x = e.getX();
@@ -270,21 +264,12 @@ public class RegionController {
                                 .getZoomWindowStart()
                                 * ratio)
                                 / ratio;
-                // Make sure the marker doesn't get dragged before the start
-                // marker
-                if (newTime < regionModel.getRegionStart()) {
-                    newTime = regionModel.getRegionStart();
-                }
-                // Make sure the marker doesn't get dragged out of view
-                if (newTime > viewableModel.getZoomWindowEnd()) {
-                    newTime = viewableModel.getZoomWindowEnd();
-                }
                 fireMarkerEvent(Marker.END_MARKER, Math.round(newTime));
             }
         }
 
         @Override
-        public void mouseReleased(MouseEvent e) {
+        public void mouseReleased(final MouseEvent e) {
             onStartMarker = false;
             onEndMarker = false;
             JComponent source = (JComponent) e.getSource();

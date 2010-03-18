@@ -2,10 +2,12 @@ package org.fest.swing.fixture;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.Polygon;
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
 import org.openshapa.controllers.component.RegionController;
 import org.openshapa.util.UIUtils;
+import org.openshapa.views.component.NeedlePainter;
 import org.openshapa.views.component.RegionPainter;
 
 /**
@@ -65,8 +67,8 @@ public class RegionFixture extends ComponentFixture {
         robot.pressMouse(getPointInStartMarker(), MouseButton.LEFT_BUTTON);
 
         //Move mouse to new position
-        Point to = new Point(getPointInStartMarker().x,
-                getPointInStartMarker().y + pixels);
+        Point to = new Point(getPointInStartMarker().x + pixels,
+                getPointInStartMarker().y);
         robot.moveMouse(to);
 
         //Release mouse
@@ -74,14 +76,28 @@ public class RegionFixture extends ComponentFixture {
     }
 
     public Point getPointInStartMarker() {
-        int numOfPointsInPolygon = ((RegionPainter)target)
-                .getStartMarkerPolygon().npoints;
-        Point startMarker = new Point(
-                ((RegionPainter)target).getStartMarkerPolygon()
-                .xpoints[numOfPointsInPolygon / 2],
-                ((RegionPainter)target).getStartMarkerPolygon()
-                .ypoints[numOfPointsInPolygon / 2]);
-        return startMarker;
+        /*
+         * The start marker is a trapezoid, where the first point is the top
+         * left, and all other points go around clockwise.
+         */
+        Polygon startMarker = ((RegionPainter)target).getStartMarkerPolygon();
+
+        Point locationOfPolygon = startMarker.getBounds().getLocation();
+
+        // Find middle x position
+        int xPos =
+                (startMarker.xpoints[1] - startMarker.xpoints[0]) / 2
+                        + locationOfPolygon.x
+                        + ((RegionPainter) target).getLocationOnScreen().x;
+        // Find middle y position
+        int yPos =
+                (startMarker.ypoints[3] - startMarker.ypoints[0]) / 2
+                        + locationOfPolygon.y
+                        + ((RegionPainter) target).getLocationOnScreen().y;
+
+        Point centrePoint = new Point(xPos, yPos);
+
+        return centrePoint;
     }
 
     public void dragEndMarker(int pixels) {
@@ -89,23 +105,39 @@ public class RegionFixture extends ComponentFixture {
         robot.pressMouse(getPointInEndMarker(), MouseButton.LEFT_BUTTON);
 
         //Move mouse to new position
-        Point to = new Point(getPointInEndMarker().x,
-                getPointInEndMarker().y + pixels);
+        Point to = new Point(getPointInEndMarker().x + pixels,
+                getPointInEndMarker().y);
         robot.moveMouse(to);
 
         //Release mouse
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
+    /**
+     * @return
+     */
     public Point getPointInEndMarker() {
-        int numOfPointsInPolygon = ((RegionPainter)target)
-                .getEndMarkerPolygon().npoints;
-        Point endMarker = new Point(
-                ((RegionPainter)target).getEndMarkerPolygon()
-                .xpoints[numOfPointsInPolygon / 2],
-                ((RegionPainter)target).getEndMarkerPolygon()
-                .ypoints[numOfPointsInPolygon / 2]);
-        return endMarker;
-    }
+        /*
+         * The start marker is a trapezoid, where the first point is the top
+         * left, and all other points go around clockwise.
+         */
+        Polygon endMarker = ((RegionPainter)target).getEndMarkerPolygon();
 
+        Point locationOfPolygon = endMarker.getBounds().getLocation();
+
+         // Find middle x position
+        int xPos =
+                (endMarker.xpoints[1] - endMarker.xpoints[0]) / 2
+                        + locationOfPolygon.x
+                         + ((RegionPainter) target).getLocationOnScreen().x;
+        // Find middle y position
+        int yPos =
+                (endMarker.ypoints[2] - endMarker.ypoints[1]) / 2
+                        + locationOfPolygon.y
+                        + ((RegionPainter) target).getLocationOnScreen().y;
+
+        Point centrePoint = new Point(xPos, yPos);
+
+        return centrePoint;
+    }
 }

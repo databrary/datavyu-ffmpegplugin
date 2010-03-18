@@ -2,7 +2,6 @@ package org.fest.swing.fixture;
 
 import java.awt.Component;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.image.ImageObserver;
 
@@ -11,6 +10,7 @@ import javax.swing.text.BadLocationException;
 import org.fest.swing.core.MouseButton;
 
 import org.fest.swing.core.Robot;
+import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
@@ -78,25 +78,25 @@ public class SpreadsheetCellFixture extends JPanelFixture {
         switch (component) {
         case VALUE:
             charPoint =
-                    centerOf(((SpreadsheetCell) target).getDataView()
+                    UIUtils.centerOf(((SpreadsheetCell) target).getDataView()
                             .modelToView(charPos));
             c = ((SpreadsheetCell) target).getDataView();
             break;
         case ONSET:
             charPoint =
-                    centerOf(((SpreadsheetCell) target).getOnset().modelToView(
+                    UIUtils.centerOf(((SpreadsheetCell) target).getOnset().modelToView(
                             charPos));
             c = ((SpreadsheetCell) target).getOnset();
             break;
         case OFFSET:
             charPoint =
-                    centerOf(((SpreadsheetCell) target).getOffset()
+                    UIUtils.centerOf(((SpreadsheetCell) target).getOffset()
                             .modelToView(charPos));
             c = ((SpreadsheetCell) target).getOffset();
             break;
         default:
             charPoint =
-                    centerOf(((SpreadsheetCell) target).getDataView()
+                    UIUtils.centerOf(((SpreadsheetCell) target).getDataView()
                             .modelToView(charPos));
             c = ((SpreadsheetCell) target).getDataView();
             break;
@@ -137,44 +137,36 @@ public class SpreadsheetCellFixture extends JPanelFixture {
                 MatrixRootView.class));
     }
 
-    /**
-     * @param r rectange to find centre of
-     * @return point at centre of rectange.
-     */
-    private Point centerOf(final Rectangle r) {
-        return new Point(r.x + r.width / 2, r.y + r.height / 2);
-    }
-
     public void select(final int component, int startPos, int endPos)
             throws BadLocationException {
         Point startPoint, endPoint;
         Component c;
         switch (component) {
         case VALUE:
-            startPoint = centerOf(((SpreadsheetCell) target).getDataView()
-                    .modelToView(startPos));
-            endPoint = centerOf(((SpreadsheetCell) target).getDataView()
+            startPoint = UIUtils.centerOf(((SpreadsheetCell) target)
+                    .getDataView().modelToView(startPos));
+            endPoint = UIUtils.centerOf(((SpreadsheetCell) target).getDataView()
                     .modelToView(endPos));
             c = ((SpreadsheetCell) target).getDataView();
             break;
         case ONSET:
-            startPoint = centerOf(((SpreadsheetCell) target).getOnset()
+            startPoint = UIUtils.centerOf(((SpreadsheetCell) target).getOnset()
                     .modelToView(startPos));
-            endPoint = centerOf(((SpreadsheetCell) target).getOnset()
+            endPoint = UIUtils.centerOf(((SpreadsheetCell) target).getOnset()
                     .modelToView(endPos));
             c = ((SpreadsheetCell) target).getOnset();
             break;
         case OFFSET:
-            startPoint = centerOf(((SpreadsheetCell) target).getOffset()
+            startPoint = UIUtils.centerOf(((SpreadsheetCell) target).getOffset()
                     .modelToView(startPos));
-            endPoint = centerOf(((SpreadsheetCell) target).getOffset()
+            endPoint = UIUtils.centerOf(((SpreadsheetCell) target).getOffset()
                     .modelToView(endPos));
             c = ((SpreadsheetCell) target).getOffset();
             break;
         default:
-            startPoint = centerOf(((SpreadsheetCell) target).getDataView()
-                    .modelToView(startPos));
-            endPoint = centerOf(((SpreadsheetCell) target).getDataView()
+            startPoint = UIUtils.centerOf(((SpreadsheetCell) target)
+                    .getDataView().modelToView(startPos));
+            endPoint = UIUtils.centerOf(((SpreadsheetCell) target).getDataView()
                     .modelToView(endPos));
             c = ((SpreadsheetCell) target).getDataView();
             break;
