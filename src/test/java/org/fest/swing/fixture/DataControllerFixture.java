@@ -211,4 +211,9 @@ public class DataControllerFixture extends DialogFixture {
     public final Set<DataViewer> getDataViewers() {
         return ((DataControllerV) target).getDataViewers();
     }
+
+    public final MixerControllerFixture getTrackMixerController() {
+        return new MixerControllerFixture(robot, 
+                ((DataControllerV) target).getMixerController());
+    }
 }

@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.SimpleTimeZone;
 
 import javax.swing.JPanel;
 
@@ -27,7 +29,7 @@ public class UIUtils {
      * Different cell variable types.
      */
     public static final String[] VAR_TYPES =
-            { "TEXT", "PREDICATE", "INTEGER", "NOMINAL", "MATRIX", "FLOAT" };
+            {"TEXT", "PREDICATE", "INTEGER", "NOMINAL", "MATRIX", "FLOAT"};
 
     /**
      * Checks if two text files are equal.
@@ -76,14 +78,14 @@ public class UIUtils {
         return ff.panel(new GenericTypeMatcher<JPanel>(JPanel.class) {
 
             @Override
-            protected boolean isMatching(JPanel panel) {
+            protected boolean isMatching(final JPanel panel) {
                 return panel.getClass().equals(SpreadsheetPanel.class);
             }
         });
     }
 
-    public static void createNewVariable(FrameFixture ff, String varName,
-            String varRadio) {
+    public static void createNewVariable(final FrameFixture ff,
+            final String varName, final String varRadio) {
         String varRadioCompName;
         if (varRadio.endsWith("TypeButton")) {
             varRadioCompName = varRadio;
@@ -115,7 +117,7 @@ public class UIUtils {
         newVariableDialog.button("okButton").click();
     }
 
-    public static void setClipboard(String str) {
+    public static void setClipboard(final String str) {
         StringSelection ss = new StringSelection(str);
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
     }
@@ -123,33 +125,33 @@ public class UIUtils {
     public static boolean equalValues(final String value1, final String value2) {
         if ((value1.startsWith("<") && value1.endsWith(">"))
                 || (value2.startsWith("<") && value2.endsWith(">"))) {
-             boolean result = value1.equalsIgnoreCase(value2);
-            
-             if (!result) {
-             System.out.println(value1 + "\n" + value2 + "\n");
-             }
+            boolean result = value1.equalsIgnoreCase(value2);
+
+            if (!result) {
+                System.out.println(value1 + "\n" + value2 + "\n");
+            }
 
             return value1.equalsIgnoreCase(value2);
         } else {
             try {
                 // Handle doubles
-                 boolean result =
-                 FloatUtils.closeEnough(Double.parseDouble(value1),
-                 Double.parseDouble(value2));
-                
-                 if (!result) {
-                 System.out.println(value1 + "\n" + value2 + "\n");
-                 }
+                boolean result =
+                        FloatUtils.closeEnough(Double.parseDouble(value1),
+                                Double.parseDouble(value2));
+
+                if (!result) {
+                    System.out.println(value1 + "\n" + value2 + "\n");
+                }
 
                 return FloatUtils.closeEnough(Double.parseDouble(value1),
                         Double.parseDouble(value2));
             } catch (NumberFormatException nfe) {
                 // Handle other variable types
-                 boolean result = value1.equalsIgnoreCase(value2);
-                
-                 if (!result) {
-                 System.out.println(value1 + "\n" + value2 + "\n");
-                 }
+                boolean result = value1.equalsIgnoreCase(value2);
+
+                if (!result) {
+                    System.out.println(value1 + "\n" + value2 + "\n");
+                }
 
                 return value1.equalsIgnoreCase(value2);
             }
@@ -159,5 +161,12 @@ public class UIUtils {
     public static String[] getArgsFromMatrix(final String values) {
         String argList = values.substring(1, values.length() - 1);
         return argList.split(", ", -1);
+    }
+
+    public static String millisecondsToTimestamp(final long milliseconds) {
+        // DateFormat is not thread safe.
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss:SSS");
+        sdf.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
+        return sdf.format(milliseconds);
     }
 }

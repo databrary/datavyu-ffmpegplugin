@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -420,6 +421,17 @@ public class TracksEditorController implements TrackMouseEventListener {
             models.add(track.trackController.getTrackModel());
         }
         return models;
+    }
+
+    /**
+     * @return All track controllers.
+     */
+    public Vector<TrackController> getAllTrackControllers() {
+        Vector<TrackController> controllers = new Vector<TrackController>();
+        for (Track track : tracks) {
+            controllers.add(track.trackController);
+        }
+        return controllers;
     }
 
     public void setMovementLock(final String mediaPath, final boolean lock) {
