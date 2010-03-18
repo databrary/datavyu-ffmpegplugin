@@ -19,6 +19,7 @@ import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.NeedleFixture;
 import org.fest.swing.fixture.RegionFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.fixture.TrackFixture;
 import org.fest.swing.util.Platform;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.UIUtils;
@@ -257,12 +258,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
         int widthOfTrack = dcf.getTrackMixerController().getTracksEditor()
                 .getTrack(0).getWidthInPixels();
-        // TEST1. Right region beyond start + needle moves with it
+        // TEST1. Right region beyond start + needle stays same
         region.dragEndMarker(-1 * widthOfTrack);
         Assert.assertEquals(region.getEndTimeAsTimeStamp(), "00:00:00:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:000");
 
-        // TEST2. Right region beyond end + need stays same
+        // TEST2. Right region beyond end + needle stays same
         region.dragEndMarker(widthOfTrack);
         Assert.assertEquals(region.getEndTimeAsTimeStamp(), "00:01:00:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:000");
@@ -292,21 +293,18 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                 endTS.toHMSFString());
 
         // TEST6. Left region can't cross (go beyond) right
-        /*BugzID:1542
         region.dragStartMarker(widthOfTrack);
         Assert.assertEquals(region.getStartTimeAsTimeStamp(),
                 endTS.toHMSFString());
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), 
                 endTS.toHMSFString());
-         */
 
-        //This will need to change when BugzID:1542
-        region.dragStartMarker(widthOfTrack / 4);
+        region.dragStartMarker(-1 * widthOfTrack / 2);
         TimeStamp startTS = null;
         try {
             startTS = new TimeStamp(region.getStartTimeAsTimeStamp());
-            Assert.assertTrue((startTS.ge(new TimeStamp("00:00:10:000")))
-                    && (startTS.le(new TimeStamp("00:00:30:000"))));
+            Assert.assertTrue((startTS.ge(new TimeStamp("00:00:00:000")))
+                    && (startTS.le(new TimeStamp("00:00:40:000"))));
         } catch (SystemErrorException ex) {
             Logger.getLogger(UITrackViewerTest.class.getName())
                     .log(Level.SEVERE, null, ex);
@@ -320,5 +318,83 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                 startTS.toHMSFString());
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
                 startTS.toHMSFString());
+    }
+
+    /**
+     * Test moving track while locked and unlocked.
+     */
+    @Test
+    public void testLockUnlockTrack() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller and get starting time
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+                "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+        final DataControllerFixture dcf =
+                new DataControllerFixture(mainFrameFixture.robot,
+                        (DataControllerV) mainFrameFixture.dialog()
+                        .component());
+
+        //3. Open track view
+        dcf.pressShowTracksButton();
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                public void executeInEDT() {
+                    OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                    fc.setVisible(false);
+                    for (FileFilter f : pm.getPluginFileFilters()) {
+                        fc.addChoosableFileFilter(f);
+                    }
+                    fc.setSelectedFile(videoFile);
+                    method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class)
+                            .in((DataControllerV) dcf.component()).invoke(fc);
+                }
+            });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        //4. Drag track
+        TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
+                .getTrack(0);
+        Assert.assertEquals(track.getOffsetTimeAsLong(), 0);
+        track.drag(150);
+        long offset = track.getOffsetTimeAsLong();
+        Assert.assertTrue(offset > 0);
+
+        //5. Lock track
+        track.pressLockButton();
+
+        //6. Try to drag track, shouldn't be able to.
+        track.drag(150);
+        Assert.assertEquals(track.getOffsetTimeAsLong(), offset);
+        track.drag(-100);
+        Assert.assertEquals(track.getOffsetTimeAsLong(), offset);
     }
 }

@@ -1,6 +1,9 @@
 package org.fest.swing.fixture;
 
+import static org.fest.reflect.core.Reflection.field;
+
 import java.awt.Point;
+import javax.swing.JComponent;
 
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
@@ -24,7 +27,8 @@ public class TrackFixture extends ComponentFixture {
      *            TracksEditorController
      */
     public TrackFixture(final Robot robot, final TrackController target) {
-        super(robot, target.getView());
+        super(robot, (JComponent) field("trackPainter")
+                .ofType(TrackPainter.class).in(target).get());
         trackC = target;
     }
 
@@ -109,17 +113,19 @@ public class TrackFixture extends ComponentFixture {
         Point topLeft = ((TrackPainter) target).getLocationOnScreen();
         Point startClick;
         if (pixels >= 0) {
-            startClick = new Point(topLeft.x + 5, topLeft.y + 5);
+            startClick = new Point(topLeft.x + 5, 
+                    (topLeft.y + ((TrackPainter) target).getHeight() / 2) + 5);
         } else {
             startClick =
                     new Point(topLeft.x + ((TrackPainter) target).getWidth()
-                            - 5, topLeft.y
-                            + ((TrackPainter) target).getHeight() - 5);
+                    - 5,
+                    (topLeft.y
+                    + ((TrackPainter) target).getHeight() / 2) - 5);
         }
         robot.pressMouse(startClick, MouseButton.LEFT_BUTTON);
 
         // Move mouse to new position
-        Point to = new Point(startClick.x, startClick.y + pixels);
+        Point to = new Point(startClick.x + pixels, startClick.y);
         robot.moveMouse(to);
 
         // Release mouse
@@ -130,7 +136,7 @@ public class TrackFixture extends ComponentFixture {
      * @return int width of track in pixels
      */
     public int getWidthInPixels() {
-        return target.getWidth();
+        return trackC.getView().getWidth();
     }
 
 }
