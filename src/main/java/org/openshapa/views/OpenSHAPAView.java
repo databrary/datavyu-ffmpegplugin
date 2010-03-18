@@ -394,14 +394,12 @@ public final class OpenSHAPAView extends FrameView {
         ProjectController projectController = OpenSHAPA.getProjectController();
 
         try {
-            MacshapaDatabase newDB = new MacshapaDatabase();
+            MacshapaDatabase newDB = new MacshapaDatabase(Constants
+                                                          .TICKS_PER_SECOND);
             projectController.setDatabase(newDB);
             OpenSHAPAView s =
                     (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
             s.showSpreadsheet();
-            // TODO- BugzID:79 This needs to move above showSpreadsheet,
-            // when setTicks is fully implemented.
-            newDB.setTicks(Constants.TICKS_PER_SECOND);
         } catch (SystemErrorException se) {
             logger.error("Unable to create new database on open", se);
         }
@@ -430,13 +428,13 @@ public final class OpenSHAPAView extends FrameView {
                                                     .getParent());
 
             try {
-                MacshapaDatabase newDB = new MacshapaDatabase();
+                MacshapaDatabase newDB = new MacshapaDatabase(Constants
+                                                            .TICKS_PER_SECOND);
                 projectController.setDatabase(newDB);
                 OpenSHAPAView s =
                         (OpenSHAPAView) OpenSHAPA.getApplication()
                                 .getMainView();
                 s.showSpreadsheet();
-                newDB.setTicks(Constants.TICKS_PER_SECOND);
             } catch (SystemErrorException ex) {
                 logger.error("Unable to create new database on open", ex);
             }

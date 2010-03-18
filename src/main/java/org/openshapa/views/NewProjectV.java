@@ -238,7 +238,8 @@ public final class NewProjectV extends OpenSHAPADialog {
                 throw new LogicErrorException(r.getString("Error.invalidName"));
             }
 
-            MacshapaDatabase database = new MacshapaDatabase();
+            MacshapaDatabase database = new MacshapaDatabase(Constants
+                                                            .TICKS_PER_SECOND);
             database.setName(getProjectName());
             database.setDescription(getProjectDescription());
 
@@ -255,10 +256,6 @@ public final class NewProjectV extends OpenSHAPADialog {
 
             dispose();
             finalize();
-
-            // TODO- BugzID:79 This needs to move above showSpreadsheet,
-            // when setTicks is fully implemented.
-            database.setTicks(Constants.TICKS_PER_SECOND);
         } catch (SystemErrorException ex) {
             logger.error("Unable to create new database", ex);
         } catch (LogicErrorException ex) {

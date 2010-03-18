@@ -421,17 +421,14 @@ public final class OpenSHAPA extends SingleFrameApplication implements
             lastScriptsExecuted = new LinkedList<File>();
 
             // Initalise DB
-            MacshapaDatabase db = new MacshapaDatabase();
+            MacshapaDatabase db = new MacshapaDatabase(Constants
+                                                       .TICKS_PER_SECOND);
             // BugzID:449 - Set default database name.
             db.setName("Database1");
             projectController.setDatabase(db);
 
             // Initialize plugin manager
             PluginManager.getInstance();
-
-            // TODO- BugzID:79 This needs to move above showSpreadsheet,
-            // when setTicks is fully implemented.
-            db.setTicks(Constants.TICKS_PER_SECOND);
 
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
