@@ -116,7 +116,7 @@ public class TrackController {
         header.setBorder(BorderFactory.createCompoundBorder(BorderFactory
                 .createMatteBorder(0, 0, 0, 1, new Color(73, 73, 73)),
                 BorderFactory.createEmptyBorder(2, 2, 2, 2)));
-
+        header.setBackground(Color.LIGHT_GRAY);
         header.add(trackLabel, "w 96!, span 3");
         header.add(iconLabel, "span 3, w 96!, h 32!");
 
