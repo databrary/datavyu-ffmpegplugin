@@ -166,7 +166,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveSHAPA1() throws Exception {
         saveTest("savedSHAPA", "shapa");
     }
@@ -177,7 +177,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveCSV1() throws Exception {
         saveTest("savedCSV", "csv");
     }
@@ -188,7 +188,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveSHAPA2() throws Exception {
         saveTest("savedSHAPA.shapa", "shapa");
     }
@@ -199,7 +199,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveCSV2() throws Exception {
         saveTest("savedCSV.csv", "csv");
     }
@@ -210,7 +210,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveSHAPA3() throws Exception {
         saveTest("savedSHAPA.csv", "shapa");
     }
@@ -221,7 +221,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveCSV3() throws Exception {
         saveTest("savedCSV.shapa", "csv");
     }

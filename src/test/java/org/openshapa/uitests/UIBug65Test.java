@@ -23,7 +23,7 @@ public final class UIBug65Test extends OpenSHAPATestClass {
     /**
      * Test that the order of columns remains the same.
      */
-    @Test
+    //@Test
     public void testColumnOrder() {
         System.err.println("testBug493");
         String root = System.getProperty("testPath");

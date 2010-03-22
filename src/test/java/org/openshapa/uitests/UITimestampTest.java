@@ -26,7 +26,7 @@ public final class UITimestampTest extends OpenSHAPATestClass {
     /**
      * Test editing the onset and offset timestamps.
      */
-    @Test
+    //@Test
     public void testTimestampEditing() {
         JTextComponentFixture onset, offset;
 
@@ -87,7 +87,7 @@ public final class UITimestampTest extends OpenSHAPATestClass {
     /**
      * Test pasting the onset and offset timestamps.
      */
-    @Test
+    //@Test
     public void testTimestampPasting() {
         JTextComponentFixture onset, offset;
 
@@ -126,7 +126,7 @@ public final class UITimestampTest extends OpenSHAPATestClass {
     /**
      * Test deleting the onset and offset timestamps.
      */
-    @Test
+    //@Test
     public void testTimestampDeletion() throws BadLocationException {
         String[] testInput =
                 { "123456789", "12:34:56:789", "127893999", "12:78:93:999" };

@@ -38,7 +38,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      /**
      * Test needle movement to ensure needle time is the same as the clock time.
      */
-    @Test
+    //@Test
     public void testNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
@@ -117,7 +117,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test needle movement to ensure needle can't go beyond start or end.
      */
-    @Test
+    //@Test
     public void testRangeOfNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet
@@ -197,7 +197,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * 6. Left region can't cross (go beyond) right
      * 7. Right region can't cross left
      */
-    @Test
+    //@Test
     public void testRegionMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Get Spreadsheet

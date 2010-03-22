@@ -16,7 +16,7 @@ import org.testng.annotations.Test;
  */
 public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
 
-    @Test
+    //@Test
     public void testCreateCellLeftRight() {
         // Left column
         createVariable("L", "TEXT");
@@ -94,7 +94,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
                 "Expecting right cell to inherit centre cell offset value.");
     }
 
-    @Test
+    //@Test
     public void testBug698() {
         // Left column
         createVariable("L", "TEXT");

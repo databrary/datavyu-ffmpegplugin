@@ -21,7 +21,7 @@ public final class UIBug652Test extends OpenSHAPATestClass {
     /**
      * Test for closing window and creating new predicate.
      */
-    @Test
+    //@Test
     public void testNewPredicateAfterClose() {
         System.err.println("testNewPredicateAfterClose");
 
@@ -72,7 +72,7 @@ public final class UIBug652Test extends OpenSHAPATestClass {
     /**
      * Test for running script, then creating predicates.
      */
-    @Test
+    //@Test
     public void testNewPredicateAfterScript() {
         System.err.println("testNewPredicateAfterScript");
 

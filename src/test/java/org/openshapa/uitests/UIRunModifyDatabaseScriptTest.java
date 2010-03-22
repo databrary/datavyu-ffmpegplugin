@@ -65,7 +65,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
      * @throws IOException
      *             if file read issues.
      */
-    @Test
+    //@Test
     public void testModifySpreadsheet() throws IOException {
         // 1. Open and run script to populate database
         String root = System.getProperty("testPath");
