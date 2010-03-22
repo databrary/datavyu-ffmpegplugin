@@ -30,8 +30,8 @@ import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.controllers.NewDatabaseC;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.controllers.NewVariableC;
-import org.openshapa.controllers.OpenDatabaseC;
-import org.openshapa.controllers.OpenProjectC;
+import org.openshapa.controllers.OpenDatabaseFileC;
+import org.openshapa.controllers.OpenProjectFileC;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.SetSheetLayoutC;
@@ -403,7 +403,7 @@ public final class OpenSHAPAView extends FrameView {
         } catch (SystemErrorException se) {
             logger.error("Unable to create new database on open", se);
         }
-        OpenDatabaseC odc = new OpenDatabaseC();
+        OpenDatabaseFileC odc = new OpenDatabaseFileC();
         odc.open(jd.getSelectedFile());
 
         String dir = jd.getSelectedFile().getAbsolutePath();
@@ -416,7 +416,7 @@ public final class OpenSHAPAView extends FrameView {
     }
 
     private void openProject(final OpenSHAPAFileChooser jd) {
-        OpenProjectC opc = new OpenProjectC();
+        OpenProjectFileC opc = new OpenProjectFileC();
         Project p = opc.open(jd.getSelectedFile());
 
         if (p != null) {
@@ -440,7 +440,7 @@ public final class OpenSHAPAView extends FrameView {
             }
 
             // Load the database
-            OpenDatabaseC odc = new OpenDatabaseC();
+            OpenDatabaseFileC odc = new OpenDatabaseFileC();
             odc.open(new File(jd.getSelectedFile().getParent(),
                               projectController.getDatabaseFileName()));
 

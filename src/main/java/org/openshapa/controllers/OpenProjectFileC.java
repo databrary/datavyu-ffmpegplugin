@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
-import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.project.OpenSHAPAProjectConstructor;
 import org.openshapa.models.project.Project;
 import org.yaml.snakeyaml.Loader;
@@ -16,10 +15,10 @@ import com.usermetrix.jclient.UserMetrix;
 /**
  * Controller for opening and loading OpenSHAPA project files that are on disk.
  */
-public final class OpenProjectC {
+public final class OpenProjectFileC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(OpenProjectC.class);
+    private UserMetrix logger = UserMetrix.getInstance(OpenProjectFileC.class);
 
     /**
      * Opens and loads a project file from disk.

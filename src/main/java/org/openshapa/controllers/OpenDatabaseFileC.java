@@ -44,10 +44,10 @@ import org.openshapa.util.Constants;
 /**
  * Controller for opening a database from disk.
  */
-public final class OpenDatabaseC {
+public final class OpenDatabaseFileC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(OpenDatabaseC.class);
+    private UserMetrix logger = UserMetrix.getInstance(OpenDatabaseFileC.class);
 
     /** The index of the ONSET timestamp in the CSV line. */
     private static final int DATA_ONSET = 0;
