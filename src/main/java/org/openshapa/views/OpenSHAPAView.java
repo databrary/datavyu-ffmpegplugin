@@ -394,65 +394,29 @@ public final class OpenSHAPAView extends FrameView {
         OpenSHAPA.newProjectController();
         ProjectController projectController = OpenSHAPA.getProjectController();
 
-        try {
-            MacshapaDatabase newDB = new MacshapaDatabase(Constants
-                                                          .TICKS_PER_SECOND);
-            projectController.setDatabase(newDB);
-            OpenSHAPAView s =
-                    (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
-            s.showSpreadsheet();
-        } catch (SystemErrorException se) {
-            logger.error("Unable to create new database on open", se);
-        }
-
-        OpenDatabaseFileC odc = new OpenDatabaseFileC();
-        odc.open(jd.getSelectedFile());
-
-        /*
+        // Set the database to the freshly loaded database.
         OpenC openC = new OpenC();
         openC.openDatabase(jd.getSelectedFile());
         projectController.setDatabase(openC.getDatabase());
-         */
 
+        // Set the project name.
         String dir = jd.getSelectedFile().getAbsolutePath();
         int match = dir.lastIndexOf(jd.getSelectedFile().getName());
         dir = dir.substring(0, match);
-
         projectController.setProjectName(projectController.getDB().getName());
-
         OpenSHAPA.getApplication().updateTitle();
     }
 
     private void openProject(final OpenSHAPAFileChooser jd) {
-        OpenProjectFileC opc = new OpenProjectFileC();
-        Project p = opc.open(jd.getSelectedFile());
+        OpenC openC = new OpenC();
+        openC.openProject(jd.getSelectedFile());
 
-        if (p != null) {
-            // Successfully loaded the project file
-            OpenSHAPA.newProjectController(p);
-            ProjectController projectController =
-                              OpenSHAPA.getProjectController();
-            projectController.setProjectDirectory(jd.getSelectedFile()
-                                                    .getParent());
-
-            try {
-                MacshapaDatabase newDB = new MacshapaDatabase(Constants
-                                                            .TICKS_PER_SECOND);
-                projectController.setDatabase(newDB);
-                OpenSHAPAView s =
-                        (OpenSHAPAView) OpenSHAPA.getApplication()
-                                .getMainView();
-                s.showSpreadsheet();
-            } catch (SystemErrorException ex) {
-                logger.error("Unable to create new database on open", ex);
-            }
-
-            // Load the database
-            OpenDatabaseFileC odc = new OpenDatabaseFileC();
-            odc.open(new File(jd.getSelectedFile().getParent(),
-                              projectController.getDatabaseFileName()));
-
-            projectController.loadProject();
+        if (openC.getProject() != null && openC.getDatabase() != null) {
+            OpenSHAPA.newProjectController(openC.getProject());
+            OpenSHAPA.getProjectController().setDatabase(openC.getDatabase());
+            OpenSHAPA.getProjectController()
+                     .setProjectDirectory(jd.getSelectedFile().getParent());
+            OpenSHAPA.getProjectController().loadProject();
         }
     }
 

@@ -40,12 +40,14 @@ public final class OpenC {
      * @param projectFile The file to use when opening a file as a project.
      */
     public void openProject(final File projectFile) {
+        // Need to handle opening zipped project files.
+
         OpenProjectFileC opc = new OpenProjectFileC();
         project = opc.open(projectFile);
 
         if (project != null) {
             OpenDatabaseFileC odc = new OpenDatabaseFileC();
-            database = odc.open(new File(project.getProjectDirectory(),
+            database = odc.open(new File(projectFile.getParent(),
                                          project.getDatabaseFileName()));
         }
     }
