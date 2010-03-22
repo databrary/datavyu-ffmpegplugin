@@ -33,6 +33,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
      */
     @Test
     public void testZoomingIn() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
@@ -159,6 +160,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
      */
     @Test
     public void testZoomingOut() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());

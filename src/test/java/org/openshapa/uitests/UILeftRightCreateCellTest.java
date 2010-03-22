@@ -18,6 +18,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
 
     @Test
     public void testCreateCellLeftRight() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // Left column
         createVariable("L", "TEXT");
         validateVariable("L", "TEXT");
@@ -96,6 +97,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
 
     @Test
     public void testBug698() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // Left column
         createVariable("L", "TEXT");
         validateVariable("L", "TEXT");

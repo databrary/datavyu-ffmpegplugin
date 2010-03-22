@@ -45,7 +45,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
      */
     @Test
     public void testAddingVariablesWithScript() {
-        System.err.println("testAddingVariablesWithScript");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
@@ -91,7 +91,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
      */
     @Test
     public void testAddingVariablesManually() {
-        System.err.println("testAddingVariablesManually");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String[] varNames = { "t", "p", "i", "n", "m", "f" };
         String[] varTypes =
                 { "text", "predicate", "integer", "nominal", "matrix", "float" };
@@ -133,7 +133,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
      */
     @Test
     public void testRemovalWithNewDatabase() {
-        System.err.println("testRemovalWithNewDatabase");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());

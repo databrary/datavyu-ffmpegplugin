@@ -22,7 +22,7 @@ public final class UIBug308Test extends OpenSHAPATestClass {
      */
     @Test
     public void testDuplicateName() {
-        System.err.println("testDuplicateName");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "v";
         String varType = UIUtils.VAR_TYPES[(int) (Math.random()
                 * UIUtils.VAR_TYPES.length)];

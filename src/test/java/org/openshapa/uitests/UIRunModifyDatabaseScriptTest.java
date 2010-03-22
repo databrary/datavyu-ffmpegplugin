@@ -67,6 +67,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
      */
     @Test
     public void testModifySpreadsheet() throws IOException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // 1. Open and run script to populate database
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/demo_data.rb");

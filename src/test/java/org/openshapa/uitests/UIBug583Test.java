@@ -26,7 +26,7 @@ public final class UIBug583Test extends OpenSHAPATestClass {
         /**
          * Different cell variable types.
          */
-        System.err.println("testBug583");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String[] floatCellValues =
                 {/* BugzID:747-"0.000000", */"0.123400", "0.246800",

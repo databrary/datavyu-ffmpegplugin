@@ -192,6 +192,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      */
     @Test
     public void testStandardSequence1() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         mainFrameFixture.clickMenuItemWithPath("Controller",
                 "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(300, 300));

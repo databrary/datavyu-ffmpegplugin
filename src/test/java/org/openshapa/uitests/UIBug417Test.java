@@ -38,7 +38,7 @@ public final class UIBug417Test extends OpenSHAPATestClass {
      */
     @Test
     public void testDuplicateName() {
-        System.err.println("testDuplicateName");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "v";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";
@@ -86,7 +86,7 @@ public final class UIBug417Test extends OpenSHAPATestClass {
      */
     @Test
     public void testReservedName() {
-        System.err.println("testReservedName");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "ge";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";
@@ -126,7 +126,7 @@ public final class UIBug417Test extends OpenSHAPATestClass {
      */
     @Test
     public void testInvalidColumnName() {
-        System.err.println("testInvalidColumnName");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "(hello)";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";

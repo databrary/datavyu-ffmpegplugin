@@ -23,7 +23,7 @@ public final class UIBug652Test extends OpenSHAPATestClass {
      */
     @Test
     public void testNewPredicateAfterClose() {
-        System.err.println("testNewPredicateAfterClose");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
 
@@ -74,7 +74,7 @@ public final class UIBug652Test extends OpenSHAPATestClass {
      */
     @Test
     public void testNewPredicateAfterScript() {
-        System.err.println("testNewPredicateAfterScript");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");

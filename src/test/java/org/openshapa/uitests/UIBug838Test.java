@@ -168,6 +168,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      */
     @Test
     public void testSaveSHAPA1() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedSHAPA", "shapa");
     }
 
@@ -179,6 +180,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      */
     @Test
     public void testSaveCSV1() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV", "csv");
     }
 
@@ -190,6 +192,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      */
     @Test
     public void testSaveSHAPA2() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedSHAPA.shapa", "shapa");
     }
 
@@ -201,6 +204,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      */
     @Test
     public void testSaveCSV2() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV.csv", "csv");
     }
 
@@ -212,6 +216,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      */
     @Test
     public void testSaveSHAPA3() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedSHAPA.csv", "shapa");
     }
 
@@ -223,6 +228,7 @@ public final class UIBug838Test extends OpenSHAPATestClass {
      */
     @Test
     public void testSaveCSV3() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV.shapa", "csv");
     }
 }

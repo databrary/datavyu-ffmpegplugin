@@ -73,7 +73,7 @@ public final class UIBug661Test extends OpenSHAPATestClass {
             return;
         }
 
-        System.err.println("testDialogLocation");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // Delete confounding files from previous test
         String root = System.getProperty("testPath");
         File location1 = new File(root + "ui/location1/location2.shapa");

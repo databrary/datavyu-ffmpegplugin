@@ -24,7 +24,7 @@ public final class UIBug497Test extends OpenSHAPATestClass {
      */
     @Test
     public void testBug497Integer() {
-        System.err.println("testBug497Integer");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "i";
         String varType = "INTEGER";
         String varRadio = varType.toLowerCase() + "TypeButton";
@@ -64,7 +64,7 @@ public final class UIBug497Test extends OpenSHAPATestClass {
      */
     @Test
     public void testBug497Float() {
-        System.err.println("testBug497Float");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "f";
         String varType = "FLOAT";
         String varRadio = varType.toLowerCase() + "TypeButton";
