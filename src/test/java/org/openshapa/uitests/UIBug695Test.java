@@ -23,9 +23,9 @@ public final class UIBug695Test extends OpenSHAPATestClass {
     /**
      * Test Bug 695.
      */
-    //@Test
+    @Test
     public void testBug695() {
-        System.err.println("testBug695");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Add matrix with vocab editor
 

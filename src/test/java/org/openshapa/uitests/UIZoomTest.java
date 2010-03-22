@@ -31,8 +31,9 @@ public final class UIZoomTest extends OpenSHAPATestClass {
     /**
      * Test zooming in and reset.
      */
-    //@Test
+    @Test
     public void testZoomingIn() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
@@ -157,8 +158,9 @@ public final class UIZoomTest extends OpenSHAPATestClass {
     /**
      * Test zooming out and reset.
      */
-    //@Test
+    @Test
     public void testZoomingOut() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
@@ -258,7 +260,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
     /**
      * Test to ensure vocab editor contents is not being zoomed.
      */
-    //@Test
+    @Test
     public void testBug635() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");

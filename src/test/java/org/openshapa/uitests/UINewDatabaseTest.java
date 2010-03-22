@@ -36,9 +36,9 @@ public final class UINewDatabaseTest extends OpenSHAPATestClass {
     /**
      * Test new spreadsheet.
      */
-    //@Test
+    @Test
     public void testNewSpreadsheet() {
-        System.err.println("testNewSpreadsheet");
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
@@ -135,7 +135,7 @@ public final class UINewDatabaseTest extends OpenSHAPATestClass {
      */
     // BugzID:938 - Expecting the new database dialog to remain open.
     // Must write test to check that this is true.
-    // //@Test
+    // @Test
     // public void testBug576() {
     // System.err.println("testBug576");
     // String root = System.getProperty("testPath");
