@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Vector;
 
-import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Column;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
@@ -89,34 +88,6 @@ public final class OpenDatabaseFileC {
             db = openAsMacSHAPADB(sourceFile);
         }
 
-        // BugzID:449 - Set filename in spreadsheet window and database if the
-        // database name is undefined.
-        try {
-            if (db != null) {
-                OpenSHAPA.getProjectController().setDatabase(db);
-                db = OpenSHAPA.getProjectController().getDB();
-                OpenSHAPA.getProjectController().setProjectDirectory(
-                        sourceFile.getParent());
-
-                if (db.getName().equals("Undefined")) {
-                    String dbName = sourceFile.getName();
-                    dbName = dbName.substring(0, dbName.lastIndexOf('.'));
-                    db.setName(dbName);
-                    OpenSHAPA.getProjectController()
-                             .setDatabaseFileName(sourceFile.getName());
-                }
-
-                // Calling this will erase the "modified" variable and update
-                // the title, not actuall save the database.
-                db.saveDatabase();
-            }
-
-        } catch (SystemErrorException se) {
-            logger.error("Can't set db name to the name of the CSV file.", se);
-        }
-
-        // Display any changes to the database.
-        OpenSHAPA.getView().showSpreadsheet();
         return db;
     }
 
@@ -148,7 +119,7 @@ public final class OpenDatabaseFileC {
         } catch (IOException e) {
             logger.error("Unable to load macshapa database:'" + sFile + "'", e);
         } catch (LogicErrorException e) {
-            OpenSHAPA.getApplication().showWarningDialog(e);
+            logger.error("Corrupted macshapa database", e);
         }
 
         // Error occured - return null.

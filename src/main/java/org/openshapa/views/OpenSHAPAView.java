@@ -298,6 +298,9 @@ public final class OpenSHAPAView extends FrameView {
                 }
             }
         }
+
+        // Display any changes to the database.
+        this.showSpreadsheet();
     }
 
     /**
@@ -395,8 +398,11 @@ public final class OpenSHAPAView extends FrameView {
         openC.openDatabase(jd.getSelectedFile());
         projController.setDatabase(openC.getDatabase());
 
-        // Set the project name.
-        projController.setProjectName(projController.getDatabaseFileName());
+        // BugzID:449 - Set filename in spreadsheet window and database if the
+        // database name is undefined.
+        projController.setProjectDirectory(jd.getSelectedFile().getParent());
+        projController.setDatabaseFileName(jd.getSelectedFile().getName());
+        projController.setProjectName(jd.getSelectedFile().getName());
         OpenSHAPA.getApplication().updateTitle();
     }
 
