@@ -53,6 +53,15 @@ public final class OpenC {
     }
 
     /**
+     * Opens a file as a OpenSHAPA project.
+     *
+     * @param projectFile the file to use when opening a file as a project.
+     */
+    public void openProject(final String projectFile) {
+        this.openProject(new File(projectFile));
+    }
+
+    /**
      * @return The instance of the macshapa database that was opened by this
      * controller, returns null if no database opened.
      */

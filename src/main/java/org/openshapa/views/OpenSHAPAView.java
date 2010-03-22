@@ -30,17 +30,13 @@ import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.controllers.NewDatabaseC;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.controllers.NewVariableC;
-import org.openshapa.controllers.OpenDatabaseFileC;
-import org.openshapa.controllers.OpenProjectFileC;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.SetSheetLayoutC;
 import org.openshapa.controllers.VocabEditorC;
 import org.openshapa.controllers.project.ProjectController;
-import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.ArrayDirection;
-import org.openshapa.util.Constants;
 import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
@@ -49,7 +45,6 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.controllers.OpenC;
-import org.openshapa.models.project.Project;
 
 /**
  * The main FrameView, representing the interface for OpenSHAPA the user will
@@ -59,7 +54,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * Constructor.
-     * 
+     *
      * @param app
      *            The SingleFrameApplication that invoked this main FrameView.
      */
@@ -71,7 +66,7 @@ public final class OpenSHAPAView extends FrameView {
         manager.addKeyEventDispatcher(new KeyEventDispatcher() {
             /**
              * Dispatches the keystroke to the correct action.
-             * 
+             *
              * @param evt
              *            The event that triggered this action.
              * @return true if the KeyboardFocusManager should take no further
@@ -390,17 +385,18 @@ public final class OpenSHAPAView extends FrameView {
     }
 
     private void openDatabase(final OpenSHAPAFileChooser jd) {
-        // Make a project for the new database.
-        OpenSHAPA.newProjectController();
-        ProjectController projectController = OpenSHAPA.getProjectController();
-
         // Set the database to the freshly loaded database.
         OpenC openC = new OpenC();
+
+        // Make a project for the new database.
+        OpenSHAPA.newProjectController();
+        ProjectController projController = OpenSHAPA.getProjectController();
+
         openC.openDatabase(jd.getSelectedFile());
-        projectController.setDatabase(openC.getDatabase());
+        projController.setDatabase(openC.getDatabase());
 
         // Set the project name.
-        projectController.setProjectName(projectController.getDatabaseFileName());
+        projController.setProjectName(projController.getDatabaseFileName());
         OpenSHAPA.getApplication().updateTitle();
     }
 
