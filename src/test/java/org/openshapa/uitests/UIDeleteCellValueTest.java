@@ -68,7 +68,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    //@Test
+    @Test
     public void testDeleteNominalCell() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String type = "NOMINAL";
@@ -82,7 +82,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
      *             on any error
      */
     // BugzID:1351
-    // //@Test
+    // @Test
     public void testDeleteFloatCell() throws Exception {
         String type = "FLOAT";
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
@@ -95,7 +95,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    //@Test
+    @Test
     public void testDeleteIntCell() throws Exception {
         String type = "INTEGER";
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
@@ -108,7 +108,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    //@Test
+    @Test
     public void testDeleteTextCell() throws Exception {
         String type = "TEXT";
 

@@ -386,7 +386,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         Assert.assertEquals(track.getOffsetTimeAsLong(), 0);
         track.drag(150);
         long offset = track.getOffsetTimeAsLong();
-        Assert.assertTrue(offset > 0);
+        Assert.assertTrue(offset > 0, "offset=" + offset);
 
         //5. Lock track
         track.pressLockButton();

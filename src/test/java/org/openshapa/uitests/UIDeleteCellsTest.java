@@ -27,7 +27,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
      * be deleted but the cell graphics for the last cell are not removed.
      * Select cells in one column, delete, repeat.
      */
-    //@Test
+    @Test
     public void testBug713() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
@@ -100,7 +100,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
     /**
      * Select one cell, delete, repeat.
      */
-    //@Test
+    @Test
     public void testDeleteSingleCells() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
@@ -173,7 +173,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
     /**
      * Select all cells, then delete.
      */
-    //@Test
+    @Test
     public void testDeleteAllCellsInSpreadsheet() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
