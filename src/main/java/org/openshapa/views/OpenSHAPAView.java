@@ -400,10 +400,7 @@ public final class OpenSHAPAView extends FrameView {
         projectController.setDatabase(openC.getDatabase());
 
         // Set the project name.
-        String dir = jd.getSelectedFile().getAbsolutePath();
-        int match = dir.lastIndexOf(jd.getSelectedFile().getName());
-        dir = dir.substring(0, match);
-        projectController.setProjectName(projectController.getDB().getName());
+        projectController.setProjectName(projectController.getDatabaseFileName());
         OpenSHAPA.getApplication().updateTitle();
     }
 
