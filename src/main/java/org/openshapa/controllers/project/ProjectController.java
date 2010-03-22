@@ -6,7 +6,6 @@ import java.util.List;
 import javax.swing.filechooser.FileFilter;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.controllers.OpenC;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.project.Project;
@@ -14,7 +13,6 @@ import org.openshapa.models.project.TrackSettings;
 import org.openshapa.models.project.ViewerSetting;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.MixerControllerV;
-import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 import org.openshapa.views.continuous.PluginManager;
@@ -86,7 +84,7 @@ public class ProjectController {
 
     /**
      * Sets the name of the project.
-     * 
+     *
      * @param newProjectName
      *            The new name to use for this project.
      */
@@ -96,7 +94,7 @@ public class ProjectController {
 
         // Set the name of the project.
         String name = newProjectName;
-        int match = name.lastIndexOf(".shapa");
+        int match = name.lastIndexOf(".");
         if (match != -1) {
             name = name.substring(0, match);
         }

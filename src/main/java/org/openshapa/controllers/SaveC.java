@@ -157,6 +157,7 @@ public final class SaveC {
         new SaveProjectC().save(directory + "/" + newProjectName,
                                 projectController.getProject());
         projectController.saveProject();
+        OpenSHAPA.getApplication().updateTitle();
     }
 
     /**

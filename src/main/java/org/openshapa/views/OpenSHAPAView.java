@@ -143,14 +143,10 @@ public final class OpenSHAPAView extends FrameView {
      * Update the title of the application.
      */
     public void updateTitle() {
-        // BugzID:449 - Update the name of the window to include the default
-        // name of the database.
-
         // Show the project name instead of database.
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap =
-                OpenSHAPA.getApplication().getContext().getResourceMap(
-                        OpenSHAPA.class);
+        ResourceMap rMap = OpenSHAPA.getApplication().getContext()
+                                    .getResourceMap(OpenSHAPA.class);
         String postFix = "";
         ProjectController projectController = OpenSHAPA.getProjectController();
 
@@ -288,19 +284,54 @@ public final class OpenSHAPAView extends FrameView {
                 FileFilter filter = jd.getFileFilter();
 
                 // Opening a project file
-                OpenSHAPA.getProjectController().setLastSaveOption(filter);
                 if (filter instanceof SHAPAFilter) {
-                    openProject(jd);
+                    openProject(jd.getSelectedFile());
 
                 // Opening a database file
                 } else {
-                    openDatabase(jd);
+                    openDatabase(jd.getSelectedFile());
                 }
+
+                // BugzID:449 - Set filename in spreadsheet window and database
+                // if the database name is undefined.
+                ProjectController pController = OpenSHAPA
+                                                .getProjectController();
+                pController.setProjectName(jd.getSelectedFile().getName());
+                pController.setLastSaveOption(filter);
+                pController.saveProject();
+                pController.getDB().saveDatabase();
+                updateTitle();
             }
         }
 
         // Display any changes to the database.
         this.showSpreadsheet();
+    }
+
+    private void openDatabase(final File databaseFile) {
+        // Set the database to the freshly loaded database.
+        OpenC openC = new OpenC();
+        openC.openDatabase(databaseFile);
+
+        // Make a project for the new database.
+        OpenSHAPA.newProjectController();
+        ProjectController projController = OpenSHAPA.getProjectController();
+
+        projController.setDatabase(openC.getDatabase());
+        projController.setProjectDirectory(databaseFile.getParent());
+        projController.setDatabaseFileName(databaseFile.getName());
+    }
+
+    private void openProject(final File projectFile) {
+        OpenC openC = new OpenC();
+        openC.openProject(projectFile);
+
+        if (openC.getProject() != null && openC.getDatabase() != null) {
+            OpenSHAPA.newProjectController(openC.getProject());
+            OpenSHAPA.getProjectController().setDatabase(openC.getDatabase());
+            OpenSHAPA.getProjectController()
+                     .setProjectDirectory(projectFile.getParent());
+        }
     }
 
     /**
@@ -385,38 +416,6 @@ public final class OpenSHAPAView extends FrameView {
     @Action
     public void deleteCells() {
         new DeleteCellC(panel.getSelectedCells());
-    }
-
-    private void openDatabase(final OpenSHAPAFileChooser jd) {
-        // Set the database to the freshly loaded database.
-        OpenC openC = new OpenC();
-
-        // Make a project for the new database.
-        OpenSHAPA.newProjectController();
-        ProjectController projController = OpenSHAPA.getProjectController();
-
-        openC.openDatabase(jd.getSelectedFile());
-        projController.setDatabase(openC.getDatabase());
-
-        // BugzID:449 - Set filename in spreadsheet window and database if the
-        // database name is undefined.
-        projController.setProjectDirectory(jd.getSelectedFile().getParent());
-        projController.setDatabaseFileName(jd.getSelectedFile().getName());
-        projController.setProjectName(jd.getSelectedFile().getName());
-        OpenSHAPA.getApplication().updateTitle();
-    }
-
-    private void openProject(final OpenSHAPAFileChooser jd) {
-        OpenC openC = new OpenC();
-        openC.openProject(jd.getSelectedFile());
-
-        if (openC.getProject() != null && openC.getDatabase() != null) {
-            OpenSHAPA.newProjectController(openC.getProject());
-            OpenSHAPA.getProjectController().setDatabase(openC.getDatabase());
-            OpenSHAPA.getProjectController()
-                     .setProjectDirectory(jd.getSelectedFile().getParent());
-            OpenSHAPA.getProjectController().loadProject();
-        }
     }
 
     /**

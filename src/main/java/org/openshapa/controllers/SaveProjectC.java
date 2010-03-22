@@ -47,8 +47,6 @@ public final class SaveProjectC {
 
             out.close();
             fileWriter.close();
-
-            OpenSHAPA.getApplication().updateTitle();
         } catch (IOException ex) {
             logger.error("Unable to save project file", ex);
         }

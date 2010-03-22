@@ -281,8 +281,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             fc.setSelectedFile(newSHAPA);
 
             method("openProject")
-                    .withParameterTypes(OpenSHAPAFileChooser.class).in(
-                            OpenSHAPA.getView()).invoke(fc);
+                    .withParameterTypes(File.class).in(
+                            OpenSHAPA.getView()).invoke(fc.getSelectedFile());
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Open...");
 
