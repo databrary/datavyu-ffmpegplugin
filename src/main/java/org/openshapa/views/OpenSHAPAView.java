@@ -48,6 +48,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.controllers.OpenC;
 import org.openshapa.models.project.Project;
 
 /**
@@ -403,8 +404,15 @@ public final class OpenSHAPAView extends FrameView {
         } catch (SystemErrorException se) {
             logger.error("Unable to create new database on open", se);
         }
+
         OpenDatabaseFileC odc = new OpenDatabaseFileC();
         odc.open(jd.getSelectedFile());
+
+        /*
+        OpenC openC = new OpenC();
+        openC.openDatabase(jd.getSelectedFile());
+        projectController.setDatabase(openC.getDatabase());
+         */
 
         String dir = jd.getSelectedFile().getAbsolutePath();
         int match = dir.lastIndexOf(jd.getSelectedFile().getName());
