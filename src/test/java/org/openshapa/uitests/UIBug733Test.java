@@ -33,7 +33,7 @@ public final class UIBug733Test extends OpenSHAPATestClass {
     /**
      * Test Bug 733.
      */
-    @Test
+    //@Test
     public void testBug733() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 

@@ -331,7 +331,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testLoadingSHAPA1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         loadTest("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
@@ -343,7 +343,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testLoadingSHAPA2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         loadTest("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
@@ -355,7 +355,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveAsSHAPA1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedSHAPA", "shapa");
@@ -367,7 +367,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveAsCSV1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedCSV", "csv");
@@ -379,7 +379,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveAsSHAPA2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedSHAPA.shapa", "shapa");
@@ -391,7 +391,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveAsCSV2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedCSV.csv", "csv");
@@ -403,7 +403,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveAsSHAPA3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedSHAPA.csv", "shapa");
@@ -415,7 +415,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveAsCSV3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedCSV.shapa", "csv");
@@ -428,7 +428,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveSHAPA1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedSHAPA", "shapa");
@@ -440,7 +440,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveCSV1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV", "csv");
@@ -452,7 +452,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveSHAPA2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedSHAPA.shapa", "shapa");
@@ -464,7 +464,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveCSV2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV.csv", "csv");
@@ -476,7 +476,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveSHAPA3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedSHAPA.csv", "shapa");
@@ -488,7 +488,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testSaveCSV3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV.shapa", "csv");
