@@ -299,6 +299,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             mainFrameFixture.fileChooser().selectFile(newSHAPA).approve();
         }
 
+        //Check that the title bar file name does not have an asterix
+        Assert.assertFalse(mainFrameFixture.component().getTitle()
+                .endsWith("*"));
+
         // 4. Save the contents as a separate project file
         File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
 
