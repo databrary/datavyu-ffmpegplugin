@@ -260,22 +260,30 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         int widthOfTrack = dcf.getTrackMixerController().getTracksEditor()
                 .getTrack(0).getWidthInPixels();
         // TEST1. Right region beyond start + needle stays same
-        region.dragEndMarker(-1 * widthOfTrack);
+        while (region.getEndTimeAsLong() > 0) {
+            region.dragEndMarker(-1 * widthOfTrack);
+        }
         Assert.assertEquals(region.getEndTimeAsTimeStamp(), "00:00:00:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:000");
 
         // TEST2. Right region beyond end + needle stays same
-        region.dragEndMarker(widthOfTrack);
+        while (region.getEndTimeAsLong() <= 0) {
+            region.dragEndMarker(widthOfTrack);
+        }
         Assert.assertEquals(region.getEndTimeAsTimeStamp(), "00:01:00:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:000");
 
         // TEST3. Left region beyond end + needle moves with it
-        region.dragStartMarker(widthOfTrack);
+        while (region.getStartTimeAsLong() <= 0) {
+            region.dragStartMarker(widthOfTrack);
+        }
         Assert.assertEquals(region.getStartTimeAsTimeStamp(), "00:01:00:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:01:00:000");
 
         // TEST4. Left region beyond start + needle stays same
-        region.dragStartMarker(-1 * widthOfTrack);
+        while (region.getStartTimeAsLong() > 0) {
+            region.dragStartMarker(-1 * widthOfTrack);
+        }
         Assert.assertEquals(region.getStartTimeAsTimeStamp(), "00:00:00:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:01:00:000");
 
@@ -543,7 +551,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         //c. Drag 1 pixel at a time until it snaps
         //Turn on snap button
-        dcf.getTrackMixerController().getSnapToggleButton().click();
+        dcf.getTrackMixerController().getSnapToggleButton().check();
+        dcf.getTrackMixerController().getSnapToggleButton().requireSelected();
         long newTime = onePixelTime;
         long oldTime = 0;
 
@@ -567,32 +576,35 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                 .getSnapMarker().isVisible());
         track1.releaseLeftMouse();
 
-        //8. Drag track 2 to snap from the other direction
+        //8. Drag track 1 to snap from the other direction
         //a. Drag 1 pixel to see what 1 pixel equals in time
 
         //b. Jump 35 pixels
-        track2.drag(35);
+        track1.drag(35);
 
         //c. Drag 1 pixel at a time until it snaps
-        newTime = track2.getOffsetTimeAsLong();
+        newTime = track1.getOffsetTimeAsLong();
         oldTime = newTime + onePixelTime;
+
+        dcf.getTrackMixerController().getSnapToggleButton().requireSelected();
 
         while (Math.abs((oldTime - newTime) - onePixelTime) < 2) {
         //while ((newTime - oldTime) == onePixelTime) {
             //Check we haven't gone too far
             if (newTime < 0) {
-                track2.releaseLeftMouse();
+                track1.releaseLeftMouse();
                 Assert.assertTrue(false, "passed snap point");
             }
-            oldTime = track2.getOffsetTimeAsLong();
-            track2.dragWithoutReleasing(-1);
-            newTime = track2.getOffsetTimeAsLong();
+            oldTime = track1.getOffsetTimeAsLong();
+            track1.dragWithoutReleasing(-1);
+            newTime = track1.getOffsetTimeAsLong();
         }
         System.err.print(newTime - oldTime + "," + onePixelTime);
 
 
         //d. Check if snapped
-        Assert.assertEquals(track2.getOffsetTimeAsLong(), 0);
+        Assert.assertEquals(track1.getOffsetTimeAsLong(),
+                snapPoint2 - snapPoint1);
         Assert.assertTrue(dcf.getTrackMixerController().getTracksEditor()
                 .getSnapMarker().isVisible());
         track2.releaseLeftMouse();
