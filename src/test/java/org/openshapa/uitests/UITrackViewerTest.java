@@ -179,7 +179,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
         int widthOfTrack = dcf.getTrackMixerController().getTracksEditor()
                 .getTrack(0).getWidthInPixels();
-        needle.drag(widthOfTrack);
+        while (needle.getCurrentTimeAsLong() <= 0) {
+            needle.drag(widthOfTrack);
+        }
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:01:00:000");
 
         //5. Move needle beyond start time
@@ -515,14 +517,18 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         //a. Click track 1 to select
         TrackFixture track1 = dcf.getTrackMixerController().getTracksEditor()
                 .getTrack(0);
-        track1.click();
+        while (!track1.isSelected()) {
+            track1.click();
+        }
         Assert.assertTrue(track1.isSelected());
 
         //b. Click add bookmark button
         dcf.getTrackMixerController().pressBookmarkButton();
 
         //c. Click track 1 to deselect
-        track1.click();
+        while (track1.isSelected()) {
+            track1.click();
+        }
         Assert.assertFalse(track1.isSelected());
 
         //5. Move needle another 50 pixels
