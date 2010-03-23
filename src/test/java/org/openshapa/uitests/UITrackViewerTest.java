@@ -506,7 +506,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         FrameFixture vidWindow2 = new FrameFixture(mainFrameFixture.robot,
                 vid2);
 
-        vidWindow2.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindow2.moveTo(new Point(10, dcf.component().getHeight() + 10));
 
         //3. Move needle 50 pixels
         dcf.getTrackMixerController().getNeedle().drag(50);
