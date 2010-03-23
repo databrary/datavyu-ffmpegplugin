@@ -1,38 +1,56 @@
 package org.openshapa.views.discrete;
 
-import com.usermetrix.jclient.UserMetrix;
-import org.openshapa.models.db.Database;
-import org.openshapa.models.db.ExternalColumnListListener;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.views.discrete.layouts.SheetLayout;
-import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
+
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
-import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.Box.Filler;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.OpenSHAPA.Platform;
 import org.openshapa.controllers.NewVariableC;
+import org.openshapa.event.FileDropEvent;
+import org.openshapa.event.FileDropEventListener;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.ExternalColumnListListener;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.ArrayDirection;
+import org.openshapa.views.discrete.layouts.SheetLayout;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
@@ -75,6 +93,9 @@ implements ExternalColumnListListener, ComponentListener,
     /** The currently highlighted cell. */
     private SpreadsheetCell highlightedCell;
 
+    /** List containing listeners interested in file drop events. */
+    private final transient List<FileDropEventListener> fileDropListeners;
+
     /**
      * Constructor.
      *
@@ -82,10 +103,8 @@ implements ExternalColumnListListener, ComponentListener,
      * (i.e. Spreadsheet panel) for.
      */
     public SpreadsheetPanel(final Database db) {
-
         setName(this.getClass().getSimpleName());
-
-        this.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
 
         mainView = new SpreadsheetView();
         mainView.setLayout(new BoxLayout(mainView, BoxLayout.X_AXIS));
@@ -117,11 +136,12 @@ implements ExternalColumnListListener, ComponentListener,
         JPanel rightCorner = new JPanel();
         rightCorner.setBorder(
                       BorderFactory.createMatteBorder(1, 1, 1, 0, Color.BLACK));
-        scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, rightCorner);
+        scrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER,
+                rightCorner);
 
         // set the database and layout the columns
-        this.setDatabase(db);
-        this.buildColumns();
+        setDatabase(db);
+        buildColumns();
         setLayoutType(SheetLayoutType.Ordinal);
 
         // add a listener for window resize events
@@ -142,10 +162,13 @@ implements ExternalColumnListListener, ComponentListener,
                                     .getActionMap(SpreadsheetPanel.class, this);
         newVar.setAction(aMap.get("openNewVarMenu"));
         newVar.setText(" + ");
-
         newVar.setSize(newVar.getWidth(),
                        SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
         headerView.add(newVar);
+
+        // Enable drag and drop support.
+        setDropTarget(new DropTarget(this, new SSDropTarget()));
+        fileDropListeners = new LinkedList<FileDropEventListener>();
     }
 
     /**
@@ -212,6 +235,7 @@ implements ExternalColumnListListener, ComponentListener,
     /**
      * Remove all the columns from the spreadsheet panel.
      */
+    @Override
     public void removeAll() {
         for (SpreadsheetColumn col : columns) {
             col.deregisterListeners();
@@ -242,7 +266,7 @@ implements ExternalColumnListListener, ComponentListener,
     }
 
     /**
-     * Returns the vector of Spreadsheet columns.
+     * @return the vector of Spreadsheet columns.
      * Need for UISpec4J testing
      */
     public Vector<SpreadsheetColumn> getColumns() {
@@ -253,7 +277,7 @@ implements ExternalColumnListListener, ComponentListener,
      * Deselect all selected items in the Spreadsheet.
      */
     public void deselectAll() {
-        for (SpreadsheetColumn col : this.columns) {
+        for (SpreadsheetColumn col : columns) {
             if (col.isSelected()) {
                 col.setSelected(false);
             }
@@ -282,7 +306,7 @@ implements ExternalColumnListListener, ComponentListener,
         }
 
         // set the database
-        this.database = db;
+        database = db;
 
         /*
         // set Temporal Ordering on
@@ -309,7 +333,7 @@ implements ExternalColumnListListener, ComponentListener,
      * @return Database this spreadsheet displays
      */
     public Database getDatabase() {
-        return (this.database);
+        return (database);
     }
 
     /**
@@ -365,7 +389,7 @@ implements ExternalColumnListListener, ComponentListener,
      */
     public void relayoutCells() {
         sheetLayout.relayoutCells();
-        this.validate();
+        validate();
     }
 
     /** To use when navigating left. */
@@ -382,7 +406,7 @@ implements ExternalColumnListListener, ComponentListener,
      * @return true if the event has been consumed by this dispatch, false
      * otherwise
      */
-    public boolean dispatchKeyEvent(KeyEvent e) {
+    public boolean dispatchKeyEvent(final KeyEvent e) {
         // Quick filter - if we aren't dealing with a key press and left or
         // right arrow. Forget about it - just chuck it back to Java to deal
         // with.
@@ -483,7 +507,7 @@ implements ExternalColumnListListener, ComponentListener,
         int result = 0;
 
         try {
-            Vector<DataCell> selectedCells = this.getSelectedCells();
+            Vector<DataCell> selectedCells = getSelectedCells();
             Vector<Long> columnOrder = database.getColOrderVector();
 
             // For each of the selected cells search to see if we have a column
@@ -543,11 +567,11 @@ implements ExternalColumnListListener, ComponentListener,
      * @param cellID The id of the cell to mark as highlighted.
      */
     public void highlightCell(final long cellID) {
-        for (SpreadsheetColumn col : this.getColumns()) {
+        for (SpreadsheetColumn col : getColumns()) {
             for (SpreadsheetCell cell : col.getCells()) {
                 if (cell.getCellID() == cellID) {
                     cell.setHighlighted(true);
-                    this.setHighlightedCell(cell);
+                    setHighlightedCell(cell);
                     return;
                 }
             }
@@ -575,7 +599,7 @@ implements ExternalColumnListListener, ComponentListener,
                                    scrollPane.getViewportBorderBounds().height);
         viewportStrut.changeShape(d, d, d);
         // force a validate of the contents.
-        this.revalidate();
+        revalidate();
     }
 
     /**
@@ -632,7 +656,7 @@ implements ExternalColumnListListener, ComponentListener,
             }
             shuffleColumn(columnIndex, newIndex);
             relayoutCells();
-            this.invalidate();
+            invalidate();
             this.repaint();
         }
     }
@@ -656,7 +680,7 @@ implements ExternalColumnListListener, ComponentListener,
             if (newIndex < columns.size()) {
                 shuffleColumn(columnIndex, newIndex);
                 relayoutCells();
-                this.invalidate();
+                invalidate();
                 this.repaint();
             }
         }
@@ -678,13 +702,13 @@ implements ExternalColumnListListener, ComponentListener,
 
         try {
             // Write the new column order back to the database.
-            Vector<Long> orderVec = this.database.getColOrderVector();
+            Vector<Long> orderVec = database.getColOrderVector();
 
             Long sourceColumn = orderVec.elementAt(source);
             orderVec.removeElementAt(source);
             orderVec.insertElementAt(sourceColumn, destination);
 
-            this.database.setColOrderVector(orderVec);
+            database.setColOrderVector(orderVec);
         } catch (SystemErrorException se) {
             logger.error("Unable to shuffle column order", se);
         }
@@ -734,8 +758,8 @@ implements ExternalColumnListListener, ComponentListener,
      *
      * @param cell The cell to add to the selection.
      */
-    public void addCellToSelection(SpreadsheetCell cell) {
-        this.clearColumnSelection();
+    public void addCellToSelection(final SpreadsheetCell cell) {
+        clearColumnSelection();
         if (highlightedCell != null) {
             highlightedCell.setHighlighted(false);
             highlightedCell.setSelected(true);
@@ -749,15 +773,15 @@ implements ExternalColumnListListener, ComponentListener,
      *
      * @param cell The cell to highlight.
      */
-    public void setHighlightedCell(SpreadsheetCell cell) {
+    public void setHighlightedCell(final SpreadsheetCell cell) {
         if (highlightedCell != null) {
             highlightedCell.setSelected(false);
             highlightedCell.setHighlighted(false);
             highlightedCell.invalidate();
         }
 
-        this.highlightedCell = cell;
-        this.clearColumnSelection();
+        highlightedCell = cell;
+        clearColumnSelection();
     }
 
     /**
@@ -766,7 +790,7 @@ implements ExternalColumnListListener, ComponentListener,
     public void clearCellSelection() {
         highlightedCell = null;
 
-        for (SpreadsheetColumn col : this.getColumns()) {
+        for (SpreadsheetColumn col : getColumns()) {
             for (SpreadsheetCell cell : col.getCells()) {
                 cell.setSelected(false);
                 cell.setHighlighted(false);
@@ -779,8 +803,8 @@ implements ExternalColumnListListener, ComponentListener,
      *
      * @param column The column to add to the current selection.
      */
-    public void addColumnToSelection(SpreadsheetColumn column) {
-        this.clearCellSelection();
+    public void addColumnToSelection(final SpreadsheetColumn column) {
+        clearCellSelection();
         column.requestFocus();
     }
 
@@ -788,19 +812,109 @@ implements ExternalColumnListListener, ComponentListener,
      * Clears the current column selection.
      */
     public void clearColumnSelection() {
-        for (SpreadsheetColumn col : this.getColumns()) {
+        for (SpreadsheetColumn col : getColumns()) {
             col.setSelected(false);
         }
     }
 
-    private boolean platformCellMovementMask(KeyEvent e) {
+    /**
+     * Utility method for determining if the platform specific input mask is
+     * triggered.
+     *
+     * @param e KeyEvent to examine.
+     * @return true if the input mask is used, false otherwise.
+     */
+    private boolean platformCellMovementMask(final KeyEvent e) {
         if (OpenSHAPA.getPlatform() == Platform.MAC
-                && e.getModifiers() == KeyEvent.ALT_MASK) {
+                && e.getModifiers() == InputEvent.ALT_MASK) {
             return true;
         } else if (OpenSHAPA.getPlatform() == Platform.WINDOWS
-                && e.getModifiers() == KeyEvent.CTRL_MASK) {
+                && e.getModifiers() == InputEvent.CTRL_MASK) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Add a listener interested in file drop events.
+     *
+     * @param listener The listener to add.
+     */
+    public void addFileDropEventListener(
+            final FileDropEventListener listener) {
+        synchronized (this) {
+            fileDropListeners.add(listener);
+        }
+    }
+
+    /**
+     * Remove listener from being notified of file drop events.
+     *
+     * @param listener The listener to remove.
+     */
+    public void removeFileDropEventListener(
+            final FileDropEventListener listener) {
+        synchronized (this) {
+            fileDropListeners.remove(listener);
+        }
+    }
+
+    /**
+     * Notifies all registered listeners about the file drag and drop event.
+     *
+     * @param files The files that were dropped onto the spreadsheet.
+     */
+    private void notifyFileDropEventListeners(final Iterable<File> files) {
+        final FileDropEvent event = new FileDropEvent(this, files);
+        synchronized (this) {
+            for (FileDropEventListener listener : fileDropListeners) {
+                listener.filesDropped(event);
+            }
+        }
+    }
+
+    /**
+     * Inner class for handling file drag and drop.
+     */
+    private class SSDropTarget extends DropTargetAdapter {
+
+        /**
+         * Creates a new drag and drop handler.
+         */
+        public SSDropTarget() {
+            super();
+        }
+
+        /**
+         * The event handler for when a file is dropped onto the interface.
+         *
+         *@param dtde The event to handle.
+         */
+        public void drop(final DropTargetDropEvent dtde) {
+            Transferable tr = dtde.getTransferable();
+            DataFlavor[] flavors = tr.getTransferDataFlavors();
+
+            for (int type = 0; type < flavors.length; type++) {
+                if (flavors[type].isFlavorJavaFileListType()) {
+                    dtde.acceptDrop(DnDConstants.ACTION_REFERENCE);
+
+                    List fileList = new LinkedList();
+                    try {
+                        fileList = (List) tr.getTransferData(flavors[type]);
+                        // If we made it this far, everything worked.
+                        dtde.dropComplete(true);
+                    } catch (UnsupportedFlavorException e) {
+                        dtde.rejectDrop();
+                    } catch (IOException e) {
+                        dtde.rejectDrop();
+                    }
+
+                    notifyFileDropEventListeners(fileList);
+                    return;
+                }
+            }
+
+            dtde.rejectDrop();
+        }
     }
 }

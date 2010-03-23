@@ -30,11 +30,14 @@ import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.controllers.NewDatabaseC;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.controllers.NewVariableC;
+import org.openshapa.controllers.OpenC;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.SetSheetLayoutC;
 import org.openshapa.controllers.VocabEditorC;
 import org.openshapa.controllers.project.ProjectController;
+import org.openshapa.event.FileDropEvent;
+import org.openshapa.event.FileDropEventListener;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.FileFilters.CSVFilter;
@@ -44,13 +47,13 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
-import org.openshapa.controllers.OpenC;
 
 /**
  * The main FrameView, representing the interface for OpenSHAPA the user will
  * initially see.
  */
-public final class OpenSHAPAView extends FrameView {
+public final class OpenSHAPAView extends FrameView
+implements FileDropEventListener {
 
     /**
      * Constructor.
@@ -132,9 +135,11 @@ public final class OpenSHAPAView extends FrameView {
 
         if (panel != null) {
             panel.deregisterListeners();
+            panel.removeFileDropEventListener(this);
         }
         panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
         panel.registerListeners();
+        panel.addFileDropEventListener(this);
         setComponent(panel);
 
     }
@@ -279,34 +284,44 @@ public final class OpenSHAPAView extends FrameView {
             int result = jd.showOpenDialog(getComponent());
 
             if (result == JFileChooser.APPROVE_OPTION) {
-                OpenSHAPA.getApplication().resetApp();
-
-                FileFilter filter = jd.getFileFilter();
-
-                // Opening a project file
-                if (filter instanceof SHAPAFilter) {
-                    openProject(jd.getSelectedFile());
-
-                // Opening a database file
-                } else {
-                    openDatabase(jd.getSelectedFile());
-                }
-
-                // BugzID:449 - Set filename in spreadsheet window and database
-                // if the database name is undefined.
-                ProjectController pController = OpenSHAPA
-                                                .getProjectController();
-                pController.setProjectName(jd.getSelectedFile().getName());
-                pController.setLastSaveOption(filter);
-                pController.markProjectAsUnchanged();
-                pController.getDB().markAsUnchanged();
-                updateTitle();
+                open(jd);
             }
         }
 
         // Display any changes to the database.
-        this.showSpreadsheet();
+        showSpreadsheet();
     }
+
+    /**
+     * Helper method for opening a file from disk.
+     *
+     * @param jd The file chooser to use.
+     */
+    private void open(final OpenSHAPAFileChooser jd) {
+        OpenSHAPA.getApplication().resetApp();
+
+        FileFilter filter = jd.getFileFilter();
+
+        // Opening a project file
+        if (filter instanceof SHAPAFilter) {
+            openProject(jd.getSelectedFile());
+
+        // Opening a database file
+        } else {
+            openDatabase(jd.getSelectedFile());
+        }
+
+        // BugzID:449 - Set filename in spreadsheet window and database
+        // if the database name is undefined.
+        ProjectController pController = OpenSHAPA
+                                        .getProjectController();
+        pController.setProjectName(jd.getSelectedFile().getName());
+        pController.setLastSaveOption(filter);
+        pController.markProjectAsUnchanged();
+        pController.getDB().markAsUnchanged();
+        updateTitle();
+    }
+
 
     private void openDatabase(final File databaseFile) {
         // Set the database to the freshly loaded database.
@@ -331,6 +346,37 @@ public final class OpenSHAPAView extends FrameView {
             OpenSHAPA.getProjectController().setDatabase(openC.getDatabase());
             OpenSHAPA.getProjectController()
                      .setProjectDirectory(projectFile.getParent());
+            OpenSHAPA.getProjectController().loadProject();
+        }
+    }
+
+    /**
+     * Handles the event for files being dropped onto a component. Only the
+     * first file received will be opened.
+     *
+     * @param evt The event to handle.
+     */
+    public void filesDropped(final FileDropEvent evt) {
+        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+        fc.setVisible(false);
+
+        for (File file : evt.getFiles()) {
+            final String fileName = file.getName();
+            fc.setSelectedFile(file);
+
+            if (fileName.endsWith(".shapa")) {
+                fc.setFileFilter(new SHAPAFilter());
+                open(fc);
+                break;
+            } else if (fileName.endsWith(".csv")) {
+                fc.setFileFilter(new CSVFilter());
+                open(fc);
+                break;
+            } else if (fileName.endsWith(".odb")) {
+                fc.setFileFilter(new MODBFilter());
+                open(fc);
+                break;
+            }
         }
     }
 
@@ -386,9 +432,11 @@ public final class OpenSHAPAView extends FrameView {
         // Create a fresh spreadsheet component and redraw the component.
         if (panel != null) {
             panel.deregisterListeners();
+            panel.removeFileDropEventListener(this);
         }
         panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
         panel.registerListeners();
+        panel.addFileDropEventListener(this);
         setComponent(panel);
         getComponent().revalidate();
         getComponent().resetKeyboardActions();
@@ -1116,4 +1164,6 @@ public final class OpenSHAPAView extends FrameView {
 
     /** The spreadsheet panel for this view. */
     private SpreadsheetPanel panel;
+
+
 }
