@@ -50,7 +50,7 @@ public class NeedleController {
 
     /**
      * Register the listener to be notified of needle events
-     * 
+     *
      * @param listener
      */
     public void addNeedleEventListener(final NeedleEventListener listener) {
@@ -61,7 +61,7 @@ public class NeedleController {
 
     /**
      * Removed the listener from being notified of needle events
-     * 
+     *
      * @param listener
      */
     public void removeNeedleEventListener(final NeedleEventListener listener) {
@@ -72,7 +72,7 @@ public class NeedleController {
 
     /**
      * Used to fire a new event informing listeners about the new needle time.
-     * 
+     *
      * @param newTime
      */
     private void fireNeedleEvent(final long newTime) {
@@ -93,7 +93,7 @@ public class NeedleController {
 
     /**
      * Set the current time to be represented by the needle.
-     * 
+     *
      * @param currentTime
      */
     public void setCurrentTime(final long currentTime) {
@@ -122,7 +122,7 @@ public class NeedleController {
 
     /**
      * Copies the given viewable model
-     * 
+     *
      * @param viewableModel
      */
     public void setViewableModel(final ViewableModel viewableModel) {

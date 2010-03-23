@@ -47,34 +47,34 @@ import org.openshapa.models.component.ViewableModel;
 public class MixerControllerV implements NeedleEventListener,
         MarkerEventListener, CarriageEventListener, AdjustmentListener {
 
-    /** Root interface panel */
+    /** Root interface panel. */
     private JPanel tracksPanel;
-    /** Scroll pane that holds track information */
+    /** Scroll pane that holds track information. */
     private JScrollPane tracksScrollPane;
-    /** This layered pane holds the needle painter */
+    /** This layered pane holds the needle painter. */
     private JLayeredPane layeredPane;
     /**
      * Zoomed into the display by how much. Values should only be 1, 2, 4, 8,
-     * 16, 32
+     * 16, 32.
      */
     private int zoomSetting = 1;
     /**
-     * The value of the longest video's time length in milliseconds
+     * The value of the longest video's time length in milliseconds.
      */
     private long maxEnd;
     /**
-     * The value of the earliest video's start time in milliseconds
+     * The value of the earliest video's start time in milliseconds.
      */
     private long minStart;
-    /** Listeners interested in tracks controller events */
+    /** Listeners interested in tracks controller events. */
     private EventListenerList listenerList;
-    /** Controller responsible for managing the time scale */
+    /** Controller responsible for managing the time scale. */
     private TimescaleController timescaleController;
-    /** Controller responsible for managing the timing needle */
+    /** Controller responsible for managing the timing needle. */
     private NeedleController needleController;
-    /** Controller responsible for managing a selected region */
+    /** Controller responsible for managing a selected region. */
     private RegionController regionController;
-    /** Controller responsible for managing tracks */
+    /** Controller responsible for managing tracks. */
     private TracksEditorController tracksEditorController;
 
     private JButton bookmarkButton;
@@ -248,24 +248,24 @@ public class MixerControllerV implements NeedleEventListener,
     /**
      * @return the panel containing the tracks interface.
      */
-    public JPanel getTracksPanel() {
+    public final JPanel getTracksPanel() {
         return tracksPanel;
     }
 
     /**
      * @return the longest data feed duration in milliseconds
      */
-    public long getMaxEnd() {
+    public final long getMaxEnd() {
         return maxEnd;
     }
 
     /**
      * Sets the longest data feed duration.
-     * 
+     *
      * @param maxEnd
      *            duration in milliseconds
      */
-    public void setMaxEnd(final long maxEnd) {
+    public final void setMaxEnd(final long maxEnd) {
         this.maxEnd = maxEnd;
         ViewableModel model = timescaleController.getViewableModel();
         model.setEnd(maxEnd);
@@ -278,17 +278,21 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * Add a new track to the interface.
-     * 
+     *
      * @param icon
      *            icon associated with the track
+     * @param mediaPath
+     *            absolute path to the media file.
      * @param trackName
      *            name of the track
      * @param duration
      *            the total duration of the track in milliseconds
      * @param offset
      *            the amount of playback offset in milliseconds
+     * @param bookmark
+     *            bookmark position in milliseconds
      */
-    public void addNewTrack(final ImageIcon icon, final String mediaPath,
+    public final void addNewTrack(final ImageIcon icon, final String mediaPath,
             final String trackName, final long duration, final long offset,
             final long bookmark) {
         // Check if the scale needs to be updated.
@@ -333,7 +337,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * Set the start of the new playback region
-     * 
+     *
      * @param time
      *            time in milliseconds
      */
@@ -343,7 +347,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * Set the end of the new playback region
-     * 
+     *
      * @param time
      *            time in milliseconds
      */
@@ -354,7 +358,7 @@ public class MixerControllerV implements NeedleEventListener,
     /**
      * Zooms into the displayed scale and re-adjusts the timing needle
      * accordingly.
-     * 
+     *
      * @param evt
      */
     public void zoomInScale(final ActionEvent evt) {
@@ -364,13 +368,13 @@ public class MixerControllerV implements NeedleEventListener,
         }
 
         rescale();
-        updateTracksScrollBar();
+//        updateTracksScrollBar();
     }
 
     /**
      * Zooms out of the displayed scale and re-adjusts the timing needle
      * accordingly.
-     * 
+     *
      * @param evt
      */
     public void zoomOutScale(final ActionEvent evt) {
@@ -380,12 +384,12 @@ public class MixerControllerV implements NeedleEventListener,
         }
 
         rescale();
-        updateTracksScrollBar();
+//        updateTracksScrollBar();
     }
 
     /**
      * Update the track display after a zoom.
-     * 
+     *
      * @param evt
      */
     public void zoomTracks(final ActionEvent evt) {
@@ -396,7 +400,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * Remove a track from our tracks panel.
-     * 
+     *
      * @param mediaPath
      *            the path to the media file
      */
@@ -528,7 +532,6 @@ public class MixerControllerV implements NeedleEventListener,
 
         needleController.setViewableModel(newModel);
         regionController.setViewableModel(newModel);
-
         tracksEditorController.setViewableModel(newModel);
     }
 
@@ -547,7 +550,8 @@ public class MixerControllerV implements NeedleEventListener,
                         .getEnd()) * Integer.MAX_VALUE);
         int extentValue =
                 (int) (((float) (model.getZoomWindowEnd() - model
-                        .getZoomWindowStart()) / (float) model.getEnd()) * Integer.MAX_VALUE);
+                        .getZoomWindowStart())
+                        / (float) model.getEnd()) * Integer.MAX_VALUE);
 
         tracksScrollBar
                 .setValues(startValue, extentValue, 0, Integer.MAX_VALUE);
@@ -563,7 +567,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * Handles the event for toggling the snap functionality on and off.
-     * 
+     *
      * @param e
      *            expecting the event to be generated from a JToggleButton
      */
@@ -574,7 +578,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * Handles the event for toggling movement of tracks on and off.
-     * 
+     *
      * @param e
      */
     private void lockToggleHandler(final ActionEvent e) {
@@ -584,22 +588,30 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * Handles the event for scrolling the tracks interface horizontally.
-     * 
+     *
      * @param e
      */
     public void adjustmentValueChanged(final AdjustmentEvent e) {
+
         int startValue = tracksScrollBar.getValue();
         int endValue = startValue + tracksScrollBar.getVisibleAmount();
 
         ViewableModel model = timescaleController.getViewableModel();
-        // Calculate the new window start and end
-        long newWindowStart =
-                (long) ((startValue / (float) Integer.MAX_VALUE) * model
-                        .getEnd());
-        long newWindowEnd =
-                (long) ((endValue / (float) Integer.MAX_VALUE) * model.getEnd());
-        model.setZoomWindowStart(newWindowStart);
-        model.setZoomWindowEnd(newWindowEnd);
+
+        /*
+         *  Calculate the new window start and end only if the bar is being
+         *  scrolled.
+         */
+        if (e.getValueIsAdjusting()) {
+            long newWindowStart =
+                    (long) ((startValue / (float) Integer.MAX_VALUE) * model
+                            .getEnd());
+            long newWindowEnd =
+                    (long) ((endValue / (float) Integer.MAX_VALUE)
+                            * model.getEnd());
+            model.setZoomWindowStart(newWindowStart);
+            model.setZoomWindowEnd(newWindowEnd);
+        }
 
         timescaleController.setViewableModel(model);
         regionController.setViewableModel(model);
@@ -611,7 +623,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * NeedlePainter needle was moved using the mouse
-     * 
+     *
      * @param e
      *            needle event from the NeedlePainter
      */
@@ -621,7 +633,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * RegionPainter region markers were moved using the mouse
-     * 
+     *
      * @param e
      */
     public void markerMoved(final MarkerEvent e) {
@@ -630,7 +642,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * TrackPainter recorded a change in the track's offset using the mouse
-     * 
+     *
      * @param e
      */
     public void offsetChanged(final CarriageEvent e) {
@@ -643,7 +655,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * Track is requesting current temporal position to create a bookmark.
-     * 
+     *
      * @param e
      */
     public void requestBookmark(final CarriageEvent e) {
@@ -660,7 +672,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * Track is requesting for bookmark to be saved.
-     * 
+     *
      * @param e
      */
     public void saveBookmark(final CarriageEvent e) {
@@ -676,7 +688,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * Register listeners who are interested in events from this class.
-     * 
+     *
      * @param listener
      */
     public synchronized void addTracksControllerListener(
@@ -686,7 +698,7 @@ public class MixerControllerV implements NeedleEventListener,
 
     /**
      * De-register listeners from receiving events from this class.
-     * 
+     *
      * @param listener
      */
     public synchronized void removeTracksControllerListener(
@@ -697,7 +709,7 @@ public class MixerControllerV implements NeedleEventListener,
     /**
      * Used to fire a new event informing listeners about new child component
      * events.
-     * 
+     *
      * @param needleEvent
      */
     private synchronized void fireTracksControllerEvent(

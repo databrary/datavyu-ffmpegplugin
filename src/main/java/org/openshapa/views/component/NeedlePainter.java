@@ -40,10 +40,6 @@ public class NeedlePainter extends JComponent {
         this.repaint();
     }
 
-    public ViewableModel getViewableModel() {
-        return viewableModel.clone();
-    }
-
     public void setViewableModel(final ViewableModel viewableModel) {
         this.viewableModel = viewableModel;
         this.repaint();

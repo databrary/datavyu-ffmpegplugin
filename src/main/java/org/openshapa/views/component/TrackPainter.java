@@ -56,10 +56,6 @@ public class TrackPainter extends JComponent {
         this.repaint();
     }
 
-    public ViewableModel getViewableModel() {
-        return viewableModel;
-    }
-
     public void setViewableModel(final ViewableModel viewableModel) {
         this.viewableModel = viewableModel;
         this.repaint();
