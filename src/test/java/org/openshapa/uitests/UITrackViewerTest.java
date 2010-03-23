@@ -385,7 +385,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
                 .getTrack(0);
         Assert.assertEquals(track.getOffsetTimeAsLong(), 0);
-        track.drag(150);
+        while(track.getOffsetTimeAsLong() <= 0) {
+            track.drag(150);
+        }
         long offset = track.getOffsetTimeAsLong();
         Assert.assertTrue(offset > 0, "offset=" + offset);
 
