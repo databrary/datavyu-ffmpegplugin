@@ -39,41 +39,15 @@ public final class SaveDatabaseC {
      * Constructor.
      *
      * @param destinationFile
-     *      The destination to use when saving the database
-     * @param db
-     *      The MacSHAPA Database file to save to disk.
-     */
-    public SaveDatabaseC(final File destinationFile,
-                         final MacshapaDatabase db) {
-        this.saveDatabase(destinationFile, db);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param destinationFile
-     *      The destination to use when saving the database.
-     * @param db
-     *      The MacSHAPA Database file to save to disk.
-     */
-    public SaveDatabaseC(final String destinationFile,
-                         final MacshapaDatabase db) {
-        this.saveDatabase(new File(destinationFile), db);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param destinationFile
      *      The destination to use when saving the database.
      * @param fileFilter
      *      The selected filter to use when saving the database.
      * @param db
      *      The MacSHAPADatabase file to save to disk.
      */
-    public SaveDatabaseC(final String destinationFile,
-                         final FileFilter fileFilter,
-                         final MacshapaDatabase db) {
+    public void saveDatabase(final String destinationFile,
+                             final FileFilter fileFilter,
+                             final MacshapaDatabase db) {
 
         String outputFile = destinationFile.toLowerCase();
 

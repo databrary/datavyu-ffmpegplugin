@@ -72,12 +72,14 @@ public final class SaveC {
         File dbFile =
                 new File(projectController.getProjectDirectory() + "/"
                         + databaseFileName);
-        new SaveDatabaseC(dbFile, projectController.getDB());
+        //new SaveDatabaseC(dbFile, projectController.getDB());
+        SaveDatabaseC saveDatabaseC = new SaveDatabaseC();
+        saveDatabaseC.saveDatabase(dbFile, projectController.getDB());
         projectController.getDB().markAsUnchanged();
 
         // Now save the project
         projectController.updateProject();
-        new SaveProjectC().save(projectController.getProjectDirectory() + "/"
+        new SaveProjectFileC().save(projectController.getProjectDirectory() + "/"
                 + projectName, projectController.getProject());
         projectController.markProjectAsUnchanged();
 
@@ -148,13 +150,14 @@ public final class SaveC {
         projectController.setLastSaveOption(new SHAPAFilter());
 
         // Save the database
-        new SaveDatabaseC(new File(directory, databaseFileName),
-                          projectController.getDB());
+        SaveDatabaseC saveDatabaseC = new SaveDatabaseC();
+        saveDatabaseC.saveDatabase(new File(directory, databaseFileName),
+                                   projectController.getDB());
         projectController.getDB().markAsUnchanged();
 
         // Save the project
         projectController.updateProject();
-        new SaveProjectC().save(directory + "/" + newProjectName,
+        new SaveProjectFileC().save(directory + "/" + newProjectName,
                                 projectController.getProject());
         projectController.markProjectAsUnchanged();
         OpenSHAPA.getApplication().updateTitle();
@@ -166,9 +169,10 @@ public final class SaveC {
     public void saveDatabase() {
         ProjectController projectController = OpenSHAPA.getProjectController();
         projectController.markProjectAsUnchanged();
-        new SaveDatabaseC(new File(projectController.getProjectDirectory(),
-                                   projectController.getDatabaseFileName()),
-                          projectController.getDB());
+        SaveDatabaseC saveDBC = new SaveDatabaseC();
+        saveDBC.saveDatabase(new File(projectController.getProjectDirectory(),
+                                      projectController.getDatabaseFileName()),
+                             projectController.getDB());
         projectController.getDB().markAsUnchanged();
     }
 
@@ -207,9 +211,10 @@ public final class SaveC {
         projectController.markProjectAsUnchanged();
         projectController.setLastSaveOption(saveFormat);
 
-        new SaveDatabaseC(directory + "/" + file,
-                          saveFormat,
-                          projectController.getDB());
+        SaveDatabaseC saveDBC = new SaveDatabaseC();
+        saveDBC.saveDatabase(directory + "/" + file,
+                             saveFormat,
+                             projectController.getDB());
         projectController.getDB().markAsUnchanged();
     }
 }

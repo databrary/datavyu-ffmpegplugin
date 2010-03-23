@@ -289,7 +289,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      * database information is being lost (e.g. on an "open" or "new"
      * instruction). In all interpretations, "true" indicates that all unsaved
      * changes are to be discarded.
-     * 
+     *
      * @return True for quit, false otherwise.
      */
     public boolean safeQuit() {
@@ -333,7 +333,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * Action to call when the application is exiting.
-     * 
+     *
      * @param event
      *            The event that triggered this action.
      */
@@ -346,7 +346,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     /**
      * If the user is trying to save over an existing file, prompt them whether
      * they they wish to continue.
-     * 
+     *
      * @return True for overwrite, false otherwise.
      */
     public boolean overwriteExisting() {
@@ -493,7 +493,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      * This method is to initialize the specified window by injecting resources.
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
-     * 
+     *
      * @param root
      *            The parent window.
      */
@@ -517,7 +517,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * A convenient static getter for the application instance.
-     * 
+     *
      * @return The instance of the OpenSHAPA application.
      */
     public static OpenSHAPA getApplication() {
@@ -526,7 +526,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * A convenient static getter for the application session storage.
-     * 
+     *
      * @return The SessionStorage for the OpenSHAPA application.
      */
     public static SessionStorage getSessionStorage() {
@@ -544,7 +544,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     /**
      * Gets the single instance project associated with the currently running
      * with OpenSHAPA.
-     * 
+     *
      * @return The single project in use with this instance of OpenSHAPA
      */
     public static ProjectController getProjectController() {
@@ -561,7 +561,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     /**
      * Creates a new project controller, using the given project as the
      * underlying project.
-     * 
+     *
      * @param project
      */
     public static void newProjectController(final Project project) {
@@ -572,7 +572,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     /**
      * Gets the single instance of the data controller that is currently used
      * with OpenSHAPA.
-     * 
+     *
      * @return The single data controller in use with this instance of
      *         OpenSHAPA.
      */
@@ -589,7 +589,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * Sets the list of scripts that were last executed.
-     * 
+     *
      * @param list
      *            List of scripts.
      */
@@ -634,7 +634,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * Main method launching the application.
-     * 
+     *
      * @param args
      *            The command line arguments passed to OpenSHAPA.
      */
@@ -754,7 +754,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      */
     private static OpenSHAPAView VIEW;
 
-    /** The current project */
+    /** The current project. */
     private ProjectController projectController;
 
     /** Opened windows. */
@@ -773,7 +773,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
         /**
          * Calls safeQuit to check if we can exit.
-         * 
+         *
          * @param arg0
          *            The event generating the quit call.
          * @return True if the application can quit, false otherwise.
@@ -784,7 +784,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
         /**
          * Cleanup would occur here, but we choose to do nothing for now.
-         * 
+         *
          * @param arg0
          *            The event generating the quit call.
          */

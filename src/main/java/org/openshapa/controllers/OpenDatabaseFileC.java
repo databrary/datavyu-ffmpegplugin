@@ -64,17 +64,6 @@ public final class OpenDatabaseFileC {
      *
      * @return populated MacshapaDatabase on success, null otherwise.
      */
-    public MacshapaDatabase open(final String sourceFile) {
-        return this.open(new File(sourceFile));
-    }
-
-    /**
-     * Opens a database.
-     *
-     * @param sourceFile The source file to open.
-     *
-     * @return populated MacshapaDatabase on success, null otherwise.
-     */
     public MacshapaDatabase open(final File sourceFile) {
         MacshapaDatabase db;
         String inputFile = sourceFile.toString().toLowerCase();
