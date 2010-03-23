@@ -30,10 +30,10 @@ import com.usermetrix.jclient.UserMetrix;
 /**
  * Controller for saving the database to disk.
  */
-public final class SaveDatabaseC {
+public final class SaveDatabaseFileC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SaveDatabaseC.class);
+    private UserMetrix logger = UserMetrix.getInstance(SaveDatabaseFileC.class);
 
     /**
      * Constructor.
