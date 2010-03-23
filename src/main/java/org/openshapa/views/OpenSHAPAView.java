@@ -206,8 +206,10 @@ implements FileDropEventListener {
     @Action
     public void save() {
         try {
-            // If the user has not saved before - invoke the saveAs() controller to
-            // force the user to nominate a destination file.
+            SaveC saveC = new SaveC();
+
+            // If the user has not saved before - invoke the saveAs()
+            // controller to force the user to nominate a destination file.
             ProjectController projController = OpenSHAPA.getProjectController();
             if (projController.isNewProject()
                     || projController.getProjectName() == null) {
@@ -219,7 +221,12 @@ implements FileDropEventListener {
                 if (projController.getLastSaveOption() instanceof SHAPAFilter) {
                     saveController.saveProject();
                 } else {
-                    saveController.saveDatabase();
+                    File file = new File(projController.getProjectDirectory(),
+                                         projController.getDatabaseFileName());
+                    saveC.saveDatabase(file, projController.getDB());
+
+                    projController.markProjectAsUnchanged();
+                    projController.getDB().markAsUnchanged();
                 }
             }
         } catch (LogicErrorException e) {

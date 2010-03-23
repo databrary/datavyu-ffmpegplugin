@@ -183,21 +183,6 @@ public final class SaveC {
     }
 
     /**
-     * Just save the database.
-     *
-     * @deprecated
-     */
-    public void saveDatabase() throws LogicErrorException {
-        ProjectController projectController = OpenSHAPA.getProjectController();
-        projectController.markProjectAsUnchanged();
-        SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
-        saveDBC.saveDatabase(new File(projectController.getProjectDirectory(),
-                                      projectController.getDatabaseFileName()),
-                             projectController.getDB());
-        projectController.getDB().markAsUnchanged();
-    }
-
-    /**
      * Save what is worked on as a new database.
      *
      * @param directory The directory to save the database too.

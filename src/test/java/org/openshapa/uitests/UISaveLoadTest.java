@@ -16,6 +16,7 @@ import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.controllers.project.ProjectController;
+import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.UIUtils;
@@ -240,7 +241,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Run a load test for specified input and expected output files.
-     * 
+     *
      * @param inputFile
      *            The input CSV file to open before saving.
      * @param expectedOutputFile
@@ -250,7 +251,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws SystemErrorException
      */
     private void loadTest(final String inputFile,
-            final String expectedOutputFile) throws IOException {
+                          final String expectedOutputFile)
+    throws IOException, LogicErrorException {
         final String root = System.getProperty("testPath");
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
