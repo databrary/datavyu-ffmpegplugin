@@ -10,6 +10,8 @@ import java.io.IOException;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.RunScriptC;
@@ -22,6 +24,7 @@ import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
 import org.openshapa.views.OpenSHAPAFileChooser;
+import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -256,10 +259,13 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     private void loadTest(final String inputFile,
             final String expectedOutputFile) throws IOException {
-        final String root = System.getProperty("testPath");
+        final String root = System.getProperty("testPath") + "/ui/";
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
-        File testCSV = new File(root + inputFile);
+        File testCSV = new File(tempFolder + inputFile);
+        //Copy file to new project location
+        UIUtils.copy(new File(root + inputFile), testCSV);
+
         Assert.assertTrue(testCSV.exists(), "Expecting input file to exist.");
 
         // 1. Make a new project, set it up
@@ -272,6 +278,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         // 2. Write the project out
         File newSHAPA = new File(tempFolder + "/newSHAPA.shapa");
+        Assert.assertFalse(newSHAPA.exists());
 
         Dumper dumper =
                 new Dumper(new OpenSHAPAProjectRepresenter(),
@@ -310,6 +317,14 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         //Check that the title bar file name does not have an asterix
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
+        //Check that something has been loaded
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        Assert.assertNotNull(ssPanel.allColumns());
+
         // 4. Save the contents as a separate project file
         File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
 
@@ -342,10 +357,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //BugzID:1568@Test
     public void testLoadingSHAPA1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        loadTest("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
+        loadTest("test-v1-in.csv", "test-v1-out.csv");
     }
 
     /**
@@ -354,10 +369,15 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //BugzID:1568@Test
     public void testLoadingSHAPA2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        loadTest("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");
+        loadTest("test-v2-in.csv", "test-v2-out.csv");
+    }
+
+    public void testLoadingSHAPA3() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        loadTest("test-v3-in.csv", "test-v3-out.csv");
     }
 
     /**
