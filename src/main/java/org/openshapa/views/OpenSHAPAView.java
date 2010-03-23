@@ -777,7 +777,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects 'strong temporal ordering'.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -789,7 +789,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects 'weak temporal ordering'.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -802,7 +802,7 @@ public final class OpenSHAPAView extends FrameView {
     /**
      * The action to invoke when the user selects 'recent scripts' from the
      * scripting menu.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -824,7 +824,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects 'scripts' from the main menu.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -862,7 +862,7 @@ public final class OpenSHAPAView extends FrameView {
     /**
      * = Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL
      * points.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
@@ -873,7 +873,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL points.
-     * 
+     *
      * @param evt
      */
     private void zoomOutMenuItemActionPerformed(
@@ -883,7 +883,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * Function to reset the zoom level to the default size.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
@@ -898,7 +898,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The method to invoke when the use selects the spreadsheet menu item.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
@@ -959,7 +959,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects new cell from the menu.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -971,7 +971,7 @@ public final class OpenSHAPAView extends FrameView {
     /**
      * The action to invoke when the user selects new cell to the left from the
      * menu.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -983,7 +983,7 @@ public final class OpenSHAPAView extends FrameView {
     /**
      * The action to invoke when the user selects new cell to the right from the
      * menu.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -996,7 +996,7 @@ public final class OpenSHAPAView extends FrameView {
      * Changes the font size by adding sizeDif to the current size. Then it
      * creates and revalidates a new panel to show the font update. This will
      * not make the font smaller than smallestSize.
-     * 
+     *
      * @param sizeDif
      *            The number to add to the current font size.
      */
@@ -1024,7 +1024,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * Creates a new menu item for running a named script.
-     * 
+     *
      * @param f
      *            The file to run when menu item is selected.
      * @return The jmenuitem that can be added to a menu.
@@ -1044,7 +1044,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects a recent script to run.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
@@ -1054,7 +1054,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * Returns SpreadsheetPanel
-     * 
+     *
      * @return SpreadsheetPanel panel
      */
     public SpreadsheetPanel getSpreadsheetPanel() {

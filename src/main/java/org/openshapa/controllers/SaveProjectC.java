@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.models.project.Project;
 import org.yaml.snakeyaml.Dumper;
