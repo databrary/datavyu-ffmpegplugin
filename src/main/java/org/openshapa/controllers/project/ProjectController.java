@@ -20,7 +20,7 @@ import org.openshapa.views.continuous.PluginManager;
 /**
  * This class is responsible for managing a project.
  */
-public class ProjectController {
+public final class ProjectController {
 
     /** The current project we are working on. */
     private Project project;
@@ -107,7 +107,7 @@ public class ProjectController {
 
     /**
      * Sets the database associated with this project.
-     * 
+     *
      * @param newDB
      *            The new database to use with this project.
      */
@@ -117,7 +117,7 @@ public class ProjectController {
 
     /**
      * Gets the database associated with this project.
-     * 
+     *
      * @return The single database to use with this project.
      */
     public MacshapaDatabase getDB() {
@@ -133,7 +133,7 @@ public class ProjectController {
 
     /**
      * Sets the id of the last created cell to the specified parameter.
-     * 
+     *
      * @param newId
      *            The Id of the newly created cell.
      */
@@ -150,7 +150,7 @@ public class ProjectController {
 
     /**
      * Sets the id of the last selected cell to the specified parameter.
-     * 
+     *
      * @param newId
      *            The id of hte newly selected cell.
      */
@@ -167,7 +167,7 @@ public class ProjectController {
 
     /**
      * Sets the id of the last created column to the specified parameter.
-     * 
+     *
      * @param newId
      *            The Id of the newly created column.
      */
@@ -198,7 +198,7 @@ public class ProjectController {
 
     /**
      * Set the database file name, directory not included.
-     * 
+     *
      * @param fileName
      */
     public void setDatabaseFileName(final String fileName) {
@@ -215,7 +215,7 @@ public class ProjectController {
     /**
      * Set the directory the project file (and all project specific resources)
      * resides in.
-     * 
+     *
      * @param directory
      */
     public void setProjectDirectory(final String directory) {
@@ -310,7 +310,7 @@ public class ProjectController {
     /**
      * Marks the project state as being saved.
      */
-    public void saveProject() {
+    public void markProjectAsUnchanged() {
         changed = false;
         newProject = false;
     }

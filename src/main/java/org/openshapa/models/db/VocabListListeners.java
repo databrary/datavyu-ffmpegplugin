@@ -69,7 +69,7 @@ public class VocabListListeners extends Listeners
         ExternalVocabListListener el;
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
 
         // No internal listeners for now.
 
@@ -116,7 +116,7 @@ public class VocabListListeners extends Listeners
         ExternalVocabListListener el;
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
 
         // No internal listeners for now.
 

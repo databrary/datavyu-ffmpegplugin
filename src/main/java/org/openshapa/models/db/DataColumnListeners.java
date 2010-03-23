@@ -347,7 +347,7 @@ public class DataColumnListeners extends Listeners
 
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
 
         // No internal listeners for now.
 
@@ -393,7 +393,7 @@ public class DataColumnListeners extends Listeners
 
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
 
         // No internal listeners for now.
 
@@ -448,7 +448,7 @@ public class DataColumnListeners extends Listeners
 
             if(nonTrivial) {
                 // The database has been modified!
-                db.modifyDatabase();
+                db.markAsChanged();
             } nonTrivial = false;
 
             // first, notify the internal listeners... none at present, so
@@ -522,7 +522,7 @@ public class DataColumnListeners extends Listeners
 
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
 
         // first, notify the intenal listeners... none at present
 

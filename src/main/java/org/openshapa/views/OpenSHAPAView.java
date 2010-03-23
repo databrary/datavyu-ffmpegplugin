@@ -298,8 +298,8 @@ public final class OpenSHAPAView extends FrameView {
                                                 .getProjectController();
                 pController.setProjectName(jd.getSelectedFile().getName());
                 pController.setLastSaveOption(filter);
-                pController.saveProject();
-                pController.getDB().saveDatabase();
+                pController.markProjectAsUnchanged();
+                pController.getDB().markAsUnchanged();
                 updateTitle();
             }
         }

@@ -488,7 +488,7 @@ public class DataCellListeners extends Listeners
 
             if(nonTrivial) {
                 // The database has been modified!
-                db.modifyDatabase();
+                db.markAsChanged();
             } nonTrivial = false;
 
             // first, notify the intenal listeners...
@@ -600,7 +600,7 @@ public class DataCellListeners extends Listeners
         InternalDataCellListener il;
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
 
         // first, notify the internal listeners...
         for ( Long id : this.ils )

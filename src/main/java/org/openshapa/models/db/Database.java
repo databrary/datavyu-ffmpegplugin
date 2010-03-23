@@ -4658,7 +4658,7 @@ public abstract class Database
     }
 
     /** Updates hasChanged to true. */
-    public void modifyDatabase() {
+    public void markAsChanged() {
         if (OpenSHAPA.getApplication().getCanSetUnsaved()) {
             hasChanged = true;
             OpenSHAPA.getApplication().updateTitle();
@@ -4666,7 +4666,7 @@ public abstract class Database
     }
 
     /** Updates hasChanged to false. */
-    public void saveDatabase() {
+    public void markAsUnchanged() {
         hasChanged = false;
         OpenSHAPA.getApplication().updateTitle();
     }

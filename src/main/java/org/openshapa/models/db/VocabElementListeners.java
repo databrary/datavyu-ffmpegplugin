@@ -669,7 +669,7 @@ public class VocabElementListeners extends Listeners {
         {
 
             // The database has been modified!
-            db.modifyDatabase();
+            db.markAsChanged();
 
             // first, notify the intenal listeners...
             this.notifyInternalListenersOfChange();
@@ -779,7 +779,7 @@ public class VocabElementListeners extends Listeners {
         final String mName = "VEChangeListeners::notifyListenersOfDeletion()";
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
 
         // first, notify the intenal listeners...
         this.notifyInternalListenersOfDeletion();

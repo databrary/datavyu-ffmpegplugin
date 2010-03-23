@@ -105,7 +105,7 @@ public class ColumnListListeners extends Listeners
 
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
 
         // No internal listeners for now.
 
@@ -153,7 +153,7 @@ public class ColumnListListeners extends Listeners
         ExternalColumnListListener el;
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
 
 
         // No internal listeners for now.
@@ -202,7 +202,7 @@ public class ColumnListListeners extends Listeners
         ExternalColumnListListener el;
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
         
 
 
