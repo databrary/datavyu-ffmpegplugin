@@ -33,10 +33,6 @@ public class TimescalePainter extends JComponent {
         this.repaint();
     }
 
-    public ViewableModel getViewableModel() {
-        return viewableModel;
-    }
-
     public void setViewableModel(final ViewableModel viewableModel) {
         this.viewableModel = viewableModel;
         this.repaint();
@@ -53,7 +49,7 @@ public class TimescalePainter extends JComponent {
 
     /**
      * This method paints the timing scale.
-     * 
+     *
      * @param g
      */
     @Override

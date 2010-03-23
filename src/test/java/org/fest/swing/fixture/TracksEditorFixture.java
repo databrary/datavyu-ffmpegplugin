@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import org.fest.swing.core.Robot;
 import org.openshapa.controllers.component.TrackController;
 import org.openshapa.controllers.component.TracksEditorController;
+import org.openshapa.views.component.SnapMarkerPainter;
 
 /**
  * Fixture for OpenSHAPA NeedlePainter.
@@ -86,5 +87,10 @@ public class TracksEditorFixture extends JPanelFixture {
             }
         }
         return null;
+    }
+
+    public SnapMarkerFixture getSnapMarker() {
+        return new SnapMarkerFixture(robot,
+                (SnapMarkerPainter)tracksEditorC.getMarkerView());
     }
 }

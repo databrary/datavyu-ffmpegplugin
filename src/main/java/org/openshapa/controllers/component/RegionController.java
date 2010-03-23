@@ -49,7 +49,7 @@ public class RegionController {
 
     /**
      * Sets the playback region to visualise
-     * 
+     *
      * @param start
      *            start of the playback region in milliseconds
      * @param end
@@ -63,7 +63,7 @@ public class RegionController {
 
     /**
      * Sets the start of the playback region to visualise
-     * 
+     *
      * @param start
      */
     public void setPlaybackRegionStart(final long start) {
@@ -73,7 +73,7 @@ public class RegionController {
 
     /**
      * Sets the end of the playback region to visualise
-     * 
+     *
      * @param end
      */
     public void setPlaybackRegionEnd(final long end) {
@@ -106,7 +106,7 @@ public class RegionController {
 
     /**
      * Copies the given viewable model
-     * 
+     *
      * @param viewableModel
      */
     public void setViewableModel(final ViewableModel viewableModel) {
@@ -125,7 +125,7 @@ public class RegionController {
 
     /**
      * Register the listener to be notified of region marker events
-     * 
+     *
      * @param listener
      */
     public void addMarkerEventListener(final MarkerEventListener listener) {
@@ -136,7 +136,7 @@ public class RegionController {
 
     /**
      * Remove the listener from being notified of region marker events
-     * 
+     *
      * @param listener
      */
     public void removeMarkerEventListener(final MarkerEventListener listener) {
@@ -147,7 +147,7 @@ public class RegionController {
 
     /**
      * Used to inform listeners about the change of a region marker.
-     * 
+     *
      * @param marker
      * @param time
      */

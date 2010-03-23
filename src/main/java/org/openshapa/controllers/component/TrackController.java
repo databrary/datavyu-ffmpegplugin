@@ -3,8 +3,6 @@ package org.openshapa.controllers.component;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -15,7 +13,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
@@ -41,7 +41,7 @@ public class TrackController {
     private transient final JLabel trackLabel;
     private transient final JLabel iconLabel;
     private transient final TrackPainter trackPainter;
-    private transient final PopupMenu menu;
+    private transient final JPopupMenu menu;
     private transient final JButton lockUnlockButton;
     private transient final ImageIcon unlockIcon =
             new ImageIcon(getClass().getResource("/icons/track-unlock.png"));
@@ -88,14 +88,14 @@ public class TrackController {
         trackPainter.addMouseListener(painterListener);
         trackPainter.addMouseMotionListener(painterListener);
 
-        menu = new PopupMenu();
-        MenuItem setBookmarkMenuItem = new MenuItem("Set bookmark");
+        menu = new JPopupMenu();
+        JMenuItem setBookmarkMenuItem = new JMenuItem("Set bookmark");
         setBookmarkMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
                 TrackController.this.setBookmarkAction();
             }
         });
-        MenuItem clearBookmarkMenuItem = new MenuItem("Clear bookmark");
+        JMenuItem clearBookmarkMenuItem = new JMenuItem("Clear bookmark");
         clearBookmarkMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
                 TrackController.this.clearBookmarkAction();
@@ -103,6 +103,8 @@ public class TrackController {
         });
         menu.add(setBookmarkMenuItem);
         menu.add(clearBookmarkMenuItem);
+
+        menu.setName("trackPopUpMenu");
 
         trackPainter.add(menu);
 
@@ -140,7 +142,6 @@ public class TrackController {
 
     /**
      * Sets the track information to use.
-     * 
      * @param icon
      *            Icon to use with this track. {@code null} if no icon.
      * @param trackName
