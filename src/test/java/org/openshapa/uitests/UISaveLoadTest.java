@@ -331,11 +331,11 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test loading a database from a version 1 CSV file.
-     * 
+     *
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testLoadingSHAPA1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         loadTest("/ui/test-v1-in.csv", "/ui/test-v1-out.csv");
@@ -343,11 +343,11 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test loading a database from a version 2 CSV file.
-     * 
+     *
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
+    //@Test
     public void testLoadingSHAPA2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         loadTest("/ui/test-v2-in.csv", "/ui/test-v2-out.csv");

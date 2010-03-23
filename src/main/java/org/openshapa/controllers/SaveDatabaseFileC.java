@@ -44,10 +44,13 @@ public final class SaveDatabaseFileC {
      *      The selected filter to use when saving the database.
      * @param db
      *      The MacSHAPADatabase file to save to disk.
+     *
+     * @throws LogicErrorException If unable to save the database.
      */
     public void saveDatabase(final String destinationFile,
                              final FileFilter fileFilter,
-                             final MacshapaDatabase db) {
+                             final MacshapaDatabase db)
+    throws LogicErrorException {
 
         String outputFile = destinationFile.toLowerCase();
 
@@ -97,8 +100,6 @@ public final class SaveDatabaseFileC {
             }
         } catch (SystemErrorException se) {
             logger.error("Can't set db name to specified file.", se);
-        } catch (LogicErrorException le) {
-            OpenSHAPA.getApplication().showWarningDialog(le);
         }
     }
 
@@ -110,24 +111,23 @@ public final class SaveDatabaseFileC {
      * @param destinationFile
      *      The destination to save the database too.
      * @param db
-     *      The
+     *      The database to save to disk.
+     *
+     * @throws LogicErrorException If unable to save the database to the
+     * desired location.
      */
     public void saveDatabase(final File destinationFile,
-                             final MacshapaDatabase db) {
+                             final MacshapaDatabase db)
+    throws LogicErrorException {
         // We bypass any overwrite checks here.
         String outputFile = destinationFile.getName().toLowerCase();
-        String extension =
-                outputFile.substring(outputFile.lastIndexOf('.'), outputFile
-                        .length());
+        String extension = outputFile.substring(outputFile.lastIndexOf('.'),
+                                                outputFile.length());
 
-        try {
-            if (extension.equals(".csv")) {
-                saveAsCSV(destinationFile.toString(), db);
-            } else if (extension.equals(".odb")) {
-                saveAsMacSHAPADB(destinationFile.toString(), db);
-            }
-        } catch (LogicErrorException le) {
-            OpenSHAPA.getApplication().showWarningDialog(le);
+        if (extension.equals(".csv")) {
+            saveAsCSV(destinationFile.toString(), db);
+        } else if (extension.equals(".odb")) {
+            saveAsMacSHAPADB(destinationFile.toString(), db);
         }
     }
 

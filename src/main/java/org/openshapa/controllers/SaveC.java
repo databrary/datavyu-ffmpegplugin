@@ -12,6 +12,8 @@ import org.openshapa.util.HashUtils;
 import org.openshapa.util.FileFilters.SHAPAFilter;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.MacshapaDatabase;
 
 /**
  * Master controller for handling project and database file saving logic.
@@ -19,30 +21,46 @@ import com.usermetrix.jclient.UserMetrix;
 public final class SaveC {
 
     /** The logger for this class. */
-    private final transient UserMetrix logger = UserMetrix
-        .getInstance(SaveC.class);
+    private final UserMetrix logger = UserMetrix.getInstance(SaveC.class);
 
     /** The length of the SHA-1 sum to put at the end of CSV files. */
     private static final int HASH_LENGTH = 10;
 
     /**
-     * Saves what is being worked on using the last save option.
+     * Saves a database to disk.
+     *
+     * @param databaseFile The location to save the database too.
+     * @param database The database to save to disk.
+     *
+     * @throws LogicErrorException If unable to save the database.
      */
-    public void save() {
-        ProjectController projectController = OpenSHAPA.getProjectController();
+    public void saveDatabase(final String databaseFile,
+                             final MacshapaDatabase database)
+    throws LogicErrorException {
+        this.saveDatabase(new File(databaseFile), database);
+    }
 
-        if (projectController.getLastSaveOption() instanceof SHAPAFilter) {
-            saveProject();
-        } else {
-            saveDatabase();
-        }
+    /**
+     * Saves a database to disk.
+     *
+     * @param databaseFile The location to save the database too.
+     * @param database The database to save to disk.
+     *
+     * @throws LogicErrorException If unable to save the database.
+     */
+    public void saveDatabase(final File databaseFile,
+                             final MacshapaDatabase database)
+    throws LogicErrorException {
+        SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
+        saveDBC.saveDatabase(databaseFile, database);
+
     }
 
     /**
      * Save the currently opened project and database. Enforce database naming
      * rule: [project name]-[SHA-1(project name).substring(0, 10)].csv
      */
-    public void saveProject() {
+    public void saveProject() throws LogicErrorException {
         ProjectController projectController = OpenSHAPA.getProjectController();
         final String projectName = projectController.getProjectName();
 
@@ -93,7 +111,8 @@ public final class SaveC {
      * @param directory The directory to save the project too.
      * @param file The file to save the project too.
      */
-    public void saveAsProject(final String directory, final String file) {
+    public void saveAsProject(final String directory, final String file)
+    throws LogicErrorException {
         /*
          * First, check if the destination PROJECT file exists. We do not care
          * if the target database exists or not.
@@ -165,8 +184,10 @@ public final class SaveC {
 
     /**
      * Just save the database.
+     *
+     * @deprecated
      */
-    public void saveDatabase() {
+    public void saveDatabase() throws LogicErrorException {
         ProjectController projectController = OpenSHAPA.getProjectController();
         projectController.markProjectAsUnchanged();
         SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
@@ -182,10 +203,13 @@ public final class SaveC {
      * @param directory The directory to save the database too.
      * @param file The name of the file to save the database too.
      * @param saveFormat The format to use when saving the database.
+     *
+     * @deprecated
      */
     public void saveAsDatabase(final String directory,
                                final String file,
-                               final FileFilter saveFormat) {
+                               final FileFilter saveFormat)
+    throws LogicErrorException {
         /*
          * Even though the user explicitly chooses to save as a database, we
          * will still need to update the project information, just in case the
