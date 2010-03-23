@@ -1,9 +1,12 @@
 package org.fest.swing.fixture;
 
+import java.awt.MouseInfo;
 import static org.fest.reflect.core.Reflection.field;
 
 import java.awt.Point;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
@@ -20,11 +23,8 @@ public class TrackFixture extends ComponentFixture {
 
     /**
      * Constructor.
-     * 
-     * @param robot
-     *            mainframe robot
-     * @param target
-     *            TracksEditorController
+     * @param robot mainframe robot
+     * @param target TracksEditorController
      */
     public TrackFixture(final Robot robot, final TrackController target) {
         super(robot, (JComponent) field("trackPainter")
@@ -102,33 +102,66 @@ public class TrackFixture extends ComponentFixture {
         return new JLabelFixture(robot, "trackLabel").text();
     }
 
+    public JPanelFixture getTrackPanel() {
+        return new JPanelFixture(robot, (JPanel)trackC.getView());
+    }
+
     /**
      * Drag number of pixels left (negative) or right (positive)
      * 
      * @param pixels
      */
     public void drag(final int pixels) {
-        // Hold down left mouse button
-        // Start position should leave enough room to move pixels
-        Point topLeft = ((TrackPainter) target).getLocationOnScreen();
-        Point startClick;
-        if (pixels >= 0) {
-            startClick = new Point(topLeft.x + 5, 
-                    (topLeft.y + ((TrackPainter) target).getHeight() / 2) + 5);
-        } else {
-            startClick =
-                    new Point(topLeft.x + ((TrackPainter) target).getWidth()
-                    - 5,
-                    (topLeft.y
-                    + ((TrackPainter) target).getHeight() / 2) - 5);
-        }
-        robot.pressMouse(startClick, MouseButton.LEFT_BUTTON);
-
-        // Move mouse to new position
-        Point to = new Point(startClick.x + pixels, startClick.y);
-        robot.moveMouse(to);
+        dragWithoutReleasing(pixels);
 
         // Release mouse
+        releaseLeftMouse();
+    }
+
+    /**
+     * Drag number of pixels left (negative) or right (positive) without
+     * releasing the mouse.
+     * @param pixels
+     */
+    public void dragWithoutReleasing(final int pixels) {
+        // Hold down left mouse button
+        // Start position should leave enough room to move pixels
+        Point to = null;
+        if (!robot.isDragging()) {
+            //Point topLeft = ((TrackPainter) target).getLocationOnScreen();
+            Point carriagePoint = ((TrackPainter) target).getCarriagePolygon()
+                    .getBounds().getLocation();
+            Point topLeft = new Point(
+                    ((TrackPainter) target).getLocationOnScreen().x
+                    + carriagePoint.x,
+                    ((TrackPainter) target).getLocationOnScreen().y
+                    + carriagePoint.y);
+            Point startClick;
+            if (pixels >= 0) {
+                startClick = new Point(topLeft.x + 5,
+                        (topLeft.y + ((TrackPainter) target).getHeight() / 2)
+                        + 5);
+            } else {
+                startClick =
+                        new Point(topLeft.x + ((TrackPainter) target).getWidth()
+                        - carriagePoint.x - 5,
+                        (topLeft.y
+                        + ((TrackPainter) target).getHeight() / 2) - 5);
+            }
+            robot.pressMouse(startClick, MouseButton.LEFT_BUTTON);
+
+            // Move mouse to new position
+            to = new Point(startClick.x + pixels, startClick.y);
+        }
+        to = new Point(MouseInfo.getPointerInfo().getLocation().x + pixels,
+                MouseInfo.getPointerInfo().getLocation().y);
+        robot.moveMouse(to);
+    }
+
+    /**
+     * Releases the left mouse button that was used for dragging.
+     */
+    public void releaseLeftMouse() {
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
@@ -137,6 +170,20 @@ public class TrackFixture extends ComponentFixture {
      */
     public int getWidthInPixels() {
         return trackC.getView().getWidth();
+    }
+
+    /**
+     * Clicks on the track to select or deselect.
+     */
+    public void click() {
+        robot.click(target);
+    }
+
+    public JPopupMenuFixture showPopUpMenu() {
+        robot.click(target, MouseButton.RIGHT_BUTTON);
+
+        return new JPopupMenuFixture(robot, field("menu")
+                .ofType(JPopupMenu.class).in(trackC).get());
     }
 
 }

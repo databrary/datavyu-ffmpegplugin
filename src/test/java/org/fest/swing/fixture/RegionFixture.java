@@ -22,7 +22,7 @@ public class RegionFixture extends ComponentFixture {
      * @param robot mainframe robot
      * @param target NeedleController
      */
-    public RegionFixture(final Robot robot,final RegionController target) {
+    public RegionFixture(final Robot robot, final RegionController target) {
         super(robot, target.getView());
         regionC = target;
     }
@@ -59,7 +59,8 @@ public class RegionFixture extends ComponentFixture {
      * @return true if mouse is on the region head.
      */
     public boolean isMouseOnRegionHead() {
-        return ((RegionPainter)target).contains(MouseInfo.getPointerInfo().getLocation());
+        return ((RegionPainter)target).contains(
+                MouseInfo.getPointerInfo().getLocation());
     }
 
     public void dragStartMarker(int pixels) {
