@@ -95,8 +95,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         DialogFixture scriptConsole = mainFrameFixture.dialog();
         scriptConsole.button("closeButton").click();
 
-        // TODO Need to check the window title - asterisk present
-
         // 2. Save the file
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
@@ -162,6 +160,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
         // 1. Click save on empty project. Expecting it to act like Save As
+        //Check that asterisk is present
+        Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
@@ -190,6 +190,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             mainFrameFixture.fileChooser().selectFile(toSave).approve();
         }
 
+        //Check that no asterisk is present
+        Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
+
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
         Assert.assertTrue(demoFile.exists(),
@@ -217,12 +220,14 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         DialogFixture scriptConsole = mainFrameFixture.dialog();
         scriptConsole.button("closeButton").click();
 
-        // TODO Need to check the title - asterisk present
+        // Check the title - asterisk present
+        Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
         // 3. Save project file. Not expecting anything except a save
         mainFrameFixture.clickMenuItemWithPath("File", "Save");
 
-        // TODO Need to check the title - asterisk not present
+        // Check the title - asterisk not present
+        Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
         // 4. Check that the generated CSV file is correct
         ProjectController pc = OpenSHAPA.getProjectController();
@@ -262,6 +267,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         loadedProject.setDatabaseFileName(inputFile);
         loadedProject.setProjectName("newSHAPA");
 
+        //Check that title has asterisk
+        Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
+
         // 2. Write the project out
         File newSHAPA = new File(tempFolder + "/newSHAPA.shapa");
 
@@ -300,8 +308,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         }
 
         //Check that the title bar file name does not have an asterix
-        Assert.assertFalse(mainFrameFixture.component().getTitle()
-                .endsWith("*"));
+        Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
         // 4. Save the contents as a separate project file
         File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");

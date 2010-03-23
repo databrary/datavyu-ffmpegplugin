@@ -38,4 +38,11 @@ public class OpenSHAPAFrameFixture extends FrameFixture {
         return result;
     }
 
+    /**
+     * @return title of window.
+     */
+    public String getTitle() {
+        return target.getTitle();
+    }
+
 }
