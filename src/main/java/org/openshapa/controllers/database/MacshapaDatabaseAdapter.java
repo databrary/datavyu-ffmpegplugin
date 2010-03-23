@@ -22,8 +22,7 @@ public class MacshapaDatabaseAdapter implements
 
     public MacshapaDatabaseAdapter() {
         try {
-            db = new MacshapaDatabase();
-            db.setTicks(Constants.TICKS_PER_SECOND);
+            db = new MacshapaDatabase(Constants.TICKS_PER_SECOND);
         } catch (SystemErrorException e) {
             logger.error("Unable to create new database", e);
         }

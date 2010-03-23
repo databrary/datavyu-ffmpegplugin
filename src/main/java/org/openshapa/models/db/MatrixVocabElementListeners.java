@@ -433,7 +433,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
         }
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
 
         for ( Long id : this.ils )
         {
@@ -499,7 +499,7 @@ public class MatrixVocabElementListeners extends VocabElementListeners
         InternalMatrixVocabElementListener il;
 
         // The database has been modified!
-        db.modifyDatabase();
+        db.markAsChanged();
 
 
         for ( Long id : this.ils )

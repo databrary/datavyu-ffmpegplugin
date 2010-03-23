@@ -30,17 +30,13 @@ import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.controllers.NewDatabaseC;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.controllers.NewVariableC;
-import org.openshapa.controllers.OpenDatabaseC;
-import org.openshapa.controllers.OpenProjectC;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.SetSheetLayoutC;
 import org.openshapa.controllers.VocabEditorC;
 import org.openshapa.controllers.project.ProjectController;
-import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.ArrayDirection;
-import org.openshapa.util.Constants;
 import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
@@ -48,6 +44,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.controllers.OpenC;
 
 /**
  * The main FrameView, representing the interface for OpenSHAPA the user will
@@ -57,7 +54,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * Constructor.
-     * 
+     *
      * @param app
      *            The SingleFrameApplication that invoked this main FrameView.
      */
@@ -69,7 +66,7 @@ public final class OpenSHAPAView extends FrameView {
         manager.addKeyEventDispatcher(new KeyEventDispatcher() {
             /**
              * Dispatches the keystroke to the correct action.
-             * 
+             *
              * @param evt
              *            The event that triggered this action.
              * @return true if the KeyboardFocusManager should take no further
@@ -146,14 +143,10 @@ public final class OpenSHAPAView extends FrameView {
      * Update the title of the application.
      */
     public void updateTitle() {
-        // BugzID:449 - Update the name of the window to include the default
-        // name of the database.
-
         // Show the project name instead of database.
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap =
-                OpenSHAPA.getApplication().getContext().getResourceMap(
-                        OpenSHAPA.class);
+        ResourceMap rMap = OpenSHAPA.getApplication().getContext()
+                                    .getResourceMap(OpenSHAPA.class);
         String postFix = "";
         ProjectController projectController = OpenSHAPA.getProjectController();
 
@@ -291,15 +284,53 @@ public final class OpenSHAPAView extends FrameView {
                 FileFilter filter = jd.getFileFilter();
 
                 // Opening a project file
-                OpenSHAPA.getProjectController().setLastSaveOption(filter);
                 if (filter instanceof SHAPAFilter) {
-                    openProject(jd);
+                    openProject(jd.getSelectedFile());
 
                 // Opening a database file
                 } else {
-                    openDatabase(jd);
+                    openDatabase(jd.getSelectedFile());
                 }
+
+                // BugzID:449 - Set filename in spreadsheet window and database
+                // if the database name is undefined.
+                ProjectController pController = OpenSHAPA
+                                                .getProjectController();
+                pController.setProjectName(jd.getSelectedFile().getName());
+                pController.setLastSaveOption(filter);
+                pController.markProjectAsUnchanged();
+                pController.getDB().markAsUnchanged();
+                updateTitle();
             }
+        }
+
+        // Display any changes to the database.
+        this.showSpreadsheet();
+    }
+
+    private void openDatabase(final File databaseFile) {
+        // Set the database to the freshly loaded database.
+        OpenC openC = new OpenC();
+        openC.openDatabase(databaseFile);
+
+        // Make a project for the new database.
+        OpenSHAPA.newProjectController();
+        ProjectController projController = OpenSHAPA.getProjectController();
+
+        projController.setDatabase(openC.getDatabase());
+        projController.setProjectDirectory(databaseFile.getParent());
+        projController.setDatabaseFileName(databaseFile.getName());
+    }
+
+    private void openProject(final File projectFile) {
+        OpenC openC = new OpenC();
+        openC.openProject(projectFile);
+
+        if (openC.getProject() != null && openC.getDatabase() != null) {
+            OpenSHAPA.newProjectController(openC.getProject());
+            OpenSHAPA.getProjectController().setDatabase(openC.getDatabase());
+            OpenSHAPA.getProjectController()
+                     .setProjectDirectory(projectFile.getParent());
         }
     }
 
@@ -385,62 +416,6 @@ public final class OpenSHAPAView extends FrameView {
     @Action
     public void deleteCells() {
         new DeleteCellC(panel.getSelectedCells());
-    }
-
-    private void openDatabase(final OpenSHAPAFileChooser jd) {
-        // Make a project for the new database.
-        OpenSHAPA.newProjectController();
-        ProjectController projectController = OpenSHAPA.getProjectController();
-
-        try {
-            MacshapaDatabase newDB = new MacshapaDatabase();
-            projectController.setDatabase(newDB);
-            OpenSHAPAView s =
-                    (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
-            s.showSpreadsheet();
-            // TODO- BugzID:79 This needs to move above showSpreadsheet,
-            // when setTicks is fully implemented.
-            newDB.setTicks(Constants.TICKS_PER_SECOND);
-        } catch (SystemErrorException se) {
-            logger.error("Unable to create new database on open", se);
-        }
-        new OpenDatabaseC(jd.getSelectedFile());
-
-        String dir = jd.getSelectedFile().getAbsolutePath();
-        int match = dir.lastIndexOf(jd.getSelectedFile().getName());
-        dir = dir.substring(0, match);
-
-        projectController.setProjectName(projectController.getDB().getName());
-
-        OpenSHAPA.getApplication().updateTitle();
-    }
-
-    private void openProject(final OpenSHAPAFileChooser jd) {
-        OpenProjectC opc = new OpenProjectC();
-
-        if (opc.open(jd.getSelectedFile())) {
-            // Successfully loaded the project file
-            ProjectController projectController =
-                    OpenSHAPA.getProjectController();
-
-            try {
-                MacshapaDatabase newDB = new MacshapaDatabase();
-                projectController.setDatabase(newDB);
-                OpenSHAPAView s =
-                        (OpenSHAPAView) OpenSHAPA.getApplication()
-                                .getMainView();
-                s.showSpreadsheet();
-                newDB.setTicks(Constants.TICKS_PER_SECOND);
-            } catch (SystemErrorException ex) {
-                logger.error("Unable to create new database on open", ex);
-            }
-
-            // Load the database
-            new OpenDatabaseC(new File(jd.getSelectedFile().getParent(),
-                    projectController.getDatabaseFileName()));
-
-            projectController.loadProject();
-        }
     }
 
     /**
@@ -802,7 +777,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects 'strong temporal ordering'.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -814,7 +789,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects 'weak temporal ordering'.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -827,7 +802,7 @@ public final class OpenSHAPAView extends FrameView {
     /**
      * The action to invoke when the user selects 'recent scripts' from the
      * scripting menu.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -849,7 +824,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects 'scripts' from the main menu.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -887,7 +862,7 @@ public final class OpenSHAPAView extends FrameView {
     /**
      * = Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL
      * points.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
@@ -898,7 +873,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL points.
-     * 
+     *
      * @param evt
      */
     private void zoomOutMenuItemActionPerformed(
@@ -908,7 +883,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * Function to reset the zoom level to the default size.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
@@ -923,7 +898,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The method to invoke when the use selects the spreadsheet menu item.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
@@ -984,7 +959,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects new cell from the menu.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -996,7 +971,7 @@ public final class OpenSHAPAView extends FrameView {
     /**
      * The action to invoke when the user selects new cell to the left from the
      * menu.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -1008,7 +983,7 @@ public final class OpenSHAPAView extends FrameView {
     /**
      * The action to invoke when the user selects new cell to the right from the
      * menu.
-     * 
+     *
      * @param evt
      *            The event that fired this action.
      */
@@ -1021,7 +996,7 @@ public final class OpenSHAPAView extends FrameView {
      * Changes the font size by adding sizeDif to the current size. Then it
      * creates and revalidates a new panel to show the font update. This will
      * not make the font smaller than smallestSize.
-     * 
+     *
      * @param sizeDif
      *            The number to add to the current font size.
      */
@@ -1049,7 +1024,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * Creates a new menu item for running a named script.
-     * 
+     *
      * @param f
      *            The file to run when menu item is selected.
      * @return The jmenuitem that can be added to a menu.
@@ -1069,7 +1044,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * The action to invoke when the user selects a recent script to run.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
@@ -1079,7 +1054,7 @@ public final class OpenSHAPAView extends FrameView {
 
     /**
      * Returns SpreadsheetPanel
-     * 
+     *
      * @return SpreadsheetPanel panel
      */
     public SpreadsheetPanel getSpreadsheetPanel() {

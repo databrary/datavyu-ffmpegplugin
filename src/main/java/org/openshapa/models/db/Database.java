@@ -10,25 +10,27 @@ package org.openshapa.models.db;
 import org.openshapa.OpenSHAPA;
 
 /**
- * Abstract database class.
+ * Abstract database class
  */
-public abstract class Database {
+public abstract class Database
+{
 
     /*************************************************************************/
     /*************************** Constants: **********************************/
     /*************************************************************************/
 
-    /** Constant type for Data Column Creation. */
-    public static final int COLUMN_TYPE_DATA = 1;
+    /** Constant type for Data Column Creation */
+    public final static int COLUMN_TYPE_DATA = 1;
 
-    /** Constant type for Reference Column Creation. */
-    public static final int COLUMN_TYPE_REFERENCE = 2;
+    /** Constant type for Reference Column Creation */
+    public final static int COLUMN_TYPE_REFERENCE = 2;
 
-    /** Default Ticks per second from MacSHAPA. */
-    public static final int DEFAULT_TPS = 60;
+    /** Default Ticks per second from MacSHAPA */
+    public final static int DEFAULT_TPS = 60;
 
-    /** Default start time. */
-    public static final long DEFAULT_START_TIME = 0;
+    /** Default start time */
+    public final static long DEFAULT_START_TIME = 0;
+
 
     /*************************************************************************/
     /***************************** Fields: ***********************************/
@@ -52,10 +54,6 @@ public abstract class Database {
     /** Whether we are keeping all columns sorted by time automatically. */
     protected boolean temporalOrdering = false;
 
-    // /** Database change listeners */
-    // java.util.Vector<DatabaseChangeListener> changeListeners =
-    // new java.util.Vector<DatabaseChangeListener>();
-
     /** Current database user UID. */
     protected int curUID = 0;
 
@@ -71,11 +69,10 @@ public abstract class Database {
     /** Cascade Listeners. */
     private CascadeListeners listeners = null;
 
-    /**
-     * Boolean which keeps track of whether edits have occurred since the
-     * database was last saved.
-     */
+    /** Boolean which keeps track of whether edits have occurred since
+     *  the database was last saved. */
     private boolean hasChanged = false;
+
 
     /*************************************************************************/
     /*************************** Constructors: *******************************/
@@ -83,24 +80,50 @@ public abstract class Database {
 
     // Database()
     /**
-     * Constructor for Database. Sets up data structures used by all flavors of
-     * databases. -- 4/30/07 Changes: - None.
+     * Constructor for Database.  Sets up data structures used by all flavors
+     * of databases.
+     *                                               -- 4/30/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public Database() throws SystemErrorException {
+    public Database()
+        throws SystemErrorException
+    {
         super();
 
-        idx = new DBIndex(this);
+        this.idx = new DBIndex(this);
 
-        vl = new VocabList(this);
+        this.vl = new VocabList(this);
 
-        cl = new ColumnList(this);
+        this.cl = new ColumnList(this);
 
-        listeners = new CascadeListeners(this);
+        this.listeners = new CascadeListeners(this);
 
         return;
 
     } /* Database::Database() */
+
+    /**
+     * Constructor.
+     *
+     * @param ticksPerSecond The ticks per second to use with the new database.
+     *
+     * @throws SystemErrorException If unable to create database.
+     */
+    public Database(final int ticksPerSecond) throws SystemErrorException {
+        super();
+
+        this.idx = new DBIndex(this);
+        this.vl = new VocabList(this);
+        this.cl = new ColumnList(this);
+        this.listeners = new CascadeListeners(this);
+
+        this.tps = ticksPerSecond;
+    }
+
 
     /*************************************************************************/
     /******************* Abstract Method Declarations: ***********************/
@@ -111,7 +134,11 @@ public abstract class Database {
     // getType()
     /**
      * Gets the database type string<br>
-     * (eg ODB File) Changes: - None.
+     * (eg ODB File)
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
     public abstract String getType();
@@ -119,129 +146,138 @@ public abstract class Database {
     // getVersion()
     /**
      * Gets the database version number<br>
-     * (eg 2.1) Changes: - None.
+     * (eg 2.1)
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
     public abstract float getVersion();
 
-    // /*** Database element management ***/
-    //
-    // /**
-    // * getCell() -- by column ID and cell ID
-    // *
-    // * Gets the cell associated with the given id in the given column
-    // * @param columnID the id of the column the cell is in
-    // * @param cellID the id of the cell
-    // * @return the cell associated with the given cell id
-    // *
-    // * Changes:
-    // *
-    // * - None.
-    // */
-    //
-    // public abstract Cell getCell(long columnID, long cellID);
-    //
-    //
-    // /**
-    // * getFormalArgument() -- by formal argument ID
-    // *
-    // * Gets the argument associated with the given id
-    // *
-    // * @param argumentID the id of the argument
-    // * @return the argument associated with the given argument id
-    // *
-    // * Changes:
-    // *
-    // * - Used to be called getArgument(). Changed the name to avoid
-    // * confusion. Also changed type to AFormalArgumentto
-    // * reflect changes in class structure.
-    // *
-    // * -- - 3/03/07
-    // */
-    //
-    // public abstract FormalArgument getFormalArgument(long argumentID);
 
-    // /**
-    // * createColumn()
-    // *
-    // * Creates a Column of the given type in the database.
-    // * @param columnType the type of column to create:<br>
-    // * Must be either:
-    // * <UL>
-    // * <LI>COLUMN_TYPE_DATA</LI> or
-    // * <LI>COLUMN_TYPE_REFERENCE</LI>
-    // * </UL>
-    // * @return the newly created column object
-    // *
-    // * Changes:
-    // *
-    // * - None.
-    // */
-    //
-    // public abstract Column createColumn(int columnType);
-    //
-    //
-    // /**
-    // * createCell()
-    // *
-    // * Creates a new cell in the given column.
-    // * @param columnID the id of the column in which to create the cell
-    // * @return the newly created cell
-    // *
-    // * Changes:
-    // *
-    // * - None.
-    // */
-    //
-    // public abstract Cell createCell(long columnID);
 
-    // /**
-    // * createFormalArgument()
-    // *
-    // * NOTE: We must support many types of formal arguments. Thus this
-    // * method makes little sense. Expect that I will rework this
-    // * completely.
-    // * -- - 3/03/07
-    // *
-    // * Creates a new formal argument.
-    // * @return the newly created formal argument
-    // *
-    // * Changes:
-    // *
-    // * - None.
-    // */
-    //
-    // public abstract FormalArgument createFormalArgument();
-    //
-    // /**
-    // * createMatrixVocabElement()
-    // *
-    // * Creates a new matrix vocab element.
-    // * @return the newly created matrix vocab element
-    // *
-    // * Changes:
-    // *
-    // * - Changed return type to match changes in class structure for
-    // * vocab elements.
-    // * -- - 3/03/07
-    // */
-    //
-    // public abstract VocabElement createMatrixVocabElement();
-    //
-    // /**
-    // * createPredicateVocabElement()
-    // *
-    // * Creates a new predicate vocab element.
-    // * @return the newly created predicate vocab element
-    // *
-    // * Changes
-    // *
-    // * - Changed return type to match changes in class structure for
-    // * vocab elements.
-    // * -- - 3/03/07
-    // */
-    //
-    // public abstract VocabElement createPredicateVocabElement();
+//    /*** Database element management ***/
+//
+//    /**
+//     * getCell() -- by column ID and cell ID
+//     *
+//     * Gets the cell associated with the given id in the given column
+//     * @param columnID the id of the column the cell is in
+//     * @param cellID the id of the cell
+//     * @return the cell associated with the given cell id
+//     *
+//     * Changes:
+//     *
+//     *    - None.
+//     */
+//
+//    public abstract Cell getCell(long columnID, long cellID);
+//
+//
+//    /**
+//     * getFormalArgument() -- by formal argument ID
+//     *
+//     * Gets the argument associated with the given id
+//     *
+//     * @param argumentID the id of the argument
+//     * @return the argument associated with the given argument id
+//     *
+//     * Changes:
+//     *
+//     *    - Used to be called getArgument().  Changed the name to avoid
+//     *      confusion.  Also changed type to AFormalArgumentto
+//     *      reflect changes in class structure.
+//     *
+//     *                                      --  - 3/03/07
+//     */
+//
+//    public abstract FormalArgument getFormalArgument(long argumentID);
+
+
+//    /**
+//     * createColumn()
+//     *
+//     * Creates a Column of the given type in the database.
+//     * @param columnType the type of column to create:<br>
+//     * Must be either:
+//     * <UL>
+//     * <LI>COLUMN_TYPE_DATA</LI> or
+//     * <LI>COLUMN_TYPE_REFERENCE</LI>
+//     * </UL>
+//     * @return the newly created column object
+//     *
+//     * Changes:
+//     *
+//     *    - None.
+//     */
+//
+//    public abstract Column createColumn(int columnType);
+//
+//
+//    /**
+//     * createCell()
+//     *
+//     * Creates a new cell in the given column.
+//     * @param columnID the id of the column in which to create the cell
+//     * @return the newly created cell
+//     *
+//     * Changes:
+//     *
+//     *    - None.
+//     */
+//
+//    public abstract Cell createCell(long columnID);
+
+
+//    /**
+//     * createFormalArgument()
+//     *
+//     *      NOTE: We must support many types of formal arguments.  Thus this
+//     *            method makes little sense.  Expect that I will rework this
+//     *            completely.
+//     *                                  --  - 3/03/07
+//     *
+//     * Creates a new formal argument.
+//     * @return the newly created formal argument
+//     *
+//     * Changes:
+//     *
+//     *    - None.
+//     */
+//
+//    public abstract FormalArgument createFormalArgument();
+//
+//    /**
+//     * createMatrixVocabElement()
+//     *
+//     * Creates a new matrix vocab element.
+//     * @return the newly created matrix vocab element
+//     *
+//     * Changes:
+//     *
+//     *    - Changed return type to match changes in class structure for
+//     *      vocab elements.
+//     *                                          --  - 3/03/07
+//     */
+//
+//    public abstract VocabElement createMatrixVocabElement();
+//
+//    /**
+//     * createPredicateVocabElement()
+//     *
+//     * Creates a new predicate vocab element.
+//     * @return the newly created predicate vocab element
+//     *
+//     * Changes
+//     *
+//     *    - Changed return type to match changes in class structure for
+//     *      vocab elements.
+//     *                                          --  - 3/03/07
+//     */
+//
+//    public abstract VocabElement createPredicateVocabElement();
+
 
     /*************************************************************************/
     /***************************** Overrides: ********************************/
@@ -250,45 +286,62 @@ public abstract class Database {
     // toDBString()
     /**
      * Returns a String representation of the Database for debugging or testing.
-     * 
-     * @return the string value. Changes: - None.
+     *
+     * @return the string value.
+     *
+     * Changes:
+     *
+     *    - None.
+     *
      */
 
-    public String toDBString() {
+    public String toDBString()
+    {
         String s;
 
-        s =
-            "(" + getName() + " " + vl.toDBString() + " " + cl.toDBString()
-            + ")";
+        s = "(" + this.getName() + " " +
+                  this.vl.toDBString() + " " +
+                  this.cl.toDBString() + ")";
 
         return (s);
 
     } /* Database::toDBString() */
 
+
     // toString()
     /**
      * Returns a String representation of the Database for display or testing.
-     * 
-     * @return the string value. Changes: - None.
+     *
+     * @return the string value.
+     *
+     * Changes:
+     *
+     *    - None.
+     *
      */
 
-    @Override
-    public String toString() {
+    public String toString()
+    {
         String s;
 
-        if (description == null) {
-            s =
-                "(" + getName() + " " + vl.toString() + " " + cl.toString()
-                + ")";
-        } else {
-            s =
-                "(" + getName() + " " + "(Description: " + getDescription()
-                + ") " + vl.toString() + " " + cl.toString() + ")";
+        if ( this.description == null )
+        {
+            s = "(" + this.getName() + " " +
+                      this.vl.toString() + " " +
+                      this.cl.toString() + ")";
+        }
+        else
+        {
+            s = "(" + this.getName() + " " +
+                      "(Description: " + this.getDescription() + ") " +
+                      this.vl.toString() + " " +
+                      this.cl.toString() + ")";
         }
 
         return (s);
 
     } /* Database::toString() */
+
 
     /*************************************************************************/
     /***************************** Accessors: ********************************/
@@ -296,115 +349,169 @@ public abstract class Database {
 
     // getCurUID()
     /**
-     * Get the current user ID. -- 4/11/07
-     * 
-     * @return ID of the user who is currently working on the database. Changes:
-     *         - None.
+     * Get the current user ID.
+     *
+     *                -- 4/11/07
+     *
+     * @return  ID of the user who is currently working on the database.
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public int getCurUID() {
-        return curUID;
+    public int getCurUID()
+    {
+        return this.curUID;
 
     } /* Database::getCurUID() */
 
+
     // getDescription()
     /**
-     * Get the description of the database. -- 4/10/07
-     * 
-     * @return A copy of the description field of the instance of Database, or
-     *         null if the description is undefined. Changes: - None.
+     * Get the description of the database.
+     *
+     *                     -- 4/10/07
+     *
+     * @return  A copy of the description field of the instance of Database, or
+     *          null if the description is undefined.
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public String getDescription() {
+    public String getDescription()
+    {
         String descriptionCopy = null;
 
-        if (description != null) {
-            descriptionCopy = new String(description);
+        if ( this.description != null )
+        {
+            descriptionCopy = new String(this.description);
         }
 
         return descriptionCopy;
 
     } /* Database::geDescription() */
 
+
     // getName()
     /**
-     * Get the name of the database. -- 4/10/07
-     * 
-     * @return A copy of the name field of the instance of Database, or null if
-     *         the name is undefined. Changes: - None.
+     * Get the name of the database.
+     *
+     *                     -- 4/10/07
+     *
+     * @return  A copy of the name field of the instance of Database, or null
+     *          if the name is undefined.
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public String getName() {
+    public String getName()
+    {
         String nameCopy = null;
 
-        if (name != null) {
-            nameCopy = new String(name);
+        if ( this.name != null )
+        {
+            nameCopy = new String(this.name);
         }
 
         return nameCopy;
 
     } /* Database::getName() */
 
+
     // getTemporalOrdering()
     /**
-     * Gets the current value of the temporal ordering flag. -- 3/20/08
-     * 
-     * @return Value of this.temporalOrdering. Changes: - None.
+     * Gets the current value of the temporal ordering flag.
+     *
+     *                               -- 3/20/08
+     *
+     * @return Value of this.temporalOrdering.
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public boolean getTemporalOrdering() {
+    public boolean getTemporalOrdering()
+    {
 
-        return temporalOrdering;
+        return this.temporalOrdering;
 
     } /* Database::getTemporalOrdering() */
 
     // getVocabList()
     /**
-     * This method shouldn't exist as it is currently written as it gives the
-     * caller direct access to the data base's copy of the vocab list, and
-     * allows the caller to corrupt the database. I am modifying the method to
-     * throw a system error unconditionally. 7/26/09
-     * 
+     * This method shouldn't exist as it is currently written as it gives
+     * the caller direct access to the data base's copy of the vocab list,
+     * and allows the caller to corrupt the database.
+     *
+     * I am modifying the method to throw a system error unconditionally.
+     *
+     *                                      7/26/09
+     *
      * @return throws system error unconditionally.
      */
-    public VocabList getVocabList() throws SystemErrorException {
+    public VocabList getVocabList()
+        throws SystemErrorException
+    {
         final String mName = "Database::removeVocabElement(targetID): ";
 
-        throw new SystemErrorException(mName + "This routine allows the user "
-                + "direct access to internal database structures.  It should "
-                + "not exist and must not be used.  I am leaving it in place "
-                + "to prevent the creation of something similar in the "
-                + "future.");
+        throw new SystemErrorException(mName + "This routine allows the user " +
+                "direct access to internal database structures.  It should " +
+                "not exist and must not be used.  I am leaving it in place " +
+                "to prevent the creation of something similar in the " +
+                "future.");
 
-        // This is the old body of the method. DO NOT re-enable it.
+        // This is the old body of the method.  DO NOT re-enable it.
         // return this.vl;
     }
 
+    
     // getTicks()
     /**
      * Gets the ticks per second
-     * 
-     * @return ticks per second Changes: - None.
+     *
+     * @return ticks per second
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public int getTicks() {
-        return (tps);
+    public int getTicks()
+    {
+        return (this.tps);
 
     } /* Datebase::getTicks() */
 
+
     // setDescription()
     /**
-     * Set the description of the database. Note that null is a valid new
-     * description, as the database description is optional. -- 4/10/07
-     * 
-     * @return void Changes: - None.
+     * Set the description of the database.  Note that null is a valid
+     * new description, as the database description is optional.
+     *
+     *                                   -- 4/10/07
+     *
+     * @return  void
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void setDescription(final String newDescription) {
-        if (newDescription != null) {
-            description = new String(newDescription);
-        } else {
-            description = null;
+    public void setDescription(String newDescription)
+    {
+        if ( newDescription != null )
+        {
+            this.description = new String(newDescription);
+        }
+        else
+        {
+            this.description = null;
         }
 
         return;
@@ -413,11 +520,11 @@ public abstract class Database {
 
     /**
      * Determines if the supplied string is valid to use as a database name.
-     * 
-     * @param newName
-     *            The string to determine if it is valid.
+     *
+     * @param newName The string to determine if it is valid.
+     *
      * @return True if the supplied string is valid as a database name, false
-     *         otherwise.
+     * otherwise.
      */
     public boolean isValidDatabaseName(final String newName) {
         return !(newName == null || newName.length() == 0);
@@ -425,44 +532,65 @@ public abstract class Database {
 
     // setName()
     /**
-     * Set the description of the database. Note that null is a valid new
-     * description, as the database description is optional. -- 4/10/07
-     * 
-     * @return void Changes: - None.
+     * Set the description of the database.  Note that null is a valid
+     * new description, as the database description is optional.
+     *
+     *                                   -- 4/10/07
+     *
+     * @return  void
+     *
+     * Changes:
+     *
+     *    - None.
      */
     // TODO: must create listener class for changes in db configuration.
-    // Listener should report changes in name, description, curUID,
-    // others?
+    //       Listener should report changes in name, description, curUID,
+    //       others?
 
-    public void setName(final String newName) throws SystemErrorException {
+    public void setName(String newName)
+        throws SystemErrorException
+    {
         final String mName = "Databaset::setName(): ";
 
-        if (!isValidDatabaseName(newName)) {
+        if ( !isValidDatabaseName(newName) )
+        {
             throw new SystemErrorException(mName + "null or empty name");
-        } else {
-            name = new String(newName);
+        }
+        else
+        {
+            this.name = new String(newName);
         }
 
         return;
 
     } /* Database::setName() */
 
+
     // setTemporalOrdering()
     /**
-     * Set the current value of the temporal ordering flag. If the flag is
-     * switched from false to true, sort all the columns. -- 3/20/08
-     * 
-     * @return void. Changes: - None.
+     * Set the current value of the temporal ordering flag.  If the flag is
+     * switched from false to true, sort all the columns.
+     *
+     *                               -- 3/20/08
+     *
+     * @return void.
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void setTemporalOrdering(final boolean newTemporalOrdering)
-    throws SystemErrorException {
+    public void setTemporalOrdering(boolean newTemporalOrdering)
+        throws SystemErrorException
+    {
 
-        if (temporalOrdering != newTemporalOrdering) {
-            temporalOrdering = newTemporalOrdering;
+        if ( this.temporalOrdering != newTemporalOrdering )
+        {
+            this.temporalOrdering = newTemporalOrdering;
 
-            if (temporalOrdering) {
-                cl.applyTemporalOrdering();
+            if ( this.temporalOrdering )
+            {
+                this.cl.applyTemporalOrdering();
             }
         }
 
@@ -470,95 +598,121 @@ public abstract class Database {
 
     } /* Database::setTemporalOrdering() */
 
+
     // setTicks()
     /**
      * Sets the ticks per second
-     * 
-     * @param tps
-     *            ticks per second Changes: - None.
+     *
+     * @param tps ticks per second
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
     // TODO: finish this
 
-    public void setTicks(final int tps) throws SystemErrorException {
+    public void setTicks(int tps)
+        throws SystemErrorException
+    {
         int prevTPS = this.tps;
         this.tps = tps;
 
         throw new SystemErrorException("not fully implemented");
 
-        // // Notify all listeners of TPS change
-        // for (int i=0; i<this.changeListeners.size(); i++) {
-        // ((DatabaseChangeListener)this.changeListeners.elementAt(i)).databaseTicksChanged(this,
-        // prevTPS);
-        // }
-        //
-        // return;
+//        // Notify all listeners of TPS change
+//        for (int i=0; i<this.changeListeners.size(); i++) {
+//            ((DatabaseChangeListener)this.changeListeners.elementAt(i)).databaseTicksChanged(this, prevTPS);
+//        }
+//
+//        return;
 
     } /* Datebase::setTicks() */
+
 
     // getUseStartTime()
     /**
      * Gets the use start time flag
-     * 
-     * @return true if we are to use a start time Changes: - None.
+     *
+     * @return true if we are to use a start time
+     *
+     * Changes:
+     *
+     *      - None.
      */
 
-    public boolean getUseStartTime() {
-        return (useStartTime);
+    public boolean getUseStartTime()
+    {
+        return (this.useStartTime);
 
     } /* Database::getUseStartTime() */
+
 
     // setUseStartTime()
     /**
      * Sets the start time flag
-     * 
-     * @param useStartTime
-     *            the use start time flag value Changes: - None.
+     *
+     * @param useStartTime the use start time flag value
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void setUseStartTime(final boolean useStartTime) {
+    public void setUseStartTime(boolean useStartTime)
+    {
         this.useStartTime = useStartTime;
 
     } /* Database::useStartTime() */
 
+
     // getStartTime()
     /**
      * Gets the start time
-     * 
-     * @return the start time value Changes: - None.
+     * @return the start time value
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public long getStartTime() {
-        return (startTime);
+    public long getStartTime()
+    {
+        return (this.startTime);
 
     } /* Database::getStarTime() */
+
 
     // setStartTime()
     /**
      * Sets the start time
-     * 
-     * @param startTime
-     *            the start time Changes: - None.
+     * @param startTime the start time
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
     // TODO: finish this.
 
-    public void setStartTime(final long startTime) throws SystemErrorException {
+    public void setStartTime(long startTime)
+        throws SystemErrorException
+    {
         long prevST = this.startTime;
         this.startTime = startTime;
 
         throw new SystemErrorException("not fully implemented");
 
-        // // Notify all listeners of TPS change
-        // for (int i=0; i<this.changeListeners.size(); i++)
-        // {
-        // ((DatabaseChangeListener)this.changeListeners.elementAt(i)).databaseStartTimeChanged(this,
-        // prevST);
-        // }
-        //
-        // return;
+//        // Notify all listeners of TPS change
+//        for (int i=0; i<this.changeListeners.size(); i++)
+//        {
+//            ((DatabaseChangeListener)this.changeListeners.elementAt(i)).databaseStartTimeChanged(this, prevST);
+//        }
+//
+//        return;
 
     } /* Database::setStarTime() */
+
 
     /*************************************************************************/
     /*************************** Methods: ************************************/
@@ -568,34 +722,43 @@ public abstract class Database {
     /************************** Cell Management ******************************/
     /*************************************************************************/
     /*                                                                       */
-    /* The method defined in this section support the insertion, deletion, */
-    /* and modification of cells in columns. */
+    /* The method defined in this section support the insertion, deletion,   */
+    /* and modification of cells in columns.                                 */
     /*                                                                       */
-    /* The following methods are provided: */
+    /* The following methods are provided:                                   */
     /*                                                                       */
-    /* appendCell(cell) */
-    /* insertCell(cell, ord) */
+    /*      appendCell(cell)                                                 */
+    /*      insertCell(cell, ord)                                            */
     /*                                                                       */
-    /* getCell(cellID) */
-    /* getCell(colID, cellOrd) */
+    /*      getCell(cellID)                                                  */
+    /*      getCell(colID, cellOrd)                                          */
     /*                                                                       */
-    /* replaceCell(cellID) */
+    /*      replaceCell(cellID)                                              */
     /*                                                                       */
-    /* removeCell(cellID) */
+    /*      removeCell(cellID)                                               */
     /*                                                                       */
     /*************************************************************************/
 
     // appendCell()
     /**
      * Append a copy of the supplied cell to the column indicated in the
-     * itsColID field of the cell. The cell must not have an ID assigned, and
-     * must be of a type congruent with the type of the column. In the case of a
-     * DataCell and DataColumn, the DataCell must have itsMveID and itsMveType
-     * fields with values matching that of the target DataColumn. Returns the id
-     * assigned to the newly appended cell -- 8/31/07 Changes: - None.
+     * itsColID field of the cell.  The cell must not have an ID assigned,
+     * and must be of a type congruent with the type of the column.  In the
+     * case of a DataCell and DataColumn, the DataCell must have itsMveID and
+     * itsMveType fields with values matching that of the target DataColumn.
+     *
+     * Returns the id assigned to the newly appended cell
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public long appendCell(final Cell cell) throws SystemErrorException {
+    public long appendCell(Cell cell)
+        throws SystemErrorException
+    {
         final String mName = "Database::appendCell(cell): ";
         long cellID = DBIndex.INVALID_ID;
         long colID = DBIndex.INVALID_ID;
@@ -605,50 +768,60 @@ public abstract class Database {
         ReferenceColumn rc = null;
         ReferenceCell refCell = null;
 
-        if (cell == null) {
+        if ( cell == null )
+        {
             throw new SystemErrorException(mName + "cell == null");
-        } else if (cell.getID() != DBIndex.INVALID_ID) {
+        }
+        else if ( cell.getID() != DBIndex.INVALID_ID )
+        {
             throw new SystemErrorException(mName + "cell.id != INVALID_ID");
         }
 
         colID = cell.getItsColID();
 
-        if (colID == DBIndex.INVALID_ID) {
-            throw new SystemErrorException(mName
-                    + "cell.itsColID == INVALID_ID");
+        if ( colID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName +
+                                           "cell.itsColID == INVALID_ID");
         }
 
-        col = cl.getColumn(colID);
+        col = this.cl.getColumn(colID);
 
-        if (col instanceof DataColumn) {
-            if (!(cell instanceof DataCell)) {
-                throw new SystemErrorException(mName
-                        + "cell/column type mismatch -- DataColumn ID expected");
+        if ( col instanceof DataColumn )
+        {
+            if ( ! ( cell instanceof DataCell ) )
+            {
+                throw new SystemErrorException(mName +
+                        "cell/column type mismatch -- DataColumn ID expected");
             }
 
-            dc = (DataColumn) col;
+            dc = (DataColumn)col;
 
-            dataCell = new DataCell((DataCell) cell);
+            dataCell = new DataCell((DataCell)cell);
 
             dc.appendCell(dataCell);
 
             cellID = dataCell.getID();
-        } else if (col instanceof ReferenceColumn) {
-            if (!(cell instanceof ReferenceCell)) {
-                throw new SystemErrorException(
-                        mName
-                        + "cell/column type mismatch -- ReferenceColumn ID expected");
+        }
+        else if ( col instanceof ReferenceColumn )
+        {
+            if ( ! ( cell instanceof ReferenceCell ) )
+            {
+                throw new SystemErrorException(mName +
+                    "cell/column type mismatch -- ReferenceColumn ID expected");
             }
 
-            rc = (ReferenceColumn) col;
+            rc = (ReferenceColumn)col;
 
-            refCell = new ReferenceCell((ReferenceCell) cell);
+            refCell = new ReferenceCell((ReferenceCell)cell);
 
-            idx.addElement(refCell);
+            this.idx.addElement(refCell);
             cellID = refCell.getID();
 
             rc.appendCell(refCell);
-        } else {
+        }
+        else
+        {
             throw new SystemErrorException(mName + "unknown Column subclass");
         }
 
@@ -656,20 +829,33 @@ public abstract class Database {
 
     } /* Database::appendCell(cell) */
 
+
     // insertCell()
     /**
      * Insert a copy of the supplied cell to the column indicated in the
-     * itsColID field of the cell at the specified ord. The cell must not have
-     * an ID assigned, and must be of a type congruent with the type of the
-     * column. In the case of a DataCell and DataColumn, the DataCell must have
-     * itsMveID and itsMveType fields with values matching that of the target
-     * DataColumn. The ord parameter must be in the range of 1 to the number of
-     * cells in the column, or simply 1 if the column is empty. Returns the id
-     * assigned to the newly inserted cell -- 8/31/07 Changes: - None.
+     * itsColID field of the cell at the specified ord.
+     *
+     * The cell must not have an ID assigned, and must be of a type congruent
+     * with the type of the column.  In the case of a DataCell and DataColumn,
+     * the DataCell must have itsMveID and itsMveType fields with values
+     * matching that of the target DataColumn.
+     *
+     * The ord parameter must be in the range of 1 to the number of cells in
+     * the column, or simply 1 if the column is empty.
+     *
+     * Returns the id assigned to the newly inserted cell
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public long insertdCell(final Cell cell, final int ord)
-    throws SystemErrorException {
+    public long insertdCell(Cell cell,
+                            int ord)
+        throws SystemErrorException
+    {
         final String mName = "Database::insertCell(cell, ord): ";
         long cellID = DBIndex.INVALID_ID;
         long colID = DBIndex.INVALID_ID;
@@ -679,52 +865,64 @@ public abstract class Database {
         ReferenceColumn rc = null;
         ReferenceCell refCell = null;
 
-        if (cell == null) {
+        if ( cell == null )
+        {
             throw new SystemErrorException(mName + "cell == null");
-        } else if (cell.getID() != DBIndex.INVALID_ID) {
+        }
+        else if ( cell.getID() != DBIndex.INVALID_ID )
+        {
             throw new SystemErrorException(mName + "cell.id != INVALID_ID");
-        } else if (ord < 1) {
+        }
+        else if ( ord < 1 )
+        {
             throw new SystemErrorException(mName + "ord is non positive");
         }
 
         colID = cell.getItsColID();
 
-        if (colID == DBIndex.INVALID_ID) {
-            throw new SystemErrorException(mName
-                    + "cell.itsColID == INVALID_ID");
+        if ( colID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName +
+                                           "cell.itsColID == INVALID_ID");
         }
 
-        col = cl.getColumn(colID);
+        col = this.cl.getColumn(colID);
 
-        if (col instanceof DataColumn) {
-            if (!(cell instanceof DataCell)) {
-                throw new SystemErrorException(mName
-                        + "cell/column type mismatch -- DataColumn ID expected");
+        if ( col instanceof DataColumn )
+        {
+            if ( ! ( cell instanceof DataCell ) )
+            {
+                throw new SystemErrorException(mName +
+                        "cell/column type mismatch -- DataColumn ID expected");
             }
 
-            dc = (DataColumn) col;
+            dc = (DataColumn)col;
 
-            dataCell = new DataCell((DataCell) cell);
+            dataCell = new DataCell((DataCell)cell);
 
             dc.insertCell(dataCell, ord);
 
             cellID = dataCell.getID();
-        } else if (col instanceof ReferenceColumn) {
-            if (!(cell instanceof ReferenceCell)) {
-                throw new SystemErrorException(
-                        mName
-                        + "cell/column type mismatch -- ReferenceColumn ID expected");
+        }
+        else if ( col instanceof ReferenceColumn )
+        {
+            if ( ! ( cell instanceof ReferenceCell ) )
+            {
+                throw new SystemErrorException(mName +
+                    "cell/column type mismatch -- ReferenceColumn ID expected");
             }
 
-            rc = (ReferenceColumn) col;
+            rc = (ReferenceColumn)col;
 
-            refCell = new ReferenceCell((ReferenceCell) cell);
+            refCell = new ReferenceCell((ReferenceCell)cell);
 
-            idx.addElement(refCell);
+            this.idx.addElement(refCell);
             cellID = refCell.getID();
 
             rc.insertCell(refCell, ord);
-        } else {
+        }
+        else
+        {
             throw new SystemErrorException(mName + "unknown Column subclass");
         }
 
@@ -732,84 +930,131 @@ public abstract class Database {
 
     } /* Database::insertCell(cell, ord) */
 
+
     // getCell(id)
     /**
-     * Given a cell id, look it up in the index, and return copy. Throw a system
-     * error exception if no such cell exists. -- 8/31/07 Changes: - None.
+     * Given a cell id, look it up in the index, and return copy.  Throw a
+     * system error exception if no such cell exists.
+     *
+     *                                                   -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public Cell getCell(final long id) throws SystemErrorException {
-        final String mName = "Database::getCell(id): ";
-        DBElement dbe = null;
-        Cell cell = null;
+    public Cell getCell(long id)
+        throws SystemErrorException
+    {
+         final String mName = "Database::getCell(id): ";
+         DBElement dbe = null;
+         Cell cell = null;
 
-        if (id == DBIndex.INVALID_ID) {
-            throw new SystemErrorException(mName + "id == INVALID_ID");
-        }
+         if ( id == DBIndex.INVALID_ID )
+         {
+             throw new SystemErrorException(mName + "id == INVALID_ID");
+         }
 
-        dbe = idx.getElement(id);
+         dbe = this.idx.getElement(id);
 
-        if (dbe == null) {
-            throw new SystemErrorException(mName + "id has no referent");
-        } else if (!(dbe instanceof Cell)) {
-            throw new SystemErrorException(mName + "id doesn't refer to a Cell");
-        }
+         if ( dbe == null )
+         {
+             throw new SystemErrorException(mName + "id has no referent");
+         }
+         else if ( ! ( dbe instanceof Cell ) )
+         {
+             throw new SystemErrorException(mName +
+                                            "id doesn't refer to a Cell");
+         }
 
-        if (dbe instanceof DataCell) {
-            cell = new DataCell((DataCell) dbe);
-        } else if (dbe instanceof ReferenceCell) {
-            cell = new ReferenceCell((ReferenceCell) dbe);
-        } else {
-            throw new SystemErrorException(mName + "Unknown Cell subclass.");
-        }
+         if ( dbe instanceof DataCell )
+         {
+             cell = new DataCell((DataCell)dbe);
+         }
+         else if ( dbe instanceof ReferenceCell )
+         {
+             cell = new ReferenceCell((ReferenceCell)dbe);
+         }
+         else
+         {
+             throw new SystemErrorException(mName + "Unknown Cell subclass.");
+         }
 
-        return cell;
+         return cell;
 
     } /* Database::getCell(id) */
 
+
     // getCell(colID, ord)
     /**
-     * Given a column id, and a cell ord, look it up the cell at that ord in the
-     * target column, and return copy. Throw a system error exception if no such
-     * cell exists. -- 8/31/07 Changes: - None.
+     * Given a column id, and a cell ord, look it up the cell at that ord in
+     * the target column, and return copy.  Throw a system error exception
+     * if no such cell exists.
+     *
+     *                                                   -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public Cell getCell(final long colID, final int ord)
-    throws SystemErrorException {
-        final String mName = "Database::getCell(colID, ord): ";
-        Column col = null;
-        Cell cell = null;
+    public Cell getCell(long colID,
+                        int ord)
+        throws SystemErrorException
+    {
+         final String mName = "Database::getCell(colID, ord): ";
+         Column col = null;
+         Cell cell = null;
 
-        if (colID == DBIndex.INVALID_ID) {
-            throw new SystemErrorException(mName + "id == INVALID_ID");
-        }
+         if ( colID == DBIndex.INVALID_ID )
+         {
+             throw new SystemErrorException(mName + "id == INVALID_ID");
+         }
 
-        col = cl.getColumn(colID);
+         col = this.cl.getColumn(colID);
 
-        if (col == null) {
-            throw new SystemErrorException(mName + "colID has no referent");
-        }
+         if ( col == null )
+         {
+             throw new SystemErrorException(mName + "colID has no referent");
+         }
 
-        if (col instanceof DataColumn) {
-            cell = ((DataColumn) col).getCellCopy(ord);
-        } else if (col instanceof ReferenceColumn) {
-            cell = ((ReferenceColumn) col).getCellCopy(ord);
-        } else {
-            throw new SystemErrorException(mName + "Unknown subclass of Column");
-        }
+         if ( col instanceof DataColumn )
+         {
+             cell = ((DataColumn)col).getCellCopy(ord);
+         }
+         else if ( col instanceof ReferenceColumn )
+         {
+             cell = ((ReferenceColumn)col).getCellCopy(ord);
+         }
+         else
+         {
+             throw new SystemErrorException(mName +
+                     "Unknown subclass of Column");
+         }
 
-        return cell;
+         return cell;
 
     } /* Database::getCell(colID, ord) */
+
 
     // replaceCell()
     /**
      * Replace the old version of a cell with the new one supplied as a
-     * parameter. The id, itsColID, itsMveID, and itsMveType fields of the new
-     * cell must match that of the old. -- 8/31/07 Changes: - None.
+     * parameter.
+     *
+     * The id, itsColID, itsMveID, and itsMveType fields of the new cell
+     * must match that of the old.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void replaceCell(final Cell newCell) throws SystemErrorException {
+    public void replaceCell(Cell newCell)
+        throws SystemErrorException
+    {
         final String mName = "Database::replaceCell(newCell): ";
         int ord;
         long cellID = DBIndex.INVALID_ID;
@@ -824,79 +1069,95 @@ public abstract class Database {
         ReferenceCell newRefCell = null;
         ReferenceCell oldRefCell = null;
 
-        if (newCell == null) {
+        if ( newCell == null )
+        {
             throw new SystemErrorException(mName + "newCell == null");
-        } else if (newCell.getID() == DBIndex.INVALID_ID) {
+        }
+        else if ( newCell.getID() == DBIndex.INVALID_ID )
+        {
             throw new SystemErrorException(mName + "newCell.id != INVALID_ID");
         }
 
         cellID = newCell.getID();
 
-        dbe = idx.getElement(cellID);
+        dbe = this.idx.getElement(cellID);
 
-        if (dbe == null) {
+        if ( dbe == null )
+        {
             throw new SystemErrorException(mName + "newCell.id has no referent");
-        } else if (!(dbe instanceof Cell)) {
-            throw new SystemErrorException(mName
-                    + "newCell.id doesn't refer to a cell");
+        }
+        else if ( ! ( dbe instanceof Cell ) )
+        {
+            throw new SystemErrorException(mName +
+                    "newCell.id doesn't refer to a cell");
         }
 
-        oldCell = (Cell) dbe;
+        oldCell = (Cell)dbe;
 
         colID = newCell.getItsColID();
 
-        if (colID == DBIndex.INVALID_ID) {
-            throw new SystemErrorException(mName
-                    + "cell.itsColID == INVALID_ID");
+        if ( colID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName +
+                                           "cell.itsColID == INVALID_ID");
         }
 
-        col = cl.getColumn(colID);
+        col = this.cl.getColumn(colID);
 
-        if (col instanceof DataColumn) {
-            if (!(newCell instanceof DataCell)) {
-                throw new SystemErrorException(mName
-                        + "newCell/column type mismatch -- DataCell expected");
+        if ( col instanceof DataColumn )
+        {
+            if ( ! ( newCell instanceof DataCell ) )
+            {
+                throw new SystemErrorException(mName +
+                    "newCell/column type mismatch -- DataCell expected");
             }
 
-            if (!(oldCell instanceof DataCell)) {
-                throw new SystemErrorException(mName
-                        + "oldCell/column type mismatch -- DataCell expected");
+            if ( ! ( oldCell instanceof DataCell ) )
+            {
+                throw new SystemErrorException(mName +
+                    "oldCell/column type mismatch -- DataCell expected");
             }
 
-            dc = (DataColumn) col;
-            newDataCell = new DataCell((DataCell) newCell);
-            oldDataCell = (DataCell) oldCell;
+            dc = (DataColumn)col;
+            newDataCell = new DataCell((DataCell)newCell);
+            oldDataCell = (DataCell)oldCell;
             ord = oldDataCell.getOrd();
 
-            if (dc.replaceCell(newDataCell, ord) != oldDataCell) {
-                throw new SystemErrorException(mName
-                        + "dc.replaceCell() return unexpected value");
+            if ( dc.replaceCell(newDataCell, ord) != oldDataCell )
+            {
+                throw new SystemErrorException(mName +
+                        "dc.replaceCell() return unexpected value");
             }
 
-        } else if (col instanceof ReferenceColumn) {
-            if (!(newCell instanceof ReferenceCell)) {
-                throw new SystemErrorException(
-                        mName
-                        + "newCell/column type mismatch -- ReferenceCell expected");
+        }
+        else if ( col instanceof ReferenceColumn )
+        {
+            if ( ! ( newCell instanceof ReferenceCell ) )
+            {
+                throw new SystemErrorException(mName +
+                    "newCell/column type mismatch -- ReferenceCell expected");
             }
 
-            if (!(oldCell instanceof ReferenceCell)) {
-                throw new SystemErrorException(
-                        mName
-                        + "newCell/column type mismatch -- ReferenceCell expected");
+            if ( ! ( oldCell instanceof ReferenceCell ) )
+            {
+                throw new SystemErrorException(mName +
+                    "newCell/column type mismatch -- ReferenceCell expected");
             }
 
-            rc = (ReferenceColumn) col;
-            newRefCell = new ReferenceCell((ReferenceCell) newCell);
-            oldRefCell = (ReferenceCell) oldCell;
+            rc = (ReferenceColumn)col;
+            newRefCell = new ReferenceCell((ReferenceCell)newCell);
+            oldRefCell = (ReferenceCell)oldCell;
             ord = oldRefCell.getOrd();
 
-            if (rc.replaceCell(newRefCell, ord) != oldRefCell) {
-                throw new SystemErrorException(mName
-                        + "rc.replaceCell() return unexpected value");
+            if ( rc.replaceCell(newRefCell, ord) != oldRefCell )
+            {
+                throw new SystemErrorException(mName +
+                        "rc.replaceCell() return unexpected value");
             }
 
-        } else {
+        }
+        else
+        {
             throw new SystemErrorException(mName + "unknown Column subclass");
         }
 
@@ -904,13 +1165,21 @@ public abstract class Database {
 
     } /* Database::replaceCell(cell) */
 
+
     // removeCell()
     /**
-     * Remove the specified cell from its column and discard it. -- 8/31/07
-     * Changes: - None.
+     * Remove the specified cell from its column and discard it.
+     *
+     *                                           -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void removeCell(final long cellID) throws SystemErrorException {
+    public void removeCell(long cellID)
+        throws SystemErrorException
+    {
         final String mName = "Database::replaceCell(newCell): ";
         int ord;
         long colID = DBIndex.INVALID_ID;
@@ -922,60 +1191,74 @@ public abstract class Database {
         ReferenceColumn rc = null;
         ReferenceCell refCell = null;
 
-        if (cellID == DBIndex.INVALID_ID) {
+        if ( cellID == DBIndex.INVALID_ID )
+        {
             throw new SystemErrorException(mName + "cellID == INVALID_ID");
         }
 
-        dbe = idx.getElement(cellID);
+        dbe = this.idx.getElement(cellID);
 
-        if (dbe == null) {
+        if ( dbe == null )
+        {
             throw new SystemErrorException(mName + "cellID has no referent");
-        } else if (!(dbe instanceof Cell)) {
-            throw new SystemErrorException(mName
-                    + "newCell.id doesn't refer to a cell");
+        }
+        else if ( ! ( dbe instanceof Cell ) )
+        {
+            throw new SystemErrorException(mName +
+                    "newCell.id doesn't refer to a cell");
         }
 
-        cell = (Cell) dbe;
+        cell = (Cell)dbe;
 
         colID = cell.getItsColID();
 
-        if (colID == DBIndex.INVALID_ID) {
-            throw new SystemErrorException(mName
-                    + "cell.itsColID == INVALID_ID");
+        if ( colID == DBIndex.INVALID_ID )
+        {
+            throw new SystemErrorException(mName +
+                                           "cell.itsColID == INVALID_ID");
         }
 
-        col = cl.getColumn(colID);
+        col = this.cl.getColumn(colID);
 
-        if (col instanceof DataColumn) {
-            if (!(cell instanceof DataCell)) {
-                throw new SystemErrorException(mName
-                        + "cell/column type mismatch -- DataCell expected");
+        if ( col instanceof DataColumn )
+        {
+            if ( ! ( cell instanceof DataCell ) )
+            {
+                throw new SystemErrorException(mName +
+                    "cell/column type mismatch -- DataCell expected");
             }
 
-            dc = (DataColumn) col;
-            dataCell = (DataCell) cell;
+            dc = (DataColumn)col;
+            dataCell = (DataCell)cell;
             ord = dataCell.getOrd();
 
-            if (dc.removeCell(ord, cellID) != dataCell) {
-                throw new SystemErrorException(mName
-                        + "dc.removeCell() return unexpected value");
+            if ( dc.removeCell(ord, cellID) != dataCell )
+            {
+                throw new SystemErrorException(mName +
+                        "dc.removeCell() return unexpected value");
             }
 
-        } else if (col instanceof ReferenceColumn) {
-            if (!(cell instanceof ReferenceCell)) {
-                throw new SystemErrorException(mName
-                        + "cell/column type mismatch -- ReferenceCell expected");
+        }
+        else if ( col instanceof ReferenceColumn )
+        {
+            if ( ! ( cell instanceof ReferenceCell ) )
+            {
+                throw new SystemErrorException(mName +
+                    "cell/column type mismatch -- ReferenceCell expected");
             }
 
-            rc = (ReferenceColumn) col;
-            refCell = (ReferenceCell) cell;
+            rc = (ReferenceColumn)col;
+            refCell = (ReferenceCell)cell;
             ord = refCell.getOrd();
 
-            if (rc.removeCell(ord, cellID) != refCell) {
-                throw new SystemErrorException(mName
-                        + "rc.removeCell() return unexpected value");
+            if ( rc.removeCell(ord, cellID) != refCell )
+            {
+                throw new SystemErrorException(mName +
+                        "rc.removeCell() return unexpected value");
             }
-        } else {
+        }
+        else
+        {
             throw new SystemErrorException(mName + "unknown Column subclass");
         }
 
@@ -983,97 +1266,118 @@ public abstract class Database {
 
     } /* Database::removeCell() */
 
+
     /*************************************************************************/
     /********************** Column List Management ***************************/
     /*************************************************************************/
     /*                                                                       */
-    /* The Column list contains the list of all columns in the database. */
+    /* The Column list contains the list of all columns in the database.     */
     /*                                                                       */
-    /* At present, the column list is envisioned as containing two types of */
-    /* columns, DataColumn and ReferenceColumn. */
+    /* At present, the column list is envisioned as containing two types of  */
+    /* columns, DataColumn and ReferenceColumn.                              */
     /*                                                                       */
-    /* DataColumns are very similar to the old MacSHAPA columns or spread */
+    /* DataColumns are very similar to the old MacSHAPA columns or spread    */
     /* sheet variables, being typed as either integer, float, text, nominal, */
-    /* predicate, or matrix. However, as we have introduced typed formal */
-    /* arguments, we are implementing them all as matricies. The associated */
-    /* matrix vocab elements of all but the matrix type are fixed length */
-    /* system matricies, and thus may not be edited by the user. */
+    /* predicate, or matrix.  However, as we have introduced typed formal    */
+    /* arguments, we are implementing them all as matricies.  The associated */
+    /* matrix vocab elements of all but the matrix type are fixed length     */
+    /* system matricies, and thus may not be edited by the user.             */
     /*                                                                       */
-    /* In addition to being used to implement the usual user columns, */
+    /* In addition to being used to implement the usual user columns,        */
     /* DataColumns will probably also be used to store input and output from */
-    /* reports. */
+    /* reports.                                                              */
     /*                                                                       */
-    /* Reference columns contain reference cells, which are just references */
-    /* to data cells. They allow cells from different Data columns to be */
-    /* mirrored in a single reference column. They will probably be used */
-    /* display purposes, and to construct input for some reports. */
+    /* Reference columns contain reference cells, which are just references  */
+    /* to data cells.  They allow cells from different Data columns to be    */
+    /* mirrored in a single reference column.  They will probably be used    */
+    /* display purposes, and to construct input for some reports.            */
     /*                                                                       */
-    /* The following methods support the management of columns: */
+    /* The following methods support the management of columns:              */
     /*                                                                       */
-    /* addColumn() */
-    /* addDataColumn() -- internal use only */
-    /* addReferenceColumn() -- internal use only */
+    /*      addColumn()                                                      */
+    /*          addDataColumn() -- internal use only                         */
+    /*          addReferenceColumn() -- internal use only                    */
     /*                                                                       */
-    /* colNameInUse() */
+    /*      colNameInUse()                                                   */
     /*                                                                       */
-    /* getColumn(id) */
-    /* getColumn(name) */
+    /*      getColumn(id)                                                    */
+    /*      getColumn(name)                                                  */
     /*                                                                       */
-    /* getColOrderVector() */
+    /*      getColOrderVector()                                              */
     /*                                                                       */
-    /* getDataColumn(id) */
-    /* getDataColumn(name) */
+    /*      getDataColumn(id)                                                */
+    /*      getDataColumn(name)                                              */
     /*                                                                       */
-    /* getReferenceColumn(id) */
-    /* getReferenceColumn(name) */
+    /*      getReferenceColumn(id)                                           */
+    /*      getReferenceColumn(name)                                         */
     /*                                                                       */
-    /* getColumns() */
-    /* getDataColumns() */
-    /* getReferenceColumns() */
+    /*      getColumns()                                                     */
+    /*      getDataColumns()                                                 */
+    /*      getReferenceColumns()                                            */
     /*                                                                       */
-    /* removeColumn() -- target column must be empty */
+    /*      removeColumn() -- target column must be empty                    */
     /*                                                                       */
-    /* replaceColumn() */
+    /*      replaceColumn()                                                  */
     /*                                                                       */
-    /* setColOrderVector() */
+    /*      setColOrderVector()                                              */
     /*                                                                       */
     /*************************************************************************/
 
     // addColumn()
     /**
-     * Insert a copy of the supplied Column into the column list, and return its
-     * ID. The column must not have an ID assigned to it, and must have a valid
-     * name that is not in use. The column must be empty, and must have been
-     * created for this database. If the column is a DataColumn, its type must
-     * be set. Verify that the vocab list does not contain a MatrixVocabElement
-     * defining the syntax of the columns cells. Then create a default initial
-     * MatrixVocabElement as appropriate for the type of the DataColumn. --
-     * 8/31/07 Changes: - None.
+     * Insert a copy of the supplied Column into the column list, and return
+     * its ID.
+     *
+     * The column must not have an ID assigned to it, and must have a valid
+     * name that is not in use.  The column must be empty, and must have been
+     * created for this database.
+     *
+     * If the column is a DataColumn, its type must be set.  Verify that the
+     * vocab list does not contain a MatrixVocabElement defining the syntax
+     * of the columns cells.  Then create a default initial MatrixVocabElement
+     * as appropriate for the type of the DataColumn.
+     *
+     *                                                   -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public long addColumn(final Column col) throws SystemErrorException {
+    public long addColumn(Column col) throws SystemErrorException {
         final String mName = "Database::addColumn(col): ";
         long newColID = DBIndex.INVALID_ID;
 
-        if (col == null) {
+        if ( col == null )
+        {
             throw new SystemErrorException(mName + "col == null");
-        } else if (col.getDB() != this) {
+        }
+        else if ( col.getDB() != this )
+        {
             throw new SystemErrorException(mName + "db mismatch");
-        } else if (col.getID() != DBIndex.INVALID_ID) {
+        }
+        else if ( col.getID() != DBIndex.INVALID_ID )
+        {
             throw new SystemErrorException(mName + "col.id != INVALID_ID");
-        } else if ((!(IsValidSVarName(col.getName())))
-                || (vl.inVocabList(col.getName()))
-                || (cl.inColumnList(col.getName()))) {
+        }
+        else if ( ( ! ( this.IsValidSVarName(col.getName()) ) ) ||
+                  ( this.vl.inVocabList(col.getName()) ) ||
+                  ( this.cl.inColumnList(col.getName()) ) )
+        {
             throw new SystemErrorException(mName + "col.name invalid or in use");
         }
 
-        if (col instanceof DataColumn) {
-            newColID = addDataColumn(new DataColumn((DataColumn) col));
-        } else if (col instanceof ReferenceColumn) {
-            newColID =
-                addReferenceColumn(new ReferenceColumn(
-                        (ReferenceColumn) col));
-        } else {
+        if ( col instanceof DataColumn )
+        {
+            newColID = this.addDataColumn(new DataColumn((DataColumn)col));
+        }
+        else if ( col instanceof ReferenceColumn )
+        {
+            newColID = this.addReferenceColumn(
+                    new ReferenceColumn((ReferenceColumn)col));
+        }
+        else
+        {
             throw new SystemErrorException(mName + "Unknown Column subclass");
         }
 
@@ -1081,72 +1385,93 @@ public abstract class Database {
 
     } /* Database::addColumn(col) */
 
+
     // addDataColumn()
     /**
-     * Given an instance of DataColumn with a valid name and type set, but no
-     * associated MatrixVocabElement or ID, construct an initial
-     * MatrixVocabElement for the DataColumn, and insert it into the vocab list.
-     * Then insert the column into the column list (and in passing, the index),
-     * and return the newly assigned ID of the column. Before doing this, verify
-     * that the type of the DataColumn has been set, and that the itsMveID field
-     * is set to the INVALID_ID. No need to verify that the column name is valid
-     * and not in use, as that has been checked already. -- 8/30/07 Changes: -
-     * None.
+     * Given an instance of DataColumn with a valid name and type set, but
+     * no associated MatrixVocabElement or ID, construct an initial
+     * MatrixVocabElement for the DataColumn, and insert it into the vocab
+     * list.  Then insert the column into the column list (and in passing, the
+     * index), and return the newly assigned ID of the column.
+     *
+     * Before doing this, verify that the type of the DataColumn has been set,
+     * and that the itsMveID field is set to the INVALID_ID.  No need to verify
+     * that the column name is valid and not in use, as that has been checked
+     * already.
+     *
+     *                                                   -- 8/30/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    private long addDataColumn(final DataColumn dc) throws SystemErrorException {
+    private long addDataColumn(DataColumn dc) throws SystemErrorException {
         final String mName = "Database::addDataColumn(dc): ";
         long colID = DBIndex.INVALID_ID;
         long mveID = DBIndex.INVALID_ID;
         MatrixVocabElement mve = null;
 
-        if ((dc == null) || (dc.getDB() != this)
-                || (dc.getID() != DBIndex.INVALID_ID)) {
+        if ( ( dc == null ) ||
+             ( dc.getDB() != this ) ||
+             ( dc.getID() != DBIndex.INVALID_ID ) )
+        {
             throw new SystemErrorException(mName + "bad dc param on entry");
-        } else if ((!(IsValidSVarName(dc.getName())))
-                || (vl.inVocabList(dc.getName()))
-                || (cl.inColumnList(dc.getName()))) {
+        }
+        else if ( ( ! ( this.IsValidSVarName(dc.getName() ) ) ) ||
+                  ( this.vl.inVocabList(dc.getName()) ) ||
+                  ( this.cl.inColumnList(dc.getName()) ) )
+        {
             throw new SystemErrorException(mName + "dc.name invalid or in use");
-        } else if (dc.getItsMveID() != DBIndex.INVALID_ID) {
+        }
+        else if ( dc.getItsMveID() != DBIndex.INVALID_ID )
+        {
             throw new SystemErrorException(mName + "dc.itsMveID != INVALID_ID");
-        } else if (dc.getItsMveType() == MatrixVocabElement.MatrixType.UNDEFINED) {
+        }
+        else if ( dc.getItsMveType() == MatrixVocabElement.MatrixType.UNDEFINED )
+        {
             throw new SystemErrorException(mName + "dc.insMveType undefined");
-        } else if (dc.getItsCells() != null) {
-            throw new SystemErrorException(mName
-                    + "dc.itsCells aleady defined?");
+        }
+        else if ( dc.getItsCells() != null )
+        {
+            throw new SystemErrorException(mName +
+                                           "dc.itsCells aleady defined?");
         }
 
         mve = dc.constructInitMatrixVE();
 
-        vl.addElement(mve);
+        this.vl.addElement(mve);
 
         mveID = mve.getID();
 
-        if ((vl.getVocabElement(mveID) != mve)
-                || (vl.getVocabElement(dc.getName()) != mve)) {
-            throw new SystemErrorException(mName
-                    + "mve insertion in vl failed?");
+        if ( ( this.vl.getVocabElement(mveID) != mve ) ||
+             ( this.vl.getVocabElement(dc.getName()) != mve ) )
+        {
+            throw new SystemErrorException(mName +
+                                           "mve insertion in vl failed?");
         }
 
         dc.setItsMveID(mveID);
 
-        cl.addColumn(dc);
+        this.cl.addColumn(dc);
 
         colID = dc.getID();
 
-        if ((cl.getColumn(colID) != dc) || (cl.getColumn(dc.getName()) != dc)
-                || (dc.getItsCells() == null)) {
+        if ( ( this.cl.getColumn(colID) != dc ) ||
+             ( this.cl.getColumn(dc.getName()) != dc ) ||
+             ( dc.getItsCells() == null ) )
+        {
             throw new SystemErrorException(mName + "dc insertion in cl failed");
         }
 
         mve.setItsColID(colID);
 
-        /*
-         * If the type of the DataColumn is anything other than MATRIX, the
+        /* If the type of the DataColumn is anything other than MATRIX, the
          * associated MatrixVocabElement must not be editable by the user.
          * Ensure this by setting the system flag on the MVE.
          */
-        if (dc.getItsMveType() != MatrixVocabElement.MatrixType.MATRIX) {
+        if ( dc.getItsMveType() != MatrixVocabElement.MatrixType.MATRIX )
+        {
             mve.setSystem();
         }
 
@@ -1154,37 +1479,53 @@ public abstract class Database {
 
     } /* Database::addDataColumn(dc) */
 
+
     // addReferenceColumn()
     /**
      * Given an instance of a ReferenceColumn with a valid name, insert it into
      * the column list (and in passing, the index), and return the newly
-     * assigned ID of the column. -- 8/30/07 Changes: - None.
+     * assigned ID of the column.
+     *
+     *                                                   -- 8/30/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    private long addReferenceColumn(final ReferenceColumn rc)
-    throws SystemErrorException {
+    private long addReferenceColumn(ReferenceColumn rc)
+        throws SystemErrorException
+    {
         final String mName = "Database::addReferenceColumn(rc): ";
         long colID = DBIndex.INVALID_ID;
         long mveID = DBIndex.INVALID_ID;
 
-        if ((rc == null) || (rc.getDB() != this)
-                || (rc.getID() != DBIndex.INVALID_ID)) {
+        if ( ( rc == null ) ||
+             ( rc.getDB() != this ) ||
+             ( rc.getID() != DBIndex.INVALID_ID ) )
+        {
             throw new SystemErrorException(mName + "bad rc param on entry");
-        } else if ((!(IsValidSVarName(rc.getName())))
-                || (vl.inVocabList(rc.getName()))
-                || (cl.inColumnList(rc.getName()))) {
+        }
+        else if ( ( ! ( this.IsValidSVarName(rc.getName() ) ) ) ||
+                  ( this.vl.inVocabList(rc.getName()) ) ||
+                  ( this.cl.inColumnList(rc.getName()) ) )
+        {
             throw new SystemErrorException(mName + "rc.name invalid or in use");
-        } else if (rc.getItsCells() != null) {
-            throw new SystemErrorException(mName
-                    + "rc.itsCells aleady defined?");
+        }
+        else if ( rc.getItsCells() != null )
+        {
+            throw new SystemErrorException(mName +
+                                           "rc.itsCells aleady defined?");
         }
 
-        cl.addColumn(rc);
+        this.cl.addColumn(rc);
 
         colID = rc.getID();
 
-        if ((cl.getColumn(colID) != rc) || (cl.getColumn(rc.getName()) != rc)
-                || (rc.getItsCells() == null)) {
+        if ( ( this.cl.getColumn(colID) != rc ) ||
+             ( this.cl.getColumn(rc.getName()) != rc ) ||
+             ( rc.getItsCells() == null ) )
+        {
             throw new SystemErrorException(mName + "dc insertion in cl failed");
         }
 
@@ -1192,22 +1533,36 @@ public abstract class Database {
 
     } /* Database::addReferenceColumn(rc) */
 
+
     // colNameInUse(name)
     /**
-     * Test to see if a column name is in use. Return true if it is, and false
-     * if it isn't. Throw a system error if the name is invalid. -- 8/31/07
-     * Changes: - None.
+     * Test to see if a column name is in use.  Return true if it is, and false
+     * if it isn't.  Throw a system error if the name is invalid.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public boolean colNameInUse(final String name) throws SystemErrorException {
+    public boolean colNameInUse(String name)
+        throws SystemErrorException
+    {
         final String mName = "Database::colNameInUse(name): ";
         boolean nameInUse = false;
 
-        if (name == null) {
+        if ( name == null )
+        {
             throw new SystemErrorException(mName + "name == null");
-        } else if (!(IsValidSVarName(name))) {
+        }
+        else if ( ! ( this.IsValidSVarName(name) ) )
+        {
             throw new SystemErrorException(mName + "name is invalid");
-        } else if ((vl.inVocabList(name)) || (cl.inColumnList(name))) {
+        }
+        else if ( ( this.vl.inVocabList(name) ) ||
+                  ( this.cl.inColumnList(name) ) )
+        {
             nameInUse = true;
         }
 
@@ -1215,26 +1570,41 @@ public abstract class Database {
 
     } /* DataBase::colNameInUse(name) */
 
+
     // getColumn(id)
     /**
-     * Given a column ID, try to look up the associated column in the column
-     * list, and return a copy of its DataColumn or ReferenceColumn structure,
-     * but with itsCells set to null. If no such column exists, throw a system
-     * error. -- 8/31/07 Changes: - None.
+     * Given a column ID, try to look up the associated column in the
+     * column list, and return a copy of its DataColumn or ReferenceColumn
+     * structure, but with itsCells set to null.
+     *
+     * If no such column exists, throw a system error.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public Column getColumn(final long id) throws SystemErrorException {
+    public Column getColumn(long id)
+        throws SystemErrorException
+    {
         final String mName = "Database::getColumn(id): ";
         Column col = null;
         Column copy = null;
 
-        col = cl.getColumn(id);
+        col = this.cl.getColumn(id);
 
-        if (col instanceof DataColumn) {
-            copy = new DataColumn((DataColumn) col);
-        } else if (col instanceof ReferenceColumn) {
-            copy = new ReferenceColumn((ReferenceColumn) col);
-        } else {
+        if ( col instanceof DataColumn )
+        {
+            copy = new DataColumn((DataColumn)col);
+        }
+        else if ( col instanceof ReferenceColumn )
+        {
+            copy = new ReferenceColumn((ReferenceColumn)col);
+        }
+        else
+        {
             throw new SystemErrorException(mName + "unknown Column subtype?");
         }
 
@@ -1242,26 +1612,41 @@ public abstract class Database {
 
     } /* Database::getColumn(id) */
 
+
     // getColumn(name)
     /**
-     * Given a column name, try to look up the associated column in the column
-     * list, and return a copy of its DataColumn or ReferenceColumn structure,
-     * but with itsCells set to null. If no such column exists, throw a system
-     * error. -- 8/31/07 Changes: - None.
+     * Given a column name, try to look up the associated column in the
+     * column list, and return a copy of its DataColumn or ReferenceColumn
+     * structure, but with itsCells set to null.
+     *
+     * If no such column exists, throw a system error.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public Column getColumn(final String name) throws SystemErrorException {
+    public Column getColumn(String name)
+        throws SystemErrorException
+    {
         final String mName = "Database::getColumn(name): ";
         Column col = null;
         Column copy = null;
 
-        col = cl.getColumn(name);
+        col = this.cl.getColumn(name);
 
-        if (col instanceof DataColumn) {
-            copy = new DataColumn((DataColumn) col);
-        } else if (col instanceof ReferenceColumn) {
-            copy = new ReferenceColumn((ReferenceColumn) col);
-        } else {
+        if ( col instanceof DataColumn )
+        {
+            copy = new DataColumn((DataColumn)col);
+        }
+        else if ( col instanceof ReferenceColumn )
+        {
+            copy = new ReferenceColumn((ReferenceColumn)col);
+        }
+        else
+        {
             throw new SystemErrorException(mName + "unknown Column subtype?");
         }
 
@@ -1269,353 +1654,481 @@ public abstract class Database {
 
     } /* Database::getColumn(name) */
 
+
     // getDataColumn(id)
     /**
      * Given a data column ID, try to look up the associated data column in the
      * column list, and return a copy of its DataColumn structure, but with
-     * itsCells set to null. If no such column exists, throw a system error. --
-     * 8/31/07 Changes: - None.
+     * itsCells set to null.
+     *
+     * If no such column exists, throw a system error.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public DataColumn getDataColumn(final long id) throws SystemErrorException {
+    public DataColumn getDataColumn(long id)
+        throws SystemErrorException
+    {
         final String mName = "Database::getDataColumn(id): ";
         Column col = null;
         DataColumn dc = null;
 
-        col = cl.getColumn(id);
+        col = this.cl.getColumn(id);
 
-        if (!(col instanceof DataColumn)) {
-            throw new SystemErrorException(mName
-                    + "id doesn't map to a DataColumn");
+        if ( ! ( col instanceof DataColumn ) )
+        {
+            throw new SystemErrorException(mName +
+                    "id doesn't map to a DataColumn");
         }
 
-        dc = new DataColumn((DataColumn) col);
+        dc = new DataColumn((DataColumn)col);
 
         return dc;
 
     } /* Database::getDataColumn(id) */
 
+
     // getColOrderVector()
     /**
-     * Obtain a copy of the column order vector from this.cl, and return it to
-     * the user.
-     * 
+     * Obtain a copy of the column order vector from this.cl, and return it
+     * to the user.
+     *
      * @return copy of this.cl.cov
-     * @throws org.openshapa.db.SystemErrorException
-     *             if any errors are detected.
+     *
+     * @throws org.openshapa.db.SystemErrorException if any errors are detected.
      */
     public java.util.Vector<Long> getColOrderVector()
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "Database::getColOrderVector(): ";
         java.util.Vector<Long> cov_copy = null;
 
-        if (cl == null) {
+        if ( this.cl == null )
+        {
             throw new SystemErrorException(mName + "this.cl null on entry");
         }
 
-        cov_copy = cl.getColOrderVector();
+        cov_copy = this.cl.getColOrderVector();
 
         return cov_copy;
 
     } /* Database::getColOrderVector() */
 
+
     // getDataColumn(name)
     /**
      * Given a data column name, try to look up the associated dat column in the
      * column list, and return a copy of its DataColumn structure, but with
-     * itsCells set to null. If no such column exists, throw a system error. --
-     * 8/31/07 Changes: - None.
+     * itsCells set to null.
+     *
+     * If no such column exists, throw a system error.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public DataColumn getDataColumn(final String name)
-    throws SystemErrorException {
+    public DataColumn getDataColumn(String name)
+        throws SystemErrorException
+    {
         final String mName = "Database::getDataColumn(name): ";
         Column col = null;
         DataColumn dc = null;
 
-        col = cl.getColumn(name);
+        col = this.cl.getColumn(name);
 
-        if (!(col instanceof DataColumn)) {
-            throw new SystemErrorException(mName
-                    + "name doesn't map to a data column");
+        if ( ! ( col instanceof DataColumn ) )
+        {
+            throw new SystemErrorException(mName +
+                    "name doesn't map to a data column");
         }
 
-        dc = new DataColumn((DataColumn) col);
+        dc = new DataColumn((DataColumn)col);
 
         return dc;
 
     } /* Database::getDataColumn(name) */
 
+
     // getReferenceColumn(id)
     /**
      * Given a reference column ID, try to look up the associated reference
      * column in the column list, and return a copy of its ReferenceColumn
-     * structure, but with itsCells set to null. If no such column exists, throw
-     * a system error. -- 8/31/07 Changes: - None.
+     * structure, but with itsCells set to null.
+     *
+     * If no such column exists, throw a system error.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public ReferenceColumn getReferenceColumn(final long id)
-    throws SystemErrorException {
+    public ReferenceColumn getReferenceColumn(long id)
+        throws SystemErrorException
+    {
         final String mName = "Database::getReferenceColumn(id): ";
         Column col = null;
         ReferenceColumn rc = null;
 
-        col = cl.getColumn(id);
+        col = this.cl.getColumn(id);
 
-        if (!(col instanceof ReferenceColumn)) {
-            throw new SystemErrorException(mName
-                    + "id doesn't map to a ReferenceColumn");
+        if ( ! ( col instanceof ReferenceColumn ) )
+        {
+            throw new SystemErrorException(mName +
+                    "id doesn't map to a ReferenceColumn");
         }
 
-        rc = new ReferenceColumn((ReferenceColumn) col);
+        rc = new ReferenceColumn((ReferenceColumn)col);
 
         return rc;
 
     } /* Database::getDataColumn(id) */
 
+
     // getReferenceColumn(name)
     /**
      * Given a reference column name, try to look up the associated refernce
      * column in the column list, and return a copy of its ReferenceColumn
-     * structure, but with itsCells set to null. If no such column exists, throw
-     * a system error. -- 8/31/07 Changes: - None.
+     * structure, but with itsCells set to null.
+     *
+     * If no such column exists, throw a system error.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public ReferenceColumn getReferenceColumn(final String name)
-    throws SystemErrorException {
+    public ReferenceColumn getReferenceColumn(String name)
+        throws SystemErrorException
+    {
         final String mName = "Database::getReferenceColumn(name): ";
         Column col = null;
         ReferenceColumn rc = null;
 
-        col = cl.getColumn(name);
+        col = this.cl.getColumn(name);
 
-        if (!(col instanceof ReferenceColumn)) {
-            throw new SystemErrorException(mName
-                    + "name doesn't map to a data column");
+        if ( ! ( col instanceof ReferenceColumn ) )
+        {
+            throw new SystemErrorException(mName +
+                    "name doesn't map to a data column");
         }
 
-        rc = new ReferenceColumn((ReferenceColumn) col);
+        rc = new ReferenceColumn((ReferenceColumn)col);
 
         return rc;
 
     } /* Database::getDataColumn(name) */
 
+
     // getColumns()
     /**
      * Return a vector containing copies of the DataColumn or ReferenceColumn
      * classes of each column in the column list, but with the itsCells fields
-     * set to null. If there are no Columns, return null. -- 8/31/07 Changes: -
-     * Modified the method to return an empty vector if there are not Columns.
-     * -- 11/24/08
+     * set to null.
+     *
+     * If there are no Columns, return null.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - Modified the method to return an empty vector if there are not
+     *      Columns.
+     *                                               -- 11/24/08
      */
 
-    public java.util.Vector<Column> getColumns() throws SystemErrorException {
+    public java.util.Vector<Column> getColumns()
+        throws SystemErrorException
+    {
 
-        return cl.getColumns();
+        return this.cl.getColumns();
 
     } /* Database::getColumns() */
 
+
     // getDataColumns()
     /**
-     * Return a vector containing copies of the DataColumn classes of each data
-     * column in the column list, but with the itsCells fields set to null. If
-     * there are no DataColumns, return null. -- 8/31/07 Changes: - Modified the
-     * method to return an empty vector if there are no DataColumns. -- 11/24/08
+     * Return a vector containing copies of the DataColumn classes of each
+     * data column in the column list, but with the itsCells fields
+     * set to null.
+     *
+     * If there are no DataColumns, return null.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - Modified the method to return an empty vector if there are no
+     *      DataColumns.
+     *                                               -- 11/24/08
      */
 
     public java.util.Vector<DataColumn> getDataColumns()
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
 
-        return cl.getDataColumns();
+        return this.cl.getDataColumns();
 
     } /* Database::getDataColumns() */
+
 
     // getReferenceColumns()
     /**
      * Return a vector containing copies of the ReferenceColumn classes of each
-     * reference column in the column list, but with the itsCells fields set to
-     * null. If there are no ReferenceColumns, return null. -- 8/31/07 Changes:
-     * - Modified the method to return an empty vector if there are no
-     * DataColumns. -- 11/24/08
+     * reference column in the column list, but with the itsCells fields
+     * set to null.
+     *
+     * If there are no ReferenceColumns, return null.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - Modified the method to return an empty vector if there are no
+     *      DataColumns.
+     *                                               -- 11/24/08
      */
 
     public java.util.Vector<ReferenceColumn> getReferenceColumns()
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
 
-        return cl.getReferenceColumns();
+        return this.cl.getReferenceColumns();
 
     } /* Database::getReferenceColumns() */
 
+
     // removeColumn()
     /**
-     * Given the ID of a column, attempt to remove it from the column list (and
-     * thereby from the database as a whole). Note that a column must be empty
-     * (i.e. have no cells), before it can be removed. If the Column is a
-     * DataColumn, also remove the MatrixVocabElement associated with the
-     * DataColumn. -- 8/31/07 Changed: - None.
+     * Given the ID of a column, attempt to remove it from the column list
+     * (and thereby from the database as a whole).  Note that a column must be
+     * empty (i.e. have no cells), before it can be removed.
+     *
+     * If the Column is a DataColumn, also remove the MatrixVocabElement
+     * associated with the DataColumn.
+     *
+     *                                               -- 8/31/07
+     *
+     * Changed:
+     *
+     *    - None.
      */
 
-    public void removeColumn(final long id) throws SystemErrorException {
+    public void removeColumn(long id)
+        throws SystemErrorException
+    {
         final String mName = "Database::removeColumn(id): ";
         long mveID = DBIndex.INVALID_ID;
         Column col = null;
         DataColumn dc = null;
         MatrixVocabElement mve = null;
 
-        if (id == DBIndex.INVALID_ID) {
+        if ( id == DBIndex.INVALID_ID )
+        {
             throw new SystemErrorException(mName + "id == INVALID_ID");
         }
 
-        col = cl.getColumn(id);
+        col = this.cl.getColumn(id);
 
-        if (col.getNumCells() != 0) {
+        if ( col.getNumCells() != 0 )
+        {
             throw new SystemErrorException(mName + "col.numCells != 0");
         }
 
-        if (col instanceof DataColumn) {
-            dc = (DataColumn) col;
+        if ( col instanceof DataColumn )
+        {
+            dc = (DataColumn)col;
             mveID = dc.getItsMveID();
 
-            if (mveID == DBIndex.INVALID_ID) {
-                throw new SystemErrorException(mName
-                        + "dc.itsMveID == INVALID_ID");
-            } else if (!vl.matrixInVocabList(mveID)) {
-                throw new SystemErrorException(mName
-                        + "dc.itsMveID doesn't refer to a matrix vocab element");
+            if ( mveID == DBIndex.INVALID_ID )
+            {
+                throw new SystemErrorException(mName +
+                                               "dc.itsMveID == INVALID_ID");
+            }
+            else if ( ! this.vl.matrixInVocabList(mveID) )
+            {
+                throw new SystemErrorException(mName +
+                        "dc.itsMveID doesn't refer to a matrix vocab element");
             }
 
-            mve = vl.getMatrixVocabElement(mveID);
+            mve = this.vl.getMatrixVocabElement(mveID);
 
-            if (mve.getItsColID() != id) {
+            if ( mve.getItsColID() != id )
+            {
                 throw new SystemErrorException(mName + "mve.istColID != id");
             }
         }
 
-        cl.removeColumn(id);
+        this.cl.removeColumn(id);
 
-        if (mveID != DBIndex.INVALID_ID) {
-            vl.removeVocabElement(mveID);
+        if ( mveID != DBIndex.INVALID_ID )
+        {
+            this.vl.removeVocabElement(mveID);
         }
 
         return;
 
     } /* Database::removeColumn(id) */
 
+
     // replaceColumn()
     /**
-     * Given an instance of DataColumn or ReferenceColumn with ID matching that
-     * of a column in the column list, replace the current verion of the (Data
-     * or Reference) column with a copy of the supplied (Data or Reference)
-     * column. At present, the itsMveID and itsMveType fields of the supplied
-     * DataColumn must match that of the original instance of DataColumn. We
-     * will probably want to relax this in the future, but we will keep this
-     * restriction for now. -- 8/31/07 Changes: - Modified method to check for
-     * name changes in a DataColumn. If the name of the DataColumn has been
-     * changed, apply the name change to the associated MVE first, so as to
-     * avoid the one change at a time invarient. Then check to see if there are
-     * any remaining changes. If there are, proceed as before.
+     * Given an instance of DataColumn or ReferenceColumn with ID matching
+     * that of a column in the column list, replace the current verion of
+     * the (Data or Reference) column with a copy of the supplied (Data or
+     * Reference) column.
+     *
+     * At present, the itsMveID and itsMveType fields of the supplied
+     * DataColumn must match that of the original instance of DataColumn.
+     * We will probably want to relax this in the future, but we will keep
+     * this restriction for now.
+     *
+     *                                                  -- 8/31/07
+     *
+     * Changes:
+     *
+     *    - Modified method to check for name changes in a DataColumn.  If
+     *      the name of the DataColumn has been changed, apply the name change
+     *      to the associated MVE first, so as to avoid the one change at a
+     *      time invarient.  Then check to see if there are any remaining
+     *      changes.  If there are, proceed as before.
      */
 
-    public void replaceColumn(final Column newCol) throws SystemErrorException {
+    public void replaceColumn(Column newCol)
+        throws SystemErrorException
+    {
         final String mName = "Database::replaceColumn(): ";
         long colID;
         Column oldCol;
 
-        if (newCol == null) {
+        if ( newCol == null )
+        {
             throw new SystemErrorException(mName + "newCol == null");
-        } else if (newCol.getDB() != this) {
+        }
+        else if ( newCol.getDB() != this )
+        {
             throw new SystemErrorException(mName + "db mismatch");
-        } else if (newCol.getID() == DBIndex.INVALID_ID) {
+        }
+        else if ( newCol.getID() == DBIndex.INVALID_ID )
+        {
             throw new SystemErrorException(mName + "newCol.id == INVALID_ID");
         }
 
         colID = newCol.getID();
 
-        oldCol = cl.getColumn(colID);
+        oldCol = this.cl.getColumn(colID);
 
-        if (oldCol.getName().compareTo(newCol.getName()) != 0) {
-            /*
-             * we have a name change -- verify that the new name is valid and
-             * not in use.
+        if ( oldCol.getName().compareTo(newCol.getName()) != 0 )
+        {
+            /* we have a name change -- verify that the new name is valid
+             * and not in use.
              */
-            if ((!(IsValidSVarName(newCol.getName())))
-                    || (vl.inVocabList(newCol.getName()))
-                    || (cl.inColumnList(newCol.getName()))) {
-                throw new SystemErrorException(mName
-                        + "newCol.name modified and either invalid or in use");
+            if ( ( ! ( this.IsValidSVarName(newCol.getName() ) ) ) ||
+                  ( this.vl.inVocabList(newCol.getName()) ) ||
+                  ( this.cl.inColumnList(newCol.getName()) ) )
+            {
+                throw new SystemErrorException(mName +
+                        "newCol.name modified and either invalid or in use");
             }
         }
 
-        if (oldCol instanceof DataColumn) {
+        if ( oldCol instanceof DataColumn )
+        {
             DataColumn newDC;
             DataColumn oldDC;
             long mveID;
             MatrixVocabElement mve;
             MatrixVocabElement newMve;
 
-            if (!(newCol instanceof DataColumn)) {
-                throw new SystemErrorException(mName
-                        + "col type mismatch -- DataColumn expected");
+            if ( ! ( newCol instanceof DataColumn ) )
+            {
+                throw new SystemErrorException(mName +
+                        "col type mismatch -- DataColumn expected");
             }
 
-            newDC = (DataColumn) newCol;
-            oldDC = (DataColumn) oldCol;
+            newDC = (DataColumn)newCol;
+            oldDC = (DataColumn)oldCol;
 
-            if (newDC.getItsMveID() == DBIndex.INVALID_ID) {
-                throw new SystemErrorException(mName
-                        + "newDC.itsMveID == INVALID_ID");
-            } else if (newDC.getItsMveID() != oldDC.getItsMveID()) {
-                throw new SystemErrorException(mName
-                        + "newDC.itsMveID != oldC.itsMveID");
-            } else if (newDC.getItsMveType() == MatrixVocabElement.MatrixType.UNDEFINED) {
-                throw new SystemErrorException(mName
-                        + "newDC.itsMveType == UNDEFINED");
-            } else if (newDC.getItsMveType() != oldDC.getItsMveType()) {
-                throw new SystemErrorException(mName
-                        + "newDC.itsMveType != oldC.itsMveType");
+            if ( newDC.getItsMveID() == DBIndex.INVALID_ID )
+            {
+                throw new SystemErrorException(mName +
+                        "newDC.itsMveID == INVALID_ID");
+            }
+            else if ( newDC.getItsMveID() != oldDC.getItsMveID() )
+            {
+                throw new SystemErrorException(mName +
+                        "newDC.itsMveID != oldC.itsMveID");
+            }
+            else if ( newDC.getItsMveType() ==
+                      MatrixVocabElement.MatrixType.UNDEFINED )
+            {
+                throw new SystemErrorException(mName +
+                        "newDC.itsMveType == UNDEFINED");
+            }
+            else if ( newDC.getItsMveType() != oldDC.getItsMveType() )
+            {
+                throw new SystemErrorException(mName +
+                        "newDC.itsMveType != oldC.itsMveType");
             }
 
             mveID = oldDC.getItsMveID();
-            mve = vl.getMatrixVocabElement(mveID);
+            mve = this.vl.getMatrixVocabElement(mveID);
 
-            if (mve.getName().compareTo(oldDC.getName()) != 0) {
+            if ( mve.getName().compareTo(oldDC.getName()) != 0 )
+            {
                 System.out.printf("mve.getName() = %s\n", mve.getName());
                 System.out.printf("oldDC.getName() = %s\n", oldDC.getName());
-                throw new SystemErrorException(mName + "oldDC.name != mve.name");
+                throw new SystemErrorException(mName +
+                                               "oldDC.name != mve.name");
             }
 
-            if (oldDC.getName().compareTo(newDC.getName()) != 0) {
-                /*
-                 * the user has changed the name of the DataColumn. We must
-                 * apply this change to the associated matrix vocab element as
-                 * well.
+            if ( oldDC.getName().compareTo(newDC.getName()) != 0 )
+            {
+                /* the user has changed the name of the DataColumn.  We must
+                 * apply this change to the associated matrix vocab element
+                 * as well.
                  */
 
                 newMve = new MatrixVocabElement(mve);
                 newMve.setName(newDC.getName());
-                vl.replaceVocabElement(newMve);
+                this.vl.replaceVocabElement(newMve);
 
-                if ((vl.getMatrixVocabElement(mveID) != newMve)
-                        || (vl.getMatrixVocabElement(newDC.getName()) != newMve)) {
-                    throw new SystemErrorException(
-                            mName
-                            + "failure updating matrix for data col name change");
+                if ( ( this.vl.getMatrixVocabElement(mveID) != newMve ) ||
+                     ( this.vl.getMatrixVocabElement(newDC.getName()) != newMve ) )
+                {
+                    throw new SystemErrorException(mName +
+                            "failure updating matrix for data col name change");
                 }
             }
 
-            cl.replaceDataColumn(new DataColumn(newDC), false);
-        } else if (oldCol instanceof ReferenceColumn) {
+            this.cl.replaceDataColumn(new DataColumn(newDC), false);
+        }
+        else if ( oldCol instanceof ReferenceColumn )
+        {
             ReferenceColumn newRC;
 
-            if (!(newCol instanceof ReferenceColumn)) {
-                throw new SystemErrorException(mName
-                        + "col type mismatch -- ReferenceColumn expected");
+            if ( ! ( newCol instanceof ReferenceColumn ) )
+            {
+                throw new SystemErrorException(mName +
+                        "col type mismatch -- ReferenceColumn expected");
             }
 
-            newRC = (ReferenceColumn) newCol;
+            newRC = (ReferenceColumn)newCol;
 
-            cl.replaceReferenceColumn(new ReferenceColumn(newRC));
-        } else {
+            this.cl.replaceReferenceColumn(new ReferenceColumn(newRC));
+        }
+        else
+        {
             throw new SystemErrorException(mName + "Unknow Column subclass?!?");
         }
 
@@ -1623,46 +2136,59 @@ public abstract class Database {
 
     } /* Database::replaceColumn(newCol) */
 
+
+
     // setColOrderVector()
     /**
-     * Verify that the supplied new column order vector is valid. Throw a system
-     * error if it is not. Otherwise, replace the old column order vector with
-     * the new, and notify the listeners (all external).
-     * 
-     * @param new_cov
-     *            new column order vector
-     * @throws org.openshapa.db.SystemErrorException
-     *             if any error is detected.
+     * Verify that the supplied new column order vector is valid.  Throw a
+     * system error if it is not.
+     *
+     * Otherwise, replace the old column order vector with the new, and
+     * notify the listeners (all external).
+     *
+     * @param new_cov new column order vector
+     *
+     * @throws org.openshapa.db.SystemErrorException if any error is detected.
      */
-    public void setColOrderVector(final java.util.Vector<Long> new_cov)
-    throws SystemErrorException {
+    public void setColOrderVector(java.util.Vector<Long> new_cov)
+        throws SystemErrorException
+    {
         final String mName = "Database::setColOrderVector(): ";
 
-        if (cl == null) {
+        if ( this.cl == null )
+        {
             throw new SystemErrorException(mName + "this.cl null on entry");
         }
 
-        cl.setColOrderVector(new_cov);
+        this.cl.setColOrderVector(new_cov);
 
         return;
 
     } /* Database::setColOrderVector() */
 
+
     // toMODBFile_includeDataColumnInUserSection()
     /**
      * Some types of databases construct columns that are not directly created
-     * by the user, and store them in the column list. This method exists to
-     * allow these databases to prevent such columns from appearing in the user
-     * section of a MacSHAPA ODB file. Such databases should override this
-     * method. -- 7/5/09 Changes: - None.
+     * by the user, and store them in the column list.  This method exists to
+     * allow these databases to prevent such columns from appearing in the
+     * user section of a MacSHAPA ODB file.
+     *
+     * Such databases should override this method.
+     *
+     *                                           -- 7/5/09
+     * Changes:
+     *
+     *    - None.
      */
 
-    protected boolean toMODBFile_includeDataColumnInUserSection(
-            final DataColumn dc) {
+    protected boolean toMODBFile_includeDataColumnInUserSection(final DataColumn dc)
+    {
 
-        return (true);
+        return(true);
 
     } /* toMODBFile_includeDataColumnInUserSection() */
+
 
     /*************************************************************************/
     /************************ Listener Management ****************************/
@@ -1670,102 +2196,151 @@ public abstract class Database {
 
     // cascadeEnd()
     /**
-     * Note the end of a cascade of changes. Note that such cascades may be
-     * nested. -- 2/11/08 Changes: - None.
+     * Note the end of a cascade of changes.  Note that such cascades
+     * may be nested.
+     *                                           -- 2/11/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    protected void cascadeEnd() throws SystemErrorException {
-        listeners.notifyListenersOfCascadeEnd();
+    protected void cascadeEnd()
+        throws SystemErrorException
+    {
+        this.listeners.notifyListenersOfCascadeEnd();
 
         return;
 
     } /* Database::cascadeEnd() */
 
+
     // cascadeStart()
     /**
-     * Note the beginning of a cascade of changes. Note that such cascades may
-     * be nested. -- 2/11/08 Changes: - None.
+     * Note the beginning of a cascade of changes.  Note that such cascades
+     * may be nested.
+     *                                           -- 2/11/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    protected void cascadeStart() throws SystemErrorException {
-        listeners.notifyListenersOfCascadeBegin();
+    protected void cascadeStart()
+        throws SystemErrorException
+    {
+        this.listeners.notifyListenersOfCascadeBegin();
 
         return;
 
     } /* Database::cascadeStart() */
 
+
     // deregisterCascadeListener()
     /**
-     * Deregister a cascade listener. The listener must implement the
+     * Deregister a cascade listener.  The listener must implement the
      * ExternalCascadeListener interface, and must be registered with the
-     * Database on entry. -- 2/11/08 Changes: - None.
+     * Database on entry.
+     *
+     *                                           -- 2/11/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void deregisterCascadeListener(final ExternalCascadeListener el)
-    throws SystemErrorException {
+    public void deregisterCascadeListener(ExternalCascadeListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::deregisterCascadeListener()";
 
-        listeners.deregisterExternalListener(el);
+        this.listeners.deregisterExternalListener(el);
 
         return;
 
     } /* Database::deregisterCascadeListener() */
 
+
     // deregisterInternalCascadeListener()
     /**
-     * Deregister an internal cascade listener. The listener must implement the
+     * Deregister an internal cascade listener.  The listener must implement the
      * ExternalCascadeListener interface, and must be registered with the
-     * Database on entry. -- 2/11/08 Changes: - None.
+     * Database on entry.
+     *
+     *                                           -- 2/11/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void deregisterInternalCascadeListener(final long id)
-    throws SystemErrorException {
+    public void deregisterInternalCascadeListener(long id)
+        throws SystemErrorException
+    {
         final String mName = "Database::deregisterInternalCascadeListener()";
 
-        listeners.deregisterInternalListener(id);
+        this.listeners.deregisterInternalListener(id);
 
         return;
 
     } /* Database::deregisterInternalCascadeListener() */
 
+
     // deregisterColumnListListener()
     /**
-     * Deregister a ColumnList listener. The listener must implement the
+     * Deregister a ColumnList listener.  The listener must implement the
      * ExternalColumnListListener interface, and must be registered with the
-     * column list on entry. -- 2/11/08 Changes: - None.
+     * column list on entry.
+     *
+     *                                           -- 2/11/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void deregisterColumnListListener(final ExternalColumnListListener el)
-    throws SystemErrorException {
+    public void deregisterColumnListListener(ExternalColumnListListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::deregisterColumnListListener()";
 
-        cl.deregisterExternalListener(el);
+        this.cl.deregisterExternalListener(el);
 
         return;
 
     } /* Database::deregisterColumnListListener() */
 
+
     // deregisterDataCellListener()
     /**
-     * Deregister a DataCell listener. The listener must implement the
+     * Deregister a DataCell listener.  The listener must implement the
      * ExternalDataCellListener interface, and must be registered with the
-     * target on entry. -- 2/6/08 Changes: - None.
+     * target on entry.
+     *
+     *                                           -- 2/6/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void deregisterDataCellListener(final long id,
-            final ExternalDataCellListener el) throws SystemErrorException {
+    public void deregisterDataCellListener(long id,
+                                           ExternalDataCellListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::deregisterDataCellListener()";
         DBElement dbe;
         DataCell dc;
 
-        dbe = idx.getElement(id);
+        dbe = this.idx.getElement(id);
 
-        if (!(dbe instanceof DataCell)) {
-            throw new SystemErrorException(mName
-                    + "id doesn't refer to a DataCell");
+        if ( ! ( dbe instanceof DataCell ) )
+        {
+            throw new SystemErrorException(mName +
+                    "id doesn't refer to a DataCell");
         }
 
-        dc = (DataCell) dbe;
+        dc = (DataCell)dbe;
 
         dc.deregisterExternalListener(el);
 
@@ -1773,27 +2348,37 @@ public abstract class Database {
 
     } /* Database::deregisterDataCellListener() */
 
+
     // deregisterDataColumnListener()
     /**
-     * Deregister a DataColumn listener. The listener must implement the
+     * Deregister a DataColumn listener.  The listener must implement the
      * ExternalDataColumnListener interface, and must be registered with the
-     * target on entry. -- 2/6/08 Changes: - None.
+     * target on entry.
+     *
+     *                                           -- 2/6/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void deregisterDataColumnListener(final long id,
-            final ExternalDataColumnListener el) throws SystemErrorException {
+    public void deregisterDataColumnListener(long id,
+                                             ExternalDataColumnListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::deregisterDataColumnListener()";
         DBElement dbe;
         DataColumn dc;
 
-        dbe = idx.getElement(id);
+        dbe = this.idx.getElement(id);
 
-        if (!(dbe instanceof DataColumn)) {
-            throw new SystemErrorException(mName
-                    + "id doesn't refer to a DataColumn");
+        if ( ! ( dbe instanceof DataColumn ) )
+        {
+            throw new SystemErrorException(mName +
+                    "id doesn't refer to a DataColumn");
         }
 
-        dc = (DataColumn) dbe;
+        dc = (DataColumn)dbe;
 
         dc.deregisterExternalListener(el);
 
@@ -1801,27 +2386,37 @@ public abstract class Database {
 
     } /* Database::deregisterDataColumnListener() */
 
+
     // deregisterVocabElementListener()
     /**
-     * Deregister a vocab element listener. The listener must implement the
+     * Deregister a vocab element listener.  The listener must implement the
      * ExternalVocabElementListener interface, and must be registered with the
-     * target on entry. -- 2/6/08 Changes: - None.
+     * target on entry.
+     *
+     *                                           -- 2/6/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void deregisterVocabElementListener(final long id,
-            final ExternalVocabElementListener el) throws SystemErrorException {
+    public void deregisterVocabElementListener(long id,
+                                               ExternalVocabElementListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::deregisterVocabElementListener()";
         DBElement dbe;
         VocabElement ve;
 
-        dbe = idx.getElement(id);
+        dbe = this.idx.getElement(id);
 
-        if (!(dbe instanceof VocabElement)) {
-            throw new SystemErrorException(mName
-                    + "id doesn't refer to a VocabElement");
+        if ( ! ( dbe instanceof VocabElement ) )
+        {
+            throw new SystemErrorException(mName +
+                    "id doesn't refer to a VocabElement");
         }
 
-        ve = (VocabElement) dbe;
+        ve = (VocabElement)dbe;
 
         ve.deregisterExternalListener(el);
 
@@ -1829,79 +2424,112 @@ public abstract class Database {
 
     } /* Database::deregisterVocabElementListener() */
 
+
     // deregisterVocabListListener()
     /**
-     * Deregister a vocab list change listener. The listener must implement the
+     * Deregister a vocab list change listener.  The listener must implement the
      * ExternalVocabListListener interface, and must be registered with the
-     * vocab list on entry. -- 2/6/08 Changes: - None.
+     * vocab list on entry.
+     *
+     *                                           -- 2/6/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void deregisterVocabListListener(final ExternalVocabListListener el)
-    throws SystemErrorException {
+    public void deregisterVocabListListener(ExternalVocabListListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::deregisterVocabListListener()";
 
-        vl.deregisterExternalChangeListener(el);
+        this.vl.deregisterExternalChangeListener(el);
 
         return;
 
     } /* Database::deregisterVocabListListener() */
 
+
     // registerCascadeListener()
     /**
-     * Register a cascade listener. The listener must implement the
-     * ExternalCascadeListener interface. The listener will be informed of the
-     * beginning and end of cascades of changes. -- 2/11/08 Changes: - None.
+     * Register a cascade listener.  The listener must implement the
+     * ExternalCascadeListener interface.  The listener will be informed
+     * of the beginning and end of cascades of changes.
+     *
+     *                                           -- 2/11/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void registerCascadeListener(final ExternalCascadeListener el)
-    throws SystemErrorException {
+    public void registerCascadeListener(ExternalCascadeListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::registerCascadeListener()";
 
-        listeners.registerExternalListener(el);
+        this.listeners.registerExternalListener(el);
 
         return;
 
     } /* Database::registerCascadeListener() */
 
+
     // registerColumnListListener()
     /**
-     * Register a cascade listener. The listener must implement the
-     * ExternalCascadeListener interface. The listener will be informed of the
-     * beginning and end of cascades of changes. -- 2/11/08 Changes: - None.
+     * Register a cascade listener.  The listener must implement the
+     * ExternalCascadeListener interface.  The listener will be informed
+     * of the beginning and end of cascades of changes.
+     *
+     *                                           -- 2/11/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void registerColumnListListener(final ExternalColumnListListener el)
-    throws SystemErrorException {
+    public void registerColumnListListener(ExternalColumnListListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::registerColumnListListener()";
 
-        cl.registerExternalListener(el);
+        this.cl.registerExternalListener(el);
 
         return;
 
     } /* Database::registerColumnListListener() */
 
+
     // registerDataCellListener()
     /**
-     * Register a DataCell listener. The listener must implement the
-     * ExternalDataCellListener interface. The listener will be informed of
-     * changes in and deletions of data cells in the target column. -- 2/11/08
-     * Changes: - None.
+     * Register a DataCell listener.  The listener must implement the
+     * ExternalDataCellListener interface.  The listener will be informed
+     * of changes in and deletions of data cells in the target column.
+     *
+     *                                           -- 2/11/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void registerDataCellListener(final long id,
-            final ExternalDataCellListener el) throws SystemErrorException {
+    public void registerDataCellListener(long id,
+                                         ExternalDataCellListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::registerDataCellListener()";
         DBElement dbe;
         DataCell dc;
 
-        dbe = idx.getElement(id);
+        dbe = this.idx.getElement(id);
 
-        if (!(dbe instanceof DataCell)) {
-            throw new SystemErrorException(mName
-                    + "id doesn't refer to a DataCell");
+        if ( ! ( dbe instanceof DataCell ) )
+        {
+            throw new SystemErrorException(mName +
+                    "id doesn't refer to a DataCell");
         }
 
-        dc = (DataCell) dbe;
+        dc = (DataCell)dbe;
 
         dc.registerExternalListener(el);
 
@@ -1909,28 +2537,37 @@ public abstract class Database {
 
     } /* Database::registerDataCellListener() */
 
+
     // registerDataColumnListener()
     /**
-     * Register a DataColumn listener. The listener must implement the
-     * ExternalDataColumnListener interface. The listener will be informed of
-     * changes in and deletions of data cells in the target column. -- 2/11/08
-     * Changes: - None.
+     * Register a DataColumn listener.  The listener must implement the
+     * ExternalDataColumnListener interface.  The listener will be informed
+     * of changes in and deletions of data cells in the target column.
+     *
+     *                                           -- 2/11/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void registerDataColumnListener(final long id,
-            final ExternalDataColumnListener el) throws SystemErrorException {
+    public void registerDataColumnListener(long id,
+                                           ExternalDataColumnListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::registerDataColumnListener()";
         DBElement dbe;
         DataColumn dc;
 
-        dbe = idx.getElement(id);
+        dbe = this.idx.getElement(id);
 
-        if (!(dbe instanceof DataColumn)) {
-            throw new SystemErrorException(mName
-                    + "id doesn't refer to a DataColumn");
+        if ( ! ( dbe instanceof DataColumn ) )
+        {
+            throw new SystemErrorException(mName +
+                    "id doesn't refer to a DataColumn");
         }
 
-        dc = (DataColumn) dbe;
+        dc = (DataColumn)dbe;
 
         dc.registerExternalListener(el);
 
@@ -1938,44 +2575,62 @@ public abstract class Database {
 
     } /* Database::registerDataColumnListener() */
 
+
     // registerInternalCascadeListener()
     /**
-     * Register an internal cascade listener. The listener must implement the
-     * InternalCascadeListener interface. The listener will be informed of the
-     * beginning and end of cascades of changes. -- 2/11/08 Changes: - None.
+     * Register an internal cascade listener.  The listener must implement the
+     * InternalCascadeListener interface.  The listener will be informed
+     * of the beginning and end of cascades of changes.
+     *
+     *                                           -- 2/11/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    protected void registerInternalCascadeListener(final long id)
-    throws SystemErrorException {
+    protected void registerInternalCascadeListener(long id)
+        throws SystemErrorException
+    {
         final String mName = "Database::registerInternalCascadeListener()";
 
-        listeners.registerInternalListener(id);
+        this.listeners.registerInternalListener(id);
 
         return;
 
     } /* Database::registerInternalCascadeListener() */
 
+
     // registerVocabElementListener()
     /**
-     * Register a vocab element listener. The listener must implement the
-     * ExternalVocabElementListener interface. The listener will be informed of
-     * changes in and deletions of vocab elements. -- 2/6/08 Changes: - None.
+     * Register a vocab element listener.  The listener must implement the
+     * ExternalVocabElementListener interface.  The listener will be informed
+     * of changes in and deletions of vocab elements.
+     *
+     *                                           -- 2/6/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void registerVocabElementListener(final long id,
-            final ExternalVocabElementListener el) throws SystemErrorException {
+    public void registerVocabElementListener(long id,
+                                             ExternalVocabElementListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::registerVocabElementListener()";
         DBElement dbe;
         VocabElement ve;
 
-        dbe = idx.getElement(id);
+        dbe = this.idx.getElement(id);
 
-        if (!(dbe instanceof VocabElement)) {
-            throw new SystemErrorException(mName
-                    + "id doesn't refer to a VocabElement");
+        if ( ! ( dbe instanceof VocabElement ) )
+        {
+            throw new SystemErrorException(mName +
+                    "id doesn't refer to a VocabElement");
         }
 
-        ve = (VocabElement) dbe;
+        ve = (VocabElement)dbe;
 
         ve.registerExternalListener(el);
 
@@ -1983,130 +2638,117 @@ public abstract class Database {
 
     } /* Database::registerVocabElementListener() */
 
+
     // registerVocabListListener()
     /**
-     * Register a vocab list listener. The listener must implement the
-     * ExternalVocabListListener interface. The listener will be informed of the
-     * insertion and deletion of vocab element into and from the vocab list. --
-     * 2/6/08 Changes: - None.
+     * Register a vocab list listener.  The listener must implement the
+     * ExternalVocabListListener interface.  The listener will be informed
+     * of the insertion and deletion of vocab element into and from the
+     * vocab list.
+     *
+     *                                           -- 2/6/08
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void registerVocabListListener(final ExternalVocabListListener el)
-    throws SystemErrorException {
+    public void registerVocabListListener(ExternalVocabListListener el)
+        throws SystemErrorException
+    {
         final String mName = "Database::registerVLListener()";
 
-        vl.registerExternalListener(el);
+        this.vl.registerExternalListener(el);
 
         return;
 
     } /* Database::registerVocabListListener() */
 
+
     /*************************************************************************/
     /*********************** Supported Features: *****************************/
     /*************************************************************************/
     /*                                                                       */
-    /* The supported features methods are used to indicate which database */
-    /* features are supported by each subclass of Database. Subclasses */
-    /* must override these methods as required. */
+    /* The supported features methods are used to indicate which database    */
+    /* features are supported by each subclass of Database.  Subclasses      */
+    /* must override these methods as required.                              */
     /*                                                                       */
-    /* Expect this set of methods to expand as the set of subclasses of */
-    /* Database expands. */
+    /* Expect this set of methods to expand as the set of subclasses of      */
+    /* Database expands.                                                     */
     /*                                                                       */
     /*************************************************************************/
 
     // TODO: Add code enforcing these flags.
+    
+    public boolean floatSubrangeSupported()         { return true; }
+    public boolean integerSubrangeSupported()       { return true; }
+    public boolean nominalSubrangeSupported()       { return true; }
+    public boolean predSubrangeSupported()          { return true; }
+    public boolean readOnly()                       { return false; }
+    public boolean tickSizeAgjustmentSupported()    { return true; }
+    public boolean typedFormalArgsSupported()       { return true; }
+    public boolean queryVariablesSupported()        { return false; }
 
-    public boolean floatSubrangeSupported() {
-        return true;
-    }
-
-    public boolean integerSubrangeSupported() {
-        return true;
-    }
-
-    public boolean nominalSubrangeSupported() {
-        return true;
-    }
-
-    public boolean predSubrangeSupported() {
-        return true;
-    }
-
-    public boolean readOnly() {
-        return false;
-    }
-
-    public boolean tickSizeAgjustmentSupported() {
-        return true;
-    }
-
-    public boolean typedFormalArgsSupported() {
-        return true;
-    }
-
-    public boolean queryVariablesSupported() {
-        return false;
-    }
 
     /*************************************************************************/
     /********************** Vocab List Management ****************************/
     /*************************************************************************/
     /*                                                                       */
-    /* The Vocab list is implemented as a single class, as both matricies */
-    /* (i.e. column variables) and predicates are vocab elements, and share */
-    /* a name space. */
+    /* The Vocab list is implemented as a single class, as both matricies    */
+    /* (i.e. column variables) and predicates are vocab elements, and share  */
+    /* a name space.                                                         */
     /*                                                                       */
-    /* This shared name space is necessary for the old MacSHAPA query */
-    /* language, but we shouldn't need it elsewhere. */
+    /* This shared name space is necessary for the old MacSHAPA query        */
+    /* language, but we shouldn't need it elsewhere.                         */
     /*                                                                       */
-    /* Thus, while I have implemented query list management methods that */
-    /* deal with instances of VocabElement, we shouldn't have to use them */
-    /* outside a possible implementation of the old MacSHAPA query language */
-    /* and associated editors. */
+    /* Thus, while I have implemented query list management methods that     */
+    /* deal with instances of VocabElement, we shouldn't have to use them    */
+    /* outside a possible implementation of the old MacSHAPA query language  */
+    /* and associated editors.                                               */
     /*                                                                       */
-    /* For all other purposes, I have implemented methods that deal with */
-    /* PredicateVocabElements or MatrixVocabElements. Use these unless the */
-    /* more general methods are absolutely necessary. This will make it */
-    /* easier to put predicates and matricies (i.e. column variables) in */
-    /* separate name spaces should we ever wish to. */
-    /* -- 6/11/07 */
+    /* For all other purposes, I have implemented methods that deal with     */
+    /* PredicateVocabElements or MatrixVocabElements.  Use these unless the  */
+    /* more general methods are absolutely necessary.  This will make it     */
+    /* easier to put predicates and matricies (i.e. column variables) in     */
+    /* separate name spaces should we ever wish to.                          */
+    /*                                                      -- 6/11/07       */
     /*                                                                       */
-    /* MatrixVocabElement based methods: */
+    /* MatrixVocabElement based methods:                                     */
     /*                                                                       */
-    /* addMatrixVE(mve) -- internal use only */
-    /* getMatrixVE(id) */
-    /* getMatrixVE(name) */
-    /* getMatrixVEs() */
-    /* matrixNameInUse(name) */
-    /* matrixVEExists(id) */
-    /* matrixVEExists(name) */
-    /* removeMatrixVE(id) -- internal use only */
-    /* replaceMatrixVE(mve) */
-    /*                                                                       */
-    /*                                                                       */
-    /* PredicateVocabElement based methods: */
-    /*                                                                       */
-    /* addPredVE(pve) */
-    /* addSystemPredVE(pve) -- internal use only */
-    /* getPredVE(id) */
-    /* getPredVE(name) */
-    /* getPredVEs() */
-    /* predNameInUse(name) */
-    /* predVEExists(id) */
-    /* predVEExists(name) */
-    /* removePredVE(id) */
-    /* replacePredVE(pve) */
+    /*      addMatrixVE(mve)  -- internal use only                           */
+    /*      getMatrixVE(id)                                                  */
+    /*      getMatrixVE(name)                                                */
+    /*      getMatrixVEs()                                                   */
+    /*      matrixNameInUse(name)                                            */
+    /*      matrixVEExists(id)                                               */
+    /*      matrixVEExists(name)                                             */
+    /*      removeMatrixVE(id)  -- internal use only                         */
+    /*      replaceMatrixVE(mve)                                             */
     /*                                                                       */
     /*                                                                       */
-    /* VocabElement based methods (use only when necessary): */
+    /* PredicateVocabElement based methods:                                  */
     /*                                                                       */
-    /* addVocabElement(ve) */
-    /* getVocabElement(id) */
-    /* getVocabElement(name) */
-    /* replaceVocabElement(ve) */
-    /* removeVocabElement(id) -- scare crow -- should not exist */
-    /* vocabElementExists(id) */
-    /* vocabElementExists(name) */
+    /*      addPredVE(pve)                                                   */
+    /*      addSystemPredVE(pve) -- internal use only                        */
+    /*      getPredVE(id)                                                    */
+    /*      getPredVE(name)                                                  */
+    /*      getPredVEs()                                                     */
+    /*      predNameInUse(name)                                              */
+    /*      predVEExists(id)                                                 */
+    /*      predVEExists(name)                                               */
+    /*      removePredVE(id)                                                 */
+    /*      replacePredVE(pve)                                               */
+    /*                                                                       */
+    /*                                                                       */
+    /* VocabElement based methods (use only when necessary):                 */
+    /*                                                                       */
+    /*      addVocabElement(ve)                                              */
+    /*      getVocabElement(id)                                              */
+    /*      getVocabElement(name)                                            */
+    /*      replaceVocabElement(ve)                                          */
+    /*      removeVocabElement(id) -- scare crow -- should not exist         */
+    /*      vocabElementExists(id)                                           */
+    /*      vocabElementExists(name)                                         */
     /*                                                                       */
     /*************************************************************************/
 
@@ -2114,225 +2756,318 @@ public abstract class Database {
 
     // addMatrixVE(mve)
     /**
-     * Given a MatrixVocabElement, make a copy, add the copy to the vocab list
-     * and index, and return the id assigned to the copy. Throws a system error
-     * if any errors are detected. This method is private, and is used mostly
-     * for testing. As matricies are created as part of columns, there is no
-     * need for this routine outside the database code. -- 6/12/07 Changes: -
-     * None.
+     * Given a MatrixVocabElement, make a copy, add the copy to the
+     * vocab list and index, and return the id assigned to the copy.
+     * Throws a system error if any errors are detected.
+     *
+     * This method is private, and is used mostly for testing.  As matricies
+     * are created as part of columns, there is no need for this routine
+     * outside the database code.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    private long addMatrixVE(final MatrixVocabElement mve)
-    throws SystemErrorException {
+    private long addMatrixVE(MatrixVocabElement mve)
+        throws SystemErrorException
+    {
         final String mName = "Database::addMatrixVE(mve): ";
         MatrixVocabElement local_mve = null;
 
-        if (mve == null) {
+        if ( mve == null )
+        {
             throw new SystemErrorException(mName + "null mve.");
-        } else if ((local_mve = new MatrixVocabElement(mve)) == null) {
+        }
+        else if ( (local_mve = new MatrixVocabElement(mve)) == null )
+        {
             throw new SystemErrorException(mName + "couldn't copy mve");
-        } else {
-            vl.addElement(local_mve);
+        }
+        else
+        {
+            this.vl.addElement(local_mve);
         }
 
         return local_mve.getID();
 
     } /* Database::addMatrixVE(mve) */
 
+
     // getMatrixVE(id)
     /**
      * Given an matrix vocab element ID, return a copy of the associated
-     * MatrixVocabElement. Throws a system error if no such MatrixVocabElement
-     * exists. -- 6/12/07 Changes: - None.
+     * MatrixVocabElement.  Throws a system error if no such
+     * MatrixVocabElement exists.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public MatrixVocabElement getMatrixVE(final long targetID)
-    throws SystemErrorException {
+    public MatrixVocabElement getMatrixVE(long targetID)
+        throws SystemErrorException
+    {
         final String mName = "Database::getMatrixVE(id): ";
         VocabElement ve = null;
 
-        ve = vl.getVocabElement(targetID);
+        ve = this.vl.getVocabElement(targetID);
 
-        if (!(ve instanceof MatrixVocabElement)) {
-            throw new SystemErrorException(mName
-                    + "target not a MatrixVocabElement");
+        if ( ! ( ve instanceof MatrixVocabElement ) )
+        {
+            throw new SystemErrorException(mName +
+                                          "target not a MatrixVocabElement");
         }
 
-        return new MatrixVocabElement((MatrixVocabElement) ve);
+        return new MatrixVocabElement((MatrixVocabElement)ve);
 
     } /* Database::getMatrixVE(id) */
+
 
     // getMatrixVE(name)
     /**
      * Given an matrix vocab element name, return a copy of the associated
-     * MatrixVocabElement. Throws a system error if no such MatrixVocabElement
-     * exists. -- 6/12/07 Changes: - None.
+     * MatrixVocabElement.  Throws a system error if no such
+     * MatrixVocabElement exists.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public MatrixVocabElement getMatrixVE(final String targetName)
-    throws SystemErrorException {
+    public MatrixVocabElement getMatrixVE(String targetName)
+        throws SystemErrorException
+    {
         final String mName = "Database::getMatrixVE(name): ";
         VocabElement ve = null;
 
-        ve = vl.getVocabElement(targetName);
+        ve = this.vl.getVocabElement(targetName);
 
-        if (!(ve instanceof MatrixVocabElement)) {
-            throw new SystemErrorException(mName
-                    + "target not a MatrixVocabElement");
+        if ( ! ( ve instanceof MatrixVocabElement ) )
+        {
+            throw new SystemErrorException(mName +
+                                          "target not a MatrixVocabElement");
         }
 
-        return new MatrixVocabElement((MatrixVocabElement) ve);
+        return new MatrixVocabElement((MatrixVocabElement)ve);
 
     } /* Database::getMatrixVE(name) */
+
 
     // getMatrixVEs()
     /**
      * If the vocab list contains any non-system matricies of type
      * matrixType.MATRIX, construct a vector containing copies of all such
-     * entries, and return it. If there are no such entries, return null. --
-     * 6/18/07 Changes: - None.
+     * entries, and return it.  If there are no such entries, return null.
+     *
+     *                                               -- 6/18/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
     public java.util.Vector<MatrixVocabElement> getMatrixVEs()
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
 
-        return vl.getMatricies();
-
+        return this.vl.getMatricies();
+    
     } /* Database::getMatrixVEs() */
+
 
     // matrixNameInUse(name)
     /**
-     * Given a valid matrix (i.e. column variable) name, return true if it is in
-     * use, and false if it is not. Throws a system error on a null or invalid
-     * name. -- 6/13/07 Changes: - None.
+     * Given a valid matrix (i.e. column variable) name, return true if it is
+     * in use, and false if it is not.  Throws a system error on a null or
+     * invalid name.
+     *                                               -- 6/13/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public boolean matrixNameInUse(final String matrixName)
-    throws SystemErrorException {
+    public boolean matrixNameInUse(String matrixName)
+        throws SystemErrorException
+    {
 
-        return vl.inVocabList(matrixName);
-
+        return this.vl.inVocabList(matrixName);
+    
     } /* Database::matrixNameInUse() */
+
 
     // matrixVEExists(id)
     /**
-     * Given a matrix vocab element id, return true if the vocab list contains a
-     * MatrixVocabElement with that id, and false otherwise. -- 6/12/07 Changes:
-     * - None.
+     * Given a matrix vocab element id, return true if the vocab list contains
+     * a MatrixVocabElement with that id, and false otherwise.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public boolean matrixVEExists(final long targetID)
-    throws SystemErrorException {
+    public boolean matrixVEExists(long targetID)
+        throws SystemErrorException
+    {
 
-        return vl.matrixInVocabList(targetID);
-
+        return this.vl.matrixInVocabList(targetID);
+    
     } /* Database::matrixVEExists(ID) */
+
 
     // matrixVEExists(name)
     /**
      * Given a matrix vocab element name, return true if the vocab list contains
-     * a MatrixVocabElement with that name, and false otherwise. -- 6/12/07
-     * Changes: - None.
+     * a MatrixVocabElement with that name, and false otherwise.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public boolean matrixVEExists(final String targetName)
-    throws SystemErrorException {
+    public boolean matrixVEExists(String targetName)
+        throws SystemErrorException
+    {
 
-        return vl.matrixInVocabList(targetName);
-
+        return this.vl.matrixInVocabList(targetName);
+    
     } /* Database::matrixVEExists(name) */
+
 
     // removeMatrixVE(id)
     /**
      * Given a matrix vocab element id, remove the associated instance of
-     * MatrixVocabElement from the vocab list. Also delete the
+     * MatrixVocabElement from the vocab list.  Also delete the
      * MatrixVocabElement from the index, along with all of its formal
-     * parameters. Throws a system error if the taarget doesn't exist. This
-     * method is private, as matrix vocab elements are inserted and deleted with
-     * columns. Thus there should be no need of the method outside the database
-     * code. -- 6/12/07 Changes: - None.
+     * parameters.  Throws a system error if the taarget doesn't exist.
+     *
+     * This method is private, as matrix vocab elements are inserted and
+     * deleted with columns.  Thus there should be no need of the method
+     * outside the database code.
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    private void removeMatrixVE(final long targetID)
-    throws SystemErrorException {
+    private void removeMatrixVE(long targetID)
+        throws SystemErrorException
+    {
         final String mName = "Database::removeMatrixVE(targetID): ";
 
-        if (!matrixVEExists(targetID)) {
-            throw new SystemErrorException(mName + "no such MatrixVocabElement");
+        if ( ! matrixVEExists(targetID) )
+        {
+            throw new SystemErrorException(mName +
+                                           "no such MatrixVocabElement");
         }
 
-        vl.removeVocabElement(targetID);
+        this.vl.removeVocabElement(targetID);
 
     } /* Database::removeMatrixVE(id) */
+
 
     // replaceMatrixVE(mve)
     /***
      * Given a (possibly modified) copy of a MatrixVocabElement that exists in
      * the vocab list, replace the old copy with a copy of the supplied
-     * MatrixVocabElement. The old version is matched with the new via id.
-     * Throws a system error if the old version doesn't exist. Update the index
-     * in passing, and adjust for changes in the formal argument list. --
-     * 6/12/07 Changes:
+     * MatrixVocabElement.  The old version is matched with the new via id.
+     * Throws a system error if the old version doesn't exist.  Update the
+     * index in passing, and adjust for changes in the formal argument list.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
      * <ul>
-     * <li>Added test to see if the target mve is a system mve, and throw a
-     * system error if it is. Need this to prevent the UI code from modifying
-     * system matricies. 7/25/09</li>
+     *   <li>
+     *      Added test to see if the target mve is a system mve, and throw a
+     *      system error if it is.  Need this to prevent the UI code from
+     *      modifying system matricies.
+     *                                              7/25/09
+     *   </li>
      * </ul>
      */
 
-    public void replaceMatrixVE(final MatrixVocabElement mve)
-    throws SystemErrorException {
+    public void replaceMatrixVE(MatrixVocabElement mve)
+        throws SystemErrorException
+    {
         final String mName = "Database::replaceMatrixVE(mve): ";
         MatrixVocabElement local_mve = null;
 
-        if (mve == null) {
+        if ( mve == null )
+        {
             throw new SystemErrorException(mName + "mve == null");
-        } else if (mve.getSystem()) {
-            throw new SystemErrorException(mName
-                    + "supplied mve is marked as system");
-        } else if (mve.getID() == DBIndex.INVALID_ID) {
+        }
+        else if ( mve.getSystem() )
+        {
+            throw new SystemErrorException(mName +
+                                           "supplied mve is marked as system");
+        }
+        else if ( mve.getID() == DBIndex.INVALID_ID )
+        {
             throw new SystemErrorException(mName + "mve has invalid ID");
-        } else if (!vl.matrixInVocabList(mve.getID())) {
+        }
+        else if ( ! this.vl.matrixInVocabList(mve.getID()) )
+        {
             throw new SystemErrorException(mName + "target mve doesn't exist");
-        } else if (vl.getMatrixVocabElement(mve.getID()).getSystem()) {
+        }
+        else if ( this.vl.getMatrixVocabElement(mve.getID()).getSystem() )
+        {
             throw new SystemErrorException(mName + "target mve is a system mve");
-        } else if ((local_mve = new MatrixVocabElement(mve)) == null) {
+        }
+        else if ( (local_mve = new MatrixVocabElement(mve)) == null )
+        {
             throw new SystemErrorException(mName + "couldn't copy mve");
         }
 
-        vl.replaceVocabElement(local_mve);
+        this.vl.replaceVocabElement(local_mve);
 
         return;
 
     } /* Database::replaceMatrixVE(mve) */
+
 
     /*** PredicateVocabElement methods ***/
 
     // addArgToPredVE()
     /**
      * Add a new argument to the target predicate vocab element, and return a
-     * copy of the revised pve. This version of the method adds an untyped
-     * formal arguement unconditionally -- we will probably want a version that
-     * allows the user to specify the type of the formal argument, and/or
-     * suggest a name. However, this version should be sufficient for now. In
-     * the case of normal predicates, this is a convenience method, however in
-     * the case of variable length system predicates, it is absolutely
+     * copy of the revised pve.  This version of the method adds an untyped
+     * formal arguement unconditionally -- we will probably want a version
+     * that allows the user to specify the type of the formal argument, and/or
+     * suggest a name.  However, this version should be sufficient for now.
+     *
+     * In the case of normal predicates, this is a convenience method, however
+     * in the case of variable length system predicates, it is absolutely
      * essential, as there is no other way for code above the level of the
      * database to add new arguements to a system variable length predicate.
-     * 7/26/09
-     * 
-     * @param targetID
-     *            id of the variable length predicate vocab element to which a
-     *            new argument is to be added.
-     * @return copy of the predicate vocab elememnt to which the new argument has
-     *         been added.
-     * @throws org.openshapa.db.SystemErrorException
-     *             if the target pve doesn't exits, is not variable length, or
-     *             on any other error.
+     *
+     *                                              7/26/09
+     *
+     * @param targetID id of the variable length predicate vocab element to
+     *          which a new argument is to be added.
+     *
+     * @return copy of the predicate vocab elememnt to which the new argument
+     *          has been added.
+     *
+     * @throws org.openshapa.db.SystemErrorException if the target pve doesn't
+     *          exits, is not variable length, or on any other error.
      */
 
-    public PredicateVocabElement addArgToPredVE(final long targetID)
-    throws SystemErrorException {
+    public PredicateVocabElement addArgToPredVE(long targetID)
+        throws SystemErrorException
+    {
         final String mName = "Database::addArgToPredVE(id): ";
         String new_farg_name = null;
         int i = 0;
@@ -2341,312 +3076,431 @@ public abstract class Database {
         PredicateVocabElement local_pve = null;
         PredicateVocabElement new_pve = null;
 
-        if (!vl.predInVocabList(targetID)) {
+        if ( ! this.vl.predInVocabList(targetID) )
+        {
             throw new SystemErrorException(mName + "target pve doesn't exist");
         }
 
-        /*
-         * old_pve is the data base's internal copy -- be careful not to change
-         * it.
+        /* old_pve is the data base's internal copy -- be careful
+         * not to change it.
          */
-        old_pve = vl.getPredicateVocabElement(targetID);
+        old_pve = this.vl.getPredicateVocabElement(targetID);
 
-        if (!old_pve.getVarLen()) {
-            throw new SystemErrorException(mName
-                    + "target pve isn't variable length");
+        if ( ! old_pve.getVarLen() )
+        {
+            throw new SystemErrorException(mName +
+                                           "target pve isn't variable length");
         }
 
-        /*
-         * make a copy of the database's version of the pve, so we can add a new
-         * argument to it, and then replace the old version with the new. Must
-         * do this as otherwise we will fail to trigger the listeners so that
-         * they can update the database to reflect the change.
+        /* make a copy of the database's version of the pve, so we can add
+         * a new argument to it, and then replace the old version with the
+         * new.  Must do this as otherwise we will fail to trigger the
+         * listeners so that they can update the database to reflect the
+         * change.
          */
         local_pve = new PredicateVocabElement(old_pve);
 
-        do {
+        do
+        {
             new_farg_name = "<arg" + i + ">";
             i++;
 
-        } while (!local_pve.fArgNameIsUnique(new_farg_name));
+        } while ( ! local_pve.fArgNameIsUnique(new_farg_name));
 
         new_farg = new UnTypedFormalArg(this, new_farg_name);
 
         local_pve.appendFormalArg(new_farg, local_pve.getSystem());
 
-        vl.replaceVocabElement(local_pve);
+        this.vl.replaceVocabElement(local_pve);
 
-        /*
-         * new_pve is the data base's internal copy -- be careful not to change
-         * it or return it.
+        /* new_pve is the data base's internal copy -- be careful
+         * not to change it or return it.
          */
-        new_pve = vl.getPredicateVocabElement(targetID);
+        new_pve = this.vl.getPredicateVocabElement(targetID);
 
         return new PredicateVocabElement(new_pve);
 
     } /* Database::addArgToPredVE(id) */
 
+
     // addPredVE(pve)
     /**
-     * Given a PredicateVocabElement, make a copy and add the copy to the vocab
-     * list and index. Return the ID assigned to the copy. Throws a system error
-     * if any errors are detected. -- 6/12/07 Changes:
+     * Given a PredicateVocabElement, make a copy and add the copy to the
+     * vocab list and index.  Return the ID assigned to the copy.
+     * Throws a system error if any errors are detected.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *
      * <ul>
-     * <li>Added test to see if the new pve is a system pve, and throw a system
-     * error if it is. Need this to prevent the insertion of system predicates
-     * from outside the database. 7/25/09</li>
+     *   <li>
+     *      Added test to see if the new pve is a system pve, and throw a
+     *      system error if it is.  Need this to prevent the insertion of
+     *      system predicates from outside the database.
+     *
+     *                                              7/25/09
+     *   </li>
      * </ul>
      */
 
-    public long addPredVE(final PredicateVocabElement pve)
-    throws SystemErrorException {
+    public long addPredVE(PredicateVocabElement pve)
+        throws SystemErrorException
+    {
         final String mName = "Database::addPredVE(pve): ";
         PredicateVocabElement local_pve = null;
 
-        if (pve == null) {
+        if ( pve == null )
+        {
             throw new SystemErrorException(mName + "null pve.");
-        } else if (pve.getSystem()) {
-            throw new SystemErrorException(mName
-                    + "supplied pve is marked as system");
-        } else if ((local_pve = new PredicateVocabElement(pve)) == null) {
+        }
+        else if ( pve.getSystem() )
+        {
+            throw new SystemErrorException(mName +
+                                           "supplied pve is marked as system");
+        }
+        else if ( (local_pve = new PredicateVocabElement(pve)) == null )
+        {
             throw new SystemErrorException(mName + "couldn't copy pve");
-        } else {
-            vl.addElement(local_pve);
+        }
+        else
+        {
+            this.vl.addElement(local_pve);
         }
 
         return local_pve.getID();
 
     } /* Database::addPredVE(mve) */
 
+
     // addSystemPredVE(pve)
     /**
-     * Given a system PredicateVocabElement, make a copy and add the copy to the
-     * vocab list and index. Return the ID assigned to the copy. Throws a system
-     * error if any errors are detected. For now, at least, system predicates
-     * will always be added by the database itself. Thus this method should
-     * remain protected. -- 7/26/09 Changes:
+     * Given a system PredicateVocabElement, make a copy and add the copy
+     * to the vocab list and index.  Return the ID assigned to the copy.
+     * Throws a system error if any errors are detected.
+     *
+     * For now, at least, system predicates will always be added by the
+     * database itself.  Thus this method should remain protected.
+     *
+     *                                               -- 7/26/09
+     *
+     * Changes:
+     *
      * <ul>
-     * <li>None</li>
+     *   <li>
+     *      None
+     *   </li>
      * </ul>
      */
 
-    protected long addSystemPredVE(final PredicateVocabElement pve)
-    throws SystemErrorException {
+    protected long addSystemPredVE(PredicateVocabElement pve)
+        throws SystemErrorException
+    {
         final String mName = "Database::addSystemPredVE(pve): ";
         PredicateVocabElement local_pve = null;
 
-        if (pve == null) {
+        if ( pve == null )
+        {
             throw new SystemErrorException(mName + "null pve.");
-        } else if (!pve.getSystem()) {
-            throw new SystemErrorException(mName
-                    + "supplied pve not marked as system");
-        } else if ((local_pve = new PredicateVocabElement(pve)) == null) {
+        }
+        else if ( ! pve.getSystem() )
+        {
+            throw new SystemErrorException(mName +
+                                           "supplied pve not marked as system");
+        }
+        else if ( (local_pve = new PredicateVocabElement(pve)) == null )
+        {
             throw new SystemErrorException(mName + "couldn't copy pve");
-        } else {
-            vl.addElement(local_pve);
+        }
+        else
+        {
+            this.vl.addElement(local_pve);
         }
 
         return local_pve.getID();
 
     } /* Database::addSystemPredVE(mve) */
 
+
     // getPredVE(id)
     /**
      * Given an predicate vocab element ID, return a copy of the associated
-     * PredicateVocabElement. Throws a system error if no such
-     * PredicateVocabElement exists. -- 6/12/07 Changes:
+     * PredicateVocabElement.  Throws a system error if no such
+     * PredicateVocabElement exists.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
      * <ul>
-     * <li>None.</li>
+     *   <li>
+     *      None.
+     *   </li>
      * </ul>
      */
 
-    public PredicateVocabElement getPredVE(final long targetID)
-    throws SystemErrorException {
+    public PredicateVocabElement getPredVE(long targetID)
+        throws SystemErrorException
+    {
         final String mName = "Database::getPredVE(id): ";
         VocabElement ve = null;
 
-        ve = vl.getVocabElement(targetID);
+        ve = this.vl.getVocabElement(targetID);
 
-        if (!(ve instanceof PredicateVocabElement)) {
-            throw new SystemErrorException(mName
-                    + "target not a PredicateVocabElement");
+        if ( ! ( ve instanceof PredicateVocabElement ) )
+        {
+            throw new SystemErrorException(mName +
+                                          "target not a PredicateVocabElement");
         }
 
-        return new PredicateVocabElement((PredicateVocabElement) ve);
+        return new PredicateVocabElement((PredicateVocabElement)ve);
 
     } /* Database::getPredVE(id) */
+
 
     // getPredVE(name)
     /**
      * Given an predicate vocab element name, return a copy of the associated
-     * PredicateVocabElement. Throws a system error if no such
-     * PredicateVocabElement exists. -- 6/12/07 Changes: - None.
+     * PredicateVocabElement.  Throws a system error if no such
+     * PredicateVocabElement exists.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public PredicateVocabElement getPredVE(final String targetName)
-    throws SystemErrorException {
+    public PredicateVocabElement getPredVE(String targetName)
+        throws SystemErrorException
+    {
         final String mName = "Database::getPredVE(name): ";
         VocabElement ve = null;
 
-        ve = vl.getVocabElement(targetName);
+        ve = this.vl.getVocabElement(targetName);
 
-        if (!(ve instanceof PredicateVocabElement)) {
-            throw new SystemErrorException(mName
-                    + "target not a PredicateVocabElement");
+        if ( ! ( ve instanceof PredicateVocabElement ) )
+        {
+            throw new SystemErrorException(mName +
+                                          "target not a PredicateVocabElement");
         }
 
-        return new PredicateVocabElement((PredicateVocabElement) ve);
+        return new PredicateVocabElement((PredicateVocabElement)ve);
 
     } /* Database::getPredVE(name) */
+
 
     // getPredVEs()
     /**
      * If the vocab list contains any non-system predicates, construct a vector
-     * containing copies of all such entries, and return it. If there are no
-     * such entries, return null. -- 6/18/07 Changes: - None.
+     * containing copies of all such entries, and return it.  If there are no
+     * such entries, return null.
+     *
+     *                                               -- 6/18/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
     public java.util.Vector<PredicateVocabElement> getPredVEs()
-    throws SystemErrorException {
-        return vl.getPreds();
+        throws SystemErrorException
+    {
+        return this.vl.getPreds();
     }
+
 
     // predNameInUse(name)
     /**
-     * Given a valid predicate name, return true if it is in use, and false if
-     * it is not. Throws a system error on a null or invalid name. -- 6/13/07
-     * Changes: - None.
+     * Given a valid predicate name, return true if it is in use, and false
+     * if it is not.  Throws a system error on a null or invalid name.
+     *
+     *                                               -- 6/13/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public boolean predNameInUse(final String predName)
-    throws SystemErrorException {
-        return vl.inVocabList(predName);
+    public boolean predNameInUse(String predName)
+        throws SystemErrorException
+    {
+        return this.vl.inVocabList(predName);
     }
+
 
     // predVEExists(id)
     /**
      * Given a predicate vocab element id, return true if the vocab list
-     * contains a PredicateVocabElement with that id, and false otherwise. --
-     * 6/12/07 Changes: - None.
+     * contains a PredicateVocabElement with that id, and false otherwise.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public boolean predVEExists(final long targetID)
-    throws SystemErrorException {
-        return vl.predInVocabList(targetID);
+    public boolean predVEExists(long targetID)
+        throws SystemErrorException
+    {
+        return this.vl.predInVocabList(targetID);
     }
+
 
     // predVEExists(name)
     /**
      * Given a predicate vocab element name, return true if the vocab list
-     * contain a PredicateVocabElement with that name, and false otherwise. --
-     * 6/12/07 Changes: - None.
+     * contain a PredicateVocabElement with that name, and false otherwise.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public boolean predVEExists(final String targetName)
-    throws SystemErrorException {
-        return vl.predInVocabList(targetName);
+    public boolean predVEExists(String targetName)
+        throws SystemErrorException
+    {
+        return this.vl.predInVocabList(targetName);
     }
+
 
     // removePredVE(id)
     /**
      * Given a pred vocab element id, remove the associated instance of
-     * PredicateVocabElement from the vocab list. Also delete the
+     * PredicateVocabElement from the vocab list.  Also delete the
      * PredicateVocabElement from the index, along with all of its formal
-     * parameters. Throws a system error if the target doesn't exist. -- 6/12/07
-     * Changes: - None.
+     * parameters.  Throws a system error if the target doesn't exist.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public void removePredVE(final long targetID) throws SystemErrorException {
+    public void removePredVE(long targetID)
+        throws SystemErrorException
+    {
         final String mName = "Database::removePredVE(targetID): ";
 
-        if (!predVEExists(targetID)) {
-            throw new SystemErrorException(mName
-                    + "no such PredicateVocabElement");
+        if ( ! predVEExists(targetID) )
+        {
+            throw new SystemErrorException(mName +
+                                           "no such PredicateVocabElement");
         }
 
-        vl.removeVocabElement(targetID);
+        this.vl.removeVocabElement(targetID);
 
     } /* Database::removePredVE(id) */
+
 
     // replacePredVE(pve)
     /**
      * Given a (possibly modified) copy of a PredicateVocabElement that exists
      * in the vocab list, replace the old copy with a copy of the supplied
-     * PredicateVocabElement. The old version is matched with the new via id.
-     * Throws a system error if the old version doesn't exist. Update the index
-     * in passing, and adjust for changes in the formal argument list. --
-     * 6/12/07 Changes:
+     * PredicateVocabElement.  The old version is matched with the new via id.
+     * Throws a system error if the old version doesn't exist.  Update the
+     * index in passing, and adjust for changes in the formal argument list.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
      * <ul>
-     * <li>Added test to see if the target pve is a system pve, and throw a
-     * system error if it is. Need this to prevent the UI code from modifying
-     * system predicates. 7/25/09</li>
+     *   <li>
+     *      Added test to see if the target pve is a system pve, and throw a
+     *      system error if it is.  Need this to prevent the UI code from
+     *      modifying system predicates.
+     *                                              7/25/09
+     *   </li>
      * </ul>
      */
 
-    public void replacePredVE(final PredicateVocabElement pve)
-    throws SystemErrorException {
+    public void replacePredVE(PredicateVocabElement pve)
+        throws SystemErrorException
+    {
         final String mName = "Database::replacePredVE(pve): ";
         PredicateVocabElement local_pve = null;
 
-        if (pve == null) {
+        if ( pve == null )
+        {
             throw new SystemErrorException(mName + "pve == null");
-        } else if (pve.getSystem()) {
-            throw new SystemErrorException(mName
-                    + "supplied pve is marked as system");
-        } else if (pve.getID() == DBIndex.INVALID_ID) {
+        }
+        else if ( pve.getSystem() )
+        {
+            throw new SystemErrorException(mName +
+                                           "supplied pve is marked as system");
+        }
+        else if ( pve.getID() == DBIndex.INVALID_ID )
+        {
             throw new SystemErrorException(mName + "pve has invalid ID");
-        } else if (!vl.predInVocabList(pve.getID())) {
+        }
+        else if ( ! this.vl.predInVocabList(pve.getID()) )
+        {
             throw new SystemErrorException(mName + "target pve doesn't exist");
-        } else if (vl.getPredicateVocabElement(pve.getID()).getSystem()) {
+        }
+        else if ( this.vl.getPredicateVocabElement(pve.getID()).getSystem() )
+        {
             throw new SystemErrorException(mName + "target pve is a system pve");
-        } else if ((local_pve = new PredicateVocabElement(pve)) == null) {
+        }
+        else if ( (local_pve = new PredicateVocabElement(pve)) == null )
+        {
             throw new SystemErrorException(mName + "couldn't copy pve");
         }
 
-        vl.replaceVocabElement(local_pve);
+        this.vl.replaceVocabElement(local_pve);
 
         return;
 
     } /* Database::replacePredVE(mve) */
 
+
     /*** VocabElement methods -- use only if type is unknown ***/
 
     // addVocabElement()
     /**
-     * Adds a vocab element to the database. Use this method only it the type
-     * (predicate or matrix) of the vocab element is not know at the time of
-     * call. This should seldom be the case.
-     * 
-     * @param ve
-     *            The vocab element to add to the database.
+     * Adds a vocab element to the database.
+     *
+     * Use this method only it the type (predicate or matrix) of the vocab
+     * element is not know at the time of call.  This should seldom be the
+     * case.
+     *
+     * @param ve The vocab element to add to the database.
      * @return The ID of the vocab element within the database.
-     * @throws org.openshapa.db.SystemErrorException
-     *             If unable to add the vocab element to the database.
+     * @throws org.openshapa.db.SystemErrorException If unable to add
+     * the vocab element to the database.
      */
     public long addVocabElement(final VocabElement ve)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "Database::addVocabElement(ve): ";
         long new_ID = DBIndex.INVALID_ID;
         VocabElement copy = null;
 
-        try {
+        try
+        {
             // Throw an error if the vocab element is null.
-            if (ve == null) {
-                throw new SystemErrorException(mName
-                        + "Unable to add ve - it is null");
+            if ( ve == null )
+            {
+                throw new SystemErrorException(mName +
+                                               "Unable to add ve - it is null");
             }
 
             // Create a copy of the vocab element and add it to the database
             // vocab.
             copy = (VocabElement) ve.clone();
 
-            vl.addElement(copy);
+            this.vl.addElement(copy);
 
             new_ID = copy.getID();
 
         }
 
-        catch (CloneNotSupportedException e) {
+        catch (CloneNotSupportedException e)
+        {
             throw new SystemErrorException(e.toString());
         }
 
@@ -2654,36 +3508,53 @@ public abstract class Database {
 
     } /* Database::addVocabElement(ve) */
 
+
     // getVocabElement(id)
     /**
      * Given a vocab element ID, return a copy of the associated vocab element.
-     * Throws a system error if the target does not exist. Use this method only
-     * it the type (predicate or matrix) of the vocab element is not know at the
-     * time of call. This should seldom be the case. -- 6/12/07 Changes: - none.
+     * Throws a system error if the target does not exist.
+     *
+     * Use this method only it the type (predicate or matrix) of the vocab
+     * element is not know at the time of call.  This should seldom be the
+     * case.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - none.
      */
 
-    public VocabElement getVocabElement(final long targetID)
-    throws SystemErrorException {
+    public VocabElement getVocabElement(long targetID)
+       throws SystemErrorException
+    {
         final String mName = "Database::getVocabElement(targetID): ";
         VocabElement ve;
         VocabElement ve_copy = null;
 
-        ve = vl.getVocabElement(targetID);
+        ve = this.vl.getVocabElement(targetID);
 
-        if (ve == null) {
-            throw new SystemErrorException(mName
-                    + "vl.getVocabElement() returned null");
+        if ( ve == null )
+        {
+            throw new SystemErrorException(mName +
+                    "vl.getVocabElement() returned null");
         }
 
-        if (ve instanceof MatrixVocabElement) {
-            ve_copy = new MatrixVocabElement((MatrixVocabElement) ve);
-        } else if (ve instanceof PredicateVocabElement) {
-            ve_copy = new PredicateVocabElement((PredicateVocabElement) ve);
-        } else {
+        if ( ve instanceof MatrixVocabElement )
+        {
+            ve_copy = new MatrixVocabElement((MatrixVocabElement)ve);
+        }
+        else if ( ve instanceof PredicateVocabElement )
+        {
+            ve_copy = new PredicateVocabElement((PredicateVocabElement)ve);
+        }
+        else
+        {
             throw new SystemErrorException(mName + "Unknown ve type");
         }
 
-        if (ve_copy == null) {
+        if ( ve_copy == null )
+        {
             throw new SystemErrorException(mName + "can't copy ve");
         }
 
@@ -2691,37 +3562,53 @@ public abstract class Database {
 
     } /* Database::getVocabElement(targetID) */
 
+
     // getVocabElement(name)
     /**
      * Given a vocab element name, return a copy of the associated vocab
-     * element. Throws a system error if the target does not exist. Use this
-     * method only it the type (predicate or matrix) of the vocab element is not
-     * know at the time of call. This should seldom be the case. -- 6/12/07
-     * Changes: - none.
+     * element.  Throws a system error if the target does not exist.
+     *
+     * Use this method only it the type (predicate or matrix) of the vocab
+     * element is not know at the time of call.  This should seldom be the
+     * case.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - none.
      */
 
-    public VocabElement getVocabElement(final String targetName)
-    throws SystemErrorException {
+    public VocabElement getVocabElement(String targetName)
+       throws SystemErrorException
+    {
         final String mName = "Database::getVocabElement(targetName): ";
         VocabElement ve;
         VocabElement ve_copy = null;
 
-        ve = vl.getVocabElement(targetName);
+        ve = this.vl.getVocabElement(targetName);
 
-        if (ve == null) {
-            throw new SystemErrorException(mName
-                    + "vl.getVocabElement() returned null");
+        if ( ve == null )
+        {
+            throw new SystemErrorException(mName +
+                    "vl.getVocabElement() returned null");
         }
 
-        if (ve instanceof MatrixVocabElement) {
-            ve_copy = new MatrixVocabElement((MatrixVocabElement) ve);
-        } else if (ve instanceof PredicateVocabElement) {
-            ve_copy = new PredicateVocabElement((PredicateVocabElement) ve);
-        } else {
+        if ( ve instanceof MatrixVocabElement )
+        {
+            ve_copy = new MatrixVocabElement((MatrixVocabElement)ve);
+        }
+        else if ( ve instanceof PredicateVocabElement )
+        {
+            ve_copy = new PredicateVocabElement((PredicateVocabElement)ve);
+        }
+        else
+        {
             throw new SystemErrorException(mName + "Unknown ve type");
         }
 
-        if (ve_copy == null) {
+        if ( ve_copy == null )
+        {
             throw new SystemErrorException(mName + "can't copy ve");
         }
 
@@ -2729,68 +3616,82 @@ public abstract class Database {
 
     } /* Database::getVocabElement(targetName) */
 
+
     // removeVocabElement()
     /**
      * This method removes the nominated vocab element and all data associated
      * with the vocab element, i.e. this method will remove any cells that use
      * the nominated vocab element, and will remove the column linked to a
      * matrix vocab element.
-     * 
-     * @param targetID
-     *            The ID of the vocab element to remove from the database.
-     * @throws org.openshapa.db.SystemErrorException
-     *             If unable to remove the desired vocab element.
+     *
+     * @param targetID The ID of the vocab element to remove from the database.
+     *
+     * @throws org.openshapa.db.SystemErrorException If unable to remove the
+     * desired vocab element.
      */
 
-    public void removeVocabElement(final long targetID)
-    throws SystemErrorException {
-        vl.getVocabElement(targetID).prepareForRemoval();
-        if (vl.inVocabList(targetID)) {
-            vl.removeVocabElement(targetID);
+    public void removeVocabElement(long targetID)
+        throws SystemErrorException
+    {
+        this.vl.getVocabElement(targetID).prepareForRemoval();
+        if (this.vl.inVocabList(targetID)) {
+            this.vl.removeVocabElement(targetID);
         }
     }
 
+
     // replaceVocabElement()
     /**
-     * Attempt to replace a vocab element in the database. Fail if the supplied
-     * ve is null, if the supplied ve is marked system, if the target (indicated
-     * by ve.getID()) doesn't exist, if the target ve is marked as system, or if
-     * there is a type mismatch.
-     * 
-     * @param ve
-     *            -- new version of the target vocab element that is to replace
-     *            the old version.
-     * @throws org.openshapa.db.SystemErrorException
-     *             on failure.
+     * Attempt to replace a vocab element in the database.  Fail if the
+     * supplied ve is null, if the supplied ve is marked system, if the
+     * target (indicated by ve.getID()) doesn't exist, if the target ve
+     * is marked as system, or if there is a type mismatch.
+     *
+     * @param ve -- new version of the target vocab element that is to
+     *              replace the old version.
+     *
+     * @throws org.openshapa.db.SystemErrorException on failure.
      */
 
     public void replaceVocabElement(final VocabElement ve)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "Database::replaceVocabElement(ve): ";
         VocabElement local_ve = null;
 
-        try {
-            if (ve == null) {
+        try
+        {
+            if ( ve == null )
+            {
                 throw new SystemErrorException(mName + "ve == null");
-            } else if (ve.getSystem()) {
-                throw new SystemErrorException(mName
-                        + "supplied ve is marked as system");
-            } else if (ve.getID() == DBIndex.INVALID_ID) {
+            }
+            else if ( ve.getSystem() )
+            {
+                throw new SystemErrorException(mName +
+                                           "supplied ve is marked as system");
+            }
+            else if ( ve.getID() == DBIndex.INVALID_ID )
+            {
                 throw new SystemErrorException(mName + "ve has invalid ID");
-            } else if (!vl.inVocabList(ve.getID())) {
-                throw new SystemErrorException(mName
-                        + "target ve doesn't exist");
-            } else if (vl.getVocabElement(ve.getID()).getSystem()) {
-                throw new SystemErrorException(mName
-                        + "target ve is a system ve");
+            }
+            else if ( ! this.vl.inVocabList(ve.getID()) )
+            {
+                throw new SystemErrorException(mName +
+                                               "target ve doesn't exist");
+            }
+            else if ( this.vl.getVocabElement(ve.getID()).getSystem() )
+            {
+                throw new SystemErrorException(mName +
+                                               "target ve is a system ve");
             }
 
             local_ve = (VocabElement) ve.clone();
 
-            vl.replaceVocabElement(local_ve);
+            this.vl.replaceVocabElement(local_ve);
         }
 
-        catch (CloneNotSupportedException e) {
+        catch (CloneNotSupportedException e)
+        {
             throw new SystemErrorException("Cant to replace vocab element");
         }
 
@@ -2798,54 +3699,83 @@ public abstract class Database {
 
     } /* Database::replaceVocabElement(ve) */
 
+
     // vocabElementExists(id)
     /**
      * Given a vocab element id, return true if a vocab element with that id
-     * exists, and false otherwise. Use this method only it the type (predicate
-     * or matrix) of the vocab element is not know at the time of call. This
-     * should seldom be the case. -- 6/12/07 Changes: - none.
+     * exists, and false otherwise.
+     *
+     * Use this method only it the type (predicate or matrix) of the vocab
+     * element is not know at the time of call.  This should seldom be the
+     * case.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - none.
      */
 
-    public boolean vocabElementExists(final long targetID)
-    throws SystemErrorException {
-        return vl.inVocabList(targetID);
+    public boolean vocabElementExists(long targetID)
+       throws SystemErrorException
+    {
+        return this.vl.inVocabList(targetID);
     }
+
 
     // vocabElementExists(name)
     /**
-     * Given a vocab element name, return true if a vocab element with that name
-     * exists, and false otherwise. Use this method only it the type (predicate
-     * or matrix) of the vocab element is not know at the time of call. This
-     * should seldom be the case. -- 6/12/07 Changes: - None.
+     * Given a vocab element name, return true if a vocab element with that
+     * name exists, and false otherwise.
+     *
+     * Use this method only it the type (predicate or matrix) of the vocab
+     * element is not know at the time of call.  This should seldom be the
+     * case.
+     *
+     *                                               -- 6/12/07
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public boolean vocabElementExists(final String targetName)
-    throws SystemErrorException {
-        return vl.inVocabList(targetName);
+    public boolean vocabElementExists(String targetName)
+       throws SystemErrorException
+    {
+        return this.vl.inVocabList(targetName);
     }
+
 
     /*** UID management ***/
 
     // isValidUID()
     /**
-     * Determine whether a user ID is valid. Return true if it is, and false
-     * otherwise.
-     * 
-     * @param uid
-     *            : User ID to be tested for validity
-     * @return true if uid id valid, and false otherwise Changes: - None.
+     * Determine whether a user ID is valid.  Return true if it is, and
+     * false otherwise.
+     *
+     * @param   uid:    User ID to be tested for validity
+     *
+     * @return  true if uid id valid, and false otherwise
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public boolean isValidUID(final int uid) {
+    public boolean isValidUID(int uid)
+    {
         boolean isValid = true;
 
-        /*
-         * TODO: For now, return true if the uid is non-negative. Once we get
-         * the user table set up, return true iff uid is zero or the uid appears
-         * in the user table.
+        /* TODO:
+         *
+         * For now, return true if the uid is non-negative.
+         *
+         * Once we get the user table set up, return true iff uid is zero
+         * or the uid appears in the user table.
          */
 
-        if (uid < 0) {
+        if ( uid < 0 )
+        {
             isValid = false;
         }
 
@@ -2853,99 +3783,108 @@ public abstract class Database {
 
     } /* Database::isValidUID(uid) */
 
-    /*** Database element management ***/
-    //
-    // /**
-    // * createCell()
-    // *
-    // * Creates a new cell in the given column.
-    // * @param column the column in which to create the cell
-    // * @return the newly created cell
-    // */
-    //
-    // public Cell createCell(Column column)
-    // {
-    // return (this.createCell(column.getID()));
-    //
-    // } /* Database::createCell() */
-    //
-    //
-    // /**
-    // * getCell() -- by column reference and cell ID
-    // *
-    // * Gets the cell associated with the given id in the given column
-    // * @param column the column the cell is in
-    // * @param cellID the id of the cell
-    // * @return the cell associated with the given cell id
-    // *
-    // * Changes:
-    // *
-    // * - None.
-    // */
-    //
-    // public Cell getCell(Column column, long cellID)
-    // {
-    // return (this.getCell(column.getID(), cellID));
-    //
-    // } /* Database::getCell() -- by column reference and cell ID */
 
-    // /*** Listener Management ***/
-    //
-    // /**
-    // * addChangeListener()
-    // *
-    // * Adds a database change listener
-    // * @param listener the change listener to add
-    // *
-    // * Changes:
-    // *
-    // * - None.
-    // */
-    //
-    // public void addChangeListener(DatabaseChangeListener listener)
-    // {
-    // this.changeListeners.add(listener);
-    //
-    // return;
-    //
-    // } /* Database::addChangeListener() */
-    //
-    // /**
-    // * removeChangeListener()
-    // *
-    // * Removes a database change listener
-    // * @param listener the change listener to remove
-    // *
-    // * Changes:
-    // *
-    // * - None
-    // */
-    //
-    // public void removeChangeListener(DatabaseChangeListener listener)
-    // {
-    // this.changeListeners.remove(listener);
-    //
-    // return;
-    //
-    // } /* Database::removeChangeListener() */
+    /*** Database element management ***/
+//
+//    /**
+//     * createCell()
+//     *
+//     * Creates a new cell in the given column.
+//     * @param column the column in which to create the cell
+//     * @return the newly created cell
+//     */
+//
+//    public Cell createCell(Column column)
+//    {
+//        return (this.createCell(column.getID()));
+//
+//    } /*  Database::createCell() */
+//
+//
+//    /**
+//     * getCell() -- by column reference and cell ID
+//     *
+//     * Gets the cell associated with the given id in the given column
+//     * @param column the column the cell is in
+//     * @param cellID the id of the cell
+//     * @return the cell associated with the given cell id
+//     *
+//     * Changes:
+//     *
+//     *    - None.
+//     */
+//
+//    public Cell getCell(Column column, long cellID)
+//    {
+//        return (this.getCell(column.getID(), cellID));
+//
+//    } /* Database::getCell() -- by column reference and cell ID */
+
+
+//    /*** Listener Management ***/
+//
+//    /**
+//     * addChangeListener()
+//     *
+//     * Adds a database change listener
+//     * @param listener the change listener to add
+//     *
+//     * Changes:
+//     *
+//     *    - None.
+//     */
+//
+//    public void addChangeListener(DatabaseChangeListener listener)
+//    {
+//        this.changeListeners.add(listener);
+//
+//        return;
+//
+//    } /* Database::addChangeListener() */
+//
+//    /**
+//     * removeChangeListener()
+//     *
+//     * Removes a database change listener
+//     * @param listener the change listener to remove
+//     *
+//     * Changes:
+//     *
+//     *    - None
+//     */
+//
+//    public void removeChangeListener(DatabaseChangeListener listener)
+//    {
+//        this.changeListeners.remove(listener);
+//
+//        return;
+//
+//    } /* Database::removeChangeListener() */
+
 
     /*** Version String Construction ***/
 
     // getDBVersionString()
     /**
      * Gets the database type and version string<br>
-     * (eg ODB File v2.1) Changes: - None.
+     * (eg ODB File v2.1)
+     *
+     * Changes:
+     *
+     *    - None.
      */
 
-    public String getDBVersionString() {
+    public String getDBVersionString()
+    {
         StringBuffer sb = new StringBuffer();
-        sb.append(getType());
+        sb.append(this.getType());
         sb.append(" v");
-        sb.append(getVersion());
+        sb.append(this.getVersion());
 
         return (sb.toString());
 
     } /* Database::getDBVersionString() */
+
 
     /*************************************************************************/
     /************************ Class Methods: *********************************/
@@ -2954,26 +3893,34 @@ public abstract class Database {
     // IsGraphicalChar
     /**
      * Test to see if the character passed in as a parameter is a graphical
-     * character. Return true if it is, and false otherwise. Eventually we will
-     * need to extend this method to work nicely with unicode, but for now, we
-     * will take a stict ASCII view of the issue. Thus, for present purposes, a
-     * graphical character is a character with ASCII code 0x21 - 0x7E inclusive.
-     * -- 1/23/07 Changes: - None.
+     * character.  Return true if it is, and false otherwise.
+     *
+     * Eventually we will need to extend this method to work nicely with
+     * unicode, but for now, we will take a stict ASCII view of the issue.
+     * Thus, for present purposes, a graphical character is a character with
+     * ASCII code 0x21 - 0x7E inclusive.
+     *                                           -- 1/23/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *
      */
 
-    protected static boolean IsGraphicalChar(final char ch) {
+    protected static boolean IsGraphicalChar(char ch) {
 
         boolean retVal = false;
 
-        if ((ch >= 0x21) && (ch <= 0x7E)) {
+        if ( ( ch >= 0x21 ) && ( ch <= 0x7E ) ) {
 
             retVal = true;
 
         }
 
-        return (retVal);
+        return(retVal);
 
     } /* Database::IsGraphicalChar() */
+
 
     // IsValidFargName()
     /**
@@ -3001,15 +3948,16 @@ public abstract class Database {
      *
      */
 
-    public static boolean IsValidFargName(final String name)
-    throws SystemErrorException {
+    public static boolean IsValidFargName(String name)
+        throws SystemErrorException
+    {
 
         final String mName = "Database::IsValidFargName(): ";
         char ch;
         int i;
         int len;
 
-        if (name == null) {
+        if ( name == null ) {
 
             throw new SystemErrorException(mName + "name null on entry.");
 
@@ -3017,12 +3965,13 @@ public abstract class Database {
 
         len = name.length();
 
-        if (len <= 2) {
+        if ( len <= 2 ) {
 
             // string is too short to be a valid formal argument name
             return false;
 
-        } else if ((name.charAt(0) != '<') || (name.charAt(len - 1) != '>')) {
+        } else if ( ( name.charAt(0) != '<' ) ||
+                    ( name.charAt(len - 1) != '>' ) ) {
 
             // string either doesn't start with a '<' or doesn't end with '>'
             // Thus it is not a valid formal argument name.
@@ -3030,13 +3979,17 @@ public abstract class Database {
 
         } else {
 
-            for (i = 1; i < len - 1; i++) {
+            for ( i = 1; i < len - 1; i++ ) {
 
                 ch = name.charAt(i);
 
-                if ((!IsGraphicalChar(ch)) || (ch == '(') || (ch == ')')
-                        || (ch == '<') || (ch == '>') || (ch == ',')
-                        || (ch == '"')) {
+                if ( ( ! IsGraphicalChar(ch)) ||
+                     ( ch == '(' ) ||
+                     ( ch == ')' ) ||
+                     ( ch == '<' ) ||
+                     ( ch == '>' ) ||
+                     ( ch == ',' ) ||
+                     ( ch == '"' ) ) {
 
                     return false;
                 }
@@ -3047,51 +4000,82 @@ public abstract class Database {
 
     } /* Database::IsValidFargName() */
 
+
     // IsValidFloat()
     /**
      * Test to see if the object passed in as a parameter is a Double that can
-     * be used to replace a formal argument. Return true if it is, and false
-     * otherwise. The method name "IsValidFloat()" is a historical hold over
-     * from MacSHAPA. Were it not for that issue, "IsValidDouble()" would make
-     * much more sense. -- 2/7/07 Changes: - None.
+     * be used to replace a formal argument.
+     *
+     * Return true if it is, and false otherwise.
+     *
+     * The method name "IsValidFloat()" is a historical hold over from MacSHAPA.
+     * Were it not for that issue, "IsValidDouble()" would make much more
+     * sense.
+     *
+     *                                           -- 2/7/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *
      */
 
-    public static boolean IsValidFloat(final Object o)
-    throws SystemErrorException {
+    public static boolean IsValidFloat(Object o)
+        throws SystemErrorException
+    {
         final String mName = "Database::IsValidFoat(): ";
 
-        if (o == null) {
+        if ( o == null )
+        {
             throw new SystemErrorException(mName + "o null on entry.");
         }
 
-        if (o instanceof Double) {
+        if ( o instanceof Double )
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     } /* Database::IsValidFloat() */
 
+
     // IsValidInt()
     /**
-     * Test to see if the object passed in as a parameter is a Long that can be
-     * used to replace a formal argument. Return true if it is, and false
-     * otherwise. -- 2/7/07 Changes: - None.
+     * Test to see if the object passed in as a parameter is a Long that can
+     * be used to replace a formal argument.
+     *
+     * Return true if it is, and false otherwise.
+     *
+     *                                           -- 2/7/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *
      */
 
-    public static boolean IsValidInt(final Object o)
-    throws SystemErrorException {
+    public static boolean IsValidInt(Object o)
+        throws SystemErrorException
+    {
         final String mName = "Database::IsValidInt(): ";
 
-        if (o == null) {
+        if ( o == null )
+        {
             throw new SystemErrorException(mName + "o null on entry.");
         }
 
-        if (o instanceof Long) {
+        if ( o instanceof Long )
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     } /* Database::IsValidInt() */
+
 
     // IsValidNominal()
     /**
@@ -3120,29 +4104,34 @@ public abstract class Database {
      *
      */
 
-    public static boolean IsValidNominal(final Object obj)
-    throws SystemErrorException {
+    public static boolean IsValidNominal(Object obj)
+        throws SystemErrorException
+    {
 
         final String mName = "Database::IsValidNominal(): ";
         int len;
 
-        if (obj == null) {
+
+        if ( obj == null )
+        {
             throw new SystemErrorException(mName + "obj null on entry.");
-        } else if (!(obj instanceof String)) {
+        }
+        else if ( ! ( obj instanceof String ) )
+        {
             return false;
         }
 
-        String s = (String) obj;
+        String s = (String)obj;
 
         len = s.length();
 
-        if (len < 1) {
+        if ( len < 1 ) {
 
             // s is too short to be a valid nominal
             return false;
 
-        } else if ((Character.isSpaceChar(s.charAt(0)))
-                || (Character.isSpaceChar(s.charAt(len - 1)))) {
+        } else if ( ( Character.isSpaceChar(s.charAt(0)) ) ||
+                    ( Character.isSpaceChar(s.charAt(len - 1)) ) ) {
 
             // s either starts or ends with white space, and thus is
             // not a valid nominal.
@@ -3153,13 +4142,28 @@ public abstract class Database {
             char ch;
             int i;
 
-            for (i = 0; i < len; i++) {
+            for ( i = 0; i < len; i++ ) {
 
                 ch = s.charAt(i);
 
-                if (!((ch == ' ') || ((IsGraphicalChar(ch)) && (ch != '(')
-                        && (ch != ')') && (ch != '<') && (ch != '>')
-                        && (ch != ',') && (ch != '"')))) {
+                if ( ! ( ( ch == ' ' )
+                         ||
+                         ( ( IsGraphicalChar(ch) )
+                           &&
+                           ( ch != '(' )
+                           &&
+                           ( ch != ')' )
+                           &&
+                           ( ch != '<' )
+                           &&
+                           ( ch != '>' )
+                           &&
+                           ( ch != ',' )
+                           &&
+                           ( ch != '"' )
+                         )
+                       )
+                   ) {
 
                     // s contains a character that can't appear in a
                     // nominal.
@@ -3171,6 +4175,7 @@ public abstract class Database {
         return true;
 
     } /* Database::IsValidNominal() */
+
 
     // IsValidPredName()
     /**
@@ -3196,19 +4201,21 @@ public abstract class Database {
      *
      */
 
-    public static boolean IsValidPredName(final String name)
-    throws SystemErrorException {
+    public static boolean IsValidPredName(String name)
+        throws SystemErrorException
+    {
 
         final String mName = "Database::IsValidPredName(): ";
         int len;
 
-        if (name == null) {
+        if ( name == null )
+        {
             throw new SystemErrorException(mName + "name null on entry.");
         }
 
         len = name.length();
 
-        if (len < 1) {
+        if ( len < 1 ) {
 
             // string is too short to be a valid predicate name
             return false;
@@ -3218,12 +4225,25 @@ public abstract class Database {
             char ch;
             int i;
 
-            for (i = 0; i < len; i++) {
+            for ( i = 0; i < len; i++ ) {
 
                 ch = name.charAt(i);
 
-                if (!((IsGraphicalChar(ch)) && (ch != '(') && (ch != ')')
-                        && (ch != '<') && (ch != '>') && (ch != ',') && (ch != '"'))) {
+                if ( ! ( ( IsGraphicalChar(ch) )
+                         &&
+                         ( ch != '(' )
+                         &&
+                         ( ch != ')' )
+                         &&
+                         ( ch != '<' )
+                         &&
+                         ( ch != '>' )
+                         &&
+                         ( ch != ',' )
+                         &&
+                         ( ch != '"' )
+                       )
+                   ) {
 
                     // string contains a character that can't appear in a
                     // predicate name.
@@ -3235,6 +4255,7 @@ public abstract class Database {
         return true;
 
     } /* Database::IsValidPredName() */
+
 
     // IsValidQueryVar()
     /**
@@ -3264,29 +4285,34 @@ public abstract class Database {
      *
      */
 
-    public static boolean IsValidQueryVar(final Object obj)
-    throws SystemErrorException {
+    public static boolean IsValidQueryVar(Object obj)
+        throws SystemErrorException
+    {
 
         final String mName = "Database::IsValidQueryVar(): ";
         int len;
 
-        if (obj == null) {
+
+        if ( obj == null )
+        {
             throw new SystemErrorException(mName + "obj null on entry.");
-        } else if (!(obj instanceof String)) {
+        }
+        else if ( ! ( obj instanceof String ) )
+        {
             return false;
         }
 
-        String s = (String) obj;
+        String s = (String)obj;
 
         len = s.length();
 
-        if (len < 2) {
+        if ( len < 2 ) {
 
             // s is too short to be a valid query variable
             return false;
 
-        } else if ((s.charAt(0) != '?')
-                || (Character.isSpaceChar(s.charAt(len - 1)))) {
+        } else if ( ( s.charAt(0) != '?' ) ||
+                    ( Character.isSpaceChar(s.charAt(len - 1)) ) ) {
 
             // s either doesn't start with a question mark, or ends with
             // white space, and thus is not a valid query variable.
@@ -3297,13 +4323,28 @@ public abstract class Database {
             char ch;
             int i;
 
-            for (i = 0; i < len; i++) {
+            for ( i = 0; i < len; i++ ) {
 
                 ch = s.charAt(i);
 
-                if (!((ch == ' ') || ((IsGraphicalChar(ch)) && (ch != '(')
-                        && (ch != ')') && (ch != '<') && (ch != '>')
-                        && (ch != ',') && (ch != '"')))) {
+                if ( ! ( ( ch == ' ' )
+                         ||
+                         ( ( IsGraphicalChar(ch) )
+                           &&
+                           ( ch != '(' )
+                           &&
+                           ( ch != ')' )
+                           &&
+                           ( ch != '<' )
+                           &&
+                           ( ch != '>' )
+                           &&
+                           ( ch != ',' )
+                           &&
+                           ( ch != '"' )
+                         )
+                       )
+                   ) {
 
                     // s contains a character that can't appear in a
                     // nominal.
@@ -3315,6 +4356,7 @@ public abstract class Database {
         return true;
 
     } /* Database::IsValidQueryVar() */
+
 
     // IsValidSVarName()
     /**
@@ -3348,25 +4390,26 @@ public abstract class Database {
      *
      */
 
-    public static boolean IsValidSVarName(final String name)
-    throws SystemErrorException {
+    public static boolean IsValidSVarName(String name)
+        throws SystemErrorException
+    {
 
         final String mName = "Database::IsValidSVarName(): ";
         int len;
 
-        if (name == null) {
+        if ( name == null ) {
             throw new SystemErrorException(mName + "name null on entry.");
         }
 
         len = name.length();
 
-        if (len < 1) {
+        if ( len < 1 ) {
 
             // string is too short to be a valid spreadsheet variable name
             return false;
 
-        } else if ((Character.isSpaceChar(name.charAt(0)))
-                || (Character.isSpaceChar(name.charAt(len - 1)))) {
+        } else if ( ( Character.isSpaceChar(name.charAt(0)) ) ||
+                    ( Character.isSpaceChar(name.charAt(len - 1)) ) ) {
 
             // string either starts or ends with white space, and thus is
             // not a valid spreadsheet variable name.
@@ -3377,13 +4420,28 @@ public abstract class Database {
             char ch;
             int i;
 
-            for (i = 0; i < len; i++) {
+            for ( i = 0; i < len; i++ ) {
 
                 ch = name.charAt(i);
 
-                if (!((ch == ' ') || ((IsGraphicalChar(ch)) && (ch != '(')
-                        && (ch != ')') && (ch != '<') && (ch != '>')
-                        && (ch != ',') && (ch != '"')))) {
+                if ( ! ( ( ch == ' ' )
+                         ||
+                         ( ( IsGraphicalChar(ch) )
+                           &&
+                           ( ch != '(' )
+                           &&
+                           ( ch != ')' )
+                           &&
+                           ( ch != '<' )
+                           &&
+                           ( ch != '>' )
+                           &&
+                           ( ch != ',' )
+                           &&
+                           ( ch != '"' )
+                         )
+                       )
+                   ) {
 
                     // string contains a character that can't appear in a
                     // spreadsheet variable name.
@@ -3396,54 +4454,80 @@ public abstract class Database {
 
     } /* Database::IsValidSVarName() */
 
+
     // IsValidTextString()
     /**
      * Test to see if a string contains a valid text string -- that is a string
-     * that can appear as the value of a cell in a text column variable. Return
-     * true if it does, and false if it doesn't. The old MacSHAPA definition of
-     * a text string is as follows: <char> --> Any character in the standard
-     * roman character set, hexadecimal values 0x00 to 0xFF. <bs> --> back space
-     * (i.e. ASCII code 0x08) <text_string_char> --> ( <char> - ( <bs> ) )
-     * <text_string> --> (<text_string_char>)* Note that the MacSHAPA definition
-     * of the text string makes used of characters beyond 0x7F (the end point of
-     * the ASCII character set). While we can hope that Java will use characters
-     * beyond the ASCII character set uniformly across different platforms, at
-     * present I don't know how these characters will be managed. Thus to begin
-     * with I will redefine <char> as follows: <char> --> Any character in the
-     * ASCII character set (hexadecimal values 0x00 to 0x7F) It is worth noting
-     * that the old MacSHAPA definition of a text string was driven by the
-     * character set used by the TextEdit utility provided by MacOS. I suspect
-     * that similar considerations will ultimately drive the definition of a
-     * text string in OpenSHAPA. Eventually we will have to extend this
-     * definition to make full use of Unicode, but that can wait for now. --
-     * 1/25/07 Changes: - None.
+     * that can appear as the value of a cell in a text column variable.
+     * Return true if it does, and false if it doesn't.
+     *
+     * The old MacSHAPA definition of a text string is as follows:
+     *
+     *  <char> --> Any character in the standard roman character set,
+     *		   hexadecimal values 0x00 to 0xFF.
+     *
+     *  <bs> --> back space (i.e. ASCII code 0x08)
+     *
+     *  <text_string_char> --> ( <char> - ( <bs> ) )
+     *
+     *  <text_string> --> (<text_string_char>)*
+     *
+     * Note that the MacSHAPA definition of the text string makes used of
+     * characters beyond 0x7F (the end point of the ASCII character set).
+     *
+     * While we can hope that Java will use characters beyond the ASCII
+     * character set uniformly across different platforms, at present I
+     * don't know how these characters will be managed.  Thus to begin with
+     * I will redefine <char> as follows:
+     *
+     *   <char> --> Any character in the ASCII character set (hexadecimal
+     *              values 0x00 to 0x7F)
+     *
+     * It is worth noting that the old MacSHAPA definition of a text string
+     * was driven by the character set used by the TextEdit utility provided
+     * by MacOS.  I suspect that similar considerations will ultimately drive
+     * the definition of a text string in OpenSHAPA.
+     *
+     * Eventually we will have to extend this definition to make full use of
+     * Unicode, but that can wait for now.
+     *                                           -- 1/25/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *
      */
 
-    public static boolean IsValidTextString(final Object obj)
-    throws SystemErrorException {
+    public static boolean IsValidTextString(Object obj)
+        throws SystemErrorException
+    {
 
         final String mName = "Database::IsValidTextString(): ";
         char ch;
         int i;
         int len;
 
-        if (obj == null) {
+        if ( obj == null )
+        {
             throw new SystemErrorException(mName + "obj null on entry.");
-        } else if (!(obj instanceof String)) {
+        }
+        else if ( ! ( obj instanceof String ) )
+        {
             return false;
         }
 
         /* If we get this far, we know that obj is a String */
 
-        String s = (String) obj;
+        String s = (String)obj;
 
         len = s.length();
 
-        for (i = 0; i < len; i++) {
+        for ( i = 0; i < len; i++ ) {
 
             ch = s.charAt(i);
 
-            if ((ch < 0) || (ch > 0x7F) || (ch == '\b')) {
+            if ( ( ch < 0 ) || ( ch > 0x7F ) || ( ch == '\b') )
+            {
                 // string contains a character that can't appear in a
                 // text string.
                 return false;
@@ -3454,30 +4538,42 @@ public abstract class Database {
 
     } /* Database::IsValidTextString() */
 
+
     // IsValidTimeStamp()
     /**
-     * Test to see if the object is a valid time stamp. For now that means
+     * Test to see if the object is a valid time stamp.  For now that means
      * checking to see if it is an instance of Timestamp, verifying that the
-     * number of ticks is non-negative, and that the number of ticks per second
-     * is positive. -- 2/11/07 Changes; - None.
+     * number of ticks is non-negative, and that the number of ticks per
+     * second is positive.
+     *
+     *                                               -- 2/11/07
+     *
+     * Changes;
+     *
+     *    - None.
+     *
      */
 
-    public static boolean IsValidTimeStamp(final Object obj)
-    throws SystemErrorException {
+    public static boolean IsValidTimeStamp(Object obj)
+        throws SystemErrorException
+    {
         final String mName = "Database::IsValidTimeStamp(): ";
 
-        if (obj == null) {
+        if ( obj == null )
+        {
             throw new SystemErrorException(mName + "obj null on entry.");
-        } else if (!(obj instanceof TimeStamp)) {
-            return false;
+        }
+        else if ( ! ( obj instanceof TimeStamp ) )
+        {
+            return false ;
         }
 
-        TimeStamp s = (TimeStamp) obj;
+        TimeStamp s = (TimeStamp)obj;
 
-        if ((s.getTime() < TimeStamp.MIN_TICKS)
-                || (s.getTime() > TimeStamp.MAX_TICKS)
-                || (s.getTPS() < TimeStamp.MIN_TPS)
-                || (s.getTPS() > TimeStamp.MAX_TPS))
+        if ( ( s.getTime() < TimeStamp.MIN_TICKS ) ||
+             ( s.getTime() > TimeStamp.MAX_TICKS ) ||
+             ( s.getTPS() < TimeStamp.MIN_TPS ) ||
+             ( s.getTPS() > TimeStamp.MAX_TPS ) )
             /*  */
             /* TODO: add a check to verify that the tps matches the db tps ?? */
         {
@@ -3488,48 +4584,65 @@ public abstract class Database {
 
     } /* Database::IsValidTimeStamp() */
 
+
     // IsValidQuoteString()
     /**
-     * Test to see if a object contains a valid quote string -- that is a string
-     * that can appear as an argument in a matrix or predicate. Return true if
-     * it does, and false if it doesn't. For now, we will use the old MacSHAPA
-     * definition of a quote string: <graphic_char> --> ASCII codes 0x21 - 0x7E
-     * <quote_string_char> --> ( <graphic_char> - ( '"' ) ) | ( ' ' )
-     * <quote_string> --> (<quote_string_char>)* Eventually we will have to
-     * extend this definition to make full use of Unicode, but that can wait for
-     * now. -- 1/25/07 Changes: - None.
+     * Test to see if a object contains a valid quote string -- that is a
+     * string that can appear as an argument in a matrix or predicate.
+     * Return true if it does, and false if it doesn't.
+     *
+     * For now, we will use the old MacSHAPA definition of a quote string:
+     *
+     *  <graphic_char> --> ASCII codes 0x21 - 0x7E
+     *
+     *	<quote_string_char> --> ( <graphic_char> - ( '"' ) ) | ( ' ' )
+     *
+     *	<quote_string> --> (<quote_string_char>)*
+     *
+     * Eventually we will have to extend this definition to make full use of
+     * Unicode, but that can wait for now.
+     *                                           -- 1/25/07
+     *
+     * Changes:
+     *
+     *    - None.
+     *
      */
 
-    public static boolean IsValidQuoteString(final Object obj)
-    throws SystemErrorException {
+    public static boolean IsValidQuoteString(Object obj)
+        throws SystemErrorException
+    {
 
         final String mName = "Database::IsValidQuoteString(): ";
         char ch;
         int i;
         int len;
 
-        if (obj == null) {
+        if ( obj == null )
+        {
             throw new SystemErrorException(mName + "obj null on entry.");
-        } else if (!(obj instanceof String)) {
+        }
+        else if ( ! ( obj instanceof String ) )
+        {
             return false;
         }
 
-        String s = (String) obj;
+        String s = (String)obj;
 
         len = s.length();
 
-        for (i = 0; i < len; i++) {
+        for ( i = 0; i < len; i++ ) {
 
             ch = s.charAt(i);
 
-            /*
-             * recall that 0x20 is space -- thus the lower end of the following
-             * test is 0x20, not 0x21.
+            /* recall that 0x20 is space -- thus the lower end of
+             * the following test is 0x20, not 0x21.
              */
-            if ((ch < 0x20) || (ch > 0x7E) || (ch == '\"')) {
-                // string contains a character that can't appear in a
-                // quote string.
-                return false;
+            if ( ( ch < 0x20 ) || ( ch > 0x7E ) || ( ch == '\"' ) )
+            {
+                    // string contains a character that can't appear in a
+                    // quote string.
+                    return false;
             }
         }
 
@@ -3545,7 +4658,7 @@ public abstract class Database {
     }
 
     /** Updates hasChanged to true. */
-    public void modifyDatabase() {
+    public void markAsChanged() {
         if (OpenSHAPA.getApplication().getCanSetUnsaved()) {
             hasChanged = true;
             OpenSHAPA.getApplication().updateTitle();
@@ -3553,7 +4666,7 @@ public abstract class Database {
     }
 
     /** Updates hasChanged to false. */
-    public void saveDatabase() {
+    public void markAsUnchanged() {
         hasChanged = false;
         OpenSHAPA.getApplication().updateTitle();
     }

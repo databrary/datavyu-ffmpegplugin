@@ -154,6 +154,19 @@ public class MacshapaDatabase extends Database {
 
     } /* MacshapaDatabase::MacshapaDatabase() */
 
+    /**
+     * Constructor.
+     *
+     * @param ticksPerSecond The ticks per second to use with this database.
+     *
+     * @throws SystemErrorException If unable to create macshapa database.
+     */
+    public MacshapaDatabase(final int ticksPerSecond)
+    throws SystemErrorException {
+        super(ticksPerSecond);
+        setupSystemPreds();
+    }
+
 
     /*************************************************************************/
     /*************************** Overrides: **********************************/

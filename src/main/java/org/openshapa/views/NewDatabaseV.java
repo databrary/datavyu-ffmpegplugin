@@ -231,7 +231,7 @@ public final class NewDatabaseV extends OpenSHAPADialog {
      */
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_okButtonActionPerformed
         try {
-            MacshapaDatabase model = new MacshapaDatabase();
+            MacshapaDatabase model = new MacshapaDatabase(Constants.TICKS_PER_SECOND);
             ResourceMap r =
                     Application.getInstance(OpenSHAPA.class).getContext()
                             .getResourceMap(NewDatabaseV.class);
@@ -255,11 +255,6 @@ public final class NewDatabaseV extends OpenSHAPADialog {
 
             dispose();
             finalize();
-
-            // TODO- BugzID:79 This needs to move above showSpreadsheet,
-            // when setTicks is fully implemented.
-            model.setTicks(Constants.TICKS_PER_SECOND);
-
         } catch (SystemErrorException e) {
             logger.error("Unable to create new database", e);
         } catch (LogicErrorException e) {

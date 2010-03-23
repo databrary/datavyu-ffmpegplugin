@@ -15,7 +15,6 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
-import org.openshapa.models.db.Database;
 import org.openshapa.models.db.FormalArgument;
 import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
@@ -40,36 +39,41 @@ public final class SaveDatabaseC {
      * Constructor.
      *
      * @param destinationFile
-     *            The destination to use when saving the c
+     *      The destination to use when saving the database
+     * @param db
+     *      The MacSHAPA Database file to save to disk.
      */
-    public SaveDatabaseC(final File destinationFile) {
-        // We bypass any overwrite checks here.
-        String outputFile = destinationFile.getName().toLowerCase();
-        String extension =
-                outputFile.substring(outputFile.lastIndexOf('.'), outputFile
-                        .length());
-
-        try {
-            if (extension.equals(".csv")) {
-                saveAsCSV(destinationFile.toString());
-            } else if (extension.equals(".odb")) {
-                saveAsMacSHAPADB(destinationFile.toString());
-            }
-        } catch (LogicErrorException le) {
-            OpenSHAPA.getApplication().showWarningDialog(le);
-        }
+    public SaveDatabaseC(final File destinationFile,
+                         final MacshapaDatabase db) {
+        this.saveDatabase(destinationFile, db);
     }
 
     /**
      * Constructor.
      *
      * @param destinationFile
-     *            The destination to use when saving the database.
-     * @param fileFilter
-     *            The selected filter to use when saving the database.
+     *      The destination to use when saving the database.
+     * @param db
+     *      The MacSHAPA Database file to save to disk.
      */
     public SaveDatabaseC(final String destinationFile,
-            final FileFilter fileFilter) {
+                         final MacshapaDatabase db) {
+        this.saveDatabase(new File(destinationFile), db);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param destinationFile
+     *      The destination to use when saving the database.
+     * @param fileFilter
+     *      The selected filter to use when saving the database.
+     * @param db
+     *      The MacSHAPADatabase file to save to disk.
+     */
+    public SaveDatabaseC(final String destinationFile,
+                         final FileFilter fileFilter,
+                         final MacshapaDatabase db) {
 
         String outputFile = destinationFile.toLowerCase();
 
@@ -97,10 +101,10 @@ public final class SaveDatabaseC {
                     || !outFile.exists()) {
 
                 if (fileFilter.getClass() == CSVFilter.class) {
-                    saveAsCSV(outputFile);
+                    saveAsCSV(outputFile, db);
 
                 } else if (fileFilter.getClass() == MODBFilter.class) {
-                    saveAsMacSHAPADB(outputFile);
+                    saveAsMacSHAPADB(outputFile, db);
                 }
 
                 String dbName;
@@ -125,27 +129,53 @@ public final class SaveDatabaseC {
     }
 
     /**
+     * Saves the database to the specified destination, if the file ends with
+     * .csv, the database is saved in a CSV format, if the database ends with
+     * .odb, the database is saved in a MacSHAPA format.
+     *
+     * @param destinationFile
+     *      The destination to save the database too.
+     * @param db
+     *      The
+     */
+    public void saveDatabase(final File destinationFile,
+                             final MacshapaDatabase db) {
+        // We bypass any overwrite checks here.
+        String outputFile = destinationFile.getName().toLowerCase();
+        String extension =
+                outputFile.substring(outputFile.lastIndexOf('.'), outputFile
+                        .length());
+
+        try {
+            if (extension.equals(".csv")) {
+                saveAsCSV(destinationFile.toString(), db);
+            } else if (extension.equals(".odb")) {
+                saveAsMacSHAPADB(destinationFile.toString(), db);
+            }
+        } catch (LogicErrorException le) {
+            OpenSHAPA.getApplication().showWarningDialog(le);
+        }
+    }
+
+    /**
      * Saves the database to the specified destination in a MacSHAPA format.
      *
      * @param outFile
-     *            The path of the file to use when writing to disk.
+     *      The path of the file to use when writing to disk.
+     * @param db
+     *      The database to save as a MacSHAPA db format.
      * @throws LogicErrorException
-     *             When unable to save the database as a macshapa database to
-     *             disk (usually because of permissions errors).
+     *      When unable to save the database as a macshapa database to
+     *      disk (usually because of permissions errors).
      */
-    public void saveAsMacSHAPADB(final String outFile)
-            throws LogicErrorException {
+    public void saveAsMacSHAPADB(final String outFile,
+                                 final MacshapaDatabase db)
+    throws LogicErrorException {
 
         try {
             PrintStream outStream = new PrintStream(outFile);
-            OpenSHAPA.getProjectController().getDB()
-                    .toMODBFile(outStream, "\r");
+            db.toMODBFile(outStream, "\r");
             outStream.close();
-
-            Database db = OpenSHAPA.getProjectController().getDB();
-
-            // BugzID:743 - Here we update the GUI to indicate successful save
-            db.saveDatabase();
 
         } catch (FileNotFoundException e) {
             ResourceMap rMap =
@@ -168,14 +198,15 @@ public final class SaveDatabaseC {
      * Saves the database to the specified destination in a CSV format.
      *
      * @param outFile
-     *            The path of the file to use when writing to disk.
+     *      The path of the file to use when writing to disk.
+     * @param db
+     *      The database to save as a CSV file.
      * @throws LogicErrorException
-     *             When unable to save the database as a CSV to disk (usually
-     *             because of permissions errors).
+     *      When unable to save the database as a CSV to disk (usually
+     *      because of permissions errors).
      */
-    public void saveAsCSV(final String outFile) throws LogicErrorException {
-        MacshapaDatabase db = OpenSHAPA.getProjectController().getDB();
-
+    public void saveAsCSV(final String outFile, final MacshapaDatabase db)
+    throws LogicErrorException {
         try {
             FileWriter fileWriter = new FileWriter(outFile);
             BufferedWriter out = new BufferedWriter(fileWriter);
@@ -250,10 +281,6 @@ public final class SaveDatabaseC {
             }
             out.close();
             fileWriter.close();
-
-            // BugzID:743 - Here we update the GUI to indicate successful save
-            db.saveDatabase();
-
         } catch (FileNotFoundException e) {
             ResourceMap rMap =
                     Application.getInstance(OpenSHAPA.class).getContext()

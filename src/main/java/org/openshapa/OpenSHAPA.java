@@ -52,7 +52,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * Dispatches the keystroke to the correct action.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      * @return true if the KeyboardFocusManager should take no further action
@@ -64,11 +64,31 @@ public final class OpenSHAPA extends SingleFrameApplication implements
          * keyboard.
          */
         int modifiers = evt.getModifiers();
+        // BugzID:468 - Define accelerator keys based on OS.
+        int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
+
+        // If we are typing a key that is a shortcut - we consume it straight
+        // away.
+        if (evt.getID() == KeyEvent.KEY_TYPED && modifiers == keyMask) {
+            switch (evt.getKeyChar()) {
+                case '+':
+                case '-':
+                case 'o':
+                case 's':
+                case 'n':
+                case 'l':
+                case 'r':
+                    evt.consume();
+                    return true;
+                default:
+                    break;
+            }
+        }
+
         if (evt.getID() == KeyEvent.KEY_PRESSED
                 && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
 
-            // BugzID:468 - Define accelerator keys based on OS.
-            int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
             switch (evt.getKeyCode()) {
             /**
              * This case is because VK_PLUS is not linked to a key on the
@@ -421,17 +441,14 @@ public final class OpenSHAPA extends SingleFrameApplication implements
             lastScriptsExecuted = new LinkedList<File>();
 
             // Initalise DB
-            MacshapaDatabase db = new MacshapaDatabase();
+            MacshapaDatabase db = new MacshapaDatabase(Constants
+                                                       .TICKS_PER_SECOND);
             // BugzID:449 - Set default database name.
             db.setName("Database1");
             projectController.setDatabase(db);
 
             // Initialize plugin manager
             PluginManager.getInstance();
-
-            // TODO- BugzID:79 This needs to move above showSpreadsheet,
-            // when setTicks is fully implemented.
-            db.setTicks(Constants.TICKS_PER_SECOND);
 
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);

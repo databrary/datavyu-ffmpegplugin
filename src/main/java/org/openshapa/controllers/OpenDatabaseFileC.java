@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Vector;
 
-import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Column;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
@@ -36,17 +35,18 @@ import org.openshapa.models.db.TimeStamp;
 import org.openshapa.models.db.UnTypedFormalArg;
 import org.openshapa.models.db.UndefinedDataValue;
 import org.openshapa.models.db.VocabElement;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.util.Constants;
 
 /**
  * Controller for opening a database from disk.
  */
-public final class OpenDatabaseC {
+public final class OpenDatabaseFileC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(OpenDatabaseC.class);
+    private UserMetrix logger = UserMetrix.getInstance(OpenDatabaseFileC.class);
 
     /** The index of the ONSET timestamp in the CSV line. */
     private static final int DATA_ONSET = 0;
@@ -58,51 +58,37 @@ public final class OpenDatabaseC {
     private static final int DATA_INDEX = 2;
 
     /**
-     * Constructor.
+     * Opens a database.
      *
-     * @param sourceFile
-     *            The source file to use when opening a database from disk.
+     * @param sourceFile The source file to open.
+     *
+     * @return populated MacshapaDatabase on success, null otherwise.
      */
-    public OpenDatabaseC(final File sourceFile) {
+    public MacshapaDatabase open(final String sourceFile) {
+        return this.open(new File(sourceFile));
+    }
+
+    /**
+     * Opens a database.
+     *
+     * @param sourceFile The source file to open.
+     *
+     * @return populated MacshapaDatabase on success, null otherwise.
+     */
+    public MacshapaDatabase open(final File sourceFile) {
+        MacshapaDatabase db;
         String inputFile = sourceFile.toString().toLowerCase();
 
         // If the file ends with CSV - treat it as a comma seperated file.
         if (inputFile.endsWith(".csv")) {
-            openAsCSV(sourceFile);
+            db = openAsCSV(sourceFile);
 
-            // Otherwise treat it as a macshapa database file.
+        // Otherwise treat it as a macshapa database file.
         } else {
-            openAsMacSHAPADB(sourceFile);
+            db = openAsMacSHAPADB(sourceFile);
         }
 
-        // BugzID:449 - Set filename in spreadsheet window and database if the
-        // database name is undefined.
-        try {
-            Database db = OpenSHAPA.getProjectController().getDB();
-            OpenSHAPA.getProjectController().setProjectDirectory(
-                    sourceFile.getParent());
-
-            if (db.getName().equals("Undefined")) {
-                String dbName = sourceFile.getName();
-                dbName = dbName.substring(0, dbName.lastIndexOf('.'));
-                db.setName(dbName);
-                OpenSHAPA.getProjectController()
-                        .setDatabaseFileName(sourceFile.getName());
-            }
-
-            // Calling this will erase the "modified" variable and update
-            // the title, not actuall save the database.
-            db.saveDatabase();
-
-        } catch (SystemErrorException se) {
-            logger.error("Can't set db name to the name of the CSV file.", se);
-        }
-
-        // Display any changes to the database.
-        SpreadsheetPanel view =
-            (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
-            .getComponent();
-        view.relayoutCells();
+        return db;
     }
 
     /**
@@ -111,19 +97,21 @@ public final class OpenDatabaseC {
      *
      * @param sFile
      *            The source file to use when populating the database.
+     *
+     * @return popluated database on success, null otherwise.
      */
-    public void openAsMacSHAPADB(final File sFile) {
+    public MacshapaDatabase openAsMacSHAPADB(final File sFile) {
         try {
             FileReader sReader = new FileReader(sFile);
             BufferedReader sourceStream = new BufferedReader(sReader);
             PrintStream listStream = new PrintStream(new File("read_list.log"));
             PrintStream errorStream = new PrintStream(new File("error.log"));
 
-            MacshapaODBReader modbr =
-                new MacshapaODBReader(sourceStream, listStream, errorStream);
-            OpenSHAPA.getProjectController().setDatabase(modbr.readDB());
-            OpenSHAPA.getProjectController().setProjectDirectory(
-                    sFile.getParent());
+            MacshapaODBReader modbr = new MacshapaODBReader(sourceStream,
+                                                            listStream,
+                                                            errorStream);
+
+            return modbr.readDB();
         } catch (FileNotFoundException e) {
             logger.error("Unable to load macshapa database:'" + sFile + "'", e);
         } catch (SystemErrorException e) {
@@ -131,8 +119,11 @@ public final class OpenDatabaseC {
         } catch (IOException e) {
             logger.error("Unable to load macshapa database:'" + sFile + "'", e);
         } catch (LogicErrorException e) {
-            OpenSHAPA.getApplication().showWarningDialog(e);
+            logger.error("Corrupted macshapa database", e);
         }
+
+        // Error occured - return null.
+        return null;
     }
 
     /**
@@ -141,12 +132,13 @@ public final class OpenDatabaseC {
      *
      * @param sFile
      *            The source file to use when populating the database.
+     *
+     * @return populated database on sucess, null otherwise.
      */
-    public void openAsCSV(final File sFile) {
+    public MacshapaDatabase openAsCSV(final File sFile) {
         try {
-            Database db = OpenSHAPA.getProjectController().getDB();
-            OpenSHAPA.getProjectController().setProjectDirectory(
-                    sFile.getParent());
+            MacshapaDatabase db = new MacshapaDatabase(Constants
+                                                       .TICKS_PER_SECOND);
             BufferedReader csvFile = new BufferedReader(new FileReader(sFile));
 
             // Read each line of the CSV file.
@@ -163,16 +155,17 @@ public final class OpenDatabaseC {
                     line = parseVariable(csvFile, line, db);
                 }
 
-                // Use the original schema to load the file - just variables,
-                // and no
-                // escape characters.
             } else {
+
+                // Use the original schema to load the file - just variables,
+                // and no escape characters.
                 while (line != null) {
                     line = parseVariable(csvFile, line, db);
                 }
             }
 
             csvFile.close();
+            return db;
         } catch (FileNotFoundException e) {
             logger.error("Unable to load CSV file.", e);
         } catch (IOException e) {
@@ -182,6 +175,9 @@ public final class OpenDatabaseC {
         } catch (LogicErrorException e) {
             logger.error("Corrupted CSV file", e);
         }
+
+        // Error encountered - return null.
+        return null;
     }
 
     /**
@@ -204,7 +200,7 @@ public final class OpenDatabaseC {
                         // Move over the escape character.
                         i++;
                     } else if (line.charAt(i) == '\\'
-                        && line.charAt(i + 1) == ',') {
+                            && line.charAt(i + 1) == ',') {
                         char[] buff = {','};
                         result = result.concat(new String(buff));
                         // Move over the escape character.
@@ -250,7 +246,7 @@ public final class OpenDatabaseC {
 
             // Create the data cell from line in the CSV file.
             DataCell cell =
-                new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
+                    new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
 
             // Set the onset and offset from tokens in the line.
             cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
@@ -261,18 +257,17 @@ public final class OpenDatabaseC {
                 // Add the populated cell to the database.
                 dc.getDB().appendCell(cell);
 
-                // Non empty predicate - need to check if we need to add an
-                // entry to
-                // the vocab, and create it if it doesn't exist. Otherwise we
-                // just
-                // plow ahead and add the predicate to the database.
             } else {
+                // Non empty predicate - need to check if we need to add an
+                // entry to the vocab, and create it if it doesn't exist.
+                // Otherwise we just plow ahead and add the predicate to the
+                // database.
                 PredicateVocabElement pve =
-                    dc.getDB().getPredVE(tokens[DATA_INDEX]);
+                        dc.getDB().getPredVE(tokens[DATA_INDEX]);
 
                 Predicate p =
-                    new Predicate(dc.getDB(), pve.getID(), parseFormalArgs(
-                            tokens, DATA_INDEX + 1, dc, pve));
+                        new Predicate(dc.getDB(), pve.getID(), parseFormalArgs(
+                                tokens, DATA_INDEX + 1, dc, pve));
                 PredDataValue pdv = new PredDataValue(dc.getDB());
                 pdv.setItsValue(p);
 
@@ -391,7 +386,7 @@ public final class OpenDatabaseC {
      */
     private String parseMatrixVariable(final BufferedReader csvFile,
             final DataColumn dc, final MatrixVocabElement mve)
-    throws IOException, SystemErrorException {
+            throws IOException, SystemErrorException {
         String line = csvFile.readLine();
 
         while (line != null && Character.isDigit(line.charAt(0))) {
@@ -400,7 +395,7 @@ public final class OpenDatabaseC {
 
             // Create the data cell from line in the CSV file.
             DataCell cell =
-                new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
+                    new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
 
             // Set the onset and offset from tokens in the line.
             cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
@@ -408,15 +403,15 @@ public final class OpenDatabaseC {
 
             // Strip the brackets from the first and last argument.
             tokens[DATA_INDEX] =
-                tokens[DATA_INDEX]
-                       .substring(1, tokens[DATA_INDEX].length());
+                    tokens[DATA_INDEX]
+                            .substring(1, tokens[DATA_INDEX].length());
 
             int end = tokens.length - 1;
             tokens[end] = tokens[end].substring(0, tokens[end].length() - 1);
 
             Matrix m =
-                new Matrix(dc.getDB(), mve.getID(), parseFormalArgs(tokens,
-                        DATA_INDEX, dc, mve));
+                    new Matrix(dc.getDB(), mve.getID(), parseFormalArgs(tokens,
+                            DATA_INDEX, dc, mve));
             cell.setVal(m);
 
             // Add the populated cell to the database.
@@ -437,9 +432,9 @@ public final class OpenDatabaseC {
      *            The csvFile we are currently parsing.
      * @param dc
      *            The datacolumn that we will be adding cells too.
-     * @param populator
-     *            The populator to use when converting the contents of the cell
-     *            into a datavalue that can be inserted into the spreadsheet.
+     * @param The
+     *            populator to use when converting the contents of the cell into
+     *            a datavalue that can be inserted into the spreadsheet.
      * @return The next line in the file that is not part of the block of text
      *         in the CSV file.
      * @throws IOException
@@ -450,7 +445,7 @@ public final class OpenDatabaseC {
      */
     private String parseEntries(final BufferedReader csvFile,
             final DataColumn dc, final EntryPopulator populator)
-    throws IOException, SystemErrorException {
+            throws IOException, SystemErrorException {
 
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
@@ -473,7 +468,7 @@ public final class OpenDatabaseC {
 
             // Create the data cell from line in the CSV file.
             DataCell cell =
-                new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
+                    new DataCell(dc.getDB(), dc.getID(), dc.getItsMveID());
 
             // Set the onset and offset from tokens in the line.
             cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
@@ -482,8 +477,8 @@ public final class OpenDatabaseC {
             // Insert the datavalue in the cell.
             long mveId = dc.getDB().getMatrixVE(dc.getItsMveID()).getID();
             Matrix m =
-                Matrix.Construct(dc.getDB(), mveId, populator
-                        .createValue(tokens));
+                    Matrix.Construct(dc.getDB(), mveId, populator
+                            .createValue(tokens));
             cell.setVal(m);
 
             // Add the populated cell to the database.
@@ -555,20 +550,20 @@ public final class OpenDatabaseC {
         if (formalArgument[1].equalsIgnoreCase("quote_string")) {
             fa = new QuoteStringFormalArg(db, "<" + formalArgument[0] + ">");
 
-            // Add nominal formal argument.
         } else if (formalArgument[1].equalsIgnoreCase("nominal")) {
+            // Add nominal formal argument.
             fa = new NominalFormalArg(db, "<" + formalArgument[0] + ">");
 
-            // Add integer formal argument.
         } else if (formalArgument[1].equalsIgnoreCase("integer")) {
+            // Add integer formal argument.
             fa = new IntFormalArg(db, "<" + formalArgument[0] + ">");
 
-            // Add float formal argument.
         } else if (formalArgument[1].equalsIgnoreCase("float")) {
+            // Add float formal argument.
             fa = new FloatFormalArg(db, "<" + formalArgument[0] + ">");
 
-            // Not sure what it is - add undefined formal argument.
         } else {
+            // Not sure what it is - add undefined formal argument.
             fa = new UnTypedFormalArg(db, "<" + formalArgument[0] + ">");
         }
 
@@ -613,23 +608,22 @@ public final class OpenDatabaseC {
         if (getVarType(varType) == MatrixVocabElement.MatrixType.TEXT) {
             return parseEntries(csvFile, dc, new PopulateText(dc.getDB()));
 
-            // Read nominal variable.
         } else if (getVarType(varType)
-                == MatrixVocabElement.MatrixType.NOMINAL) {
+                   == MatrixVocabElement.MatrixType.NOMINAL) {
+            // Read nominal variable.
             return parseEntries(csvFile, dc, new PopulateNominal(dc.getDB()));
 
-            // Read integer variable.
         } else if (getVarType(varType)
-                == MatrixVocabElement.MatrixType.INTEGER) {
+                   == MatrixVocabElement.MatrixType.INTEGER) {
+            // Read integer variable.
             return parseEntries(csvFile, dc, new PopulateInteger(dc.getDB()));
 
         } else if (getVarType(varType) == MatrixVocabElement.MatrixType.FLOAT) {
             return parseEntries(csvFile, dc, new PopulateFloat(dc.getDB()));
 
-            // Read matrix variable.
         } else if (getVarType(varType)
-                == MatrixVocabElement.MatrixType.MATRIX) {
-            // Build vocab for matrix.
+                   == MatrixVocabElement.MatrixType.MATRIX) {
+            // Read matrix variable - Build vocab for matrix.
             String[] vocabString = tokens[1].split("-");
 
             // Get the vocab element for the matrix and clean it up to be
@@ -649,7 +643,7 @@ public final class OpenDatabaseC {
 
             // Read predicate variable.
         } else if (getVarType(varType)
-                == MatrixVocabElement.MatrixType.PREDICATE) {
+                   == MatrixVocabElement.MatrixType.PREDICATE) {
             return parsePredicateVariable(csvFile, dc);
         }
 
@@ -690,7 +684,6 @@ public final class OpenDatabaseC {
      * database spreadsheet cells.
      */
     private abstract class EntryPopulator {
-        /** The database. */
         private Database db;
 
         /**
@@ -721,7 +714,7 @@ public final class OpenDatabaseC {
          *             array of tokens.
          */
         abstract DataValue createValue(final String[] tokens)
-        throws SystemErrorException;
+                throws SystemErrorException;
     }
 
     /**
@@ -751,7 +744,7 @@ public final class OpenDatabaseC {
          */
         @Override
         public DataValue createValue(final String[] tokens)
-        throws SystemErrorException {
+                throws SystemErrorException {
             IntDataValue idv = new IntDataValue(getDatabase());
 
             // BugzID:722 - Only populate the value if we have one from the file
@@ -789,7 +782,7 @@ public final class OpenDatabaseC {
          */
         @Override
         public DataValue createValue(final String[] tokens)
-        throws SystemErrorException {
+                throws SystemErrorException {
             FloatDataValue fdv = new FloatDataValue(getDatabase());
 
             // BugzID:722 - Only populate the value if we have one from the file
@@ -826,7 +819,7 @@ public final class OpenDatabaseC {
          */
         @Override
         public DataValue createValue(final String[] tokens)
-        throws SystemErrorException {
+                throws SystemErrorException {
             NominalDataValue ndv = new NominalDataValue(getDatabase());
 
             // BugzID:722 - Only populate the value if we have one from the file
@@ -863,7 +856,7 @@ public final class OpenDatabaseC {
          */
         @Override
         public DataValue createValue(final String[] tokens)
-        throws SystemErrorException {
+                throws SystemErrorException {
             TextStringDataValue tsdv = new TextStringDataValue(getDatabase());
 
             // BugzID:722 - Only populate the value if we have one from the file

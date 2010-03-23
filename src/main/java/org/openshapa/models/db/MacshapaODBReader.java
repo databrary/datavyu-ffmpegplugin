@@ -2208,8 +2208,7 @@ public class MacshapaODBReader
     public MacshapaODBReader(java.io.BufferedReader input,
                              java.io.PrintStream listing,
                              java.io.PrintStream errors)
-        throws SystemErrorException,
-               LogicErrorException
+        throws SystemErrorException
     {
         super();
 
