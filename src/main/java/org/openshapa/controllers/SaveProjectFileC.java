@@ -16,10 +16,10 @@ import com.usermetrix.jclient.UserMetrix;
 /**
  * Controller for saving the OpenSHAPA project to disk.
  */
-public final class SaveProjectC {
+public final class SaveProjectFileC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SaveProjectC.class);
+    private UserMetrix logger = UserMetrix.getInstance(SaveProjectFileC.class);
 
     /**
      * Saves the OpenSHAPA project to disk.

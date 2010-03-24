@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Vector;
 
-import javax.swing.filechooser.FileFilter;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -22,111 +21,16 @@ import org.openshapa.models.db.MatrixVocabElement;
 import org.openshapa.models.db.PredicateVocabElement;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.db.MatrixVocabElement.MatrixType;
-import org.openshapa.util.FileFilters.CSVFilter;
-import org.openshapa.util.FileFilters.MODBFilter;
 
 import com.usermetrix.jclient.UserMetrix;
 
 /**
  * Controller for saving the database to disk.
  */
-public final class SaveDatabaseC {
+public final class SaveDatabaseFileC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SaveDatabaseC.class);
-
-    /**
-     * Constructor.
-     *
-     * @param destinationFile
-     *      The destination to use when saving the database
-     * @param db
-     *      The MacSHAPA Database file to save to disk.
-     */
-    public SaveDatabaseC(final File destinationFile,
-                         final MacshapaDatabase db) {
-        this.saveDatabase(destinationFile, db);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param destinationFile
-     *      The destination to use when saving the database.
-     * @param db
-     *      The MacSHAPA Database file to save to disk.
-     */
-    public SaveDatabaseC(final String destinationFile,
-                         final MacshapaDatabase db) {
-        this.saveDatabase(new File(destinationFile), db);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param destinationFile
-     *      The destination to use when saving the database.
-     * @param fileFilter
-     *      The selected filter to use when saving the database.
-     * @param db
-     *      The MacSHAPADatabase file to save to disk.
-     */
-    public SaveDatabaseC(final String destinationFile,
-                         final FileFilter fileFilter,
-                         final MacshapaDatabase db) {
-
-        String outputFile = destinationFile.toLowerCase();
-
-        if (fileFilter.getClass() == CSVFilter.class) {
-            // BugzID:541 - Don't append ".csv" unless needed.
-            if (!outputFile.contains(".csv")) {
-                outputFile = destinationFile.concat(".csv");
-            }
-
-        } else if (fileFilter.getClass() == MODBFilter.class) {
-            // Don't append ".db" if the path already contains it.
-            if (!outputFile.contains(".odb")) {
-                outputFile = destinationFile.concat(".odb");
-            }
-        }
-
-        File outFile = new File(outputFile);
-
-        // BugzID:449 - Set filename in spreadsheet window and database to
-        // be the same as the file specified.
-        try {
-            // Check for existence; if so, confirm overwrite.
-            if ((outFile.exists() && OpenSHAPA.getApplication()
-                    .overwriteExisting())
-                    || !outFile.exists()) {
-
-                if (fileFilter.getClass() == CSVFilter.class) {
-                    saveAsCSV(outputFile, db);
-
-                } else if (fileFilter.getClass() == MODBFilter.class) {
-                    saveAsMacSHAPADB(outputFile, db);
-                }
-
-                String dbName;
-                if (outFile.getName().lastIndexOf('.') != -1) {
-                    dbName =
-                            outFile.getName().substring(0,
-                                    outFile.getName().lastIndexOf('.'));
-                } else {
-                    dbName = outFile.getName();
-                }
-                OpenSHAPA.getProjectController().getDB().setName(dbName);
-
-                // Update the name of the window to include the name we just
-                // set in the database.
-                OpenSHAPA.getApplication().updateTitle();
-            }
-        } catch (SystemErrorException se) {
-            logger.error("Can't set db name to specified file.", se);
-        } catch (LogicErrorException le) {
-            OpenSHAPA.getApplication().showWarningDialog(le);
-        }
-    }
+    private UserMetrix logger = UserMetrix.getInstance(SaveDatabaseFileC.class);
 
     /**
      * Saves the database to the specified destination, if the file ends with
@@ -136,24 +40,23 @@ public final class SaveDatabaseC {
      * @param destinationFile
      *      The destination to save the database too.
      * @param db
-     *      The
+     *      The database to save to disk.
+     *
+     * @throws LogicErrorException If unable to save the database to the
+     * desired location.
      */
     public void saveDatabase(final File destinationFile,
-                             final MacshapaDatabase db) {
+                             final MacshapaDatabase db)
+    throws LogicErrorException {
         // We bypass any overwrite checks here.
         String outputFile = destinationFile.getName().toLowerCase();
-        String extension =
-                outputFile.substring(outputFile.lastIndexOf('.'), outputFile
-                        .length());
+        String extension = outputFile.substring(outputFile.lastIndexOf('.'),
+                                                outputFile.length());
 
-        try {
-            if (extension.equals(".csv")) {
-                saveAsCSV(destinationFile.toString(), db);
-            } else if (extension.equals(".odb")) {
-                saveAsMacSHAPADB(destinationFile.toString(), db);
-            }
-        } catch (LogicErrorException le) {
-            OpenSHAPA.getApplication().showWarningDialog(le);
+        if (extension.equals(".csv")) {
+            saveAsCSV(destinationFile.toString(), db);
+        } else if (extension.equals(".odb")) {
+            saveAsMacSHAPADB(destinationFile.toString(), db);
         }
     }
 

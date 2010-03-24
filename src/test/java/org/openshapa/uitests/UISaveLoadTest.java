@@ -18,6 +18,8 @@ import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.controllers.project.ProjectController;
+import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
@@ -258,7 +260,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws SystemErrorException
      */
     private void loadTest(final String inputFile,
-            final String expectedOutputFile) throws IOException {
+                          final String expectedOutputFile)
+    throws IOException, LogicErrorException {
         final String root = System.getProperty("testPath") + "/ui/";
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
@@ -295,9 +298,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             fc.setFileFilter(new SHAPAFilter());
             fc.setSelectedFile(newSHAPA);
 
-            method("openProject")
-                    .withParameterTypes(File.class).in(
-                            OpenSHAPA.getView()).invoke(fc.getSelectedFile());
+            method("open")
+                    .withParameterTypes(OpenSHAPAFileChooser.class).in(
+                            OpenSHAPA.getView()).invoke(fc);
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Open...");
 
@@ -327,7 +330,11 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         if (Platform.isOSX()) {
             SaveC saveController = new SaveC();
-            saveController.saveAsProject(tempFolder, "savedSHAPA.shapa");
+
+            saveController.saveProject(tempFolder,
+                                       "savedSHAPA.shapa",
+                                       OpenSHAPA.getProjectController().getProject(),
+                                       OpenSHAPA.getProjectController().getDB());
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
             mainFrameFixture.fileChooser().component().setFileFilter(
@@ -375,9 +382,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             fc.setFileFilter(new MODBFilter());
             fc.setSelectedFile(odbFile);
 
-            method("openProject")
-                    .withParameterTypes(File.class).in(
-                            OpenSHAPA.getView()).invoke(fc.getSelectedFile());
+            method("open")
+                    .withParameterTypes(OpenSHAPAFileChooser.class).in(
+                            OpenSHAPA.getView()).invoke(fc);
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Open...");
 

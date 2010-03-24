@@ -47,6 +47,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.LogicErrorException;
 
 /**
  * The main FrameView, representing the interface for OpenSHAPA the user will
@@ -204,50 +205,47 @@ implements FileDropEventListener {
      */
     @Action
     public void save() {
-        // If the user has not saved before - invoke the saveAs() controller to
-        // force the user to nominate a destination file.
-        ProjectController openShapaProject = OpenSHAPA.getProjectController();
-        if (openShapaProject.isNewProject()
-                || openShapaProject.getProjectName() == null) {
-            saveAs();
-        } else if (openShapaProject.getDatabaseFileName() == null) {
-            saveAs();
-        } else {
-            SaveC saveController = new SaveC();
-            saveController.save();
-        }
-    }
+        try {
+            SaveC saveC = new SaveC();
 
-    private void save(final OpenSHAPAFileChooser fc) {
-        SaveC saveC = new SaveC();
+            // If the user has not saved before - invoke the saveAs()
+            // controller to force the user to nominate a destination file.
+            ProjectController projController = OpenSHAPA.getProjectController();
+            if (projController.isNewProject()
+                    || projController.getProjectName() == null) {
+                saveAs();
+            } else if (projController.getDatabaseFileName() == null) {
+                saveAs();
+            } else {
+                SaveC saveController = new SaveC();
 
-        FileFilter filter = fc.getFileFilter();
-        // Save as a project
-        if (filter instanceof SHAPAFilter) {
-            // Build the project file name
-            String projectFileName = fc.getSelectedFile().getName();
-            if (!projectFileName.endsWith(".shapa")) {
-                projectFileName = projectFileName.concat(".shapa");
+                if (projController.getLastSaveOption() instanceof SHAPAFilter) {
+                    projController.updateProject();
+                    saveController.saveProject(
+                            projController.getProjectDirectory(),
+                            projController.getProjectName(),
+                            projController.getProject(),
+                            projController.getDB());
+
+                    projController.markProjectAsUnchanged();
+                    projController.getDB().markAsUnchanged();
+
+                    // Update the application title
+                    OpenSHAPA.getApplication().updateTitle();
+
+                // Save content just as a database.
+                } else {
+                    File file = new File(projController.getProjectDirectory(),
+                                         projController.getDatabaseFileName());
+                    saveC.saveDatabase(file, projController.getDB());
+
+                    projController.markProjectAsUnchanged();
+                    projController.getDB().markAsUnchanged();
+                }
             }
-            // Send it off to the controller
-            saveC.saveAsProject(fc.getSelectedFile().getParent(),
-                    projectFileName);
-            // Save as a CSV database
-        } else if (filter instanceof CSVFilter) {
-            String databaseFileName = fc.getSelectedFile().getName();
-            if (!databaseFileName.endsWith(".csv")) {
-                databaseFileName = databaseFileName.concat(".csv");
-            }
-            saveC.saveAsDatabase(fc.getSelectedFile().getParent(),
-                    databaseFileName, filter);
-            // Save as a ODB database
-        } else if (filter instanceof MODBFilter) {
-            String databaseFileName = fc.getSelectedFile().getName();
-            if (!databaseFileName.endsWith(".odb")) {
-                databaseFileName = databaseFileName.concat(".odb");
-            }
-            saveC.saveAsDatabase(fc.getSelectedFile().getParent(),
-                    databaseFileName, filter);
+
+        } catch (LogicErrorException e) {
+            OpenSHAPA.getApplication().showWarningDialog(e);
         }
     }
 
@@ -263,9 +261,101 @@ implements FileDropEventListener {
         jd.addChoosableFileFilter(new SHAPAFilter());
 
         int result = jd.showSaveDialog(getComponent());
-
         if (result == JFileChooser.APPROVE_OPTION) {
             save(jd);
+        }
+    }
+
+    private boolean canSave(final String directory, final String file) {
+        File newFile = new File(directory, file);
+
+        return ((newFile.exists()
+                 && OpenSHAPA.getApplication().overwriteExisting())
+                 || !newFile.exists());
+    }
+
+    private void save(final OpenSHAPAFileChooser fc) {
+        ProjectController projController = OpenSHAPA.getProjectController();
+        projController.updateProject();
+
+        try {
+            SaveC saveC = new SaveC();
+
+            FileFilter filter = fc.getFileFilter();
+            // Save as a project
+            if (filter instanceof SHAPAFilter) {
+                // Build the project file name
+                String projFileName = fc.getSelectedFile().getName();
+                if (!projFileName.endsWith(".shapa")) {
+                    projFileName = projFileName.concat(".shapa");
+                }
+
+                // Only save if the project file does not exists or if the user
+                // confirms a file overwrite in the case that the file exists.
+                if (!canSave(fc.getSelectedFile().getParent(), projFileName)) {
+                    return;
+                }
+
+                // Send it off to the controller
+                saveC.saveProject(fc.getSelectedFile().getParent(),
+                                  projFileName,
+                                  projController.getProject(),
+                                  projController.getDB());
+
+            // Save as a CSV database
+            } else if (filter instanceof CSVFilter) {
+                String dbFileName = fc.getSelectedFile().getName();
+                if (!dbFileName.endsWith(".csv")) {
+                    dbFileName = dbFileName.concat(".csv");
+                }
+
+                // Only save if the project file does not exists or if the user
+                // confirms a file overwrite in the case that the file exists.
+                if (!canSave(fc.getSelectedFile().getParent(), dbFileName)) {
+                    return;
+                }
+
+                File f = new File(fc.getSelectedFile().getParent(), dbFileName);
+                saveC.saveDatabase(f, projController.getDB());
+
+                projController.getDB().setName(dbFileName);
+                projController.setProjectDirectory(fc.getSelectedFile().getParent());
+                projController.setDatabaseFileName(dbFileName);
+
+            // Save as a ODB database
+            } else if (filter instanceof MODBFilter) {
+                String dbFileName = fc.getSelectedFile().getName();
+                if (!dbFileName.endsWith(".odb")) {
+                    dbFileName = dbFileName.concat(".odb");
+                }
+
+                // Only save if the project file does not exists or if the user
+                // confirms a file overwrite in the case that the file exists.
+                if (!canSave(fc.getSelectedFile().getParent(), dbFileName)) {
+                    return;
+                }
+
+                File f = new File(fc.getSelectedFile(), dbFileName);
+                saveC.saveDatabase(f, projController.getDB());
+
+                if (dbFileName.lastIndexOf('.') != -1) {
+                    dbFileName = dbFileName.substring(0, dbFileName.lastIndexOf('.'));
+                }
+                projController.getDB().setName(dbFileName);
+                projController.setProjectDirectory(fc.getSelectedFile().getParent());
+                projController.setDatabaseFileName(dbFileName);
+            }
+
+
+            projController.setLastSaveOption(filter);
+            projController.markProjectAsUnchanged();
+            projController.getDB().markAsUnchanged();
+            OpenSHAPA.getApplication().updateTitle();
+
+        } catch (LogicErrorException e) {
+            OpenSHAPA.getApplication().showWarningDialog(e);
+        } catch (SystemErrorException e) {
+            logger.error("Unable to save.", e);
         }
     }
 
@@ -287,9 +377,6 @@ implements FileDropEventListener {
                 open(jd);
             }
         }
-
-        // Display any changes to the database.
-        showSpreadsheet();
     }
 
     /**
@@ -320,6 +407,9 @@ implements FileDropEventListener {
         pController.markProjectAsUnchanged();
         pController.getDB().markAsUnchanged();
         updateTitle();
+
+        // Display any changes to the database.
+        showSpreadsheet();
     }
 
 
@@ -357,6 +447,10 @@ implements FileDropEventListener {
      * @param evt The event to handle.
      */
     public void filesDropped(final FileDropEvent evt) {
+        if (!OpenSHAPA.getApplication().safeQuit()) {
+            return;
+        }
+
         OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
         fc.setVisible(false);
 

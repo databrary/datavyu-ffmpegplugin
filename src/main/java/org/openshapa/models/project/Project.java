@@ -75,12 +75,25 @@ public final class Project implements Cloneable {
 
     /**
      * Sets the name of the project.
-     * 
+     *
      * @param newProjectName
      *            The new name to use for this project.
      */
     public void setProjectName(final String newProjectName) {
-        projectName = newProjectName;
+        // Check Pre-conditions.
+        assert (newProjectName != null);
+
+        // Set the name of the project.
+        String name = newProjectName;
+        int match = name.lastIndexOf(".");
+        if (match != -1) {
+            name = name.substring(0, match);
+        }
+        if (name.equals("")) {
+            name = "Project1";
+        }
+
+        projectName = name;
     }
 
     public void setViewerSettings(final Iterable<ViewerSetting> viewerSettings) {
