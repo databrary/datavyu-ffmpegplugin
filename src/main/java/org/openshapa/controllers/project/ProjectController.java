@@ -89,20 +89,7 @@ public final class ProjectController {
      *            The new name to use for this project.
      */
     public void setProjectName(final String newProjectName) {
-        // Check Pre-conditions.
-        assert (newProjectName != null);
-
-        // Set the name of the project.
-        String name = newProjectName;
-        int match = name.lastIndexOf(".");
-        if (match != -1) {
-            name = name.substring(0, match);
-        }
-        if (name.equals("")) {
-            name = "Project1";
-        }
-
-        project.setProjectName(name);
+        project.setProjectName(newProjectName);
     }
 
     /**
@@ -327,7 +314,7 @@ public final class ProjectController {
      * @return a deep-copy clone of the current project.
      */
     public Project getProject() {
-        return project.clone();
+        return project; //.clone();
     }
 
 }
