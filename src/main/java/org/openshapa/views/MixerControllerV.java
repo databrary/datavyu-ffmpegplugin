@@ -161,7 +161,7 @@ public class MixerControllerV implements NeedleEventListener,
             timescaleController.setConstraints(minStart, maxEnd,
                     zoomIntervals(1));
             ViewableModel vm = timescaleController.getViewableModel();
-            vm.setEnd(60000);
+            vm.setEnd(maxEnd);
             timescaleController.setViewableModel(vm);
         }
         layeredPane.add(timescaleView, Integer.valueOf(0));
