@@ -357,6 +357,10 @@ implements FileDropEventListener {
      * @param evt The event to handle.
      */
     public void filesDropped(final FileDropEvent evt) {
+        if (!OpenSHAPA.getApplication().safeQuit()) {
+            return;
+        }
+
         OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
         fc.setVisible(false);
 
