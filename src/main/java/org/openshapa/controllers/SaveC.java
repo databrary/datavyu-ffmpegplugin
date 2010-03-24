@@ -14,6 +14,7 @@ import org.openshapa.util.FileFilters.SHAPAFilter;
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.models.project.Project;
 
 /**
  * Master controller for handling project and database file saving logic.
@@ -27,7 +28,7 @@ public final class SaveC {
     private static final int HASH_LENGTH = 10;
 
     /**
-     * Saves a database to disk.
+     * Saves only a database to disk.
      *
      * @param databaseFile The location to save the database too.
      * @param database The database to save to disk.
@@ -41,7 +42,7 @@ public final class SaveC {
     }
 
     /**
-     * Saves a database to disk.
+     * Saves only a database to disk.
      *
      * @param databaseFile The location to save the database too.
      * @param database The database to save to disk.
@@ -57,8 +58,66 @@ public final class SaveC {
     }
 
     /**
+     * Saves an entire project, including database to disk.
+     *
+     * @param projectFile The destination to save the project too.
+     * @param project The project to save to disk.
+     * @param database The database to save to disk.
+     *
+     * @throws LogicErrorException If unable to save the entire project to
+     * disk.
+     */
+    public void saveProject(final String projectFile,
+                            final Project project,
+                            final MacshapaDatabase database)
+    throws LogicErrorException {
+        this.saveProject(new File(projectFile), project, database);
+    }
+
+    /**
+     * Saves an entire project, including database to disk.
+     *
+     * @param projectFile The destination to save the project too.
+     * @param project The project to save to disk.
+     * @param database The database to save to disk.
+     *
+     * @throws LogicErrorException If unable to save the entire project to
+     * disk.
+     */
+    public void saveProject(final File databaseFile,
+                            final Project project,
+                            final MacshapaDatabase database)
+    throws LogicErrorException {
+
+        // Compute the database file name
+        String databaseFileName = project.getProjectName();
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            md.update(project.getProjectName().getBytes());
+            byte[] digest = md.digest();
+            String stringDigest = HashUtils.convertToHex(digest);
+            databaseFileName += "-" + stringDigest.substring(0, HASH_LENGTH);
+            databaseFileName = databaseFileName.concat(".csv");
+
+        } catch (NoSuchAlgorithmException ex) {
+            logger.error("Could not get SHA-1 implementation", ex);
+            // Abort. Shouldn't happen. If it does, don't risk overwriting.
+            return;
+        }
+
+        File dbFile = new File(project.getProjectDirectory() + "/"
+                               + databaseFileName);
+
+        new SaveDatabaseFileC().saveDatabase(dbFile, database);
+        new SaveProjectFileC().save(project.getProjectDirectory() + "/"
+                                    + project.getProjectName(), project);
+    }
+
+    /**
      * Save the currently opened project and database. Enforce database naming
      * rule: [project name]-[SHA-1(project name).substring(0, 10)].csv
+     *
+     * @deprecated
      */
     public void saveProject() throws LogicErrorException {
         ProjectController projectController = OpenSHAPA.getProjectController();

@@ -220,6 +220,8 @@ implements FileDropEventListener {
                 SaveC saveController = new SaveC();
                 if (projController.getLastSaveOption() instanceof SHAPAFilter) {
                     saveController.saveProject();
+
+                // Save content just as a database.
                 } else {
                     File file = new File(projController.getProjectDirectory(),
                                          projController.getDatabaseFileName());
@@ -229,6 +231,7 @@ implements FileDropEventListener {
                     projController.getDB().markAsUnchanged();
                 }
             }
+
         } catch (LogicErrorException e) {
             OpenSHAPA.getApplication().showWarningDialog(e);
         }
@@ -267,6 +270,7 @@ implements FileDropEventListener {
                 // Send it off to the controller
                 saveC.saveAsProject(fc.getSelectedFile().getParent(),
                         projectFileName);
+
                 // Save as a CSV database
             } else if (filter instanceof CSVFilter) {
                 String databaseFileName = fc.getSelectedFile().getName();
@@ -275,6 +279,7 @@ implements FileDropEventListener {
                 }
                 saveC.saveAsDatabase(fc.getSelectedFile().getParent(),
                         databaseFileName, filter);
+
                 // Save as a ODB database
             } else if (filter instanceof MODBFilter) {
                 String databaseFileName = fc.getSelectedFile().getName();
@@ -284,6 +289,7 @@ implements FileDropEventListener {
                 saveC.saveAsDatabase(fc.getSelectedFile().getParent(),
                         databaseFileName, filter);
             }
+
         } catch (LogicErrorException e) {
             OpenSHAPA.getApplication().showWarningDialog(e);
         }
