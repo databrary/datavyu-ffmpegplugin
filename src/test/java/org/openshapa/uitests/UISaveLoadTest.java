@@ -99,6 +99,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         DialogFixture scriptConsole = mainFrameFixture.dialog();
         scriptConsole.button("closeButton").click();
 
+        //Check that asterisk is present
+        Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
+
         // 2. Save the file
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
@@ -302,13 +305,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Open...");
 
-            try {
-                JOptionPaneFixture warning = mainFrameFixture.optionPane();
-                warning.requireTitle("Unsaved changes");
-                warning.buttonWithText("OK").click();
-            } catch (Exception e) {
-                // Do nothing
-            }
+            //This will fail if a dialog is not shown.
+            JOptionPaneFixture warning = mainFrameFixture.optionPane();
+            warning.requireTitle("Unsaved changes");
+            warning.buttonWithText("OK").click();
 
             mainFrameFixture.fileChooser().component().setFileFilter(
                     new SHAPAFilter());
