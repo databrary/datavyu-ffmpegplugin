@@ -81,6 +81,8 @@ public class OpenSHAPATestClass {
     protected final void restartApplication() {
         System.err.println("restarting Application.");
         //OpenSHAPA.getApplication().resetApp();
+        OpenSHAPA.getApplication().closeOpenedWindows();
+
         mainFrameFixture = OpenSHAPAInstance.getFixture();
 
         // Create a new project, this is for the discard changes dialog.
