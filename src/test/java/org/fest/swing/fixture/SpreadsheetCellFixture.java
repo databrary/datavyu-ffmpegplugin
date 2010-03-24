@@ -39,9 +39,9 @@ public class SpreadsheetCellFixture extends JPanelFixture {
     /**
      * Fill selects the cell.
      */
-    public final void fillSelectCell(boolean select) {
-        if ((select && !((SpreadsheetCell) target).isFilled()) ||
-        (!select && ((SpreadsheetCell) target).isFilled())) {
+    public final void fillSelectCell(final boolean select) {
+        if ((select && !((SpreadsheetCell) target).isFilled())
+                || (!select && ((SpreadsheetCell) target).isFilled())) {
             JLabel ordinalLabel = ordinalLabel().target;
             Point labelPosition = ordinalLabel.getLocation();
             Point clickPosition =
@@ -56,9 +56,9 @@ public class SpreadsheetCellFixture extends JPanelFixture {
     /**
      * Border selects the cell.
      */
-    public final void borderSelectCell(boolean select) {
-        if ((select && !((SpreadsheetCell) target).isHighlighted()) ||
-        (!select && ((SpreadsheetCell) target).isHighlighted())) {
+    public final void borderSelectCell(final boolean select) {
+        if ((select && !((SpreadsheetCell) target).isHighlighted())
+                || (!select && ((SpreadsheetCell) target).isHighlighted())) {
            cellValue().click();
         }
     }
@@ -84,8 +84,8 @@ public class SpreadsheetCellFixture extends JPanelFixture {
             break;
         case ONSET:
             charPoint =
-                    UIUtils.centerOf(((SpreadsheetCell) target).getOnset().modelToView(
-                            charPos));
+                    UIUtils.centerOf(((SpreadsheetCell) target).getOnset()
+                    .modelToView(charPos));
             c = ((SpreadsheetCell) target).getOnset();
             break;
         case OFFSET:
@@ -137,8 +137,15 @@ public class SpreadsheetCellFixture extends JPanelFixture {
                 MatrixRootView.class));
     }
 
-    public void select(final int component, int startPos, int endPos)
-            throws BadLocationException {
+    /**
+     * Selects text in component from start position to end position.
+     * @param component to select text in
+     * @param startPos start postion (0 is beginning)
+     * @param endPos end pos
+     * @throws BadLocationException on bad location exception
+     */
+    public void select(final int component, final int startPos,
+            final int endPos) throws BadLocationException {
         Point startPoint, endPoint;
         Component c;
         switch (component) {
@@ -171,7 +178,7 @@ public class SpreadsheetCellFixture extends JPanelFixture {
             c = ((SpreadsheetCell) target).getDataView();
             break;
         }
-      
+
         //First line is required to get focus on component
         robot.click(c, endPoint);
         //Click on start point and hold mouse
@@ -182,6 +189,9 @@ public class SpreadsheetCellFixture extends JPanelFixture {
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
+    /**
+     * @return true if cell is highlight or fill selected, else false
+     */
     public boolean isSelected() {
         return ((SpreadsheetCell) target).isSelected();
     }

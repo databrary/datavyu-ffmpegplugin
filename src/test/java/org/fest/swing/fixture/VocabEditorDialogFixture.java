@@ -22,7 +22,7 @@ public class VocabEditorDialogFixture extends DialogFixture {
     public VocabEditorDialogFixture(final Robot robot,
             final VocabEditorV target) {
         super(robot, target);
-        veDialog = (VocabEditorV)this.target;
+        veDialog = (VocabEditorV) this.target;
     }
 
     /**

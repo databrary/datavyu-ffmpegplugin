@@ -13,7 +13,7 @@ import org.openshapa.controllers.component.TracksEditorController;
 import org.openshapa.views.component.SnapMarkerPainter;
 
 /**
- * Fixture for OpenSHAPA NeedlePainter.
+ * Fixture for Tracks Editor, which contains all tracks.
  */
 public class TracksEditorFixture extends JPanelFixture {
     /** The underlying mixercontroller. */
@@ -54,8 +54,7 @@ public class TracksEditorFixture extends JPanelFixture {
     }
 
     /**
-     * @param Track
-     *            number, starting from 0 at the top.
+     * @param n Track number, starting from 0 at the top.
      * @return track at track number.
      */
     public TrackFixture getTrack(final int n) {
@@ -89,8 +88,11 @@ public class TracksEditorFixture extends JPanelFixture {
         return null;
     }
 
+    /**
+     * @return fixture for the snap marker (purple line)
+     */
     public SnapMarkerFixture getSnapMarker() {
         return new SnapMarkerFixture(robot,
-                (SnapMarkerPainter)tracksEditorC.getMarkerView());
+                (SnapMarkerPainter) tracksEditorC.getMarkerView());
     }
 }
