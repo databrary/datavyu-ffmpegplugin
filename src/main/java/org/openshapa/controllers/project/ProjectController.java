@@ -314,7 +314,7 @@ public final class ProjectController {
      * @return a deep-copy clone of the current project.
      */
     public Project getProject() {
-        return project; //.clone();
+        return project;
     }
 
 }
