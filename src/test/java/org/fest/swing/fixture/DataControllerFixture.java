@@ -196,11 +196,11 @@ public class DataControllerFixture extends DialogFixture {
     }
 
     /**
-     * Returns speed label
+     * Returns speed label.
      * @return String from speed label
      */
     public final String getSpeed() {
-        return new JLabelFixture(robot, 
+        return new JLabelFixture(robot,
                 findByName("lblSpeed", JLabel.class)).text();
     }
 
@@ -212,8 +212,12 @@ public class DataControllerFixture extends DialogFixture {
         return ((DataControllerV) target).getDataViewers();
     }
 
+    /**
+     * Track mixer controller contains all track related components.
+     * @return The track mixer controller
+     */
     public final MixerControllerFixture getTrackMixerController() {
-        return new MixerControllerFixture(robot, 
+        return new MixerControllerFixture(robot,
                 ((DataControllerV) target).getMixerController());
     }
 }

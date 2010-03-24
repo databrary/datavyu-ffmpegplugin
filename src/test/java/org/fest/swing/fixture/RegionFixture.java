@@ -7,7 +7,6 @@ import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
 import org.openshapa.controllers.component.RegionController;
 import org.openshapa.util.UIUtils;
-import org.openshapa.views.component.NeedlePainter;
 import org.openshapa.views.component.RegionPainter;
 
 /**
@@ -63,6 +62,11 @@ public class RegionFixture extends ComponentFixture {
                 MouseInfo.getPointerInfo().getLocation());
     }
 
+    /**
+     * Drags the start marker the specified number of pixels left (-ve) or
+     * right (+ve).
+     * @param pixels number of pixels to drag
+     */
     public void dragStartMarker(int pixels) {
         //Hold down left mouse button
         robot.pressMouse(getPointInStartMarker(), MouseButton.LEFT_BUTTON);
@@ -76,12 +80,15 @@ public class RegionFixture extends ComponentFixture {
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
-    public Point getPointInStartMarker() {
+    /**
+     * @return Point in the centre of the start marker head
+     */
+    private Point getPointInStartMarker() {
         /*
          * The start marker is a trapezoid, where the first point is the top
          * left, and all other points go around clockwise.
          */
-        Polygon startMarker = ((RegionPainter)target).getStartMarkerPolygon();
+        Polygon startMarker = ((RegionPainter) target).getStartMarkerPolygon();
 
         Point locationOfPolygon = startMarker.getBounds().getLocation();
 
@@ -101,6 +108,11 @@ public class RegionFixture extends ComponentFixture {
         return centrePoint;
     }
 
+     /**
+     * Drags the end marker the specified number of pixels left (-ve) or
+     * right (+ve).
+     * @param pixels number of pixels to drag
+     */
     public void dragEndMarker(int pixels) {
         //Hold down left mouse button
         robot.pressMouse(getPointInEndMarker(), MouseButton.LEFT_BUTTON);
@@ -122,7 +134,7 @@ public class RegionFixture extends ComponentFixture {
          * The start marker is a trapezoid, where the first point is the top
          * left, and all other points go around clockwise.
          */
-        Polygon endMarker = ((RegionPainter)target).getEndMarkerPolygon();
+        Polygon endMarker = ((RegionPainter) target).getEndMarkerPolygon();
 
         Point locationOfPolygon = endMarker.getBounds().getLocation();
 

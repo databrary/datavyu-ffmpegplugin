@@ -1,13 +1,8 @@
 package org.fest.swing.fixture;
 
-import java.awt.MouseInfo;
-import java.awt.Point;
-import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
-import org.openshapa.controllers.component.NeedleController;
 import org.openshapa.controllers.component.TimescaleController;
 import org.openshapa.util.UIUtils;
-import org.openshapa.views.component.NeedlePainter;
 
 /**
  * Fixture for OpenSHAPA TimescalePainter.
@@ -21,7 +16,8 @@ public class TimescaleFixture extends ComponentFixture {
      * @param robot mainframe robot
      * @param target TimescaleController
      */
-    public TimescaleFixture(final Robot robot,final TimescaleController target) {
+    public TimescaleFixture(final Robot robot,
+            final TimescaleController target) {
         super(robot, target.getView());
         timescaleC = target;
     }

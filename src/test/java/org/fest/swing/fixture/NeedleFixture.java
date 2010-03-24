@@ -21,7 +21,6 @@ public class NeedleFixture extends ComponentFixture {
 
     /**
      * Constructor.
-     * 
      * @param robot
      *            mainframe robot
      * @param target
@@ -52,8 +51,7 @@ public class NeedleFixture extends ComponentFixture {
     }
 
     /**
-     * Drag number of pixels left (negative) or right (positive)
-     * 
+     * Drag number of pixels left (negative) or right (positive).
      * @param pixels
      */
     public void drag(final int pixels) {
@@ -61,15 +59,18 @@ public class NeedleFixture extends ComponentFixture {
         robot.pressMouse(getCenterOfMarker(), MouseButton.LEFT_BUTTON);
 
         // Move mouse to new position
-        Point to =
-                new Point(getCenterOfMarker().x + pixels, getCenterOfMarker().y);
+        Point to = new Point(getCenterOfMarker().x + pixels,
+                getCenterOfMarker().y);
         robot.moveMouse(to);
 
         // Release mouse
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
-    public Point getCenterOfMarker() {
+    /**
+     * @return a point at the centre of the needle head.
+     */
+    private Point getCenterOfMarker() {
         /*
          * There are actually 4 points that define the needle polygon triangle,
          * because it has a slightly flat base (1pixel). We ignore the 4th

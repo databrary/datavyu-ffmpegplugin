@@ -103,12 +103,11 @@ public class TrackFixture extends ComponentFixture {
     }
 
     public JPanelFixture getTrackPanel() {
-        return new JPanelFixture(robot, (JPanel)trackC.getView());
+        return new JPanelFixture(robot, (JPanel) trackC.getView());
     }
 
     /**
      * Drag number of pixels left (negative) or right (positive)
-     * 
      * @param pixels
      */
     public void drag(final int pixels) {
@@ -179,6 +178,10 @@ public class TrackFixture extends ComponentFixture {
         robot.click(target);
     }
 
+    /**
+     * Right click and show pop up menu.
+     * @return JPopMenuFixture for the pop up menu
+     */
     public JPopupMenuFixture showPopUpMenu() {
         robot.click(target, MouseButton.RIGHT_BUTTON);
 

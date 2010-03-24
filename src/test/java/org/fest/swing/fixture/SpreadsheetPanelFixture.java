@@ -22,7 +22,7 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
     public SpreadsheetPanelFixture(final Robot robot,
             final SpreadsheetPanel target) {
         super(robot, target);
-        ssPanel = (SpreadsheetPanel)this.target;
+        ssPanel = (SpreadsheetPanel) this.target;
     }
 
     /**
@@ -35,7 +35,7 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
         Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();
 
         int count = 0;
-        for (SpreadsheetColumn c : ssCols) {            
+        for (SpreadsheetColumn c : ssCols) {
             if (count == column) {
                 return new SpreadsheetColumnFixture(robot, c);
             }
@@ -50,7 +50,7 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
      * @return SpreadsheetColumnFixture for column, null if not found.
      */
     public final SpreadsheetColumnFixture column(final String columnName) {
-        Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();        
+        Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();
 
         for (SpreadsheetColumn c : ssCols) {
             String headerText = c.getText();

@@ -14,7 +14,7 @@ public class MixerControllerFixture {
     private Robot r;
     /**
      * Constructor.
-     * @param r main frame fixture robot
+     * @param robot main frame fixture robot
      * @param target mixercontroller class
      */
     public MixerControllerFixture(final Robot robot,
@@ -25,6 +25,7 @@ public class MixerControllerFixture {
 
     /**
      * Get lock toggle button.
+     * @return  JToggleButtonFixture for lock toggle button
      */
     public final JToggleButtonFixture getLockToggleButton() {
         return new JToggleButtonFixture(r, "lockToggleButton");
@@ -39,6 +40,7 @@ public class MixerControllerFixture {
 
     /**
      * Get snap toggle button.
+     * @return JToggleButtonFixture for Snap toggle button
      */
     public final JToggleButtonFixture getSnapToggleButton() {
         return new JToggleButtonFixture(r, "snapToggleButton");
@@ -51,18 +53,30 @@ public class MixerControllerFixture {
         new JButtonFixture(r, "zoomInButton").click();
     }
 
+    /**
+     * @return fixture for the track needle
+     */
     public final NeedleFixture getNeedle() {
         return new NeedleFixture(r, mixControl.getNeedleController());
     }
 
+    /**
+     * @return fixture for the start and end region markers
+     */
     public final RegionFixture getRegion() {
         return new RegionFixture(r, mixControl.getRegionController());
     }
 
+    /**
+     * @return fixture for the timescale
+     */
     public final TimescaleFixture getTimescale() {
         return new TimescaleFixture(r, mixControl.getTimescaleController());
     }
 
+    /**
+     * @return fixture for the tracks editor, which contains all tracks
+     */
     public final TracksEditorFixture getTracksEditor() {
         return new TracksEditorFixture(r,
                 mixControl.getTracksEditorController());

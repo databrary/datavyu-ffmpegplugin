@@ -1,23 +1,34 @@
 package org.fest.swing.fixture;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import javax.swing.JLabel;
 import javax.swing.text.BadLocationException;
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
+import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 
+/**
+ * Fixture for a single Vocab Element.
+ */
 public class VocabElementFixture extends JPanelFixture {
-    private VocabElementV ve;
 
-    public VocabElementFixture(Robot robot, String panelName) {
+    /**
+     * Constructor.
+     * @param robot mainframefixture robot
+     * @param panelName name of panel
+     */
+    public VocabElementFixture(final Robot robot, final String panelName) {
         super(robot, panelName);
     }
 
-    public VocabElementFixture(Robot robot, VocabElementV target) {
+    /**
+     * Constructor.
+     * @param robot mainframefixture robot
+     * @param target VocabElementV of vocabe element
+     */
+    public VocabElementFixture(final Robot robot, final VocabElementV target) {
         super(robot, target);
-        ve = (VocabElementV)this.target;
     }
 
     /**
@@ -45,7 +56,8 @@ public class VocabElementFixture extends JPanelFixture {
     }
 
     public JTextComponentFixture value() {
-        return new JTextComponentFixture(robot, ve.getDataView());
+        return new JTextComponentFixture(robot,
+                ((VocabElementV) target).getDataView());
     }
 
     /**
@@ -53,7 +65,8 @@ public class VocabElementFixture extends JPanelFixture {
      * @return vocab element name
      */
     public final String getVEName() {
-        return ve.getDataView().getEditors().elementAt(0).getText();
+        return ((VocabElementV) target).getDataView().getEditors()
+                .elementAt(0).getText();
     }
 
      /**
@@ -63,7 +76,8 @@ public class VocabElementFixture extends JPanelFixture {
      */
     public final String getArgument(final int arg) {
         int editorNum = arg * 6 + 3;
-        return ve.getDataView().getEditors().elementAt(editorNum).getText();
+        return ((VocabElementV) target).getDataView().getEditors()
+                .elementAt(editorNum).getText();
     }
 
     /**
@@ -74,48 +88,71 @@ public class VocabElementFixture extends JPanelFixture {
     public final int getArgStartIndex(final int arg) {
         int argPos = 0;
         for (int i = 0; i <= arg; i++) {
-            argPos = ve.getDataView().getText().indexOf("<", argPos + 1);
+            argPos = ((VocabElementV) target).getDataView().getText()
+                    .indexOf("<", argPos + 1);
         }
         return argPos + 1;
     }
 
+    /**
+     * Enters text in a particular argument.
+     * @param arg argument number
+     * @param text text to input
+     * @throws BadLocationException on bad location exception
+     */
     public void enterTextInArg(final int arg, final String text)
             throws BadLocationException {
         clickToCharPos(getArgStartIndex(arg), 1);
         value().enterText(text);
     }
 
+    /**
+     * Replaces text in a particular argument.
+     * @param arg argument number
+     * @param text text to input
+     * @throws BadLocationException on bad location exception
+     */
     public void replaceTextInArg(final int arg, final String text)
             throws BadLocationException {
         clickToCharPos(getArgStartIndex(arg), 2);
         value().enterText(text);
     }
 
+     /**
+     * Selects text from start position to end position.
+     * @param startPos start postion (0 is beginning)
+     * @param endPos end position
+     * @throws BadLocationException on bad location exception
+     */
     public void select(int startPos, int endPos) throws BadLocationException {
-        Point startPoint = centerOf(ve.getDataView().modelToView(startPos));
-        Point endPoint = centerOf(ve.getDataView().modelToView(endPos));
-        
+        Point startPoint = UIUtils.centerOf(((VocabElementV) target)
+                .getDataView().modelToView(startPos));
+        Point endPoint = UIUtils.centerOf(((VocabElementV) target).getDataView()
+                .modelToView(endPos));
+
         //First line is required to get focus on component
-        robot.click(ve.getDataView(), endPoint);
+        robot.click(((VocabElementV) target).getDataView(), endPoint);
         //Click on start point and hold mouse
-        robot.moveMouse(ve.getDataView(), startPoint);
-        robot.pressMouse(ve.getDataView(), startPoint, MouseButton.LEFT_BUTTON);
+        robot.moveMouse(((VocabElementV) target).getDataView(), startPoint);
+        robot.pressMouse(((VocabElementV) target).getDataView(), startPoint,
+                MouseButton.LEFT_BUTTON);
         //Drag to end pos and release mouse
-        robot.moveMouse(ve.getDataView(), endPoint);       
+        robot.moveMouse(((VocabElementV) target).getDataView(), endPoint);
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
+    /**
+     * Clicks on a particular character position a particular number of times.
+     * @param charPos character position
+     * @param times number of times to click
+     * @throws BadLocationException on bad location exception
+     */
     public void clickToCharPos(int charPos, int times)
             throws BadLocationException {
-        Point charPoint = centerOf(ve.getDataView().modelToView(charPos));
+        Point charPoint = UIUtils.centerOf(((VocabElementV) target)
+                .getDataView().modelToView(charPos));
         for (int i = 0; i < times; i++) {
-            robot.click(ve.getDataView(), charPoint);
+            robot.click(((VocabElementV) target).getDataView(), charPoint);
         }
     }
-
-    private static Point centerOf(Rectangle r) {
-        return new Point(r.x + r.width / 2, r.y + r.height / 2);
-    }
-
-
 }

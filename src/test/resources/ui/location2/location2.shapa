@@ -1,7 +1,6 @@
 !project
-dbDir: C:\Development\openshapa\src\test\resources\ui\location2
 dbFile: location2-40eab207f8.csv
-description: null
 name: location2
-version: 2
-viewerSettings: {}
+trackSettings: []
+version: 3
+viewerSettings: []

@@ -23,6 +23,7 @@ import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
+import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.discrete.SpreadsheetPanel;
@@ -69,7 +70,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a database with Save As.
-     * 
      * @param fileName
      *            fileName to save as
      * @param extension
@@ -98,6 +98,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
         scriptConsole.button("closeButton").click();
+
+        //Check that asterisk is present
+        Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
         // 2. Save the file
         if (Platform.isOSX()) {
@@ -151,7 +154,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a database to a file with Save.
-     * 
      * @param fileName
      *            file name to save
      * @param extension
@@ -249,7 +251,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Run a load test for specified input and expected output files.
-     *
      * @param inputFile
      *            The input CSV file to open before saving.
      * @param expectedOutputFile
@@ -303,13 +304,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Open...");
 
-            try {
-                JOptionPaneFixture warning = mainFrameFixture.optionPane();
-                warning.requireTitle("Unsaved changes");
-                warning.buttonWithText("OK").click();
-            } catch (Exception e) {
-                // Do nothing
-            }
+            //This will fail if a dialog is not shown.
+            JOptionPaneFixture warning = mainFrameFixture.optionPane();
+            warning.requireTitle("Unsaved changes");
+            warning.buttonWithText("OK").click();
 
             mainFrameFixture.fileChooser().component().setFileFilter(
                     new SHAPAFilter());
@@ -354,8 +352,65 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test loading a database from a version 1 CSV file.
+     * Run a load test for odb files.
      *
+     * @param inputFile
+     *            The input CSV file to open before saving.
+     * @param expectedOutputFile
+     *            The expected output of saving the above file.
+     * @throws IOException
+     *             If unable to save file.
+     * @throws SystemErrorException
+     */
+    private void loadODBTest(final String inputFile,
+            final String expectedOutputFile) throws IOException {
+        //THIS TEST NEEDS TO BE MADE MORE RIGOROUS. RIGHT
+        //NOW IT JUST OPENS A FILE AND CHECKS THERE IS SOME DATA
+
+        String root = System.getProperty("testPath");
+
+        File odbFile = new File(root + "/ui/" + inputFile);
+        Assert.assertTrue(odbFile.exists());
+        // 1. Load ODB File
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+            fc.setFileFilter(new MODBFilter());
+            fc.setSelectedFile(odbFile);
+
+            method("openProject")
+                    .withParameterTypes(File.class).in(
+                            OpenSHAPA.getView()).invoke(fc.getSelectedFile());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
+
+            try {
+                JOptionPaneFixture warning = mainFrameFixture.optionPane();
+                warning.requireTitle("Unsaved changes");
+                warning.buttonWithText("OK").click();
+            } catch (Exception e) {
+                // Do nothing
+            }
+
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                    new MODBFilter());
+            mainFrameFixture.fileChooser().selectFile(odbFile).approve();
+        }
+
+        //Check that the title bar file name does not have an asterix
+        Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
+
+        //Check that something has been loaded
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        Assert.assertNotNull(ssPanel.allColumns());
+    }
+
+    /**
+     * Test loading a database from a version 1 CSV file.
      * @throws java.lang.Exception
      *             on any error
      */
@@ -367,7 +422,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test loading a database from a version 2 CSV file.
-     *
      * @throws java.lang.Exception
      *             on any error
      */
@@ -377,14 +431,28 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         loadTest("test-v2-in.csv", "test-v2-out.csv");
     }
 
+    /**
+     * Test loading a database from version 3 CSV file.
+     * @throws Exception on any error
+     */
+    @Test
     public void testLoadingSHAPA3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         loadTest("test-v3-in.csv", "test-v3-out.csv");
     }
 
     /**
+     * Test loading an ODB file.
+     * @throws Exception on any error.
+     */
+    @Test
+    public void testLoadingODB1() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        loadODBTest("macshapa-file.odb", null);
+    }
+
+    /**
      * Test saving a SHAPA database with Save As, no extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -396,7 +464,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save As, no extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -408,7 +475,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save As, extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -420,7 +486,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save As, extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -432,7 +497,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save As, wrong extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -444,7 +508,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save As, wrong entension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -457,7 +520,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     /*********************** SAVE TESTS ***************************/
     /**
      * Test saving a SHAPA database with Save, no extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -469,7 +531,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, no extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -481,7 +542,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save, extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -493,7 +553,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -505,7 +564,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save, wrong extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -517,7 +575,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, wrong entension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
