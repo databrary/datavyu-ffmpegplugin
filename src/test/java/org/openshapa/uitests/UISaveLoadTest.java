@@ -22,6 +22,7 @@ import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
+import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.discrete.SpreadsheetPanel;
@@ -352,6 +353,64 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     }
 
     /**
+     * Run a load test for odb files.
+     *
+     * @param inputFile
+     *            The input CSV file to open before saving.
+     * @param expectedOutputFile
+     *            The expected output of saving the above file.
+     * @throws IOException
+     *             If unable to save file.
+     * @throws SystemErrorException
+     */
+    private void loadODBTest(final String inputFile,
+            final String expectedOutputFile) throws IOException {
+        //THIS TEST NEEDS TO BE MADE MORE RIGOROUS. RIGHT
+        //NOW IT JUST OPENS A FILE AND CHECKS THERE IS SOME DATA
+
+        String root = System.getProperty("testPath");
+
+        File odbFile = new File(root + "/ui/" + inputFile);
+        Assert.assertTrue(odbFile.exists());
+        // 1. Load ODB File
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+            fc.setFileFilter(new MODBFilter());
+            fc.setSelectedFile(odbFile);
+
+            method("openProject")
+                    .withParameterTypes(File.class).in(
+                            OpenSHAPA.getView()).invoke(fc.getSelectedFile());
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
+
+            try {
+                JOptionPaneFixture warning = mainFrameFixture.optionPane();
+                warning.requireTitle("Unsaved changes");
+                warning.buttonWithText("OK").click();
+            } catch (Exception e) {
+                // Do nothing
+            }
+
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                    new MODBFilter());
+            mainFrameFixture.fileChooser().selectFile(odbFile).approve();
+        }
+
+        //Check that the title bar file name does not have an asterix
+        Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
+
+        //Check that something has been loaded
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel =
+                new SpreadsheetPanelFixture(mainFrameFixture.robot,
+                        (SpreadsheetPanel) jPanel.component());
+
+        Assert.assertNotNull(ssPanel.allColumns());
+    }
+
+    /**
      * Test loading a database from a version 1 CSV file.
      * 
      * @throws java.lang.Exception
@@ -378,6 +437,12 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     public void testLoadingSHAPA3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         loadTest("test-v3-in.csv", "test-v3-out.csv");
+    }
+
+    @Test
+    public void testLoadingODB1() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        loadODBTest("macshapa-file.odb", null);
     }
 
     /**
