@@ -18,7 +18,6 @@ import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.controllers.project.ProjectController;
-import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
@@ -69,7 +68,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a database with Save As.
-     * 
      * @param fileName
      *            fileName to save as
      * @param extension
@@ -154,7 +152,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a database to a file with Save.
-     * 
      * @param fileName
      *            file name to save
      * @param extension
@@ -252,7 +249,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Run a load test for specified input and expected output files.
-     * 
      * @param inputFile
      *            The input CSV file to open before saving.
      * @param expectedOutputFile
@@ -412,7 +408,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test loading a database from a version 1 CSV file.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -424,7 +419,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test loading a database from a version 2 CSV file.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -434,11 +428,20 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         loadTest("test-v2-in.csv", "test-v2-out.csv");
     }
 
+    /**
+     * Test loading a database from version 3 CSV file.
+     * @throws Exception on any error
+     */
+    @Test
     public void testLoadingSHAPA3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         loadTest("test-v3-in.csv", "test-v3-out.csv");
     }
 
+    /**
+     * Test loading an ODB file.
+     * @throws Exception on any error.
+     */
     @Test
     public void testLoadingODB1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
@@ -447,7 +450,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save As, no extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -459,7 +461,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save As, no extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -471,7 +472,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save As, extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -483,7 +483,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save As, extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -495,7 +494,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save As, wrong extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -507,7 +505,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save As, wrong entension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -520,7 +517,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     /*********************** SAVE TESTS ***************************/
     /**
      * Test saving a SHAPA database with Save, no extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -532,7 +528,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, no extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -544,7 +539,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save, extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -556,7 +550,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -568,7 +561,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a SHAPA database with Save, wrong extension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
@@ -580,7 +572,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test saving a CSV database with Save, wrong entension in file name.
-     * 
      * @throws java.lang.Exception
      *             on any error
      */
