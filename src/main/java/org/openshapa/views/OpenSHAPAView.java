@@ -313,9 +313,6 @@ implements FileDropEventListener {
                 open(jd);
             }
         }
-
-        // Display any changes to the database.
-        showSpreadsheet();
     }
 
     /**
@@ -346,6 +343,9 @@ implements FileDropEventListener {
         pController.markProjectAsUnchanged();
         pController.getDB().markAsUnchanged();
         updateTitle();
+
+        // Display any changes to the database.
+        showSpreadsheet();
     }
 
 
