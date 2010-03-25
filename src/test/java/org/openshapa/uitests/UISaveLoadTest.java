@@ -1,5 +1,6 @@
 package org.openshapa.uitests;
 
+import java.awt.event.KeyEvent;
 import static org.fest.reflect.core.Reflection.method;
 
 import java.io.File;
@@ -19,7 +20,6 @@ import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.controllers.project.ProjectController;
 import org.openshapa.models.db.LogicErrorException;
-import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
@@ -232,7 +232,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
         // 3. Save project file. Not expecting anything except a save
-        mainFrameFixture.clickMenuItemWithPath("File", "Save");
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_S, Platform
+                    .controlOrCommandMask());
 
         // Check the title - asterisk not present
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
