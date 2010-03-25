@@ -18,7 +18,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
     /**
      * Test creating a new TEXT variable.
      */
-    @Test
+    //@Test
     public void testTextVariable() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "t";
@@ -31,7 +31,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
     /**
      * Test creating a new PREDICATE variable.
      */
-    @Test
+    //@Test
     public void testPredicateVariable() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "p";
@@ -44,7 +44,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
     /**
      * Test creating a new INTEGER variable.
      */
-    @Test
+    //@Test
     public void testIntegerVariable() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "i";
@@ -57,7 +57,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
     /**
      * Test creating a new NOMINAL variable.
      */
-    @Test
+    //@Test
     public void testNominalVariable() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "n";
@@ -70,7 +70,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX variable.
      */
-    @Test
+    //@Test
     public void testMatrixVariable() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "m";
@@ -83,7 +83,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
     /**
      * Test creating a new FLOAT variable.
      */
-    @Test
+    //@Test
     public void testFloatVariable() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "f";
@@ -135,7 +135,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
     /**
      * Test for Bug 326 - creating cell with + button.
      */
-    @Test
+    //@Test
     public void testBug326() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "v";
