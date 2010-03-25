@@ -551,10 +551,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
 
         //3. Move needle 50 pixels
-        dcf.getTrackMixerController().getNeedle().drag(50);
+        NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
+        while (needle.getCurrentTimeAsLong() <= 0) {
+            needle.drag(100);
+        }
+        
+        long snapPoint1 = needle.getCurrentTimeAsLong();
 
-        long snapPoint1 = dcf.getTrackMixerController().getNeedle()
-            .getCurrentTimeAsLong();
+        Assert.assertTrue(snapPoint1 > 0);
 
         //4. Add bookmark to Track 1 using button
         //a. Click track 1 to select
@@ -569,6 +573,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         //b. Click add bookmark button
         dcf.getTrackMixerController().pressBookmarkButton();
+        Assert.assertEquals(snapPoint1, track1.getBookmarkTimeAsLong());
 
         //c. Click track 1 to deselect
         while (track1.isSelected()) {
@@ -578,21 +583,34 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         Assert.assertFalse(track1.isSelected());
 
         //5. Move needle another 50 pixels
-        dcf.getTrackMixerController().getNeedle().drag(50);
+        while (needle.getCurrentTimeAsLong() <= (1.9 * snapPoint1)) {
+            dcf.getTrackMixerController().getNeedle().drag(100);
+        }
+        Assert.assertTrue(needle.getCurrentTimeAsLong() > snapPoint1);
 
         long snapPoint2 = dcf.getTrackMixerController().getNeedle()
             .getCurrentTimeAsLong();
+        Assert.assertTrue(snapPoint2 > (1.9 * snapPoint1));
 
         //6. Add bookmark to Track 2 using right click popup menu
         TrackFixture track2 = dcf.getTrackMixerController().getTracksEditor()
             .getTrack(1);
         JPopupMenuFixture popup = track2.showPopUpMenu();
         popup.menuItemWithPath("Set bookmark").click();
-        track2.click();
+        Assert.assertEquals(snapPoint2, track2.getBookmarkTimeAsLong());
+
+        while (track2.isSelected()) {
+            track2.click();
+        }
+
         Assert.assertFalse(track2.isSelected());
 
         //Move needle away
-        dcf.getTrackMixerController().getNeedle().drag(50);
+        while (needle.getCurrentTimeAsLong() <= snapPoint2) {
+            needle.drag(100);
+        }
+
+        Assert.assertTrue(needle.getCurrentTimeAsLong() > snapPoint2);
 
         //7. Drag track 1 to snap
         //a. Drag 1 pixel to see what 1 pixel equals in time
@@ -600,9 +618,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         long onePixelTime = track1.getOffsetTimeAsLong();
 
-        //b. Jump 35 pixels
-        track1.drag(35);
-
+        //b. Drag away from start marker
+        track1.drag(20);
+        
         //c. Drag 1 pixel at a time until it snaps
         //Turn on snap button
         dcf.getTrackMixerController().getSnapToggleButton().check();
@@ -614,7 +632,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         while (Math.abs((newTime - oldTime) - onePixelTime) < 2) {
             //Check if we've snapped
             if (dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
-                    .isVisible()) {
+                    .isVisible()
+                    && newTime > (10 * onePixelTime)) {
                 break;
             }
             //Check we haven't gone too far
@@ -638,12 +657,10 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         track1.releaseLeftMouse();
 
         //8. Drag track 1 to snap from the other direction
-        //a. Drag 1 pixel to see what 1 pixel equals in time
-
-        //b. Jump 35 pixels
+        //a. Drag track away
         track1.drag(35);
-
-        //c. Drag 1 pixel at a time until it snaps
+        
+        //b. Drag 1 pixel at a time until it snaps
         newTime = track1.getOffsetTimeAsLong();
         oldTime = newTime + onePixelTime;
 
@@ -652,7 +669,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         while (Math.abs((oldTime - newTime) - onePixelTime) < 2) {
             //Check if we've snapped
             if (dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
-                    .isVisible()) {
+                    .isVisible()
+                    && newTime > (10 * onePixelTime)) {
                 break;
             }
 
@@ -670,7 +688,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.print(newTime - oldTime + "," + onePixelTime);
 
 
-        //d. Check if snapped
+        //b. Check if snapped
         Assert.assertEquals(track1.getOffsetTimeAsLong(),
             snapPoint2 - snapPoint1);
         Assert.assertTrue(dcf.getTrackMixerController().getTracksEditor()
