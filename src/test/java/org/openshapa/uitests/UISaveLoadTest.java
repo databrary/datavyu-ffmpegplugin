@@ -25,7 +25,7 @@ import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
-import org.openshapa.util.FileFilters.SHPFilter;
+import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.testng.Assert;
@@ -58,7 +58,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         FilenameFilter ff = new FilenameFilter() {
             public boolean accept(final File dir, final String name) {
                 return (name.endsWith(".csv") || name.endsWith(".shapa")
-                        || name.endsWith(".shp"));
+                        || name.endsWith(".opf"));
             }
         };
         File tempDirectory = new File(tempFolder);
@@ -109,7 +109,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
             if (extension.equals("shp")) {
-                fc.setFileFilter(new SHPFilter());
+                fc.setFileFilter(new OPFFilter());
             } else if (extension.equals("csv")) {
                 fc.setFileFilter(new CSVFilter());
             }
@@ -123,7 +123,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
             if (extension.equals("shp")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
-                        new SHPFilter());
+                        new OPFFilter());
             } else if (extension.equals("csv")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
                         new CSVFilter());
@@ -339,7 +339,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
             mainFrameFixture.fileChooser().component().setFileFilter(
-                    new SHPFilter());
+                    new OPFFilter());
             mainFrameFixture.fileChooser().selectFile(savedSHAPA).approve();
         }
 
@@ -654,8 +654,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         // Delete confounding files from previous test
         String root = System.getProperty("testPath");
-        File location1 = new File(root + "ui/location1/location2.shp");
-        File location2 = new File(root + "ui/location2/location1.shp");
+        File location1 = new File(root + "ui/location1/location2.opf");
+        File location2 = new File(root + "ui/location2/location1.opf");
         location1.delete();
         location2.delete();
         Assert.assertFalse(location1.exists());
@@ -663,8 +663,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         fileLocationTest("location1/test.shapa", null);
         // At this point it should remember location1
-        fileLocationTest("location2/location2.shp", "location1");
+        fileLocationTest("location2/location2.opf", "location1");
         // At this point it should remember location2
-        fileLocationTest("location1/location1.shp", "location2");
+        fileLocationTest("location1/location1.opf", "location2");
     }
 }
