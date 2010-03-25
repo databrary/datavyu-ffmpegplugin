@@ -52,7 +52,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement to ensure needle time is the same as the clock time.
     */
-    @Test public void testNeedleMovement() {
+    @Test
+    public void testNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -134,7 +135,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test needle movement to ensure needle can't go beyond start or end.
      */
-    @Test public void testRangeOfNeedleMovement() {
+    @Test
+    public void testRangeOfNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -219,7 +221,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * 6. Left region can't cross (go beyond) right
      * 7. Right region can't cross left
      */
-    @Test public void testRegionMovement() {
+    @Test
+    public void testRegionMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -365,7 +368,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test moving track while locked and unlocked.
      */
-    @Test public void testLockUnlockTrack() {
+    @Test
+    public void testLockUnlockTrack() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -448,7 +452,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    @Test public void testTrackSnapping() {
+    @Test
+    public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -543,7 +548,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         FrameFixture vidWindow2 = new FrameFixture(mainFrameFixture.robot,
                 vid2);
 
-        vidWindow2.moveTo(new Point(10, dcf.component().getHeight() + 10));
+        vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
 
         //3. Move needle 50 pixels
         dcf.getTrackMixerController().getNeedle().drag(50);
@@ -607,18 +612,15 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         long oldTime = 0;
 
         while (Math.abs((newTime - oldTime) - onePixelTime) < 2) {
-
-            //while ((newTime - oldTime) == onePixelTime) {
-            //Check we haven't gone too far
-            if (newTime > snapPoint1) {
-                track1.releaseLeftMouse();
-                Assert.assertTrue(false, "passed snap point");
-            }
-
             //Check if we've snapped
             if (dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
                     .isVisible()) {
                 break;
+            }
+            //Check we haven't gone too far
+            if (newTime > snapPoint1) {
+                track1.releaseLeftMouse();
+                Assert.assertTrue(false, "passed snap point");
             }
 
             oldTime = track1.getOffsetTimeAsLong();
@@ -648,18 +650,16 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         dcf.getTrackMixerController().getSnapToggleButton().requireSelected();
 
         while (Math.abs((oldTime - newTime) - onePixelTime) < 2) {
-
-            //while ((newTime - oldTime) == onePixelTime) {
-            //Check we haven't gone too far
-            if (newTime < 0) {
-                track1.releaseLeftMouse();
-                Assert.assertTrue(false, "passed snap point");
-            }
-
             //Check if we've snapped
             if (dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
                     .isVisible()) {
                 break;
+            }
+
+            //Check we haven't gone too far
+            if (newTime < 0) {
+                track1.releaseLeftMouse();
+                Assert.assertTrue(false, "passed snap point");
             }
 
             oldTime = track1.getOffsetTimeAsLong();
