@@ -378,6 +378,7 @@ implements FileDropEventListener {
                 }
 
                 // Send it off to the controller
+                projController.setProjectName(archiveName);
                 saveC.saveProjectArchive(new File(
                         fc.getSelectedFile().getParent(), archiveName),
                         projController.getProject(), projController.getDB());
