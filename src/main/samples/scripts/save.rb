@@ -57,7 +57,7 @@ save_c = SaveC.new
 
 #
 # Saves a database (i.e. a .odb or .csv file). If you want to save a project
-# call save_project("project dir", "project name", project, database) instead.
+# call save_project("project file", project, database) instead.
 # These methods do *NOT* alter the OpenSHAPA UI.
 #
 save_c.save_database("out.csv", db)

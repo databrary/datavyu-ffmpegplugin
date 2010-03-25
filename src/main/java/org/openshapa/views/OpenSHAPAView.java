@@ -226,7 +226,7 @@ implements FileDropEventListener {
                     projController.updateProject();
                     projController.setLastSaveOption(new SHPFilter());
 
-                    saveController.saveProjectArchive(
+                    saveController.saveProject(
                             new File(projController.getProjectDirectory(),
                                     projController.getProjectName() + ".shp"),
                             projController.getProject(),
@@ -263,7 +263,6 @@ implements FileDropEventListener {
 
         jd.addChoosableFileFilter(new MODBFilter());
         jd.addChoosableFileFilter(new CSVFilter());
-        jd.addChoosableFileFilter(new SHAPAFilter());
         jd.addChoosableFileFilter(new SHPFilter());
 
         int result = jd.showSaveDialog(getComponent());
@@ -288,28 +287,8 @@ implements FileDropEventListener {
             SaveC saveC = new SaveC();
 
             FileFilter filter = fc.getFileFilter();
-            // Save as a project
-            if (filter instanceof SHAPAFilter) {
-                // Build the project file name
-                String projFileName = fc.getSelectedFile().getName();
-                if (!projFileName.endsWith(".shapa")) {
-                    projFileName = projFileName.concat(".shapa");
-                }
 
-                // Only save if the project file does not exists or if the user
-                // confirms a file overwrite in the case that the file exists.
-                if (!canSave(fc.getSelectedFile().getParent(), projFileName)) {
-                    return;
-                }
-
-                // Send it off to the controller
-                saveC.saveProject(fc.getSelectedFile().getParent(),
-                                  projFileName,
-                                  projController.getProject(),
-                                  projController.getDB());
-
-            // Save as a CSV database
-            } else if (filter instanceof CSVFilter) {
+            if (filter instanceof CSVFilter) {
                 String dbFileName = fc.getSelectedFile().getName();
                 if (!dbFileName.endsWith(".csv")) {
                     dbFileName = dbFileName.concat(".csv");
@@ -350,6 +329,8 @@ implements FileDropEventListener {
                 projController.getDB().setName(dbFileName);
                 projController.setProjectDirectory(fc.getSelectedFile().getParent());
                 projController.setDatabaseFileName(dbFileName);
+
+            // Save as a project
             } else if (filter instanceof SHPFilter) {
                 String archiveName = fc.getSelectedFile().getName();
                 if (!archiveName.endsWith(".shp")) {
@@ -364,7 +345,7 @@ implements FileDropEventListener {
 
                 // Send it off to the controller
                 projController.setProjectName(archiveName);
-                saveC.saveProjectArchive(new File(
+                saveC.saveProject(new File(
                         fc.getSelectedFile().getParent(), archiveName),
                         projController.getProject(), projController.getDB());
             }
