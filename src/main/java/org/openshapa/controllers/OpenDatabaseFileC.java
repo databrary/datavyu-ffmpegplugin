@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Vector;
 
@@ -19,6 +21,7 @@ import org.openshapa.models.db.FormalArgument;
 import org.openshapa.models.db.IntDataValue;
 import org.openshapa.models.db.IntFormalArg;
 import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.MacshapaODBReader;
 import org.openshapa.models.db.Matrix;
 import org.openshapa.models.db.MatrixVocabElement;
@@ -35,10 +38,9 @@ import org.openshapa.models.db.TimeStamp;
 import org.openshapa.models.db.UnTypedFormalArg;
 import org.openshapa.models.db.UndefinedDataValue;
 import org.openshapa.models.db.VocabElement;
+import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
-import org.openshapa.models.db.MacshapaDatabase;
-import org.openshapa.util.Constants;
 
 /**
  * Controller for opening a database from disk.
@@ -157,6 +159,61 @@ public final class OpenDatabaseFileC {
             return db;
         } catch (FileNotFoundException e) {
             logger.error("Unable to load CSV file.", e);
+        } catch (IOException e) {
+            logger.error("Unable to read line from CSV file", e);
+        } catch (SystemErrorException e) {
+            logger.error("Unable to populate databse from CSV file", e);
+        } catch (LogicErrorException e) {
+            logger.error("Corrupted CSV file", e);
+        }
+
+        // Error encountered - return null.
+        return null;
+    }
+
+    /**
+     * This method parses a CSV input stream and populates the database (and
+     * spreadsheet) with data. The caller is responsible for managing the
+     * stream.
+     *
+     * @param inStream
+     *            The stream to deserialized when populating the database.
+     *
+     * @return populated database on sucess, null otherwise.
+     */
+    public MacshapaDatabase openAsCSV(final InputStream inStream) {
+        try {
+            MacshapaDatabase db = new MacshapaDatabase(Constants
+                                                       .TICKS_PER_SECOND);
+            InputStreamReader isr = new InputStreamReader(inStream);
+            BufferedReader csvFile = new BufferedReader(isr);
+
+            // Read each line of the CSV file.
+            String line = csvFile.readLine();
+
+            // If we have a version identifier parse the file using the schema
+            // that matches that identifier.
+            if (line.equalsIgnoreCase("#2")) {
+
+                // Parse predicate definitions first.
+                line = parseDefinitions(csvFile, db);
+
+                while (line != null) {
+                    line = parseVariable(csvFile, line, db);
+                }
+
+            } else {
+
+                // Use the original schema to load the file - just variables,
+                // and no escape characters.
+                while (line != null) {
+                    line = parseVariable(csvFile, line, db);
+                }
+            }
+
+            csvFile.close();
+            isr.close();
+            return db;
         } catch (IOException e) {
             logger.error("Unable to read line from CSV file", e);
         } catch (SystemErrorException e) {

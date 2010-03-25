@@ -1,6 +1,11 @@
 package org.openshapa.controllers;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.zip.ZipInputStream;
+
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.project.Project;
 
@@ -50,6 +55,34 @@ public final class OpenC {
             database = odc.open(new File(projectFile.getParent(),
                                          project.getDatabaseFileName()));
         }
+    }
+
+    /**
+     * Opens a file as an OpenSHAPA archive.
+     *
+     * @param archiveFile The archive to open as a project.
+     */
+    public void openProjectArchive(final File archiveFile) {
+        try {
+            FileInputStream fis = new FileInputStream(archiveFile);
+            ZipInputStream zis = new ZipInputStream(fis);
+
+            zis.getNextEntry();
+            OpenProjectFileC opc =  new OpenProjectFileC();
+            project = opc.open(zis);
+
+            zis.getNextEntry();
+            OpenDatabaseFileC odc = new OpenDatabaseFileC();
+            database = odc.openAsCSV(zis);
+
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     /**
