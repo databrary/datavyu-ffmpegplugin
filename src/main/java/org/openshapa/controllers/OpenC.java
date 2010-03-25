@@ -45,15 +45,20 @@ public final class OpenC {
      * @param projectFile The file to use when opening a file as a project.
      */
     public void openProject(final File projectFile) {
-        // Need to handle opening zipped project files.
+        // If project is archive - open it as such.
+        if (projectFile.getName().endsWith(".opf")) {
+            openProjectArchive(projectFile);
 
-        OpenProjectFileC opc = new OpenProjectFileC();
-        project = opc.open(projectFile);
+        // Otherwise project is uncompressed.
+        } else {
+            OpenProjectFileC opc = new OpenProjectFileC();
+            project = opc.open(projectFile);
 
-        if (project != null) {
-            OpenDatabaseFileC odc = new OpenDatabaseFileC();
-            database = odc.open(new File(projectFile.getParent(),
-                                         project.getDatabaseFileName()));
+            if (project != null) {
+                OpenDatabaseFileC odc = new OpenDatabaseFileC();
+                database = odc.open(new File(projectFile.getParent(),
+                                             project.getDatabaseFileName()));
+            }
         }
     }
 
@@ -62,7 +67,7 @@ public final class OpenC {
      *
      * @param archiveFile The archive to open as a project.
      */
-    public void openProjectArchive(final File archiveFile) {
+    private void openProjectArchive(final File archiveFile) {
         try {
             FileInputStream fis = new FileInputStream(archiveFile);
             ZipInputStream zis = new ZipInputStream(fis);

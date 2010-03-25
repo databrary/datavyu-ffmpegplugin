@@ -44,7 +44,7 @@ import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
-import org.openshapa.util.FileFilters.SHPFilter;
+import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
@@ -169,8 +169,8 @@ implements FileDropEventListener {
             extension = ".csv";
         } else if (lastSaveOption instanceof MODBFilter) {
             extension = ".odb";
-        } else if (lastSaveOption instanceof SHPFilter) {
-            extension = ".shp";
+        } else if (lastSaveOption instanceof OPFFilter) {
+            extension = ".opf";
         }
 
         String projectName = projectController.getProjectName();
@@ -222,13 +222,13 @@ implements FileDropEventListener {
 
                 // Force people to use new
                 if (projController.getLastSaveOption() instanceof SHAPAFilter
-                  || projController.getLastSaveOption() instanceof SHPFilter) {
+                  || projController.getLastSaveOption() instanceof OPFFilter) {
                     projController.updateProject();
-                    projController.setLastSaveOption(new SHPFilter());
+                    projController.setLastSaveOption(new OPFFilter());
 
                     saveController.saveProject(
                             new File(projController.getProjectDirectory(),
-                                    projController.getProjectName() + ".shp"),
+                                    projController.getProjectName() + ".opf"),
                             projController.getProject(),
                             projController.getDB());
 
@@ -236,7 +236,7 @@ implements FileDropEventListener {
                     projController.getDB().markAsUnchanged();
 
                     // Update the application title
-                    OpenSHAPA.getApplication().updateTitle();
+                    updateTitle();
 
                 // Save content just as a database.
                 } else {
@@ -263,7 +263,7 @@ implements FileDropEventListener {
 
         jd.addChoosableFileFilter(new MODBFilter());
         jd.addChoosableFileFilter(new CSVFilter());
-        jd.addChoosableFileFilter(new SHPFilter());
+        jd.addChoosableFileFilter(new OPFFilter());
 
         int result = jd.showSaveDialog(getComponent());
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -304,6 +304,7 @@ implements FileDropEventListener {
                 saveC.saveDatabase(f, projController.getDB());
 
                 projController.getDB().setName(dbFileName);
+                projController.setProjectName(dbFileName);
                 projController.setProjectDirectory(fc.getSelectedFile().getParent());
                 projController.setDatabaseFileName(dbFileName);
 
@@ -331,10 +332,10 @@ implements FileDropEventListener {
                 projController.setDatabaseFileName(dbFileName);
 
             // Save as a project
-            } else if (filter instanceof SHPFilter) {
+            } else if (filter instanceof OPFFilter) {
                 String archiveName = fc.getSelectedFile().getName();
-                if (!archiveName.endsWith(".shp")) {
-                    archiveName = archiveName.concat(".shp");
+                if (!archiveName.endsWith(".opf")) {
+                    archiveName = archiveName.concat(".opf");
                 }
 
                 // Only save if the project file does not exists or if the user
@@ -354,7 +355,7 @@ implements FileDropEventListener {
             projController.setLastSaveOption(filter);
             projController.markProjectAsUnchanged();
             projController.getDB().markAsUnchanged();
-            OpenSHAPA.getApplication().updateTitle();
+            updateTitle();
 
         } catch (LogicErrorException e) {
             OpenSHAPA.getApplication().showWarningDialog(e);
@@ -374,7 +375,7 @@ implements FileDropEventListener {
             jd.addChoosableFileFilter(new MODBFilter());
             jd.addChoosableFileFilter(new CSVFilter());
             jd.addChoosableFileFilter(new SHAPAFilter());
-            jd.addChoosableFileFilter(new SHPFilter());
+            jd.addChoosableFileFilter(new OPFFilter());
 
             int result = jd.showOpenDialog(getComponent());
 
@@ -394,13 +395,9 @@ implements FileDropEventListener {
 
         FileFilter filter = jd.getFileFilter();
 
-        // Opening a project file
-        if (filter instanceof SHAPAFilter) {
+        // Opening a project or project archive file
+        if (filter instanceof SHAPAFilter || filter instanceof OPFFilter) {
             openProject(jd.getSelectedFile());
-
-        // Opening a project archive file
-        } else if (filter instanceof SHPFilter) {
-            openProjectArchive(jd.getSelectedFile());
 
         // Opening a database file
         } else {
@@ -420,7 +417,6 @@ implements FileDropEventListener {
         // Display any changes to the database.
         showSpreadsheet();
     }
-
 
     private void openDatabase(final File databaseFile) {
         // Set the database to the freshly loaded database.
@@ -445,19 +441,6 @@ implements FileDropEventListener {
             OpenSHAPA.getProjectController().setDatabase(openC.getDatabase());
             OpenSHAPA.getProjectController()
                      .setProjectDirectory(projectFile.getParent());
-            OpenSHAPA.getProjectController().loadProject();
-        }
-    }
-
-    private void openProjectArchive(final File archiveFile) {
-        OpenC openC = new OpenC();
-        openC.openProjectArchive(archiveFile);
-
-        if (openC.getProject() != null && openC.getDatabase() != null) {
-            OpenSHAPA.newProjectController(openC.getProject());
-            OpenSHAPA.getProjectController().setDatabase(openC.getDatabase());
-            OpenSHAPA.getProjectController()
-                     .setProjectDirectory(archiveFile.getParent());
             OpenSHAPA.getProjectController().loadProject();
         }
     }
@@ -492,8 +475,8 @@ implements FileDropEventListener {
                 fc.setFileFilter(new MODBFilter());
                 open(fc);
                 break;
-            } else if (fileName.endsWith(".shp")) {
-                fc.setFileFilter(new SHPFilter());
+            } else if (fileName.endsWith(".opf")) {
+                fc.setFileFilter(new OPFFilter());
                 open(fc);
             }
         }
