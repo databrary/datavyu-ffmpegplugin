@@ -20,3 +20,4 @@ test-output/
 .pmd
 .checkstyle
 cop.sh
+out.csv
