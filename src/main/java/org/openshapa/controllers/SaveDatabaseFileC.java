@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Vector;
-
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -196,6 +196,93 @@ public final class SaveDatabaseFileC {
                             .getResourceMap(OpenSHAPA.class);
             throw new LogicErrorException(rMap.getString(
                     "UnableToSave.message", outFile), e);
+        } catch (SystemErrorException se) {
+            logger.error("Unable to save database as CSV file", se);
+        }
+    }
+
+    /**
+     * Serialize the database to the specified stream in a CSV format.
+     *
+     * @param outStream
+     *      The stream to use when serializing.
+     * @param db
+     *      The database to save as a CSV file.
+     * @throws LogicErrorException
+     *      When unable to save the database as a CSV to disk (usually
+     *      because of permissions errors).
+     */
+    public void saveAsCSV(final OutputStream outStream,
+            final MacshapaDatabase db)
+    throws LogicErrorException {
+        try {
+            // Dump out an identifier for the version of file.
+            PrintStream ps = new PrintStream(outStream);
+            ps.println("#2");
+
+            // Dump out all the predicates held within the database.
+            Vector<PredicateVocabElement> predicates = db.getPredVEs();
+            if (predicates.size() > 0) {
+                int counter = 0;
+
+                for (PredicateVocabElement pve : predicates) {
+                    ps.printf("%d:%s-", counter,  pve.getName());
+                    for (int j = 0; j < pve.getNumFormalArgs(); j++) {
+                        FormalArgument fa = pve.getFormalArgCopy(j);
+                        String name =
+                                fa.getFargName().substring(1,
+                                        fa.getFargName().length() - 1);
+                        ps.printf("%s|%s", name, fa.getFargType().toString());
+
+                        if (j < pve.getNumFormalArgs() - 1) {
+                            ps.print(',');
+                        }
+                    }
+                    ps.println();
+                    counter++;
+                }
+            }
+
+            // Dump out the data from all the columns.
+            Vector<Long> colIds = db.getColOrderVector();
+            for (int i = 0; i < colIds.size(); i++) {
+                DataColumn dc = db.getDataColumn(colIds.get(i));
+                boolean isMatrix = false;
+                ps.printf("%s (%s)", dc.getName(), dc.getItsMveType());
+
+                // If we a matrix type - we need to dump the formal args.
+                MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
+                if (dc.getItsMveType() == MatrixType.MATRIX) {
+                    isMatrix = true;
+                    ps.print('-');
+                    for (int j = 0; j < mve.getNumFormalArgs(); j++) {
+                        FormalArgument fa = mve.getFormalArgCopy(j);
+                        String name =
+                                fa.getFargName().substring(1,
+                                        fa.getFargName().length() - 1);
+                        ps.printf("%s|%s", name, fa.getFargType().toString());
+
+                        if (j < mve.getNumFormalArgs() - 1) {
+                            ps.print(',');
+                        }
+                    }
+                }
+                ps.println();
+
+                for (int j = 1; j <= dc.getNumCells(); j++) {
+                    DataCell c = (DataCell) dc.getDB().getCell(dc.getID(), j);
+
+                    String value = c.getVal().toEscapedString();
+
+                    if (!isMatrix) {
+                        value = value.substring(1, value.length() - 1);
+                    }
+
+                    ps.printf("%s,%s,%s", c.getOnset().toString(),
+                            c.getOffset().toString(), value);
+                    ps.println();
+                }
+            }
         } catch (SystemErrorException se) {
             logger.error("Unable to save database as CSV file", se);
         }

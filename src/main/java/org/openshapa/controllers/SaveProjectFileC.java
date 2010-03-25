@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.models.project.Project;
@@ -46,6 +47,25 @@ public final class SaveProjectFileC {
 
             out.close();
             fileWriter.close();
+        } catch (IOException ex) {
+            logger.error("Unable to save project file", ex);
+        }
+    }
+
+    /**
+     * Serialize the OpenSHAPA project to a stream. The caller is responsible
+     * for closing the output stream.
+     *
+     * @param outStream The output stream to use for the project.
+     * @param project The project you wish to serialize.
+     */
+    public void save(final OutputStream outStream, final Project project) {
+        Dumper dumper = new Dumper(new OpenSHAPAProjectRepresenter(),
+                new DumperOptions());
+        Yaml yaml = new Yaml(dumper);
+
+        try {
+            outStream.write(yaml.dump(project).getBytes());
         } catch (IOException ex) {
             logger.error("Unable to save project file", ex);
         }
