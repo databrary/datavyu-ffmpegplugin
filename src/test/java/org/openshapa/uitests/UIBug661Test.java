@@ -67,7 +67,7 @@ public final class UIBug661Test extends OpenSHAPATestClass {
     /**
      * Tests open dialog location.
      */
-    //@Test
+    @Test
     public void testDialogLocation() {
         if (Platform.isOSX()) {
             return;
