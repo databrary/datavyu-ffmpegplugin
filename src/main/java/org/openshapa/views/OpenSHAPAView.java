@@ -217,29 +217,14 @@ implements FileDropEventListener {
             if (projController.isNewProject()
                     || projController.getProjectName() == null) {
                 saveAs();
-            } else if (projController.getDatabaseFileName() == null) {
-                saveAs();
             } else {
                 SaveC saveController = new SaveC();
 
-                if (projController.getLastSaveOption() instanceof SHAPAFilter) {
+                // Force people to use new
+                if (projController.getLastSaveOption() instanceof SHAPAFilter
+                  || projController.getLastSaveOption() instanceof SHPFilter) {
                     projController.updateProject();
-                    saveController.saveProject(
-                            projController.getProjectDirectory(),
-                            projController.getProjectName(),
-                            projController.getProject(),
-                            projController.getDB());
-
-                    projController.markProjectAsUnchanged();
-                    projController.getDB().markAsUnchanged();
-
-                    // Update the application title
-                    OpenSHAPA.getApplication().updateTitle();
-
-                 // Save as archive file
-                } else if (projController.getLastSaveOption()
-                        instanceof SHPFilter) {
-                    projController.updateProject();
+                    projController.setLastSaveOption(new SHPFilter());
 
                     saveController.saveProjectArchive(
                             new File(projController.getProjectDirectory(),

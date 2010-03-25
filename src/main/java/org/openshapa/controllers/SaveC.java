@@ -133,8 +133,8 @@ public final class SaveC {
      * disk.
      */
     public void saveProjectArchive(final File projectFile,
-                            final Project project,
-                            final MacshapaDatabase database)
+                                   final Project project,
+                                   final MacshapaDatabase database)
     throws LogicErrorException {
         try {
             FileOutputStream fos = new FileOutputStream(projectFile);
@@ -156,11 +156,9 @@ public final class SaveC {
             fos.flush();
             fos.close();
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Unable to find file.", e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Unable to read file.", e);
         }
     }
 }
