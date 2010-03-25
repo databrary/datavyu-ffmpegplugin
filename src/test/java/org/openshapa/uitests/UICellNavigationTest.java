@@ -27,7 +27,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
     /**
      * Test movement left to right using key presses.
      */
-    //@Test
+    @Test
     public void testLeftRightCellNavigation() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
@@ -101,7 +101,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
     /**
      * Test movement up down for text cells with multiple lines.
      */
-    //@Test
+    @Test
     public void testUpDownMultilineCells() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String root = System.getProperty("testPath");
