@@ -1,6 +1,5 @@
 package org.openshapa.views.continuous.quicktime;
 
-import com.usermetrix.jclient.UserMetrix;
 import java.awt.Toolkit;
 import java.io.File;
 
@@ -23,6 +22,8 @@ import quicktime.std.movies.Movie;
 import quicktime.std.movies.TimeInfo;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * The viewer for a quicktime video file.
@@ -129,7 +130,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         // BugzID:753 - Locks the window to the videos aspect ratio.
         if (aspectRatio > 0.0 && !updatedAspect) {
             setSize((int) (getHeight() * aspectRatio), getHeight());
-            this.invalidate();
+            invalidate();
             updatedAspect = true;
         } else {
             updatedAspect = false;
@@ -149,7 +150,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      *            The playback offset of the movie in milliseconds.
      */
     public void setOffset(final long offset) {
-        assert (offset >= 0);
         this.offset = offset;
     }
 
@@ -170,7 +170,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public void setDataFeed(final File videoFile) {
         this.videoFile = videoFile;
         try {
-            this.setTitle(videoFile.getName());
+            setTitle(videoFile.getName());
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
 
@@ -196,13 +196,13 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             this.add(QTFactory.makeQTComponent(movie).asComponent());
 
             setName(getClass().getSimpleName() + "-" + videoFile.getName());
-            this.pack();
+            pack();
 
             // Prevent initial white frame for video on OSX.
-            this.setVisible(true);
+            setVisible(true);
 
             // Set the size of the window to be the same as the incoming video.
-            this.setBounds(this.getX(), this.getY(), movie.getBox().getWidth(),
+            this.setBounds(getX(), getY(), movie.getBox().getWidth(),
                     movie.getBox().getHeight());
 
             // BugzID:928 - FPS calculations will fail when using H264.
@@ -358,7 +358,8 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("QTDataViewerDialog"); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
+            @Override
+            public void windowClosing(final java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
         });
@@ -369,18 +370,18 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /**
      * Action to invoke when the QTDataViewer window is closing (clean itself
      * up).
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {// GEN-FIRST:event_formWindowClosing
+    private void formWindowClosing(final java.awt.event.WindowEvent evt) {// GEN-FIRST:event_formWindowClosing
         try {
             movie.stop();
         } catch (QTException e) {
             logger.error("Couldn't kill", e);
         }
-        this.parent.shutdown(this);
-    }                                  
+        parent.shutdown(this);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
