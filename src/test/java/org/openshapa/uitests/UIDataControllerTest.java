@@ -628,7 +628,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         dcf.pressFastForwardButton();
         //Using Thread.sleep to wait for 5 seconds.
         try {
-            Thread.sleep(5000);
+            Thread.sleep(8000);
         } catch (InterruptedException ex) {
             Logger.getLogger(UIDataControllerTest.class.getName())
                     .log(Level.SEVERE, null, ex);
