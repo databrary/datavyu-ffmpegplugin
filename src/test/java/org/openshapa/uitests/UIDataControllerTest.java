@@ -727,10 +727,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         UIUtils.createNewVariable(mainFrameFixture, "test", "text");
 
         //4. Create a new cell using Num0
-        do {
-            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD0,
-                null);
-        } while (ssPanel.column("test").allCells().size() == 0);
+        //The first line is really just to delay things.
+        ssPanel.column("test").click();
+        ssPanel.column("test").pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
 
         //Check that cell exists
         Assert.assertEquals(ssPanel.column("test").allCells().size(), 1);
@@ -747,7 +746,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         Assert.assertEquals(ssPanel.column("test").allCells().size(), 0);
 
         //6. Create cell with NUM0
-        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD0, null);
+        ssPanel.column("test").click();
+        ssPanel.column("test").pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
 
         //Check that cell exists
         Assert.assertEquals(ssPanel.column("test").allCells().size(), 1);
