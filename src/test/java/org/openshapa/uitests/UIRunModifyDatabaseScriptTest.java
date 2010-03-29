@@ -137,7 +137,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
 
         // 4. - compare it to the reference .csv
         File testCSV = new File(root + "/ui/modify-test-out.csv");
-        Assert.assertTrue(UIUtils.areFilesSame(testCSV, savedCSV));
+        Assert.assertTrue(UIUtils.areFilesSameLineComp(testCSV, savedCSV));
     }
 
 }

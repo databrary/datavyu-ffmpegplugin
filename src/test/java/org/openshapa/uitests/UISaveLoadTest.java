@@ -1,5 +1,6 @@
 package org.openshapa.uitests;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import static org.fest.reflect.core.Reflection.method;
@@ -9,11 +10,18 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.JDialog;
+
+import org.fest.swing.core.GenericTypeMatcher;
+import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.OpenSHAPA;
@@ -24,6 +32,7 @@ import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.controllers.project.ProjectController;
 
 import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
 
 import org.openshapa.util.UIUtils;
@@ -32,6 +41,7 @@ import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
 import org.openshapa.util.FileFilters.OPFFilter;
 
+import org.openshapa.views.NewProjectV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
@@ -168,8 +178,14 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
                     pc.getDatabaseFileName());
 
         } else if (extension.equals("opf")) {
-            expectedOutputFile = new File(root +"/ui/" + justSaved.getName());
-            outputFile = justSaved;
+
+            //Open the opf and save it as a csv
+            //This will also test opf opening. Later this can be refactored to
+            //its own test.
+            loadOPF(justSaved);
+            outputFile = saveAsCSV(fileName);
+
+            expectedOutputFile = new File(root + "/ui/demo_data_to_csv2.csv");
         }
 
         Assert.assertTrue(outputFile.exists(),
@@ -177,8 +193,106 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(expectedOutputFile.exists(),
             "Expecting reference output to exist.");
 
-        Assert.assertTrue(UIUtils.areFilesSame(outputFile, expectedOutputFile),
-            "Expecting files to be the same.");
+        Assert.assertTrue(UIUtils.areFilesSameLineComp(outputFile,
+                expectedOutputFile), "Expecting files to be the same.");
+    }
+
+    /**
+     * Saves current data as a CSV.
+     * @param fileName csv file name
+     * @return CSV file that was just saved.
+     */
+    private File saveAsCSV(String fileName) {
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+        File toSave;
+        String csvFileName = fileName + ".csv";
+
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+            fc.setFileFilter(new CSVFilter());
+
+            toSave = new File(tempFolder + "/" + csvFileName);
+
+            fc.setSelectedFile(toSave);
+
+            method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                OpenSHAPA.getView()).invoke(fc);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                new CSVFilter());
+
+            toSave = new File(tempFolder + "/" + csvFileName);
+            mainFrameFixture.fileChooser().selectFile(toSave).approve();
+        }
+
+        return toSave;
+    }
+
+    /**
+     * Loads opf file after creating a new project.
+     * @param opf opf file to load
+     */
+    private void loadOPF(File opf) {
+
+        // Create a new project, this is for the discard changes dialog.
+        if (Platform.isOSX()) {
+            mainFrameFixture.pressAndReleaseKey(KeyPressInfo.keyCode(
+                    KeyEvent.VK_N).modifiers(InputEvent.META_MASK));
+        } else {
+            mainFrameFixture.menuItemWithPath("File", "New").click();
+        }
+
+        try {
+            JOptionPaneFixture warning = mainFrameFixture.optionPane();
+            warning.requireTitle("Unsaved changes");
+            warning.buttonWithText("OK").click();
+        } catch (Exception e) {
+            // Do nothing
+        }
+
+        // Get New Database dialog
+        DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
+                new GenericTypeMatcher<JDialog>(JDialog.class) {
+                    @Override protected boolean isMatching(
+                        final JDialog dialog) {
+                        return dialog.getClass().equals(NewProjectV.class);
+                    }
+                }, Timeout.timeout(5, TimeUnit.SECONDS));
+
+        newDatabaseDialog.textBox("nameField").enterText("n");
+
+        newDatabaseDialog.button("okButton").click();
+
+        //Open OPF
+        Assert.assertTrue(opf.exists());
+
+        // 1. Load OPF File
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+            fc.setFileFilter(new OPFFilter());
+            fc.setSelectedFile(opf);
+
+            method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                OpenSHAPA.getView()).invoke(fc);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
+
+            try {
+                JOptionPaneFixture warning = mainFrameFixture.optionPane();
+                warning.requireTitle("Unsaved changes");
+                warning.buttonWithText("OK").click();
+            } catch (Exception e) {
+                // Do nothing
+            }
+
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                new OPFFilter());
+            mainFrameFixture.fileChooser().selectFile(opf).approve();
+        }
     }
 
     /**
@@ -280,8 +394,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(expectedOutputCSV.exists(),
             "Expecting reference output CSV to exist.");
 
-        Assert.assertTrue(UIUtils.areFilesSame(outputCSV, expectedOutputCSV),
-            "Expecting CSV files to be the same.");
+        Assert.assertTrue(UIUtils.areFilesSameLineComp(outputCSV,
+                expectedOutputCSV), "Expecting CSV files to be the same.");
     }
 
     /**
@@ -383,7 +497,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         File savedDB = new File(pc.getProjectDirectory(),
                 pc.getDatabaseFileName());
 
-        Assert.assertTrue(UIUtils.areFilesSame(testOutputCSV, savedDB),
+        Assert.assertTrue(UIUtils.areFilesSameLineComp(testOutputCSV, savedDB),
             "Expecting CSV files to be the same.");
     }
 
@@ -491,6 +605,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     @Test public void testSaveAsOPF1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        //This will also test file loading
         saveAsTest("savedSHAPA.opf", "opf");
     }
 
@@ -511,6 +627,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     @Test public void testSaveAsOPF2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        //This will also test file loading
         saveAsTest("savedSHAPA.shapa", "opf");
     }
 
@@ -531,6 +649,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     @Test public void testSaveAsOPF3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        //This will also test file loading
         saveAsTest("savedSHAPA.csv", "opf");
     }
 
