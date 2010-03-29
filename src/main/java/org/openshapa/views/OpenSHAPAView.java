@@ -549,7 +549,7 @@ implements FileDropEventListener {
      */
     @Action
     public void runScript() {
-        new RunScriptC();
+        (new RunScriptC(ConsoleV.getInstance().getConsole())).execute();
     }
 
     /**

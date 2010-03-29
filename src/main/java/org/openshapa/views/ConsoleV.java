@@ -5,6 +5,7 @@ import org.openshapa.OpenSHAPA;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import javax.swing.JFrame;
+import javax.swing.JTextArea;
 
 /**
  * The dialog for the scripting console. Renders output from scripts and other
@@ -33,8 +34,10 @@ public class ConsoleV extends OpenSHAPADialog {
         super(parent, modal);
         initComponents();
         setName(this.getClass().getSimpleName());
+    }
 
-        new ReaderThread(scriptOutput).start();
+    public JTextArea getConsole() {
+        return this.console;
     }
 
     /**
@@ -131,48 +134,4 @@ public class ConsoleV extends OpenSHAPADialog {
     private javax.swing.JTextArea console;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
-
-    /**
-     * Seperate thread for polling the incoming data from the scripting engine.
-     * The data from the scripting engine gets placed directly into the
-     * consoleOutput
-     */
-    class ReaderThread extends Thread {
-        /** The output from the scripting engine. */
-        private PipedInputStream output;
-
-        /** The size of the buffer to use while ingesting data. */
-        private static final int BUFFER_SIZE = 1024;
-
-        /**
-         * Constructor.
-         *
-         * @param scriptOutput The stream containing output from the scripting
-         * engine.
-         */
-        ReaderThread(final PipedInputStream scriptOutput) {
-            output = scriptOutput;
-        }
-
-        /**
-         * The method to invoke when the thread is started.
-         */
-        @Override
-        public void run() {
-            final byte[] buf = new byte[BUFFER_SIZE];
-            try {
-                while (true) {
-                    final int len = output.read(buf);
-                    if (len > 0) {
-                        console.append(new String(buf, 0, len));
-                        // Make sure the last line is always visible
-                        console.setCaretPosition(console.getDocument()
-                                                        .getLength());
-                    }
-                }
-            } catch (IOException e) {
-                logger.error("Unable to run console thread.", e);
-            }
-        }
-    }
 }
