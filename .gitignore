@@ -19,5 +19,6 @@ test-output/
 .fbprefs
 .pmd
 .checkstyle
+.externalToolBuilders/
 cop.sh
 out.csv
