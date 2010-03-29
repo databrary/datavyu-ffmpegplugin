@@ -52,8 +52,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement to ensure needle time is the same as the clock time.
     */
-    @Test
-    public void testNeedleMovement() {
+    @Test public void testNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -135,8 +134,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test needle movement to ensure needle can't go beyond start or end.
      */
-    @Test
-    public void testRangeOfNeedleMovement() {
+    @Test public void testRangeOfNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -221,8 +219,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * 6. Left region can't cross (go beyond) right
      * 7. Right region can't cross left
      */
-    @Test
-    public void testRegionMovement() {
+    @Test public void testRegionMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -368,8 +365,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test moving track while locked and unlocked.
      */
-    @Test
-    public void testLockUnlockTrack() {
+    @Test public void testLockUnlockTrack() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -452,8 +448,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    @Test
-    public void testTrackSnapping() {
+    @Test public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -497,10 +492,19 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                     }
                 });
         } else {
-            dcf.button("addDataButton").click();
+            boolean worked = false;
+            JFileChooserFixture jfcf = null;
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile1).approve();
+            do {
+                dcf.button("addDataButton").click();
+                try {
+                    jfcf = dcf.fileChooser();
+                    jfcf.selectFile(videoFile1).approve();
+                    worked = true;
+                } catch (Exception e) {
+                    // keep trying
+                }
+            } while (worked == false);
         }
 
         // 2. Get first window
@@ -535,10 +539,19 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                     }
                 });
         } else {
-            dcf.button("addDataButton").click();
+            boolean worked = false;
+            JFileChooserFixture jfcf = null;
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile2).approve();
+            do {
+                dcf.button("addDataButton").click();
+                try {
+                    jfcf = dcf.fileChooser();
+                    jfcf.selectFile(videoFile2).approve();
+                    worked = true;
+                } catch (Exception e) {
+                    // keep trying
+                }                
+            } while (worked == false);
         }
 
         // 2. Get second window
@@ -552,10 +565,11 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         //3. Move needle 50 pixels
         NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
+
         while (needle.getCurrentTimeAsLong() <= 0) {
             needle.drag(100);
         }
-        
+
         long snapPoint1 = needle.getCurrentTimeAsLong();
 
         Assert.assertTrue(snapPoint1 > 0);
@@ -586,6 +600,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         while (needle.getCurrentTimeAsLong() <= (1.9 * snapPoint1)) {
             dcf.getTrackMixerController().getNeedle().drag(100);
         }
+
         Assert.assertTrue(needle.getCurrentTimeAsLong() > snapPoint1);
 
         long snapPoint2 = dcf.getTrackMixerController().getNeedle()
@@ -620,7 +635,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         //b. Drag away from start marker
         track1.drag(20);
-        
+
         //c. Drag 1 pixel at a time until it snaps
         //Turn on snap button
         dcf.getTrackMixerController().getSnapToggleButton().check();
@@ -630,12 +645,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         long oldTime = 0;
 
         while (Math.abs((newTime - oldTime) - onePixelTime) < 2) {
+
             //Check if we've snapped
-            if (dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
-                    .isVisible()
-                    && newTime > (10 * onePixelTime)) {
+            if (
+                dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
+                    .isVisible() && (newTime > (10 * onePixelTime))) {
                 break;
             }
+
             //Check we haven't gone too far
             if (newTime > snapPoint1) {
                 track1.releaseLeftMouse();
@@ -659,7 +676,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         //8. Drag track 1 to snap from the other direction
         //a. Drag track away
         track1.drag(35);
-        
+
         //b. Drag 1 pixel at a time until it snaps
         newTime = track1.getOffsetTimeAsLong();
         oldTime = newTime + onePixelTime;
@@ -667,10 +684,11 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         dcf.getTrackMixerController().getSnapToggleButton().requireSelected();
 
         while (Math.abs((oldTime - newTime) - onePixelTime) < 2) {
+
             //Check if we've snapped
-            if (dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
-                    .isVisible()
-                    && newTime > (10 * onePixelTime)) {
+            if (
+                dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
+                    .isVisible() && (newTime > (10 * onePixelTime))) {
                 break;
             }
 

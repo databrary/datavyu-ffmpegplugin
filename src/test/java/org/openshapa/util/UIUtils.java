@@ -37,6 +37,8 @@ public class UIUtils {
     public static final String[] VAR_TYPES =
             {"TEXT", "PREDICATE", "INTEGER", "NOMINAL", "MATRIX", "FLOAT"};
 
+    private final static int BLOCK_SIZE = 65536;
+
     /**
      * Checks if two text files are equal.
      * 
@@ -50,34 +52,27 @@ public class UIUtils {
      */
     public static Boolean areFilesSame(final File file1, final File file2)
             throws IOException {
-        FileReader fr1 = new FileReader(file1);
-        FileReader fr2 = new FileReader(file2);
-
-        BufferedReader r1 = new BufferedReader(fr1);
-        BufferedReader r2 = new BufferedReader(fr2);
-
-        String line1 = r1.readLine();
-        String line2 = r2.readLine();
-        if (!line1.equals(line2)) {
+        //Check file sizes first
+        if (file1.length() != file2.length()) {
             return false;
         }
 
-        while (line1 != null && line2 != null) {
-            if (!line1.equals(line2)) {
-                return false;
-            }
+        //Compare bytes
+        InputStream i1 = new FileInputStream(file1);
+        InputStream i2 = new FileInputStream(file2);
+        byte[] stream1Block = new byte[BLOCK_SIZE];
+        byte[] stream2Block = new byte[BLOCK_SIZE];
+        int b1, b2;
+        do {
+            b1 = i1.read(stream1Block);
+            b2 = i2.read(stream2Block);
+        } while (b1 == b2 && b1 != -1);
+        i1.close();
+        i2.close();
 
-            line1 = r1.readLine();
-            line2 = r2.readLine();
-        }
-
-        r1.close();
-        r2.close();
-
-        fr1.close();
-        fr2.close();
-
-        return true;
+        //Check if we've reached the end of the file. If we have, they're
+        //identical
+        return b1 == -1;
     }
 
     public static JPanelFixture getSpreadsheet(final FrameFixture ff) {
