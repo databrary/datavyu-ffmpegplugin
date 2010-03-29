@@ -50,7 +50,7 @@ public class UIUtils {
      *             on file read error
      * @return true if equal, else false
      */
-    public static Boolean areFilesSame(final File file1, final File file2)
+    public static Boolean areFilesSameByteComp(final File file1, final File file2)
             throws IOException {
         //Check file sizes first
         if (file1.length() != file2.length()) {
@@ -73,6 +73,49 @@ public class UIUtils {
         //Check if we've reached the end of the file. If we have, they're
         //identical
         return b1 == -1;
+    }
+
+    /**
+     * Checks if two text files are equal.
+     *
+     * @param file1
+     *            First file
+     * @param file2
+     *            Second file
+     * @throws IOException
+     *             on file read error
+     * @return true if equal, else false
+     */
+    public static Boolean areFilesSameLineComp(final File file1, final File file2)
+            throws IOException {
+        FileReader fr1 = new FileReader(file1);
+        FileReader fr2 = new FileReader(file2);
+
+        BufferedReader r1 = new BufferedReader(fr1);
+        BufferedReader r2 = new BufferedReader(fr2);
+
+        String line1 = r1.readLine();
+        String line2 = r2.readLine();
+        if (!line1.equals(line2)) {
+            return false;
+        }
+
+        while (line1 != null && line2 != null) {
+            if (!line1.equals(line2)) {
+                return false;
+            }
+
+            line1 = r1.readLine();
+            line2 = r2.readLine();
+        }
+
+        r1.close();
+        r2.close();
+
+        fr1.close();
+        fr2.close();
+
+        return true;
     }
 
     public static JPanelFixture getSpreadsheet(final FrameFixture ff) {
