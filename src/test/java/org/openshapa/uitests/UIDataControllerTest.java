@@ -727,7 +727,10 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         UIUtils.createNewVariable(mainFrameFixture, "test", "text");
 
         //4. Create a new cell using Num0
-        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD0, null);
+        do {
+            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD0,
+                null);
+        } while (ssPanel.column("test").allCells().size() == 0);
 
         //Check that cell exists
         Assert.assertEquals(ssPanel.column("test").allCells().size(), 1);
