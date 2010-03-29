@@ -440,6 +440,11 @@ implements ExternalColumnListListener, ComponentListener,
      * adjacent column.
      */
     private void highlightAdjacentCell(final int direction) {
+        // No cell selected - simply return, can't move left or right.
+        if (highlightedCell == null) {
+            return;
+        }
+
         for (int colID = 0; colID < columns.size(); colID++) {
             for (int cellID = 0; cellID < columns.get(colID).getCells().size();
                  cellID++) {
