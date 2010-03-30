@@ -409,7 +409,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                     1000));
 
         long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + 5000; // 5 second timeout
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
         while ((System.currentTimeMillis() < maxTime) &&
                 (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
@@ -454,6 +455,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
                     1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
         while ((System.currentTimeMillis() < maxTime) &&
                 (!scriptConsole.textBox().text().contains("Finished"))) {
@@ -502,7 +506,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                     1000));
 
         long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + 5000; // 5 second timeout
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
         while ((System.currentTimeMillis() < maxTime) &&
                 (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
@@ -552,6 +557,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
                     1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
         while ((System.currentTimeMillis() < maxTime) &&
                 (!scriptConsole.textBox().text().contains("Finished"))) {
@@ -645,7 +653,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                     1000));
 
         long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + 5000; // 5 second timeout
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
         while ((System.currentTimeMillis() < maxTime) &&
                 (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
@@ -735,6 +744,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
                     1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
         while ((System.currentTimeMillis() < maxTime) &&
                 (!scriptConsole.textBox().text().contains("Finished"))) {

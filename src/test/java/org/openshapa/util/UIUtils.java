@@ -42,6 +42,8 @@ public class UIUtils {
 
     private final static int BLOCK_SIZE = 65536;
 
+    public final static int SCRIPT_LOAD_TIMEOUT = 5000;
+
     /**
      * Checks if two text files are equal.
      * 
