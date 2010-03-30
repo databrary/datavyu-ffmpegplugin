@@ -5,10 +5,15 @@ import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+
 import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.discrete.SpreadsheetPanel;
+
 import org.testng.Assert;
+
 import org.testng.annotations.Test;
+
 
 /**
  * Fest test for Bug 308. When an error occurs (such as a duplicate variable
@@ -16,16 +21,17 @@ import org.testng.annotations.Test;
  * to fix the problem.
  */
 public final class UIBug308Test extends OpenSHAPATestClass {
+
     /**
      * Test creating a new variable. Then try to create variable with same name.
      * Type is selected randomly since it should not affect this.
      */
-    @Test
-    public void testDuplicateName() {
+    @Test public void testDuplicateName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         String varName = "v";
-        String varType = UIUtils.VAR_TYPES[(int) (Math.random()
-                * UIUtils.VAR_TYPES.length)];
+        String varType =
+            UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
 
@@ -33,30 +39,38 @@ public final class UIBug308Test extends OpenSHAPATestClass {
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
         // Find our new column header
-        SpreadsheetPanelFixture ssPanel =
-                new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                        (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
         Assert.assertNotNull(ssPanel.column(varName));
 
         // 3. Create variable with same name
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");
+
         // Find the new variable dialog
         DialogFixture newVariableDialog = mainFrameFixture.dialog();
+
         // Check if the new variable dialog is actually visible
         newVariableDialog.requireVisible();
+
         // Get the variable value text box
         JTextComponentFixture variableValueTextBox =
-                newVariableDialog.textBox();
+            newVariableDialog.textBox();
+
         // The variable value box should have no text in it
         variableValueTextBox.requireEmpty();
+
         // It should be editable
         variableValueTextBox.requireEditable();
+
         // Type in some text.
         variableValueTextBox.enterText(varName);
+
         // Get the radio button for text variables
         newVariableDialog.radioButton(varRadio).click();
+
         // Check that it is selected
         newVariableDialog.radioButton(varRadio).requireSelected();
+
         // Click "OK"
         newVariableDialog.button("okButton").click();
 

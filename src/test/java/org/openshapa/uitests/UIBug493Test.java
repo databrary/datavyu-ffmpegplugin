@@ -8,9 +8,13 @@ import org.fest.swing.fixture.JLabelFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.util.Platform;
+
 import org.openshapa.util.UIUtils;
+
 import org.testng.Assert;
+
 import org.testng.annotations.Test;
+
 
 /**
  * Test for Bug 493: Pasting and pressing Enter used to create 2 new lines
@@ -21,17 +25,17 @@ public final class UIBug493Test extends OpenSHAPATestClass {
     /**
      * Bug 493 test.
      */
-    @Test
-    public void testBug493() {
+    @Test public void testBug493() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         String varName = "t";
         String varType = "TEXT";
         String varRadio = varType.toLowerCase() + "TypeButton";
 
-        String[] testInput =
-                { "Subject stands up ", "$10,432", "Hand me the manual!",
-                        "Tote_that_bale", "Jeune fille celebre",
-                        "If x?7 then x? 2" };
+        String[] testInput = {
+                "Subject stands up ", "$10,432", "Hand me the manual!",
+                "Tote_that_bale", "Jeune fille celebre", "If x?7 then x? 2"
+            };
 
         String[] expectedTestOutput = testInput;
 
@@ -46,18 +50,19 @@ public final class UIBug493Test extends OpenSHAPATestClass {
 
         // 3. Create cell, paste text and press enter, for each testInput
         for (int i = 0; i < testInput.length; i++) {
+
             // a. Create cell
             column.click();
             mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
             // b. Paste text
             UIUtils.setClipboard(testInput[i]);
-            JTextComponentFixture cell =
-                    mainFrameFixture.textBox(JTextComponentMatcher
-                            .withText("<val>"));
+
+            JTextComponentFixture cell = mainFrameFixture.textBox(
+                    JTextComponentMatcher.withText("<val>"));
             cell.click();
             cell.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V)
-                    .modifiers(Platform.controlOrCommandMask()));
+                .modifiers(Platform.controlOrCommandMask()));
 
             // c. Press Enter
             mainFrameFixture.robot.pressKey(KeyEvent.VK_ENTER);

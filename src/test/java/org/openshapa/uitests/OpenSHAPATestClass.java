@@ -7,9 +7,11 @@ package org.openshapa.uitests;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JDialog;
+
 import junitx.util.PrivateAccessor;
 
 import org.fest.swing.core.GenericTypeMatcher;
@@ -20,14 +22,19 @@ import org.fest.swing.fixture.OpenSHAPAFrameFixture;
 import org.fest.swing.launcher.ApplicationLauncher;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
+
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
+
 import org.openshapa.util.ConfigProperties;
+
 import org.openshapa.views.NewProjectV;
+
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
+
 
 /**
  * GUI Test class for OpenSHAPA. All OpenSHAPA Fest tests must extend this
@@ -35,19 +42,20 @@ import org.testng.annotations.BeforeSuite;
  */
 public class OpenSHAPATestClass {
 
-    /** Main Frame fixture for use by all tests. */
-    protected OpenSHAPAFrameFixture mainFrameFixture;
-
     static {
+
         try {
 
-            ConfigProperties p = (ConfigProperties) PrivateAccessor
-                .getField(Configuration.getInstance(), "properties");
+            ConfigProperties p = (ConfigProperties) PrivateAccessor.getField(
+                    Configuration.getInstance(), "properties");
             p.setCanSendLogs(false);
         } catch (Exception e) {
             System.err.println("Unable to overide sending usage logs");
         }
     }
+
+    /** Main Frame fixture for use by all tests. */
+    protected OpenSHAPAFrameFixture mainFrameFixture;
 
     /** Constructor nulls the mainFrame Fixture. */
     public OpenSHAPATestClass() {
@@ -57,9 +65,9 @@ public class OpenSHAPATestClass {
     /**
      * Starts openSHAPA.
      */
-    @BeforeSuite
-    protected final void startApplication() {
+    @BeforeSuite protected final void startApplication() {
         System.err.println("Starting Application.");
+
         OpenSHAPAFrameFixture fixture;
 
         // Launch OpenSHAPA, this happens once per test class.
@@ -77,9 +85,9 @@ public class OpenSHAPATestClass {
     /**
      * Restarts the application between tests. Achieves this by using File->New
      */
-    @AfterMethod
-    protected final void restartApplication() {
+    @AfterMethod protected final void restartApplication() {
         System.err.println("restarting Application.");
+
         //OpenSHAPA.getApplication().resetApp();
         OpenSHAPA.getApplication().closeOpenedWindows();
 
@@ -102,11 +110,10 @@ public class OpenSHAPATestClass {
         }
 
         // Get New Database dialog
-        DialogFixture newDatabaseDialog =
-                mainFrameFixture.dialog(new GenericTypeMatcher<JDialog>(
-                        JDialog.class) {
-                    @Override
-                    protected boolean isMatching(final JDialog dialog) {
+        DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
+                new GenericTypeMatcher<JDialog>(JDialog.class) {
+                    @Override protected boolean isMatching(
+                        final JDialog dialog) {
                         return dialog.getClass().equals(NewProjectV.class);
                     }
                 }, Timeout.timeout(5, TimeUnit.SECONDS));
@@ -117,15 +124,14 @@ public class OpenSHAPATestClass {
     }
 
     /** Releases application after all tests in suite are finished. */
-    @AfterSuite
-    public final void endApplication() {
+    @AfterSuite public final void endApplication() {
         mainFrameFixture.cleanUp();
     }
 
     /** Gets the OpenSHAPA Instance for each test. */
-    @BeforeClass
-    public final void newTestClass() {
+    @BeforeClass public final void newTestClass() {
         System.err.println("Class starting");
+
         if (mainFrameFixture == null) {
             mainFrameFixture = OpenSHAPAInstance.getFixture();
         }

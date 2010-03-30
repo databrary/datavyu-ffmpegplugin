@@ -9,9 +9,13 @@ import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
+
 import org.openshapa.util.UIUtils;
+
 import org.testng.Assert;
+
 import org.testng.annotations.Test;
+
 
 /**
  * Test for Bug 652. Bug 652: Everytime VocEditor window is reopened, the
@@ -22,8 +26,7 @@ public final class UIBug652Test extends OpenSHAPATestClass {
     /**
      * Test for closing window and creating new predicate.
      */
-    @Test
-    public void testNewPredicateAfterClose() {
+    @Test public void testNewPredicateAfterClose() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
@@ -35,11 +38,11 @@ public final class UIBug652Test extends OpenSHAPATestClass {
         // will fail if can not find
         vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
                 JTextComponent.class) {
-            @Override
-            protected boolean isMatching(final JTextComponent vocEl) {
-                return vocEl.getText().startsWith("predicate1");
-            }
-        });
+                @Override protected boolean isMatching(
+                    final JTextComponent vocEl) {
+                    return vocEl.getText().startsWith("predicate1");
+                }
+            });
 
         vocabEditor.button("okButton").click();
 
@@ -53,19 +56,19 @@ public final class UIBug652Test extends OpenSHAPATestClass {
         // will fail if can not find
         vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
                 JTextComponent.class) {
-            @Override
-            protected boolean isMatching(final JTextComponent vocEl) {
-                return vocEl.getText().startsWith("predicate1");
-            }
-        });
+                @Override protected boolean isMatching(
+                    final JTextComponent vocEl) {
+                    return vocEl.getText().startsWith("predicate1");
+                }
+            });
 
         vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
                 JTextComponent.class) {
-            @Override
-            protected boolean isMatching(final JTextComponent vocEl) {
-                return vocEl.getText().startsWith("predicate2");
-            }
-        });
+                @Override protected boolean isMatching(
+                    final JTextComponent vocEl) {
+                    return vocEl.getText().startsWith("predicate2");
+                }
+            });
 
         vocabEditor.button("okButton").click();
     }
@@ -73,8 +76,7 @@ public final class UIBug652Test extends OpenSHAPATestClass {
     /**
      * Test for running script, then creating predicates.
      */
-    @Test
-    public void testNewPredicateAfterScript() {
+    @Test public void testNewPredicateAfterScript() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -92,10 +94,17 @@ public final class UIBug652Test extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
+
         scriptConsole.button("closeButton").click();
 
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
@@ -107,11 +116,11 @@ public final class UIBug652Test extends OpenSHAPATestClass {
         // will fail if can not find
         vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
                 JTextComponent.class) {
-            @Override
-            protected boolean isMatching(final JTextComponent vocEl) {
-                return vocEl.getText().startsWith("predicate2");
-            }
-        });
+                @Override protected boolean isMatching(
+                    final JTextComponent vocEl) {
+                    return vocEl.getText().startsWith("predicate2");
+                }
+            });
 
         vocabEditor.button("okButton").click();
 
@@ -125,19 +134,19 @@ public final class UIBug652Test extends OpenSHAPATestClass {
         // will fail if can not find
         vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
                 JTextComponent.class) {
-            @Override
-            protected boolean isMatching(final JTextComponent vocEl) {
-                return vocEl.getText().startsWith("predicate2");
-            }
-        });
+                @Override protected boolean isMatching(
+                    final JTextComponent vocEl) {
+                    return vocEl.getText().startsWith("predicate2");
+                }
+            });
 
         vocabEditor.textBox(new GenericTypeMatcher<JTextComponent>(
                 JTextComponent.class) {
-            @Override
-            protected boolean isMatching(final JTextComponent vocEl) {
-                return vocEl.getText().startsWith("predicate3");
-            }
-        });
+                @Override protected boolean isMatching(
+                    final JTextComponent vocEl) {
+                    return vocEl.getText().startsWith("predicate3");
+                }
+            });
 
         vocabEditor.button("okButton").click();
     }
