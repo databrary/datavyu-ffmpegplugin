@@ -2,8 +2,6 @@ package org.openshapa.views;
 
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
-import java.io.IOException;
-import java.io.PipedInputStream;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
@@ -12,7 +10,7 @@ import javax.swing.JTextArea;
  * things which dumps things to the console. Implemented as a singleton. Only
  * A single console is used in OpenSHAPA.
  */
-public class ConsoleV extends OpenSHAPADialog {
+public final class ConsoleV extends OpenSHAPADialog {
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(ListVariables.class);
@@ -25,8 +23,6 @@ public class ConsoleV extends OpenSHAPADialog {
      *
      * @param parent The parent of this dialog.
      * @param modal Is the scripting console modal or not?
-     * @param scriptOutput The stream containing scripting data to be outputed
-     * to the console.
      */
     public ConsoleV(final java.awt.Frame parent,
                     final boolean modal) {
@@ -35,6 +31,9 @@ public class ConsoleV extends OpenSHAPADialog {
         setName(this.getClass().getSimpleName());
     }
 
+    /**
+     * @return The text area that makes up the console.
+     */
     public JTextArea getConsole() {
         return this.console;
     }
