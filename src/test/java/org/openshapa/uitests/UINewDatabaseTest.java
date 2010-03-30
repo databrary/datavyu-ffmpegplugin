@@ -2,7 +2,9 @@ package org.openshapa.uitests;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+
 import java.io.File;
+
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
@@ -19,26 +21,31 @@ import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.fixture.VocabEditorDialogFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
-import org.openshapa.controllers.RunScriptC;
+
 import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.ListVariables;
 import org.openshapa.views.NewProjectV;
 import org.openshapa.views.VocabEditorV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
+
 import org.testng.Assert;
+
 import org.testng.annotations.Test;
+
 
 /**
  * Test the creation of a new database. This is now synonomous with the creation
  * of a New Project.
  */
 public final class UINewDatabaseTest extends OpenSHAPATestClass {
+
     /**
      * Test new spreadsheet.
      */
-    /*@Test*/
-    public void testNewSpreadsheet() {
+    @Test public void testNewSpreadsheet() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
@@ -54,21 +61,24 @@ public final class UINewDatabaseTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
         while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
             Thread.yield();
         }
+
         scriptConsole.button("closeButton").click();
 
         // 2. Check that the database is populated
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        SpreadsheetPanelFixture ssPanel =
-                new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                        (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
         Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
         Assert.assertTrue(cols.size() != 0);
+
         for (SpreadsheetColumnFixture col : cols) {
             Assert.assertTrue(col.numOfCells() != 0);
         }
@@ -92,11 +102,10 @@ public final class UINewDatabaseTest extends OpenSHAPATestClass {
         // DialogFixture newDatabaseDialog = mainFrameFixture.dialog();
 
         // Get New Database dialog
-        DialogFixture newDatabaseDialog =
-                mainFrameFixture.dialog(new GenericTypeMatcher<JDialog>(
-                        JDialog.class) {
-                    @Override
-                    protected boolean isMatching(final JDialog dialog) {
+        DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
+                new GenericTypeMatcher<JDialog>(JDialog.class) {
+                    @Override protected boolean isMatching(
+                        final JDialog dialog) {
                         return dialog.getClass().equals(NewProjectV.class);
                     }
                 }, Timeout.timeout(5, TimeUnit.SECONDS));
@@ -110,12 +119,12 @@ public final class UINewDatabaseTest extends OpenSHAPATestClass {
 
         // 4b. Check that variable list is empty
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
+
         // Get VariableList dialog
-        DialogFixture varListDialog =
-                mainFrameFixture.dialog(new GenericTypeMatcher<JDialog>(
-                        JDialog.class) {
-                    @Override
-                    protected boolean isMatching(final JDialog dialog) {
+        DialogFixture varListDialog = mainFrameFixture.dialog(
+                new GenericTypeMatcher<JDialog>(JDialog.class) {
+                    @Override protected boolean isMatching(
+                        final JDialog dialog) {
                         return dialog.getClass().equals(ListVariables.class);
                     }
                 }, Timeout.timeout(5, TimeUnit.SECONDS));
@@ -125,9 +134,10 @@ public final class UINewDatabaseTest extends OpenSHAPATestClass {
 
         // 4c. Check that vocab editor is empty
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         veDialog.close();
@@ -138,7 +148,7 @@ public final class UINewDatabaseTest extends OpenSHAPATestClass {
      */
     // BugzID:938 - Expecting the new database dialog to remain open.
     // Must write test to check that this is true.
-    // /*@Test*/
+    // @Test
     // public void testBug576() {
     // System.err.println("testBug576");
     // String root = System.getProperty("testPath");

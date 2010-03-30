@@ -30,7 +30,7 @@ public final class UIBug686Test extends OpenSHAPATestClass {
     /**
      * Test Bug 686.
      */
-    /*@Test*/
+    @Test
     public void testBug686() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 

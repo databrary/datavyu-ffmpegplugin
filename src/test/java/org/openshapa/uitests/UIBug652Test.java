@@ -22,7 +22,7 @@ public final class UIBug652Test extends OpenSHAPATestClass {
     /**
      * Test for closing window and creating new predicate.
      */
-    /*@Test*/
+    @Test
     public void testNewPredicateAfterClose() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
@@ -73,7 +73,7 @@ public final class UIBug652Test extends OpenSHAPATestClass {
     /**
      * Test for running script, then creating predicates.
      */
-    /*@Test*/
+    @Test
     public void testNewPredicateAfterScript() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 

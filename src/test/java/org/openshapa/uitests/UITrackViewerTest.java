@@ -497,6 +497,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
             do {
                 dcf.button("addDataButton").click();
+
                 try {
                     jfcf = dcf.fileChooser();
                     jfcf.selectFile(videoFile1).approve();
@@ -544,13 +545,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
             do {
                 dcf.button("addDataButton").click();
+
                 try {
                     jfcf = dcf.fileChooser();
                     jfcf.selectFile(videoFile2).approve();
                     worked = true;
                 } catch (Exception e) {
                     // keep trying
-                }                
+                }
             } while (worked == false);
         }
 
@@ -644,12 +646,18 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         long newTime = onePixelTime;
         long oldTime = 0;
 
-        while (Math.abs((newTime - oldTime) - onePixelTime) < 2) {
+        while (((newTime - oldTime) == 0) ||
+                (Math.abs((newTime - oldTime) - onePixelTime) < 2)) {
 
             //Check if we've snapped
             if (
                 dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
                     .isVisible() && (newTime > (10 * onePixelTime))) {
+                System.err.println("Snapped while moving");
+                System.err.println("New time=" + newTime);
+                System.err.println("Old time=" + oldTime);
+                System.err.println("onePixelTime=" + onePixelTime);
+
                 break;
             }
 
@@ -664,7 +672,13 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             newTime = track1.getOffsetTimeAsLong();
         }
 
-        System.err.print(newTime - oldTime + "," + onePixelTime);
+        System.err.println("Snapped?");
+        System.err.println("New time=" + newTime);
+        System.err.println("Old time=" + oldTime);
+        System.err.println("onePixelTime=" + onePixelTime);
+        System.err.println("snapPoint2=" + snapPoint2);
+        System.err.println("snapPoint1=" + snapPoint1);
+        System.err.println("trackOffset=" + track1.getOffsetTimeAsLong());
 
         //d. Check if snapped
         Assert.assertEquals(track1.getOffsetTimeAsLong(),
