@@ -186,9 +186,6 @@ public class RegionPainter extends JComponent {
                 + regionModel.getPaddingLeft();
 
             int endXPos = getSize().width - 21;
-//                    Math.round(viewableModel.getZoomWindowEnd() * ratio
-//                            - viewableModel.getZoomWindowStart() * ratio)
-//                            + regionModel.getPaddingLeft() + 4;
 
             g.setColor(new Color(63, 63, 63, 100));
             g.fillRect(startXPos, markerHeight + 1, endXPos - startXPos,
