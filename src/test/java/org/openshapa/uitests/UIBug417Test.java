@@ -36,7 +36,7 @@ public final class UIBug417Test extends OpenSHAPATestClass {
      * Test creating a variable with the same name. Type is selected randomly
      * since it should not affect this
      */
-    @Test
+    /*@Test*/
     public void testDuplicateName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "v";
@@ -84,7 +84,7 @@ public final class UIBug417Test extends OpenSHAPATestClass {
     /**
      * Test creating a variable with a reserved name.
      */
-    @Test
+    /*@Test*/
     public void testReservedName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "ge";
@@ -124,7 +124,7 @@ public final class UIBug417Test extends OpenSHAPATestClass {
     /**
      * Test invalid column name.
      */
-    @Test
+    /*@Test*/
     public void testInvalidColumnName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String varName = "(hello)";
