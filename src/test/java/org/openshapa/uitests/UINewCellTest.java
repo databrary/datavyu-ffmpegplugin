@@ -374,7 +374,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+        while (!scriptConsole.textBox().text().contains("Finished")) {
             Thread.yield();
         }
         scriptConsole.button("closeButton").click();
@@ -415,7 +415,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+        while (!scriptConsole.textBox().text().contains("Finished")) {
             Thread.yield();
         }
         scriptConsole.button("closeButton").click();
@@ -456,7 +456,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+        while (!scriptConsole.textBox().text().contains("Finished")) {
             Thread.yield();
         }
         scriptConsole.button("closeButton").click();
@@ -502,7 +502,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+        while (!scriptConsole.textBox().text().contains("Finished")) {
             Thread.yield();
         }
         scriptConsole.button("closeButton").click();
@@ -587,7 +587,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+        while (!scriptConsole.textBox().text().contains("Finished")) {
             Thread.yield();
         }
         scriptConsole.button("closeButton").click();
@@ -672,7 +672,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+        while (!scriptConsole.textBox().text().contains("Finished")) {
             Thread.yield();
         }
         scriptConsole.button("closeButton").click();
