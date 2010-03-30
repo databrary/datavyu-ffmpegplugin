@@ -8,8 +8,8 @@ import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
-import org.openshapa.controllers.RunScriptC;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.testng.Assert;
@@ -36,7 +36,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -45,7 +45,10 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Get the spreadsheet, check that cells do exist
@@ -109,7 +112,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -118,7 +121,10 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Get the spreadsheet, check that cells do exist
@@ -182,7 +188,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -191,7 +197,10 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Get the spreadsheet, check that cells do exist

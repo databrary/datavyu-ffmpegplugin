@@ -433,11 +433,6 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
             // Make a new project
             projectController = new ProjectController();
-
-            // Build output streams for the scripting engine.
-            consoleOutputStream = new PipedInputStream();
-            PipedOutputStream sIn = new PipedOutputStream(consoleOutputStream);
-            consoleWriter = new PrintWriter(sIn);
             lastScriptsExecuted = new LinkedList<File>();
 
             // Initalise DB
@@ -452,8 +447,6 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
         } catch (SystemErrorException e) {
             logger.error("Unable to create MacSHAPADatabase", e);
-        } catch (IOException e) {
-            logger.error("Unable to create scripting output streams", e);
         }
 
         // Make view the new view so we can keep track of it for hotkeys.
@@ -597,23 +590,16 @@ public final class OpenSHAPA extends SingleFrameApplication implements
         OpenSHAPA.getApplication().lastScriptsExecuted = list;
     }
 
-    /**
-     * @return The console writer for OpenSHAPA.
-     */
-    public static PrintWriter getConsoleWriter() {
-        return OpenSHAPA.getApplication().consoleWriter;
-    }
-
-    /**
-     * @return The consoleoutput stream for OpenSHAPA.
-     */
-    public static PipedInputStream getConsoleOutputStream() {
-        return OpenSHAPA.getApplication().consoleOutputStream;
-    }
-
     /** All the supported platforms that OpenSHAPA runs on. */
     public enum Platform {
-        MAC, WINDOWS, UNKNOWN
+        /** Generic Mac platform. I.e. Tiger, Leopard, Snow Leopard. */
+        MAC,
+
+        /** Generic windows platform. I.e. XP, vista, etc. */
+        WINDOWS,
+
+        /** Unknown platform. */
+        UNKNOWN
     };
 
     /**
@@ -716,12 +702,6 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(OpenSHAPA.class);
-
-    /** output stream for messages coming from the scripting engine. */
-    private PipedInputStream consoleOutputStream;
-
-    /** input stream for displaying messages from the scripting engine. */
-    private PrintWriter consoleWriter;
 
     /** The list of scripts that the user has last invoked. */
     private LinkedList<File> lastScriptsExecuted;

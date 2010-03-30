@@ -58,6 +58,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.io.IOException;
 
 
 /**
@@ -632,8 +633,14 @@ public final class OpenSHAPAView extends FrameView
     /**
      * Action for invoking a script.
      */
-    @Action public void runScript() {
-        new RunScriptC();
+    @Action
+    public void runScript() {
+        try {
+            RunScriptC scriptC = new RunScriptC();
+            scriptC.execute();
+        } catch (IOException e) {
+            logger.error("Unable run script", e);
+        }
     }
 
     /**
@@ -1302,7 +1309,12 @@ public final class OpenSHAPAView extends FrameView
      *            The event that triggered this action.
      */
     private void runRecentScript(final java.awt.event.ActionEvent evt) {
-        new RunScriptC(evt.getActionCommand());
+        try {
+            RunScriptC scriptC = new RunScriptC(evt.getActionCommand());
+            scriptC.execute();
+        } catch (IOException e) {
+            logger.error("Unable to run recent script", e);
+        }
     }
 
     /**

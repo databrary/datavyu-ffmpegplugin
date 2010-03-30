@@ -18,11 +18,14 @@ import java.util.SimpleTimeZone;
 import javax.swing.JPanel;
 
 import org.fest.swing.core.GenericTypeMatcher;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
 import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
+import org.openshapa.controllers.RunScriptC;
 import org.openshapa.views.NewVariableV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
@@ -239,5 +242,18 @@ public class UIUtils {
         }
         in.close();
         out.close();
+    }
+
+    public static void runScript(final File script) {
+        GuiActionRunner.execute(new GuiTask() {
+            public void executeInEDT() {
+                try {
+                    RunScriptC scriptC = new RunScriptC(script.toString());
+                    scriptC.execute();
+                } catch (IOException e) {
+                    System.err.println("Unable to invoke script:" + e.toString());
+                }
+            }
+        });
     }
 }

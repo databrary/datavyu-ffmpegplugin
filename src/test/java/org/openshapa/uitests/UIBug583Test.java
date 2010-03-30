@@ -21,8 +21,8 @@ public final class UIBug583Test extends OpenSHAPATestClass {
     /**
      * Bug 583 test with a range of values, including 0.
      */
-    /*@Test*/
-    public void testBug583() {
+    @Test
+    public void testBug583() throws InterruptedException {
         /**
          * Different cell variable types.
          */
@@ -39,7 +39,7 @@ public final class UIBug583Test extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -48,7 +48,10 @@ public final class UIBug583Test extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Get each float cell

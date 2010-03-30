@@ -1,6 +1,5 @@
 package org.openshapa.uitests;
 
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Vector;
 
@@ -9,8 +8,8 @@ import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
-import org.openshapa.controllers.RunScriptC;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.testng.Assert;
@@ -32,7 +31,7 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -41,7 +40,10 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Sequentially select each column and delete
@@ -50,7 +52,6 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
         SpreadsheetPanelFixture ssPanel =
                 new SpreadsheetPanelFixture(mainFrameFixture.robot,
                         (SpreadsheetPanel) jPanel.component());
-        
 
         Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
         for (SpreadsheetColumnFixture col : cols) {
@@ -76,7 +77,7 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -85,7 +86,10 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Select all columns and delete
