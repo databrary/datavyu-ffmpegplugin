@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
 import org.openshapa.event.CarriageEvent;
+import org.openshapa.event.CarriageEventAdapter;
 import org.openshapa.event.CarriageEventListener;
 import org.openshapa.event.TrackMouseEventListener;
 
@@ -30,28 +31,33 @@ import org.openshapa.models.component.ViewableModel;
  */
 public final class TracksEditorController implements TrackMouseEventListener {
 
-    /**
-     * Views
-     */
-    private transient JPanel editingPanel;
-    private final transient SnapMarkerController snapMarkerController;
+    /** Main UI panel. */
+    private JPanel editingPanel;
+
+    /** UI component for displaying a snap position. */
+    private final SnapMarkerController snapMarkerController;
+
+    /** List of track controllers. */
+    private final List<Track> tracks;
+
+    /** Viewable model. */
+    private final ViewableModel viewableModel;
+
+    /** Should tracks be snapped when moving. */
+    private boolean allowSnap;
+
+    /** Handles the selection model for tracks. */
+    private final CarriageSelection selectionHandler;
 
     /**
-     * Models
+     * Create a new tracks editor controller.
      */
-    private final transient List<Track> tracks;
-    private final transient ViewableModel viewableModel;
-
-    /**
-     * Controller states
-     */
-    private transient boolean allowSnap;
-
     public TracksEditorController() {
         tracks = new LinkedList<Track>();
         viewableModel = new ViewableModel();
         snapMarkerController = new SnapMarkerController();
         allowSnap = false;
+        selectionHandler = new CarriageSelection();
         initView();
     }
 
@@ -78,28 +84,27 @@ public final class TracksEditorController implements TrackMouseEventListener {
     }
 
     /**
-     * Copies the given viewable model
+     * Copies the given viewable model.
      *
-     * @param viewableModel
+     * @param newModel The viewable model to copy from.
      */
-    public void setViewableModel(final ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel newModel) {
 
         /*
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
          */
-        this.viewableModel.setEnd(viewableModel.getEnd());
-        this.viewableModel.setIntervalTime(viewableModel.getIntervalTime());
-        this.viewableModel.setIntervalWidth(viewableModel.getIntervalWidth());
-        this.viewableModel.setZoomWindowEnd(viewableModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(
-            viewableModel.getZoomWindowStart());
+        this.viewableModel.setEnd(newModel.getEnd());
+        this.viewableModel.setIntervalTime(newModel.getIntervalTime());
+        this.viewableModel.setIntervalWidth(newModel.getIntervalWidth());
+        this.viewableModel.setZoomWindowEnd(newModel.getZoomWindowEnd());
+        this.viewableModel.setZoomWindowStart(newModel.getZoomWindowStart());
 
         for (Track track : tracks) {
-            track.trackController.setViewableModel(viewableModel);
+            track.trackController.setViewableModel(newModel);
         }
 
-        snapMarkerController.setViewableModel(viewableModel);
+        snapMarkerController.setViewableModel(newModel);
     }
 
     /**
@@ -140,6 +145,8 @@ public final class TracksEditorController implements TrackMouseEventListener {
             trackController.addCarriageEventListener(listener);
         }
 
+        trackController.addCarriageEventListener(selectionHandler);
+
         trackController.addTrackMouseEventListener(this);
 
         final Track track = new Track();
@@ -156,9 +163,9 @@ public final class TracksEditorController implements TrackMouseEventListener {
      * Remove a specific track from the controller. Also deregisters the given
      * listener from the track.
      *
-     * @param mediaPath
-     * @param listener
-     * @return true if a track was removed, false otherwise
+     * @param mediaPath absolute path to the media file.
+     * @param listener listener to deregister, if any.
+     * @return true if a track was removed, false otherwise.
      */
     public boolean removeTrack(final String mediaPath,
         final CarriageEventListener listener) {
@@ -170,6 +177,8 @@ public final class TracksEditorController implements TrackMouseEventListener {
             if (track.mediaPath.equals(mediaPath)) {
                 editingPanel.remove(track.trackController.getView());
                 track.trackController.removeCarriageEventListener(listener);
+                track.trackController.removeCarriageEventListener(
+                    selectionHandler);
                 track.trackController.removeTrackMouseEventListener(this);
                 allTracks.remove();
                 editingPanel.validate();
@@ -188,6 +197,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
 
         for (Track track : tracks) {
             track.trackController.removeTrackMouseEventListener(this);
+            track.trackController.removeCarriageEventListener(selectionHandler);
         }
 
         tracks.clear();
@@ -253,12 +263,13 @@ public final class TracksEditorController implements TrackMouseEventListener {
      * against every other track.</li>
      * <li>A candidate snap point is chosen as the new offset value if it is
      * within +/- 5 seconds of the snap point being compared against.</li>
-     * <li>If no snap points are found, then return 0</li>
+     * <li>If no snap points are found, then return null.</li>
      * </ol>
      *
-     * @param mediaPath
-     * @param temporalSnapPosition
-     * @return
+     * @param mediaPath Absolute position to the media path being moved on the
+     * interface.
+     * @param temporalSnapPosition The snap position to start searching from.
+     * @return see Javadoc for explanation.
      */
     private SnapPoint snapOffset(final String mediaPath,
         final long temporalSnapPosition) {
@@ -305,9 +316,9 @@ public final class TracksEditorController implements TrackMouseEventListener {
         }
 
         // Calculate the snap threshold as a % of the longest track duration
-        final long threshold = (long) (0.01F *
-                (viewableModel.getZoomWindowEnd() -
-                    viewableModel.getZoomWindowStart()));
+        final long threshold = (long) (0.01F
+                * (viewableModel.getZoomWindowEnd()
+                    - viewableModel.getZoomWindowStart()));
 
         // Sort the candidate snap points
         Collections.sort(snapCandidates);
@@ -328,8 +339,8 @@ public final class TracksEditorController implements TrackMouseEventListener {
         }
 
         // Add the closest snap point as first search position
-        if (Math.abs(rightSnapTime - temporalSnapPosition) <
-                Math.abs(temporalSnapPosition - leftSnapTime)) {
+        if (Math.abs(rightSnapTime - temporalSnapPosition)
+                < Math.abs(temporalSnapPosition - leftSnapTime)) {
             snapPoints.add(0, rightSnapTime);
         } else {
             snapPoints.add(0, leftSnapTime);
@@ -352,8 +363,8 @@ public final class TracksEditorController implements TrackMouseEventListener {
                 lowerSnapTime = snapCandidates.get(candidateIndex - 1);
             }
 
-            if ((lowerSnapTime < snapPoint) &&
-                    (Math.abs(snapPoint - lowerSnapTime) <= threshold)) {
+            if ((lowerSnapTime < snapPoint)
+                    && (Math.abs(snapPoint - lowerSnapTime) <= threshold)) {
                 final SnapPoint sp = new SnapPoint();
                 sp.snapOffset = lowerSnapTime - snapPoint;
                 sp.snapMarkerPosition = lowerSnapTime;
@@ -411,7 +422,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
     }
 
     /**
-     * Switches the snapping functionality on or off
+     * Switches the snapping functionality on or off.
      *
      * @param allowSnap
      *            true if carriage movement should have assisted
@@ -422,7 +433,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
     }
 
     /**
-     * Sets the carriage movement locking state
+     * Sets the carriage movement locking state.
      *
      * @param lockState
      *            true if carriages are not allowed to move, false otherwise.
@@ -437,12 +448,19 @@ public final class TracksEditorController implements TrackMouseEventListener {
     /**
      * Handles a mouse released event on a track.
      *
-     * @param e
+     * @param e The event to handle.
      */
     public void mouseReleased(final MouseEvent e) {
         snapMarkerController.setMarkerTime(-1);
     }
 
+    /**
+     * Set the bookmark for the given track.
+     *
+     * @param mediaPath Absolute path to the media file represented by the
+     * track.
+     * @param position Position of the bookmark in milliseconds.
+     */
     public void setBookmarkPosition(final String mediaPath,
         final long position) {
 
@@ -481,6 +499,27 @@ public final class TracksEditorController implements TrackMouseEventListener {
         return controllers;
     }
 
+    /**
+     * Deselect all tracks except for the given track.
+     * @param selected
+     */
+    private void deselectExcept(final TrackController selected) {
+
+        for (Track track : tracks) {
+
+            if (track.trackController != selected) {
+                track.trackController.deselect();
+            }
+        }
+    }
+
+    /**
+     * Set the movement lock state for a given track.
+     *
+     * @param mediaPath Absolute path to the media file represented by the
+     * track.
+     * @param lock true if the track's movement is locked, false otherwise.
+     */
     public void setMovementLock(final String mediaPath, final boolean lock) {
 
         for (Track track : tracks) {
@@ -492,11 +531,30 @@ public final class TracksEditorController implements TrackMouseEventListener {
     }
 
     /**
+     * Inner class for handling carriage selection.
+     */
+    private class CarriageSelection extends CarriageEventAdapter {
+
+
+        @Override public void selectionChanged(final CarriageEvent e) {
+
+            if (!e.hasModifiers()) {
+                deselectExcept((TrackController) e.getSource());
+            }
+        }
+
+    }
+
+    /**
      * Inner class for associating track identifier (absolute media path) to a
      * track controller.
      */
     private static class Track {
+
+        /** Absolute path to the media file represented by the track. */
         public String mediaPath;
+
+        /** The controller associated with the track. */
         public TrackController trackController;
     }
 
@@ -504,7 +562,11 @@ public final class TracksEditorController implements TrackMouseEventListener {
      * Inner class for packaging snap information.
      */
     private static class SnapPoint {
+
+        /** The new snap offset position in milliseconds. */
         public long snapOffset;
+
+        /** The snap marker position to paint. */
         public long snapMarkerPosition;
     }
 

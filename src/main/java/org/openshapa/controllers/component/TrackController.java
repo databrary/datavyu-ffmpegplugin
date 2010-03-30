@@ -26,50 +26,73 @@ import org.openshapa.event.CarriageEvent;
 import org.openshapa.event.CarriageEventListener;
 import org.openshapa.event.TrackMouseEventListener;
 import org.openshapa.event.CarriageEvent.EventType;
+
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
 import org.openshapa.models.component.TrackModel.TrackState;
+
 import org.openshapa.views.component.TrackPainter;
+
 
 /**
  * TrackPainterController is responsible for managing a TrackPainter.
  */
-public class TrackController {
+public final class TrackController {
 
-    /** View components */
-    private transient final JPanel view;
-    private transient final JLabel trackLabel;
-    private transient final JLabel iconLabel;
-    private transient final TrackPainter trackPainter;
-    private transient final JPopupMenu menu;
-    private transient final JButton lockUnlockButton;
-    private transient final ImageIcon unlockIcon =
-            new ImageIcon(getClass().getResource("/icons/track-unlock.png"));
-    private transient final ImageIcon lockIcon =
-            new ImageIcon(getClass().getResource("/icons/track-lock.png"));
+    /** Track panel border color. */
+    private static final Color BORDER_COLOR = new Color(73, 73, 73);
 
-    /** Models */
+    /** Main panel holding the track UI. */
+    private final JPanel view;
+
+    /** Track label. */
+    private final JLabel trackLabel;
+
+    /** Label holding the icon. */
+    private final JLabel iconLabel;
+
+    /** Component that paints the track. */
+    private final TrackPainter trackPainter;
+
+    /** Right click menu. */
+    private final JPopupMenu menu;
+
+    /** Button for (un)locking the track. */
+    private final JButton lockUnlockButton;
+
+    /** Unlock icon. */
+    private final ImageIcon unlockIcon = new ImageIcon(getClass().getResource(
+                "/icons/track-unlock.png"));
+
+    /** Lock icon. */
+    private final ImageIcon lockIcon = new ImageIcon(getClass().getResource(
+                "/icons/track-lock.png"));
+
+    /** Viewable model. */
     private final ViewableModel viewableModel;
-    private transient final TrackModel trackModel;
+
+    /** Track model. */
+    private final TrackModel trackModel;
 
     /**
      * Listeners interested in custom playback region events and mouse events on
-     * the track
+     * the track.
      */
-    private transient final EventListenerList listenerList;
+    private final EventListenerList listenerList;
 
-    /** States */
+    /** States. */
     // can the carriage be moved using the mouse when snap is switched on
-    private transient boolean isMoveable;
+    private boolean isMoveable;
 
+    /**
+     * Creates a new TrackController.
+     */
     public TrackController() {
         isMoveable = true;
 
         view = new JPanel();
         view.setLayout(new MigLayout("ins 0", "[]0[]"));
-        view
-                .setBorder(BorderFactory.createLineBorder(
-                        new Color(73, 73, 73), 1));
+        view.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
 
         trackPainter = new TrackPainter();
 
@@ -89,18 +112,20 @@ public class TrackController {
         trackPainter.addMouseMotionListener(painterListener);
 
         menu = new JPopupMenu();
+
         JMenuItem setBookmarkMenuItem = new JMenuItem("Set bookmark");
         setBookmarkMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                TrackController.this.setBookmarkAction();
-            }
-        });
+                public void actionPerformed(final ActionEvent e) {
+                    TrackController.this.setBookmarkAction();
+                }
+            });
+
         JMenuItem clearBookmarkMenuItem = new JMenuItem("Clear bookmark");
         clearBookmarkMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                TrackController.this.clearBookmarkAction();
-            }
-        });
+                public void actionPerformed(final ActionEvent e) {
+                    TrackController.this.clearBookmarkAction();
+                }
+            });
         menu.add(setBookmarkMenuItem);
         menu.add(clearBookmarkMenuItem);
 
@@ -115,8 +140,8 @@ public class TrackController {
         trackLabel.setName("trackLabel");
 
         final JPanel header = new JPanel(new MigLayout("ins 0, wrap 3"));
-        header.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-                .createMatteBorder(0, 0, 0, 1, new Color(73, 73, 73)),
+        header.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 0, 1, BORDER_COLOR),
                 BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         header.setBackground(Color.LIGHT_GRAY);
         header.add(trackLabel, "w 96!, span 3");
@@ -127,10 +152,10 @@ public class TrackController {
         lockUnlockButton.setContentAreaFilled(false);
         lockUnlockButton.setBorderPainted(false);
         lockUnlockButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                handleLockUnlockButtonEvent(e);
-            }
-        });
+                public void actionPerformed(final ActionEvent e) {
+                    handleLockUnlockButtonEvent(e);
+                }
+            });
         header.add(lockUnlockButton, "w 20!, h 20!");
         lockUnlockButton.setName("lockUnlockButton");
 
@@ -154,11 +179,13 @@ public class TrackController {
      *            Offset of the data feed in milliseconds
      */
     public void setTrackInformation(final ImageIcon icon,
-            final String trackName, final String trackId, final long duration,
-            final long offset) {
+        final String trackName, final String trackId, final long duration,
+        final long offset) {
+
         if (icon != null) {
             iconLabel.setIcon(icon);
         }
+
         trackModel.setTrackName(trackName);
         trackModel.setTrackId(trackId);
         trackModel.setDuration(duration);
@@ -171,7 +198,7 @@ public class TrackController {
 
     /**
      * Sets the track offset in milliseconds.
-     * 
+     *
      * @param offset
      *            Offset of the data feed in milliseconds
      */
@@ -182,8 +209,8 @@ public class TrackController {
 
     /**
      * Indicate that the track's information cannot be resolved.
-     * 
-     * @param erroneous
+     *
+     * @param erroneous true if the data is erroneous, false otherwise.
      */
     public void setErroneous(final boolean erroneous) {
         trackModel.setErroneous(erroneous);
@@ -193,12 +220,13 @@ public class TrackController {
     /**
      * Add a bookmark location to the track. Does not take track offsets into
      * account.
-     * 
+     *
      * @param bookmark
      *            bookmark position in milliseconds
      */
     public void addBookmark(final long bookmark) {
-        if (0 <= bookmark && bookmark <= trackModel.getDuration()) {
+
+        if ((0 <= bookmark) && (bookmark <= trackModel.getDuration())) {
             trackModel.setBookmark(bookmark);
             trackPainter.setTrackModel(trackModel);
         }
@@ -207,7 +235,7 @@ public class TrackController {
     /**
      * Add a bookmark location to the track. Track offsets are taken into
      * account. This call is the same as addBookmark(position - offset).
-     * 
+     *
      * @param position
      *            temporal position in milliseconds to bookmark.
      */
@@ -215,6 +243,11 @@ public class TrackController {
         addBookmark(position - trackModel.getOffset());
     }
 
+    /**
+     * Sets the state of the track model.
+     *
+     * @param state the new state to set.
+     */
     private void setState(final TrackState state) {
         trackModel.setState(state);
         trackPainter.setTrackModel(trackModel);
@@ -275,26 +308,27 @@ public class TrackController {
      * @return a clone of the viewable model used by the controller
      */
     public ViewableModel getViewableModel() {
+
         // return a clone to avoid model tainting
         return viewableModel.clone();
     }
 
     /**
-     * Copies the given viewable model
-     * 
-     * @param viewableModel
+     * Copies the given viewable model.
+     *
+     * @param newModel the viewable model to copy settings from.
      */
-    public void setViewableModel(final ViewableModel viewableModel) {
+    public void setViewableModel(final ViewableModel newModel) {
+
         /*
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
          */
-        this.viewableModel.setEnd(viewableModel.getEnd());
-        this.viewableModel.setIntervalTime(viewableModel.getIntervalTime());
-        this.viewableModel.setIntervalWidth(viewableModel.getIntervalWidth());
-        this.viewableModel.setZoomWindowEnd(viewableModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(viewableModel
-                .getZoomWindowStart());
+        this.viewableModel.setEnd(newModel.getEnd());
+        this.viewableModel.setIntervalTime(newModel.getIntervalTime());
+        this.viewableModel.setIntervalWidth(newModel.getIntervalWidth());
+        this.viewableModel.setZoomWindowEnd(newModel.getZoomWindowEnd());
+        this.viewableModel.setZoomWindowStart(newModel.getZoomWindowStart());
         trackPainter.setViewableModel(this.viewableModel);
         view.repaint();
     }
@@ -308,21 +342,22 @@ public class TrackController {
 
     /**
      * Set if the track carriage can be moved while the snap functionality is
-     * switched on
-     * 
-     * @param canMove
+     * switched on.
+     *
+     * @param canMove true if the carriage can be moved, false otherwise.
      */
     public void setMoveable(final boolean canMove) {
         isMoveable = canMove;
     }
 
     /**
-     * Set if the track carriage can be moved
-     * 
-     * @param lock
+     * Set if the track carriage can be moved.
+     *
+     * @param lock true if the carriage is locked, false otherwise.
      */
     public void setLocked(final boolean lock) {
         trackModel.setLocked(lock);
+
         if (lock) {
             lockUnlockButton.setIcon(lockIcon);
         } else {
@@ -331,59 +366,71 @@ public class TrackController {
     }
 
     /**
-     * Used to request bookmark saving
+     * Used to request bookmark saving.
      */
     public void saveBookmark() {
         fireCarriageBookmarkSaveEvent();
     }
 
+    public void deselect() {
+        trackModel.setSelected(false);
+        trackPainter.setTrackModel(trackModel);
+    }
+
     /**
-     * Request a bookmark
+     * Request a bookmark.
      */
     private void setBookmarkAction() {
         fireCarriageBookmarkRequestEvent();
+
         /*
          * invert the selected state because the menu event generates a click
          * event.
          */
-        changeSelected();
+        changeSelected(false);
     }
 
     /**
-     * Remove the track's bookmark
+     * Remove the track's bookmark.
      */
     private void clearBookmarkAction() {
         trackModel.setBookmark(-1);
         trackPainter.setTrackModel(trackModel);
+
         /*
          * invert the selected state because the menu event generates a click
          * event.
          */
-        changeSelected();
+        changeSelected(false);
     }
 
     /**
      * Invert selection state.
+     *
+     * @param hasModifiers true if modifiers were held down, false otherwise.
      */
-    private void changeSelected() {
+    private void changeSelected(final boolean hasModifiers) {
+
         if (trackModel.isSelected()) {
             trackModel.setSelected(false);
         } else {
             trackModel.setSelected(true);
         }
+
         trackPainter.setTrackModel(trackModel);
-        fireCarriageSelectionChangeEvent();
+        fireCarriageSelectionChangeEvent(hasModifiers);
     }
 
     /**
      * Handles the event for locking and unlocking the track's movement.
-     * 
-     * @param e
+     *
+     * @param e event to handle.
      */
     private void handleLockUnlockButtonEvent(final ActionEvent e) {
         boolean isLocked = trackModel.isLocked();
         isLocked ^= true;
         trackModel.setLocked(isLocked);
+
         if (isLocked) {
             lockUnlockButton.setIcon(lockIcon);
         } else {
@@ -393,8 +440,8 @@ public class TrackController {
 
     /**
      * Register a mouse listener.
-     * 
-     * @param listener
+     *
+     * @param listener listener to register.
      */
     public void addMouseListener(final MouseListener listener) {
         view.addMouseListener(listener);
@@ -402,30 +449,33 @@ public class TrackController {
 
     /**
      * Remove the mouse listener.
-     * 
-     * @param listener
+     *
+     * @param listener listener to remove.
      */
     public void removeMouseListener(final MouseListener listener) {
         view.removeMouseListener(listener);
     }
 
     /**
-     * Register the listener to be notified of carriage events
-     * 
-     * @param listener
+     * Register the listener to be notified of carriage events.
+     *
+     * @param listener listener to register.
      */
     public void addCarriageEventListener(final CarriageEventListener listener) {
+
         synchronized (this) {
             listenerList.add(CarriageEventListener.class, listener);
         }
     }
 
     /**
-     * Remove the listener from being notified of carriage events
-     * 
-     * @param listener
+     * Remove the listener from being notified of carriage events.
+     *
+     * @param listener listener to remove.
      */
-    public void removeCarriageEventListener(final CarriageEventListener listener) {
+    public void removeCarriageEventListener(
+        final CarriageEventListener listener) {
+
         synchronized (this) {
             listenerList.remove(CarriageEventListener.class, listener);
         }
@@ -433,11 +483,12 @@ public class TrackController {
 
     /**
      * Register the listener interested in mouse events on the track's carriage.
-     * 
-     * @param listener
+     *
+     * @param listener listener to register.
      */
     public void addTrackMouseEventListener(
-            final TrackMouseEventListener listener) {
+        final TrackMouseEventListener listener) {
+
         synchronized (this) {
             listenerList.add(TrackMouseEventListener.class, listener);
         }
@@ -446,37 +497,42 @@ public class TrackController {
     /**
      * Remove the listener from being notified of mouse events on the track's
      * carriage.
-     * 
-     * @param listener
+     *
+     * @param listener listener to remove.
      */
     public void removeTrackMouseEventListener(
-            final TrackMouseEventListener listener) {
+        final TrackMouseEventListener listener) {
+
         synchronized (this) {
             listenerList.remove(TrackMouseEventListener.class, listener);
         }
     }
 
     /**
-     * Used to inform listeners about a new carriage event
-     * 
-     * @param newOffset
+     * Used to inform listeners about a new carriage event.
+     *
+     * @param newOffset the new offset to inform listeners about.
      * @param temporalPosition
      *            the temporal position of the mouse when the new offset is
      *            triggered
+     * @param hasModifiers true if modifiers were held down, false otherwise.
      */
     private void fireCarriageOffsetChangeEvent(final long newOffset,
-            final long temporalPosition) {
+        final long temporalPosition, final boolean hasModifiers) {
+
         synchronized (this) {
-            final CarriageEvent e =
-                    new CarriageEvent(this, trackModel.getTrackId(), newOffset,
-                            trackModel.getBookmark(), trackModel.getDuration(),
-                            temporalPosition, EventType.OFFSET_CHANGE);
+            final CarriageEvent e = new CarriageEvent(this,
+                    trackModel.getTrackId(), newOffset,
+                    trackModel.getBookmark(), trackModel.getDuration(),
+                    temporalPosition, EventType.OFFSET_CHANGE, hasModifiers);
             final Object[] listeners = listenerList.getListenerList();
+
             /*
              * The listener list contains the listening class and then the
              * listener instance.
              */
             for (int i = 0; i < listeners.length; i += 2) {
+
                 if (listeners[i] == CarriageEventListener.class) {
                     ((CarriageEventListener) listeners[i + 1]).offsetChanged(e);
                 }
@@ -485,47 +541,49 @@ public class TrackController {
     }
 
     /**
-     * Used to inform listeners about a bookmark request event
-     * 
-     * @param offset
+     * Used to inform listeners about a bookmark request event.
      */
     private void fireCarriageBookmarkRequestEvent() {
+
         synchronized (this) {
-            final CarriageEvent e =
-                    new CarriageEvent(this, trackModel.getTrackId(), trackModel
-                            .getOffset(), trackModel.getBookmark(), trackModel
-                            .getDuration(), 0, EventType.BOOKMARK_REQUEST);
+            final CarriageEvent e = new CarriageEvent(this,
+                    trackModel.getTrackId(), trackModel.getOffset(),
+                    trackModel.getBookmark(), trackModel.getDuration(), 0,
+                    EventType.BOOKMARK_REQUEST, false);
             final Object[] listeners = listenerList.getListenerList();
+
             /*
              * The listener list contains the listening class and then the
              * listener instance.
              */
             for (int i = 0; i < listeners.length; i += 2) {
+
                 if (listeners[i] == CarriageEventListener.class) {
-                    ((CarriageEventListener) listeners[i + 1])
-                            .requestBookmark(e);
+                    ((CarriageEventListener) listeners[i + 1]).requestBookmark(
+                        e);
                 }
             }
         }
     }
 
     /**
-     * Used to inform listeners about a bookmark request event
-     * 
-     * @param offset
+     * Used to inform listeners about a bookmark request event.
      */
     private void fireCarriageBookmarkSaveEvent() {
+
         synchronized (this) {
-            final CarriageEvent e =
-                    new CarriageEvent(this, trackModel.getTrackId(), trackModel
-                            .getOffset(), trackModel.getBookmark(), trackModel
-                            .getDuration(), 0, EventType.BOOKMARK_SAVE);
+            final CarriageEvent e = new CarriageEvent(this,
+                    trackModel.getTrackId(), trackModel.getOffset(),
+                    trackModel.getBookmark(), trackModel.getDuration(), 0,
+                    EventType.BOOKMARK_SAVE, false);
             final Object[] listeners = listenerList.getListenerList();
+
             /*
              * The listener list contains the listening class and then the
              * listener instance.
              */
             for (int i = 0; i < listeners.length; i += 2) {
+
                 if (listeners[i] == CarriageEventListener.class) {
                     ((CarriageEventListener) listeners[i + 1]).saveBookmark(e);
                 }
@@ -535,22 +593,27 @@ public class TrackController {
 
     /**
      * Used to inform listeners about track selection event.
+     *
+     * @param hasModifiers true if modifiers were held down, false otherwise.
      */
-    private void fireCarriageSelectionChangeEvent() {
+    private void fireCarriageSelectionChangeEvent(final boolean hasModifiers) {
+
         synchronized (this) {
-            final CarriageEvent e =
-                    new CarriageEvent(this, trackModel.getTrackId(), trackModel
-                            .getOffset(), trackModel.getBookmark(), trackModel
-                            .getDuration(), 0, EventType.CARRIAGE_SELECTION);
+            final CarriageEvent e = new CarriageEvent(this,
+                    trackModel.getTrackId(), trackModel.getOffset(),
+                    trackModel.getBookmark(), trackModel.getDuration(), 0,
+                    EventType.CARRIAGE_SELECTION, hasModifiers);
             final Object[] listeners = listenerList.getListenerList();
+
             /*
              * The listener list contains the listening class and then the
              * listener instance.
              */
             for (int i = 0; i < listeners.length; i += 2) {
+
                 if (listeners[i] == CarriageEventListener.class) {
-                    ((CarriageEventListener) listeners[i + 1])
-                            .selectionChanged(e);
+                    ((CarriageEventListener) listeners[i + 1]).selectionChanged(
+                        e);
                 }
             }
         }
@@ -559,20 +622,23 @@ public class TrackController {
     /**
      * Used to inform listeners about the mouse release event on the track's
      * carriage.
-     * 
-     * @param e
+     *
+     * @param e the event to handle.
      */
     private void fireMouseReleasedEvent(final MouseEvent e) {
+
         synchronized (this) {
             final Object[] listeners = listenerList.getListenerList();
+
             /*
              * The listener list contains the listening class and then the
              * listener instance.
              */
             for (int i = 0; i < listeners.length; i += 2) {
+
                 if (listeners[i] == TrackMouseEventListener.class) {
-                    ((TrackMouseEventListener) listeners[i + 1])
-                            .mouseReleased(e);
+                    ((TrackMouseEventListener) listeners[i + 1]).mouseReleased(
+                        e);
                 }
             }
         }
@@ -583,25 +649,36 @@ public class TrackController {
      */
     private class TrackPainterListener extends MouseInputAdapter {
 
-        private transient long offsetInit;
-        private transient boolean inCarriage;
-        private transient int xInit;
-        private transient TrackState initialState;
+        /** Initial offset value. */
+        private long offsetInit;
 
-        private transient final Cursor moveCursor =
-                Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
-        private transient final Cursor defaultCursor =
-                Cursor.getDefaultCursor();
+        /** Is the mouse in the carriage. */
+        private boolean inCarriage;
 
-        @Override
-        public void mouseClicked(final MouseEvent e) {
+        /** Initial x-coord position. */
+        private int xInit;
+
+        /** Initial track state. */
+        private TrackState initialState;
+
+        /** Mouse cursor for moving. */
+        private final Cursor moveCursor = Cursor.getPredefinedCursor(
+                Cursor.MOVE_CURSOR);
+
+        /** Default mouse cursor. */
+        private final Cursor defaultCursor = Cursor.getDefaultCursor();
+
+        @Override public void mouseClicked(final MouseEvent e) {
+
             if (trackPainter.getCarriagePolygon().contains(e.getPoint())) {
-                changeSelected();
+                final boolean hasModifiers = e.isAltDown() || e.isAltGraphDown()
+                    || e.isControlDown() || e.isMetaDown() || e.isShiftDown();
+                changeSelected(hasModifiers);
             }
         }
 
-        @Override
-        public void mousePressed(final MouseEvent e) {
+        @Override public void mousePressed(final MouseEvent e) {
+
             if (trackPainter.getCarriagePolygon().contains(e.getPoint())) {
                 inCarriage = true;
                 xInit = e.getX();
@@ -609,32 +686,40 @@ public class TrackController {
                 trackPainter.setCursor(moveCursor);
                 initialState = trackModel.getState();
             }
+
             if (e.isPopupTrigger()) {
                 menu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
 
-        @Override
-        public void mouseDragged(final MouseEvent e) {
+        @Override public void mouseDragged(final MouseEvent e) {
+
             if (trackModel.isLocked()) {
                 return;
             }
+
+            final boolean hasModifiers = e.isAltDown() || e.isAltGraphDown()
+                || e.isControlDown() || e.isMetaDown() || e.isShiftDown();
+
             if (inCarriage) {
                 final int xNet = e.getX() - xInit;
+
                 // Calculate the total amount of time we offset by
-                final float newOffset =
-                        (xNet * 1F) / viewableModel.getIntervalWidth()
-                                * viewableModel.getIntervalTime() + offsetInit;
-                final float temporalPosition =
-                        (e.getX() * 1F) / viewableModel.getIntervalWidth()
-                                * viewableModel.getIntervalTime();
+                final float newOffset = ((xNet * 1F)
+                        / viewableModel.getIntervalWidth()
+                        * viewableModel.getIntervalTime()) + offsetInit;
+                final float temporalPosition = (e.getX() * 1F)
+                    / viewableModel.getIntervalWidth()
+                    * viewableModel.getIntervalTime();
+
                 if (isMoveable) {
                     fireCarriageOffsetChangeEvent((long) newOffset,
-                            (long) temporalPosition);
+                        (long) temporalPosition, hasModifiers);
                 } else {
-                    final long threshold =
-                            (long) (0.05F * (viewableModel.getZoomWindowEnd() - viewableModel
-                                    .getZoomWindowStart()));
+                    final long threshold = (long) (0.05F
+                            * (viewableModel.getZoomWindowEnd()
+                                - viewableModel.getZoomWindowStart()));
+
                     if (Math.abs(newOffset - offsetInit) >= threshold) {
                         isMoveable = true;
                     }
@@ -642,16 +727,18 @@ public class TrackController {
             }
         }
 
-        @Override
-        public void mouseReleased(final MouseEvent e) {
+        @Override public void mouseReleased(final MouseEvent e) {
             isMoveable = true;
             inCarriage = false;
+
             final Component source = (Component) e.getSource();
             source.setCursor(defaultCursor);
             setState(initialState);
+
             if (e.isPopupTrigger()) {
                 menu.show(e.getComponent(), e.getX(), e.getY());
             }
+
             fireMouseReleasedEvent(e);
         }
     }
