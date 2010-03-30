@@ -57,7 +57,10 @@ public final class UIBug583Test extends OpenSHAPATestClass {
         DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
                     1000));
 
-        while (!scriptConsole.textBox().text().contains("Finished")) {
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + 5000; // 5 second timeout
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 

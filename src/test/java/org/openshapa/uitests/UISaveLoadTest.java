@@ -563,8 +563,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
-    public void testLoadingSHAPA1() throws Exception {
+    @Test public void testLoadingSHAPA1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         loadTest("test-v1-in.csv", "test-v1-out.csv");
     }
@@ -574,8 +573,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
-    public void testLoadingSHAPA2() throws Exception {
+    @Test public void testLoadingSHAPA2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         loadTest("test-v2-in.csv", "test-v2-out.csv");
     }
@@ -670,8 +668,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
-    public void testSaveSHAPA1() throws Exception {
+    @Test public void testSaveSHAPA1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedSHAPA", "shapa");
     }
@@ -691,8 +688,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
-    public void testSaveSHAPA2() throws Exception {
+    @Test public void testSaveSHAPA2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedSHAPA.shapa", "shapa");
     }
@@ -712,8 +708,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test
-    public void testSaveSHAPA3() throws Exception {
+    @Test public void testSaveSHAPA3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedSHAPA.csv", "shapa");
     }

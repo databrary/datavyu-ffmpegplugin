@@ -8,9 +8,13 @@ import org.fest.swing.fixture.JLabelFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.util.Platform;
+
 import org.openshapa.util.UIUtils;
+
 import org.testng.Assert;
+
 import org.testng.annotations.Test;
+
 
 /**
  * Bug 497: Allows you to paste values greate than max integer and also multiple
@@ -22,9 +26,9 @@ public final class UIBug497Test extends OpenSHAPATestClass {
     /**
      * Bug 497 integer test.
      */
-    @Test
-    public void testBug497Integer() {
+    @Test public void testBug497Integer() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         String varName = "i";
         String varType = "INTEGER";
         String varRadio = varType.toLowerCase() + "TypeButton";
@@ -48,9 +52,9 @@ public final class UIBug497Test extends OpenSHAPATestClass {
 
         // b. Paste text
         UIUtils.setClipboard(testInput);
-        JTextComponentFixture cell =
-                mainFrameFixture.textBox(JTextComponentMatcher
-                        .withText("<val>"));
+
+        JTextComponentFixture cell = mainFrameFixture.textBox(
+                JTextComponentMatcher.withText("<val>"));
         cell.click();
         cell.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V).modifiers(
                 Platform.controlOrCommandMask()));
@@ -62,9 +66,9 @@ public final class UIBug497Test extends OpenSHAPATestClass {
     /**
      * Bug 497 float test.
      */
-    @Test
-    public void testBug497Float() {
+    @Test public void testBug497Float() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         String varName = "f";
         String varType = "FLOAT";
         String varRadio = varType.toLowerCase() + "TypeButton";
@@ -88,9 +92,9 @@ public final class UIBug497Test extends OpenSHAPATestClass {
 
         // b. Paste text
         UIUtils.setClipboard(testInput);
-        JTextComponentFixture cell =
-                mainFrameFixture.textBox(JTextComponentMatcher
-                        .withText("<val>"));
+
+        JTextComponentFixture cell = mainFrameFixture.textBox(
+                JTextComponentMatcher.withText("<val>"));
         cell.click();
         cell.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V).modifiers(
                 Platform.controlOrCommandMask()));

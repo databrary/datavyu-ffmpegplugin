@@ -1,7 +1,9 @@
 package org.openshapa.uitests;
 
 import java.awt.event.KeyEvent;
+
 import java.io.File;
+
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,41 +21,50 @@ import org.fest.swing.fixture.VocabEditorDialogFixture;
 import org.fest.swing.fixture.VocabElementFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
+
 import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.VocabEditorV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
+
 import org.testng.Assert;
+
 import org.testng.annotations.Test;
+
 
 /**
  * Test vocab editor window.
  */
 public final class UIVocabEditorTest extends OpenSHAPATestClass {
+
     /**
      * Nominal test input.
      */
-    private String[] nominalTestInput =
-            { "Subject stands )up ", "$10,432", "Hand me (the manual!",
-                    "Tote_that_bale", "Jeune; fille celebre", "If x>7 then x|2" };
+    private String[] nominalTestInput = {
+            "Subject stands )up ", "$10,432", "Hand me (the manual!",
+            "Tote_that_bale", "Jeune; fille celebre", "If x>7 then x|2"
+        };
 
     /**
      * Nominal test output.
      */
-    private String[] expectedNominalTestOutput =
-            { "Subject stands up", "$10432", "Hand me the manual!",
-                    "Tote_that_bale", "Jeune fille celebre", "If x7 then x2" };
+    private String[] expectedNominalTestOutput = {
+            "Subject stands up", "$10432", "Hand me the manual!",
+            "Tote_that_bale", "Jeune fille celebre", "If x7 then x2"
+        };
 
     /**
      * Test vocab editor is being populated.
      */
-    @Test
-    public void testLoading() {
+    @Test public void testLoading() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Check that vocab editor is empty
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         // Close vocab editor window - BugzID641
@@ -74,48 +85,56 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().contains("Finished")) {
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + 5000; // 5 second timeout
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
+
         scriptConsole.button("closeButton").click();
 
         // 3. Check that vocab editor is populated
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+        veDialog = new VocabEditorDialogFixture(mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 2);
     }
 
     /**
      * Test vocab editor creating new predicate.
      */
-    @Test
-    public void testNewPredicateNoEdit() {
+    @Test public void testNewPredicateNoEdit() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Create new predicate
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         veDialog.addPredicateButton().click();
+
         String veName = veDialog.allVocabElements().elementAt(0).getVEName();
         veDialog.okButton().click();
 
         // 2. Create new predicate variable and cell
         String varName = "predicate";
-        SpreadsheetPanelFixture ssPanel =
-                new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                        (SpreadsheetPanel) UIUtils.getSpreadsheet(
-                                mainFrameFixture).component());
-        UIUtils.createNewVariable(mainFrameFixture, varName, varName
-                + "TypeButton");
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot,
+                (SpreadsheetPanel) UIUtils.getSpreadsheet(mainFrameFixture)
+                    .component());
+        UIUtils.createNewVariable(mainFrameFixture, varName,
+            varName + "TypeButton");
 
         ssPanel.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
         SpreadsheetCellFixture cell = ssPanel.column(varName).cell(1);
         cell.cellValue().enterText(veName);
         Assert.assertEquals(cell.cellValue().text(), veName + "(<arg0>)");
@@ -124,26 +143,30 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and replacing VE name.
      */
-    @Test
-    public void testNewPredicateReplaceVEName() {
+    @Test public void testNewPredicateReplaceVEName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Create new predicate
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         veDialog.addPredicateButton().click();
+
         String oldVEName = veDialog.allVocabElements().elementAt(0).getVEName();
 
         String newVEName = "newName";
+
         try {
             veDialog.vocabElement(oldVEName).select(0, oldVEName.length());
         } catch (BadLocationException ex) {
             Logger.getLogger(UIVocabEditorTest.class.getName()).log(
-                    Level.SEVERE, null, ex);
+                Level.SEVERE, null, ex);
         }
+
         veDialog.vocabElement(oldVEName).value().enterText(newVEName);
         Assert.assertFalse(oldVEName.equals(newVEName));
 
@@ -151,15 +174,16 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // 2. Create new predicate variable and cell
         String varName = "predicate";
-        SpreadsheetPanelFixture ssPanel =
-                new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                        (SpreadsheetPanel) UIUtils.getSpreadsheet(
-                                mainFrameFixture).component());
-        UIUtils.createNewVariable(mainFrameFixture, varName, varName
-                + "TypeButton");
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot,
+                (SpreadsheetPanel) UIUtils.getSpreadsheet(mainFrameFixture)
+                    .component());
+        UIUtils.createNewVariable(mainFrameFixture, varName,
+            varName + "TypeButton");
 
         ssPanel.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
         SpreadsheetCellFixture cell = ssPanel.column(varName).cell(1);
         cell.cellValue().enterText(newVEName);
         Assert.assertEquals(cell.cellValue().text(), newVEName + "(<arg0>)");
@@ -168,21 +192,24 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and adding to VE name.
      */
-    @Test
-    public void testNewPredicateAddingVEName() {
+    @Test public void testNewPredicateAddingVEName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Create new predicate
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         veDialog.addPredicateButton().click();
+
         String oldVEName = veDialog.allVocabElements().elementAt(0).getVEName();
 
         String addVEName = "newName";
         veDialog.vocabElement(oldVEName).value().enterText(addVEName);
+
         String newVEName = veDialog.allVocabElements().elementAt(0).getVEName();
         Assert.assertTrue((addVEName + oldVEName).equals(newVEName));
 
@@ -190,15 +217,16 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // 2. Create new predicate variable and cell
         String varName = "predicate";
-        SpreadsheetPanelFixture ssPanel =
-                new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                        (SpreadsheetPanel) UIUtils.getSpreadsheet(
-                                mainFrameFixture).component());
-        UIUtils.createNewVariable(mainFrameFixture, varName, varName
-                + "TypeButton");
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot,
+                (SpreadsheetPanel) UIUtils.getSpreadsheet(mainFrameFixture)
+                    .component());
+        UIUtils.createNewVariable(mainFrameFixture, varName,
+            varName + "TypeButton");
 
         ssPanel.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
         SpreadsheetCellFixture cell = ssPanel.column(varName).cell(1);
         cell.cellValue().enterText(newVEName);
         Assert.assertEquals(cell.cellValue().text(), newVEName + "(<arg0>)");
@@ -207,124 +235,135 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and adding to VE argument.
      */
-    @Test
-    public void testNewPredicateAddingVEArgument() {
+    @Test public void testNewPredicateAddingVEArgument() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Create new predicate
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         veDialog.addPredicateButton().click();
-        String oldVEArgName =
-                veDialog.allVocabElements().elementAt(0).getArgument(0);
+
+        String oldVEArgName = veDialog.allVocabElements().elementAt(0)
+            .getArgument(0);
         String veName = "predicate1";
 
         String addVEName = "newName";
         int argPos = veDialog.vocabElement(veName).getArgStartIndex(0);
+
         try {
             veDialog.vocabElement(veName).value().focus();
             veDialog.vocabElement(veName).clickToCharPos(argPos, 1);
         } catch (BadLocationException ex) {
             Logger.getLogger(UIVocabEditorTest.class.getName()).log(
-                    Level.SEVERE, null, ex);
+                Level.SEVERE, null, ex);
         }
+
         Assert.assertNull(veDialog.vocabElement(veName).value().component()
-                .getSelectedText());
+            .getSelectedText());
         veDialog.vocabElement(veName).value().enterText(addVEName);
-        String newVEArgName =
-                veDialog.allVocabElements().elementAt(0).getArgument(0);
+
+        String newVEArgName = veDialog.allVocabElements().elementAt(0)
+            .getArgument(0);
         Assert.assertTrue((addVEName + oldVEArgName).equals(newVEArgName));
 
         veDialog.okButton().click();
 
         // 2. Create new predicate variable and cell
         String varName = "predicate";
-        SpreadsheetPanelFixture ssPanel =
-                new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                        (SpreadsheetPanel) UIUtils.getSpreadsheet(
-                                mainFrameFixture).component());
-        UIUtils.createNewVariable(mainFrameFixture, varName, varName
-                + "TypeButton");
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot,
+                (SpreadsheetPanel) UIUtils.getSpreadsheet(mainFrameFixture)
+                    .component());
+        UIUtils.createNewVariable(mainFrameFixture, varName,
+            varName + "TypeButton");
 
         ssPanel.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
         SpreadsheetCellFixture cell = ssPanel.column(varName).cell(1);
         cell.cellValue().enterText(veName);
-        Assert.assertEquals(cell.cellValue().text(), veName + "(<"
-                + newVEArgName + ">)");
+        Assert.assertEquals(cell.cellValue().text(),
+            veName + "(<" + newVEArgName + ">)");
     }
 
     /**
      * Test vocab editor creating new predicate and adding to VE argument.
      */
-    @Test
-    public void testNewPredicateReplaceVEArgument() {
+    @Test public void testNewPredicateReplaceVEArgument() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Create new predicate
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         veDialog.addPredicateButton().click();
-        String oldVEArgName =
-                veDialog.allVocabElements().elementAt(0).getArgument(0);
+
+        String oldVEArgName = veDialog.allVocabElements().elementAt(0)
+            .getArgument(0);
         String veName = "predicate1";
 
         String replaceVEName = "newName";
         int argPos = veDialog.vocabElement(veName).getArgStartIndex(0);
+
         try {
             veDialog.vocabElement(veName).value().focus();
             veDialog.vocabElement(veName).clickToCharPos(argPos, 2);
         } catch (BadLocationException ex) {
             Logger.getLogger(UIVocabEditorTest.class.getName()).log(
-                    Level.SEVERE, null, ex);
+                Level.SEVERE, null, ex);
         }
+
         Assert.assertEquals(veDialog.vocabElement(veName).value().component()
-                .getSelectedText(), oldVEArgName);
+            .getSelectedText(), oldVEArgName);
         veDialog.vocabElement(veName).value().enterText(replaceVEName);
-        String newVEArgName =
-                veDialog.allVocabElements().elementAt(0).getArgument(0);
+
+        String newVEArgName = veDialog.allVocabElements().elementAt(0)
+            .getArgument(0);
         Assert.assertTrue(replaceVEName.equals(newVEArgName));
 
         veDialog.okButton().click();
 
         // 2. Create new predicate variable and cell
         String varName = "predicate";
-        SpreadsheetPanelFixture ssPanel =
-                new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                        (SpreadsheetPanel) UIUtils.getSpreadsheet(
-                                mainFrameFixture).component());
-        UIUtils.createNewVariable(mainFrameFixture, varName, varName
-                + "TypeButton");
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot,
+                (SpreadsheetPanel) UIUtils.getSpreadsheet(mainFrameFixture)
+                    .component());
+        UIUtils.createNewVariable(mainFrameFixture, varName,
+            varName + "TypeButton");
 
         ssPanel.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
         SpreadsheetCellFixture cell = ssPanel.column(varName).cell(1);
         cell.cellValue().enterText(veName);
-        Assert.assertEquals(cell.cellValue().text(), veName + "(<"
-                + newVEArgName + ">)");
+        Assert.assertEquals(cell.cellValue().text(),
+            veName + "(<" + newVEArgName + ">)");
     }
 
     /**
      * Test vocab editor reverting with multiple changes.
-     * 
+     *
      * @throws BadLocationException
      *             if point not valid
      */
-    @Test
-    public void testRevertButton1() throws BadLocationException {
+    @Test public void testRevertButton1() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // Test input
-        String[] testInputArray =
-                { "Subject stands )up ", "$10,432", "Hand me (the manual!",
-                        "Tote_that_bale", "Jeune; fille celebre",
-                        "If x>7 then x|2" };
+        String[] testInputArray = {
+                "Subject stands )up ", "$10,432", "Hand me (the manual!",
+                "Tote_that_bale", "Jeune; fille celebre", "If x>7 then x|2"
+            };
 
         // 1. Run script to populate
         String root = System.getProperty("testPath");
@@ -341,17 +380,24 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().contains("Finished")) {
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + 5000; // 5 second timeout
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
+
         scriptConsole.button("closeButton").click();
 
         // 2. Get current data
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Vector<VocabElementFixture> vve = veDialog.allVocabElements();
         int numElements = vve.size();
         String[] originalData = new String[numElements];
@@ -387,19 +433,18 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
     /**
      * Test vocab editor reverting with single addition changes.
-     * 
+     *
      * @throws BadLocationException
      *             if point not found
      */
-    @Test
-    public void testRevertButton2() throws BadLocationException {
+    @Test public void testRevertButton2() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // Test input
-        String[] testInputArray =
-                { "Subject stands )up ", "$10,432", "Hand me (the manual!",
-                        "Tote_that_bale", "Jeune; fille celebre",
-                        "If x>7 then x|2" };
+        String[] testInputArray = {
+                "Subject stands )up ", "$10,432", "Hand me (the manual!",
+                "Tote_that_bale", "Jeune; fille celebre", "If x>7 then x|2"
+            };
 
         // 1. Run script to populate
         String root = System.getProperty("testPath");
@@ -416,18 +461,24 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().contains("Finished")) {
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + 5000; // 5 second timeout
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
+
         scriptConsole.button("closeButton").click();
 
         // 2. Get current data
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
 
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Vector<VocabElementFixture> vve = veDialog.allVocabElements();
         int numElements = vve.size();
         String[] originalData = new String[numElements];
@@ -458,6 +509,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // TEST 2b. Make single addition change to vocab argument
         for (int i = 0; i < 4; i++) {
+
             for (VocabElementFixture ve : vve) {
                 ve.value().focus();
                 ve.enterTextInArg(i, testInputArray[i]);
@@ -481,12 +533,14 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // TEST 3a: Make single replacement change to vocab name
         for (VocabElementFixture ve : vve) {
+
             try {
                 ve.select(0, ve.getVEName().length());
             } catch (BadLocationException ex) {
                 Logger.getLogger(UIVocabEditorTest.class.getName()).log(
-                        Level.SEVERE, null, ex);
+                    Level.SEVERE, null, ex);
             }
+
             ve.value().enterText(testInputArray[4]);
         }
 
@@ -507,6 +561,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // TEST 3b. Make single replacement change to vocab argument
         for (int i = 0; i < 4; i++) {
+
             for (VocabElementFixture ve : vve) {
                 ve.value().focus();
                 ve.replaceTextInArg(i, testInputArray[i]);
@@ -531,19 +586,18 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
     /**
      * Test vocab editor reverting with standard deleting.
-     * 
+     *
      * @throws BadLocationException
      *             if point not found
      */
-    @Test
-    public void testRevertButton3a() throws BadLocationException {
+    @Test public void testRevertButton3a() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // Test input
-        String[] testInputArray =
-                { "Subject stands )up ", "$10,432", "Hand me (the manual!",
-                        "Tote_that_bale", "Jeune; fille celebre",
-                        "If x>7 then x|2" };
+        String[] testInputArray = {
+                "Subject stands )up ", "$10,432", "Hand me (the manual!",
+                "Tote_that_bale", "Jeune; fille celebre", "If x>7 then x|2"
+            };
 
         // 1. Run script to populate
         String root = System.getProperty("testPath");
@@ -560,17 +614,24 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().contains("Finished")) {
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + 5000; // 5 second timeout
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
+
         scriptConsole.button("closeButton").click();
 
         // 2. Get current data
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Vector<VocabElementFixture> vve = veDialog.allVocabElements();
         int numElements = vve.size();
         String[] originalData = new String[numElements];
@@ -584,9 +645,10 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
             int nameLength = ve.getVEName().length();
             ve.value().focus();
             ve.clickToCharPos(0, 1);
+
             for (int i = 0; i < nameLength; i++) {
-                ve.value().pressAndReleaseKey(
-                        KeyPressInfo.keyCode(KeyEvent.VK_DELETE));
+                ve.value().pressAndReleaseKey(KeyPressInfo.keyCode(
+                        KeyEvent.VK_DELETE));
             }
         }
 
@@ -607,13 +669,16 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // TEST 3b. delete key all ve argument
         for (int i = 0; i < 4; i++) {
+
             for (VocabElementFixture ve : vve) {
                 ve.value().focus();
                 ve.clickToCharPos(ve.getArgStartIndex(i), 1);
+
                 int argLength = ve.getArgument(i).length();
+
                 for (int j = 0; j < argLength; j++) {
-                    ve.value().pressAndReleaseKey(
-                            KeyPressInfo.keyCode(KeyEvent.VK_DELETE));
+                    ve.value().pressAndReleaseKey(KeyPressInfo.keyCode(
+                            KeyEvent.VK_DELETE));
                 }
             }
         }
@@ -638,9 +703,10 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
             int nameLength = ve.getVEName().length();
             ve.value().focus();
             ve.clickToCharPos(nameLength, 1);
+
             for (int i = 0; i < nameLength; i++) {
-                ve.value().pressAndReleaseKey(
-                        KeyPressInfo.keyCode(KeyEvent.VK_BACK_SPACE));
+                ve.value().pressAndReleaseKey(KeyPressInfo.keyCode(
+                        KeyEvent.VK_BACK_SPACE));
             }
         }
 
@@ -661,13 +727,16 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // TEST 4b. Backspace all ve argument
         for (int i = 0; i < 4; i++) {
+
             for (VocabElementFixture ve : vve) {
                 ve.value().focus();
+
                 int argLength = ve.getArgument(i).length();
                 ve.clickToCharPos(ve.getArgStartIndex(i) + argLength, 1);
+
                 for (int j = 0; j < argLength; j++) {
-                    ve.value().pressAndReleaseKey(
-                            KeyPressInfo.keyCode(KeyEvent.VK_BACK_SPACE));
+                    ve.value().pressAndReleaseKey(KeyPressInfo.keyCode(
+                            KeyEvent.VK_BACK_SPACE));
                 }
             }
         }
@@ -690,7 +759,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
     /**
      * Test vocab editor reverting with select all deleting.
-     * 
+     *
      * @throws java.lang.Exception
      *             on any error FIX BUGZID:636 & change test to FEST
      */
@@ -823,15 +892,15 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/o script.
      */
-    @Test
-    public void testAddNewPredicateAndRevert1() {
+    @Test public void testAddNewPredicateAndRevert1() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Create new predicate
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
 
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         veDialog.addPredicateButton().click();
@@ -849,9 +918,9 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/ script.
      */
-    @Test
-    public void testAddNewPredicateAndRevert2() {
+    @Test public void testAddNewPredicateAndRevert2() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
@@ -867,24 +936,31 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().contains("Finished")) {
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + 5000; // 5 second timeout
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
+
         scriptConsole.button("closeButton").click();
 
         // 2. Get number of elements
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         int origNumVEs = veDialog.numOfVocabElements();
         Assert.assertTrue(origNumVEs > 0);
 
         veDialog.addPredicateButton().click();
 
         // Check that VE exists
-        Assert.assertTrue(veDialog.numOfVocabElements() == origNumVEs + 1);
+        Assert.assertTrue(veDialog.numOfVocabElements() == (origNumVEs + 1));
 
         // Revert
         veDialog.revertButton().click();
@@ -896,15 +972,15 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/o script.
      */
-    @Test
-    public void testAddNewMatrixAndRevert1() {
+    @Test public void testAddNewMatrixAndRevert1() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Create new predicate
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
 
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         veDialog.addMatrixButton().click();
@@ -922,9 +998,9 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/ script.
      */
-    @Test
-    public void testAddNewMatrixAndRevert2() {
+    @Test public void testAddNewMatrixAndRevert2() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
@@ -940,24 +1016,31 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().contains("Finished")) {
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + 5000; // 5 second timeout
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
+
         scriptConsole.button("closeButton").click();
 
         // 2. Get number of elements
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         int origNumVEs = veDialog.numOfVocabElements();
         Assert.assertTrue(origNumVEs > 0);
 
         veDialog.addMatrixButton().click();
 
         // Check that VE exists
-        Assert.assertTrue(veDialog.numOfVocabElements() == origNumVEs + 1);
+        Assert.assertTrue(veDialog.numOfVocabElements() == (origNumVEs + 1));
 
         // Revert
         veDialog.revertButton().click();
@@ -969,9 +1052,9 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test adding a new matrix after script via vocab editor.
      */
-    @Test
-    public void testAddNewMatrix() {
+    @Test public void testAddNewMatrix() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Create new variables using script
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
@@ -987,27 +1070,34 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
-        while (!scriptConsole.textBox().text().contains("Finished")) {
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + 5000; // 5 second timeout
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
+
         scriptConsole.button("closeButton").click();
 
         // 2. Get number of elements
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-        VocabEditorDialogFixture veDialog =
-                new VocabEditorDialogFixture(mainFrameFixture.robot,
-                        (VocabEditorV) mainFrameFixture.dialog().component());
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
         int origNumVEs = veDialog.numOfVocabElements();
         Assert.assertTrue(origNumVEs > 0);
 
         veDialog.addMatrixButton().click();
 
         // Check that VE exists
-        Assert.assertTrue(veDialog.numOfVocabElements() == origNumVEs + 1);
+        Assert.assertTrue(veDialog.numOfVocabElements() == (origNumVEs + 1));
 
-        String matrixName =
-                veDialog.allVocabElements().lastElement().getVEName();
+        String matrixName = veDialog.allVocabElements().lastElement()
+            .getVEName();
 
         // Click Apply
         veDialog.applyButton().click();
@@ -1015,16 +1105,16 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         // Check that new matrix has been created
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        SpreadsheetPanelFixture ssPanel =
-                new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                        (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
         SpreadsheetColumnFixture matrixCol = ssPanel.column(matrixName);
         Assert.assertNotNull(matrixCol);
         matrixCol.click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
         SpreadsheetCellFixture cell = matrixCol.cell(1);
-        String argName =
-                veDialog.allVocabElements().lastElement().getArgument(0);
+        String argName = veDialog.allVocabElements().lastElement().getArgument(
+                0);
         Assert.assertEquals(cell.cellValue().text(), "<" + argName + ">");
     }
 }

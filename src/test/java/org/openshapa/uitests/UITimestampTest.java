@@ -1,6 +1,7 @@
 package org.openshapa.uitests;
 
 import java.awt.event.KeyEvent;
+
 import java.util.Vector;
 
 import javax.swing.text.BadLocationException;
@@ -11,36 +12,44 @@ import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
+
 import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.discrete.SpreadsheetPanel;
+
 import org.testng.Assert;
+
 import org.testng.annotations.Test;
+
 
 /**
  * Test for the New Cells.
- * 
+ *
  * @todo After bugs resolved, add more advanced cell tests involving left/right
  *       caret movement
  */
 public final class UITimestampTest extends OpenSHAPATestClass {
+
     /**
      * Test editing the onset and offset timestamps.
      */
-    @Test
-    public void testTimestampEditing() {
+    @Test public void testTimestampEditing() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         JTextComponentFixture onset, offset;
 
-        String[] testInput =
-                { "123456789", "6789", "a13", "12:34:56:789", "4.43",
-                        "127893999", "12:78:93:999", "12:34", "12:34:56" };
+        String[] testInput = {
+                "123456789", "6789", "a13", "12:34:56:789", "4.43", "127893999",
+                "12:78:93:999", "12:34", "12:34:56"
+            };
 
         int numOfTests = testInput.length;
 
-        String[] expectedTestOutput =
-                { "12:34:56:789", "68:29:00:000", "13:00:00:000",
-                        "12:34:56:789", "44:30:00:000", "13:19:33:999",
-                        "13:19:33:999", "12:34:00:000", "12:34:56:000" };
+        String[] expectedTestOutput = {
+                "12:34:56:789", "68:29:00:000", "13:00:00:000", "12:34:56:789",
+                "44:30:00:000", "13:19:33:999", "13:19:33:999", "12:34:00:000",
+                "12:34:56:000"
+            };
 
         Vector<SpreadsheetCellFixture> c = createNewCells(numOfTests);
 
@@ -57,7 +66,7 @@ public final class UITimestampTest extends OpenSHAPATestClass {
 
     /**
      * Test advanced editing the onset and offset timestamps.
-     * 
+     *
      * @throws java.lang.Exception
      *             on any error NEEDS TO BE REWRITTEN FOR FEST AFTER BUG IS
      *             FIXED.
@@ -88,21 +97,23 @@ public final class UITimestampTest extends OpenSHAPATestClass {
     /**
      * Test pasting the onset and offset timestamps.
      */
-    @Test
-    public void testTimestampPasting() {
+    @Test public void testTimestampPasting() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         JTextComponentFixture onset, offset;
 
-        String[] testInput =
-                { "123456789", "6789", "a13", "12:34:56:789", "4.43",
-                        "127893999", "12:78:93:999", "12:34", "12:34:56" };
+        String[] testInput = {
+                "123456789", "6789", "a13", "12:34:56:789", "4.43", "127893999",
+                "12:78:93:999", "12:34", "12:34:56"
+            };
 
         int numOfTests = testInput.length;
 
-        String[] expectedTestOutput =
-                { "12:34:56:789", "68:29:00:000", "13:00:00:000",
-                        "12:34:56:789", "44:30:00:000", "13:19:33:999",
-                        "13:19:33:999", "12:34:00:000", "12:34:56:000" };
+        String[] expectedTestOutput = {
+                "12:34:56:789", "68:29:00:000", "13:00:00:000", "12:34:56:789",
+                "44:30:00:000", "13:19:33:999", "13:19:33:999", "12:34:00:000",
+                "12:34:56:000"
+            };
 
         Vector<SpreadsheetCellFixture> c = createNewCells(numOfTests);
 
@@ -114,11 +125,11 @@ public final class UITimestampTest extends OpenSHAPATestClass {
             // Select all and paste
             onset.selectAll();
             onset.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V)
-                    .modifiers(Platform.controlOrCommandMask()));
+                .modifiers(Platform.controlOrCommandMask()));
 
             offset.selectAll();
             offset.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V)
-                    .modifiers(Platform.controlOrCommandMask()));
+                .modifiers(Platform.controlOrCommandMask()));
 
             Assert.assertEquals(onset.text(), expectedTestOutput[i]);
             Assert.assertEquals(offset.text(), expectedTestOutput[i]);
@@ -128,15 +139,17 @@ public final class UITimestampTest extends OpenSHAPATestClass {
     /**
      * Test deleting the onset and offset timestamps.
      */
-    @Test
-    public void testTimestampDeletion() throws BadLocationException {
+    @Test public void testTimestampDeletion() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        String[] testInput =
-                { "123456789", "12:34:56:789", "127893999", "12:78:93:999" };
+
+        String[] testInput = {
+                "123456789", "12:34:56:789", "127893999", "12:78:93:999"
+            };
 
         int numOfTests = testInput.length;
 
         Vector<SpreadsheetCellFixture> cells = createNewCells(numOfTests);
+
         for (int i = 0; i < numOfTests; i++) {
             cells.elementAt(i).onsetTimestamp().enterText(testInput[i]);
             cells.elementAt(i).offsetTimestamp().enterText(testInput[i]);
@@ -164,31 +177,40 @@ public final class UITimestampTest extends OpenSHAPATestClass {
 
         // backspace all
         c = cells.elementAt(2);
+
         int tsLength = c.onsetTimestamp().text().length();
         c.clickToCharPos(SpreadsheetCellFixture.ONSET, tsLength, 1);
-        for (int i = 0; i < tsLength + 1; i++) {
+
+        for (int i = 0; i < (tsLength + 1); i++) {
             mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
         }
+
         Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
 
         c.clickToCharPos(SpreadsheetCellFixture.OFFSET, tsLength, 1);
-        for (int i = 0; i < tsLength + 1; i++) {
+
+        for (int i = 0; i < (tsLength + 1); i++) {
             mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
         }
+
         Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
 
         // delete key all
         c = cells.elementAt(3);
         c.clickToCharPos(SpreadsheetCellFixture.ONSET, 0, 1);
-        for (int i = 0; i < tsLength + 1; i++) {
+
+        for (int i = 0; i < (tsLength + 1); i++) {
             mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
         }
+
         Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
 
         c.clickToCharPos(SpreadsheetCellFixture.OFFSET, 0, 1);
-        for (int i = 0; i < tsLength + 1; i++) {
+
+        for (int i = 0; i < (tsLength + 1); i++) {
             mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
         }
+
         Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
     }
 
@@ -198,8 +220,7 @@ public final class UITimestampTest extends OpenSHAPATestClass {
     private Vector<SpreadsheetCellFixture> createNewCells(final int amount) {
         String varName = "t";
         String varType =
-                UIUtils.VAR_TYPES[(int) (Math.random()
-                * UIUtils.VAR_TYPES.length)];
+            UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
         String varRadio = varType.toLowerCase();
 
         // 1. Create new variable
@@ -207,9 +228,8 @@ public final class UITimestampTest extends OpenSHAPATestClass {
 
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
 
-        SpreadsheetPanelFixture ssPanel =
-                new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                        (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
         Assert.assertNotNull(ssPanel.column(varName));
         ssPanel.column(varName).click();
 

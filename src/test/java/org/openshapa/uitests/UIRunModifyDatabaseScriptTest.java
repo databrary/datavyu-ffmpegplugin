@@ -11,16 +11,23 @@ import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
+
 import org.openshapa.OpenSHAPA;
+
 import org.openshapa.controllers.RunScriptC;
+
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
+
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.discrete.SpreadsheetPanel;
+
 import org.testng.Assert;
+
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 
 /**
  * Test the creation of a new database.
@@ -29,13 +36,11 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
 
     /**
      * Initialiser called before each unit test.
-     * 
+     *
      * @throws java.lang.Exception
      *             When unable to initialise test
      */
-    @AfterMethod
-    @BeforeMethod
-    protected void deleteFiles() throws Exception {
+    @AfterMethod @BeforeMethod protected void deleteFiles() throws Exception {
 
         /*
          * Deleting these temp files before and after tests because Java does
@@ -46,12 +51,14 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
-            public boolean accept(final File dir, final String name) {
-                return (name.endsWith(".csv") || name.endsWith(".shapa"));
-            }
-        };
+                public boolean accept(final File dir, final String name) {
+                    return (name.endsWith(".csv") || name.endsWith(".shapa"));
+                }
+            };
+
         File tempDirectory = new File(tempFolder);
         String[] files = tempDirectory.list(ff);
+
         for (int i = 0; i < files.length; i++) {
             File file = new File(tempFolder + "/" + files[i]);
             file.deleteOnExit();
@@ -61,22 +68,22 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
 
     /**
      * Tests modifiying the spreadsheet with a script.
-     * 
+     *
      * @throws IOException
      *             if file read issues.
      */
-    @Test
-    public void testModifySpreadsheet() throws IOException {
+    @Test public void testModifySpreadsheet() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // 1. Open and run script to populate database
         String root = System.getProperty("testPath");
         final File demoFile = new File(root + "/ui/demo_data.rb");
-        Assert
-                .assertTrue(demoFile.exists(),
-                        "Expecting demo_data.rb to exist.");
+        Assert.assertTrue(demoFile.exists(),
+            "Expecting demo_data.rb to exist.");
+
         final File modifyFile = new File(root + "/ui/find_and_replace.rb");
         Assert.assertTrue(modifyFile.exists(),
-                "Expecting find_and_replace.rb to exist.");
+            "Expecting find_and_replace.rb to exist.");
 
         if (Platform.isOSX()) {
             new RunScriptC(demoFile.toString());
@@ -93,11 +100,10 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
 
         // 1a. Check that database is populated
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet =
-                new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                        (SpreadsheetPanel) jPanel.component());
+        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
         Assert.assertTrue(spreadsheet.numOfColumns() > 0,
-                "Expecting spreadsheet to be populated.");
+            "Expecting spreadsheet to be populated.");
 
         /*
          * 2. Perform a find and replace; replace all instances of "moo" with
@@ -127,11 +133,11 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
             fc.setSelectedFile(savedCSV);
 
             method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
-                    OpenSHAPA.getView()).invoke(fc);
+                OpenSHAPA.getView()).invoke(fc);
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
             mainFrameFixture.fileChooser().component().setFileFilter(
-                    new CSVFilter());
+                new CSVFilter());
             mainFrameFixture.fileChooser().selectFile(savedCSV).approve();
         }
 
