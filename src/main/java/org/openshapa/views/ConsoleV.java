@@ -29,8 +29,7 @@ public class ConsoleV extends OpenSHAPADialog {
      * to the console.
      */
     public ConsoleV(final java.awt.Frame parent,
-                    final boolean modal,
-                    final PipedInputStream scriptOutput) {
+                    final boolean modal) {
         super(parent, modal);
         initComponents();
         setName(this.getClass().getSimpleName());
@@ -46,9 +45,7 @@ public class ConsoleV extends OpenSHAPADialog {
     public static ConsoleV getInstance() {
         if (instance == null) {
             JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-            PipedInputStream stream = OpenSHAPA.getConsoleOutputStream();
-
-            instance = new ConsoleV(mainFrame, false, stream);
+            instance = new ConsoleV(mainFrame, false);
         }
 
         return instance;

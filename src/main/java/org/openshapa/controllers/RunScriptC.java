@@ -19,6 +19,7 @@ import org.openshapa.views.OpenSHAPAView;
 import com.usermetrix.jclient.UserMetrix;
 import java.io.IOException;
 import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.List;
 import javax.swing.JTextArea;
 import org.jdesktop.swingworker.SwingWorker;
@@ -40,10 +41,19 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     /** The View that the results of the scripting engine are displayed too. */
     private JTextArea console = null;
 
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(RunScriptC.class);
+
+    /** output stream for messages coming from the scripting engine. */
+    private PipedInputStream consoleOutputStream;
+
+    /** input stream for displaying messages from the scripting engine. */
+    private PrintWriter consoleWriter;
+
     /**
      * Constructs and invokes the runscript controller.
      */
-    public RunScriptC(final JTextArea outputConsole) {
+    public RunScriptC() throws IOException {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
         jd.addChoosableFileFilter(new RBFilter());
         int result =
@@ -55,26 +65,38 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             scriptFile = null;
         }
 
-        console = outputConsole;
+        this.init();
     }
 
     /**
      * Constructs and invokes the runscript controller.
      *
-     * @param file
-     *            The absolute path to the script file you wish to invoke.
+     * @param file The absolute path to the script file you wish to invoke.
+     *
+     * @throws IOException If unable to run the script.
      */
-    public RunScriptC(final String file) {
+    public RunScriptC(final String file) throws IOException {
         scriptFile = new File(file);
+        this.init();
     }
 
     /**
-     * Action for running a script.
+     * Initalises the controller for running scripts.
+     *
+     * @throws IOException If unable to initalise the controller for running
+     * scripts.
      */
+    private void init() throws IOException {
+        OpenSHAPA.getApplication().show(ConsoleV.getInstance());
+        console = ConsoleV.getInstance().getConsole();
+        consoleOutputStream = new PipedInputStream();
+        PipedOutputStream sIn = new PipedOutputStream(consoleOutputStream);
+        consoleWriter = new PrintWriter(sIn);
+    }
+
     @Override
     protected Object doInBackground() {
-        System.out.println("Running script");
-        ReaderThread t = new ReaderThread(OpenSHAPA.getConsoleOutputStream());
+        ReaderThread t = new ReaderThread();
         t.start();
         ScriptEngine rubyEngine = OpenSHAPA.getScriptingEngine();
 
@@ -91,9 +113,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         }
 
         try {
-            OpenSHAPA.getApplication().show(ConsoleV.getInstance());
-
-            rubyEngine.getContext().setWriter(OpenSHAPA.getConsoleWriter());
+            rubyEngine.getContext().setWriter(consoleWriter);
 
             // Place a reference to the database within the scripting engine.
             rubyEngine.put("db", OpenSHAPA.getProjectController().getDB());
@@ -106,7 +126,6 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             rubyEngine.put("db", null);
 
         } catch (ScriptException e) {
-            PrintWriter consoleWriter = OpenSHAPA.getConsoleWriter();
             consoleWriter.println("***** SCRIPT ERRROR *****");
             consoleWriter.println("@Line " + e.getLineNumber() + ":'"
                     + e.getMessage() + "'");
@@ -122,9 +141,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         return null;
     }
 
+    @Override
     protected void done() {
-        System.out.println("Done scripting.");
-
         // Display any changes.
         OpenSHAPAView view = (OpenSHAPAView) OpenSHAPA.getApplication()
                                                       .getMainView();
@@ -132,9 +150,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     }
 
     @Override
-    protected void process(List<String> chunks) {
-        System.out.println("Updating console");
-
+    protected void process(final List<String> chunks) {
         for (String chunk : chunks) {
             console.append(chunk);
             // Make sure the last line is always visible
@@ -148,22 +164,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      * consoleOutput
      */
     class ReaderThread extends Thread {
-        /** The output from the scripting engine. */
-        private PipedInputStream output;
-
         /** The size of the buffer to use while ingesting data. */
         private static final int BUFFER_SIZE = 1024;
-
-        /**
-         * Constructor.
-         *
-         * @param scriptOutput The stream containing output from the scripting
-         * engine.
-         */
-        ReaderThread(final PipedInputStream scriptOutput) {
-            output = scriptOutput;
-            System.out.println("Spinning up reader thread");
-        }
 
         /**
          * The method to invoke when the thread is started.
@@ -173,22 +175,19 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             final byte[] buf = new byte[BUFFER_SIZE];
             try {
                 while (running) {
-                    final int len = output.read(buf);
+                    final int len = consoleOutputStream.read(buf);
                     if (len > 0) {
                         // Publish output from script in the console.
                         String s = new String(buf, 0, len);
-                        System.out.println("Notifying swing of update: " + s);
                         publish(s);
                     }
+
+                    // Allow other threads to do stuff.
+                    Thread.yield();
                 }
             } catch (IOException e) {
                 logger.error("Unable to run console thread.", e);
             }
-
-            System.out.println("Spinning down reader thread");
         }
     }
-
-    /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(RunScriptC.class);
 }

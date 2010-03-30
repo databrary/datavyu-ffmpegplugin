@@ -12,8 +12,8 @@ import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
-import org.openshapa.controllers.RunScriptC;
 import org.openshapa.util.KeysItem;
 import org.openshapa.util.StringItem;
 import org.openshapa.util.TextItem;
@@ -364,7 +364,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 "Expecting matrix_tests.rb to exist.");
 
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -373,7 +373,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Test single cell types
@@ -402,7 +405,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 "Expecting matrix_tests.rb to exist.");
 
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -411,7 +414,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Test single cell types
@@ -440,7 +446,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 "Expecting matrix_tests.rb to exist.");
 
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -449,7 +455,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Test single cell types
@@ -483,7 +492,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 "Expecting matrix_tests.rb to exist.");
 
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -492,7 +501,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Test double cell type
@@ -565,7 +577,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 "Expecting matrix_tests.rb to exist.");
 
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -574,7 +586,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Test double cell type
@@ -647,7 +662,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 "Expecting matrix_tests.rb to exist.");
 
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -656,7 +671,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Test double cell type

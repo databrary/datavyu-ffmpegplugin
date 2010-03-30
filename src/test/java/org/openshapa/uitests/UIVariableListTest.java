@@ -52,7 +52,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -61,7 +61,10 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Check that variable list is populated with correct data
@@ -140,7 +143,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -149,7 +152,10 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Check that variable list is populated

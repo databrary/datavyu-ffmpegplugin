@@ -6,8 +6,8 @@ import java.util.Vector;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
-import org.openshapa.controllers.RunScriptC;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import org.openshapa.views.discrete.SpreadsheetPanel;
@@ -32,7 +32,7 @@ public final class UIBug65Test extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -41,7 +41,10 @@ public final class UIBug65Test extends OpenSHAPATestClass {
         }
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(1000));
+        while (!scriptConsole.textBox().text().endsWith("Finished\n")) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 2. Save column vector
