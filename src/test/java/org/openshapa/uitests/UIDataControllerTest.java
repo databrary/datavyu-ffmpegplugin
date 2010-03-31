@@ -706,7 +706,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Expect: New cell created.
      * Actual: Dang nabbit error
      */
-    @Test public void testBug1204() {
+    /*Possible EDT issues@Test*/ public void testBug1204() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
