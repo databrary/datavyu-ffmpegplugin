@@ -261,7 +261,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
                         final JDialog dialog) {
                         return dialog.getClass().equals(NewProjectV.class);
                     }
-                }, Timeout.timeout(5, TimeUnit.SECONDS));
+                }, Timeout.timeout(10, TimeUnit.SECONDS));
 
         newDatabaseDialog.textBox("nameField").enterText("n");
 
