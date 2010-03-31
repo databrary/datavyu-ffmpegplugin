@@ -646,7 +646,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         long newTime = onePixelTime;
         long oldTime = 0;
 
-        while (((newTime - oldTime) == 0) ||
+        while ((!dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
+                    .isVisible()) ||
                 (Math.abs((newTime - oldTime) - onePixelTime) < 2)) {
 
             //Check if we've snapped
@@ -718,7 +719,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         }
 
         System.err.print(newTime - oldTime + "," + onePixelTime);
-
 
         //b. Check if snapped
         Assert.assertEquals(track1.getOffsetTimeAsLong(),
