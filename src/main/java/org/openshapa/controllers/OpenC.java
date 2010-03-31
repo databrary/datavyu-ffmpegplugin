@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,6 +20,9 @@ public final class OpenC {
 
     /** A reference to the projec that this controller opened. */
     private Project project = null;
+
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(OpenC.class);
 
     /**
      * Opens a file as a OpenSHAPA database.
@@ -47,10 +51,12 @@ public final class OpenC {
     public void openProject(final File projectFile) {
         // If project is archive - open it as such.
         if (projectFile.getName().endsWith(".opf")) {
+            logger.usage("opening project archive");
             openProjectArchive(projectFile);
 
         // Otherwise project is uncompressed.
         } else {
+            logger.usage("opening legacy shapa");
             OpenProjectFileC opc = new OpenProjectFileC();
             project = opc.open(projectFile);
 

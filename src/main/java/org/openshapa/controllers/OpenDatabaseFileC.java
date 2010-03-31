@@ -93,6 +93,7 @@ public final class OpenDatabaseFileC {
      */
     public MacshapaDatabase openAsMacSHAPADB(final File sFile) {
         try {
+            logger.usage("opening ODB database");
             FileReader sReader = new FileReader(sFile);
             BufferedReader sourceStream = new BufferedReader(sReader);
             PrintStream listStream = new PrintStream(new File("read_list.log"));
@@ -128,6 +129,7 @@ public final class OpenDatabaseFileC {
      */
     public MacshapaDatabase openAsCSV(final File sFile) {
         try {
+            logger.usage("opening csv database from file");
             MacshapaDatabase db = new MacshapaDatabase(Constants
                                                        .TICKS_PER_SECOND);
             BufferedReader csvFile = new BufferedReader(new FileReader(sFile));
@@ -183,6 +185,7 @@ public final class OpenDatabaseFileC {
      */
     public MacshapaDatabase openAsCSV(final InputStream inStream) {
         try {
+            logger.usage("opening csv database from stream");
             MacshapaDatabase db = new MacshapaDatabase(Constants
                                                        .TICKS_PER_SECOND);
             InputStreamReader isr = new InputStreamReader(inStream);

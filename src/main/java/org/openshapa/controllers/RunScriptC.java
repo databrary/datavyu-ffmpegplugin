@@ -96,6 +96,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
     @Override
     protected Object doInBackground() {
+        logger.usage("running script");
         ReaderThread t = new ReaderThread();
         t.start();
         ScriptEngine rubyEngine = OpenSHAPA.getScriptingEngine();

@@ -46,6 +46,7 @@ public final class SaveC {
     public void saveDatabase(final File databaseFile,
                              final MacshapaDatabase database)
     throws LogicErrorException {
+        logger.usage("saving database");
         SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
             saveDBC.saveDatabase(databaseFile, database);
     }
@@ -65,6 +66,7 @@ public final class SaveC {
                             final MacshapaDatabase database)
     throws LogicErrorException {
         try {
+            logger.usage("saving project");
             FileOutputStream fos = new FileOutputStream(projectFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
 
