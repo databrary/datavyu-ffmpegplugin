@@ -141,7 +141,7 @@ public final class UIUtils {
         if (varRadio.endsWith("TypeButton")) {
             varRadioCompName = varRadio;
         } else {
-            varRadioCompName = varRadio + "TypeButton";
+            varRadioCompName = varRadio.toLowerCase() + "TypeButton";
         }
         // 1. Create new variable
         ff.menuItemWithPath("Spreadsheet", "New Variable").click();
