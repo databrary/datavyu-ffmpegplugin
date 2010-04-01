@@ -36,13 +36,21 @@ public final class UIImageUtils {
         // Pixel threshold as a percentage
         final double PIXEL_THRESHOLD = 0.1;
         final double ERROR_THRESHOLD = 0.1;
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+        System.err.println("temp: " + tempFolder);
+
 
         // Load image from file
         RenderedImage refImage = ImageIO.read(refFile);
 
         // Check that images are the same size
-        Assert.assertEquals(uiImage.getHeight(), refImage.getHeight());
-        Assert.assertEquals(uiImage.getWidth(), refImage.getWidth());
+        if (!(uiImage.getHeight() == refImage.getHeight())
+                || !(uiImage.getWidth() == refImage.getWidth())) {
+            ImageIO.write(uiImage, "bmp", new File(tempFolder + "/areImagesEqual.bmp"));
+            Assert.assertEquals(uiImage.getHeight(), refImage.getHeight());
+            Assert.assertEquals(uiImage.getWidth(), refImage.getWidth());
+        }
+        
 
         int totalPixels = uiImage.getHeight() * uiImage.getWidth();
 
@@ -68,7 +76,11 @@ public final class UIImageUtils {
         }
 
         // Check if number of error pixels > threshold
-        return (errorPixels / totalPixels) < ERROR_THRESHOLD;
+        boolean withinThreshold = (errorPixels / totalPixels) < ERROR_THRESHOLD;
+        if (!withinThreshold) {
+            ImageIO.write(uiImage, "bmp", new File(tempFolder + "/areImagesEqual.bmp"));
+        }
+        return withinThreshold;
     }
 
     /**
