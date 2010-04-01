@@ -5,10 +5,16 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileFilter;
 
+import org.openshapa.views.component.DefaultTrackPainter;
+import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 
+
 public final class QTPlugin implements Plugin {
+
+    /** The filter to use when looking for files that this plugin supports. */
+    private QTFilter filter;
 
     /**
      * Default Constructor.
@@ -32,14 +38,20 @@ public final class QTPlugin implements Plugin {
         return filter;
     }
 
-    /** The filter to use when looking for files that this plugin supports. */
-    private QTFilter filter;
-
     /**
      * @return icon representing this plugin.
      */
     public ImageIcon getTypeIcon() {
         URL typeIconURL = getClass().getResource("/icons/qtplugin-icon.png");
+
         return new ImageIcon(typeIconURL);
     }
+
+    /**
+     * Get track painter.
+     */
+    public TrackPainter getTrackPainter() {
+        return new DefaultTrackPainter();
+    }
+
 }

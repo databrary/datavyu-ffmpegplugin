@@ -52,6 +52,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
     /**
      * Constructs and invokes the runscript controller.
+     *
+     * @throws IOException If Unable to create the run script controller.
      */
     public RunScriptC() throws IOException {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
@@ -73,7 +75,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      *
      * @param file The absolute path to the script file you wish to invoke.
      *
-     * @throws IOException If unable to run the script.
+     * @throws IOException If unable to create the run script controller.
      */
     public RunScriptC(final String file) throws IOException {
         scriptFile = new File(file);

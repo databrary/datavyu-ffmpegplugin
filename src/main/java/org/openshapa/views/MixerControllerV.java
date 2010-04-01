@@ -44,6 +44,8 @@ import org.openshapa.event.TracksControllerEvent.TracksEvent;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
 
+import org.openshapa.views.component.TrackPainter;
+
 
 /**
  * This class manages the tracks information interface.
@@ -309,22 +311,16 @@ public class MixerControllerV implements NeedleEventListener,
     /**
      * Add a new track to the interface.
      *
-     * @param icon
-     *            icon associated with the track
-     * @param mediaPath
-     *            absolute path to the media file.
-     * @param trackName
-     *            name of the track
-     * @param duration
-     *            the total duration of the track in milliseconds
-     * @param offset
-     *            the amount of playback offset in milliseconds
-     * @param bookmark
-     *            bookmark position in milliseconds
+     * @param icon Icon associated with the track.
+     * @param mediaPath Absolute path to the media file.
+     * @param trackName Name of the track.
+     * @param duration The total duration of the track in milliseconds.
+     * @param offset The amount of playback offset in milliseconds.
+     * @param trackPainter The track painter to use.
      */
     public final void addNewTrack(final ImageIcon icon, final String mediaPath,
         final String trackName, final long duration, final long offset,
-        final long bookmark) {
+        final TrackPainter trackPainter) {
 
         // Check if the scale needs to be updated.
         if ((duration + offset) > maxEnd) {
@@ -341,7 +337,7 @@ public class MixerControllerV implements NeedleEventListener,
         }
 
         tracksEditorController.addNewTrack(icon, mediaPath, trackName, duration,
-            offset, bookmark, this);
+            offset, this, trackPainter);
 
         tracksScrollPane.validate();
     }
