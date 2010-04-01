@@ -29,6 +29,7 @@ public final class SaveProjectFileC {
      * @param project The project you wish to save to disk.
      */
     public void save(final String outFile, final Project project) {
+        logger.usage("saving to file");
         Dumper dumper = new Dumper(new OpenSHAPAProjectRepresenter(),
                                    new DumperOptions());
         Yaml yaml = new Yaml(dumper);
@@ -60,6 +61,7 @@ public final class SaveProjectFileC {
      * @param project The project you wish to serialize.
      */
     public void save(final OutputStream outStream, final Project project) {
+        logger.usage("saving to stream");
         Dumper dumper = new Dumper(new OpenSHAPAProjectRepresenter(),
                 new DumperOptions());
         Yaml yaml = new Yaml(dumper);

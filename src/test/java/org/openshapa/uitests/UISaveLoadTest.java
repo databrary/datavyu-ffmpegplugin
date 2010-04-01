@@ -32,7 +32,6 @@ import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.controllers.project.ProjectController;
 
 import org.openshapa.models.db.LogicErrorException;
-import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
 
 import org.openshapa.util.UIUtils;
@@ -58,6 +57,7 @@ import org.yaml.snakeyaml.Yaml;
 
 /**
  * Test saving and loading a database file.
+ * Note: Loading is tested within the save tests.
  */
 public final class UISaveLoadTest extends OpenSHAPATestClass {
 
@@ -76,8 +76,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
                 public boolean accept(final File dir, final String name) {
-                    return (name.endsWith(".csv") || name.endsWith(".shapa") ||
-                            name.endsWith(".opf"));
+                    return (name.endsWith(".csv") || name.endsWith(".shapa")
+                            || name.endsWith(".opf"));
                 }
             };
 
@@ -111,7 +111,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             "Expecting demo_data_to_csv.rb to exist");
 
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -123,7 +123,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         DialogFixture scriptConsole = mainFrameFixture.dialog();
         scriptConsole.button("closeButton").click();
 
-        //Check that asterisk is present
+        // Check that asterisk is present
         Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
         // 2. Save the file
@@ -174,15 +174,16 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         if (extension.equals("csv")) {
             expectedOutputFile = new File(root + "/ui/demo_data_to_csv2.csv");
-            outputFile = new File(pc.getProjectDirectory(),
-                    pc.getDatabaseFileName());
+            loadFile(new File(pc.getProjectDirectory(),
+                    pc.getDatabaseFileName()));
+            outputFile = saveAsCSV(fileName + "new");
 
         } else if (extension.equals("opf")) {
 
-            //Open the opf and save it as a csv
-            //This will also test opf opening. Later this can be refactored to
-            //its own test.
-            loadOPF(justSaved);
+            // Open the opf and save it as a csv
+            // This will also test opf opening. Later this can be refactored to
+            // its own test.
+            loadFile(justSaved);
             outputFile = saveAsCSV(fileName);
 
             expectedOutputFile = new File(root + "/ui/demo_data_to_csv2.csv");
@@ -233,9 +234,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Loads opf file after creating a new project.
-     * @param opf opf file to load
+     * @param file opf file to load
      */
-    private void loadOPF(File opf) {
+    private void loadFile(File file) {
 
         // Create a new project, this is for the discard changes dialog.
         if (Platform.isOSX()) {
@@ -260,21 +261,34 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
                         final JDialog dialog) {
                         return dialog.getClass().equals(NewProjectV.class);
                     }
-                }, Timeout.timeout(5, TimeUnit.SECONDS));
+                }, Timeout.timeout(10, TimeUnit.SECONDS));
 
         newDatabaseDialog.textBox("nameField").enterText("n");
 
         newDatabaseDialog.button("okButton").click();
 
-        //Open OPF
-        Assert.assertTrue(opf.exists());
+        // Open file
+        Assert.assertTrue(file.exists());
 
-        // 1. Load OPF File
+        // 1. Load  File
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
-            fc.setFileFilter(new OPFFilter());
-            fc.setSelectedFile(opf);
+
+            String ext = file.getName().substring(file.getName().length() - 3,
+                    file.getName().length());
+
+            if (ext.equalsIgnoreCase("csv")) {
+                fc.setFileFilter(new CSVFilter());
+            } else if (ext.equalsIgnoreCase("opf")) {
+                fc.setFileFilter(new OPFFilter());
+            } else if (ext.equalsIgnoreCase("odb")) {
+                fc.setFileFilter(new MODBFilter());
+            } else {
+                Assert.assertTrue(false, "Bad file extension");
+            }
+
+            fc.setSelectedFile(file);
 
             method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
                 OpenSHAPA.getView()).invoke(fc);
@@ -289,9 +303,23 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
                 // Do nothing
             }
 
-            mainFrameFixture.fileChooser().component().setFileFilter(
-                new OPFFilter());
-            mainFrameFixture.fileChooser().selectFile(opf).approve();
+            String ext = file.getName().substring(file.getName().length(),
+                    file.getName().length());
+
+            if (ext.equalsIgnoreCase("csv")) {
+                mainFrameFixture.fileChooser().component().setFileFilter(
+                    new CSVFilter());
+            } else if (ext.equalsIgnoreCase("opf")) {
+                mainFrameFixture.fileChooser().component().setFileFilter(
+                    new OPFFilter());
+            } else if (ext.equalsIgnoreCase("odb")) {
+                mainFrameFixture.fileChooser().component().setFileFilter(
+                    new MODBFilter());
+            } else {
+                Assert.assertTrue(false, "Bad file extension");
+            }
+
+            mainFrameFixture.fileChooser().selectFile(file).approve();
         }
     }
 
@@ -309,15 +337,15 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
         // 1. Click save on empty project. Expecting it to act like Save As
-        //Check that asterisk is present
+        // Check that asterisk is present
         Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
 
-            if (extension.equals("shapa")) {
-                fc.setFileFilter(new SHAPAFilter());
+            if (extension.equals("opf")) {
+                fc.setFileFilter(new OPFFilter());
             } else if (extension.equals("csv")) {
                 fc.setFileFilter(new CSVFilter());
             }
@@ -331,9 +359,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save");
 
-            if (extension.equals("shapa")) {
+            if (extension.equals("opf")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
-                    new SHAPAFilter());
+                    new OPFFilter());
             } else if (extension.equals("csv")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
                     new CSVFilter());
@@ -343,13 +371,13 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             mainFrameFixture.fileChooser().selectFile(toSave).approve();
         }
 
-        //Check that no asterisk is present
+        // Check that no asterisk is present
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
         String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data_to_csv.rb");
+        File demoFile = new File(root + "/ui/demo_data_to_csv2.rb");
         Assert.assertTrue(demoFile.exists(),
-            "Expecting demo_data_to_csv.rb to exist");
+            "Expecting demo_data_to_csv2.rb to exist");
 
         String justSavedPath = tempFolder + "/" + fileName;
 
@@ -362,7 +390,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         // 2. Run script to populate database
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -372,30 +400,58 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
+            Thread.yield();
+        }
+
         scriptConsole.button("closeButton").click();
 
         // Check the title - asterisk present
         Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
         // 3. Save project file. Not expecting anything except a save
-        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_S,
-            Platform.controlOrCommandMask());
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_S)
+            .modifiers(Platform.controlOrCommandMask()));
 
         // Check the title - asterisk not present
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
         // 4. Check that the generated CSV file is correct
         ProjectController pc = OpenSHAPA.getProjectController();
-        File outputCSV = new File(pc.getProjectDirectory(),
-                pc.getDatabaseFileName());
-        Assert.assertTrue(outputCSV.exists(), "Expecting output CSV to exist.");
+        File outputFile = null;
+        File expectedOutputFile = null;
 
-        File expectedOutputCSV = new File(root + "/ui/test-v2-out.csv");
-        Assert.assertTrue(expectedOutputCSV.exists(),
-            "Expecting reference output CSV to exist.");
+        if (extension.equals("csv")) {
+            expectedOutputFile = new File(root + "/ui/demo_data_to_csv2.csv");
+            loadFile(new File(pc.getProjectDirectory(),
+                    pc.getDatabaseFileName()));
+            outputFile = saveAsCSV(fileName + "new");
 
-        Assert.assertTrue(UIUtils.areFilesSameLineComp(outputCSV,
-                expectedOutputCSV), "Expecting CSV files to be the same.");
+        } else if (extension.equals("opf")) {
+
+            // Open the opf and save it as a csv
+            // This will also test opf opening. Later this can be refactored to
+            // its own test.
+            loadFile(justSaved);
+            outputFile = saveAsCSV(fileName);
+
+            expectedOutputFile = new File(root + "/ui/demo_data_to_csv2.csv");
+        }
+
+        Assert.assertTrue(outputFile.exists(),
+            "Expecting output CSV to exist.");
+        Assert.assertTrue(expectedOutputFile.exists(),
+            "Expecting reference output to exist.");
+
+        Assert.assertTrue(UIUtils.areFilesSameLineComp(outputFile,
+                expectedOutputFile), "Expecting files to be the same.");
     }
 
     /**
@@ -416,7 +472,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         File testCSV = new File(tempFolder + inputFile);
 
-        //Copy file to new project location
+        // Copy file to new project location
         UIUtils.copy(new File(root + inputFile), testCSV);
 
         Assert.assertTrue(testCSV.exists(), "Expecting input file to exist.");
@@ -426,7 +482,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         loadedProject.setDatabaseFileName(inputFile);
         loadedProject.setProjectName("newSHAPA");
 
-        //Check that title has asterisk
+        // Check that title has asterisk
         Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
         // 2. Write the project out
@@ -452,7 +508,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Open...");
 
-            //This will fail if a dialog is not shown.
+            // This will fail if a dialog is not shown.
             JOptionPaneFixture warning = mainFrameFixture.optionPane();
             warning.requireTitle("Unsaved changes");
             warning.buttonWithText("OK").click();
@@ -462,10 +518,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             mainFrameFixture.fileChooser().selectFile(newSHAPA).approve();
         }
 
-        //Check that the title bar file name does not have an asterix
+        // Check that the title bar file name does not have an asterix
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
-        //Check that something has been loaded
+        // Check that something has been loaded
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
@@ -514,8 +570,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     private void loadODBTest(final String inputFile,
         final String expectedOutputFile) throws IOException {
-        //THIS TEST NEEDS TO BE MADE MORE RIGOROUS. RIGHT
-        //NOW IT JUST OPENS A FILE AND CHECKS THERE IS SOME DATA
+        // THIS TEST NEEDS TO BE MADE MORE RIGOROUS. RIGHT
+        // NOW IT JUST OPENS A FILE AND CHECKS THERE IS SOME DATA
 
         String root = System.getProperty("testPath");
 
@@ -547,10 +603,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             mainFrameFixture.fileChooser().selectFile(odbFile).approve();
         }
 
-        //Check that the title bar file name does not have an asterix
+        // Check that the title bar file name does not have an asterix
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
-        //Check that something has been loaded
+        // Check that something has been loaded
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
@@ -563,29 +619,26 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test public void testLoadingSHAPA1() throws Exception {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        loadTest("test-v1-in.csv", "test-v1-out.csv");
-    }
+    /*BugzID1648:@Test public void testLoadingSHAPA1() throws Exception {
+     *  System.err.println(new Exception().getStackTrace()[0].getMethodName());
+     * loadTest("test-v1-in.csv", "test-v1-out.csv");}*/
 
     /**
      * Test loading a database from a version 2 CSV file.
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test public void testLoadingSHAPA2() throws Exception {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        loadTest("test-v2-in.csv", "test-v2-out.csv");
-    }
+    /*BugzID1648:@Test public void testLoadingSHAPA2() throws Exception {
+     *  System.err.println(new Exception().getStackTrace()[0].getMethodName());
+     * loadTest("test-v2-in.csv", "test-v2-out.csv");}*/
 
     /**
      * Test loading a database from version 3 CSV file.
      * @throws Exception on any error
      */
-    @Test public void testLoadingSHAPA3() throws Exception {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        loadTest("test-v3-in.csv", "test-v3-out.csv");
-    }
+    /*BugzID1648:@Test public void testLoadingSHAPA3() throws Exception {
+     *  System.err.println(new Exception().getStackTrace()[0].getMethodName());
+     * loadTest("test-v3-in.csv", "test-v3-out.csv");}*/
 
     /**
      * Test loading an ODB file.
@@ -594,18 +647,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     @Test public void testLoadingODB1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         loadODBTest("macshapa-file.odb", null);
-    }
-
-    /**
-     * Test saving a SHAPA database with Save As, no extension in file name.
-     * @throws java.lang.Exception
-     *             on any error
-     */
-    @Test public void testSaveAsOPF1() throws Exception {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        //This will also test file loading
-        saveAsTest("savedSHAPA.opf", "opf");
     }
 
     /**
@@ -619,18 +660,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test saving a SHAPA database with Save As, extension in file name.
-     * @throws java.lang.Exception
-     *             on any error
-     */
-    @Test public void testSaveAsOPF2() throws Exception {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        //This will also test file loading
-        saveAsTest("savedSHAPA.shapa", "opf");
-    }
-
-    /**
      * Test saving a CSV database with Save As, extension in file name.
      * @throws java.lang.Exception
      *             on any error
@@ -641,6 +670,54 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     }
 
     /**
+    * Test saving a SHAPA database with Save As, no extension in file name.
+    * @throws java.lang.Exception
+    *             on any error
+    */
+    @Test public void testSaveAsOPF1() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // This will also test file loading
+        saveAsTest("savedSHAPA.opf", "opf");
+    }
+
+    /**
+     * Test saving a SHAPA database with Save As, no extension in file name.
+     * @throws java.lang.Exception
+     *             on any error
+     */
+    @Test public void testSaveOPF1() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // This will also test file loading
+        saveTest("savedSHAPA.opf", "opf");
+    }
+
+    /**
+     * Test saving a SHAPA database with Save As, extension in file name.
+     * @throws java.lang.Exception
+     *             on any error
+     */
+    @Test public void testSaveAsOPF2() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // This will also test file loading
+        saveAsTest("savedSHAPA.shapa", "opf");
+    }
+
+    /**
+     * Test saving a SHAPA database with Save As, extension in file name.
+     * @throws java.lang.Exception
+     *             on any error
+     */
+    @Test public void testSaveOPF2() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // This will also test file loading
+        saveTest("savedSHAPA.shapa", "opf");
+    }
+
+    /**
      * Test saving a SHAPA database with Save As, wrong extension in file name.
      * @throws java.lang.Exception
      *             on any error
@@ -648,8 +725,20 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     @Test public void testSaveAsOPF3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        //This will also test file loading
+        // This will also test file loading
         saveAsTest("savedSHAPA.csv", "opf");
+    }
+
+    /**
+     * Test saving a SHAPA database with Save As, wrong extension in file name.
+     * @throws java.lang.Exception
+     *             on any error
+     */
+    @Test public void testSaveOPF3() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // This will also test file loading
+        saveTest("savedSHAPA.csv", "opf");
     }
 
     /**
@@ -663,15 +752,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     }
 
     /*********************** SAVE TESTS ***************************/
-    /**
-     * Test saving a SHAPA database with Save, no extension in file name.
-     * @throws java.lang.Exception
-     *             on any error
-     */
-    @Test public void testSaveSHAPA1() throws Exception {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        saveTest("savedSHAPA", "shapa");
-    }
 
     /**
      * Test saving a CSV database with Save, no extension in file name.
@@ -684,40 +764,20 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test saving a SHAPA database with Save, extension in file name.
-     * @throws java.lang.Exception
-     *             on any error
-     */
-    @Test public void testSaveSHAPA2() throws Exception {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        saveTest("savedSHAPA.shapa", "shapa");
-    }
-
-    /**
-     * Test saving a CSV database with Save, extension in file name.
-     * @throws java.lang.Exception
-     *             on any error
-     */
+    * Test saving a CSV database with Save, extension in file name.
+    * @throws java.lang.Exception
+    *             on any error
+    */
     @Test public void testSaveCSV2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV.csv", "csv");
     }
 
     /**
-     * Test saving a SHAPA database with Save, wrong extension in file name.
-     * @throws java.lang.Exception
-     *             on any error
-     */
-    @Test public void testSaveSHAPA3() throws Exception {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        saveTest("savedSHAPA.csv", "shapa");
-    }
-
-    /**
-     * Test saving a CSV database with Save, wrong entension in file name.
-     * @throws java.lang.Exception
-     *             on any error
-     */
+    * Test saving a CSV database with Save, wrong entension in file name.
+    * @throws java.lang.Exception
+    *             on any error
+    */
     @Test public void testSaveCSV3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV.shapa", "csv");

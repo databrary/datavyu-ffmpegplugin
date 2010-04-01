@@ -86,15 +86,17 @@ public final class TrackController {
 
     /**
      * Creates a new TrackController.
+     *
+     * @param trackPainter the track painter for this controller to manage.
      */
-    public TrackController() {
+    public TrackController(final TrackPainter trackPainter) {
         isMoveable = true;
 
         view = new JPanel();
         view.setLayout(new MigLayout("ins 0", "[]0[]"));
         view.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
 
-        trackPainter = new TrackPainter();
+        this.trackPainter = trackPainter;
 
         viewableModel = new ViewableModel();
         trackModel = new TrackModel();

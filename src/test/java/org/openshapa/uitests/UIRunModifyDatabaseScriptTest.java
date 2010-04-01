@@ -52,7 +52,8 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
                 public boolean accept(final File dir, final String name) {
-                    return (name.endsWith(".csv") || name.endsWith(".shapa"));
+                    return (name.endsWith(".csv") || name.endsWith(".shapa")
+                            || name.endsWith("opf"));
                 }
             };
 
@@ -86,7 +87,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
             "Expecting find_and_replace.rb to exist.");
 
         if (Platform.isOSX()) {
-            new RunScriptC(demoFile.toString());
+            UIUtils.runScript(demoFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
@@ -96,6 +97,13 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // 1a. Check that database is populated
@@ -110,7 +118,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
          * "frog"
          */
         if (Platform.isOSX()) {
-            new RunScriptC(modifyFile.toString());
+            UIUtils.runScript(modifyFile);
         } else {
             mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 

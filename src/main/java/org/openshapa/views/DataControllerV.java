@@ -4,10 +4,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import java.io.File;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -25,20 +28,27 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+
 import org.openshapa.OpenSHAPA;
+
 import org.openshapa.OpenSHAPA.Platform;
+
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
+
 import org.openshapa.event.CarriageEvent;
 import org.openshapa.event.MarkerEvent;
 import org.openshapa.event.NeedleEvent;
 import org.openshapa.event.TracksControllerEvent;
 import org.openshapa.event.TracksControllerListener;
+
 import org.openshapa.util.ClockTimer;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer.ClockListener;
+
+import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
@@ -46,31 +56,33 @@ import org.openshapa.views.continuous.PluginManager;
 
 import com.usermetrix.jclient.UserMetrix;
 
+
 /**
  * Quicktime video controller.
  */
-public final class DataControllerV extends OpenSHAPADialog implements
-ClockListener, TracksControllerListener, DataController {
+public final class DataControllerV extends OpenSHAPADialog
+    implements ClockListener, TracksControllerListener, DataController {
 
-    // -------------------------------------------------------------------------
-    // [static]
-    //
-    /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(DataControllerV.class);
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
+
     /** Rate of playback for rewinding. */
     private static final float REWIND_RATE = -32F;
+
     /** Rate of normal playback. */
     private static final float PLAY_RATE = 1F;
+
     /** Rate of playback for fast forwarding. */
     private static final float FFORWARD_RATE = 32F;
+
     /** Sequence of allowable shuttle rates. */
     private static final float[] SHUTTLE_RATES;
+
     /**
      * The threshold to use while synchronising viewers (augmented by rate).
      */
     private static final long SYNC_THRESH = 50;
+
     /**
      * How often to synchronise the viewers with the master clock.
      */
@@ -83,9 +95,11 @@ ClockListener, TracksControllerListener, DataController {
     private static final int POWER = 5;
 
     static {
-        SHUTTLE_RATES = new float[2 * POWER + 1];
+        SHUTTLE_RATES = new float[(2 * POWER) + 1];
+
         float value = 1;
         SHUTTLE_RATES[POWER] = value;
+
         for (int i = 1; i <= POWER; ++i) {
             value *= 2;
             SHUTTLE_RATES[POWER + i] = value;
@@ -93,46 +107,35 @@ ClockListener, TracksControllerListener, DataController {
         }
     }
 
-    /** Determines whether or not Shift is being held. */
-    private boolean shiftMask = false;
-
-    /** Determines whether or not Control is being held. */
-    private boolean ctrlMask = false;
-
     /** The jump multiplier for shift-jogging. */
     private static final int SHIFTJOG = 5;
 
     /** The jump multiplier for ctrl-shift-jogging. */
     private static final int CTRLSHIFTJOG = 10;
 
-    /**
-     * Handles opening a data source.
-     *
-     * @param jd The file chooser used to open the data source.
-     */
-    private void openVideo(final OpenSHAPAFileChooser jd) {
-        PluginManager pm = PluginManager.getInstance();
+    /** Format for representing time. */
+    private static final DateFormat CLOCK_FORMAT;
 
-        File f = jd.getSelectedFile();
-        FileFilter ff = jd.getFileFilter();
-        Plugin plugin = pm.getAssociatedPlugin(ff);
-        if (plugin != null) {
-            DataViewer dataViewer = plugin.getNewDataViewer();
-            dataViewer.setDataFeed(f);
-            addDataViewer(plugin.getTypeIcon(), dataViewer, f);
-        }
+    // initialize standard date format for clock display.
+    static {
+        CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
+        CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
     /**
      * Enumeration of shuttle directions.
      */
     enum ShuttleDirection {
+
         /** The backwards playrate. */
         BACKWARDS(-1),
+
         /** Playrate for undefined shuttle speeds. */
         UNDEFINED(0),
+
         /** The playrate for forwards (normal) playrate. */
         FORWARDS(1);
+
         /** Stores the shuttle direction. */
         private int parameter;
 
@@ -152,44 +155,152 @@ ClockListener, TracksControllerListener, DataController {
         }
     }
 
-    /** Format for representing time. */
-    private static final DateFormat CLOCK_FORMAT;
+    // -------------------------------------------------------------------------
+    // [static]
+    //
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(DataControllerV.class);
 
-    // initialize standard date format for clock display.
-    static {
-        CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
-        CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
-    }
+    /** Determines whether or not Shift is being held. */
+    private boolean shiftMask = false;
+
+    /** Determines whether or not Control is being held. */
+    private boolean ctrlMask = false;
 
     // -------------------------------------------------------------------------
     //
     //
     /** The list of viewers associated with this controller. */
     private Set<DataViewer> viewers;
+
     /** Stores the highest frame rate for all available viewers. */
     private float currentFPS = 1F;
+
     /** Shuttle status flag. */
     private ShuttleDirection shuttleDirection = ShuttleDirection.UNDEFINED;
+
     /** Index of current shuttle rate. */
     private int shuttleRate;
+
     /** The rate to use when resumed from pause. */
     private float pauseRate;
+
     /** The time the last sync was performed. */
     private long lastSync;
+
     /** Clock timer. */
     private ClockTimer clock = new ClockTimer();
+
     /** The maximum duration out of all data being played. */
     private long maxDuration;
+
     /** Are we currently faking playback of the viewers? */
     private boolean fakePlayback = false;
+
     /** The start time of the playback window. */
     private long windowPlayStart;
+
     /** The end time of the playback window. */
     private long windowPlayEnd;
+
     /** Is the tracks panel currently shown? */
     private boolean tracksPanelEnabled = false;
+
     /** The controller for manipulating tracks. */
     private MixerControllerV mixerControllerV;
+
+    /** */
+    private javax.swing.JButton createNewCell;
+
+    /** */
+    private javax.swing.JButton createNewCellSettingOffset;
+
+    /** */
+    private javax.swing.JButton findButton;
+
+    /** */
+    private javax.swing.JTextField findOffsetField;
+
+    /** */
+    private javax.swing.JTextField findTextField;
+
+    /** */
+    private javax.swing.JButton forwardButton;
+
+    /** */
+    private javax.swing.JButton goBackButton;
+
+    /** */
+    private javax.swing.JTextField goBackTextField;
+
+    /** */
+    private javax.swing.JPanel gridButtonPanel;
+
+    /** */
+    private javax.swing.JLabel jLabel1;
+
+    /** */
+    private javax.swing.JLabel jLabel2;
+
+    /** */
+    private javax.swing.JButton jogBackButton;
+
+    /** */
+    private javax.swing.JButton jogForwardButton;
+
+    /** */
+    private javax.swing.JLabel lblSpeed;
+
+    /** */
+    private javax.swing.JButton addDataButton;
+
+    /** */
+    private javax.swing.JButton pauseButton;
+
+    /** */
+    private javax.swing.JButton playButton;
+
+    /** */
+    private javax.swing.JButton rewindButton;
+
+    /** */
+    private javax.swing.JButton setCellOffsetButton;
+
+    /** */
+    private javax.swing.JButton setCellOnsetButton;
+
+    /** */
+    private javax.swing.JButton setNewCellOffsetButton;
+
+    /** */
+    private javax.swing.JButton showTracksButton;
+
+    /** */
+    private javax.swing.JButton shuttleBackButton;
+
+    /** */
+    private javax.swing.JButton shuttleForwardButton;
+
+    /** */
+    private javax.swing.JButton stopButton;
+
+    /** */
+    private javax.swing.JButton syncButton;
+
+    /** */
+    private javax.swing.JButton syncCtrlButton;
+
+    /** */
+    private javax.swing.JButton syncVideoButton;
+
+    /** */
+    private javax.swing.JLabel timestampLabel;
+
+    /** */
+    private javax.swing.JPanel topPanel;
+
+    /** */
+    private javax.swing.JPanel tracksPanel;
 
     // -------------------------------------------------------------------------
     // [initialization]
@@ -234,6 +345,26 @@ ClockListener, TracksControllerListener, DataController {
     }
 
     /**
+     * Handles opening a data source.
+     *
+     * @param jd The file chooser used to open the data source.
+     */
+    private void openVideo(final OpenSHAPAFileChooser jd) {
+        PluginManager pm = PluginManager.getInstance();
+
+        File f = jd.getSelectedFile();
+        FileFilter ff = jd.getFileFilter();
+        Plugin plugin = pm.getAssociatedPlugin(ff);
+
+        if (plugin != null) {
+            DataViewer dataViewer = plugin.getNewDataViewer();
+            dataViewer.setDataFeed(f);
+            addDataViewer(plugin.getTypeIcon(), dataViewer, f,
+                plugin.getTrackPainter());
+        }
+    }
+
+    /**
      * Tells the Data Controller if shift is being held or not.
      *
      * @param shift
@@ -262,16 +393,20 @@ ClockListener, TracksControllerListener, DataController {
      */
     public void clockStart(final long time) {
         resetSync();
+
         long playTime = time;
+
         if (playTime < windowPlayStart) {
             playTime = windowPlayStart;
             clockStep(playTime);
+
             float currentRate = clock.getRate();
             clock.stop();
             clock.setTime(playTime);
             clock.setRate(currentRate);
             clock.start();
         }
+
         setCurrentTime(playTime);
     }
 
@@ -287,6 +422,7 @@ ClockListener, TracksControllerListener, DataController {
      *            Current clock time in milliseconds.
      */
     public void clockTick(final long time) {
+
         try {
             setCurrentTime(time);
 
@@ -294,6 +430,7 @@ ClockListener, TracksControllerListener, DataController {
             // allow us to stream all the information at the file. We fake play
             // back by doing a bunch of seekTo's.
             if (fakePlayback) {
+
                 for (DataViewer v : viewers) {
                     v.seekTo(time - v.getOffset());
                 }
@@ -303,16 +440,17 @@ ClockListener, TracksControllerListener, DataController {
 
                 // Synchronise viewers only if we have exceded our pulse time.
                 if ((time - lastSync) > (SYNC_PULSE * clock.getRate())) {
-                    long thresh =
-                        (long) (SYNC_THRESH * Math.abs(clock.getRate()));
+                    long thresh = (long) (SYNC_THRESH
+                            * Math.abs(clock.getRate()));
                     lastSync = time;
 
                     for (DataViewer v : viewers) {
+
                         /*
                          * Use offsets to determine if the video file should
                          * start playing.
                          */
-                        if (time >= v.getOffset() && !v.isPlaying()) {
+                        if ((time >= v.getOffset()) && !v.isPlaying()) {
                             v.seekTo(time - v.getOffset());
                             v.play();
                         }
@@ -322,8 +460,9 @@ ClockListener, TracksControllerListener, DataController {
                          * noticable drift.
                          */
                         if (v.isPlaying()
-                                && Math.abs(v.getCurrentTime()
-                                        - (time - v.getOffset())) > thresh) {
+                                && (Math.abs(
+                                        v.getCurrentTime()
+                                        - (time - v.getOffset())) > thresh)) {
                             v.seekTo(time - v.getOffset());
                         }
                     }
@@ -340,11 +479,12 @@ ClockListener, TracksControllerListener, DataController {
             }
 
             // BugzID:756 - don't play video once past the max duration.
-            if (time >= windowPlayEnd && clock.getRate() >= 0) {
+            if ((time >= windowPlayEnd) && (clock.getRate() >= 0)) {
                 setCurrentTime(windowPlayEnd);
                 clock.stop();
                 clock.setTime(windowPlayEnd);
                 clockStop(windowPlayEnd);
+
                 return;
             }
         } catch (Exception e) {
@@ -359,6 +499,7 @@ ClockListener, TracksControllerListener, DataController {
     public void clockStop(final long time) {
         resetSync();
         setCurrentTime(time);
+
         for (DataViewer viewer : viewers) {
             viewer.stop();
             viewer.seekTo(time - viewer.getOffset());
@@ -378,6 +519,7 @@ ClockListener, TracksControllerListener, DataController {
         // doing many seekTo's to grab individual frames.
         if (Math.abs(rate) > 2.0) {
             fakePlayback = true;
+
             for (DataViewer viewer : viewers) {
                 viewer.setPlaybackSpeed(rate);
                 viewer.stop();
@@ -388,8 +530,10 @@ ClockListener, TracksControllerListener, DataController {
             // draw every frame.
         } else {
             fakePlayback = false;
+
             for (DataViewer viewer : viewers) {
                 viewer.setPlaybackSpeed(rate);
+
                 if (!clock.isStopped()) {
                     viewer.play();
                 }
@@ -404,13 +548,13 @@ ClockListener, TracksControllerListener, DataController {
     public void clockStep(final long time) {
         resetSync();
         setCurrentTime(time);
+
         for (DataViewer viewer : viewers) {
             viewer.seekTo(time - viewer.getOffset());
         }
     }
 
-    @Override
-    public void dispose() {
+    @Override public void dispose() {
         mixerControllerV.removeAll();
         super.dispose();
     }
@@ -452,16 +596,22 @@ ClockListener, TracksControllerListener, DataController {
      */
     public boolean shutdown(final DataViewer viewer) {
         boolean result = viewers.remove(viewer);
+
         if (result) {
+
             // Recalculate the maximum playback duration.
             maxDuration = 0;
+
             Iterator<DataViewer> it = viewers.iterator();
+
             while (it.hasNext()) {
                 DataViewer dv = it.next();
-                if (dv.getDuration() + dv.getOffset() > maxDuration) {
+
+                if ((dv.getDuration() + dv.getOffset()) > maxDuration) {
                     maxDuration = dv.getDuration() + dv.getOffset();
                 }
             }
+
             mixerControllerV.setMaxEnd(maxDuration);
 
             if (windowPlayEnd > maxDuration) {
@@ -475,12 +625,15 @@ ClockListener, TracksControllerListener, DataController {
             }
 
             long tracksTime = mixerControllerV.getCurrentTime();
+
             if (tracksTime < windowPlayStart) {
                 tracksTime = windowPlayStart;
             }
+
             if (tracksTime > windowPlayEnd) {
                 tracksTime = windowPlayEnd;
             }
+
             mixerControllerV.setCurrentTime(tracksTime);
 
             clock.setTime(tracksTime);
@@ -490,8 +643,8 @@ ClockListener, TracksControllerListener, DataController {
             OpenSHAPA.getProjectController().projectChanged();
 
             // Remove the data viewer from the tracks panel
-            mixerControllerV
-            .removeTrack(viewer.getDataFeed().getAbsolutePath());
+            mixerControllerV.removeTrack(viewer.getDataFeed()
+                .getAbsolutePath());
             OpenSHAPA.getApplication().updateTitle();
         }
 
@@ -538,19 +691,20 @@ ClockListener, TracksControllerListener, DataController {
 
         setLayout(new MigLayout("hidemode 3"));
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
         org.jdesktop.application.ResourceMap resourceMap =
             org.jdesktop.application.Application.getInstance(
-                    org.openshapa.OpenSHAPA.class).getContext()
-                    .getResourceMap(DataControllerV.class);
+                org.openshapa.OpenSHAPA.class).getContext().getResourceMap(
+                DataControllerV.class);
         setTitle(resourceMap.getString("title"));
         setName("");
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(final java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
-        });
+                @Override public void windowClosing(
+                    final java.awt.event.WindowEvent evt) {
+                    formWindowClosing(evt);
+                }
+            });
 
         gridButtonPanel.setBackground(Color.WHITE);
         gridButtonPanel.setLayout(new MigLayout("wrap 5, ins 15 2 15 2"));
@@ -561,15 +715,15 @@ ClockListener, TracksControllerListener, DataController {
         addDataButton.setFocusPainted(false);
         addDataButton.setName("addDataButton");
         addDataButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent evt) {
-                openVideoButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(final ActionEvent evt) {
+                    openVideoButtonActionPerformed(evt);
+                }
+            });
         gridButtonPanel.add(addDataButton, "span 2, w 90!, h 25!");
 
         // Timestamp panel
-        JPanel timestampPanel =
-            new JPanel(new MigLayout("", "push[][][]0![]push"));
+        JPanel timestampPanel = new JPanel(new MigLayout("",
+                    "push[][][]0![]push"));
         timestampPanel.setOpaque(false);
 
         // Timestamp label
@@ -607,33 +761,28 @@ ClockListener, TracksControllerListener, DataController {
         gridButtonPanel.add(syncButton, "w 45!, h 45!");
 
         // Set cell onset button
-        javax.swing.ActionMap actionMap =
-            org.jdesktop.application.Application.getInstance(
-                    org.openshapa.OpenSHAPA.class).getContext()
-                    .getActionMap(DataControllerV.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application
+            .getInstance(org.openshapa.OpenSHAPA.class).getContext()
+            .getActionMap(DataControllerV.class, this);
         setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction"));
-        setCellOnsetButton.setIcon(resourceMap
-                .getIcon("setCellOnsetButton.icon"));
+        setCellOnsetButton.setIcon(resourceMap.getIcon(
+                "setCellOnsetButton.icon"));
         setCellOnsetButton.setFocusPainted(false);
         setCellOnsetButton.setName("setCellOnsetButton");
-        setCellOnsetButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/set-cell-onset-selected.png")));
+        setCellOnsetButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/set-cell-onset-selected.png")));
         gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
 
         // Set cell offset button
         setCellOffsetButton.setAction(actionMap.get("setCellOffsetAction"));
-        setCellOffsetButton.setIcon(resourceMap
-                .getIcon("setCellOffsetButton.icon"));
+        setCellOffsetButton.setIcon(resourceMap.getIcon(
+                "setCellOffsetButton.icon"));
         setCellOffsetButton.setFocusPainted(false);
         setCellOffsetButton.setName("setCellOffsetButton");
-        setCellOffsetButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/set-cell-offset-selected.png")));
+        setCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/set-cell-offset-selected.png")));
         gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
 
         // Sync video button
@@ -646,8 +795,9 @@ ClockListener, TracksControllerListener, DataController {
         rewindButton.setIcon(resourceMap.getIcon("rewindButton.icon"));
         rewindButton.setFocusPainted(false);
         rewindButton.setName("rewindButton");
-        rewindButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource("/icons/DataController/eng/rewind-selected.png")));
+        rewindButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/rewind-selected.png")));
         gridButtonPanel.add(rewindButton, "w 45!, h 45!");
 
         // Play video button
@@ -655,8 +805,9 @@ ClockListener, TracksControllerListener, DataController {
         playButton.setIcon(resourceMap.getIcon("playButton.icon"));
         playButton.setFocusPainted(false);
         playButton.setName("playButton");
-        playButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource("/icons/DataController/eng/play-selected.png")));
+        playButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/play-selected.png")));
         playButton.setRequestFocusEnabled(false);
         gridButtonPanel.add(playButton, "w 45!, h 45!");
 
@@ -665,11 +816,9 @@ ClockListener, TracksControllerListener, DataController {
         forwardButton.setIcon(resourceMap.getIcon("forwardButton.icon"));
         forwardButton.setFocusPainted(false);
         forwardButton.setName("forwardButton");
-        forwardButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/fast-forward-selected.png")));
+        forwardButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/fast-forward-selected.png")));
         gridButtonPanel.add(forwardButton, "w 45!, h 45!");
 
         // Go back button
@@ -677,11 +826,9 @@ ClockListener, TracksControllerListener, DataController {
         goBackButton.setIcon(resourceMap.getIcon("goBackButton.icon"));
         goBackButton.setFocusPainted(false);
         goBackButton.setName("goBackButton");
-        goBackButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/go-back-selected.png")));
+        goBackButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/go-back-selected.png")));
         gridButtonPanel.add(goBackButton, "w 45!, h 45!");
 
         // Go back text field
@@ -692,15 +839,13 @@ ClockListener, TracksControllerListener, DataController {
 
         // Shuttle back button
         shuttleBackButton.setAction(actionMap.get("shuttleBackAction"));
-        shuttleBackButton
-        .setIcon(resourceMap.getIcon("shuttleBackButton.icon"));
+        shuttleBackButton.setIcon(resourceMap.getIcon(
+                "shuttleBackButton.icon"));
         shuttleBackButton.setFocusPainted(false);
         shuttleBackButton.setName("shuttleBackButton");
-        shuttleBackButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/shuttle-backward-selected.png")));
+        shuttleBackButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/shuttle-backward-selected.png")));
         gridButtonPanel.add(shuttleBackButton, "w 45!, h 45!");
 
         // Stop button
@@ -708,21 +853,20 @@ ClockListener, TracksControllerListener, DataController {
         stopButton.setIcon(resourceMap.getIcon("stopButton.icon"));
         stopButton.setFocusPainted(false);
         stopButton.setName("stopButton");
-        stopButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource("/icons/DataController/eng/stop-selected.png")));
+        stopButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/stop-selected.png")));
         gridButtonPanel.add(stopButton, "w 45!, h 45!");
 
         // Shuttle forward button
         shuttleForwardButton.setAction(actionMap.get("shuttleForwardAction"));
-        shuttleForwardButton.setIcon(resourceMap
-                .getIcon("shuttleForwardButton.icon"));
+        shuttleForwardButton.setIcon(resourceMap.getIcon(
+                "shuttleForwardButton.icon"));
         shuttleForwardButton.setFocusPainted(false);
         shuttleForwardButton.setName("shuttleForwardButton");
-        shuttleForwardButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/shuttle-forward-selected.png")));
+        shuttleForwardButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/shuttle-forward-selected.png")));
         gridButtonPanel.add(shuttleForwardButton, "w 45!, h 45!");
 
         // Find button
@@ -730,8 +874,9 @@ ClockListener, TracksControllerListener, DataController {
         findButton.setIcon(resourceMap.getIcon("findButton.icon"));
         findButton.setFocusPainted(false);
         findButton.setName("findButton");
-        findButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource("/icons/DataController/eng/find-selected.png")));
+        findButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/find-selected.png")));
         gridButtonPanel.add(findButton, "w 45!, h 45!");
 
         // Find text field
@@ -745,11 +890,9 @@ ClockListener, TracksControllerListener, DataController {
         jogBackButton.setIcon(resourceMap.getIcon("jogBackButton.icon"));
         jogBackButton.setFocusPainted(false);
         jogBackButton.setName("jogBackButton");
-        jogBackButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/jog-backward-selected.png")));
+        jogBackButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/jog-backward-selected.png")));
         gridButtonPanel.add(jogBackButton, "w 45!, h 45!");
 
         // Pause button
@@ -757,8 +900,9 @@ ClockListener, TracksControllerListener, DataController {
         pauseButton.setIcon(resourceMap.getIcon("pauseButton.icon"));
         pauseButton.setFocusPainted(false);
         pauseButton.setName("pauseButton");
-        pauseButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource("/icons/DataController/eng/pause-selected.png")));
+        pauseButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/pause-selected.png")));
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
         // Jog forward button
@@ -766,9 +910,9 @@ ClockListener, TracksControllerListener, DataController {
         jogForwardButton.setIcon(resourceMap.getIcon("jogForwardButton.icon"));
         jogForwardButton.setFocusPainted(false);
         jogForwardButton.setName("jogForwardButton");
-        jogForwardButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource(
-                "/icons/DataController/eng/jog-forward-selected.png")));
+        jogForwardButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/jog-forward-selected.png")));
         gridButtonPanel.add(jogForwardButton, "w 45!, h 45!");
 
         // Create new cell button
@@ -777,64 +921,58 @@ ClockListener, TracksControllerListener, DataController {
         createNewCell.setText(resourceMap.getString("createNewCell.text"));
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setFocusPainted(false);
-        createNewCell
-        .setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        createNewCell.setHorizontalTextPosition(
+            javax.swing.SwingConstants.CENTER);
         createNewCell.setName("createNewCellButton");
-        createNewCell
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/create-new-cell-selected.png")));
+        createNewCell.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/create-new-cell-selected.png")));
         gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 92!");
 
         // Find offset field
         findOffsetField.setHorizontalAlignment(SwingConstants.CENTER);
         findOffsetField.setText("00:00:00:000");
-        findOffsetField.setToolTipText(resourceMap
-                .getString("findOffsetField.toolTipText"));
+        findOffsetField.setToolTipText(resourceMap.getString(
+                "findOffsetField.toolTipText"));
         findOffsetField.setEnabled(false);
         findOffsetField.setName("findOffsetLabel");
         gridButtonPanel.add(findOffsetField, "w 80!, h 45!");
 
         // Create new cell setting offset button
-        createNewCellSettingOffset.setAction(actionMap
-                .get("createNewCellAction"));
-        createNewCellSettingOffset.setIcon(resourceMap
-                .getIcon("createNewCellButton.icon"));
+        createNewCellSettingOffset.setAction(actionMap.get(
+                "createNewCellAction"));
+        createNewCellSettingOffset.setIcon(resourceMap.getIcon(
+                "createNewCellButton.icon"));
         createNewCellSettingOffset.setFocusPainted(false);
         createNewCellSettingOffset.setName("newCellAndOnsetButton");
-        createNewCellSettingOffset
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
+        createNewCellSettingOffset.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
                     "/icons/DataController/eng/"
                     + "create-new-cell-and-set-onset-selected.png")));
         gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 92!, h 45!");
 
         // Set new cell offset button
         setNewCellOffsetButton.setAction(actionMap.get("setNewCellStopTime"));
-        setNewCellOffsetButton.setIcon(resourceMap
-                .getIcon("setNewCellOnsetButton.icon"));
+        setNewCellOffsetButton.setIcon(resourceMap.getIcon(
+                "setNewCellOnsetButton.icon"));
         setNewCellOffsetButton.setFocusPainted(false);
         setNewCellOffsetButton.setName("newCellOffsetButton");
-        setNewCellOffsetButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/set-new-cell-offset-selected.png")));
+        setNewCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/set-new-cell-offset-selected.png")));
         gridButtonPanel.add(setNewCellOffsetButton, "w 45!, h 45!");
 
         // Show tracks button
-        showTracksButton.setIcon(resourceMap
-                .getIcon("showTracksButton.show.icon"));
+        showTracksButton.setIcon(resourceMap.getIcon(
+                "showTracksButton.show.icon"));
         showTracksButton.setName("showTracksButton");
-        showTracksButton.getAccessibleContext()
-        .setAccessibleName("Show Tracks");
+        showTracksButton.getAccessibleContext().setAccessibleName(
+            "Show Tracks");
         showTracksButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent evt) {
-                showTracksButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(final ActionEvent evt) {
+                    showTracksButtonActionPerformed(evt);
+                }
+            });
         gridButtonPanel.add(showTracksButton, "w 80!, h 45!");
 
         getContentPane().add(gridButtonPanel, "west");
@@ -886,19 +1024,20 @@ ClockListener, TracksControllerListener, DataController {
 
         setLayout(new MigLayout("hidemode 3"));
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
         org.jdesktop.application.ResourceMap resourceMap =
             org.jdesktop.application.Application.getInstance(
-                    org.openshapa.OpenSHAPA.class).getContext()
-                    .getResourceMap(DataControllerV.class);
+                org.openshapa.OpenSHAPA.class).getContext().getResourceMap(
+                DataControllerV.class);
         setTitle(resourceMap.getString("title"));
         setName("");
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(final java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
-        });
+                @Override public void windowClosing(
+                    final java.awt.event.WindowEvent evt) {
+                    formWindowClosing(evt);
+                }
+            });
 
         gridButtonPanel.setBackground(Color.WHITE);
         gridButtonPanel.setLayout(new MigLayout("wrap 5"));
@@ -909,15 +1048,15 @@ ClockListener, TracksControllerListener, DataController {
         addDataButton.setFocusPainted(false);
         addDataButton.setName("addDataButton");
         addDataButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent evt) {
-                openVideoButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(final ActionEvent evt) {
+                    openVideoButtonActionPerformed(evt);
+                }
+            });
         gridButtonPanel.add(addDataButton, "span 2, w 90!, h 25!");
 
         // Timestamp panel
-        JPanel timestampPanel =
-            new JPanel(new MigLayout("", "push[][][]0![]push"));
+        JPanel timestampPanel = new JPanel(new MigLayout("",
+                    "push[][][]0![]push"));
         timestampPanel.setOpaque(false);
 
         // Timestamp label
@@ -953,33 +1092,28 @@ ClockListener, TracksControllerListener, DataController {
         syncButton.setEnabled(false);
 
         // Set cell onset button
-        javax.swing.ActionMap actionMap =
-            org.jdesktop.application.Application.getInstance(
-                    org.openshapa.OpenSHAPA.class).getContext()
-                    .getActionMap(DataControllerV.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application
+            .getInstance(org.openshapa.OpenSHAPA.class).getContext()
+            .getActionMap(DataControllerV.class, this);
         setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction"));
-        setCellOnsetButton.setIcon(resourceMap
-                .getIcon("setCellOnsetButton.icon"));
+        setCellOnsetButton.setIcon(resourceMap.getIcon(
+                "setCellOnsetButton.icon"));
         setCellOnsetButton.setFocusPainted(false);
         setCellOnsetButton.setName("setCellOnsetButton");
-        setCellOnsetButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/set-cell-onset-selected.png")));
+        setCellOnsetButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/set-cell-onset-selected.png")));
         gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
 
         // Set cell offset button
         setCellOffsetButton.setAction(actionMap.get("setCellOffsetAction"));
-        setCellOffsetButton.setIcon(resourceMap
-                .getIcon("setCellOffsetButton.icon"));
+        setCellOffsetButton.setIcon(resourceMap.getIcon(
+                "setCellOffsetButton.icon"));
         setCellOffsetButton.setFocusPainted(false);
         setCellOffsetButton.setName("setCellOffsetButton");
-        setCellOffsetButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/set-cell-offset-selected.png")));
+        setCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/set-cell-offset-selected.png")));
         gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
 
         // Go back button
@@ -987,11 +1121,9 @@ ClockListener, TracksControllerListener, DataController {
         goBackButton.setIcon(resourceMap.getIcon("goBackButton.icon"));
         goBackButton.setFocusPainted(false);
         goBackButton.setName("goBackButton");
-        goBackButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/go-back-selected.png")));
+        goBackButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/go-back-selected.png")));
         gridButtonPanel.add(goBackButton, "w 45!, h 45!");
 
         // Sync video button
@@ -1004,8 +1136,9 @@ ClockListener, TracksControllerListener, DataController {
         rewindButton.setIcon(resourceMap.getIcon("rewindButton.icon"));
         rewindButton.setFocusPainted(false);
         rewindButton.setName("rewindButton");
-        rewindButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource("/icons/DataController/eng/rewind-selected.png")));
+        rewindButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/rewind-selected.png")));
         gridButtonPanel.add(rewindButton, "w 45!, h 45!");
 
         // Play video button
@@ -1013,8 +1146,9 @@ ClockListener, TracksControllerListener, DataController {
         playButton.setIcon(resourceMap.getIcon("playButton.icon"));
         playButton.setFocusPainted(false);
         playButton.setName("playButton");
-        playButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource("/icons/DataController/eng/play-selected.png")));
+        playButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/play-selected.png")));
         playButton.setRequestFocusEnabled(false);
         gridButtonPanel.add(playButton, "w 45!, h 45!");
 
@@ -1023,21 +1157,21 @@ ClockListener, TracksControllerListener, DataController {
         forwardButton.setIcon(resourceMap.getIcon("forwardButton.icon"));
         forwardButton.setFocusPainted(false);
         forwardButton.setName("forwardButton");
-        forwardButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/fast-forward-selected.png")));
+        forwardButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/fast-forward-selected.png")));
         gridButtonPanel.add(forwardButton, "w 45!, h 45!");
 
         // Find button
         findButton.setAction(actionMap.get("findAction"));
-        findButton.setIcon(new ImageIcon(getClass().getResource(
-        "/icons/DataController/eng/find-win.png")));
+        findButton.setIcon(new ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/find-win.png")));
         findButton.setFocusPainted(false);
         findButton.setName("findButton");
-        findButton.setPressedIcon(new ImageIcon(getClass().getResource(
-        "/icons/DataController/eng/find-win-selected.png")));
+        findButton.setPressedIcon(new ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/find-win-selected.png")));
         gridButtonPanel.add(findButton, "span 1 2, w 45!, h 95!");
 
         // Go back text field
@@ -1048,15 +1182,13 @@ ClockListener, TracksControllerListener, DataController {
 
         // Shuttle back button
         shuttleBackButton.setAction(actionMap.get("shuttleBackAction"));
-        shuttleBackButton
-        .setIcon(resourceMap.getIcon("shuttleBackButton.icon"));
+        shuttleBackButton.setIcon(resourceMap.getIcon(
+                "shuttleBackButton.icon"));
         shuttleBackButton.setFocusPainted(false);
         shuttleBackButton.setName("shuttleBackButton");
-        shuttleBackButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/shuttle-backward-selected.png")));
+        shuttleBackButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/shuttle-backward-selected.png")));
         gridButtonPanel.add(shuttleBackButton, "w 45!, h 45!");
 
         // Stop button
@@ -1064,21 +1196,20 @@ ClockListener, TracksControllerListener, DataController {
         stopButton.setIcon(resourceMap.getIcon("stopButton.icon"));
         stopButton.setFocusPainted(false);
         stopButton.setName("stopButton");
-        stopButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource("/icons/DataController/eng/stop-selected.png")));
+        stopButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/stop-selected.png")));
         gridButtonPanel.add(stopButton, "w 45!, h 45!");
 
         // Shuttle forward button
         shuttleForwardButton.setAction(actionMap.get("shuttleForwardAction"));
-        shuttleForwardButton.setIcon(resourceMap
-                .getIcon("shuttleForwardButton.icon"));
+        shuttleForwardButton.setIcon(resourceMap.getIcon(
+                "shuttleForwardButton.icon"));
         shuttleForwardButton.setFocusPainted(false);
         shuttleForwardButton.setName("shuttleForwardButton");
-        shuttleForwardButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/shuttle-forward-selected.png")));
+        shuttleForwardButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/shuttle-forward-selected.png")));
         gridButtonPanel.add(shuttleForwardButton, "w 45!, h 45!");
 
         // Find text field
@@ -1092,11 +1223,9 @@ ClockListener, TracksControllerListener, DataController {
         jogBackButton.setIcon(resourceMap.getIcon("jogBackButton.icon"));
         jogBackButton.setFocusPainted(false);
         jogBackButton.setName("jogBackButton");
-        jogBackButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/jog-backward-selected.png")));
+        jogBackButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/jog-backward-selected.png")));
         gridButtonPanel.add(jogBackButton, "w 45!, h 45!");
 
         // Pause button
@@ -1104,8 +1233,9 @@ ClockListener, TracksControllerListener, DataController {
         pauseButton.setIcon(resourceMap.getIcon("pauseButton.icon"));
         pauseButton.setFocusPainted(false);
         pauseButton.setName("pauseButton");
-        pauseButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource("/icons/DataController/eng/pause-selected.png")));
+        pauseButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/pause-selected.png")));
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
         // Jog forward button
@@ -1113,9 +1243,9 @@ ClockListener, TracksControllerListener, DataController {
         jogForwardButton.setIcon(resourceMap.getIcon("jogForwardButton.icon"));
         jogForwardButton.setFocusPainted(false);
         jogForwardButton.setName("jogForwardButton");
-        jogForwardButton.setPressedIcon(new javax.swing.ImageIcon(getClass()
-                .getResource(
-                "/icons/DataController/eng/jog-forward-selected.png")));
+        jogForwardButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/jog-forward-selected.png")));
         gridButtonPanel.add(jogForwardButton, "w 45!, h 45!");
 
         // Create new cell button
@@ -1124,64 +1254,58 @@ ClockListener, TracksControllerListener, DataController {
         createNewCell.setText(resourceMap.getString("createNewCell.text"));
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setFocusPainted(false);
-        createNewCell
-        .setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        createNewCell.setHorizontalTextPosition(
+            javax.swing.SwingConstants.CENTER);
         createNewCell.setName("createNewCellButton");
-        createNewCell
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/create-new-cell-selected.png")));
+        createNewCell.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/create-new-cell-selected.png")));
         gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 95!");
 
         // Find offset field
         findOffsetField.setHorizontalAlignment(SwingConstants.CENTER);
         findOffsetField.setText("00:00:00:000");
-        findOffsetField.setToolTipText(resourceMap
-                .getString("findOffsetField.toolTipText"));
+        findOffsetField.setToolTipText(resourceMap.getString(
+                "findOffsetField.toolTipText"));
         findOffsetField.setEnabled(false);
         findOffsetField.setName("findOffsetLabel");
         gridButtonPanel.add(findOffsetField, "w 80!, h 45!");
 
         // Create new cell setting offset button
-        createNewCellSettingOffset.setAction(actionMap
-                .get("createNewCellAction"));
-        createNewCellSettingOffset.setIcon(resourceMap
-                .getIcon("createNewCellButton.icon"));
+        createNewCellSettingOffset.setAction(actionMap.get(
+                "createNewCellAction"));
+        createNewCellSettingOffset.setIcon(resourceMap.getIcon(
+                "createNewCellButton.icon"));
         createNewCellSettingOffset.setFocusPainted(false);
         createNewCellSettingOffset.setName("newCellAndOnsetButton");
-        createNewCellSettingOffset
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                        "/icons/DataController/eng/"
-                        + "create-new-cell-and-set-onset-selected.png")));
+        createNewCellSettingOffset.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/"
+                    + "create-new-cell-and-set-onset-selected.png")));
         gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 95!, h 45!");
 
         // Set new cell offset button
         setNewCellOffsetButton.setAction(actionMap.get("setNewCellStopTime"));
-        setNewCellOffsetButton.setIcon(resourceMap
-                .getIcon("setNewCellOnsetButton.icon"));
+        setNewCellOffsetButton.setIcon(resourceMap.getIcon(
+                "setNewCellOnsetButton.icon"));
         setNewCellOffsetButton.setFocusPainted(false);
         setNewCellOffsetButton.setName("newCellOffsetButton");
-        setNewCellOffsetButton
-        .setPressedIcon(new javax.swing.ImageIcon(
-                getClass()
-                .getResource(
-                "/icons/DataController/eng/set-new-cell-offset-selected.png")));
+        setNewCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(
+                getClass().getResource(
+                    "/icons/DataController/eng/set-new-cell-offset-selected.png")));
         gridButtonPanel.add(setNewCellOffsetButton, "w 45!, h 45!");
 
         // Show tracks button
-        showTracksButton.setIcon(resourceMap
-                .getIcon("showTracksButton.show.icon"));
+        showTracksButton.setIcon(resourceMap.getIcon(
+                "showTracksButton.show.icon"));
         showTracksButton.setName("showTracksButton");
-        showTracksButton.getAccessibleContext()
-        .setAccessibleName("Show Tracks");
+        showTracksButton.getAccessibleContext().setAccessibleName(
+            "Show Tracks");
         showTracksButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent evt) {
-                showTracksButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(final ActionEvent evt) {
+                    showTracksButtonActionPerformed(evt);
+                }
+            });
         gridButtonPanel.add(showTracksButton, "w 80!, h 45!");
 
         getContentPane().add(gridButtonPanel, "west");
@@ -1210,7 +1334,7 @@ ClockListener, TracksControllerListener, DataController {
      *            The event that triggered this action.
      */
     private void openVideoButtonActionPerformed(
-            final java.awt.event.ActionEvent evt) {
+        final java.awt.event.ActionEvent evt) {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
         PluginManager pm = PluginManager.getInstance();
 
@@ -1218,6 +1342,7 @@ ClockListener, TracksControllerListener, DataController {
         for (FileFilter f : pm.getPluginFileFilters()) {
             jd.addChoosableFileFilter(f);
         }
+
         if (JFileChooser.APPROVE_OPTION == jd.showOpenDialog(this)) {
             openVideo(jd);
         }
@@ -1230,19 +1355,24 @@ ClockListener, TracksControllerListener, DataController {
      *            The event that triggered this action.
      */
     private void showTracksButtonActionPerformed(
-            final java.awt.event.ActionEvent evt) {
+        final java.awt.event.ActionEvent evt) {
         assert (evt.getSource() instanceof JButton);
+
         JButton button = (JButton) evt.getSource();
-        ResourceMap resourceMap =
-            Application.getInstance(org.openshapa.OpenSHAPA.class)
-            .getContext().getResourceMap(DataControllerV.class);
+        ResourceMap resourceMap = Application.getInstance(
+                org.openshapa.OpenSHAPA.class).getContext().getResourceMap(
+                DataControllerV.class);
+
         if (tracksPanelEnabled) {
+
             // Panel is being displayed, hide it
             button.setIcon(resourceMap.getIcon("showTracksButton.show.icon"));
         } else {
+
             // Panel is hidden, show it
             button.setIcon(resourceMap.getIcon("showTracksButton.hide.icon"));
         }
+
         tracksPanelEnabled = !tracksPanelEnabled;
         showTracksPanel(tracksPanelEnabled);
     }
@@ -1258,15 +1388,15 @@ ClockListener, TracksControllerListener, DataController {
      *            The parent file that the viewer represents.
      */
     private void addDataViewer(final ImageIcon icon, final DataViewer viewer,
-            final File f) {
+        final File f, final TrackPainter trackPainter) {
         addViewer(viewer, 0);
 
         addDataViewerToProject(viewer.getClass().getName(),
-                f.getAbsolutePath());
+            f.getAbsolutePath());
 
         // Add the file to the tracks information panel
         addTrack(icon, f.getAbsolutePath(), f.getName(), viewer.getDuration(),
-                viewer.getOffset(), -1);
+            viewer.getOffset(), trackPainter);
     }
 
     /**
@@ -1281,24 +1411,18 @@ ClockListener, TracksControllerListener, DataController {
     /**
      * Adds a track to the tracks panel.
      *
-     * @param icon
-     *            Icon associated with the track
-     * @param mediaPath
-     *            Absolute file path to the media file.
-     * @param name
-     *            The name of the track to add.
-     * @param duration
-     *            The duration of the data feed in milliseconds.
-     * @param offset
-     *            The time offset of the data feed in milliseconds.
-     * @param bookmark
-     *            The snap bookmark in milliseconds.
+     * @param icon Icon associated with the track
+     * @param mediaPath Absolute file path to the media file.
+     * @param name The name of the track to add.
+     * @param duration The duration of the data feed in milliseconds.
+     * @param offset The time offset of the data feed in milliseconds.
+     * @param trackPainter Track painter to use.
      */
     public void addTrack(final ImageIcon icon, final String mediaPath,
-            final String name, final long duration, final long offset,
-            final long bookmark) {
+        final String name, final long duration, final long offset,
+        final TrackPainter trackPainter) {
         mixerControllerV.addNewTrack(icon, mediaPath, name, duration, offset,
-                bookmark);
+            trackPainter);
     }
 
     /**
@@ -1310,7 +1434,7 @@ ClockListener, TracksControllerListener, DataController {
      *            Absolute file path to the data feed.
      */
     public void addDataViewerToProject(final String pluginName,
-            final String filePath) {
+        final String filePath) {
         OpenSHAPA.getProjectController().projectChanged();
         OpenSHAPA.getApplication().updateTitle();
     }
@@ -1322,6 +1446,7 @@ ClockListener, TracksControllerListener, DataController {
      * @param offset The offset value in milliseconds.
      */
     public void addViewer(final DataViewer viewer, final long offset) {
+
         // Add the QTDataViewer to the list of viewers we are controlling.
         viewers.add(viewer);
         viewer.setParentController(this);
@@ -1330,11 +1455,12 @@ ClockListener, TracksControllerListener, DataController {
 
         // adjust the overall frame rate.
         float fps = viewer.getFrameRate();
+
         if (fps > currentFPS) {
             currentFPS = fps;
         }
 
-        if (viewer.getOffset() + viewer.getDuration() > maxDuration) {
+        if ((viewer.getOffset() + viewer.getDuration()) > maxDuration) {
             maxDuration = viewer.getOffset() + viewer.getDuration();
         }
 
@@ -1347,16 +1473,14 @@ ClockListener, TracksControllerListener, DataController {
     /**
      * Action to invoke when the user clicks the set cell onset button.
      */
-    @Action
-    public void setCellOnsetAction() {
+    @Action public void setCellOnsetAction() {
         new SetSelectedCellStartTimeC(getCurrentTime());
     }
 
     /**
      * Action to invoke when the user clicks on the set cell offest button.
      */
-    @Action
-    public void setCellOffsetAction() {
+    @Action public void setCellOffsetAction() {
         new SetSelectedCellStopTimeC(getCurrentTime());
         setFindOffsetField(getCurrentTime());
     }
@@ -1378,16 +1502,24 @@ ClockListener, TracksControllerListener, DataController {
      * @param e event
      */
     public void tracksControllerChanged(final TracksControllerEvent e) {
+
         switch (e.getTracksEvent()) {
+
         case NEEDLE_EVENT:
             handleNeedleEvent((NeedleEvent) e.getEventObject());
+
             break;
+
         case MARKER_EVENT:
             handleMarkerEvent((MarkerEvent) e.getEventObject());
+
             break;
+
         case CARRIAGE_EVENT:
             handleCarriageEvent((CarriageEvent) e.getEventObject());
+
             break;
+
         default:
             break;
         }
@@ -1402,12 +1534,15 @@ ClockListener, TracksControllerListener, DataController {
      */
     private void handleNeedleEvent(final NeedleEvent e) {
         long newTime = e.getTime();
+
         if (newTime < windowPlayStart) {
             newTime = windowPlayStart;
         }
+
         if (newTime > windowPlayEnd) {
             newTime = windowPlayEnd;
         }
+
         clockStop(newTime);
         clockStep(newTime);
         setCurrentTime(newTime);
@@ -1424,8 +1559,11 @@ ClockListener, TracksControllerListener, DataController {
     private void handleMarkerEvent(final MarkerEvent e) {
         final long newWindowTime = e.getTime();
         final long tracksTime = mixerControllerV.getCurrentTime();
+
         switch (e.getMarker()) {
+
         case START_MARKER:
+
             if ((newWindowTime < maxDuration)
                     && (newWindowTime < windowPlayEnd)) {
                 windowPlayStart = newWindowTime;
@@ -1434,14 +1572,19 @@ ClockListener, TracksControllerListener, DataController {
             } else {
                 windowPlayStart = maxDuration;
             }
+
             mixerControllerV.setPlayRegionStart(windowPlayStart);
+
             if (tracksTime < windowPlayStart) {
                 mixerControllerV.setCurrentTime(windowPlayStart);
                 clock.setTime(windowPlayStart);
                 clockStep(windowPlayStart);
             }
+
             break;
+
         case END_MARKER:
+
             if ((newWindowTime <= maxDuration)
                     && (newWindowTime > windowPlayStart)) {
                 windowPlayEnd = newWindowTime;
@@ -1450,13 +1593,17 @@ ClockListener, TracksControllerListener, DataController {
             } else {
                 windowPlayEnd = windowPlayStart;
             }
+
             mixerControllerV.setPlayRegionEnd(windowPlayEnd);
+
             if (tracksTime > windowPlayEnd) {
                 mixerControllerV.setCurrentTime(windowPlayEnd);
                 clock.setTime(windowPlayEnd);
                 clockStep(windowPlayEnd);
             }
+
             break;
+
         default:
             break;
         }
@@ -1470,13 +1617,18 @@ ClockListener, TracksControllerListener, DataController {
      *            The carriage event that triggered this action.
      */
     private void handleCarriageEvent(final CarriageEvent e) {
+
         switch (e.getEventType()) {
+
         case OFFSET_CHANGE:
+
             // Look through our data viewers and update the offset
             Iterator<DataViewer> itOffset = viewers.iterator();
+
             while (itOffset.hasNext()) {
                 DataViewer dv = itOffset.next();
                 File feed = dv.getDataFeed();
+
                 /*
                  * Found our data viewer, update the DV offset and the settings
                  * in the project file.
@@ -1490,13 +1642,17 @@ ClockListener, TracksControllerListener, DataController {
 
             // Recalculate the maximum playback duration.
             maxDuration = 0;
+
             Iterator<DataViewer> itDuration = viewers.iterator();
+
             while (itDuration.hasNext()) {
                 DataViewer dv = itDuration.next();
-                if (dv.getDuration() + dv.getOffset() > maxDuration) {
+
+                if ((dv.getDuration() + dv.getOffset()) > maxDuration) {
                     maxDuration = dv.getDuration() + dv.getOffset();
                 }
             }
+
             mixerControllerV.setMaxEnd(maxDuration);
 
             // Reset our playback windows
@@ -1512,20 +1668,27 @@ ClockListener, TracksControllerListener, DataController {
 
             // Reset the time if needed
             long tracksTime = mixerControllerV.getCurrentTime();
+
             if (tracksTime < windowPlayStart) {
                 tracksTime = windowPlayStart;
             }
+
             if (tracksTime > windowPlayEnd) {
                 tracksTime = windowPlayEnd;
             }
+
             mixerControllerV.setCurrentTime(tracksTime);
 
             clock.setTime(tracksTime);
             clockStep(tracksTime);
+
             break;
+
         case BOOKMARK_CHANGED:
+
             // Look through our data viewers and update the bookmark
             Iterator<DataViewer> viewerIterator = viewers.iterator();
+
             while (viewerIterator.hasNext()) {
                 DataViewer dv = viewerIterator.next();
                 File feed = dv.getDataFeed();
@@ -1535,10 +1698,14 @@ ClockListener, TracksControllerListener, DataController {
                     OpenSHAPA.getApplication().updateTitle();
                 }
             }
+
             break;
+
         case BOOKMARK_SAVE:
+
             // Look through our data viewers and update the bookmark
             Iterator<DataViewer> saveIterator = viewers.iterator();
+
             while (saveIterator.hasNext()) {
                 DataViewer dv = saveIterator.next();
                 File feed = dv.getDataFeed();
@@ -1548,8 +1715,10 @@ ClockListener, TracksControllerListener, DataController {
                     OpenSHAPA.getApplication().updateTitle();
                 }
             }
+
         default:
             logger.error("Unknown event");
+
             break;
         }
     }
@@ -1649,12 +1818,12 @@ ClockListener, TracksControllerListener, DataController {
     /**
      * Action to invoke when the user clicks on the play button.
      */
-    @Action
-    public void playAction() {
+    @Action public void playAction() {
+
         // BugzID:464 - When stopped at the end of the region of interest.
         // pressing play jumps the stream back to the start of the video before
         // starting to play again.
-        if (getCurrentTime() >= windowPlayEnd && clock.isStopped()) {
+        if ((getCurrentTime() >= windowPlayEnd) && clock.isStopped()) {
             jumpTo(windowPlayStart);
         }
 
@@ -1664,24 +1833,22 @@ ClockListener, TracksControllerListener, DataController {
     /**
      * Action to invoke when the user clicks on the fast foward button.
      */
-    @Action
-    public void forwardAction() {
+    @Action public void forwardAction() {
         playAt(FFORWARD_RATE);
     }
 
     /**
      * Action to invoke when the user clicks on the rewind button.
      */
-    @Action
-    public void rewindAction() {
+    @Action public void rewindAction() {
         playAt(REWIND_RATE);
     }
 
     /**
      * Action to invoke when the user clicks on the pause button.
      */
-    @Action
-    public void pauseAction() {
+    @Action public void pauseAction() {
+
         // Resume from pause at playback rate prior to pause.
         if (clock.isStopped()) {
             shuttleAt(pauseRate);
@@ -1691,16 +1858,14 @@ ClockListener, TracksControllerListener, DataController {
             pauseRate = clock.getRate();
             clock.stop();
             lblSpeed.setText("["
-                    + FloatUtils.doubleToFractionStr(new Double(pauseRate))
-                    + "]");
+                + FloatUtils.doubleToFractionStr(new Double(pauseRate)) + "]");
         }
     }
 
     /**
      * Action to invoke when the user clicks on the stop button.
      */
-    @Action
-    public void stopAction() {
+    @Action public void stopAction() {
         clock.stop();
         clock.setRate(0);
         shuttleRate = 0;
@@ -1713,16 +1878,17 @@ ClockListener, TracksControllerListener, DataController {
      *
      * @todo proper behaviour for reversing shuttle direction?
      */
-    @Action
-    public void shuttleForwardAction() {
-        if (clock.getTime() <= 0
-                && (shuttleRate != 0 || shuttleDirection
-                != ShuttleDirection.UNDEFINED)) {
+    @Action public void shuttleForwardAction() {
+
+        if ((clock.getTime() <= 0)
+                && ((shuttleRate != 0)
+                    || (shuttleDirection != ShuttleDirection.UNDEFINED))) {
             shuttleRate = 0;
             pauseRate = 0;
             shuttleDirection = ShuttleDirection.UNDEFINED;
             shuttle(ShuttleDirection.FORWARDS);
         } else {
+
             // BugzID:794 - Previously ignored pauseRate if paused
             if (clock.isStopped()) {
                 shuttleRate = findShuttleIndex(pauseRate);
@@ -1739,15 +1905,16 @@ ClockListener, TracksControllerListener, DataController {
     /**
      * Action to invoke when the user clicks on the shuttle back button.
      */
-    @Action
-    public void shuttleBackAction() {
-        if (clock.getTime() <= 0
-                && (shuttleRate != 0 || shuttleDirection
-                != ShuttleDirection.UNDEFINED)) {
+    @Action public void shuttleBackAction() {
+
+        if ((clock.getTime() <= 0)
+                && ((shuttleRate != 0)
+                    || (shuttleDirection != ShuttleDirection.UNDEFINED))) {
             shuttleRate = 0;
             pauseRate = 0;
             shuttleDirection = ShuttleDirection.UNDEFINED;
         } else {
+
             // BugzID:794 - Previously ignored pauseRate if paused
             if (clock.isStopped()) {
                 shuttleRate = findShuttleIndex(pauseRate);
@@ -1770,14 +1937,19 @@ ClockListener, TracksControllerListener, DataController {
      * @return The index of the rate, or -1 if not found.
      */
     private int findShuttleIndex(final float pRate) {
+
         if (pRate == 0) {
             return 0;
         }
+
         for (int i = 0; i < SHUTTLE_RATES.length; i++) {
-            if (SHUTTLE_RATES[i] == pRate || SHUTTLE_RATES[i] == pRate * (-1)) {
+
+            if ((SHUTTLE_RATES[i] == pRate)
+                    || (SHUTTLE_RATES[i] == (pRate * (-1)))) {
                 return i;
             }
         }
+
         return -1;
     }
 
@@ -1804,11 +1976,12 @@ ClockListener, TracksControllerListener, DataController {
     /**
      * Action to invoke when the user clicks on the find button.
      */
-    @Action
-    public void findAction() {
+    @Action public void findAction() {
+
         if (shiftMask) {
             findOffsetAction();
         } else {
+
             try {
                 jumpTo(CLOCK_FORMAT.parse(findTextField.getText()).getTime());
             } catch (ParseException e) {
@@ -1821,6 +1994,7 @@ ClockListener, TracksControllerListener, DataController {
      * Action to invoke when the user holds shift down.
      */
     public void findOffsetAction() {
+
         try {
             jumpTo(CLOCK_FORMAT.parse(findOffsetField.getText()).getTime());
         } catch (ParseException e) {
@@ -1833,11 +2007,12 @@ ClockListener, TracksControllerListener, DataController {
      * time.
      */
     public void setRegionOfInterestAction() {
+
         try {
-            final long newWindowPlayStart =
-                CLOCK_FORMAT.parse(findTextField.getText()).getTime();
-            final long newWindowPlayEnd =
-                CLOCK_FORMAT.parse(findOffsetField.getText()).getTime();
+            final long newWindowPlayStart = CLOCK_FORMAT.parse(
+                    findTextField.getText()).getTime();
+            final long newWindowPlayEnd = CLOCK_FORMAT.parse(
+                    findOffsetField.getText()).getTime();
 
             windowPlayStart = newWindowPlayStart;
             mixerControllerV.setPlayRegionStart(newWindowPlayStart);
@@ -1857,8 +2032,8 @@ ClockListener, TracksControllerListener, DataController {
     /**
      * Action to invoke when the user clicks on the go back button.
      */
-    @Action
-    public void goBackAction() {
+    @Action public void goBackAction() {
+
         try {
             long j = -CLOCK_FORMAT.parse(goBackTextField.getText()).getTime();
             jump(j);
@@ -1874,19 +2049,21 @@ ClockListener, TracksControllerListener, DataController {
     /**
      * Action to invoke when the user clicks on the jog backwards button.
      */
-    @Action
-    public void jogBackAction() {
+    @Action public void jogBackAction() {
         int mul = 1;
+
         if (shiftMask) {
             mul = SHIFTJOG;
         }
+
         if (ctrlMask) {
             mul = CTRLSHIFTJOG;
         }
 
         /* Bug1361: Do not allow jog to skip past the region boundaries. */
         long nextTime = (long) (mul * (-ONE_SECOND) / currentFPS);
-        if (clock.getTime() + nextTime > windowPlayStart) {
+
+        if ((clock.getTime() + nextTime) > windowPlayStart) {
             jump(nextTime);
         } else {
             jumpTo(windowPlayStart);
@@ -1896,19 +2073,21 @@ ClockListener, TracksControllerListener, DataController {
     /**
      * Action to invoke when the user clicks on the jog forwards button.
      */
-    @Action
-    public void jogForwardAction() {
+    @Action public void jogForwardAction() {
         int mul = 1;
+
         if (shiftMask) {
             mul = SHIFTJOG;
         }
+
         if (ctrlMask) {
             mul = CTRLSHIFTJOG;
         }
 
         /* Bug1361: Do not allow jog to skip past the region boundaries. */
         long nextTime = (long) (mul * (ONE_SECOND) / currentFPS);
-        if (clock.getTime() + nextTime < windowPlayEnd) {
+
+        if ((clock.getTime() + nextTime) < windowPlayEnd) {
             jump(nextTime);
         } else {
             jumpTo(windowPlayEnd);
@@ -1935,16 +2114,19 @@ ClockListener, TracksControllerListener, DataController {
      */
     private void shuttle(final ShuttleDirection direction) {
         float rate = SHUTTLE_RATES[shuttleRate];
+
         if (ShuttleDirection.UNDEFINED == shuttleDirection) {
             shuttleDirection = direction;
             rate = SHUTTLE_RATES[0];
 
         } else if (direction == shuttleDirection) {
+
             if (shuttleRate < (SHUTTLE_RATES.length - 1)) {
                 rate = SHUTTLE_RATES[++shuttleRate];
             }
 
         } else {
+
             if (shuttleRate > 0) {
                 rate = SHUTTLE_RATES[--shuttleRate];
 
@@ -1996,24 +2178,21 @@ ClockListener, TracksControllerListener, DataController {
     /**
      * Action to invoke when the user clicks on the create new cell button.
      */
-    @Action
-    public void createCellAction() {
+    @Action public void createCellAction() {
         new CreateNewCellC();
     }
 
     /**
      * Action to invoke when the user clicks on the new cell button.
      */
-    @Action
-    public void createNewCellAction() {
+    @Action public void createNewCellAction() {
         new CreateNewCellC(getCurrentTime());
     }
 
     /**
      * Action to invoke when the user clicks on the new cell onset button.
      */
-    @Action
-    public void setNewCellStopTime() {
+    @Action public void setNewCellStopTime() {
         new SetNewCellStopTimeC(getCurrentTime());
         setFindOffsetField(getCurrentTime());
     }
@@ -2021,70 +2200,6 @@ ClockListener, TracksControllerListener, DataController {
     /**
      * Action to invoke when the user clicks on the sync video button.
      */
-    @Action
-    public void syncVideoAction() {
+    @Action public void syncVideoAction() {
     }
-
-    /** */
-    private javax.swing.JButton createNewCell;
-    /** */
-    private javax.swing.JButton createNewCellSettingOffset;
-    /** */
-    private javax.swing.JButton findButton;
-    /** */
-    private javax.swing.JTextField findOffsetField;
-    /** */
-    private javax.swing.JTextField findTextField;
-    /** */
-    private javax.swing.JButton forwardButton;
-    /** */
-    private javax.swing.JButton goBackButton;
-    /** */
-    private javax.swing.JTextField goBackTextField;
-    /** */
-    private javax.swing.JPanel gridButtonPanel;
-    /** */
-    private javax.swing.JLabel jLabel1;
-    /** */
-    private javax.swing.JLabel jLabel2;
-    /** */
-    private javax.swing.JButton jogBackButton;
-    /** */
-    private javax.swing.JButton jogForwardButton;
-    /** */
-    private javax.swing.JLabel lblSpeed;
-    /** */
-    private javax.swing.JButton addDataButton;
-    /** */
-    private javax.swing.JButton pauseButton;
-    /** */
-    private javax.swing.JButton playButton;
-    /** */
-    private javax.swing.JButton rewindButton;
-    /** */
-    private javax.swing.JButton setCellOffsetButton;
-    /** */
-    private javax.swing.JButton setCellOnsetButton;
-    /** */
-    private javax.swing.JButton setNewCellOffsetButton;
-    /** */
-    private javax.swing.JButton showTracksButton;
-    /** */
-    private javax.swing.JButton shuttleBackButton;
-    /** */
-    private javax.swing.JButton shuttleForwardButton;
-    /** */
-    private javax.swing.JButton stopButton;
-    /** */
-    private javax.swing.JButton syncButton;
-    /** */
-    private javax.swing.JButton syncCtrlButton;
-    /** */
-    private javax.swing.JButton syncVideoButton;
-    /** */
-    private javax.swing.JLabel timestampLabel;
-    /** */
-    private javax.swing.JPanel topPanel;
-    /** */
-    private javax.swing.JPanel tracksPanel;
 }

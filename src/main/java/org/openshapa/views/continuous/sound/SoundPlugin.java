@@ -3,10 +3,16 @@ package org.openshapa.views.continuous.sound;
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileFilter;
 
+import org.openshapa.views.component.DefaultTrackPainter;
+import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 
+
 public class SoundPlugin implements Plugin {
+
+    /** The filter to use when looking for files that this plugin supports. */
+    private SoundFilter filter;
 
     /**
      * Default Constructor.
@@ -30,11 +36,14 @@ public class SoundPlugin implements Plugin {
         return filter;
     }
 
-    /** The filter to use when looking for files that this plugin supports. */
-    private SoundFilter filter;
-
     public ImageIcon getTypeIcon() {
-        // TODO Auto-generated method stub
         return null;
+    }
+
+    /**
+     * Get track painter.
+     */
+    public TrackPainter getTrackPainter() {
+        return new DefaultTrackPainter();
     }
 }

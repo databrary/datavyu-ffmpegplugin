@@ -26,6 +26,8 @@ public final class DeleteColumnC {
      *            The columns to remove from the database/spreadsheet.
      */
     public DeleteColumnC(final Vector<DataColumn> colsToDelete) {
+        logger.usage("deleting columns");
+
         // The spreadsheet is the view for this controller.
         SpreadsheetPanel view =
                 (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()

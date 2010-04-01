@@ -30,9 +30,9 @@ import org.openshapa.views.NewVariableV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
- *
+ * Utilities for UI tests.
  */
-public class UIUtils {
+public final class UIUtils {
 
     /**
      * Different cell variable types.
@@ -40,8 +40,10 @@ public class UIUtils {
     public static final String[] VAR_TYPES =
             {"TEXT", "PREDICATE", "INTEGER", "NOMINAL", "MATRIX", "FLOAT"};
 
+    /** BLOCK_SIZE for files. */
     private final static int BLOCK_SIZE = 65536;
 
+    /** Maximum time allowed for a script to load. */
     public final static int SCRIPT_LOAD_TIMEOUT = 5000;
 
     /**
@@ -139,7 +141,7 @@ public class UIUtils {
         if (varRadio.endsWith("TypeButton")) {
             varRadioCompName = varRadio;
         } else {
-            varRadioCompName = varRadio + "TypeButton";
+            varRadioCompName = varRadio.toLowerCase() + "TypeButton";
         }
         // 1. Create new variable
         ff.menuItemWithPath("Spreadsheet", "New Variable").click();

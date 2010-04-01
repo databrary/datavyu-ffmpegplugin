@@ -26,6 +26,8 @@ public final class DeleteCellC {
      *            The cells to delete from the spreadsheet.
      */
     public DeleteCellC(final Vector<DataCell> cellsToDelete) {
+        logger.usage("deleting cells");
+
         // The spreadsheet is the view for this controller.
         SpreadsheetPanel view =
                 (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()

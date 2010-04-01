@@ -6,6 +6,10 @@ import java.io.File;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.text.BadLocationException;
 
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
@@ -63,8 +67,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     private String[] floatTestInput = {
             "1a.9", "10-43.2", "!289(", "178.&", "0~~~)", "If x?7 then. x? 2 ",
-            "589.138085638", "000389.5", "-0.1", "0.2", "-0.0", "-", "-0",
-            "-.34", "-23.34", ".34", "12.34", "-123"
+            "589.138085638", "000389.5", "-0.1", "0.2", /*BugzID:1634:"-0.0", *"-", "-0",*/
+            /*BugzID1640:"-.34", "-23.34",*/ ".34", "12.34", "-123"
         };
 
     /**
@@ -97,11 +101,11 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varRadio = "nominal";
 
         String[] expectedNominalTestOutput = {
-                "Subject stands up ", "$10432", "Hand me the manual!",
+                "Subject stands up", "$10432", "Hand me the manual!",
                 "Tote_that_bale", "Jeune fille celebre", "If x7 then x2"
             };
 
-        pasteTest(varName, varRadio, nominalTestInput,
+        cutAndPasteTest(varName, varRadio, nominalTestInput,
             expectedNominalTestOutput);
     }
 
@@ -179,7 +183,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String varRadio = "text";
 
         String[] expectedTestOutput = textTestInput;
-        pasteTest(varName, varRadio, textTestInput, expectedTestOutput);
+        cutAndPasteTest(varName, varRadio, textTestInput, expectedTestOutput);
     }
 
     /**
@@ -193,9 +197,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         String[] expectedTestOutput = {
                 "19", "-43210", "289", "178", "<val>", "72",
-                "999999999999999999", "3895", "-", "0", "-123"
+                "999999999999999999", "3895", "<val>", "0", "-123"
             };
-        pasteTest(varName, varRadio, integerTestInput, expectedTestOutput);
+        cutAndPasteTest(varName, varRadio, integerTestInput,
+            expectedTestOutput);
     }
 
     /**
@@ -246,8 +251,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         String[] expectedTestOutput = {
                 "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-                "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34", "-23.34",
-                "0.34", "12.34", "-123"
+                "389.5", "-0.1", "0.2", /*BugzID:1634:"0", "0", "0",*/
+                /*BugzID1640:"-0.34", "-23.34",*/ "0.34", "12.34", "-123"
             };
 
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
@@ -258,20 +263,20 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test pasting with INTEGER cell.
      */
-    @Test public void testFloatPasting() {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        String varName = "f";
-        String varRadio = "float";
-
-        String[] expectedTestOutput = {
-                "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-                "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34", "-23.34",
-                "0.34", "12.34", "-123"
-            };
-
-        pasteTest(varName, varRadio, floatTestInput, expectedTestOutput);
-    }
+// /*BugzID1641@Test public void testFloatPasting() {
+// System.err.println(new Exception().getStackTrace()[0].getMethodName());
+//
+// String varName = "f";
+// String varRadio = "float";
+//
+// String[] expectedTestOutput = {
+// "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+// "389.5", "-0.1", "0.2", /*BugzID:1634:"0", "0", "0",*/
+// /*BugzID:1640"-0.34", "-23.34",*/ "0.34", "12.34", "-123"
+// };
+//
+// cutAndPasteTest(varName, varRadio, floatTestInput, expectedTestOutput);
+// }
 
     /**
      * Test creating a new FLOAT cell with advanced input. BugzID:1201
@@ -411,8 +416,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -459,8 +464,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -472,7 +477,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         String[] expectedFloatTestOutput = {
                 "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-                "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34", "-23.34",
+                "389.5", "-0.1", "0.2", /*BugzID1634:"0", "0", "0",*/ /*BugzID1640: "-0.34", "-23.34",*/
                 "0.34", "12.34", "-123"
             };
 
@@ -508,8 +513,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -561,8 +566,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -577,8 +582,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2a. Test integer, only first arg
         for (int i = 0; i < numOfTests; i++) {
-            expectedInt2TestOutput[i] = "(" + expectedInt2TestOutput[i] +
-                ", <int2>)";
+            expectedInt2TestOutput[i] = "(" + expectedInt2TestOutput[i]
+                + ", <int2>)";
         }
 
         runStandardTest(varName, iTestInput, expectedInt2TestOutput,
@@ -586,7 +591,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
-            new String[expectedInt2TestOutput.length][expectedInt2TestOutput.length][2];
+            new String[expectedInt2TestOutput.length]
+            [expectedInt2TestOutput.length][2];
 
         // String[] expectedInt2bTempOutput =
         // {"19", "-43210", "289", "178", "<int1>", "72",
@@ -595,7 +601,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String[] expectedInt2bTempOutput = {"19", "-43210"};
 
         String[][] expectedInt2bTestOutput =
-            new String[expectedInt2TestOutput.length][expectedInt2TestOutput.length];
+            new String[expectedInt2TestOutput.length]
+            [expectedInt2TestOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
 
@@ -604,15 +611,15 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 testInput[i][j][1] = iTestInput[j];
 
                 if (expectedInt2bTempOutput[i].equals("<int2>")) {
-                    expectedInt2bTestOutput[i][j] = "(<int1>" + ", " +
-                        expectedInt2bTempOutput[j] + ")";
+                    expectedInt2bTestOutput[i][j] = "(<int1>" + ", "
+                        + expectedInt2bTempOutput[j] + ")";
                 } else if (expectedInt2bTempOutput[j].equals("<int1>")) {
-                    expectedInt2bTestOutput[i][j] = "(" +
-                        expectedInt2bTempOutput[i] + ", <int2>)";
+                    expectedInt2bTestOutput[i][j] = "("
+                        + expectedInt2bTempOutput[i] + ", <int2>)";
                 } else {
-                    expectedInt2bTestOutput[i][j] = "(" +
-                        expectedInt2bTempOutput[i] + ", " +
-                        expectedInt2bTempOutput[j] + ")";
+                    expectedInt2bTestOutput[i][j] = "("
+                        + expectedInt2bTempOutput[i] + ", "
+                        + expectedInt2bTempOutput[j] + ")";
                 }
             }
         }
@@ -655,8 +662,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -671,8 +678,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         int numOfTests = expectedTestOutput.length;
 
         for (int i = 0; i < numOfTests; i++) {
-            expectedTestOutput[i] = "(" + expectedTestOutput[i] +
-                ", <nominal2>)";
+            expectedTestOutput[i] = "(" + expectedTestOutput[i]
+                + ", <nominal2>)";
         }
 
         runStandardTest(varName, nomTestInput, expectedTestOutput,
@@ -694,15 +701,15 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 testInput[i][j][1] = nomTestInput[j];
 
                 if (expectedNominal2bTempOutput[i].equals("<nominal2>")) {
-                    expectedNominal2bTestOutput[i][j] = "(<nominal1>" + ", " +
-                        expectedNominal2bTempOutput[j] + ")";
+                    expectedNominal2bTestOutput[i][j] = "(<nominal1>" + ", "
+                        + expectedNominal2bTempOutput[j] + ")";
                 } else if (expectedTestOutput[j].equals("<nominal1>")) {
-                    expectedNominal2bTestOutput[i][j] = "(" +
-                        expectedNominal2bTempOutput[i] + ", <nominal2>)";
+                    expectedNominal2bTestOutput[i][j] = "("
+                        + expectedNominal2bTempOutput[i] + ", <nominal2>)";
                 } else {
-                    expectedNominal2bTestOutput[i][j] = "(" +
-                        expectedNominal2bTempOutput[i] + ", " +
-                        expectedNominal2bTempOutput[j] + ")";
+                    expectedNominal2bTestOutput[i][j] = "("
+                        + expectedNominal2bTempOutput[i] + ", "
+                        + expectedNominal2bTempOutput[j] + ")";
                 }
             }
         }
@@ -748,8 +755,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -764,18 +771,20 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2a. Test integer, only first arg
         for (int i = 0; i < numOfTests; i++) {
-            expectedFloat2TestOutput[i] = "(" + expectedFloat2TestOutput[i] +
-                ", <float2>)";
+            expectedFloat2TestOutput[i] = "(" + expectedFloat2TestOutput[i]
+                + ", <float2>)";
         }
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
-            new String[expectedFloat2TestOutput.length][expectedFloat2TestOutput.length][2];
+            new String[expectedFloat2TestOutput.length]
+            [expectedFloat2TestOutput.length][2];
 
         String[] expectedInt2bTempOutput = {"1.9", "-43.21"};
 
         String[][] expectedInt2bTestOutput =
-            new String[expectedFloat2TestOutput.length][expectedFloat2TestOutput.length];
+            new String[expectedFloat2TestOutput.length]
+            [expectedFloat2TestOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
 
@@ -784,15 +793,15 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 testInput[i][j][1] = fTestInput[j];
 
                 if (expectedInt2bTempOutput[i].equals("<float2>")) {
-                    expectedInt2bTestOutput[i][j] = "(<float1>" + ", " +
-                        expectedInt2bTempOutput[j] + ")";
+                    expectedInt2bTestOutput[i][j] = "(<float1>" + ", "
+                        + expectedInt2bTempOutput[j] + ")";
                 } else if (expectedInt2bTempOutput[j].equals("<float1>")) {
-                    expectedInt2bTestOutput[i][j] = "(" +
-                        expectedInt2bTempOutput[i] + ", <float2>)";
+                    expectedInt2bTestOutput[i][j] = "("
+                        + expectedInt2bTempOutput[i] + ", <float2>)";
                 } else {
-                    expectedInt2bTestOutput[i][j] = "(" +
-                        expectedInt2bTempOutput[i] + ", " +
-                        expectedInt2bTempOutput[j] + ")";
+                    expectedInt2bTestOutput[i][j] = "("
+                        + expectedInt2bTempOutput[i] + ", "
+                        + expectedInt2bTempOutput[j] + ")";
                 }
             }
         }
@@ -983,9 +992,13 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * @param expectedTestOutput
      *            expected test output values
      */
-    private void pasteTest(final String varName, final String varRadio,
+    private void cutAndPasteTest(final String varName, final String varRadio,
         final String[] testInput, final String[] expectedTestOutput) {
         int numOfTests = testInput.length;
+
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
         // 1. Create new variable
         UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
@@ -1004,12 +1017,36 @@ public final class UINewCellTest extends OpenSHAPATestClass {
             // cell
             int inputIndex = (ordinal + 2) % numOfTests;
 
-            // Delete existing cell contents.
-            changeCellValue(varName, ordinal, "");
+            // Type value into another cell
+            changeCellValue(varName, inputIndex + 1, "");
+            changeCellValue(varName, inputIndex + 1, testInput[inputIndex]);
 
-            // Check that it actually was deleted
-            Assert.assertTrue(cellHasValue(varName, ordinal, "<val>"),
+            try {
+
+                // Cut value
+                int strlen = spreadsheet.column(varName).cell(inputIndex + 1)
+                    .cellValue().text().length();
+                spreadsheet.column(varName).cell(inputIndex + 1).select(
+                    SpreadsheetCellFixture.VALUE, 0, strlen);
+            } catch (BadLocationException ex) {
+                Logger.getLogger(UINewCellTest.class.getName()).log(
+                    Level.SEVERE, null, ex);
+            }
+
+            spreadsheet.column(varName).cell(inputIndex + 1).cellValue()
+                .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_X)
+                    .modifiers(Platform.controlOrCommandMask()));
+
+            // Check that it is now blank
+            Assert.assertTrue(cellHasValue(varName, inputIndex + 1, "<val>"),
                 "Expecting cell contents to be deleted.");
+
+            // Check pasting cell has different value
+            if (!cellHasValue(varName, ordinal, "<val>")) {
+                Assert.assertFalse(cellHasValue(varName, ordinal,
+                        expectedTestOutput[inputIndex]),
+                    "Expecting cell contents to be deleted.");
+            }
 
             // Paste new contents.
             pasteCellValue(varName, ordinal, testInput[inputIndex]);
@@ -1197,7 +1234,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
-        spreadsheet.column(varName).cell(id).cellValue().enterText(value);
+        spreadsheet.column(varName).cell(id).cellValue().selectAll().enterText(
+            value);
     }
 
     /**
@@ -1282,9 +1320,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
-        UIUtils.setClipboard(value);
-
-        spreadsheet.column(varName).cell(id).cellValue().focus()
+        spreadsheet.column(varName).cell(id).cellValue().selectAll()
             .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V).modifiers(
                     Platform.controlOrCommandMask()));
     }
