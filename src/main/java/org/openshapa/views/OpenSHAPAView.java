@@ -9,6 +9,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import java.io.File;
+import java.io.IOException;
 
 import java.util.LinkedList;
 
@@ -58,7 +59,6 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.io.IOException;
 
 
 /**
@@ -253,11 +253,11 @@ public final class OpenSHAPAView extends FrameView
         String projectName = projectController.getProjectName();
 
         if (projectName != null) {
-            mainFrame.setTitle(rMap.getString("Application.title") + " - " +
-                projectName + extension + postFix);
+            mainFrame.setTitle(rMap.getString("Application.title") + " - "
+                + projectName + extension + postFix);
         } else {
-            mainFrame.setTitle(rMap.getString("Application.title") + " - " +
-                "Project1" + extension + postFix);
+            mainFrame.setTitle(rMap.getString("Application.title") + " - "
+                + "Project1" + extension + postFix);
         }
     }
 
@@ -293,17 +293,16 @@ public final class OpenSHAPAView extends FrameView
             // controller to force the user to nominate a destination file.
             ProjectController projController = OpenSHAPA.getProjectController();
 
-            if (projController.isNewProject() ||
-                    (projController.getProjectName() == null)) {
+            if (projController.isNewProject()
+                    || (projController.getProjectName() == null)) {
                 saveAs();
             } else {
                 SaveC saveController = new SaveC();
 
                 // Force people to use new
-                if ((projController.getLastSaveOption() instanceof
-                            SHAPAFilter) ||
-                        (projController.getLastSaveOption() instanceof
-                            OPFFilter)) {
+                if ((projController.getLastSaveOption() instanceof SHAPAFilter)
+                        || (projController.getLastSaveOption()
+                            instanceof OPFFilter)) {
                     projController.updateProject();
                     projController.setLastSaveOption(new OPFFilter());
 
@@ -354,9 +353,9 @@ public final class OpenSHAPAView extends FrameView
     private boolean canSave(final String directory, final String file) {
         File newFile = new File(directory, file);
 
-        return ((newFile.exists() &&
-                    OpenSHAPA.getApplication().overwriteExisting()) ||
-                !newFile.exists());
+        return ((newFile.exists()
+                    && OpenSHAPA.getApplication().overwriteExisting())
+                || !newFile.exists());
     }
 
     private void save(final OpenSHAPAFileChooser fc) {
@@ -633,8 +632,8 @@ public final class OpenSHAPAView extends FrameView
     /**
      * Action for invoking a script.
      */
-    @Action
-    public void runScript() {
+    @Action public void runScript() {
+
         try {
             RunScriptC scriptC = new RunScriptC();
             scriptC.execute();
@@ -1309,6 +1308,7 @@ public final class OpenSHAPAView extends FrameView
      *            The event that triggered this action.
      */
     private void runRecentScript(final java.awt.event.ActionEvent evt) {
+
         try {
             RunScriptC scriptC = new RunScriptC(evt.getActionCommand());
             scriptC.execute();

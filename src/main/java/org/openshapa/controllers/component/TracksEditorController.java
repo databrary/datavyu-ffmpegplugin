@@ -22,6 +22,8 @@ import org.openshapa.event.TrackMouseEventListener;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
 
+import org.openshapa.views.component.TrackPainter;
+
 
 /**
  * Tracks editor controller is responsible for managing multiple TrackController
@@ -110,32 +112,26 @@ public final class TracksEditorController implements TrackMouseEventListener {
     /**
      * Adds a new track to the interface.
      *
-     * @param icon
-     *            icon associated with the track
-     * @param mediaPath
-     *            absolute path to the media file
-     * @param trackName
-     *            name of the track
-     * @param duration
-     *            duration of the track in milliseconds
-     * @param offset
-     *            track offset in milliseconds
-     * @param bookmark
-     *            bookmark position in milliseconds. -1 if none.
-     * @param listener
-     *            register the listener interested in {@link CarriageEvent}.
-     *            null if uninterested.
+     * @param icon Icon associated with the track.
+     * @param mediaPath Absolute path to the media file
+     * @param trackName Name of the track.
+     * @param duration Duration of the track in milliseconds.
+     * @param offset Track offset in milliseconds.
+     * @param listener Register the listener interested in
+     * {@link CarriageEvent}. Null if uninterested.
+     * @param trackPainter The track painter to use.
      */
     public void addNewTrack(final ImageIcon icon, final String mediaPath,
         final String trackName, final long duration, final long offset,
-        final long bookmark, final CarriageEventListener listener) {
+        final CarriageEventListener listener, final TrackPainter trackPainter) {
 
         // TrackController
-        final TrackController trackController = new TrackController();
+        final TrackController trackController = new TrackController(
+                trackPainter);
         trackController.setViewableModel(viewableModel);
         trackController.setTrackInformation(icon, trackName, mediaPath,
             duration, offset);
-        trackController.addBookmark(bookmark);
+        trackController.addBookmark(-1);
 
         if (duration < 0) {
             trackController.setErroneous(true);
