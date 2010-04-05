@@ -5,13 +5,13 @@ import java.awt.Font;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import java.io.File;
 import java.io.IOException;
-
-import java.util.LinkedList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -94,6 +94,7 @@ public final class OpenSHAPAView extends FrameView
     private javax.swing.JMenu helpMenu;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
@@ -109,6 +110,7 @@ public final class OpenSHAPAView extends FrameView
     private javax.swing.JMenuItem newMenuItem;
     private javax.swing.JMenuItem newVariableMenuItem;
     private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JMenu openRecentFileMenu;
     private javax.swing.JMenuItem qtControllerItem;
     private javax.swing.JMenuItem recentScriptsHeader;
     private javax.swing.JMenuItem resetZoomMenuItem;
@@ -500,6 +502,9 @@ public final class OpenSHAPAView extends FrameView
 
         // Display any changes to the database.
         showSpreadsheet();
+
+        // Update the list of recently opened files.
+        OpenSHAPA.getApplication().addProjectFile(jd.getSelectedFile());
     }
 
     private void openDatabase(final File databaseFile) {
@@ -569,6 +574,33 @@ public final class OpenSHAPAView extends FrameView
                 fc.setFileFilter(new OPFFilter());
                 open(fc);
             }
+        }
+    }
+
+    private void openFile(final File file) {
+
+        if (!OpenSHAPA.getApplication().safeQuit()) {
+            return;
+        }
+
+        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+        fc.setVisible(false);
+
+        final String fileName = file.getName();
+        fc.setSelectedFile(file);
+
+        if (fileName.endsWith(".shapa")) {
+            fc.setFileFilter(new SHAPAFilter());
+            open(fc);
+        } else if (fileName.endsWith(".csv")) {
+            fc.setFileFilter(new CSVFilter());
+            open(fc);
+        } else if (fileName.endsWith(".odb")) {
+            fc.setFileFilter(new MODBFilter());
+            open(fc);
+        } else if (fileName.endsWith(".opf")) {
+            fc.setFileFilter(new OPFFilter());
+            open(fc);
         }
     }
 
@@ -695,7 +727,7 @@ public final class OpenSHAPAView extends FrameView
      */
     // <editor-fold defaultstate="collapsed"
     // <editor-fold defaultstate="collapsed"
-    // desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
@@ -705,6 +737,8 @@ public final class OpenSHAPAView extends FrameView
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
         openMenuItem = new javax.swing.JMenuItem();
+        openRecentFileMenu = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jSeparator7 = new javax.swing.JSeparator();
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
@@ -785,6 +819,29 @@ public final class OpenSHAPAView extends FrameView
         openMenuItem.setText(bundle.getString("file_open.text")); // NOI18N
         openMenuItem.setName(bundle.getString("file_open.text")); // NOI18N
         fileMenu.add(openMenuItem);
+
+        openRecentFileMenu.setName("openRecentFileMenu"); // NOI18N
+        openRecentFileMenu.addMenuListener(
+            new javax.swing.event.MenuListener() {
+                public void menuCanceled(
+                    final javax.swing.event.MenuEvent evt) {
+                }
+
+                public void menuDeselected(
+                    final javax.swing.event.MenuEvent evt) {
+                }
+
+                public void menuSelected(
+                    final javax.swing.event.MenuEvent evt) {
+                    openRecentFileMenuMenuSelected(evt);
+                }
+            });
+
+        jMenuItem2.setEnabled(false);
+        jMenuItem2.setName("jMenuItem2"); // NOI18N
+        openRecentFileMenu.add(jMenuItem2);
+
+        fileMenu.add(openRecentFileMenu);
 
         jSeparator7.setName("jSeparator7"); // NOI18N
         fileMenu.add(jSeparator7);
@@ -1027,6 +1084,22 @@ public final class OpenSHAPAView extends FrameView
         setMenuBar(menuBar);
     } // </editor-fold>//GEN-END:initComponents
 
+    private void openRecentFileMenuMenuSelected(
+        final javax.swing.event.MenuEvent evt) { //GEN-FIRST:event_openRecentFileMenuMenuSelected
+
+        // Flush the menu - excluding the top menu item.
+        int size = openRecentFileMenu.getMenuComponentCount();
+
+        for (int i = 1; i < size; i++) {
+            openRecentFileMenu.remove(1);
+        }
+
+        for (File file : OpenSHAPA.getLastFilesOpened()) {
+            openRecentFileMenu.add(createRecentFileMenuItem(file));
+        }
+
+    } //GEN-LAST:event_openRecentFileMenuMenuSelected
+
     /**
      * The action to invoke when the user selects 'strong temporal ordering'.
      *
@@ -1067,9 +1140,9 @@ public final class OpenSHAPAView extends FrameView
             runRecentScriptMenu.remove(1);
         }
 
-        LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
+//        LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
 
-        for (File f : lastScripts) {
+        for (File f : OpenSHAPA.getLastScriptsExecuted()) {
             runRecentScriptMenu.add(createScriptMenuItemFromFile(f));
         }
     } // GEN-LAST:event_populateRecentScripts
@@ -1295,6 +1368,24 @@ public final class OpenSHAPAView extends FrameView
                 public void actionPerformed(
                     final java.awt.event.ActionEvent evt) {
                     runRecentScript(evt);
+                }
+            });
+
+        return menuItem;
+    }
+
+    /**
+     * Creates a new menu item for opening a file.
+     * @param file The file to open.
+     * @return The menu item associated with the file.
+     */
+    private JMenuItem createRecentFileMenuItem(final File file) {
+        JMenuItem menuItem = new JMenuItem();
+        menuItem.setText(file.toString());
+        menuItem.setName(file.toString());
+        menuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(final ActionEvent e) {
+                    openFile(file);
                 }
             });
 

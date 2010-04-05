@@ -5,13 +5,17 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+
 import java.io.File;
+
 import java.util.EventObject;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -23,13 +27,17 @@ import org.jdesktop.application.LocalStorage;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
+
 import org.openshapa.controllers.project.ProjectController;
+
 import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
+
 import org.openshapa.util.Constants;
 import org.openshapa.util.MacHandler;
+
 import org.openshapa.views.AboutV;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.ListVariables;
@@ -38,13 +46,86 @@ import org.openshapa.views.UserMetrixV;
 import org.openshapa.views.continuous.PluginManager;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
+
 import com.usermetrix.jclient.UserMetrix;
+
 
 /**
  * The main class of the application.
  */
-public final class OpenSHAPA extends SingleFrameApplication implements
-        KeyEventDispatcher {
+public final class OpenSHAPA extends SingleFrameApplication
+    implements KeyEventDispatcher {
+
+    /** The desired minimum initial width. */
+    private static final int INITMINX = 600;
+
+    /** The desired minimum initial height. */
+    private static final int INITMINY = 700;
+
+    /**
+     * Constant variable for the OpenSHAPA main panel. This is so we can send
+     * keyboard shortcuts to it while the QTController is in focus. It actually
+     * get initialized in startup().
+     */
+    private static OpenSHAPAView VIEW;
+
+    /** the maximum size of the recently ran script list. */
+    private static final int MAX_RECENT_SCRIPT_SIZE = 5;
+
+    /** the maximum size of the recently opened files list. */
+    private static final int MAX_RECENT_FILE_SIZE = 5;
+
+    /** All the supported platforms that OpenSHAPA runs on. */
+    public enum Platform {
+
+        /** Generic Mac platform. I.e. Tiger, Leopard, Snow Leopard. */
+        MAC,
+
+        /** Generic windows platform. I.e. XP, vista, etc. */
+        WINDOWS,
+
+        /** Unknown platform. */
+        UNKNOWN
+    }
+
+    /** The scripting engine that we use with OpenSHAPA. */
+    private ScriptEngine rubyEngine;
+
+    /** The scripting engine manager that we use with OpenSHAPA. */
+    private ScriptEngineManager m2;
+
+    /** The JRuby scripting engine manager that we use with OpenSHAPA. */
+    private JRubyScriptEngineManager m;
+
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(OpenSHAPA.class);
+
+    /** The list of scripts that the user has last invoked. */
+    private List<File> lastScriptsExecuted;
+
+    /** The list of files that the user last opened. */
+    private List<File> lastFilesOpened;
+
+    /** The view to use when listing all variables in the database. */
+    private ListVariables listVarView;
+
+    /** The view to use for the quick time video controller. */
+    private DataControllerV dataController;
+
+    /** The view to use when displaying information about OpenSHAPA. */
+    private AboutV aboutWindow;
+
+    /** Tracks if a NumPad key has been pressed. */
+    private boolean numKeyDown = false;
+
+    /** Tracks whether or not databases are allowed to set unsaved status. */
+    private boolean canSetUnsaved = false;
+
+    /** The current project. */
+    private ProjectController projectController;
+
+    /** Opened windows. */
+    private Stack<Window> windows;
 
     /**
      * Dispatches the keystroke to the correct action.
@@ -55,37 +136,44 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      *         with regard to the KeyEvent; false otherwise
      */
     public boolean dispatchKeyEvent(final KeyEvent evt) {
+
         /**
          * This switch is for hot keys that are on the main section of the
          * keyboard.
          */
         int modifiers = evt.getModifiers();
+
         // BugzID:468 - Define accelerator keys based on OS.
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
 
         // If we are typing a key that is a shortcut - we consume it straight
         // away.
-        if (evt.getID() == KeyEvent.KEY_TYPED && modifiers == keyMask) {
+        if ((evt.getID() == KeyEvent.KEY_TYPED) && (modifiers == keyMask)) {
+
             switch (evt.getKeyChar()) {
-                case '+':
-                case '-':
-                case 'o':
-                case 's':
-                case 'n':
-                case 'l':
-                case 'r':
-                    evt.consume();
-                    return true;
-                default:
-                    break;
+
+            case '+':
+            case '-':
+            case 'o':
+            case 's':
+            case 'n':
+            case 'l':
+            case 'r':
+                evt.consume();
+
+                return true;
+
+            default:
+                break;
             }
         }
 
-        if (evt.getID() == KeyEvent.KEY_PRESSED
-                && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
+        if ((evt.getID() == KeyEvent.KEY_PRESSED)
+                && (evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD)) {
 
             switch (evt.getKeyCode()) {
+
             /**
              * This case is because VK_PLUS is not linked to a key on the
              * English keyboard. So the GUI is bound to VK_PLUS and VK_SUBTACT.
@@ -94,15 +182,21 @@ public final class OpenSHAPA extends SingleFrameApplication implements
              * is nothing left to be done with these keys.
              */
             case KeyEvent.VK_EQUALS:
+
                 if (modifiers == keyMask) {
                     VIEW.changeFontSize(OpenSHAPAView.ZOOM_INTERVAL);
                 }
+
                 return true;
+
             case KeyEvent.VK_MINUS:
+
                 if (modifiers == keyMask) {
                     VIEW.changeFontSize(-OpenSHAPAView.ZOOM_INTERVAL);
                 }
+
                 return true;
+
             default:
                 break;
             }
@@ -110,6 +204,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
         // BugzID:784 - Shift key is passed to Data Controller.
         if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
+
             if (evt.getID() == KeyEvent.KEY_PRESSED) {
                 dataController.setShiftMask(true);
             } else {
@@ -119,6 +214,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
         // BugzID:736 - Control key is passed to Data Controller.
         if (evt.getKeyCode() == KeyEvent.VK_CONTROL) {
+
             if (evt.getID() == KeyEvent.KEY_PRESSED) {
                 dataController.setCtrlMask(true);
             } else {
@@ -129,16 +225,18 @@ public final class OpenSHAPA extends SingleFrameApplication implements
         /**
          * The following cases handle numpad keystrokes.
          */
-        if (evt.getID() == KeyEvent.KEY_PRESSED
-                && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD) {
+        if ((evt.getID() == KeyEvent.KEY_PRESSED)
+                && (evt.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD)) {
             numKeyDown = true;
-        } else if (numKeyDown && evt.getID() == KeyEvent.KEY_TYPED) {
+        } else if (numKeyDown && (evt.getID() == KeyEvent.KEY_TYPED)) {
             return true;
         }
-        if (evt.getID() == KeyEvent.KEY_RELEASED
-                && evt.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD) {
+
+        if ((evt.getID() == KeyEvent.KEY_RELEASED)
+                && (evt.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD)) {
             numKeyDown = false;
         }
+
         if (!numKeyDown) {
             return false;
         }
@@ -146,56 +244,88 @@ public final class OpenSHAPA extends SingleFrameApplication implements
         boolean result = true;
 
         switch (evt.getKeyCode()) {
+
         case KeyEvent.VK_DIVIDE:
             dataController.pressSetCellOnset();
+
             break;
+
         case KeyEvent.VK_ASTERISK:
         case KeyEvent.VK_MULTIPLY:
             dataController.pressSetCellOffset();
+
             break;
+
         case KeyEvent.VK_NUMPAD7:
             dataController.pressRewind();
+
             break;
+
         case KeyEvent.VK_NUMPAD8:
             dataController.pressPlay();
+
             break;
+
         case KeyEvent.VK_NUMPAD9:
             dataController.pressForward();
+
             break;
+
         case KeyEvent.VK_NUMPAD4:
             dataController.pressShuttleBack();
+
             break;
+
         case KeyEvent.VK_NUMPAD2:
             dataController.pressPause();
+
             break;
+
         case KeyEvent.VK_NUMPAD6:
             dataController.pressShuttleForward();
+
             break;
+
         case KeyEvent.VK_NUMPAD1:
+
             // We don't do the press Jog thing for jogging - as users often
             // just hold the button down... Which causes weird problems when
             // attempting to do multiple presses.
             dataController.jogBackAction();
+
             break;
+
         case KeyEvent.VK_NUMPAD5:
             dataController.pressStop();
+
             break;
+
         case KeyEvent.VK_NUMPAD3:
+
             // We don't do the press Jog thing for jogging - as users often
             // just hold the button down... Which causes weird problems when
             // attempting to do multiple presses.
             dataController.jogForwardAction();
+
             break;
+
         case KeyEvent.VK_NUMPAD0:
             dataController.pressCreateNewCellSettingOffset();
+
             break;
+
         case KeyEvent.VK_DECIMAL:
             dataController.pressSetNewCellOnset();
+
             break;
+
         case KeyEvent.VK_SUBTRACT:
             dataController.pressGoBack();
+
             break;
+
         case KeyEvent.VK_ADD:
+
             if (modifiers == InputEvent.SHIFT_MASK) {
                 dataController.pressFind();
                 dataController.findOffsetAction();
@@ -207,14 +337,20 @@ public final class OpenSHAPA extends SingleFrameApplication implements
             }
 
             break;
+
         case KeyEvent.VK_ENTER:
             dataController.pressCreateNewCell();
+
             break;
+
         default:
+
             // Do nothing with the key.
             result = false;
+
             break;
         }
+
         return result;
     }
 
@@ -230,13 +366,15 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      */
     public void showVariableList() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        listVarView =
-                new ListVariables(mainFrame, false, projectController.getDB());
+        listVarView = new ListVariables(mainFrame, false,
+                projectController.getDB());
+
         try {
             projectController.getDB().registerColumnListListener(listVarView);
         } catch (SystemErrorException e) {
             logger.error("Unable register column list listener: ", e);
         }
+
         OpenSHAPA.getApplication().show(listVarView);
     }
 
@@ -251,18 +389,17 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * Show a warning dialog to the user.
-     * 
+     *
      * @param e
      *            The LogicErrorException to present to the user.
      */
     public void showWarningDialog(final LogicErrorException e) {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap =
-                Application.getInstance(OpenSHAPA.class).getContext()
-                        .getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
 
-        JOptionPane.showMessageDialog(mainFrame, e.getMessage(), rMap
-                .getString("WarningDialog.title"), JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(mainFrame, e.getMessage(),
+            rMap.getString("WarningDialog.title"), JOptionPane.WARNING_MESSAGE);
     }
 
     /**
@@ -270,13 +407,12 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      */
     public void showErrorDialog() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap =
-                Application.getInstance(OpenSHAPA.class).getContext()
-                        .getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
 
-        JOptionPane.showMessageDialog(mainFrame, rMap
-                .getString("ErrorDialog.message"), rMap
-                .getString("ErrorDialog.title"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(mainFrame,
+            rMap.getString("ErrorDialog.message"),
+            rMap.getString("ErrorDialog.title"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -290,9 +426,8 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      */
     public boolean safeQuit() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap =
-                Application.getInstance(OpenSHAPA.class).getContext()
-                        .getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
 
         if (projectController.isChanged()) {
 
@@ -309,19 +444,17 @@ public final class OpenSHAPA extends SingleFrameApplication implements
                 options[1] = cancel;
             }
 
-            int selection =
-                    JOptionPane
-                            .showOptionDialog(mainFrame, rMap
-                                    .getString("UnsavedDialog.message"), rMap
-                                    .getString("UnsavedDialog.title"),
-                                    JOptionPane.OK_CANCEL_OPTION,
-                                    JOptionPane.QUESTION_MESSAGE, null,
-                                    options, cancel);
+            int selection = JOptionPane.showOptionDialog(mainFrame,
+                    rMap.getString("UnsavedDialog.message"),
+                    rMap.getString("UnsavedDialog.title"),
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, options, cancel);
 
             // Button behaviour is platform dependent.
-            return getPlatform() == Platform.MAC ? selection == 1
-                    : selection == 0;
+            return (getPlatform() == Platform.MAC) ? (selection == 1)
+                                                   : (selection == 0);
         } else {
+
             // Project hasn't been changed.
             return true;
         }
@@ -333,8 +466,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      * @param event
      *            The event that triggered this action.
      */
-    @Override
-    protected void end() {
+    @Override protected void end() {
         UserMetrix.shutdown();
         super.end();
     }
@@ -347,9 +479,8 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      */
     public boolean overwriteExisting() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap =
-                Application.getInstance(OpenSHAPA.class).getContext()
-                        .getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
         String defaultOpt = "Cancel";
         String altOpt = "Overwrite";
 
@@ -365,11 +496,11 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
         int sel =
 
-                JOptionPane.showOptionDialog(mainFrame, rMap
-                        .getString("OverwriteDialog.message"), rMap
-                        .getString("OverwriteDialog.title"),
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE, null, a, defaultOpt);
+            JOptionPane.showOptionDialog(mainFrame,
+                rMap.getString("OverwriteDialog.message"),
+                rMap.getString("OverwriteDialog.title"),
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, a, defaultOpt);
 
         // Button depends on platform now.
         if (getPlatform() == Platform.MAC) {
@@ -382,23 +513,24 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     /**
      * At startup create and show the main frame of the application.
      */
-    @Override
-    protected void startup() {
+    @Override protected void startup() {
         windows = new Stack<Window>();
+
         try {
+
             // Initalise the logger (UserMetrix).
-            LocalStorage ls =
-                    OpenSHAPA.getApplication().getContext().getLocalStorage();
-            ResourceMap rMap =
-                    Application.getInstance(OpenSHAPA.class).getContext()
-                            .getResourceMap(OpenSHAPA.class);
+            LocalStorage ls = OpenSHAPA.getApplication().getContext()
+                .getLocalStorage();
+            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                .getContext().getResourceMap(OpenSHAPA.class);
 
             com.usermetrix.jclient.Configuration config =
-                    new com.usermetrix.jclient.Configuration(2);
+                new com.usermetrix.jclient.Configuration(2);
             config.setTmpDirectory(ls.getDirectory().toString()
-                    + File.separator);
-            config.addMetaData("build", rMap.getString("Application.version")
-                    + ":" + rMap.getString("Application.build"));
+                + File.separator);
+            config.addMetaData("build",
+                rMap.getString("Application.version") + ":"
+                + rMap.getString("Application.build"));
             UserMetrix.initalise(config);
             logger = UserMetrix.getInstance(OpenSHAPA.class);
 
@@ -407,11 +539,12 @@ public final class OpenSHAPA extends SingleFrameApplication implements
                 UserMetrix.setCanSendLogs(false);
             } else {
                 UserMetrix.setCanSendLogs(Configuration.getInstance()
-                        .getCanSendLogs());
+                    .getCanSendLogs());
             }
 
             // Initalise scripting engine
             rubyEngine = null;
+
             // we need to avoid using the
             // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
             // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
@@ -430,10 +563,12 @@ public final class OpenSHAPA extends SingleFrameApplication implements
             // Make a new project
             projectController = new ProjectController();
             lastScriptsExecuted = new LinkedList<File>();
+            lastFilesOpened = new LinkedList<File>();
 
             // Initalise DB
-            MacshapaDatabase db = new MacshapaDatabase(Constants
-                                                       .TICKS_PER_SECOND);
+            MacshapaDatabase db = new MacshapaDatabase(
+                    Constants.TICKS_PER_SECOND);
+
             // BugzID:449 - Set default database name.
             db.setName("Database1");
             projectController.setDatabase(db);
@@ -458,6 +593,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
         // BugzID:435 - Correct size if a small size is detected.
         int width = (int) getMainFrame().getSize().getWidth();
         int height = (int) getMainFrame().getSize().getHeight();
+
         if ((width < INITMINX) || (height < INITMINY)) {
             int x = Math.max(width, INITMINX);
             int y = Math.max(height, INITMINY);
@@ -472,9 +608,8 @@ public final class OpenSHAPA extends SingleFrameApplication implements
         getApplication().addExitListener(new ExitListenerImpl());
 
         // Create video controller.
-        dataController =
-                new DataControllerV(OpenSHAPA.getApplication().getMainFrame(),
-                        false);
+        dataController = new DataControllerV(OpenSHAPA.getApplication()
+                .getMainFrame(), false);
 
     }
 
@@ -486,14 +621,41 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      * @param root
      *            The parent window.
      */
-    @Override
-    protected void configureWindow(final java.awt.Window root) {
+    @Override protected void configureWindow(final java.awt.Window root) {
+    }
+
+    /**
+     * Add a recently opened script file to the list of recently opened scripts.
+     *
+     * @param file The file to add.
+     */
+    public void addScriptFile(final File file) {
+
+        if (lastScriptsExecuted.size() == MAX_RECENT_SCRIPT_SIZE) {
+            lastScriptsExecuted.remove(MAX_RECENT_SCRIPT_SIZE - 1);
+        }
+
+        lastScriptsExecuted.add(0, file);
+    }
+
+    /**
+     * Add a recently opened project file to the list of recently opened files.
+     * @param file
+     */
+    public void addProjectFile(final File file) {
+
+        if (lastFilesOpened.size() == MAX_RECENT_FILE_SIZE) {
+            lastFilesOpened.remove(MAX_RECENT_FILE_SIZE - 1);
+        }
+
+        lastFilesOpened.add(0, file);
     }
 
     /**
      * Asks the main frame to update its title.
      */
     public void updateTitle() {
+
         if (VIEW != null) {
             VIEW.updateTitle();
         }
@@ -554,8 +716,8 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      * @param project
      */
     public static void newProjectController(final Project project) {
-        OpenSHAPA.getApplication().projectController =
-                new ProjectController(project);
+        OpenSHAPA.getApplication().projectController = new ProjectController(
+                project);
     }
 
     /**
@@ -570,39 +732,26 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     }
 
     /**
-     * @return The list of last scripts that have been executed.
+     * @return The list of last scripts that have been executed, ordered by the
+     *  most recent first.
      */
-    public static LinkedList<File> getLastScriptsExecuted() {
+    public static Iterable<File> getLastScriptsExecuted() {
         return OpenSHAPA.getApplication().lastScriptsExecuted;
     }
 
     /**
-     * Sets the list of scripts that were last executed.
-     *
-     * @param list
-     *            List of scripts.
+     * @return The list of last opened files, ordered by the most recent first.
      */
-    public static void setLastScriptsExecuted(final LinkedList<File> list) {
-        OpenSHAPA.getApplication().lastScriptsExecuted = list;
+    public static Iterable<File> getLastFilesOpened() {
+        return OpenSHAPA.getApplication().lastFilesOpened;
     }
-
-    /** All the supported platforms that OpenSHAPA runs on. */
-    public enum Platform {
-        /** Generic Mac platform. I.e. Tiger, Leopard, Snow Leopard. */
-        MAC,
-
-        /** Generic windows platform. I.e. XP, vista, etc. */
-        WINDOWS,
-
-        /** Unknown platform. */
-        UNKNOWN
-    };
 
     /**
      * @return The platform that OpenSHAPA is running on.
      */
     public static Platform getPlatform() {
         String os = System.getProperty("os.name");
+
         if (os.contains("Mac")) {
             return Platform.MAC;
         }
@@ -621,15 +770,17 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      *            The command line arguments passed to OpenSHAPA.
      */
     public static void main(final String[] args) {
+
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
+
             try {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 System.setProperty(
-                        "com.apple.mrj.application.apple.menu.about.name",
-                        "OpenSHAPA");
+                    "com.apple.mrj.application.apple.menu.about.name",
+                    "OpenSHAPA");
                 UIManager.setLookAndFeel(UIManager
-                        .getSystemLookAndFeelClassName());
+                    .getSystemLookAndFeelClassName());
                 new MacHandler();
             } catch (ClassNotFoundException cnfe) {
                 System.err.println("Unable to start OpenSHAPA");
@@ -646,36 +797,39 @@ public final class OpenSHAPA extends SingleFrameApplication implements
         launch(OpenSHAPA.class, args);
     }
 
-    @Override
-    public void show(final JDialog dialog) {
+    @Override public void show(final JDialog dialog) {
+
         if (windows == null) {
             windows = new Stack<Window>();
         }
+
         windows.push(dialog);
         super.show(dialog);
     }
 
-    @Override
-    public void show(final JFrame frame) {
+    @Override public void show(final JFrame frame) {
+
         if (windows == null) {
             windows = new Stack<Window>();
         }
+
         windows.push(frame);
         super.show(frame);
     }
 
     public void resetApp() {
-        this.closeOpenedWindows();
+        closeOpenedWindows();
         this.dataController.dispose();
-        this.dataController = new DataControllerV(
-            OpenSHAPA.getApplication().getMainFrame(),
-            false);
+        this.dataController = new DataControllerV(OpenSHAPA.getApplication()
+                .getMainFrame(), false);
     }
 
     public void closeOpenedWindows() {
+
         if (windows == null) {
             windows = new Stack<Window>();
         }
+
         while (!windows.empty()) {
             Window window = windows.pop();
             window.setVisible(false);
@@ -686,55 +840,6 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     public static OpenSHAPAView getView() {
         return VIEW;
     }
-
-    /** The scripting engine that we use with OpenSHAPA. */
-    private ScriptEngine rubyEngine;
-
-    /** The scripting engine manager that we use with OpenSHAPA. */
-    private ScriptEngineManager m2;
-
-    /** The JRuby scripting engine manager that we use with OpenSHAPA. */
-    private JRubyScriptEngineManager m;
-
-    /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(OpenSHAPA.class);
-
-    /** The list of scripts that the user has last invoked. */
-    private LinkedList<File> lastScriptsExecuted;
-
-    /** The view to use when listing all variables in the database. */
-    private ListVariables listVarView;
-
-    /** The view to use for the quick time video controller. */
-    private DataControllerV dataController;
-
-    /** The view to use when displaying information about OpenSHAPA. */
-    private AboutV aboutWindow;
-
-    /** Tracks if a NumPad key has been pressed. */
-    private boolean numKeyDown = false;
-
-    /** Tracks whether or not databases are allowed to set unsaved status. */
-    private boolean canSetUnsaved = false;
-
-    /** The desired minimum initial width. */
-    private static final int INITMINX = 600;
-
-    /** The desired minimum initial height. */
-    private static final int INITMINY = 700;
-
-    /**
-     * Constant variable for the OpenSHAPA main panel. This is so we can send
-     * keyboard shortcuts to it while the QTController is in focus. It actually
-     * get initialized in startup().
-     */
-    private static OpenSHAPAView VIEW;
-
-    /** The current project. */
-    private ProjectController projectController;
-
-    /** Opened windows. */
-    private Stack<Window> windows;
 
     /**
      * Handles exit requests.

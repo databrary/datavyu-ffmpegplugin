@@ -3,26 +3,31 @@ package org.openshapa.controllers;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintWriter;
-import java.util.LinkedList;
+
+import java.util.List;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+
 import javax.swing.JFileChooser;
+import javax.swing.JTextArea;
+
+import org.jdesktop.swingworker.SwingWorker;
 
 import org.openshapa.OpenSHAPA;
+
 import org.openshapa.util.FileFilters.RBFilter;
+
 import org.openshapa.views.ConsoleV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.OpenSHAPAView;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.util.List;
-import javax.swing.JTextArea;
-import org.jdesktop.swingworker.SwingWorker;
+
 
 /**
  * Controller for running scripts.
@@ -58,8 +63,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     public RunScriptC() throws IOException {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
         jd.addChoosableFileFilter(new RBFilter());
-        int result =
-                jd.showOpenDialog(OpenSHAPA.getApplication().getMainFrame());
+
+        int result = jd.showOpenDialog(OpenSHAPA.getApplication()
+                .getMainFrame());
 
         if (result == JFileChooser.APPROVE_OPTION) {
             scriptFile = jd.getSelectedFile();
@@ -67,7 +73,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             scriptFile = null;
         }
 
-        this.init();
+        init();
     }
 
     /**
@@ -79,7 +85,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      */
     public RunScriptC(final String file) throws IOException {
         scriptFile = new File(file);
-        this.init();
+        init();
     }
 
     /**
@@ -92,28 +98,20 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         OpenSHAPA.getApplication().show(ConsoleV.getInstance());
         console = ConsoleV.getInstance().getConsole();
         consoleOutputStream = new PipedInputStream();
+
         PipedOutputStream sIn = new PipedOutputStream(consoleOutputStream);
         consoleWriter = new PrintWriter(sIn);
     }
 
-    @Override
-    protected Object doInBackground() {
+    @Override protected Object doInBackground() {
         logger.usage("running script");
+
         ReaderThread t = new ReaderThread();
         t.start();
+
         ScriptEngine rubyEngine = OpenSHAPA.getScriptingEngine();
 
-        // Update the list of most recently used scripts.
-        LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
-        // If the lastscripts is full - pull the last one off to make room.
-        if (lastScripts.size() >= MAX_RECENT_SCRIPT_SIZE) {
-            lastScripts.removeLast();
-        }
-        // Add the script to the list.
-        if (!lastScripts.contains(scriptFile)) {
-            lastScripts.addFirst(scriptFile);
-            OpenSHAPA.setLastScriptsExecuted(lastScripts);
-        }
+        OpenSHAPA.getApplication().addScriptFile(scriptFile);
 
         try {
             rubyEngine.getContext().setWriter(consoleWriter);
@@ -131,7 +129,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         } catch (ScriptException e) {
             consoleWriter.println("***** SCRIPT ERRROR *****");
             consoleWriter.println("@Line " + e.getLineNumber() + ":'"
-                    + e.getMessage() + "'");
+                + e.getMessage() + "'");
             consoleWriter.println("*************************");
             consoleWriter.flush();
 
@@ -141,21 +139,23 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         }
 
         running = false;
+
         return null;
     }
 
-    @Override
-    protected void done() {
+    @Override protected void done() {
+
         // Display any changes.
         OpenSHAPAView view = (OpenSHAPAView) OpenSHAPA.getApplication()
-                                                      .getMainView();
+            .getMainView();
         view.showSpreadsheet();
     }
 
-    @Override
-    protected void process(final List<String> chunks) {
+    @Override protected void process(final List<String> chunks) {
+
         for (String chunk : chunks) {
             console.append(chunk);
+
             // Make sure the last line is always visible
             console.setCaretPosition(console.getDocument().getLength());
         }
@@ -167,19 +167,23 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      * consoleOutput
      */
     class ReaderThread extends Thread {
+
         /** The size of the buffer to use while ingesting data. */
         private static final int BUFFER_SIZE = 1024;
 
         /**
          * The method to invoke when the thread is started.
          */
-        @Override
-        public void run() {
+        @Override public void run() {
             final byte[] buf = new byte[BUFFER_SIZE];
+
             try {
+
                 while (running) {
                     final int len = consoleOutputStream.read(buf);
+
                     if (len > 0) {
+
                         // Publish output from script in the console.
                         String s = new String(buf, 0, len);
                         publish(s);
