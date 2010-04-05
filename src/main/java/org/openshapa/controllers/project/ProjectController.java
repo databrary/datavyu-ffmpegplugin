@@ -256,7 +256,7 @@ public final class ProjectController {
             dataController.addViewer(viewer, setting.getOffset());
             dataController.addTrack(plugin.getTypeIcon(),
                 file.getAbsolutePath(), file.getName(), viewer.getDuration(),
-                setting.getOffset(), plugin.getTrackPainter());
+                setting.getOffset(), viewer.getTrackPainter());
         }
 
         MixerControllerV mixerController = dataController.getMixerController();

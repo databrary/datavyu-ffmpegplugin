@@ -5,8 +5,6 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileFilter;
 
-import org.openshapa.views.component.DefaultTrackPainter;
-import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 
@@ -45,13 +43,6 @@ public final class QTPlugin implements Plugin {
         URL typeIconURL = getClass().getResource("/icons/qtplugin-icon.png");
 
         return new ImageIcon(typeIconURL);
-    }
-
-    /**
-     * Get track painter.
-     */
-    public TrackPainter getTrackPainter() {
-        return new DefaultTrackPainter();
     }
 
 }

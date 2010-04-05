@@ -360,7 +360,7 @@ public final class DataControllerV extends OpenSHAPADialog
             DataViewer dataViewer = plugin.getNewDataViewer();
             dataViewer.setDataFeed(f);
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
-                plugin.getTrackPainter());
+                dataViewer.getTrackPainter());
         }
     }
 

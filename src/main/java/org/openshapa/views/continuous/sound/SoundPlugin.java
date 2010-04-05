@@ -3,8 +3,6 @@ package org.openshapa.views.continuous.sound;
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileFilter;
 
-import org.openshapa.views.component.DefaultTrackPainter;
-import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 
@@ -40,10 +38,4 @@ public class SoundPlugin implements Plugin {
         return null;
     }
 
-    /**
-     * Get track painter.
-     */
-    public TrackPainter getTrackPainter() {
-        return new DefaultTrackPainter();
-    }
 }

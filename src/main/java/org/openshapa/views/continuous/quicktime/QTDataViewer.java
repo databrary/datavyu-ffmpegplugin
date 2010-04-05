@@ -1,23 +1,33 @@
 package org.openshapa.views.continuous.quicktime;
 
 import java.awt.Toolkit;
+
 import java.io.File;
 
 import javax.swing.JFrame;
 
 import org.openshapa.util.Constants;
+
+import org.openshapa.views.component.DefaultTrackPainter;
+import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 
 import quicktime.QTException;
 import quicktime.QTSession;
+
 import quicktime.app.view.QTFactory;
+
 import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
+
 import quicktime.qd.QDDimension;
+
 import quicktime.std.StdQTConstants;
 import quicktime.std.StdQTException;
+
 import quicktime.std.clocks.TimeRecord;
+
 import quicktime.std.movies.Movie;
 import quicktime.std.movies.TimeInfo;
 import quicktime.std.movies.Track;
@@ -25,10 +35,17 @@ import quicktime.std.movies.media.Media;
 
 import com.usermetrix.jclient.UserMetrix;
 
+
 /**
  * The viewer for a quicktime video file.
  */
 public final class QTDataViewer extends JFrame implements DataViewer {
+
+    /** How many milliseconds in a second? */
+    private static final int MILLI = 1000;
+
+    /** How many frames to check when correcting the FPS. */
+    private static final int CORRECTIONFRAMES = 5;
 
     // --------------------------------------------------------------------------
     //
@@ -36,12 +53,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(QTDataViewer.class);
-
-    /** How many milliseconds in a second? */
-    private static final int MILLI = 1000;
-
-    /** How many frames to check when correcting the FPS. */
-    private static final int CORRECTIONFRAMES = 5;
 
     // --------------------------------------------------------------------------
     //
@@ -88,6 +99,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * Constructor - creates new video viewer.
      */
     public QTDataViewer() {
+
         try {
             movie = null;
             offset = 0;
@@ -101,6 +113,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         } catch (Throwable e) {
             logger.error("Unable to create QTVideoViewer", e);
         }
+
         initComponents();
     }
 
@@ -113,10 +126,12 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      *         movie's duration cannot be determined.
      */
     public long getDuration() {
+
         try {
+
             if (movie != null) {
                 return (long) Constants.TICKS_PER_SECOND
-                        * (long) movie.getDuration() / movie.getTimeScale();
+                    * (long) movie.getDuration() / movie.getTimeScale();
             }
         } catch (StdQTException ex) {
             logger.error("Unable to determine QT movie duration", ex);
@@ -125,16 +140,17 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         return -1;
     }
 
-    @Override
-    public void validate() {
+    @Override public void validate() {
+
         // BugzID:753 - Locks the window to the videos aspect ratio.
-        if (aspectRatio > 0.0 && !updatedAspect) {
+        if ((aspectRatio > 0.0) && !updatedAspect) {
             setSize((int) (getHeight() * aspectRatio), getHeight());
             invalidate();
             updatedAspect = true;
         } else {
             updatedAspect = false;
         }
+
         super.validate();
     }
 
@@ -169,8 +185,10 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      */
     public void setDataFeed(final File videoFile) {
         this.videoFile = videoFile;
+
         try {
             setTitle(videoFile.getName());
+
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
 
@@ -183,13 +201,14 @@ public final class QTDataViewer extends JFrame implements DataViewer {
                     StdQTConstants.movieTrackCharacteristic);
 
             // Initialise the video to be no bigger than a quarter of the screen
-            int hScrnWidth = Toolkit.getDefaultToolkit().getScreenSize().width / 2;
+            int hScrnWidth = Toolkit.getDefaultToolkit().getScreenSize().width
+                / 2;
             aspectRatio = movie.getBounds().getWidthF()
-                    / movie.getBounds().getHeightF();
+                / movie.getBounds().getHeightF();
 
             if (movie.getBounds().getWidth() > hScrnWidth) {
-                visualTrack.setSize(new QDDimension(hScrnWidth, hScrnWidth
-                        / aspectRatio));
+                visualTrack.setSize(new QDDimension(hScrnWidth,
+                        hScrnWidth / aspectRatio));
             }
 
             visualMedia = visualTrack.getMedia();
@@ -203,16 +222,16 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
             // Set the size of the window to be the same as the incoming video.
             this.setBounds(getX(), getY(), movie.getBox().getWidth(),
-                    movie.getBox().getHeight());
+                movie.getBox().getHeight());
 
             // BugzID:928 - FPS calculations will fail when using H264.
             // Apparently the Quicktime for Java API does not support a whole
             // bunch of methods with H264.
             fps = (float) visualMedia.getSampleCount()
-                    / visualMedia.getDuration() * visualMedia.getTimeScale();
+                / visualMedia.getDuration() * visualMedia.getTimeScale();
 
-            if (visualMedia.getSampleCount() == 1.0
-                    || visualMedia.getSampleCount() == 1) {
+            if ((visualMedia.getSampleCount() == 1.0)
+                    || (visualMedia.getSampleCount() == 1)) {
                 fps = correctFPS();
             }
         } catch (QTException e) {
@@ -240,13 +259,16 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         float minFrameLength = MILLI; // Set this to one second, as the "worst"
         float curFrameLen = 0;
         int curTime = 0;
+
         for (int i = 0; i < CORRECTIONFRAMES; i++) {
+
             try {
                 TimeInfo timeObj = visualTrack.getNextInterestingTime(
                         StdQTConstants.nextTimeStep, curTime, 1);
                 float candidateFrameLen = timeObj.time - curFrameLen;
                 curFrameLen = timeObj.time;
                 curTime += curFrameLen;
+
                 if (candidateFrameLen < minFrameLength) {
                     minFrameLength = candidateFrameLen;
                 }
@@ -254,6 +276,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
                 logger.error("Error getting time", e);
             }
         }
+
         return MILLI / minFrameLength;
     }
 
@@ -286,7 +309,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * Plays the continous data stream at the current playback rate..
      */
     public void play() {
+
         try {
+
             if (movie != null) {
                 movie.setRate(playRate);
                 playing = true;
@@ -300,7 +325,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * Stops the playback of the continous data stream.
      */
     public void stop() {
+
         try {
+
             if (movie != null) {
                 movie.stop();
                 playing = false;
@@ -322,7 +349,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      *            Millisecond absolute position for track.
      */
     public void seekTo(final long position) {
+
         try {
+
             if (movie != null) {
                 TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
                         position);
@@ -342,6 +371,13 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         return movie.getTime();
     }
 
+    /**
+     * Get track painter.
+     */
+    public TrackPainter getTrackPainter() {
+        return new DefaultTrackPainter();
+    }
+
     // --------------------------------------------------------------------------
     // [generated]
     //
@@ -358,14 +394,14 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("QTDataViewerDialog"); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(final java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
-        });
+                @Override public void windowClosing(
+                    final java.awt.event.WindowEvent evt) {
+                    formWindowClosing(evt);
+                }
+            });
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * Action to invoke when the QTDataViewer window is closing (clean itself
@@ -374,12 +410,14 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * @param evt
      *            The event that triggered this action.
      */
-    private void formWindowClosing(final java.awt.event.WindowEvent evt) {// GEN-FIRST:event_formWindowClosing
+    private void formWindowClosing(final java.awt.event.WindowEvent evt) { // GEN-FIRST:event_formWindowClosing
+
         try {
             movie.stop();
         } catch (QTException e) {
             logger.error("Couldn't kill", e);
         }
+
         parent.shutdown(this);
     }
 
