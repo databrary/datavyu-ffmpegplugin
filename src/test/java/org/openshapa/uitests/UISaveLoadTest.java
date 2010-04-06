@@ -177,7 +177,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             loadFile(new File(pc.getProjectDirectory(),
                     pc.getDatabaseFileName()));
             outputFile = saveAsCSV(fileName + "new");
-
         } else if (extension.equals("opf")) {
 
             // Open the opf and save it as a csv
@@ -233,7 +232,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Loads opf file after creating a new project.
+     * Loads file after creating a new project.
      * @param file opf file to load
      */
     private void loadFile(File file) {
@@ -303,7 +302,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
                 // Do nothing
             }
 
-            String ext = file.getName().substring(file.getName().length(),
+            String ext = file.getName().substring(file.getName().length() - 3,
                     file.getName().length());
 
             if (ext.equalsIgnoreCase("csv")) {
