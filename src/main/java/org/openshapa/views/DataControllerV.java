@@ -44,6 +44,8 @@ import org.openshapa.event.NeedleEvent;
 import org.openshapa.event.TracksControllerEvent;
 import org.openshapa.event.TracksControllerListener;
 
+import org.openshapa.models.PlaybackModel;
+
 import org.openshapa.util.ClockTimer;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer.ClockListener;
@@ -173,35 +175,11 @@ public final class DataControllerV extends OpenSHAPADialog
     /** The list of viewers associated with this controller. */
     private Set<DataViewer> viewers;
 
-    /** Stores the highest frame rate for all available viewers. */
-    private float currentFPS = 1F;
-
     /** Shuttle status flag. */
     private ShuttleDirection shuttleDirection = ShuttleDirection.UNDEFINED;
 
-    /** Index of current shuttle rate. */
-    private int shuttleRate;
-
-    /** The rate to use when resumed from pause. */
-    private float pauseRate;
-
-    /** The time the last sync was performed. */
-    private long lastSync;
-
     /** Clock timer. */
     private ClockTimer clock = new ClockTimer();
-
-    /** The maximum duration out of all data being played. */
-    private long maxDuration;
-
-    /** Are we currently faking playback of the viewers? */
-    private boolean fakePlayback = false;
-
-    /** The start time of the playback window. */
-    private long windowPlayStart;
-
-    /** The end time of the playback window. */
-    private long windowPlayEnd;
 
     /** Is the tracks panel currently shown? */
     private boolean tracksPanelEnabled = false;
@@ -302,6 +280,9 @@ public final class DataControllerV extends OpenSHAPADialog
     /** */
     private javax.swing.JPanel tracksPanel;
 
+    /** Model containing playback information. */
+    private PlaybackModel playbackModel;
+
     // -------------------------------------------------------------------------
     // [initialization]
     //
@@ -316,6 +297,7 @@ public final class DataControllerV extends OpenSHAPADialog
     public DataControllerV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
 
+
         clock.registerListener(this);
 
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
@@ -326,16 +308,17 @@ public final class DataControllerV extends OpenSHAPADialog
 
         setName(this.getClass().getSimpleName());
         viewers = new HashSet<DataViewer>();
-        pauseRate = 0;
-        lastSync = 0;
 
-        maxDuration = 0;
+        playbackModel = new PlaybackModel();
+        playbackModel.setPauseRate(0);
+        playbackModel.setLastSync(0);
+        playbackModel.setMaxDuration(0);
 
         final int defaultEndTime = 60000;
 
         // TODO This should really come from the region controller.
-        windowPlayStart = 0;
-        windowPlayEnd = defaultEndTime;
+        playbackModel.setWindowPlayStart(0);
+        playbackModel.setWindowPlayEnd(defaultEndTime);
 
         mixerControllerV = new MixerControllerV();
         tracksPanel.add(mixerControllerV.getTracksPanel());
@@ -395,6 +378,7 @@ public final class DataControllerV extends OpenSHAPADialog
         resetSync();
 
         long playTime = time;
+        final long windowPlayStart = playbackModel.getWindowPlayStart();
 
         if (playTime < windowPlayStart) {
             playTime = windowPlayStart;
@@ -414,7 +398,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Reset the sync.
      */
     private void resetSync() {
-        lastSync = 0;
+        playbackModel.setLastSync(0);
     }
 
     /**
@@ -429,7 +413,7 @@ public final class DataControllerV extends OpenSHAPADialog
             // We are playing back at a rate which is to fast and probably won't
             // allow us to stream all the information at the file. We fake play
             // back by doing a bunch of seekTo's.
-            if (fakePlayback) {
+            if (playbackModel.isFakePlayback()) {
 
                 for (DataViewer v : viewers) {
                     v.seekTo(time - v.getOffset());
@@ -439,10 +423,11 @@ public final class DataControllerV extends OpenSHAPADialog
             } else {
 
                 // Synchronise viewers only if we have exceded our pulse time.
-                if ((time - lastSync) > (SYNC_PULSE * clock.getRate())) {
+                if ((time - playbackModel.getLastSync())
+                        > (SYNC_PULSE * clock.getRate())) {
                     long thresh = (long) (SYNC_THRESH
                             * Math.abs(clock.getRate()));
-                    lastSync = time;
+                    playbackModel.setLastSync(time);
 
                     for (DataViewer v : viewers) {
 
@@ -471,6 +456,8 @@ public final class DataControllerV extends OpenSHAPADialog
 
             // BugzID:466 - Prevent rewind wrapping the clock past the start
             // point of the view window.
+            final long windowPlayStart = playbackModel.getWindowPlayStart();
+
             if (time < windowPlayStart) {
                 setCurrentTime(windowPlayStart);
                 clock.stop();
@@ -479,6 +466,8 @@ public final class DataControllerV extends OpenSHAPADialog
             }
 
             // BugzID:756 - don't play video once past the max duration.
+            final long windowPlayEnd = playbackModel.getWindowPlayEnd();
+
             if ((time >= windowPlayEnd) && (clock.getRate() >= 0)) {
                 setCurrentTime(windowPlayEnd);
                 clock.stop();
@@ -518,7 +507,7 @@ public final class DataControllerV extends OpenSHAPADialog
         // the illusion of 'smooth'. We do this by stopping the dataviewer and
         // doing many seekTo's to grab individual frames.
         if (Math.abs(rate) > 2.0) {
-            fakePlayback = true;
+            playbackModel.setFakePlayback(true);
 
             for (DataViewer viewer : viewers) {
                 viewer.setPlaybackSpeed(rate);
@@ -529,7 +518,7 @@ public final class DataControllerV extends OpenSHAPADialog
             // to
             // draw every frame.
         } else {
-            fakePlayback = false;
+            playbackModel.setFakePlayback(false);
 
             for (DataViewer viewer : viewers) {
                 viewer.setPlaybackSpeed(rate);
@@ -595,13 +584,14 @@ public final class DataControllerV extends OpenSHAPADialog
      * @return True if the controller contained this viewer.
      */
     public boolean shutdown(final DataViewer viewer) {
-        boolean result = viewers.remove(viewer);
 
-        if (result) {
+        // Was the viewer removed.
+        boolean removed = viewers.remove(viewer);
+
+        if (removed) {
 
             // Recalculate the maximum playback duration.
-            maxDuration = 0;
-
+            long maxDuration = 0;
             Iterator<DataViewer> it = viewers.iterator();
 
             while (it.hasNext()) {
@@ -612,43 +602,50 @@ public final class DataControllerV extends OpenSHAPADialog
                 }
             }
 
+            playbackModel.setMaxDuration(maxDuration);
+
             mixerControllerV.setMaxEnd(maxDuration);
 
-            if (windowPlayEnd > maxDuration) {
-                windowPlayEnd = maxDuration;
-                mixerControllerV.setPlayRegionEnd(windowPlayEnd);
+            // Reset visualisation of playback regions.
+            if (playbackModel.getWindowPlayEnd() > maxDuration) {
+                playbackModel.setWindowPlayEnd(maxDuration);
+                mixerControllerV.setPlayRegionEnd(maxDuration);
             }
 
-            if (windowPlayStart > windowPlayEnd) {
-                windowPlayStart = 0;
-                mixerControllerV.setPlayRegionStart(windowPlayStart);
+            if (playbackModel.getWindowPlayStart()
+                    > playbackModel.getWindowPlayEnd()) {
+                playbackModel.setWindowPlayStart(0);
+                mixerControllerV.setPlayRegionStart(
+                    playbackModel.getWindowPlayStart());
             }
 
+            // Reset visualisation of current playback time.
             long tracksTime = mixerControllerV.getCurrentTime();
 
-            if (tracksTime < windowPlayStart) {
-                tracksTime = windowPlayStart;
+            if (tracksTime < playbackModel.getWindowPlayStart()) {
+                tracksTime = playbackModel.getWindowPlayStart();
             }
 
-            if (tracksTime > windowPlayEnd) {
-                tracksTime = windowPlayEnd;
+            if (tracksTime > playbackModel.getWindowPlayEnd()) {
+                tracksTime = playbackModel.getWindowPlayEnd();
             }
 
             mixerControllerV.setCurrentTime(tracksTime);
 
+            // Reset the clock.
             clock.setTime(tracksTime);
             clockStep(tracksTime);
 
-            // Remove the data viewer from the project
+            // Data viewer removed, mark project as changed.
             OpenSHAPA.getProjectController().projectChanged();
 
-            // Remove the data viewer from the tracks panel
+            // Remove the data viewer from the tracks panel.
             mixerControllerV.removeTrack(viewer.getDataFeed()
                 .getAbsolutePath());
             OpenSHAPA.getApplication().updateTitle();
         }
 
-        return result;
+        return removed;
     }
 
     /**
@@ -1456,17 +1453,22 @@ public final class DataControllerV extends OpenSHAPADialog
         // adjust the overall frame rate.
         float fps = viewer.getFrameRate();
 
-        if (fps > currentFPS) {
-            currentFPS = fps;
+        if (fps > playbackModel.getCurrentFPS()) {
+            playbackModel.setCurrentFPS(fps);
         }
+
+        // Update track viewer.
+        long maxDuration = playbackModel.getMaxDuration();
 
         if ((viewer.getOffset() + viewer.getDuration()) > maxDuration) {
             maxDuration = viewer.getOffset() + viewer.getDuration();
         }
 
-        if (windowPlayEnd < maxDuration) {
-            windowPlayEnd = maxDuration;
-            mixerControllerV.setPlayRegionEnd(windowPlayEnd);
+        playbackModel.setMaxDuration(maxDuration);
+
+        if (playbackModel.getWindowPlayEnd() < maxDuration) {
+            playbackModel.setWindowPlayEnd(maxDuration);
+            mixerControllerV.setPlayRegionEnd(maxDuration);
         }
     }
 
@@ -1535,12 +1537,12 @@ public final class DataControllerV extends OpenSHAPADialog
     private void handleNeedleEvent(final NeedleEvent e) {
         long newTime = e.getTime();
 
-        if (newTime < windowPlayStart) {
-            newTime = windowPlayStart;
+        if (newTime < playbackModel.getWindowPlayStart()) {
+            newTime = playbackModel.getWindowPlayStart();
         }
 
-        if (newTime > windowPlayEnd) {
-            newTime = windowPlayEnd;
+        if (newTime > playbackModel.getWindowPlayEnd()) {
+            newTime = playbackModel.getWindowPlayEnd();
         }
 
         clockStop(newTime);
@@ -1563,49 +1565,78 @@ public final class DataControllerV extends OpenSHAPADialog
         switch (e.getMarker()) {
 
         case START_MARKER:
-
-            if ((newWindowTime < maxDuration)
-                    && (newWindowTime < windowPlayEnd)) {
-                windowPlayStart = newWindowTime;
-            } else if (newWindowTime >= windowPlayEnd) {
-                windowPlayStart = windowPlayEnd;
-            } else {
-                windowPlayStart = maxDuration;
-            }
-
-            mixerControllerV.setPlayRegionStart(windowPlayStart);
-
-            if (tracksTime < windowPlayStart) {
-                mixerControllerV.setCurrentTime(windowPlayStart);
-                clock.setTime(windowPlayStart);
-                clockStep(windowPlayStart);
-            }
-
+            handleStartMarkerEvent(newWindowTime, tracksTime);
             break;
 
         case END_MARKER:
-
-            if ((newWindowTime <= maxDuration)
-                    && (newWindowTime > windowPlayStart)) {
-                windowPlayEnd = newWindowTime;
-            } else if (newWindowTime > maxDuration) {
-                windowPlayEnd = maxDuration;
-            } else {
-                windowPlayEnd = windowPlayStart;
-            }
-
-            mixerControllerV.setPlayRegionEnd(windowPlayEnd);
-
-            if (tracksTime > windowPlayEnd) {
-                mixerControllerV.setCurrentTime(windowPlayEnd);
-                clock.setTime(windowPlayEnd);
-                clockStep(windowPlayEnd);
-            }
-
+            handleEndMarkerEvent(newWindowTime, tracksTime);
             break;
 
         default:
-            break;
+            throw new IllegalArgumentException("Unknown marker event.");
+        }
+    }
+
+    /**
+     * Helper method for handling the end region marker event.
+     *
+     * @param newWindowTime New region marker time.
+     * @param tracksTime Current time.
+     */
+    private void handleEndMarkerEvent(final long newWindowTime,
+        final long tracksTime) {
+
+        final long maxDuration = playbackModel.getMaxDuration();
+        long windowPlayEnd;
+
+        if ((newWindowTime <= maxDuration)
+                && (newWindowTime > playbackModel.getWindowPlayStart())) {
+            windowPlayEnd = newWindowTime;
+        } else if (newWindowTime > maxDuration) {
+            windowPlayEnd = maxDuration;
+        } else {
+            windowPlayEnd = playbackModel.getWindowPlayStart();
+        }
+
+        playbackModel.setWindowPlayEnd(windowPlayEnd);
+
+        mixerControllerV.setPlayRegionEnd(windowPlayEnd);
+
+        if (tracksTime > windowPlayEnd) {
+            mixerControllerV.setCurrentTime(windowPlayEnd);
+            clock.setTime(windowPlayEnd);
+            clockStep(windowPlayEnd);
+        }
+    }
+
+    /**
+     * Helper method for handling the start region marker event.
+     *
+     * @param newWindowTime New region marker time.
+     * @param tracksTime Current time.
+     */
+    private void handleStartMarkerEvent(final long newWindowTime,
+        final long tracksTime) {
+        final long windowPlayEnd = playbackModel.getWindowPlayEnd();
+        long windowPlayStart;
+
+        if ((newWindowTime < playbackModel.getMaxDuration())
+                && (newWindowTime < windowPlayEnd)) {
+            windowPlayStart = newWindowTime;
+        } else if (newWindowTime >= windowPlayEnd) {
+            windowPlayStart = windowPlayEnd;
+        } else {
+            windowPlayStart = playbackModel.getMaxDuration();
+        }
+
+        playbackModel.setWindowPlayStart(windowPlayStart);
+
+        mixerControllerV.setPlayRegionStart(windowPlayStart);
+
+        if (tracksTime < windowPlayStart) {
+            mixerControllerV.setCurrentTime(windowPlayStart);
+            clock.setTime(windowPlayStart);
+            clockStep(windowPlayStart);
         }
     }
 
@@ -1621,106 +1652,71 @@ public final class DataControllerV extends OpenSHAPADialog
         switch (e.getEventType()) {
 
         case OFFSET_CHANGE:
-
-            // Look through our data viewers and update the offset
-            Iterator<DataViewer> itOffset = viewers.iterator();
-
-            while (itOffset.hasNext()) {
-                DataViewer dv = itOffset.next();
-                File feed = dv.getDataFeed();
-
-                /*
-                 * Found our data viewer, update the DV offset and the settings
-                 * in the project file.
-                 */
-                if (feed.getAbsolutePath().equals(e.getTrackId())) {
-                    dv.setOffset(e.getOffset());
-                    OpenSHAPA.getProjectController().projectChanged();
-                    OpenSHAPA.getApplication().updateTitle();
-                }
-            }
-
-            // Recalculate the maximum playback duration.
-            maxDuration = 0;
-
-            Iterator<DataViewer> itDuration = viewers.iterator();
-
-            while (itDuration.hasNext()) {
-                DataViewer dv = itDuration.next();
-
-                if ((dv.getDuration() + dv.getOffset()) > maxDuration) {
-                    maxDuration = dv.getDuration() + dv.getOffset();
-                }
-            }
-
-            mixerControllerV.setMaxEnd(maxDuration);
-
-            // Reset our playback windows
-            if (windowPlayEnd > maxDuration) {
-                windowPlayEnd = maxDuration;
-                mixerControllerV.setPlayRegionEnd(windowPlayEnd);
-            }
-
-            if (windowPlayStart > windowPlayEnd) {
-                windowPlayStart = 0;
-                mixerControllerV.setPlayRegionStart(windowPlayStart);
-            }
-
-            // Reset the time if needed
-            long tracksTime = mixerControllerV.getCurrentTime();
-
-            if (tracksTime < windowPlayStart) {
-                tracksTime = windowPlayStart;
-            }
-
-            if (tracksTime > windowPlayEnd) {
-                tracksTime = windowPlayEnd;
-            }
-
-            mixerControllerV.setCurrentTime(tracksTime);
-
-            clock.setTime(tracksTime);
-            clockStep(tracksTime);
-
+            handleCarriageOffsetChangeEvent(e);
             break;
 
         case BOOKMARK_CHANGED:
-
-            // Look through our data viewers and update the bookmark
-            Iterator<DataViewer> viewerIterator = viewers.iterator();
-
-            while (viewerIterator.hasNext()) {
-                DataViewer dv = viewerIterator.next();
-                File feed = dv.getDataFeed();
-
-                if (feed.getAbsolutePath().equals(e.getTrackId())) {
-                    OpenSHAPA.getProjectController().projectChanged();
-                    OpenSHAPA.getApplication().updateTitle();
-                }
-            }
-
-            break;
-
         case BOOKMARK_SAVE:
-
-            // Look through our data viewers and update the bookmark
-            Iterator<DataViewer> saveIterator = viewers.iterator();
-
-            while (saveIterator.hasNext()) {
-                DataViewer dv = saveIterator.next();
-                File feed = dv.getDataFeed();
-
-                if (feed.getAbsolutePath().equals(e.getTrackId())) {
-                    OpenSHAPA.getProjectController().projectChanged();
-                    OpenSHAPA.getApplication().updateTitle();
-                }
-            }
+            OpenSHAPA.getProjectController().projectChanged();
+            OpenSHAPA.getApplication().updateTitle();
+            break;
 
         default:
-            logger.error("Unknown event");
-
-            break;
+            throw new IllegalArgumentException("Unknown carriage event.");
         }
+    }
+
+    /**
+     * @param e
+     */
+    private void handleCarriageOffsetChangeEvent(final CarriageEvent e) {
+
+        OpenSHAPA.getProjectController().projectChanged();
+        OpenSHAPA.getApplication().updateTitle();
+
+        // Recalculate the maximum playback duration.
+        long maxDuration = 0;
+
+        for (DataViewer viewer : viewers) {
+
+            if ((viewer.getDuration() + viewer.getOffset()) > maxDuration) {
+                maxDuration = viewer.getDuration() + viewer.getOffset();
+            }
+        }
+
+        playbackModel.setMaxDuration(maxDuration);
+
+        mixerControllerV.setMaxEnd(maxDuration);
+
+        // Reset our playback windows
+        if (playbackModel.getWindowPlayEnd() > maxDuration) {
+            playbackModel.setWindowPlayEnd(maxDuration);
+            mixerControllerV.setPlayRegionEnd(maxDuration);
+        }
+
+
+        if (playbackModel.getWindowPlayStart()
+                > playbackModel.getWindowPlayEnd()) {
+            playbackModel.setWindowPlayStart(0);
+            mixerControllerV.setPlayRegionStart(
+                playbackModel.getWindowPlayStart());
+        }
+
+        // Reset the time if needed
+        long tracksTime = mixerControllerV.getCurrentTime();
+
+        if (tracksTime < playbackModel.getWindowPlayStart()) {
+            tracksTime = playbackModel.getWindowPlayStart();
+        }
+
+        if (tracksTime > playbackModel.getWindowPlayEnd()) {
+            tracksTime = playbackModel.getWindowPlayEnd();
+        }
+
+        mixerControllerV.setCurrentTime(tracksTime);
+
+        clock.setTime(tracksTime);
+        clockStep(tracksTime);
     }
 
     // -------------------------------------------------------------------------
@@ -1823,8 +1819,9 @@ public final class DataControllerV extends OpenSHAPADialog
         // BugzID:464 - When stopped at the end of the region of interest.
         // pressing play jumps the stream back to the start of the video before
         // starting to play again.
-        if ((getCurrentTime() >= windowPlayEnd) && clock.isStopped()) {
-            jumpTo(windowPlayStart);
+        if ((getCurrentTime() >= playbackModel.getWindowPlayEnd())
+                && clock.isStopped()) {
+            jumpTo(playbackModel.getWindowPlayStart());
         }
 
         playAt(PLAY_RATE);
@@ -1851,14 +1848,15 @@ public final class DataControllerV extends OpenSHAPADialog
 
         // Resume from pause at playback rate prior to pause.
         if (clock.isStopped()) {
-            shuttleAt(pauseRate);
+            shuttleAt(playbackModel.getPauseRate());
 
             // Pause views - store current playback rate.
         } else {
-            pauseRate = clock.getRate();
+            playbackModel.setPauseRate(clock.getRate());
             clock.stop();
             lblSpeed.setText("["
-                + FloatUtils.doubleToFractionStr(new Double(pauseRate)) + "]");
+                + FloatUtils.doubleToFractionStr(
+                    Double.valueOf(playbackModel.getPauseRate())) + "]");
         }
     }
 
@@ -1868,8 +1866,8 @@ public final class DataControllerV extends OpenSHAPADialog
     @Action public void stopAction() {
         clock.stop();
         clock.setRate(0);
-        shuttleRate = 0;
-        pauseRate = 0;
+        playbackModel.setShuttleRate(0);
+        playbackModel.setPauseRate(0);
         shuttleDirection = ShuttleDirection.UNDEFINED;
     }
 
@@ -1881,17 +1879,18 @@ public final class DataControllerV extends OpenSHAPADialog
     @Action public void shuttleForwardAction() {
 
         if ((clock.getTime() <= 0)
-                && ((shuttleRate != 0)
+                && ((playbackModel.getShuttleRate() != 0)
                     || (shuttleDirection != ShuttleDirection.UNDEFINED))) {
-            shuttleRate = 0;
-            pauseRate = 0;
+            playbackModel.setShuttleRate(0);
+            playbackModel.setPauseRate(0);
             shuttleDirection = ShuttleDirection.UNDEFINED;
             shuttle(ShuttleDirection.FORWARDS);
         } else {
 
             // BugzID:794 - Previously ignored pauseRate if paused
             if (clock.isStopped()) {
-                shuttleRate = findShuttleIndex(pauseRate);
+                playbackModel.setShuttleRate(findShuttleIndex(
+                        playbackModel.getPauseRate()));
                 shuttle(ShuttleDirection.FORWARDS);
                 // shuttle(ShuttleDirection.BACKWARDS);
                 // This makes current tests fail, but may be the desired
@@ -1908,16 +1907,17 @@ public final class DataControllerV extends OpenSHAPADialog
     @Action public void shuttleBackAction() {
 
         if ((clock.getTime() <= 0)
-                && ((shuttleRate != 0)
+                && ((playbackModel.getShuttleRate() != 0)
                     || (shuttleDirection != ShuttleDirection.UNDEFINED))) {
-            shuttleRate = 0;
-            pauseRate = 0;
+            playbackModel.setShuttleRate(0);
+            playbackModel.setPauseRate(0);
             shuttleDirection = ShuttleDirection.UNDEFINED;
         } else {
 
             // BugzID:794 - Previously ignored pauseRate if paused
             if (clock.isStopped()) {
-                shuttleRate = findShuttleIndex(pauseRate);
+                playbackModel.setShuttleRate(findShuttleIndex(
+                        playbackModel.getPauseRate()));
                 shuttle(ShuttleDirection.BACKWARDS);
                 // shuttle(ShuttleDirection.FORWARDS);
                 // This makes current tests fail, but may be the desired
@@ -2014,14 +2014,14 @@ public final class DataControllerV extends OpenSHAPADialog
             final long newWindowPlayEnd = CLOCK_FORMAT.parse(
                     findOffsetField.getText()).getTime();
 
-            windowPlayStart = newWindowPlayStart;
+            playbackModel.setWindowPlayStart(newWindowPlayStart);
             mixerControllerV.setPlayRegionStart(newWindowPlayStart);
 
             if (newWindowPlayStart < newWindowPlayEnd) {
-                windowPlayEnd = newWindowPlayEnd;
+                playbackModel.setWindowPlayEnd(newWindowPlayEnd);
                 mixerControllerV.setPlayRegionEnd(newWindowPlayEnd);
             } else {
-                windowPlayEnd = newWindowPlayStart;
+                playbackModel.setWindowPlayEnd(newWindowPlayStart);
                 mixerControllerV.setPlayRegionEnd(newWindowPlayStart);
             }
         } catch (ParseException e) {
@@ -2061,12 +2061,13 @@ public final class DataControllerV extends OpenSHAPADialog
         }
 
         /* Bug1361: Do not allow jog to skip past the region boundaries. */
-        long nextTime = (long) (mul * (-ONE_SECOND) / currentFPS);
+        long nextTime = (long) (mul * (-ONE_SECOND)
+                / playbackModel.getCurrentFPS());
 
-        if ((clock.getTime() + nextTime) > windowPlayStart) {
+        if ((clock.getTime() + nextTime) > playbackModel.getWindowPlayStart()) {
             jump(nextTime);
         } else {
-            jumpTo(windowPlayStart);
+            jumpTo(playbackModel.getWindowPlayStart());
         }
     }
 
@@ -2085,12 +2086,13 @@ public final class DataControllerV extends OpenSHAPADialog
         }
 
         /* Bug1361: Do not allow jog to skip past the region boundaries. */
-        long nextTime = (long) (mul * (ONE_SECOND) / currentFPS);
+        long nextTime = (long) (mul * (ONE_SECOND)
+                / playbackModel.getCurrentFPS());
 
-        if ((clock.getTime() + nextTime) < windowPlayEnd) {
+        if ((clock.getTime() + nextTime) < playbackModel.getWindowPlayEnd()) {
             jump(nextTime);
         } else {
-            jumpTo(windowPlayEnd);
+            jumpTo(playbackModel.getWindowPlayEnd());
         }
     }
 
@@ -2103,8 +2105,8 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void playAt(final float rate) {
         shuttleDirection = ShuttleDirection.UNDEFINED;
-        shuttleRate = 0;
-        pauseRate = 0;
+        playbackModel.setShuttleRate(0);
+        playbackModel.setPauseRate(0);
         shuttleAt(rate);
     }
 
@@ -2113,6 +2115,7 @@ public final class DataControllerV extends OpenSHAPADialog
      *            The required direction of the shuttle.
      */
     private void shuttle(final ShuttleDirection direction) {
+        int shuttleRate = playbackModel.getShuttleRate();
         float rate = SHUTTLE_RATES[shuttleRate];
 
         if (ShuttleDirection.UNDEFINED == shuttleDirection) {
@@ -2123,12 +2126,14 @@ public final class DataControllerV extends OpenSHAPADialog
 
             if (shuttleRate < (SHUTTLE_RATES.length - 1)) {
                 rate = SHUTTLE_RATES[++shuttleRate];
+                playbackModel.setShuttleRate(shuttleRate);
             }
 
         } else {
 
             if (shuttleRate > 0) {
                 rate = SHUTTLE_RATES[--shuttleRate];
+                playbackModel.setShuttleRate(shuttleRate);
 
                 // BugzID: 676 - Shuttle speed transitions between zero.
             } else {
@@ -2156,8 +2161,8 @@ public final class DataControllerV extends OpenSHAPADialog
     private void jump(final long step) {
         clock.stop();
         clock.setRate(0);
-        shuttleRate = 0;
-        pauseRate = 0;
+        playbackModel.setShuttleRate(0);
+        playbackModel.setPauseRate(0);
         shuttleDirection = ShuttleDirection.UNDEFINED;
         clock.stepTime(step);
     }
