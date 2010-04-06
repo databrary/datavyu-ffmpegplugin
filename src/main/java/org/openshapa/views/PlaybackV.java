@@ -4,8 +4,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import java.util.LinkedList;
@@ -237,6 +240,7 @@ public final class PlaybackV extends OpenSHAPADialog {
      */
     public void setFindTime(final long milliseconds) {
         findTextField.setText(CLOCK_FORMAT.format(milliseconds));
+        onsetTime = milliseconds;
     }
 
     /**
@@ -247,8 +251,8 @@ public final class PlaybackV extends OpenSHAPADialog {
      */
     public void setFindOffsetField(final long milliseconds) {
         findOffsetField.setText(CLOCK_FORMAT.format(milliseconds));
+        offsetTime = milliseconds;
     }
-
 
     /**
      * Initialize the view for Macs.
@@ -859,6 +863,11 @@ public final class PlaybackV extends OpenSHAPADialog {
         goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
         goBackTextField.setText("00:00:05:000");
         goBackTextField.setName("goBackTextField");
+        goBackTextField.addKeyListener(new KeyAdapter() {
+                @Override public void keyReleased(final KeyEvent e) {
+                    goBackTextFieldEvent(e);
+                }
+            });
         gridButtonPanel.add(goBackTextField, "w 80!, h 45!");
 
         // Shuttle back button
@@ -1141,6 +1150,20 @@ public final class PlaybackV extends OpenSHAPADialog {
     /** Simulates sync button clicked. */
     public void pressSyncVideoButton() {
         syncVideoButton.doClick();
+    }
+
+    /**
+     * Handle the go back text field text entry event.
+     *
+     * @param evt The event to handle.
+     */
+    private void goBackTextFieldEvent(final KeyEvent evt) {
+
+        try {
+            goTime = -CLOCK_FORMAT.parse(goBackTextField.getText()).getTime();
+        } catch (ParseException e) {
+            ;
+        }
     }
 
     /**
