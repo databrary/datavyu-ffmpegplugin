@@ -30,16 +30,16 @@ import org.openshapa.controllers.component.TimescaleController;
 import org.openshapa.controllers.component.TrackController;
 import org.openshapa.controllers.component.TracksEditorController;
 
-import org.openshapa.event.CarriageEvent;
-import org.openshapa.event.CarriageEventListener;
-import org.openshapa.event.MarkerEvent;
-import org.openshapa.event.MarkerEventListener;
-import org.openshapa.event.NeedleEvent;
-import org.openshapa.event.NeedleEventListener;
-import org.openshapa.event.TracksControllerEvent;
-import org.openshapa.event.TracksControllerListener;
-import org.openshapa.event.CarriageEvent.EventType;
-import org.openshapa.event.TracksControllerEvent.TracksEvent;
+import org.openshapa.event.component.CarriageEvent;
+import org.openshapa.event.component.CarriageEventListener;
+import org.openshapa.event.component.MarkerEvent;
+import org.openshapa.event.component.MarkerEventListener;
+import org.openshapa.event.component.NeedleEvent;
+import org.openshapa.event.component.NeedleEventListener;
+import org.openshapa.event.component.TracksControllerEvent;
+import org.openshapa.event.component.TracksControllerListener;
+import org.openshapa.event.component.CarriageEvent.EventType;
+import org.openshapa.event.component.TracksControllerEvent.TracksEvent;
 
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;

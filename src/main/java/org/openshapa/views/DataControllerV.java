@@ -38,11 +38,11 @@ import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
 
-import org.openshapa.event.CarriageEvent;
-import org.openshapa.event.MarkerEvent;
-import org.openshapa.event.NeedleEvent;
-import org.openshapa.event.TracksControllerEvent;
-import org.openshapa.event.TracksControllerListener;
+import org.openshapa.event.component.CarriageEvent;
+import org.openshapa.event.component.MarkerEvent;
+import org.openshapa.event.component.NeedleEvent;
+import org.openshapa.event.component.TracksControllerEvent;
+import org.openshapa.event.component.TracksControllerListener;
 
 import org.openshapa.models.PlaybackModel;
 
@@ -403,6 +403,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
     /**
      * @param time
+     * \
      *            Current clock time in milliseconds.
      */
     public void clockTick(final long time) {
