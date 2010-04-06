@@ -43,8 +43,8 @@ import org.openshapa.controllers.SetSheetLayoutC;
 import org.openshapa.controllers.VocabEditorC;
 import org.openshapa.controllers.project.ProjectController;
 
-import org.openshapa.event.FileDropEvent;
-import org.openshapa.event.FileDropEventListener;
+import org.openshapa.event.component.FileDropEvent;
+import org.openshapa.event.component.FileDropEventListener;
 
 import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.SystemErrorException;

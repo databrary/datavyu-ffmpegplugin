@@ -22,10 +22,10 @@ import javax.swing.event.MouseInputAdapter;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.openshapa.event.CarriageEvent;
-import org.openshapa.event.CarriageEventListener;
-import org.openshapa.event.TrackMouseEventListener;
-import org.openshapa.event.CarriageEvent.EventType;
+import org.openshapa.event.component.CarriageEvent;
+import org.openshapa.event.component.CarriageEventListener;
+import org.openshapa.event.component.TrackMouseEventListener;
+import org.openshapa.event.component.CarriageEvent.EventType;
 
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;

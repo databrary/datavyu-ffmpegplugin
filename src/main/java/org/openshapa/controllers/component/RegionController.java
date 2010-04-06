@@ -9,9 +9,9 @@ import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
-import org.openshapa.event.MarkerEvent;
-import org.openshapa.event.MarkerEventListener;
-import org.openshapa.event.MarkerEvent.Marker;
+import org.openshapa.event.component.MarkerEvent;
+import org.openshapa.event.component.MarkerEventListener;
+import org.openshapa.event.component.MarkerEvent.Marker;
 import org.openshapa.models.component.RegionModel;
 import org.openshapa.models.component.ViewableModel;
 import org.openshapa.views.component.RegionPainter;

@@ -1,4 +1,4 @@
-package org.openshapa.event;
+package org.openshapa.event.component;
 
 /**
  * Interface for defining event handlers for events related to file drag and

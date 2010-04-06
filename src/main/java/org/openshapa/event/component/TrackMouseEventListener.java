@@ -1,4 +1,4 @@
-package org.openshapa.event;
+package org.openshapa.event.component;
 
 import java.awt.event.MouseEvent;
 import java.util.EventListener;

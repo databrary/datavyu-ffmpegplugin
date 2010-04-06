@@ -11,8 +11,8 @@ import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
-import org.openshapa.event.NeedleEvent;
-import org.openshapa.event.NeedleEventListener;
+import org.openshapa.event.component.NeedleEvent;
+import org.openshapa.event.component.NeedleEventListener;
 import org.openshapa.models.component.NeedleModel;
 import org.openshapa.models.component.ViewableModel;
 import org.openshapa.views.component.NeedlePainter;

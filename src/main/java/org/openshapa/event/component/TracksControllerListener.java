@@ -1,4 +1,4 @@
-package org.openshapa.event;
+package org.openshapa.event.component;
 
 import java.util.EventListener;
 

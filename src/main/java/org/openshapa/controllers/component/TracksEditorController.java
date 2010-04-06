@@ -14,10 +14,10 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.openshapa.event.CarriageEvent;
-import org.openshapa.event.CarriageEventAdapter;
-import org.openshapa.event.CarriageEventListener;
-import org.openshapa.event.TrackMouseEventListener;
+import org.openshapa.event.component.CarriageEvent;
+import org.openshapa.event.component.CarriageEventAdapter;
+import org.openshapa.event.component.CarriageEventListener;
+import org.openshapa.event.component.TrackMouseEventListener;
 
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
