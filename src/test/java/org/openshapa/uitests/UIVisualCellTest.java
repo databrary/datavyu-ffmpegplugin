@@ -1,7 +1,7 @@
 package org.openshapa.uitests;
 
 import java.awt.event.KeyEvent;
-import java.awt.image.RenderedImage;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -55,9 +55,9 @@ public final class UIVisualCellTest extends OpenSHAPATestClass {
                 Platform.controlOrCommandMask()));
 
         String root = System.getProperty("testPath");
-        File refImageFile = new File(root + "/ui/multiline.bmp");
+        File refImageFile = new File(root + "/ui/multiline.png");
 
-        RenderedImage componentImage = UIImageUtils.captureAsScreenshot(cell.component());
+        BufferedImage componentImage = UIImageUtils.captureAsScreenshot(cell.component());
 
         Assert.assertTrue(UIImageUtils.areImagesEqual(componentImage, refImageFile));
     }
