@@ -41,6 +41,7 @@ import org.openshapa.models.db.VocabElement;
 import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.io.FileInputStream;
 
 /**
  * Controller for opening a database from disk.
@@ -129,44 +130,12 @@ public final class OpenDatabaseFileC {
      */
     public MacshapaDatabase openAsCSV(final File sFile) {
         try {
-            logger.usage("opening csv database from file");
-            MacshapaDatabase db = new MacshapaDatabase(Constants
-                                                       .TICKS_PER_SECOND);
-            BufferedReader csvFile = new BufferedReader(new FileReader(sFile));
-
-            // Read each line of the CSV file.
-            String line = csvFile.readLine();
-
-            // If we have a version identifier parse the file using the schema
-            // that matches that identifier.
-            if (line.equalsIgnoreCase("#2")) {
-
-                // Parse predicate definitions first.
-                line = parseDefinitions(csvFile, db);
-
-                while (line != null) {
-                    line = parseVariable(csvFile, line, db);
-                }
-
-            } else {
-
-                // Use the original schema to load the file - just variables,
-                // and no escape characters.
-                while (line != null) {
-                    line = parseVariable(csvFile, line, db);
-                }
-            }
-
-            csvFile.close();
-            return db;
-        } catch (FileNotFoundException e) {
-            logger.error("Unable to load CSV file.", e);
-        } catch (IOException e) {
-            logger.error("Unable to read line from CSV file", e);
-        } catch (SystemErrorException e) {
-            logger.error("Unable to populate databse from CSV file", e);
-        } catch (LogicErrorException e) {
-            logger.error("Corrupted CSV file", e);
+            FileInputStream fis = new FileInputStream(sFile);
+            MacshapaDatabase result = openAsCSV(fis);
+            fis.close();
+            return result;
+        } catch (Exception fe) {
+            logger.error("Unable to open as CSV", fe);
         }
 
         // Error encountered - return null.

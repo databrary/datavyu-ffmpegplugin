@@ -47,14 +47,14 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** How many frames to check when correcting the FPS. */
     private static final int CORRECTIONFRAMES = 5;
 
-    // --------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     //
     //
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(QTDataViewer.class);
 
-    // --------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     //
     //
 
@@ -91,7 +91,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** Has the size of the window had its aspect ratio corrected? */
     private boolean updatedAspect;
 
-    // --------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // [initialization]
     //
 
@@ -117,7 +117,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         initComponents();
     }
 
-    // --------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // [interface] org.openshapa.views.continuous.DataViewer
     //
 
@@ -378,7 +378,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         return new DefaultTrackPainter();
     }
 
-    // --------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // [generated]
     //
 

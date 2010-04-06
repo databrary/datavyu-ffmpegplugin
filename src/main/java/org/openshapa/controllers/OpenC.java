@@ -3,8 +3,6 @@ package org.openshapa.controllers;
 import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.zip.ZipInputStream;
 
 import org.openshapa.models.db.MacshapaDatabase;
@@ -86,14 +84,11 @@ public final class OpenC {
             OpenDatabaseFileC odc = new OpenDatabaseFileC();
             database = odc.openAsCSV(zis);
 
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            fis.close();
+            zis.close();
+        } catch (Exception e) {
+            logger.error("Unable to open project archive", e);
         }
-
     }
 
     /**
