@@ -1,9 +1,7 @@
 package org.openshapa.controllers;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -23,6 +21,7 @@ import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.db.MatrixVocabElement.MatrixType;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.io.FileOutputStream;
 
 /**
  * Controller for saving the database to disk.
@@ -112,94 +111,11 @@ public final class SaveDatabaseFileC {
     public void saveAsCSV(final String outFile, final MacshapaDatabase db)
     throws LogicErrorException {
         try {
-            logger.usage("saving database as CSV to file");
-            FileWriter fileWriter = new FileWriter(outFile);
-            BufferedWriter out = new BufferedWriter(fileWriter);
-            // Dump out an identifier for the version of file.
-            out.write("#2");
-            out.newLine();
-
-            // Dump out all the predicates held within the database.
-            Vector<PredicateVocabElement> predicates = db.getPredVEs();
-            if (predicates.size() > 0) {
-                int counter = 0;
-
-                for (PredicateVocabElement pve : predicates) {
-                    out.write(counter + ":" + pve.getName() + "-");
-                    for (int j = 0; j < pve.getNumFormalArgs(); j++) {
-                        FormalArgument fa = pve.getFormalArgCopy(j);
-                        String name =
-                                fa.getFargName().substring(1,
-                                        fa.getFargName().length() - 1);
-                        out.write(name + "|" + fa.getFargType().toString());
-
-                        if (j < pve.getNumFormalArgs() - 1) {
-                            out.write(",");
-                        }
-                    }
-
-                    out.newLine();
-                    counter++;
-                }
-            }
-
-            // Dump out the data from all the columns.
-            Vector<Long> colIds = db.getColOrderVector();
-            for (int i = 0; i < colIds.size(); i++) {
-                DataColumn dc = db.getDataColumn(colIds.get(i));
-                boolean isMatrix = false;
-                out.write(dc.getName() + " (" + dc.getItsMveType() + ")");
-
-                // If we a matrix type - we need to dump the formal args.
-                MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
-                if (dc.getItsMveType() == MatrixType.MATRIX) {
-                    isMatrix = true;
-                    out.write("-");
-                    for (int j = 0; j < mve.getNumFormalArgs(); j++) {
-                        FormalArgument fa = mve.getFormalArgCopy(j);
-                        String name =
-                                fa.getFargName().substring(1,
-                                        fa.getFargName().length() - 1);
-                        out.write(name + "|" + fa.getFargType().toString());
-
-                        if (j < mve.getNumFormalArgs() - 1) {
-                            out.write(",");
-                        }
-                    }
-                }
-
-                out.newLine();
-                for (int j = 1; j <= dc.getNumCells(); j++) {
-                    DataCell c = (DataCell) dc.getDB().getCell(dc.getID(), j);
-                    out.write(c.getOnset().toString());
-                    out.write(",");
-                    out.write(c.getOffset().toString());
-                    out.write(",");
-                    String value = c.getVal().toEscapedString();
-
-                    if (!isMatrix) {
-                        value = value.substring(1, value.length() - 1);
-                    }
-                    out.write(value);
-                    out.newLine();
-                }
-            }
-            out.close();
-            fileWriter.close();
-        } catch (FileNotFoundException e) {
-            ResourceMap rMap =
-                    Application.getInstance(OpenSHAPA.class).getContext()
-                            .getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString(
-                    "UnableToSave.message", outFile), e);
-        } catch (IOException e) {
-            ResourceMap rMap =
-                    Application.getInstance(OpenSHAPA.class).getContext()
-                            .getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString(
-                    "UnableToSave.message", outFile), e);
-        } catch (SystemErrorException se) {
-            logger.error("Unable to save database as CSV file", se);
+            FileOutputStream fos = new FileOutputStream(outFile);
+            saveAsCSV(fos, db);
+            fos.close();
+        } catch (IOException ie) {
+            logger.error("Unable to save as CSV.", ie);
         }
     }
 
@@ -215,7 +131,7 @@ public final class SaveDatabaseFileC {
      *      because of permissions errors).
      */
     public void saveAsCSV(final OutputStream outStream,
-            final MacshapaDatabase db)
+                          final MacshapaDatabase db)
     throws LogicErrorException {
         try {
             logger.usage("saving database as CSV to stream");
