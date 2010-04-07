@@ -1085,7 +1085,7 @@ public final class OpenSHAPAView extends FrameView
     } // </editor-fold>//GEN-END:initComponents
 
     private void openRecentFileMenuMenuSelected(
-        final javax.swing.event.MenuEvent evt) { //GEN-FIRST:event_openRecentFileMenuMenuSelected
+        final javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_openRecentFileMenuMenuSelected
 
         // Flush the menu - excluding the top menu item.
         int size = openRecentFileMenu.getMenuComponentCount();
@@ -1098,7 +1098,7 @@ public final class OpenSHAPAView extends FrameView
             openRecentFileMenu.add(createRecentFileMenuItem(file));
         }
 
-    } //GEN-LAST:event_openRecentFileMenuMenuSelected
+    }//GEN-LAST:event_openRecentFileMenuMenuSelected
 
     /**
      * The action to invoke when the user selects 'strong temporal ordering'.
@@ -1343,9 +1343,7 @@ public final class OpenSHAPAView extends FrameView
             size = ZOOM_MAX_SIZE;
         }
 
-        Font biggerFont = new Font(f.getFontName(), f.getStyle(), size);
-
-        config.setSSDataFont(biggerFont);
+        config.setSSDataFontSize(size);
 
         // Create and redraw fresh window pane so all of the fonts are new
         // again.
