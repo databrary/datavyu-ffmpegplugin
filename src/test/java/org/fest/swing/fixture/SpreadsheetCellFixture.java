@@ -10,6 +10,7 @@ import javax.swing.text.BadLocationException;
 import org.fest.swing.core.MouseButton;
 
 import org.fest.swing.core.Robot;
+import org.fest.swing.util.Platform;
 import org.openshapa.util.UIUtils;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
@@ -47,9 +48,9 @@ public class SpreadsheetCellFixture extends JPanelFixture {
             Point clickPosition =
                     new Point(labelPosition.x + ImageObserver.WIDTH + 25,
                     labelPosition.y + 5);
-            robot.pressKey(KeyEvent.VK_SHIFT);
+            robot.pressKey(Platform.controlOrCommandKey());
             robot.click(component(), clickPosition);
-            robot.releaseKey(KeyEvent.VK_SHIFT);
+            robot.releaseKey(Platform.controlOrCommandKey());
         }
     }
 

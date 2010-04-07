@@ -1,5 +1,7 @@
 package org.openshapa.views.discrete;
 
+import com.sun.java.swing.SwingUtilities2;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -24,8 +26,10 @@ import javax.swing.border.MatteBorder;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
+
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.Database;
@@ -34,25 +38,75 @@ import org.openshapa.models.db.Matrix;
 import org.openshapa.models.db.ReferenceCell;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.db.TimeStamp;
+
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+
 
 /**
  * Visual representation of a spreadsheet cell.
  */
-public class SpreadsheetCell extends JPanel implements
-        ExternalDataCellListener, MouseListener, FocusListener {
-
-    /** The panel that displays the cell. */
-    private JPanel cellPanel;
+public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
+    MouseListener, FocusListener {
 
     /** Width of spacer between onset and offset timestamps. */
     private static final int TIME_SPACER = 5;
+
+    /** Border to use when a cell is highlighted. */
+    private static final Border HIGHLIGHT_BORDER = new CompoundBorder(
+            new MatteBorder(0, 0, 1, 0, Color.BLACK),
+            new MatteBorder(3, 3, 3, 3,
+                Configuration.getInstance().getSSSelectedColour()));
+
+    /** Border to use when a cell is highlighted and overlapping cell. */
+    private static final Border HIGHLIGHT_OVERLAP_BORDER = new CompoundBorder(
+            new CompoundBorder(new MatteBorder(0, 0, 1, 0,
+                    Color.BLACK),
+                new MatteBorder(0, 0, 3, 0,
+                    Configuration.getInstance().getSSOverlapColour())),
+            new MatteBorder(3,
+                3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
+
+    /** Border to use when a cell is selected. */
+    private static final Border FILL_BORDER = new CompoundBorder(
+            new CompoundBorder(new MatteBorder(0, 0, 1, 0,
+                    Color.BLACK),
+                new MatteBorder(0, 0, 3, 0,
+                    Configuration.getInstance().getSSSelectedColour())),
+            new MatteBorder(3,
+                3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
+
+    /** Border to use when a cell is selected. */
+    private static final Border FILL_OVERLAP_BORDER = HIGHLIGHT_OVERLAP_BORDER;
+
+    /** Border to use for normal cell. No extra information to show. */
+    private static final Border NORMAL_BORDER = new CompoundBorder(
+            new CompoundBorder(new MatteBorder(0, 0, 1, 0,
+                    Color.BLACK),
+                new MatteBorder(0, 0, 3, 0,
+                    Configuration.getInstance().getSSBackgroundColour())),
+            new MatteBorder(
+                3, 3, 0, 3,
+                Configuration.getInstance().getSSBackgroundColour()));
+
+    /** Border to use if cell overlaps with another. */
+    public static final Border OVERLAP_BORDER = new CompoundBorder(
+            new CompoundBorder(new MatteBorder(0, 0, 1, 0,
+                    Color.BLACK),
+                new MatteBorder(0, 0, 3, 0,
+                    Configuration.getInstance().getSSOverlapColour())),
+            new MatteBorder(3,
+                3, 0, 3, Configuration.getInstance().getSSBackgroundColour()));
+
+    /** Border to use for normal cell if there is no strut (abuts prev cell). */
+    public static final Border STRUT_BORDER = BorderFactory.createMatteBorder(0,
+            0, 1, 0, Color.BLACK);
+
+    /** The panel that displays the cell. */
+    private JPanel cellPanel;
 
     /** A panel for holding the header to the cell. */
     private JPanel topPanel;
@@ -108,49 +162,6 @@ public class SpreadsheetCell extends JPanel implements
     /** The spreadsheet cell selection listener. */
     private CellSelectionListener cellSelL;
 
-    /** Border to use when a cell is highlighted. */
-    private static final Border HIGHLIGHT_BORDER =
-            new CompoundBorder(new MatteBorder(0, 0, 1, 0, Color.BLACK),
-                    new MatteBorder(3, 3, 3, 3, Configuration.getInstance()
-                            .getSSSelectedColour()));
-
-    /** Border to use when a cell is highlighted and overlapping cell. */
-    private static final Border HIGHLIGHT_OVERLAP_BORDER =
-            new CompoundBorder(new CompoundBorder(new MatteBorder(0, 0, 1, 0,
-                    Color.BLACK), new MatteBorder(0, 0, 3, 0, Configuration
-                    .getInstance().getSSOverlapColour())), new MatteBorder(3,
-                    3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
-
-    /** Border to use when a cell is selected. */
-    private static final Border FILL_BORDER =
-            new CompoundBorder(new CompoundBorder(new MatteBorder(0, 0, 1, 0,
-                    Color.BLACK), new MatteBorder(0, 0, 3, 0, Configuration
-                    .getInstance().getSSSelectedColour())), new MatteBorder(3,
-                    3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
-
-    /** Border to use when a cell is selected. */
-    private static final Border FILL_OVERLAP_BORDER = HIGHLIGHT_OVERLAP_BORDER;
-
-    /** Border to use for normal cell. No extra information to show. */
-    private static final Border NORMAL_BORDER =
-            new CompoundBorder(new CompoundBorder(new MatteBorder(0, 0, 1, 0,
-                    Color.BLACK), new MatteBorder(0, 0, 3, 0, Configuration
-                    .getInstance().getSSBackgroundColour())), new MatteBorder(
-                    3, 3, 0, 3, Configuration.getInstance()
-                            .getSSBackgroundColour()));
-
-    /** Border to use if cell overlaps with another. */
-    public static final Border OVERLAP_BORDER =
-            new CompoundBorder(new CompoundBorder(new MatteBorder(0, 0, 1, 0,
-                    Color.BLACK), new MatteBorder(0, 0, 3, 0, Configuration
-                    .getInstance().getSSOverlapColour())), new MatteBorder(3,
-                    3, 0, 3, Configuration.getInstance()
-                            .getSSBackgroundColour()));
-
-    /** Border to use for normal cell if there is no strut (abuts prev cell). */
-    public static final Border STRUT_BORDER =
-            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK);
-
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(SpreadsheetCell.class);
 
@@ -168,20 +179,19 @@ public class SpreadsheetCell extends JPanel implements
      *             if trouble with db calls
      */
     public SpreadsheetCell(final Database cellDB, final Cell cell,
-            final CellSelectionListener listener) throws SystemErrorException {
+        final CellSelectionListener listener) throws SystemErrorException {
         db = cellDB;
         cellID = cell.getID();
         setName(this.getClass().getSimpleName());
 
-        ResourceMap rMap =
-                Application.getInstance(OpenSHAPA.class).getContext()
-                        .getResourceMap(SpreadsheetCell.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(SpreadsheetCell.class);
 
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
-        DataCell dc =
-                (DataCell) OpenSHAPA.getProjectController().getDB().getCell(
-                        cellID);
+        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
+            .getCell(
+                cellID);
 
         // Check the selected state of the datacell
         // If it is already selected in the database, we need to inform
@@ -191,9 +201,8 @@ public class SpreadsheetCell extends JPanel implements
 
         cellPanel = new JPanel();
         cellPanel.addMouseListener(this);
-        strut =
-                new Filler(new Dimension(0, 0), new Dimension(0, 0),
-                        new Dimension(Short.MAX_VALUE, 0));
+        strut = new Filler(new Dimension(0, 0), new Dimension(0, 0),
+                new Dimension(Short.MAX_VALUE, 0));
 
         setLayout(new BorderLayout());
         this.add(strut, BorderLayout.NORTH);
@@ -204,6 +213,8 @@ public class SpreadsheetCell extends JPanel implements
         topPanel.addMouseListener(this);
         ord = new JLabel();
         ord.setFont(Configuration.getInstance().getSSLabelFont());
+        ord.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+            new Boolean(true));
         ord.setToolTipText(rMap.getString("ord.tooltip"));
         ord.addMouseListener(this);
         ord.setFocusable(true);
@@ -212,6 +223,8 @@ public class SpreadsheetCell extends JPanel implements
 
         onset = new TimeStampTextField(dc, TimeStampSource.Onset);
         onset.setFont(Configuration.getInstance().getSSLabelFont());
+        onset.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+            new Boolean(true));
         onset.setToolTipText(rMap.getString("onset.tooltip"));
         onset.addFocusListener(this);
         onset.addMouseListener(this);
@@ -219,6 +232,8 @@ public class SpreadsheetCell extends JPanel implements
 
         offset = new TimeStampTextField(dc, TimeStampSource.Offset);
         offset.setFont(Configuration.getInstance().getSSLabelFont());
+        offset.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+            new Boolean(true));
         offset.setToolTipText(rMap.getString("offset.tooltip"));
         offset.addFocusListener(this);
         offset.addMouseListener(this);
@@ -226,6 +241,9 @@ public class SpreadsheetCell extends JPanel implements
 
         dataPanel = new MatrixRootView(dc, null);
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
+        dataPanel.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+            new Boolean(true));
+
         dataPanel.setMatrix(dc.getVal());
         dataPanel.setOpaque(false);
         dataPanel.addFocusListener(this);
@@ -234,7 +252,7 @@ public class SpreadsheetCell extends JPanel implements
 
         // Set the appearance of the spreadsheet cell.
         cellPanel.setBackground(Configuration.getInstance()
-                .getSSBackgroundColour());
+            .getSSBackgroundColour());
         cellPanel.setBorder(HIGHLIGHT_BORDER);
         cellPanel.setLayout(new BorderLayout());
 
@@ -245,12 +263,15 @@ public class SpreadsheetCell extends JPanel implements
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         cellPanel.add(topPanel, BorderLayout.NORTH);
         topPanel.add(ord);
+
         Component strut1 = Box.createHorizontalStrut(TIME_SPACER);
         topPanel.add(strut1);
+
         Component glue = Box.createGlue();
         topPanel.add(glue);
 
         topPanel.add(onset);
+
         Component strut2 = Box.createHorizontalStrut(TIME_SPACER);
         topPanel.add(strut2);
         topPanel.add(offset);
@@ -258,6 +279,7 @@ public class SpreadsheetCell extends JPanel implements
         // Set the apperance of the data panel - add elements for dis6playing
         // the actual data of the panel.
         cellPanel.add(dataPanel, BorderLayout.CENTER);
+
         Dimension d = new Dimension(229, 0);
         stretcher = new Filler(d, d, d);
         cellPanel.add(stretcher, BorderLayout.SOUTH);
@@ -301,9 +323,10 @@ public class SpreadsheetCell extends JPanel implements
      * @throws SystemErrorException
      */
     public long getOnsetTicks() throws SystemErrorException {
-        DataCell dc =
-                (DataCell) OpenSHAPA.getProjectController().getDB().getCell(
-                        cellID);
+        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
+            .getCell(
+                cellID);
+
         return dc.getOnset().getTime();
     }
 
@@ -314,9 +337,10 @@ public class SpreadsheetCell extends JPanel implements
      * @throws SystemErrorException
      */
     public long getOffsetTicks() throws SystemErrorException {
-        DataCell dc =
-                (DataCell) OpenSHAPA.getProjectController().getDB().getCell(
-                        cellID);
+        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
+            .getCell(
+                cellID);
+
         return dc.getOffset().getTime();
     }
 
@@ -324,9 +348,10 @@ public class SpreadsheetCell extends JPanel implements
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
     public long getOrdinal() throws SystemErrorException {
-        DataCell dc =
-                (DataCell) OpenSHAPA.getProjectController().getDB().getCell(
-                        cellID);
+        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
+            .getCell(
+                cellID);
+
         return dc.getOrd();
     }
 
@@ -351,14 +376,16 @@ public class SpreadsheetCell extends JPanel implements
      *            SpreadsheetCell previous to this cell.
      */
     public final void setLayoutPreferredY(final int y,
-            final SpreadsheetCell prev) {
+        final SpreadsheetCell prev) {
         layoutPreferredY = y;
+
         int strutHeight = y;
+
         if (prev != null) {
-            strutHeight -=
-                    (prev.getLayoutPreferredY() + prev
-                            .getLayoutPreferredHeight());
+            strutHeight -= (prev.getLayoutPreferredY()
+                    + prev.getLayoutPreferredHeight());
         }
+
         setOnsetvGap(strutHeight);
     }
 
@@ -393,6 +420,7 @@ public class SpreadsheetCell extends JPanel implements
         Dimension mysize = super.getPreferredSize();
         int myheight = mysize.height;
         myheight -= strut.getHeight();
+
         return myheight;
     }
 
@@ -402,15 +430,16 @@ public class SpreadsheetCell extends JPanel implements
      *
      * @return the maximum size of the cell.
      */
-    @Override
-    public final Dimension getMaximumSize() {
+    @Override public final Dimension getMaximumSize() {
         Dimension mysize = super.getPreferredSize();
-        if (mysize != null
-                && mysize.height < (layoutPreferredHeight + strut.getHeight())) {
-            mysize =
-                    new Dimension(mysize.width, (layoutPreferredHeight + strut
-                            .getHeight()));
+
+        if ((mysize != null)
+                && (mysize.height
+                    < (layoutPreferredHeight + strut.getHeight()))) {
+            mysize = new Dimension(mysize.width,
+                    (layoutPreferredHeight + strut.getHeight()));
         }
+
         return mysize;
     }
 
@@ -420,8 +449,7 @@ public class SpreadsheetCell extends JPanel implements
      *
      * @return the preferred size of the cell.
      */
-    @Override
-    public final Dimension getPreferredSize() {
+    @Override public final Dimension getPreferredSize() {
         return getMaximumSize();
     }
 
@@ -431,8 +459,7 @@ public class SpreadsheetCell extends JPanel implements
      *
      * @return the minimum size of the cell.
      */
-    @Override
-    public final Dimension getMinimumSize() {
+    @Override public final Dimension getMinimumSize() {
         return getMaximumSize();
     }
 
@@ -455,31 +482,34 @@ public class SpreadsheetCell extends JPanel implements
      *            cell is selected, false otherwise.
      */
     public void selectCellInDB(final boolean sel) {
+
         // Set the selection within the database.
         try {
             Cell cell = db.getCell(cellID);
             DataCell dcell = null;
+
             if (cell instanceof DataCell) {
                 dcell = (DataCell) db.getCell(cell.getID());
             } else {
-                dcell =
-                        (DataCell) db.getCell(((ReferenceCell) cell)
-                                .getTargetID());
+                dcell = (DataCell) db.getCell(((ReferenceCell) cell)
+                        .getTargetID());
             }
+
             dcell.setSelected(sel);
             cell.getDB().replaceCell(dcell);
 
             if (sel) {
+
                 // method names don't reflect usage - we didn't really create
                 // this cell just now.
                 OpenSHAPA.getProjectController().setLastCreatedColId(
-                        cell.getItsColID());
+                    cell.getItsColID());
                 OpenSHAPA.getProjectController().setLastSelectedCellId(
-                        cell.getID());
+                    cell.getID());
                 OpenSHAPA.getDataController().setFindTime(
-                        dcell.getOnset().getTime());
+                    dcell.getOnset().getTime());
                 OpenSHAPA.getDataController().setFindOffsetField(
-                        dcell.getOffset().getTime());
+                    dcell.getOffset().getTime());
             }
         } catch (SystemErrorException e) {
             logger.error("Failed selected cell in SpreadsheetCell.", e);
@@ -500,12 +530,14 @@ public class SpreadsheetCell extends JPanel implements
 
         // Update the visual representation of the SpreadsheetCell.
         if (highlighted) {
+
             if (cellOverlap) {
                 cellPanel.setBorder(HIGHLIGHT_OVERLAP_BORDER);
             } else {
                 cellPanel.setBorder(HIGHLIGHT_BORDER);
             }
         } else {
+
             if (cellOverlap) {
                 cellPanel.setBorder(OVERLAP_BORDER);
             } else {
@@ -525,9 +557,11 @@ public class SpreadsheetCell extends JPanel implements
      * @return True if the cell is filled, false otherwise.
      */
     public boolean isFilled() {
+
         if (!highlighted && selected) {
             return true;
         }
+
         return false;
     }
 
@@ -545,21 +579,25 @@ public class SpreadsheetCell extends JPanel implements
 
         // Update the visual representation of the SpreadsheetCell.
         if (selected) {
+
             if (cellOverlap) {
                 cellPanel.setBorder(FILL_OVERLAP_BORDER);
             } else {
                 cellPanel.setBorder(FILL_BORDER);
             }
+
             cellPanel.setBackground(Configuration.getInstance()
-                    .getSSSelectedColour());
+                .getSSSelectedColour());
         } else {
+
             if (cellOverlap) {
                 cellPanel.setBorder(OVERLAP_BORDER);
             } else {
                 cellPanel.setBorder(NORMAL_BORDER);
             }
+
             cellPanel.setBackground(Configuration.getInstance()
-                    .getSSBackgroundColour());
+                .getSSBackgroundColour());
         }
     }
 
@@ -575,15 +613,15 @@ public class SpreadsheetCell extends JPanel implements
      * ExternalDataCellListener.
      */
     public void DCellChanged(final Database db, final long colID,
-            final long cellID, final boolean ordChanged, final int oldOrd,
-            final int newOrd, final boolean onsetChanged,
-            final TimeStamp oldOnset, final TimeStamp newOnset,
-            final boolean offsetChanged, final TimeStamp oldOffset,
-            final TimeStamp newOffset, final boolean valChanged,
-            final Matrix oldVal, final Matrix newVal,
-            final boolean selectedChanged, final boolean oldSelected,
-            final boolean newSelected, final boolean commentChanged,
-            final String oldComment, final String newComment) {
+        final long cellID, final boolean ordChanged, final int oldOrd,
+        final int newOrd, final boolean onsetChanged,
+        final TimeStamp oldOnset, final TimeStamp newOnset,
+        final boolean offsetChanged, final TimeStamp oldOffset,
+        final TimeStamp newOffset, final boolean valChanged,
+        final Matrix oldVal, final Matrix newVal,
+        final boolean selectedChanged, final boolean oldSelected,
+        final boolean newSelected, final boolean commentChanged,
+        final String oldComment, final String newComment) {
 
         if (ordChanged) {
             setOrdinal(newOrd);
@@ -612,7 +650,7 @@ public class SpreadsheetCell extends JPanel implements
      * Called if the DataCell of interest is deleted.
      */
     public void DCellDeleted(final Database db, final long colID,
-            final long cellID) {
+        final long cellID) {
         // TODO - Figure out how to work with cells that are deleted.
     }
 
@@ -646,9 +684,8 @@ public class SpreadsheetCell extends JPanel implements
         boolean contSel = (me.getModifiers() & ActionEvent.SHIFT_MASK) != 0;
 
         Class source = me.getSource().getClass();
-        boolean isEditorSrc =
-                (source.equals(TimeStampTextField.class) || (source
-                        .equals(MatrixRootView.class)));
+        boolean isEditorSrc = (source.equals(TimeStampTextField.class)
+                || (source.equals(MatrixRootView.class)));
 
         // User has clicked in magic spot, without modifier. Clear
         // currently selected cells and select this cell.
@@ -656,6 +693,7 @@ public class SpreadsheetCell extends JPanel implements
             ord.requestFocus();
             cellSelL.clearCellSelection();
             setSelected(!isSelected());
+
             if (isSelected()) {
                 cellSelL.addCellToSelection(this);
             }
@@ -665,6 +703,7 @@ public class SpreadsheetCell extends JPanel implements
         } else if (groupSel && !contSel) {
             ord.requestFocus();
             setSelected(!isSelected());
+
             if (isSelected()) {
                 cellSelL.addCellToSelection(this);
             }
@@ -678,6 +717,7 @@ public class SpreadsheetCell extends JPanel implements
             // User has clicked somewhere in the cell without modifier. This
             // cell needs to be highlighted.
         } else {
+
             // BugzID:320 - Deselect cells before selected cell contents.
             cellSelL.clearCellSelection();
             setHighlighted(true);
@@ -710,9 +750,10 @@ public class SpreadsheetCell extends JPanel implements
      *            The focus event that triggered this action.
      */
     public void focusGained(final FocusEvent e) {
+
         if (highlighted
-                && (cellPanel.getBorder().equals(NORMAL_BORDER) || cellPanel
-                        .getBorder().equals(OVERLAP_BORDER))) {
+                && (cellPanel.getBorder().equals(NORMAL_BORDER)
+                    || cellPanel.getBorder().equals(OVERLAP_BORDER))) {
             selectCellInDB(true);
         }
     }
@@ -724,6 +765,7 @@ public class SpreadsheetCell extends JPanel implements
      *            The focus event that triggered this action.
      */
     public void focusLost(final FocusEvent e) {
+
         // BugzID: 718 - Make sure content is deselected.
         dataPanel.select(0, 0);
     }
@@ -732,17 +774,15 @@ public class SpreadsheetCell extends JPanel implements
      * @return True if this matrix view is the current focus owner, false
      *         otherwise.
      */
-    @Override
-    public boolean isFocusOwner() {
-        return (onset.isFocusOwner() || offset.isFocusOwner() || dataPanel
-                .isFocusOwner());
+    @Override public boolean isFocusOwner() {
+        return (onset.isFocusOwner() || offset.isFocusOwner()
+                || dataPanel.isFocusOwner());
     }
 
     /**
      * Request to focus this cell.
      */
-    @Override
-    public void requestFocus() {
+    @Override public void requestFocus() {
         dataPanel.requestFocus();
     }
 
@@ -763,6 +803,7 @@ public class SpreadsheetCell extends JPanel implements
      */
     public void setOnsetProcessed(final boolean onsetProcessed) {
         this.onsetProcessed = onsetProcessed;
+
         if (!onsetProcessed) {
             setStrutHeight(0);
         }
@@ -784,13 +825,15 @@ public class SpreadsheetCell extends JPanel implements
      * Set the strut height for the SpreadsheetCell.
      */
     private void setStrutHeight(final int height) {
+
         if (height == 0) {
             strut.setBorder(null);
         } else {
             strut.setBorder(STRUT_BORDER);
         }
+
         strut.changeShape(new Dimension(0, height), new Dimension(0, height),
-                new Dimension(Short.MAX_VALUE, height));
+            new Dimension(Short.MAX_VALUE, height));
         validate();
     }
 
@@ -805,12 +848,14 @@ public class SpreadsheetCell extends JPanel implements
         cellOverlap = overlap;
 
         if (cellOverlap) {
+
             if (highlighted) {
                 cellPanel.setBorder(HIGHLIGHT_OVERLAP_BORDER);
             } else {
                 cellPanel.setBorder(OVERLAP_BORDER);
             }
         } else {
+
             if (highlighted) {
                 cellPanel.setBorder(HIGHLIGHT_BORDER);
             } else {
@@ -831,17 +876,19 @@ public class SpreadsheetCell extends JPanel implements
      *
      * @param g
      */
-    @Override
-    public void paint(final Graphics g) {
+    @Override public void paint(final Graphics g) {
         // BugzID:474 - Set the size at paint time - somewhere else may have
         // altered the font.
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-          RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_RENDERING,
-          RenderingHints.VALUE_RENDER_QUALITY);
+        /*
+         * Graphics2D g2 = (Graphics2D) g;
+         * g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+         * RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+         * g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+         * RenderingHints.VALUE_RENDER_QUALITY);
+         *
+         */
 
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
-        super.paint(g2);
+        super.paint(g);
     }
 }
