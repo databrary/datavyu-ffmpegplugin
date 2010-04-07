@@ -211,6 +211,10 @@ public final class OpenSHAPAView extends FrameView
         newCellRightMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_R, keyMask));
 
+        // Set the show spreadsheet accelrator to F5.
+        showSpreadsheetMenuItem
+                .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+
         if (panel != null) {
             panel.deregisterListeners();
             panel.removeFileDropEventListener(this);
