@@ -833,6 +833,7 @@ public class SpreadsheetCell extends JPanel implements
     public void paint(final Graphics g) {
         // BugzID:474 - Set the size at paint time - somewhere else may have
         // altered the font.
+
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
         super.paint(g);
     }
