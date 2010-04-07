@@ -48,6 +48,8 @@ import org.openshapa.views.continuous.PluginManager;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 
 
 /**
@@ -77,7 +79,6 @@ public final class OpenSHAPA extends SingleFrameApplication
 
     /** All the supported platforms that OpenSHAPA runs on. */
     public enum Platform {
-
         /** Generic Mac platform. I.e. Tiger, Leopard, Snow Leopard. */
         MAC,
 
@@ -792,7 +793,7 @@ public final class OpenSHAPA extends SingleFrameApplication
             } catch (UnsupportedLookAndFeelException ulafe) {
                 System.err.println("Unsupporter look and feel exception");
             }
-        }
+        }        
 
         launch(OpenSHAPA.class, args);
     }

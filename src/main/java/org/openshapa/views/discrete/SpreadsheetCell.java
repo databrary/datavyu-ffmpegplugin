@@ -201,6 +201,7 @@ public class SpreadsheetCell extends JPanel implements
         topPanel = new JPanel();
         topPanel.addMouseListener(this);
         ord = new JLabel();
+        ord.setFont(Configuration.getInstance().getSSLabelFont());
         ord.setToolTipText(rMap.getString("ord.tooltip"));
         ord.addMouseListener(this);
         ord.setFocusable(true);
@@ -208,12 +209,14 @@ public class SpreadsheetCell extends JPanel implements
         setOrdinal(dc.getOrd());
 
         onset = new TimeStampTextField(dc, TimeStampSource.Onset);
+        onset.setFont(Configuration.getInstance().getSSLabelFont());
         onset.setToolTipText(rMap.getString("onset.tooltip"));
         onset.addFocusListener(this);
         onset.addMouseListener(this);
         onset.setName("onsetTextField");
 
         offset = new TimeStampTextField(dc, TimeStampSource.Offset);
+        offset.setFont(Configuration.getInstance().getSSLabelFont());
         offset.setToolTipText(rMap.getString("offset.tooltip"));
         offset.addFocusListener(this);
         offset.addMouseListener(this);
