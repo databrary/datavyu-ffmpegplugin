@@ -26,6 +26,12 @@ public final class ConfigProperties implements Serializable {
     /** The spreadsheet foreground colour. */
     private Color spreadsheetForegroundColour;
 
+    /** The foreground colour of the spreadsheet ordinal. */
+    private Color spreadsheetOrdinalForeground;
+
+    /** The foreground colour of the spreadsheet ordinal. */
+    private Color spreadsheetTimestampForeground;
+
     /** The spreadsheet selection colour. */
     private Color spreadsheetSelectedColour;
 
@@ -122,6 +128,40 @@ public final class ConfigProperties implements Serializable {
      */
     public Color getSSForegroundColour() {
         return spreadsheetForegroundColour;
+    }
+
+    /**
+     * Sets the spreadsheet ordinal foreground colour.
+     *
+     * @param newColour
+     *            The new colour to use for the spreadsheet foreground.
+     */
+    public void setSSOrdinalColour(final Color newColour) {
+        spreadsheetOrdinalForeground = newColour;
+    }
+
+    /**
+     * @return The spreadsheet ordinal foreground colour.
+     */
+    public Color getSSOrdinalColour() {
+        return spreadsheetOrdinalForeground;
+    }
+
+     /**
+     * Sets the spreadsheet timestamp foreground colour.
+     *
+     * @param newColour
+     *            The new colour to use for the spreadsheet foreground.
+     */
+    public void setSSTimestampColour(final Color newColour) {
+        spreadsheetTimestampForeground = newColour;
+    }
+
+    /**
+     * @return The spreadsheet timestamp foreground colour.
+     */
+    public Color getSSTimestampeColour() {
+        return spreadsheetTimestampForeground;
     }
 
     /**

@@ -38,10 +38,16 @@ public final class Configuration {
     private static final float LABEL_FONT_SIZE = 12;
 
     /** The default spreadsheet background colour. */
-    private static final Color DEFAULT_BACKGROUND = Color.WHITE;
+    private static final Color DEFAULT_BACKGROUND = new Color(249, 249, 249);
 
     /** The default spreadsheet foreground colour. */
-    private static final Color DEFAULT_FOREGROUND = Color.BLACK;
+    private static final Color DEFAULT_FOREGROUND = new Color(58, 58, 58);
+
+    /** The default spreadsheet ordinal foreground colour. */
+    private static final Color DEFAULT_ORDINAL = new Color(175, 175, 175);
+
+    /** The default spreadsheet time stamp foreground colour. */
+    private static final Color DEFAULT_TIMESTAMP = new Color(90, 90, 90);
 
     /** The default spreadsheet selected colour. */
     private static final Color DEFAULT_SELECTED = new Color(176, 197, 227);
@@ -105,13 +111,17 @@ public final class Configuration {
                 + " can't be loaded. Using default font");
         }
 
+        properties.setSSOrdinalColour(DEFAULT_ORDINAL);
+        properties.setSSTimestampColour(DEFAULT_TIMESTAMP);
+        properties.setSSBackgroundColour(DEFAULT_BACKGROUND);
+        properties.setSSForegroundColour(DEFAULT_FOREGROUND);
+
         // Properties not loaded from disk - initalise to default and save.
         if (properties == null) {
             properties = new ConfigProperties();
             properties.setSSDataFont(DEFAULT_FONT);
             properties.setSSLabelFont(LABEL_FONT);
-            properties.setSSBackgroundColour(DEFAULT_BACKGROUND);
-            properties.setSSForegroundColour(DEFAULT_FOREGROUND);
+
             properties.setSSSelectedColour(DEFAULT_SELECTED);
             properties.setSSOverlapColour(DEFAULT_OVERLAP);
             properties.setMixerInterfaceNormalCarriageColour(
@@ -248,6 +258,44 @@ public final class Configuration {
      */
     public Color getSSForegroundColour() {
         return properties.getSSForegroundColour();
+    }
+
+    /**
+     * Sets and saves (to the config file) the ordinal foreground colour of the
+     * spreadsheet.
+     *
+     * @param colour
+     *            The new colour to use for the spreadsheet ordinal foreground.
+     */
+    public void setSSOrdinalColour(final Color colour) {
+        properties.setSSOrdinalColour(colour);
+        save();
+    }
+
+    /**
+     * @return The ordinal foreground colour of the spreadsheet.
+     */
+    public Color getSSOrdinalColour() {
+        return properties.getSSOrdinalColour();
+    }
+
+    /**
+     * Sets and saves (to the config file) the ordinal foreground colour of the
+     * spreadsheet.
+     *
+     * @param colour
+     *            The new colour to use for the spreadsheet ordinal foreground.
+     */
+    public void setSSTimestampColour(final Color colour) {
+        properties.setSSTimestampColour(colour);
+        save();
+    }
+
+    /**
+     * @return The ordinal foreground colour of the spreadsheet.
+     */
+    public Color getSSTimestampColour() {
+        return properties.getSSTimestampeColour();
     }
 
     /**

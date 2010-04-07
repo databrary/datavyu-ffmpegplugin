@@ -57,14 +57,15 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
     /** Border to use when a cell is highlighted. */
     private static final Border HIGHLIGHT_BORDER = new CompoundBorder(
-            new MatteBorder(0, 0, 1, 0, Color.BLACK),
+            new MatteBorder(0, 0, 1, 0, new Color(175, 175, 175)),
             new MatteBorder(3, 3, 3, 3,
                 Configuration.getInstance().getSSSelectedColour()));
 
     /** Border to use when a cell is highlighted and overlapping cell. */
     private static final Border HIGHLIGHT_OVERLAP_BORDER = new CompoundBorder(
-            new CompoundBorder(new MatteBorder(0, 0, 1, 0,
-                    Color.BLACK),
+            new CompoundBorder(
+                new MatteBorder(0, 0, 1, 0,
+                    new Color(175, 175, 175)),
                 new MatteBorder(0, 0, 3, 0,
                     Configuration.getInstance().getSSOverlapColour())),
             new MatteBorder(3,
@@ -72,8 +73,9 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
     /** Border to use when a cell is selected. */
     private static final Border FILL_BORDER = new CompoundBorder(
-            new CompoundBorder(new MatteBorder(0, 0, 1, 0,
-                    Color.BLACK),
+            new CompoundBorder(
+                new MatteBorder(0, 0, 1, 0,
+                    new Color(175, 175, 175)),
                 new MatteBorder(0, 0, 3, 0,
                     Configuration.getInstance().getSSSelectedColour())),
             new MatteBorder(3,
@@ -84,8 +86,9 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
     /** Border to use for normal cell. No extra information to show. */
     private static final Border NORMAL_BORDER = new CompoundBorder(
-            new CompoundBorder(new MatteBorder(0, 0, 1, 0,
-                    Color.BLACK),
+            new CompoundBorder(
+                new MatteBorder(0, 0, 1, 0,
+                    new Color(175, 175, 175)),
                 new MatteBorder(0, 0, 3, 0,
                     Configuration.getInstance().getSSBackgroundColour())),
             new MatteBorder(
@@ -94,8 +97,9 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
     /** Border to use if cell overlaps with another. */
     public static final Border OVERLAP_BORDER = new CompoundBorder(
-            new CompoundBorder(new MatteBorder(0, 0, 1, 0,
-                    Color.BLACK),
+            new CompoundBorder(
+                new MatteBorder(0, 0, 1, 0,
+                    new Color(175, 175, 175)),
                 new MatteBorder(0, 0, 3, 0,
                     Configuration.getInstance().getSSOverlapColour())),
             new MatteBorder(3,
@@ -103,7 +107,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
     /** Border to use for normal cell if there is no strut (abuts prev cell). */
     public static final Border STRUT_BORDER = BorderFactory.createMatteBorder(0,
-            0, 1, 0, Color.BLACK);
+            0, 1, 0, new Color(175, 175, 175));
 
     /** The panel that displays the cell. */
     private JPanel cellPanel;
@@ -213,6 +217,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
         topPanel.addMouseListener(this);
         ord = new JLabel();
         ord.setFont(Configuration.getInstance().getSSLabelFont());
+        ord.setForeground(Configuration.getInstance().getSSOrdinalColour());
         ord.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
             new Boolean(true));
         ord.setToolTipText(rMap.getString("ord.tooltip"));
@@ -223,6 +228,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
         onset = new TimeStampTextField(dc, TimeStampSource.Onset);
         onset.setFont(Configuration.getInstance().getSSLabelFont());
+        onset.setForeground(Configuration.getInstance().getSSTimestampColour());
         onset.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
             new Boolean(true));
         onset.setToolTipText(rMap.getString("onset.tooltip"));
@@ -232,6 +238,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
         offset = new TimeStampTextField(dc, TimeStampSource.Offset);
         offset.setFont(Configuration.getInstance().getSSLabelFont());
+        offset.setForeground(Configuration.getInstance()
+            .getSSTimestampColour());
         offset.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
             new Boolean(true));
         offset.setToolTipText(rMap.getString("offset.tooltip"));
@@ -241,6 +249,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
         dataPanel = new MatrixRootView(dc, null);
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
+        dataPanel.setForeground(Configuration.getInstance()
+            .getSSForegroundColour());
         dataPanel.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
             new Boolean(true));
 
