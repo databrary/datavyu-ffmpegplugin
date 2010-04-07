@@ -2,6 +2,7 @@ package org.openshapa.uitests;
 
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -15,6 +16,7 @@ import org.openshapa.util.UIImageUtils;
 import org.openshapa.util.UIUtils;
 
 import org.openshapa.views.discrete.SpreadsheetPanel;
+
 import org.testng.Assert;
 
 import org.testng.annotations.Test;
@@ -24,6 +26,7 @@ import org.testng.annotations.Test;
  * Test the visual aspects of cells.
  */
 public final class UIVisualCellTest extends OpenSHAPATestClass {
+
     /**
      * Checks if multiline text wrapping is working.
      * @throws IOException if can't load image file
@@ -57,11 +60,11 @@ public final class UIVisualCellTest extends OpenSHAPATestClass {
         String root = System.getProperty("testPath");
         File refImageFile = new File(root + "/ui/multiline.png");
 
-        BufferedImage componentImage = UIImageUtils.captureAsScreenshot(cell.component());
+        BufferedImage componentImage = UIImageUtils.captureAsScreenshot(
+                cell.component());
 
-        if (!Platform.isOSX()) {
-            Assert.assertTrue(UIImageUtils.areImagesEqual(componentImage, refImageFile));
-        }
+        Assert.assertTrue(UIImageUtils.areImagesEqual(componentImage,
+                refImageFile));
     }
 
 }

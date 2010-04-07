@@ -771,7 +771,6 @@ public final class OpenSHAPA extends SingleFrameApplication
      *            The command line arguments passed to OpenSHAPA.
      */
     public static void main(final String[] args) {
-
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
 
@@ -793,7 +792,7 @@ public final class OpenSHAPA extends SingleFrameApplication
             } catch (UnsupportedLookAndFeelException ulafe) {
                 System.err.println("Unsupporter look and feel exception");
             }
-        }        
+        }
 
         launch(OpenSHAPA.class, args);
     }

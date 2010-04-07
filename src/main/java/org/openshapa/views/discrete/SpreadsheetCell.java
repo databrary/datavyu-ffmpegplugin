@@ -39,6 +39,8 @@ import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 /**
  * Visual representation of a spreadsheet cell.
@@ -828,8 +830,13 @@ public class SpreadsheetCell extends JPanel implements
     public void paint(final Graphics g) {
         // BugzID:474 - Set the size at paint time - somewhere else may have
         // altered the font.
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+          RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+          RenderingHints.VALUE_RENDER_QUALITY);
 
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
-        super.paint(g);
+        super.paint(g2);
     }
 }
