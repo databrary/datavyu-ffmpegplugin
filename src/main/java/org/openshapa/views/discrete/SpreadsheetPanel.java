@@ -87,11 +87,20 @@ implements ExternalColumnListListener, ComponentListener,
     /** Default height for the viewport if no cells yet. */
     private static final int DEFAULT_HEIGHT = 50;
 
+    /** To use when navigating left. */
+    static final int LEFT_DIR = -1;
+
+    /** To use when navigating right. */
+    static final int RIGHT_DIR = 1;
+
     /** New variable button to be added to the column header panel. */
     private JButton newVar = new JButton();
 
     /** The currently highlighted cell. */
     private SpreadsheetCell highlightedCell;
+
+    /** Last selected cell - used as an end point for continous selections. */
+    private SpreadsheetCell lastSelectedCell;
 
     /** List containing listeners interested in file drop events. */
     private final transient List<FileDropEventListener> fileDropListeners;
@@ -169,6 +178,8 @@ implements ExternalColumnListListener, ComponentListener,
         // Enable drag and drop support.
         setDropTarget(new DropTarget(this, new SSDropTarget()));
         fileDropListeners = new LinkedList<FileDropEventListener>();
+
+        lastSelectedCell = null;
     }
 
     /**
@@ -391,12 +402,6 @@ implements ExternalColumnListListener, ComponentListener,
         sheetLayout.relayoutCells();
         validate();
     }
-
-    /** To use when navigating left. */
-    static final int LEFT_DIR = -1;
-
-    /** To use when navigating right. */
-    static final int RIGHT_DIR = 1;
 
     /**
      * Dispatches the key event to the desired components.
@@ -759,6 +764,60 @@ implements ExternalColumnListListener, ComponentListener,
     }
 
     /**
+     * Adds a series of cells as a continous selection.
+     *
+     * @param cell The cell to use as the end point for the selection.
+     */
+    public void addCellToContinousSelection(final SpreadsheetCell cell) {
+        try {
+            if (lastSelectedCell != null) {
+                DataCell c1 = (DataCell) database
+                                         .getCell(lastSelectedCell.getCellID());
+                DataCell c2 = (DataCell) database.getCell(cell.getCellID());
+
+                // We can only do continous selections in a single column at
+                // at the moment.
+                if (c1.getItsColID() == c2.getItsColID()) {
+                    // Deselect the highlighted cell.
+                    if (highlightedCell != null) {
+                        highlightedCell.setHighlighted(false);
+                        highlightedCell.setSelected(true);
+                        highlightedCell = null;
+                    }
+
+                    for (SpreadsheetColumn col : getColumns()) {
+                        if (c1.getItsColID() == col.getColID()) {
+                            // Perform continous selection.
+                            boolean addToSelection = false;
+                            for (SpreadsheetCell c : col.getCells()) {
+                                if (!addToSelection) {
+                                    c.setSelected(false);
+                                }
+
+                                if (c.equals(cell) || c.equals(lastSelectedCell)) {
+                                    addToSelection = !addToSelection;
+                                    // We always include start and end cells.
+                                    c.setSelected(true);
+                                }
+
+                                if (addToSelection) {
+                                    c.setSelected(true);
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            } else {
+                lastSelectedCell = cell;
+            }
+        } catch (SystemErrorException se) {
+            logger.error("Unable to continous select cells", se);
+        }
+    }
+
+    /**
      * Add a cell to the current selection.
      *
      * @param cell The cell to add to the selection.
@@ -771,6 +830,8 @@ implements ExternalColumnListListener, ComponentListener,
 
             highlightedCell = null;
         }
+
+        lastSelectedCell = cell;
     }
 
     /**
@@ -786,6 +847,7 @@ implements ExternalColumnListListener, ComponentListener,
         }
 
         highlightedCell = cell;
+        lastSelectedCell = cell;
         clearColumnSelection();
     }
 
@@ -794,6 +856,7 @@ implements ExternalColumnListListener, ComponentListener,
      */
     public void clearCellSelection() {
         highlightedCell = null;
+        lastSelectedCell = null;
 
         for (SpreadsheetColumn col : getColumns()) {
             for (SpreadsheetCell cell : col.getCells()) {

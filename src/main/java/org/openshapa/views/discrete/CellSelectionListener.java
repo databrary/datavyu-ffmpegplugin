@@ -13,6 +13,14 @@ public interface CellSelectionListener {
     void addCellToSelection(SpreadsheetCell cell);
 
     /**
+     * Adds the cell and everything in between to the selected
+     * cells.
+     *
+     * @param cell The end point cell to use for the continous selection.
+     */
+    void addCellToContinousSelection(SpreadsheetCell cell);
+
+    /**
      * Sets the currently selected cell.
      *
      * @param cell The cell to use as the highlight.
