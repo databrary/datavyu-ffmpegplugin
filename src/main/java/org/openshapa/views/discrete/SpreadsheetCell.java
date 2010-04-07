@@ -154,7 +154,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * Creates new form SpreadsheetCell.
-     * 
+     *
      * @param cellDB
      *            Database the cell is in
      * @param cell
@@ -281,7 +281,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * Set the ordinal value.
-     * 
+     *
      * @param ord
      *            The new ordinal value to use with this cell.
      */
@@ -291,7 +291,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * Get the onset ticks
-     * 
+     *
      * @return Onset time as a long.
      * @throws SystemErrorException
      */
@@ -304,7 +304,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * Get the offset ticks
-     * 
+     *
      * @return Offset ticks as a long.
      * @throws SystemErrorException
      */
@@ -328,7 +328,7 @@ public class SpreadsheetCell extends JPanel implements
     /**
      * Allow a layout to set a preferred y location for the cell. Set to 0 if
      * layout wants default behaviour. (e.g. Ordinal layout)
-     * 
+     *
      * @param y
      *            Preferred Y location for the visible portion of the cell.
      */
@@ -339,7 +339,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * Allow a layout to set a preferred y location for the cell.
-     * 
+     *
      * @param y
      *            Preferred Y location for the visible portion of the cell.
      * @param prev
@@ -394,7 +394,7 @@ public class SpreadsheetCell extends JPanel implements
     /**
      * Override Maximum size to return the preferred size or the active layouts
      * preferred height, whichever is greater.
-     * 
+     *
      * @return the maximum size of the cell.
      */
     @Override
@@ -412,7 +412,7 @@ public class SpreadsheetCell extends JPanel implements
     /**
      * Override Preferred size to return the maximum size (which takes into
      * account the super.preferred size. See getMaximumSize.
-     * 
+     *
      * @return the preferred size of the cell.
      */
     @Override
@@ -423,7 +423,7 @@ public class SpreadsheetCell extends JPanel implements
     /**
      * Override Minimum size to return the maximum size (which takes into
      * account the super.preferred size. See getMaximumSize.
-     * 
+     *
      * @return the minimum size of the cell.
      */
     @Override
@@ -433,7 +433,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * Set the width of the SpreadsheetCell.
-     * 
+     *
      * @param width
      *            New width of the SpreadsheetCell.
      */
@@ -444,7 +444,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * Mark the cell as selected in the database.
-     * 
+     *
      * @param sel
      *            The selection state to use when marking the cell. True if the
      *            cell is selected, false otherwise.
@@ -484,7 +484,7 @@ public class SpreadsheetCell extends JPanel implements
     /**
      * Set this cell as highlighted, a highlighted cell has a difference
      * appearance to unselected (or fill selected) cell.
-     * 
+     *
      * @param isHighlighted
      *            The highlighted state of the cell, true when the cell is
      *            highlighted false otherwise.
@@ -529,7 +529,7 @@ public class SpreadsheetCell extends JPanel implements
     /**
      * Set this cell as selected, a selected cell has a different appearance to
      * an unselcted one (typically colour).
-     * 
+     *
      * @param sel
      *            The selection state of the cell, when true the cell is
      *            selected false otherwise.
@@ -613,7 +613,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * The action to invoke when the mouse enters this component.
-     * 
+     *
      * @param me
      *            The mouse event that triggered this action.
      */
@@ -622,7 +622,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * The action to invoke when the mouse exits this component.
-     * 
+     *
      * @param me
      *            The mouse event that triggered this action.
      */
@@ -631,15 +631,14 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * The action to invoke when a mouse button is pressed.
-     * 
+     *
      * @param me
      *            The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-        boolean groupSel =
-                ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0 || (me
-                        .getModifiers() & keyMask) != 0);
+        boolean groupSel = (me.getModifiers() & keyMask) != 0;
+        boolean contSel = (me.getModifiers() & ActionEvent.SHIFT_MASK) != 0;
 
         Class source = me.getSource().getClass();
         boolean isEditorSrc =
@@ -648,7 +647,7 @@ public class SpreadsheetCell extends JPanel implements
 
         // User has clicked in magic spot, without modifier. Clear
         // currently selected cells and select this cell.
-        if (!isEditorSrc && !groupSel) {
+        if (!isEditorSrc && !groupSel && !contSel) {
             ord.requestFocus();
             cellSelL.clearCellSelection();
             setSelected(!isSelected());
@@ -658,12 +657,18 @@ public class SpreadsheetCell extends JPanel implements
 
             // User has clicked on editor or magic spot with modifier. Add
             // this cell to the current selection.
-        } else if (groupSel) {
+        } else if (groupSel && !contSel) {
             ord.requestFocus();
             setSelected(!isSelected());
             if (isSelected()) {
                 cellSelL.addCellToSelection(this);
             }
+
+            // User has clicked on editor or magic spot with shift modifier.
+            // Add this cell and everything in between the current selection.
+        } else if (contSel) {
+            ord.requestFocus();
+            cellSelL.addCellToContinousSelection(this);
 
             // User has clicked somewhere in the cell without modifier. This
             // cell needs to be highlighted.
@@ -677,7 +682,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * The action to invoke when a mouse button is released.
-     * 
+     *
      * @param me
      *            The mouse event that triggered this action.
      */
@@ -686,7 +691,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * The action to invoke when a mouse button is clicked.
-     * 
+     *
      * @param me
      *            The mouse event that triggered this action.
      */
@@ -695,7 +700,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * The action to invoke when the focus is gained on this component.
-     * 
+     *
      * @param e
      *            The focus event that triggered this action.
      */
@@ -709,7 +714,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * The action to invoke when the focus is lost from this component.
-     * 
+     *
      * @param e
      *            The focus event that triggered this action.
      */
@@ -746,7 +751,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * Set if onset has been processed. Used in the temporal layout algorithm.
-     * 
+     *
      * @param onsetProcessed
      *            True to mark that the onset has been processed. False
      *            otherwise.
@@ -761,7 +766,7 @@ public class SpreadsheetCell extends JPanel implements
     /**
      * Set the vertical location for the SpreadsheetCell. Sets the
      * onsetProcessed flag also. Used in the temporal layout algorithm.
-     * 
+     *
      * @param vPos
      *            The vertical location in pixels for this cell.
      */
@@ -786,7 +791,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * Set the border of the cell.
-     * 
+     *
      * @param overlap
      *            true if the cell overlaps with the following cell, false
      *            otherwise.
@@ -818,7 +823,7 @@ public class SpreadsheetCell extends JPanel implements
 
     /**
      * Method to call when painting the component.
-     * 
+     *
      * @param g
      */
     @Override

@@ -33,7 +33,7 @@ public final class TimeStampTextField extends JTextField implements
 
     /**
      * Creates a new instance of MatrixV.
-     * 
+     *
      * @param cell
      *            The parent datacell for this spreadsheet cell.
      * @param tsType
