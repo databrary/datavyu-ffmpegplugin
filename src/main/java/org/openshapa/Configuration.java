@@ -28,6 +28,9 @@ public final class Configuration {
     /** The default font to be used by OpenSHAPA. */
     private static final Font DEFAULT_FONT = new Font("Arial", Font.PLAIN, 14);
 
+    /** The default font to be used by OpenSHAPA labels. */
+    private static final Font LABEL_FONT = new Font("Arial", Font.PLAIN, 12);
+
     /** The default spreadsheet background colour. */
     private static final Color DEFAULT_BACKGROUND = Color.WHITE;
 
@@ -87,6 +90,25 @@ public final class Configuration {
      */
     public Font getSSDataFont() {
         return properties.getSSDataFont();
+    }
+
+    /**
+     * Sets and saves (to the config file) the data font to use on the
+     * spreadsheet.
+     *
+     * @param font
+     *            The new data font to use on the spreadsheet.
+     */
+    public void setSSLabelFont(final Font font) {
+        properties.setSSLabelFont(font);
+        save();
+    }
+
+    /**
+     * @return The data font to use for the spreadsheet.
+     */
+    public Font getSSLabelFont() {
+        return properties.getSSLabelFont();
     }
 
     /**
@@ -274,10 +296,25 @@ public final class Configuration {
             logger.error("Unable to load configuration file from dis", e);
         }
 
+//        //Set custom font
+//        Font newFont = null;
+//        String fontFileName = "/fonts/Fontin_Sans_R_45b.otf";
+//
+//        try{
+//           newFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream(fontFileName));
+//           properties.setSSDataFont(newFont.deriveFont(12f));
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            System.err.println(fontFileName + " can't be loaded. Using default font");
+//        }
+        properties.setSSDataFont(DEFAULT_FONT);
+        properties.setSSLabelFont(LABEL_FONT);
+
         // Properties not loaded from disk - initalise to default and save.
         if (properties == null) {
             properties = new ConfigProperties();
             properties.setSSDataFont(DEFAULT_FONT);
+            properties.setSSLabelFont(LABEL_FONT);
             properties.setSSBackgroundColour(DEFAULT_BACKGROUND);
             properties.setSSForegroundColour(DEFAULT_FOREGROUND);
             properties.setSSSelectedColour(DEFAULT_SELECTED);

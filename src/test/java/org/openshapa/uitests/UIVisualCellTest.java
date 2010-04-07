@@ -59,7 +59,9 @@ public final class UIVisualCellTest extends OpenSHAPATestClass {
 
         BufferedImage componentImage = UIImageUtils.captureAsScreenshot(cell.component());
 
-        Assert.assertTrue(UIImageUtils.areImagesEqual(componentImage, refImageFile));
+        if (!Platform.isOSX()) {
+            Assert.assertTrue(UIImageUtils.areImagesEqual(componentImage, refImageFile));
+        }
     }
 
 }

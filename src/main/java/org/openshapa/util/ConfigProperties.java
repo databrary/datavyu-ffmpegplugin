@@ -17,6 +17,9 @@ public final class ConfigProperties implements Serializable {
     /** The spreadsheet data font. */
     private Font spreadsheetDataFont;
 
+    /** The spreadsheet label font. */
+    private Font spreadsheetLabelFont;
+
     /** The spreadsheet background colour. */
     private Color spreadsheetBackgroundColour;
 
@@ -68,6 +71,23 @@ public final class ConfigProperties implements Serializable {
      */
     public Font getSSDataFont() {
         return spreadsheetDataFont;
+    }
+
+    /**
+     * Sets the spreadsheet data font.
+     *
+     * @param font
+     *            The new font to use for spreadsheet data.
+     */
+    public void setSSLabelFont(final Font font) {
+        spreadsheetLabelFont = font;
+    }
+
+    /**
+     * @return The spreadsheet data font.
+     */
+    public Font getSSLabelFont() {
+        return spreadsheetLabelFont;
     }
 
     /**
