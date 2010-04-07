@@ -38,8 +38,8 @@ public final class UIImageUtils {
 
         // CONSTANTS
         // Pixel threshold as a percentage
-        final double PIXEL_THRESHOLD = 0.1;
-        final double ERROR_THRESHOLD = 0.1;
+        final double PIXEL_THRESHOLD = 0.15;
+        final double ERROR_THRESHOLD = 0.15;
         final String tempFolder = System.getProperty("java.io.tmpdir");
         System.err.println("temp: " + tempFolder);
 
