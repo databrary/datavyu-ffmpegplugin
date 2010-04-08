@@ -17,6 +17,7 @@ import junitx.util.PrivateAccessor;
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.OpenSHAPAFrameFixture;
 import org.fest.swing.launcher.ApplicationLauncher;
@@ -92,6 +93,14 @@ public class OpenSHAPATestClass {
         OpenSHAPA.getApplication().closeOpenedWindows();
 
         mainFrameFixture = OpenSHAPAInstance.getFixture();
+
+        //Try and close any filechoosers that are open
+        try {
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.cancel();
+        } catch (Exception e) {
+            //Do nothing
+        }
 
         // Create a new project, this is for the discard changes dialog.
         if (Platform.isOSX()) {
