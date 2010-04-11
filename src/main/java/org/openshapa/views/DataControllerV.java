@@ -1672,6 +1672,19 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void handleCarriageOffsetChangeEvent(final CarriageEvent e) {
 
+        // Look through our data viewers and update the offset
+        for (DataViewer viewer : viewers) {
+            File feed = viewer.getDataFeed();
+
+            /*
+             * Found our data viewer, update the DV offset and the settings
+             * in the project file.
+             */
+            if (feed.getAbsolutePath().equals(e.getTrackId())) {
+                viewer.setOffset(e.getOffset());
+            }
+        }
+
         OpenSHAPA.getProjectController().projectChanged();
         OpenSHAPA.getApplication().updateTitle();
 
