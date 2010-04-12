@@ -1,10 +1,12 @@
 package org.openshapa.uitests;
 
 import java.awt.Frame;
+import java.io.IOException;
 
 import static org.fest.reflect.core.Reflection.method;
 
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 import java.io.File;
 
@@ -21,6 +23,7 @@ import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
+import org.openshapa.util.UIImageUtils;
 
 import org.openshapa.util.UIUtils;
 
@@ -43,7 +46,7 @@ public final class UIBug733Test extends OpenSHAPATestClass {
     /**
      * Test Bug 733.
      */
-    @Test public void testBug733() {
+    @Test public void testBug733() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Open video
@@ -100,6 +103,14 @@ public final class UIBug733Test extends OpenSHAPATestClass {
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
         vidWindow.resizeHeightTo(600);
+        vid.setAlwaysOnTop(true);
+
+        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        vid.toFront();
+        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(
+                vid);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
 
         // 3. Get aspect window dimensions
         int beforeResizeWidth = vidWindow.component().getWidth();
@@ -109,6 +120,13 @@ public final class UIBug733Test extends OpenSHAPATestClass {
         vidWindow.resizeHeightTo(beforeResizeHeight / 4);
 
         //a. Check that ratio remains the same
+        refImageFile = new File(root + "/ui/head_turns150h0t.png");
+        vid.toFront();
+        vidImage = UIImageUtils.captureAsScreenshot(
+                vid);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
+
         Assert.assertTrue(Math.abs(
                 vidWindow.component().getWidth() - (beforeResizeWidth / 4)) < 3,
             "" +
@@ -121,6 +139,13 @@ public final class UIBug733Test extends OpenSHAPATestClass {
         vidWindow.resizeHeightTo(beforeResizeHeight * 3);
 
         //a. Check that ratio remains the same
+        refImageFile = new File(root + "/ui/head_turns450h0t.png");
+        vid.toFront();
+        vidImage = UIImageUtils.captureAsScreenshot(
+                vid);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
+
         Assert.assertTrue(Math.abs(
                 vidWindow.component().getWidth() - (beforeResizeWidth * 3)) < 3,
             "" +

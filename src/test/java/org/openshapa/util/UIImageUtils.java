@@ -2,6 +2,8 @@ package org.openshapa.util;
 
 import java.awt.AWTException;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Rectangle;
 
@@ -22,6 +24,8 @@ import javax.imageio.ImageIO;
 
 import org.testng.Assert;
 
+import quicktime.std.movies.Movie;
+
 
 /**
  * Image utilities.
@@ -30,9 +34,16 @@ import org.testng.Assert;
 public final class UIImageUtils {
 
     /** Maximum distance one pixel can be away from another */
-    public static final double MAX_PIXEL_DISTANCE = Math.sqrt((255*255) + (255*255) + (255*255));
+    public static final double MAX_PIXEL_DISTANCE = Math.sqrt((255 * 255)
+            + (255 * 255) + (255 * 255));
 
-
+    /**
+     * Checks if two images are equal within 15%
+     * @param uiImage image1
+     * @param refFile referenceImageFile
+     * @return true if similar enough
+     * @throws IOException on error reading file
+     */
     public static Boolean areImagesEqual(final BufferedImage uiImage,
         final File refFile) throws IOException {
 
@@ -40,6 +51,23 @@ public final class UIImageUtils {
         // Pixel threshold as a percentage
         final double PIXEL_THRESHOLD = 0.15;
         final double ERROR_THRESHOLD = 0.15;
+
+        return areImagesEqual(uiImage, refFile, PIXEL_THRESHOLD,
+                ERROR_THRESHOLD);
+    }
+
+    /**
+     * Checks if two images are equal within given threshold
+     * @param uiImage image1
+     * @param refFile referenceImageFile
+     * @param pixThreshold pixel threshold
+     * @param errThreshold final error threshold
+     * @return true if similar enough
+     * @throws IOException on error reading file
+     */
+    public static Boolean areImagesEqual(final BufferedImage uiImage,
+        final File refFile, final double pixThreshold,
+        final double errThreshold) throws IOException {
         final String tempFolder = System.getProperty("java.io.tmpdir");
         System.err.println("temp: " + tempFolder);
 
@@ -70,15 +98,15 @@ public final class UIImageUtils {
                 double pixelDistance = pixelDistance(col1, col2);
 
                 // Check if correct within threshold
-                if (pixelDistance > (PIXEL_THRESHOLD * MAX_PIXEL_DISTANCE)) {
+                if (pixelDistance > (pixThreshold * MAX_PIXEL_DISTANCE)) {
                     errorPixels++;
                 }
             }
         }
 
         // Check if number of error pixels > threshold
-        double error = (double)errorPixels / (double)totalPixels;
-        boolean withinThreshold = error < ERROR_THRESHOLD;
+        double error = (double) errorPixels / (double) totalPixels;
+        boolean withinThreshold = error < errThreshold;
         System.err.println("Error=" + error);
 
         if (!withinThreshold) {
@@ -99,7 +127,8 @@ public final class UIImageUtils {
 
         double pixelDistance = Math.sqrt(((r1 - r2) * (r1 - r2))
                 + ((g1 - g2)
-                * (g1 - g2)) + ((b1 - b2) * (b1 - b2)));
+                    * (g1 - g2)) + ((b1 - b2) * (b1 - b2)));
+
         return pixelDistance;
     }
 
@@ -129,12 +158,47 @@ public final class UIImageUtils {
     }
 
     /**
+    * Captures screenshot of component and saves to a file.
+    * @param frame JComponent to capture screenshot
+    * @param saveAs file name
+    */
+    public static void captureAsScreenshot(final Frame frame,
+        final File saveAs) {
+
+        try {
+            Robot robot = new Robot();
+
+            // Create Rectangle around component
+            Point locOnScreen = frame.getLocationOnScreen();
+            Rectangle bounds = frame.getBounds();
+
+            // Compensate for frame boundary
+            locOnScreen.setLocation(locOnScreen.x + frame.getInsets().left,
+                locOnScreen.y + frame.getInsets().top);
+            bounds.setRect(0, 0,
+                bounds.getWidth() - frame.getInsets().left
+                - frame.getInsets().right,
+                bounds.getHeight() - frame.getInsets().top
+                - frame.getInsets().bottom);
+
+            bounds.setLocation(locOnScreen);
+
+            BufferedImage bi = robot.createScreenCapture(bounds);
+            ImageIO.write(bi, "png", saveAs);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
     * Captures screenshot of component nd returns as BufferedImage
     * @param component JComponent to capture screenshot
     * @param saveAs file name
     */
     public static BufferedImage captureAsScreenshot(
-        final JComponent component) {
+        final Component component) {
         BufferedImage bi = null;
 
         try {
@@ -143,6 +207,41 @@ public final class UIImageUtils {
             // Create Rectangle around component
             Point locOnScreen = component.getLocationOnScreen();
             Rectangle bounds = component.getBounds();
+            bounds.setLocation(locOnScreen);
+
+            bi = robot.createScreenCapture(bounds);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+
+        return bi;
+    }
+
+    /**
+    * Captures screenshot of component nd returns as BufferedImage
+    * @param frame JComponent to capture screenshot
+    * @param saveAs file name
+    */
+    public static BufferedImage captureAsScreenshot(
+        final Frame frame) {
+        BufferedImage bi = null;
+
+        try {
+            Robot robot = new Robot();
+
+            // Create Rectangle around component
+            Point locOnScreen = frame.getLocationOnScreen();
+            Rectangle bounds = frame.getBounds();
+
+            // Compensate for frame boundary
+            locOnScreen.setLocation(locOnScreen.x + frame.getInsets().left,
+                locOnScreen.y + frame.getInsets().top);
+            bounds.setRect(0, 0,
+                bounds.getWidth() - frame.getInsets().left
+                - frame.getInsets().right,
+                bounds.getHeight() - frame.getInsets().top
+                - frame.getInsets().bottom);
+
             bounds.setLocation(locOnScreen);
 
             bi = robot.createScreenCapture(bounds);
@@ -178,23 +277,28 @@ public final class UIImageUtils {
             for (int y = 0; y < img1.getHeight(); y++) {
                 i1Color = new Color(img1.getRGB(x, y));
                 i2Color = new Color(img2.getRGB(x, y));
-                //Get normalized difference
-                double normDistance = pixelDistance(i1Color, i2Color) / MAX_PIXEL_DISTANCE * 255;
+
+                // Get normalized difference
+                double normDistance = pixelDistance(i1Color, i2Color)
+                    / MAX_PIXEL_DISTANCE * 255;
 
                 if (normDistance > 0) {
                     System.err.println(normDistance);
                 }
 
-                int color = i1Color.getRGB() & 0x00FFFFFF; // mask away any alpha
+                int color = i1Color.getRGB() & 0x00FFFFFF; // mask away any
+                                                           // alpha
 
-                int mask = (int)normDistance << 24; // shift blue (normed pixelDistance) into alpha bits
+                int mask = (int) normDistance << 24; // shift blue (normed
+                                                     // pixelDistance) into
+                                                     // alpha bits
 
                 color |= mask;
                 result.setRGB(x, y, color);
             }
         }
 
-        return result;        
+        return result;
     }
 
     /**

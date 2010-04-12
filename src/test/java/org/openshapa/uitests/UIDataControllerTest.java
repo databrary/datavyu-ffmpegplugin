@@ -1,6 +1,7 @@
 package org.openshapa.uitests;
 
 import java.awt.Frame;
+import java.io.IOException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,6 +10,7 @@ import static org.fest.reflect.core.Reflection.method;
 
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 import java.io.File;
 
@@ -38,6 +40,7 @@ import org.openshapa.views.continuous.PluginManager;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.openshapa.models.db.TimeStamp;
+import org.openshapa.util.UIImageUtils;
 
 import org.testng.Assert;
 
@@ -612,7 +615,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * When a video finishes playing, hitting play does nothing.
      * I expected it to play again.
      */
-    @Test public void testBug464() {
+    @Test public void testBug464() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -667,6 +670,17 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
+        vidWindow.resizeHeightTo(600);
+        vid.setAlwaysOnTop(true);
+
+        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+
+        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(
+                vid);
+
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
+
         // 2. Fast forward video to end and confirm you've reached end (1min)
         dcf.pressFastForwardButton();
 
@@ -681,6 +695,12 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // Check time
         Assert.assertEquals(dcf.getCurrentTime(), "00:01:00:000");
 
+        vid.setVisible(true);
+        vid.toFront();
+        refImageFile = new File(root + "/ui/head_turns600h1mt.png");
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile, 0.02, 0.1));
+
         // 3. Press play, should start playing again
         dcf.pressPlayButton();
 
@@ -690,6 +710,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             TimeStamp currTS = new TimeStamp(currTime);
             TimeStamp oneMin = new TimeStamp("00:01:00:000");
             Assert.assertTrue(currTS.le(oneMin));
+            Assert.assertFalse(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile, 0.02, 0.1));
         } catch (SystemErrorException ex) {
             Logger.getLogger(UIDataControllerTest.class.getName()).log(
                 Level.SEVERE, null, ex);

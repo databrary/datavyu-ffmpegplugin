@@ -1,12 +1,23 @@
 package org.openshapa.uitests;
 
+import static org.fest.reflect.core.Reflection.method;
+
+import java.awt.Frame;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import javax.swing.filechooser.FileFilter;
 
 import org.fest.swing.core.KeyPressInfo;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.fixture.DataControllerFixture;
+import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
@@ -14,6 +25,9 @@ import org.fest.swing.util.Platform;
 
 import org.openshapa.util.UIImageUtils;
 import org.openshapa.util.UIUtils;
+import org.openshapa.views.DataControllerV;
+import org.openshapa.views.OpenSHAPAFileChooser;
+import org.openshapa.views.continuous.PluginManager;
 
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
@@ -66,5 +80,71 @@ public final class UIVisualCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(UIImageUtils.areImagesEqual(componentImage,
                 refImageFile));
     }
+
+//    Can be deleted
+//    @Test public void testVideoCapture() throws IOException {
+//
+//            System.err.println(new Exception().getStackTrace()[0].getMethodName());
+//
+//        // 1. Get Spreadsheet
+//        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+//        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+//                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+//
+//        // 2. Open Data Viewer Controller and get starting time
+//        mainFrameFixture.clickMenuItemWithPath("Controller",
+//            "Data Viewer Controller");
+//        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+//
+//        final DataControllerFixture dcf = new DataControllerFixture(
+//                mainFrameFixture.robot,
+//                (DataControllerV) mainFrameFixture.dialog().component());
+//
+//        //3. Open track view
+//        dcf.pressShowTracksButton();
+//
+//        // c. Open video
+//        String root = System.getProperty("testPath");
+//        final File videoFile = new File(root + "/ui/head_turns.mov");
+//        Assert.assertTrue(videoFile.exists());
+//
+//        if (Platform.isOSX()) {
+//            final PluginManager pm = PluginManager.getInstance();
+//
+//            GuiActionRunner.execute(new GuiTask() {
+//                    public void executeInEDT() {
+//                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+//                        fc.setVisible(false);
+//
+//                        for (FileFilter f : pm.getPluginFileFilters()) {
+//                            fc.addChoosableFileFilter(f);
+//                        }
+//
+//                        fc.setSelectedFile(videoFile);
+//                        method("openVideo").withParameterTypes(
+//                            OpenSHAPAFileChooser.class).in(
+//                            (DataControllerV) dcf.component()).invoke(fc);
+//                    }
+//                });
+//        } else {
+//            dcf.button("addDataButton").click();
+//
+//            JFileChooserFixture jfcf = dcf.fileChooser();
+//            jfcf.selectFile(videoFile).approve();
+//        }
+//
+//        // 2. Get window
+//        Iterator it = dcf.getDataViewers().iterator();
+//
+//        Frame vid = ((Frame) it.next());
+//        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+//
+//        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+//
+//        String root1 = System.getProperty("testPath");
+//        File refImageFile = new File(root1 + "/ui/temp.png");
+//
+//        UIImageUtils.captureAsScreenshot(vid, refImageFile);
+//    }
 
 }
