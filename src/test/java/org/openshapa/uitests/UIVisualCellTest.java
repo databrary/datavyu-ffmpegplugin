@@ -1,23 +1,13 @@
 package org.openshapa.uitests;
 
-import static org.fest.reflect.core.Reflection.method;
 
-import java.awt.Frame;
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-import javax.swing.filechooser.FileFilter;
 
 import org.fest.swing.core.KeyPressInfo;
-import org.fest.swing.edt.GuiActionRunner;
-import org.fest.swing.edt.GuiTask;
-import org.fest.swing.fixture.DataControllerFixture;
-import org.fest.swing.fixture.FrameFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
@@ -25,9 +15,6 @@ import org.fest.swing.util.Platform;
 
 import org.openshapa.util.UIImageUtils;
 import org.openshapa.util.UIUtils;
-import org.openshapa.views.DataControllerV;
-import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.continuous.PluginManager;
 
 import org.openshapa.views.discrete.SpreadsheetPanel;
 

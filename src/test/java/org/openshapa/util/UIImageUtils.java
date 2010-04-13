@@ -167,8 +167,18 @@ public final class UIImageUtils {
 
         try {
             Robot robot = new Robot();
+            Rectangle bounds = getInternalRectangle(frame);
+            BufferedImage bi = robot.createScreenCapture(bounds);
+            ImageIO.write(bi, "png", saveAs);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-            // Create Rectangle around component
+    public static Rectangle getInternalRectangle(Frame frame) {
+        // Create Rectangle around component
             Point locOnScreen = frame.getLocationOnScreen();
             Rectangle bounds = frame.getBounds();
 
@@ -182,14 +192,7 @@ public final class UIImageUtils {
                 - frame.getInsets().bottom);
 
             bounds.setLocation(locOnScreen);
-
-            BufferedImage bi = robot.createScreenCapture(bounds);
-            ImageIO.write(bi, "png", saveAs);
-        } catch (AWTException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            return bounds;
     }
 
     /**
@@ -230,19 +233,7 @@ public final class UIImageUtils {
             Robot robot = new Robot();
 
             // Create Rectangle around component
-            Point locOnScreen = frame.getLocationOnScreen();
-            Rectangle bounds = frame.getBounds();
-
-            // Compensate for frame boundary
-            locOnScreen.setLocation(locOnScreen.x + frame.getInsets().left,
-                locOnScreen.y + frame.getInsets().top);
-            bounds.setRect(0, 0,
-                bounds.getWidth() - frame.getInsets().left
-                - frame.getInsets().right,
-                bounds.getHeight() - frame.getInsets().top
-                - frame.getInsets().bottom);
-
-            bounds.setLocation(locOnScreen);
+            Rectangle bounds = getInternalRectangle(frame);
 
             bi = robot.createScreenCapture(bounds);
         } catch (AWTException e) {
