@@ -59,7 +59,7 @@ public final class PlaybackV extends OpenSHAPADialog {
     private javax.swing.JButton createNewCell;
 
     /** */
-    private javax.swing.JButton createNewCellSettingOffset;
+    private javax.swing.JButton createNewCellSetOnset;
 
     /** */
     private javax.swing.JButton findButton;
@@ -313,7 +313,7 @@ public final class PlaybackV extends OpenSHAPADialog {
         findButton = new javax.swing.JButton();
         jogBackButton = new javax.swing.JButton();
         stopButton = new javax.swing.JButton();
-        createNewCellSettingOffset = new javax.swing.JButton();
+        createNewCellSetOnset = new javax.swing.JButton();
         jogForwardButton = new javax.swing.JButton();
         setNewCellOffsetButton = new javax.swing.JButton();
         goBackTextField = new javax.swing.JTextField();
@@ -633,25 +633,25 @@ public final class PlaybackV extends OpenSHAPADialog {
         gridButtonPanel.add(findOffsetField, "w 80!, h 45!");
 
         // Create new cell setting offset button
-        createNewCellSettingOffset.addActionListener(new ActionListener() {
+        createNewCellSetOnset.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    createNewCellSetOffsetAction(e);
+                    createNewCellSetOnsetAction(e);
                 }
             });
-        createNewCellSettingOffset.setIcon(resourceMap.getIcon(
+        createNewCellSetOnset.setIcon(resourceMap.getIcon(
                 "createNewCellButton.icon"));
-        createNewCellSettingOffset.setFocusPainted(false);
-        createNewCellSettingOffset.setName("newCellAndOnsetButton");
-        createNewCellSettingOffset.setPressedIcon(new javax.swing.ImageIcon(
+        createNewCellSetOnset.setFocusPainted(false);
+        createNewCellSetOnset.setName("newCellAndOnsetButton");
+        createNewCellSetOnset.setPressedIcon(new javax.swing.ImageIcon(
                 getClass().getResource(
                     "/icons/DataController/eng/"
                     + "create-new-cell-and-set-onset-selected.png")));
-        gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 92!, h 45!");
+        gridButtonPanel.add(createNewCellSetOnset, "span 2, w 92!, h 45!");
 
         // Set new cell offset button
         setNewCellOffsetButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    setNewCellStopTime(e);
+                    setNewCellOffsetTime(e);
                 }
             });
         setNewCellOffsetButton.setIcon(resourceMap.getIcon(
@@ -704,7 +704,7 @@ public final class PlaybackV extends OpenSHAPADialog {
         findButton = new javax.swing.JButton();
         jogBackButton = new javax.swing.JButton();
         stopButton = new javax.swing.JButton();
-        createNewCellSettingOffset = new javax.swing.JButton();
+        createNewCellSetOnset = new javax.swing.JButton();
         jogForwardButton = new javax.swing.JButton();
         setNewCellOffsetButton = new javax.swing.JButton();
         goBackTextField = new javax.swing.JTextField();
@@ -1029,26 +1029,26 @@ public final class PlaybackV extends OpenSHAPADialog {
         findOffsetField.setName("findOffsetLabel");
         gridButtonPanel.add(findOffsetField, "w 80!, h 45!");
 
-        // Create new cell setting offset button
-        createNewCellSettingOffset.addActionListener(new ActionListener() {
+        // Create new cell set onset button
+        createNewCellSetOnset.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    createNewCellSetOffsetAction(e);
+                    createNewCellSetOnsetAction(e);
                 }
             });
-        createNewCellSettingOffset.setIcon(resourceMap.getIcon(
+        createNewCellSetOnset.setIcon(resourceMap.getIcon(
                 "createNewCellButton.icon"));
-        createNewCellSettingOffset.setFocusPainted(false);
-        createNewCellSettingOffset.setName("newCellAndOnsetButton");
-        createNewCellSettingOffset.setPressedIcon(new javax.swing.ImageIcon(
+        createNewCellSetOnset.setFocusPainted(false);
+        createNewCellSetOnset.setName("newCellAndOnsetButton");
+        createNewCellSetOnset.setPressedIcon(new javax.swing.ImageIcon(
                 getClass().getResource(
                     "/icons/DataController/eng/"
                     + "create-new-cell-and-set-onset-selected.png")));
-        gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 95!, h 45!");
+        gridButtonPanel.add(createNewCellSetOnset, "span 2, w 95!, h 45!");
 
         // Set new cell offset button
         setNewCellOffsetButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    setNewCellStopTime(e);
+                    setNewCellOffsetTime(e);
                 }
             });
         setNewCellOffsetButton.setIcon(resourceMap.getIcon(
@@ -1164,7 +1164,7 @@ public final class PlaybackV extends OpenSHAPADialog {
 
     /** Simulates create new cell setting offset button clicked. */
     public void pressCreateNewCellSettingOffset() {
-        createNewCellSettingOffset.doClick();
+        createNewCellSetOnset.doClick();
     }
 
     /** Simulates sync button clicked. */
@@ -1396,26 +1396,26 @@ public final class PlaybackV extends OpenSHAPADialog {
     /**
      * Action to invoke when the user clicks on the new cell set offset button.
      */
-    private void createNewCellSetOffsetAction(final ActionEvent evt) {
+    private void createNewCellSetOnsetAction(final ActionEvent evt) {
         PlaybackEvent event = new PlaybackEvent(this,
                 PlaybackType.NEW_CELL_OFFSET, goTime, onsetTime, offsetTime,
                 evt.getModifiers());
 
         for (PlaybackListener listener : listeners) {
-            listener.newCellOffsetEvent(event);
+            listener.newCellSetOnsetEvent(event);
         }
     }
 
     /**
      * Action to invoke when the user clicks on the new cell onset button.
      */
-    private void setNewCellStopTime(final ActionEvent evt) {
+    private void setNewCellOffsetTime(final ActionEvent evt) {
         PlaybackEvent event = new PlaybackEvent(this,
                 PlaybackType.NEW_CELL_SET_ONSET, goTime, onsetTime, offsetTime,
                 evt.getModifiers());
 
         for (PlaybackListener listener : listeners) {
-            listener.newCellSetOnsetEvent(event);
+            listener.setNewCellOffsetEvent(event);
         }
     }
 

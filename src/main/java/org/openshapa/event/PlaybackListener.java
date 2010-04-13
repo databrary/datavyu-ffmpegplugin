@@ -115,7 +115,7 @@ public interface PlaybackListener {
      *
      * @param The event to handle.
      */
-    void newCellOffsetEvent(PlaybackEvent evt);
+    void setNewCellOffsetEvent(PlaybackEvent evt);
 
     /**
      * New cell button was used.

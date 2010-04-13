@@ -302,7 +302,7 @@ public final class PlaybackController implements PlaybackListener,
         new CreateNewCellC();
     }
 
-    public void newCellOffsetEvent(final PlaybackEvent evt) {
+    public void setNewCellOffsetEvent(final PlaybackEvent evt) {
         new SetNewCellStopTimeC(getCurrentTime());
         setFindOffsetField(getCurrentTime());
     }
