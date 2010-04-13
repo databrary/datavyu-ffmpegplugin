@@ -833,11 +833,6 @@ public final class PlaybackController implements PlaybackListener,
         }
     }
 
-
-    // -------------------------------------------------------------------------
-    // Simulated clicks (for numpad calls)
-    //
-
     /** Simulates play button clicked. */
     public void pressPlay() {
         playbackView.pressPlay();
@@ -959,6 +954,13 @@ public final class PlaybackController implements PlaybackListener,
             mixerControllerV.setPlayRegionEnd(newWindowPlayStart);
         }
 
+    }
+
+    /**
+     * Action to invoke when the user holds shift down.
+     */
+    public void findOffsetAction() {
+        jumpTo(playbackView.getFindOffsetTime());
     }
 
     // ------------------------------------------------------------------------
