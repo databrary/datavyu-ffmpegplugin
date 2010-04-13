@@ -155,12 +155,6 @@ public final class PlaybackController implements PlaybackListener,
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(DataControllerV.class);
 
-    /** Determines whether or not Shift is being held. */
-    private boolean shiftMask = false;
-
-    /** Determines whether or not Control is being held. */
-    private boolean ctrlMask = false;
-
     // -------------------------------------------------------------------------
     //
     //
@@ -257,11 +251,12 @@ public final class PlaybackController implements PlaybackListener,
     public void jogBackEvent(final PlaybackEvent evt) {
         int mul = 1;
 
-        if (shiftMask) {
+        if (evt.getModifiers() == InputEvent.SHIFT_DOWN_MASK) {
             mul = SHIFTJOG;
         }
 
-        if (ctrlMask) {
+        if (evt.getModifiers()
+                == (InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) {
             mul = CTRLSHIFTJOG;
         }
 
@@ -279,11 +274,12 @@ public final class PlaybackController implements PlaybackListener,
     public void jogForwardEvent(final PlaybackEvent evt) {
         int mul = 1;
 
-        if (shiftMask) {
+        if (evt.getModifiers() == InputEvent.SHIFT_DOWN_MASK) {
             mul = SHIFTJOG;
         }
 
-        if (ctrlMask) {
+        if (evt.getModifiers()
+                == (InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) {
             mul = CTRLSHIFTJOG;
         }
 
@@ -437,27 +433,6 @@ public final class PlaybackController implements PlaybackListener,
         playbackModel.setShuttleRate(0);
         playbackModel.setPauseRate(0);
         shuttleDirection = ShuttleDirection.UNDEFINED;
-    }
-
-
-    /**
-     * Tells the Data Controller if shift is being held or not.
-     *
-     * @param shift
-     *            True for shift held; false otherwise.
-     */
-    public void setShiftMask(final boolean shift) {
-        shiftMask = shift;
-    }
-
-    /**
-     * Tells the Data Controller if ctrl is being held or not.
-     *
-     * @param ctrl
-     *            True for ctrl held; false otherwise.
-     */
-    public void setCtrlMask(final boolean ctrl) {
-        ctrlMask = ctrl;
     }
 
     // -------------------------------------------------------------------------
