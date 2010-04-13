@@ -15,10 +15,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.SimpleTimeZone;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -81,10 +83,10 @@ public final class PlaybackV extends OpenSHAPADialog {
     private javax.swing.JPanel gridButtonPanel;
 
     /** */
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel atLabel;
 
     /** */
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel multiplierLabel;
 
     /** */
     private javax.swing.JButton jogBackButton;
@@ -93,7 +95,7 @@ public final class PlaybackV extends OpenSHAPADialog {
     private javax.swing.JButton jogForwardButton;
 
     /** */
-    private javax.swing.JLabel lblSpeed;
+    private javax.swing.JLabel speedLabel;
 
     /** */
     private javax.swing.JButton addDataButton;
@@ -239,8 +241,13 @@ public final class PlaybackV extends OpenSHAPADialog {
      *            The time to use when populating the find field.
      */
     public void setFindTime(final long milliseconds) {
+        assert SwingUtilities.isEventDispatchThread();
         findTextField.setText(CLOCK_FORMAT.format(milliseconds));
         onsetTime = milliseconds;
+    }
+
+    public long getFindTime() {
+        return onsetTime;
     }
 
     /**
@@ -250,9 +257,42 @@ public final class PlaybackV extends OpenSHAPADialog {
      *            The time to use when populating the find field.
      */
     public void setFindOffsetField(final long milliseconds) {
+        assert SwingUtilities.isEventDispatchThread();
         findOffsetField.setText(CLOCK_FORMAT.format(milliseconds));
         offsetTime = milliseconds;
     }
+
+    public long getFindOffsetTime() {
+        return offsetTime;
+    }
+
+    public void setTimestampLabelText(final String text) {
+        assert SwingUtilities.isEventDispatchThread();
+        timestampLabel.setText(text);
+    }
+
+    public void setSpeedLabel(final String text) {
+        assert SwingUtilities.isEventDispatchThread();
+        speedLabel.setText(text);
+    }
+
+    public void setShowTracksButtonIcon(final Icon icon) {
+        assert SwingUtilities.isEventDispatchThread();
+        showTracksButton.setIcon(icon);
+    }
+
+    /**
+     * @param show
+     *            true to show the tracks layout, false otherwise.
+     */
+    public void showTracksPanel(final boolean show) {
+        assert SwingUtilities.isEventDispatchThread();
+        tracksPanel.setVisible(show);
+        tracksPanel.repaint();
+        pack();
+        validate();
+    }
+
 
     /**
      * Initialize the view for Macs.
@@ -281,10 +321,10 @@ public final class PlaybackV extends OpenSHAPADialog {
         syncVideoButton = new javax.swing.JButton();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
-        lblSpeed = new javax.swing.JLabel();
+        speedLabel = new javax.swing.JLabel();
         createNewCell = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        atLabel = new javax.swing.JLabel();
+        multiplierLabel = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
         showTracksButton = new javax.swing.JButton();
         tracksPanel = new javax.swing.JPanel();
@@ -335,19 +375,19 @@ public final class PlaybackV extends OpenSHAPADialog {
         timestampLabel.setName("timestampLabel");
         timestampPanel.add(timestampLabel);
 
-        jLabel1.setText("@");
-        timestampPanel.add(jLabel1);
+        atLabel.setText("@");
+        timestampPanel.add(atLabel);
 
-        lblSpeed.setFont(new Font("Tahoma", Font.BOLD, fontSize));
-        lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1,
-                2));
-        lblSpeed.setName("lblSpeed");
-        lblSpeed.setText("0");
-        timestampPanel.add(lblSpeed);
+        speedLabel.setFont(new Font("Tahoma", Font.BOLD, fontSize));
+        speedLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1,
+                1, 2));
+        speedLabel.setName("lblSpeed");
+        speedLabel.setText("0");
+        timestampPanel.add(speedLabel);
 
-        jLabel2.setFont(new Font("Tahoma", Font.BOLD, fontSize));
-        jLabel2.setText("x");
-        timestampPanel.add(jLabel2);
+        multiplierLabel.setFont(new Font("Tahoma", Font.BOLD, fontSize));
+        multiplierLabel.setText("x");
+        timestampPanel.add(multiplierLabel);
 
         gridButtonPanel.add(timestampPanel, "span 3, pushx, growx");
 
@@ -672,10 +712,10 @@ public final class PlaybackV extends OpenSHAPADialog {
         syncVideoButton = new javax.swing.JButton();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
-        lblSpeed = new javax.swing.JLabel();
+        speedLabel = new javax.swing.JLabel();
         createNewCell = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        atLabel = new javax.swing.JLabel();
+        multiplierLabel = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
         showTracksButton = new javax.swing.JButton();
         tracksPanel = new javax.swing.JPanel();
@@ -727,19 +767,19 @@ public final class PlaybackV extends OpenSHAPADialog {
         timestampLabel.setName("timestampLabel");
         timestampPanel.add(timestampLabel);
 
-        jLabel1.setText("@");
-        timestampPanel.add(jLabel1);
+        atLabel.setText("@");
+        timestampPanel.add(atLabel);
 
-        lblSpeed.setFont(new Font("Tahoma", Font.BOLD, fontSize));
-        lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1,
-                2));
-        lblSpeed.setName("lblSpeed");
-        lblSpeed.setText("0");
-        timestampPanel.add(lblSpeed);
+        speedLabel.setFont(new Font("Tahoma", Font.BOLD, fontSize));
+        speedLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1,
+                1, 2));
+        speedLabel.setName("lblSpeed");
+        speedLabel.setText("0");
+        timestampPanel.add(speedLabel);
 
-        jLabel2.setFont(new Font("Tahoma", Font.BOLD, fontSize));
-        jLabel2.setText("x");
-        timestampPanel.add(jLabel2);
+        multiplierLabel.setFont(new Font("Tahoma", Font.BOLD, fontSize));
+        multiplierLabel.setText("x");
+        timestampPanel.add(multiplierLabel);
 
         gridButtonPanel.add(timestampPanel, "span 3, pushx, growx");
 
@@ -1052,16 +1092,6 @@ public final class PlaybackV extends OpenSHAPADialog {
         setVisible(false);
     }
 
-    /**
-     * @param show
-     *            true to show the tracks layout, false otherwise.
-     */
-    public void showTracksPanel(final boolean show) {
-        tracksPanel.setVisible(show);
-        tracksPanel.repaint();
-        pack();
-        validate();
-    }
 
     // -------------------------------------------------------------------------
     // Simulated clicks (for numpad calls)
@@ -1140,16 +1170,6 @@ public final class PlaybackV extends OpenSHAPADialog {
     /** Simulates sync button clicked. */
     public void pressSyncButton() {
         syncButton.doClick();
-    }
-
-    /** Simulates sync button clicked. */
-    public void pressSyncCtrlButton() {
-        syncCtrlButton.doClick();
-    }
-
-    /** Simulates sync button clicked. */
-    public void pressSyncVideoButton() {
-        syncVideoButton.doClick();
     }
 
     /**
