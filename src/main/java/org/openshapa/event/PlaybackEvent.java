@@ -12,9 +12,10 @@ public final class PlaybackEvent extends EventObject {
 
     /** Enumeration of playback types. */
     public enum PlaybackType {
-        ADD_DATA, SET_CELL_ONSET, SET_CELL_OFFSET, GO_BACK, REWIND, PLAY,
-        FORWARD, SHUTTLE_BACK, STOP, SHUTTLE_FORWARD, FIND, JOG_BACK, PAUSE,
-        JOG_FORWARD, NEW_CELL_SET_ONSET, NEW_CELL_OFFSET, NEW_CELL, SHOW_TRACKS
+        ADD_DATA, SET_CELL_ONSET, SET_CELL_OFFSET, GO_BACK,
+        REWIND, PLAY, FORWARD, SHUTTLE_BACK, STOP, SHUTTLE_FORWARD, FIND,
+        JOG_BACK, PAUSE, JOG_FORWARD, NEW_CELL_SET_ONSET, NEW_CELL_OFFSET,
+        NEW_CELL, SHOW_TRACKS
     }
 
     /** Modifiers associated with this event. */
