@@ -884,6 +884,15 @@ public final class PlaybackController implements PlaybackListener,
         playbackView.pressSyncButton();
     }
 
+    /** Simulates jog back button click. */
+    public void pressJogBackButton() {
+        playbackView.pressJogBackButton();
+    }
+
+    /** Simulates jog forward button click. */
+    public void pressJogForwardButton() {
+        playbackView.pressJogForwardButton();
+    }
 
     /**
      * Populates the find time in the controller.

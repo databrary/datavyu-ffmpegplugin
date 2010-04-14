@@ -49,12 +49,6 @@ public final class PlaybackV extends OpenSHAPADialog {
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
-    /** Determines whether or not Shift is being held. */
-    private boolean shiftMask = false;
-
-    /** Determines whether or not Control is being held. */
-    private boolean ctrlMask = false;
-
     /** */
     private javax.swing.JButton createNewCell;
 
@@ -1170,6 +1164,16 @@ public final class PlaybackV extends OpenSHAPADialog {
     /** Simulates sync button clicked. */
     public void pressSyncButton() {
         syncButton.doClick();
+    }
+
+    /** Simulates jog back button click. */
+    public void pressJogBackButton() {
+        jogBackButton.doClick();
+    }
+
+    /** Simulates jog forward button click. */
+    public void pressJogForwardButton() {
+        jogForwardButton.doClick();
     }
 
     /**
