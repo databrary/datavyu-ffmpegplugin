@@ -209,26 +209,6 @@ public final class PlaybackV extends OpenSHAPADialog {
     }
 
     /**
-     * Tells the Data Controller if shift is being held or not.
-     *
-     * @param shift
-     *            True for shift held; false otherwise.
-     */
-    public void setShiftMask(final boolean shift) {
-        shiftMask = shift;
-    }
-
-    /**
-     * Tells the Data Controller if ctrl is being held or not.
-     *
-     * @param ctrl
-     *            True for ctrl held; false otherwise.
-     */
-    public void setCtrlMask(final boolean ctrl) {
-        ctrlMask = ctrl;
-    }
-
-    /**
      * Populates the find time in the controller.
      *
      * @param milliseconds
