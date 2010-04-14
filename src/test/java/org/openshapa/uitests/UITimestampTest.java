@@ -161,6 +161,20 @@ public final class UITimestampTest extends OpenSHAPATestClass {
         mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
         Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
 
+        // Try multiple deletes on empty
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
+        Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
+        c.onsetTimestamp().selectAll();
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
+        Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
+
+        c.offsetTimestamp().selectAll();
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
+        Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
+
+        // Try multiple deletes on empty
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
+        Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
         c.offsetTimestamp().selectAll();
         mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
         Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
@@ -171,25 +185,41 @@ public final class UITimestampTest extends OpenSHAPATestClass {
         mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
         Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
 
+        // Try multiple deletes on empty
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
+        Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
+        c.onsetTimestamp().selectAll();
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
+        Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
+
         c.offsetTimestamp().selectAll();
         mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
         Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
 
-        // backspace all
+        // Try multiple deletes on empty
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
+        Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
+        c.offsetTimestamp().selectAll();
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
+        Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
+
+        // backspace all, plus extra to test backspacing on empty
         c = cells.elementAt(2);
 
         int tsLength = c.onsetTimestamp().text().length();
-        c.clickToCharPos(SpreadsheetCellFixture.ONSET, tsLength, 1);
+        c.onsetTimestamp().pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_END));
 
-        for (int i = 0; i < (tsLength + 1); i++) {
+        for (int i = 0; i < (tsLength + 5); i++) {
             mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
         }
 
         Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
 
-        c.clickToCharPos(SpreadsheetCellFixture.OFFSET, tsLength, 1);
+        c.offsetTimestamp().pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_END));
 
-        for (int i = 0; i < (tsLength + 1); i++) {
+        for (int i = 0; i < (tsLength + 5); i++) {
             mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_BACK_SPACE);
         }
 
@@ -197,17 +227,19 @@ public final class UITimestampTest extends OpenSHAPATestClass {
 
         // delete key all
         c = cells.elementAt(3);
-        c.clickToCharPos(SpreadsheetCellFixture.ONSET, 0, 1);
+        c.onsetTimestamp().pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_HOME));
 
-        for (int i = 0; i < (tsLength + 1); i++) {
+        for (int i = 0; i < (tsLength + 5); i++) {
             mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
         }
 
         Assert.assertEquals(c.onsetTimestamp().text(), "00:00:00:000");
 
-        c.clickToCharPos(SpreadsheetCellFixture.OFFSET, 0, 1);
+        c.offsetTimestamp().pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_HOME));
 
-        for (int i = 0; i < (tsLength + 1); i++) {
+        for (int i = 0; i < (tsLength + 5); i++) {
             mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_DELETE);
         }
 
