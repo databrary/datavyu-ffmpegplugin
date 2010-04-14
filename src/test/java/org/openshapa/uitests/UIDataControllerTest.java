@@ -308,7 +308,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * resulting in multiple forward shuttle presses being necessary to get
      * a positive playback speed again.
      */
-    @Test public void testBug778() {
+    @Test public void testBug778() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -363,6 +363,16 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
+        vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
+            + vid.getInsets().top);
+        vid.setAlwaysOnTop(true);
+
+        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+
+        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
+
         // 3. Play movie for 5 seconds
         dcf.pressPlayButton();
 
@@ -392,6 +402,10 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         // 4. Check that speed has returned to 0 and time is 0
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
+        vidImage = UIImageUtils.captureAsScreenshot(vid);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
+
         Assert.assertEquals(dcf.getSpeed(), "0");
 
         // 5. Press forward shuttle once and confirm that it's positive
@@ -507,7 +521,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Unpause/play the movie, voila, cannot play the movie
      * using that button anymore.
      */
-    @Test public void testBug798() {
+    @Test public void testBug798() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -561,6 +575,15 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
+            + vid.getInsets().top);
+        vid.setAlwaysOnTop(true);
+
+        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+
+        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
 
         // 2. Shuttle forward to 4x
         dcf.pressPlayButton();
@@ -605,11 +628,17 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // Check that its 0 time and speed
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         Assert.assertEquals(dcf.getSpeed(), "0");
+        vidImage = UIImageUtils.captureAsScreenshot(vid);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
 
         // 5. Press pause and ensure it does nothing
         dcf.pressPauseButton();
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         Assert.assertEquals(dcf.getSpeed(), "0");
+        vidImage = UIImageUtils.captureAsScreenshot(vid);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
     }
 
     /**

@@ -145,7 +145,8 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         // BugzID:753 - Locks the window to the videos aspect ratio.
         if ((aspectRatio > 0.0) && !updatedAspect) {
             int newHeight = getHeight();
-            int newWidth = (int) (getVideoHeight() * aspectRatio) + getInsets().left + getInsets().right;
+            int newWidth = (int) (getVideoHeight() * aspectRatio)
+                + getInsets().left + getInsets().right;
             setSize(newWidth, newHeight);
             invalidate();
             updatedAspect = true;
@@ -404,14 +405,13 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("QTDataViewerDialog"); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override public void windowClosing(
-                    final java.awt.event.WindowEvent evt) {
-                    formWindowClosing(evt);
-                }
-            });
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         pack();
-    } // </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
     /**
      * Action to invoke when the QTDataViewer window is closing (clean itself
