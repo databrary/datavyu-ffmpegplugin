@@ -34,6 +34,8 @@ import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
+import org.openshapa.logging.PlaybackLogging;
+
 import org.openshapa.models.PlaybackModel;
 
 import org.openshapa.util.ClockTimer;
@@ -213,6 +215,7 @@ public final class PlaybackController implements PlaybackListener,
         playbackView = new PlaybackV(OpenSHAPA.getApplication().getMainFrame(),
                 false, mixerControllerV.getTracksPanel());
         playbackView.addPlaybackListener(this);
+        playbackView.addPlaybackListener(new PlaybackLogging());
         playbackView.showTracksPanel(false);
     }
 
