@@ -1,214 +1,94 @@
 package org.openshapa.controllers;
 
 import java.io.File;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import javax.swing.filechooser.FileFilter;
-import org.apache.log4j.Logger;
-import org.openshapa.OpenSHAPA;
-import org.openshapa.project.Project;
-import org.openshapa.util.FileFilters.SHAPAFilter;
-import org.openshapa.util.HashUtils;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.models.project.Project;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * Master controller for handling project and database file saving logic.
  */
-public class SaveC {
+public final class SaveC {
 
-    private static SaveC INSTANCE = new SaveC();
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(SaveC.class);
-    /** Last option used for saving */
-    private FileFilter lastSaveOption;
+    /** The logger for this class. */
+    private final UserMetrix logger = UserMetrix.getInstance(SaveC.class);
 
     /**
-     * Singleton.
+     * Saves only a database to disk.
+     *
+     * @param databaseFile The location to save the database too.
+     * @param database The database to save to disk.
+     *
+     * @throws LogicErrorException If unable to save the database.
      */
-    private SaveC() {}
-
-    /**
-     * @return only instance of this class.
-     */
-    public static SaveC getInstance() {
-        return INSTANCE;
+    public void saveDatabase(final String databaseFile,
+                             final MacshapaDatabase database)
+    throws LogicErrorException {
+        this.saveDatabase(new File(databaseFile), database);
     }
 
     /**
-     * Set the last save option used. This affects the "Save" functionality.
-     * @param saveOption
+     * Saves only a database to disk.
+     *
+     * @param databaseFile The location to save the database too.
+     * @param database The database to save to disk.
+     *
+     * @throws LogicErrorException If unable to save the database.
      */
-    public void setLastSaveOption(FileFilter saveOption) {
-        this.lastSaveOption = saveOption;
-    }
-
-    public FileFilter getLastSaveOption() {
-        if (lastSaveOption == null) {
-            return new SHAPAFilter();
-        }
-        return lastSaveOption;
-    }
-
-    /**
-     * Saves what is being worked on using the last save option.
-     */
-    public void save() {
-        if (lastSaveOption instanceof SHAPAFilter) {
-            saveProject();
-        } else {
-            saveDatabase();
-        }
+    public void saveDatabase(final File databaseFile,
+                             final MacshapaDatabase database)
+    throws LogicErrorException {
+        logger.usage("saving database");
+        SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
+            saveDBC.saveDatabase(databaseFile, database);
     }
 
     /**
-     * Save the currently opened project and database. Enforce database naming
-     * rule: [project name]-[SHA-1(project name).substring(0, 10)].csv
-     * 
+     * Saves an entire project, including database to disk.
+     *
+     * @param projectFile The destination to save the project too.
+     * @param project The project to save to disk.
+     * @param database The database to save to disk.
+     *
+     * @throws LogicErrorException If unable to save the entire project to
+     * disk.
      */
-    public void saveProject() {
-        Project project = OpenSHAPA.getProject();
-        final String projectName = project.getProjectName();
-
-        // Compute the database file name
-        String databaseFileName = projectName;
+    public void saveProject(final File projectFile,
+                            final Project project,
+                            final MacshapaDatabase database)
+    throws LogicErrorException {
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            md.update(projectName.getBytes());
-            byte[] digest = md.digest();
-            String stringDigest = HashUtils.convertToHex(digest);
-            databaseFileName += "-" + stringDigest.substring(0, 10);
-            databaseFileName = databaseFileName.concat(".csv");
-        } catch (NoSuchAlgorithmException ex) {
-            logger.error("Could not get SHA-1 implementation", ex);
-            /* Stop here, this should not happen, but in case it does
-             * don't risk overwriting.\
-             */
-            return;
+            logger.usage("saving project");
+            FileOutputStream fos = new FileOutputStream(projectFile);
+            ZipOutputStream zos = new ZipOutputStream(fos);
+
+            ZipEntry projectEntry = new ZipEntry("project");
+            zos.putNextEntry(projectEntry);
+            new SaveProjectFileC().save(zos, project);
+            zos.closeEntry();
+
+            ZipEntry dbEntry = new ZipEntry("db");
+            zos.putNextEntry(dbEntry);
+            new SaveDatabaseFileC().saveAsCSV(zos, database);
+            zos.closeEntry();
+
+            zos.finish();
+            zos.close();
+
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            logger.error("Unable to find file.", e);
+        } catch (IOException e) {
+            logger.error("Unable to read file.", e);
         }
-
-        // Update the project data
-        project.setDatabaseFile(databaseFileName);
-
-        // Save the database
-        File dbFile = new File(project.getDatabaseDir() + "/" + databaseFileName);
-        new SaveDatabaseC(dbFile);
-
-        // Now save the project
-        new SaveProjectC().save(project.getDatabaseDir() + "/" + projectName);
-
-        // Update the application title
-        OpenSHAPA.getApplication().updateTitle();
     }
-
-    /**
-     * Save what is being worked on as a new project.
-     * @param directory
-     * @param file
-     */
-    public void saveAsProject(final String directory, final String file) {
-        /* First, check if the destination PROJECT file exists. We do not care
-         * if the target database exists or not.
-         */
-        String newProjectName = file;
-        /* Find out the new name of the project, build the output project file
-         * name.
-         */
-        if (newProjectName.endsWith(".shapa")) {
-            int extensionIndex = newProjectName.lastIndexOf(".shapa");
-            newProjectName = newProjectName.substring(0, extensionIndex);
-        }
-        if (newProjectName.length() == 0) {
-            logger.error("Invalid file name supplied.");
-            return;
-        }
-        final String projectFileName = newProjectName.concat(".shapa");
-        File projectFile = new File(directory, projectFileName);
-        /* Do the save if the project file does not exists or if the user 
-         * confirms a file overwrite in the case that the file exists.
-         */
-        boolean doSave = (!projectFile.exists() ||
-                            (projectFile.exists() &&
-                            OpenSHAPA.getApplication().overwriteExisting()));
-        // Stop the save process if user does not want to save.
-        if (!doSave) {
-            return;
-        }
-
-        // We have the new project name, calculate new database file name
-        String databaseFileName = newProjectName;
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            md.update(newProjectName.getBytes());
-            byte[] digest = md.digest();
-            String stringDigest = HashUtils.convertToHex(digest);
-            databaseFileName += "-" + stringDigest.substring(0, 10);
-            databaseFileName = databaseFileName.concat(".csv");
-        } catch (NoSuchAlgorithmException ex) {
-            logger.error("Could not get SHA-1 implementation", ex);
-            /* Stop here, this should not happen, but in case it does
-             * don't risk overwriting.\
-             */
-            return;
-        }
-
-        // Update project information first.
-        Project project = OpenSHAPA.getProject();
-        project.setProjectName(newProjectName);
-        project.setDatabaseDir(directory);
-        project.setDatabaseFile(databaseFileName);
-
-        this.setLastSaveOption(new SHAPAFilter());
-
-        // Save the database
-        new SaveDatabaseC(new File(directory, databaseFileName));
-
-        // Save the project
-        new SaveProjectC().save(directory + "/" + newProjectName);
-    }
-
-    /**
-     * Just save the database.
-     */
-    public void saveDatabase() {
-        Project project = OpenSHAPA.getProject();
-        project.saveProject();
-        new SaveDatabaseC(new File(project.getDatabaseDir(),
-                                   project.getDatabaseFile()));
-    }
-
-    /**
-     * Save what is worked on as a new database
-     * @param directory
-     * @param file
-     * @param saveFormat
-     */
-    public void saveAsDatabase(final String directory, final String file, 
-            final FileFilter saveFormat) {
-        /* Even though the user explicitly chooses to save as a database, we
-         * will still need to update the project information, just in case the
-         * user decides to save as a project. We will only update the project
-         * name. The project name will be the file name minus any extension, if
-         * applicable.
-         */
-        String newProjectName = file;
-        int extensionIndex = file.lastIndexOf(".");
-        if (extensionIndex != -1) {
-            newProjectName = newProjectName.substring(0, extensionIndex);
-        }
-
-        if (newProjectName.length() == 0) {
-            logger.error("Invalid file name supplied.");
-            return;
-        }
-
-        Project project = OpenSHAPA.getProject();
-        project.setProjectName(newProjectName);
-        project.setDatabaseDir(directory);
-        project.setDatabaseFile(file);
-        project.saveProject();
-
-        this.setLastSaveOption(saveFormat);
-
-        new SaveDatabaseC(directory + "/" + file, saveFormat);
-    }
-
 }

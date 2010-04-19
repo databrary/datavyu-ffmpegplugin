@@ -1,84 +1,79 @@
 package org.openshapa.uitests;
 
-import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.Key;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
-import org.uispec4j.utils.KeyUtils;
+import java.awt.event.KeyEvent;
+
+import org.fest.swing.core.KeyPressInfo;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
+
+import org.openshapa.util.UIUtils;
+
+import org.testng.annotations.Test;
+
 
 /**
- * Bug 309 Test
- * The Ok button on dialogs should probably be defaulted
- * (ie. respond to Enter/Return key)
+ * Bug 309 Test The Ok button on dialogs should probably be defaulted (ie.
+ * respond to Enter/Return key)
  */
-public final class UIBug309Test extends OpenSHAPAUISpecTestCase {
+public final class UIBug309Test extends OpenSHAPATestClass {
 
     /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
+     * Different possible cell types.
      */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception on any error
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    static {
-      UISpec4J.init();
-    }
-
-    /**
-     * Different cell variable types.
-     */
-    private static final String [] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
+    private static final String[] VAR_TYPES = {
+            "TEXT", "PREDICATE", "INTEGER", "NOMINAL", "MATRIX", "FLOAT"
         };
 
     /**
-     * Test creating a new variable.
-     * Then try to create variable with same name.
-     * Type is selected randomly since it should not affect this.
-     * @throws java.lang.Exception on any error
+     * Test creating a new variable. Test to see if the user can press enter
+     * rather than having to click on the OK button.
+     *
+     * @throws java.lang.Exception
+     *             on any error
      */
-    public void testEnterInsteadOfClicking() throws Exception {
-        String varName = "textVar";
-        String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
-        String varRadio = varType.toLowerCase();
+    @Test public void testEnterInsteadOfClicking() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2. Create new variable,
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
-        //Instead of clicking, just press "Enter"
-        KeyUtils.pressKey(newVarWindow.getAwtComponent(), Key.ENTER);
-        //check that correct column has been created
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-        assertNotNull(ss.getSpreadsheetColumn(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
-                .equals(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
-                .equals(varType));
-        //check that column has no cells
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
+        String varName = "v";
+        String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
+        String varRadio = varType.toLowerCase() + "TypeButton";
+
+        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+
+        // Create new variable.
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");
+
+        // Find the new variable dialog
+        DialogFixture newVariableDialog = mainFrameFixture.dialog();
+
+        // Check if the new variable dialog is actually visible
+        newVariableDialog.requireVisible();
+
+        // Get the variable value text box
+        JTextComponentFixture variableValueTextBox =
+            newVariableDialog.textBox();
+
+        // The variable value box should have no text in it
+        variableValueTextBox.requireEmpty();
+
+        // It should be editable
+        variableValueTextBox.requireEditable();
+
+        // Type in some text.
+        variableValueTextBox.enterText(varName);
+
+        // Get the radio button for text variables
+        newVariableDialog.radioButton(varRadio).click();
+
+        // Check that it is selected
+        newVariableDialog.radioButton(varRadio).requireSelected();
+
+        // Press the enter key with the text field selected.
+        variableValueTextBox.pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_ENTER));
+
+        // 2. Check that the column has been created
+        ssPanel.panel("headerView").label().text().startsWith(varName);
     }
 }

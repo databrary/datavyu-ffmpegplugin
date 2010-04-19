@@ -2,18 +2,18 @@ package org.openshapa.views.discrete.datavalues;
 
 import java.util.Vector;
 import javax.swing.text.JTextComponent;
-import org.openshapa.db.DataCell;
-import org.openshapa.db.DataValue;
-import org.openshapa.db.FloatDataValue;
-import org.openshapa.db.IntDataValue;
-import org.openshapa.db.Matrix;
-import org.openshapa.db.NominalDataValue;
-import org.openshapa.db.PredDataValue;
-import org.openshapa.db.Predicate;
-import org.openshapa.db.QuoteStringDataValue;
-import org.openshapa.db.SystemErrorException;
-import org.openshapa.db.TextStringDataValue;
-import org.openshapa.db.UndefinedDataValue;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.DataValue;
+import org.openshapa.models.db.FloatDataValue;
+import org.openshapa.models.db.IntDataValue;
+import org.openshapa.models.db.Matrix;
+import org.openshapa.models.db.NominalDataValue;
+import org.openshapa.models.db.PredDataValue;
+import org.openshapa.models.db.Predicate;
+import org.openshapa.models.db.QuoteStringDataValue;
+import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.TextStringDataValue;
+import org.openshapa.models.db.UndefinedDataValue;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**

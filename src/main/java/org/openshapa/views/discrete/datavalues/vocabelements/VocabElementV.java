@@ -1,9 +1,10 @@
 package org.openshapa.views.discrete.datavalues.vocabelements;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.BorderLayout;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.FormalArgument;
-import org.openshapa.db.VocabElement;
+import org.openshapa.models.db.FormalArgument;
+import org.openshapa.models.db.VocabElement;
 import org.openshapa.views.VocabEditorV;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,11 +15,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
-import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.Configuration;
-import org.openshapa.db.MatrixVocabElement;
+import org.openshapa.models.db.MatrixVocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**
@@ -69,8 +68,9 @@ public class VocabElementV extends JPanel {
                 BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY),
                 BorderFactory.createEmptyBorder(3, 0, 3, 0));
 
-    /** The error logger for this class. */
-    private static Logger logger = Logger.getLogger(VocabElementV.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix
+            .getInstance(VocabElementV.class);
 
     public VocabElementV(VocabElement vocabElement, VocabEditorV vev) {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)

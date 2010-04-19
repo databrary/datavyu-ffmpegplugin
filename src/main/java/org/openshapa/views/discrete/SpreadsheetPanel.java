@@ -1,41 +1,109 @@
 package org.openshapa.views.discrete;
 
-import org.openshapa.db.DataCell;
-import org.openshapa.db.DataColumn;
-import org.openshapa.db.Database;
-import org.openshapa.db.ExternalColumnListListener;
-import org.openshapa.db.SystemErrorException;
-import org.openshapa.views.discrete.layouts.SheetLayout;
-import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
-import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
-import org.openshapa.controllers.NewVariableC;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
+
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
-import javax.swing.Box.Filler;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import org.apache.log4j.Logger;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.Box.Filler;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.OpenSHAPA.Platform;
+import org.openshapa.controllers.NewVariableC;
+import org.openshapa.event.component.FileDropEvent;
+import org.openshapa.event.component.FileDropEventListener;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.ExternalColumnListListener;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.ArrayDirection;
+import org.openshapa.views.discrete.layouts.SheetLayout;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
  * OpenSHAPA database as a spreadsheet.
  */
 public final class SpreadsheetPanel extends JPanel
-    implements ExternalColumnListListener, ComponentListener {
+implements ExternalColumnListListener, ComponentListener,
+           CellSelectionListener, ColumnSelectionListener, KeyEventDispatcher {
+
+    /** Scrollable view inserted into the JScrollPane. */
+    private SpreadsheetView mainView;
+
+    /** View showing the Column titles. */
+    private JPanel headerView;
+
+    /** The Database being viewed. */
+    private Database database;
+
+    /** Vector of the Spreadsheetcolumns added to the Spreadsheet. */
+    private Vector<SpreadsheetColumn> columns;
+
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(SpreadsheetPanel.class);
+
+    /** Reference to the spreadsheet layout handler. */
+    private SheetLayout sheetLayout;
+
+    /** Reference to the scrollPane. */
+    private JScrollPane scrollPane;
+
+    /** Strut used to expand the viewport to fill the scrollpane. */
+    private Filler viewportStrut;
+
+    /** Default height for the viewport if no cells yet. */
+    private static final int DEFAULT_HEIGHT = 50;
+
+    /** To use when navigating left. */
+    static final int LEFT_DIR = -1;
+
+    /** To use when navigating right. */
+    static final int RIGHT_DIR = 1;
+
+    /** New variable button to be added to the column header panel. */
+    private JButton newVar = new JButton();
+
+    /** The currently highlighted cell. */
+    private SpreadsheetCell highlightedCell;
+
+    /** Last selected cell - used as an end point for continous selections. */
+    private SpreadsheetCell lastSelectedCell;
+
+    /** List containing listeners interested in file drop events. */
+    private final transient List<FileDropEventListener> fileDropListeners;
 
     /**
      * Constructor.
@@ -44,10 +112,8 @@ public final class SpreadsheetPanel extends JPanel
      * (i.e. Spreadsheet panel) for.
      */
     public SpreadsheetPanel(final Database db) {
-
         setName(this.getClass().getSimpleName());
-
-        this.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
 
         mainView = new SpreadsheetView();
         mainView.setLayout(new BoxLayout(mainView, BoxLayout.X_AXIS));
@@ -56,6 +122,7 @@ public final class SpreadsheetPanel extends JPanel
         headerView.setLayout(new BoxLayout(headerView, BoxLayout.X_AXIS));
         headerView.setBorder(
                       BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+        headerView.setName("headerView");
 
         columns = new Vector<SpreadsheetColumn>();
 
@@ -63,10 +130,6 @@ public final class SpreadsheetPanel extends JPanel
         this.add(scrollPane, BorderLayout.CENTER);
         scrollPane.setViewportView(mainView);
         scrollPane.setColumnHeaderView(headerView);
-        colSelector = new Selector(this);
-        cellSelector = new Selector(this);
-        colSelector.addOther(cellSelector);
-        cellSelector.addOther(colSelector);
 
         // setup strut for the mainView - used when scrollPane is resized
         Dimension d = new Dimension(0, DEFAULT_HEIGHT);
@@ -82,11 +145,12 @@ public final class SpreadsheetPanel extends JPanel
         JPanel rightCorner = new JPanel();
         rightCorner.setBorder(
                       BorderFactory.createMatteBorder(1, 1, 1, 0, Color.BLACK));
-        scrollPane.setCorner(JScrollPane.UPPER_RIGHT_CORNER, rightCorner);
+        scrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER,
+                rightCorner);
 
         // set the database and layout the columns
-        this.setDatabase(db);
-        this.buildColumns();
+        setDatabase(db);
+        buildColumns();
         setLayoutType(SheetLayoutType.Ordinal);
 
         // add a listener for window resize events
@@ -99,7 +163,7 @@ public final class SpreadsheetPanel extends JPanel
         // Set up the add new variable button
         newVar.setBorder(BorderFactory
                          .createMatteBorder(0, 0, 0, 1, Color.black));
-        newVar.setName(rMap.getString("add.name"));
+        newVar.setName("newVarPlusButton");
         newVar.setToolTipText(rMap.getString("add.tooltip"));
 
         ActionMap aMap = Application.getInstance(OpenSHAPA.class)
@@ -107,10 +171,35 @@ public final class SpreadsheetPanel extends JPanel
                                     .getActionMap(SpreadsheetPanel.class, this);
         newVar.setAction(aMap.get("openNewVarMenu"));
         newVar.setText(" + ");
-
         newVar.setSize(newVar.getWidth(),
                        SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
         headerView.add(newVar);
+
+        // Enable drag and drop support.
+        setDropTarget(new DropTarget(this, new SSDropTarget()));
+        fileDropListeners = new LinkedList<FileDropEventListener>();
+
+        lastSelectedCell = null;
+    }
+
+    /**
+     * Registers this column data panel with everything that needs to notify
+     * this class of events.
+     */
+    public void registerListeners() {
+        KeyboardFocusManager m = KeyboardFocusManager
+                                 .getCurrentKeyboardFocusManager();
+        m.addKeyEventDispatcher(this);
+    }
+
+    /**
+     * Deregisters this column data panel with everything that is currently
+     * notiying it of events.
+     */
+    public void deregisterListeners() {
+        KeyboardFocusManager m = KeyboardFocusManager
+                                 .getCurrentKeyboardFocusManager();
+        m.removeKeyEventDispatcher(this);
     }
 
     /**
@@ -139,16 +228,14 @@ public final class SpreadsheetPanel extends JPanel
         headerView.remove(newVar);
 
         // Create the spreadsheet column and register it.
-        SpreadsheetColumn col = new SpreadsheetColumn(db,
-                                                      colID,
-                                                      colSelector,
-                                                      cellSelector);
+        SpreadsheetColumn col = new SpreadsheetColumn(db, colID, this, this);
         col.registerListeners();
 
         // add the datapanel to the scrollpane viewport
         mainView.add(col.getDataPanel());
+
         // add the headerpanel to the scrollpane headerviewport
-        headerView.add(col.getHeaderPanel());
+        headerView.add(col);
         // add the new variable '+' button to the header.
         headerView.add(newVar);
 
@@ -156,13 +243,17 @@ public final class SpreadsheetPanel extends JPanel
         columns.add(col);
     }
 
+    /**
+     * Remove all the columns from the spreadsheet panel.
+     */
+    @Override
     public void removeAll() {
         for (SpreadsheetColumn col : columns) {
             col.deregisterListeners();
             col.clear();
 
             mainView.remove(col.getDataPanel());
-            headerView.remove(col.getHeaderPanel());
+            headerView.remove(col);
         }
 
         columns.clear();
@@ -178,7 +269,7 @@ public final class SpreadsheetPanel extends JPanel
             if (col.getColID() == colID) {
                 col.deregisterListeners();
                 mainView.remove(col.getDataPanel());
-                headerView.remove(col.getHeaderPanel());
+                headerView.remove(col);
                 columns.remove(col);
                 break;
             }
@@ -186,7 +277,7 @@ public final class SpreadsheetPanel extends JPanel
     }
 
     /**
-     * Returns the vector of Spreadsheet columns.
+     * @return the vector of Spreadsheet columns.
      * Need for UISpec4J testing
      */
     public Vector<SpreadsheetColumn> getColumns() {
@@ -197,8 +288,17 @@ public final class SpreadsheetPanel extends JPanel
      * Deselect all selected items in the Spreadsheet.
      */
     public void deselectAll() {
-        cellSelector.deselectAll();
-        colSelector.deselectAll();
+        for (SpreadsheetColumn col : columns) {
+            if (col.isSelected()) {
+                col.setSelected(false);
+            }
+
+            for (SpreadsheetCell cell : col.getCells()) {
+                if (cell.isSelected()) {
+                    cell.setSelected(false);
+                }
+            }
+        }
     }
 
     /**
@@ -212,12 +312,12 @@ public final class SpreadsheetPanel extends JPanel
             try {
                 database.deregisterColumnListListener(this);
             } catch (SystemErrorException e) {
-                logger.warn("deregisterColumnListListener failed", e);
+                logger.error("deregisterColumnListListener failed", e);
             }
         }
 
         // set the database
-        this.database = db;
+        database = db;
 
         /*
         // set Temporal Ordering on
@@ -244,14 +344,7 @@ public final class SpreadsheetPanel extends JPanel
      * @return Database this spreadsheet displays
      */
     public Database getDatabase() {
-        return (this.database);
-    }
-
-    /**
-     * @return Selector handling the SpreadsheetCells.
-     */
-    public Selector getCellSelector() {
-        return cellSelector;
+        return (database);
     }
 
     /**
@@ -259,13 +352,13 @@ public final class SpreadsheetPanel extends JPanel
      *
      * @param db The database that the column has been removed from.
      * @param colID The id of the freshly removed column.
-     * @param old_cov The column order vector prior to the deletion.
-     * @param new_cov The column order vector after to the deletion.
+     * @param oldCov The column order vector prior to the deletion.
+     * @param newCov The column order vector after to the deletion.
      */
     public void colDeletion(final Database db,
                             final long colID,
-                            final Vector<Long> old_cov,
-                            final Vector<Long> new_cov) {
+                            final Vector<Long> oldCov,
+                            final Vector<Long> newCov) {
         deselectAll();
         removeColumn(colID);
         relayoutCells();
@@ -276,13 +369,13 @@ public final class SpreadsheetPanel extends JPanel
      *
      * @param db The database that the column has been added to.
      * @param colID The id of the newly added column.
-     * @param old_cov The column order vector prior to the insertion.
-     * @param new_cov The column order vector after to the insertion.
+     * @param oldCov The column order vector prior to the insertion.
+     * @param newCov The column order vector after to the insertion.
      */
     public void colInsertion(final Database db,
                              final long colID,
-                             final Vector<Long> old_cov,
-                             final Vector<Long> new_cov) {
+                             final Vector<Long> oldCov,
+                             final Vector<Long> newCov) {
         deselectAll();
         addColumn(db, colID);
     }
@@ -292,12 +385,12 @@ public final class SpreadsheetPanel extends JPanel
      * of the columns is changed without any insertions or deletions).
      *
      * @param db The database that the column has been added to.
-     * @param old_cov The column order vector prior to the insertion.
-     * @param new_cov The column order vector after to the insertion.
+     * @param oldCov The column order vector prior to the insertion.
+     * @param newCov The column order vector after to the insertion.
      */
     public void colOrderVectorEdited(final Database db,
-                                     final Vector<Long> old_cov,
-                                     final Vector<Long> new_cov) {
+                                     final Vector<Long> oldCov,
+                                     final Vector<Long> newCov) {
         // do nothing for now
         return;
     }
@@ -305,19 +398,98 @@ public final class SpreadsheetPanel extends JPanel
     /**
      * Relayout the SpreadsheetCells in the spreadsheet.
      */
-    public final void relayoutCells() {
-        sheetLayout.relayoutCells(); 
-        this.validate();
+    public void relayoutCells() {
+        sheetLayout.relayoutCells();
+        validate();
+    }
+
+    /**
+     * Dispatches the key event to the desired components.
+     *
+     * @param e The key event to dispatch.
+     *
+     * @return true if the event has been consumed by this dispatch, false
+     * otherwise
+     */
+    public boolean dispatchKeyEvent(final KeyEvent e) {
+        // Quick filter - if we aren't dealing with a key press and left or
+        // right arrow. Forget about it - just chuck it back to Java to deal
+        // with.
+        if (e.getID() == KeyEvent.KEY_PRESSED
+            && (e.getKeyCode() == KeyEvent.VK_LEFT
+                || e.getKeyCode() == KeyEvent.VK_RIGHT)) {
+
+            // User is attempting to move to the column to the left.
+            if (e.getKeyCode() == KeyEvent.VK_LEFT
+                && platformCellMovementMask(e)) {
+                highlightAdjacentCell(LEFT_DIR);
+                e.consume();
+                return true;
+
+            // User is attempting to move to the column to the right.
+            } else if (e.getKeyCode() == KeyEvent.VK_RIGHT
+                       && platformCellMovementMask(e)) {
+                highlightAdjacentCell(RIGHT_DIR);
+                e.consume();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Highlights a cell in an adjacent column.
+     *
+     * @param direction The direction in which you wish to highlight an
+     * adjacent column.
+     */
+    private void highlightAdjacentCell(final int direction) {
+        // No cell selected - simply return, can't move left or right.
+        if (highlightedCell == null) {
+            return;
+        }
+
+        for (int colID = 0; colID < columns.size(); colID++) {
+            for (int cellID = 0; cellID < columns.get(colID).getCells().size();
+                 cellID++) {
+
+                // For each of the cells in the columns - look for the
+                // highlighted cell.
+                SpreadsheetCell cell = columns.get(colID)
+                                              .getCells().get(cellID);
+
+                if (cell.getCellID() == highlightedCell.getCellID()) {
+
+                    // Find column in the desired direction
+                    int newColID = colID + direction;
+                    if (newColID >= 0 && newColID < columns.size()) {
+
+                        // Find the most appopriate cell in the new
+                        // column.
+                        int newCellID = Math.min(cellID,
+                            (columns.get(newColID).getCells().size() - 1));
+
+                        SpreadsheetCell newCell = columns.get(newColID)
+                                                  .getCells().get(newCellID);
+                        newCell.requestFocus();
+                        newCell.setHighlighted(true);
+                        setHighlightedCell(newCell);
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     /**
      * @return Vector of the selected columns.
      */
-    public Vector <DataColumn> getSelectedCols() {
-        Vector <DataColumn> selcols = new Vector <DataColumn>();
+    public Vector<DataColumn> getSelectedCols() {
+        Vector<DataColumn> selcols = new Vector<DataColumn>();
 
         try {
-            Vector <DataColumn> cols = database.getDataColumns();
+            Vector<DataColumn> cols = database.getDataColumns();
             int numCols = cols.size();
             for (int i = 0; i < numCols; i++) {
                 DataColumn col = cols.elementAt(i);
@@ -345,8 +517,8 @@ public final class SpreadsheetPanel extends JPanel
         int result = 0;
 
         try {
-            Vector <DataCell> selectedCells = this.getSelectedCells();
-            Vector <Long> columnOrder = database.getColOrderVector();
+            Vector<DataCell> selectedCells = getSelectedCells();
+            Vector<Long> columnOrder = database.getColOrderVector();
 
             // For each of the selected cells search to see if we have a column
             // to the left.
@@ -376,11 +548,11 @@ public final class SpreadsheetPanel extends JPanel
     /**
      * @return Vector of the selected columns.
      */
-    public Vector <DataCell> getSelectedCells() {
-        Vector <DataCell> selcells = new Vector <DataCell>();
+    public Vector<DataCell> getSelectedCells() {
+        Vector<DataCell> selcells = new Vector<DataCell>();
 
         try {
-            Vector <DataColumn> cols = database.getDataColumns();
+            Vector<DataColumn> cols = database.getDataColumns();
             int numCols = cols.size();
             for (int i = 0; i < numCols; i++) {
                 DataColumn col = cols.elementAt(i);
@@ -397,6 +569,23 @@ public final class SpreadsheetPanel extends JPanel
            logger.error("Unable to set new cell stop time.", e);
         }
         return selcells;
+    }
+
+    /**
+     * Mark a cell as highlighted in the spreadsheet panel.
+     *
+     * @param cellID The id of the cell to mark as highlighted.
+     */
+    public void highlightCell(final long cellID) {
+        for (SpreadsheetColumn col : getColumns()) {
+            for (SpreadsheetCell cell : col.getCells()) {
+                if (cell.getCellID() == cellID) {
+                    cell.setHighlighted(true);
+                    setHighlightedCell(cell);
+                    return;
+                }
+            }
+        }
     }
 
     /**
@@ -420,7 +609,7 @@ public final class SpreadsheetPanel extends JPanel
                                    scrollPane.getViewportBorderBounds().height);
         viewportStrut.changeShape(d, d, d);
         // force a validate of the contents.
-        this.revalidate();
+        revalidate();
     }
 
     /**
@@ -460,9 +649,9 @@ public final class SpreadsheetPanel extends JPanel
      * Moves a given column to the left by a certain number of positions.
      * @param colID the ID of the column to move
      * @param positions the number of positions to the left to move the given
-     * column. 
+     * column.
      */
-    public void moveColumnLeft(final long colID, final int positions){
+    public void moveColumnLeft(final long colID, final int positions) {
         int columnIndex = -1;
         // What index does the given column sit at
         for (int i = 0; i < columns.size(); i++) {
@@ -477,7 +666,7 @@ public final class SpreadsheetPanel extends JPanel
             }
             shuffleColumn(columnIndex, newIndex);
             relayoutCells();
-            this.invalidate();
+            invalidate();
             this.repaint();
         }
     }
@@ -501,7 +690,7 @@ public final class SpreadsheetPanel extends JPanel
             if (newIndex < columns.size()) {
                 shuffleColumn(columnIndex, newIndex);
                 relayoutCells();
-                this.invalidate();
+                invalidate();
                 this.repaint();
             }
         }
@@ -519,6 +708,19 @@ public final class SpreadsheetPanel extends JPanel
         }
         if (source == destination) {
             return;
+        }
+
+        try {
+            // Write the new column order back to the database.
+            Vector<Long> orderVec = database.getColOrderVector();
+
+            Long sourceColumn = orderVec.elementAt(source);
+            orderVec.removeElementAt(source);
+            orderVec.insertElementAt(sourceColumn, destination);
+
+            database.setColOrderVector(orderVec);
+        } catch (SystemErrorException se) {
+            logger.error("Unable to shuffle column order", se);
         }
 
         // Reorder the columns vector
@@ -561,39 +763,226 @@ public final class SpreadsheetPanel extends JPanel
         }
     }
 
-    /** Scrollable view inserted into the JScrollPane. */
-    private SpreadsheetView mainView;
+    /**
+     * Adds a series of cells as a continous selection.
+     *
+     * @param cell The cell to use as the end point for the selection.
+     */
+    public void addCellToContinousSelection(final SpreadsheetCell cell) {
+        try {
+            if (lastSelectedCell != null) {
+                DataCell c1 = (DataCell) database
+                                         .getCell(lastSelectedCell.getCellID());
+                DataCell c2 = (DataCell) database.getCell(cell.getCellID());
 
-    /** View showing the Column titles. */
-    private JPanel headerView;
+                // We can only do continous selections in a single column at
+                // at the moment.
+                if (c1.getItsColID() == c2.getItsColID()) {
+                    // Deselect the highlighted cell.
+                    if (highlightedCell != null) {
+                        highlightedCell.setHighlighted(false);
+                        highlightedCell.setSelected(true);
+                        highlightedCell = null;
+                    }
 
-    /** The Database being viewed. */
-    private Database database;
+                    for (SpreadsheetColumn col : getColumns()) {
+                        if (c1.getItsColID() == col.getColID()) {
+                            // Perform continous selection.
+                            boolean addToSelection = false;
+                            for (SpreadsheetCell c : col.getCells()) {
+                                if (!addToSelection) {
+                                    c.setSelected(false);
+                                }
 
-    /** Vector of the Spreadsheetcolumns added to the Spreadsheet. */
-    private Vector<SpreadsheetColumn> columns;
+                                if (c.equals(cell) || c.equals(lastSelectedCell)) {
+                                    addToSelection = !addToSelection;
+                                    // We always include start and end cells.
+                                    c.setSelected(true);
+                                }
 
-    /** Selector object for handling Column header selection. */
-    private Selector colSelector;
+                                if (addToSelection) {
+                                    c.setSelected(true);
+                                }
+                            }
 
-    /** Selector object for handling SpreadsheetCell selection. */
-    private Selector cellSelector;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                lastSelectedCell = cell;
+            }
+        } catch (SystemErrorException se) {
+            logger.error("Unable to continous select cells", se);
+        }
+    }
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(SpreadsheetPanel.class);
+    /**
+     * Add a cell to the current selection.
+     *
+     * @param cell The cell to add to the selection.
+     */
+    public void addCellToSelection(final SpreadsheetCell cell) {
+        clearColumnSelection();
+        if (highlightedCell != null) {
+            highlightedCell.setHighlighted(false);
+            highlightedCell.setSelected(true);
 
-    /** Reference to the spreadsheet layout handler. */
-    private SheetLayout sheetLayout;
+            highlightedCell = null;
+        }
 
-    /** Reference to the scrollPane. */
-    private JScrollPane scrollPane;
+        lastSelectedCell = cell;
+    }
 
-    /** Strut used to expand the viewport to fill the scrollpane. */
-    private Filler viewportStrut;
+    /**
+     * Set the currently highlighted cell.
+     *
+     * @param cell The cell to highlight.
+     */
+    public void setHighlightedCell(final SpreadsheetCell cell) {
+        if (highlightedCell != null) {
+            highlightedCell.setSelected(false);
+            highlightedCell.setHighlighted(false);
+            highlightedCell.invalidate();
+        }
 
-    /** Default height for the viewport if no cells yet. */
-    private static final int DEFAULT_HEIGHT = 50;
+        highlightedCell = cell;
+        lastSelectedCell = cell;
+        clearColumnSelection();
+    }
 
-    /** New variable button to be added to the column header panel. */
-    private JButton newVar = new JButton();
+    /**
+     * Clears the current cell selection.
+     */
+    public void clearCellSelection() {
+        highlightedCell = null;
+        lastSelectedCell = null;
+
+        for (SpreadsheetColumn col : getColumns()) {
+            for (SpreadsheetCell cell : col.getCells()) {
+                cell.setSelected(false);
+                cell.setHighlighted(false);
+            }
+        }
+    }
+
+    /**
+     * Add a column to the current selection.
+     *
+     * @param column The column to add to the current selection.
+     */
+    public void addColumnToSelection(final SpreadsheetColumn column) {
+        clearCellSelection();
+        column.requestFocus();
+    }
+
+    /**
+     * Clears the current column selection.
+     */
+    public void clearColumnSelection() {
+        for (SpreadsheetColumn col : getColumns()) {
+            col.setSelected(false);
+        }
+    }
+
+    /**
+     * Utility method for determining if the platform specific input mask is
+     * triggered.
+     *
+     * @param e KeyEvent to examine.
+     * @return true if the input mask is used, false otherwise.
+     */
+    private boolean platformCellMovementMask(final KeyEvent e) {
+        if (OpenSHAPA.getPlatform() == Platform.MAC
+                && e.getModifiers() == InputEvent.ALT_MASK) {
+            return true;
+        } else if (OpenSHAPA.getPlatform() == Platform.WINDOWS
+                && e.getModifiers() == InputEvent.CTRL_MASK) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Add a listener interested in file drop events.
+     *
+     * @param listener The listener to add.
+     */
+    public void addFileDropEventListener(
+            final FileDropEventListener listener) {
+        synchronized (this) {
+            fileDropListeners.add(listener);
+        }
+    }
+
+    /**
+     * Remove listener from being notified of file drop events.
+     *
+     * @param listener The listener to remove.
+     */
+    public void removeFileDropEventListener(
+            final FileDropEventListener listener) {
+        synchronized (this) {
+            fileDropListeners.remove(listener);
+        }
+    }
+
+    /**
+     * Notifies all registered listeners about the file drag and drop event.
+     *
+     * @param files The files that were dropped onto the spreadsheet.
+     */
+    private void notifyFileDropEventListeners(final Iterable<File> files) {
+        final FileDropEvent event = new FileDropEvent(this, files);
+        synchronized (this) {
+            for (FileDropEventListener listener : fileDropListeners) {
+                listener.filesDropped(event);
+            }
+        }
+    }
+
+    /**
+     * Inner class for handling file drag and drop.
+     */
+    private class SSDropTarget extends DropTargetAdapter {
+
+        /**
+         * Creates a new drag and drop handler.
+         */
+        public SSDropTarget() {
+            super();
+        }
+
+        /**
+         * The event handler for when a file is dropped onto the interface.
+         *
+         *@param dtde The event to handle.
+         */
+        public void drop(final DropTargetDropEvent dtde) {
+            Transferable tr = dtde.getTransferable();
+            DataFlavor[] flavors = tr.getTransferDataFlavors();
+
+            for (int type = 0; type < flavors.length; type++) {
+                if (flavors[type].isFlavorJavaFileListType()) {
+                    dtde.acceptDrop(DnDConstants.ACTION_REFERENCE);
+
+                    List fileList = new LinkedList();
+                    try {
+                        fileList = (List) tr.getTransferData(flavors[type]);
+                        // If we made it this far, everything worked.
+                        dtde.dropComplete(true);
+                    } catch (UnsupportedFlavorException e) {
+                        dtde.rejectDrop();
+                    } catch (IOException e) {
+                        dtde.rejectDrop();
+                    }
+
+                    notifyFileDropEventListeners(fileList);
+                    return;
+                }
+            }
+
+            dtde.rejectDrop();
+        }
+    }
 }

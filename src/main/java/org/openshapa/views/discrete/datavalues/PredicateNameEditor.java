@@ -2,23 +2,26 @@ package org.openshapa.views.discrete.datavalues;
 
 import java.awt.event.KeyEvent;
 import java.util.Vector;
+
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
+
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.DBIndex;
-import org.openshapa.db.DataCell;
-import org.openshapa.db.Database;
-import org.openshapa.db.Matrix;
-import org.openshapa.db.PredDataValue;
-import org.openshapa.db.Predicate;
-import org.openshapa.db.PredicateVocabElement;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.DBIndex;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.Matrix;
+import org.openshapa.models.db.PredDataValue;
+import org.openshapa.models.db.Predicate;
+import org.openshapa.models.db.PredicateVocabElement;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 
+import com.usermetrix.jclient.UserMetrix;
+
 /**
- * This class is the character editor of a Predicate name.
- * DataValueEditor issues.
+ * This class is the character editor of a Predicate name. DataValueEditor
+ * issues.
  */
 public final class PredicateNameEditor extends DataValueEditor {
 
@@ -31,23 +34,27 @@ public final class PredicateNameEditor extends DataValueEditor {
     /** String holding the reserved characters. */
     static final String PREDNAME_RESERVED_CHARS = ")(<>|,;\t\n";
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(PredicateNameEditor.class);
+    /** The logger for this class. */
+    private UserMetrix logger =
+            UserMetrix.getInstance(PredicateNameEditor.class);
 
     /**
      * Constructor.
-     *
-     * @param ta The parent JTextComponent the editor is in.
-     * @param cell The parent data cell this editor resides within.
-     * @param matrix Matrix holding the datavalue this editor will represent.
-     * @param matrixIndex The index of the datavalue within the matrix.
-     * @param eds The vector of predicate argument editors.
+     * 
+     * @param ta
+     *            The parent JTextComponent the editor is in.
+     * @param cell
+     *            The parent data cell this editor resides within.
+     * @param matrix
+     *            Matrix holding the datavalue this editor will represent.
+     * @param matrixIndex
+     *            The index of the datavalue within the matrix.
+     * @param eds
+     *            The vector of predicate argument editors.
      */
-    public PredicateNameEditor(final JTextComponent ta,
-                               final DataCell cell,
-                               final Matrix matrix,
-                               final int matrixIndex,
-                               final Vector<EditorComponent> eds) {
+    public PredicateNameEditor(final JTextComponent ta, final DataCell cell,
+            final Matrix matrix, final int matrixIndex,
+            final Vector<EditorComponent> eds) {
 
         super(ta, cell, matrix, matrixIndex);
 
@@ -63,14 +70,14 @@ public final class PredicateNameEditor extends DataValueEditor {
     @Override
     public void updateStrings() {
         try {
-            String newText = this.getText();
+            String newText = getText();
             PredDataValue pdv = (PredDataValue) getModel();
             if (!pdv.isEmpty()) {
                 newText = pdv.getItsValue().getPredName();
             } else if (getText().length() == 0) {
                 newText = getNullArg();
             }
-            this.resetText(newText);
+            resetText(newText);
         } catch (SystemErrorException e) {
             logger.error("Problem getting predicate.", e);
         }
@@ -78,49 +85,52 @@ public final class PredicateNameEditor extends DataValueEditor {
 
     /**
      * The action to invoke when a key is typed.
-     * @param e The KeyEvent that triggered this action.
+     * 
+     * @param e
+     *            The KeyEvent that triggered this action.
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        int pos = this.getCaretPosition();
+        int pos = getCaretPosition();
 
         // The backspace key removes characters from behind the caret.
         if (!e.isConsumed()
-            && e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-            && e.getKeyChar() == '\u0008') {
+                && e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                && e.getKeyChar() == '\u0008') {
 
-            this.removeBehindCaret();
-            pos = this.getCaretPosition();
-            this.searchForPredicate(this.getText());
-            this.setCaretPosition(pos);
+            removeBehindCaret();
+            pos = getCaretPosition();
+            searchForPredicate(getText());
+            setCaretPosition(pos);
             e.consume();
 
-        // The delete key removes characters ahead of the caret.
+            // The delete key removes characters ahead of the caret.
         } else if (!e.isConsumed()
-                   && e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                   && e.getKeyChar() == '\u007F') {
+                && e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                && e.getKeyChar() == '\u007F') {
 
-            this.removeAheadOfCaret();
-            pos = this.getCaretPosition();
-            this.searchForPredicate(this.getText());
-            this.setCaretPosition(pos);
+            removeAheadOfCaret();
+            pos = getCaretPosition();
+            searchForPredicate(getText());
+            setCaretPosition(pos);
             e.consume();
 
-        // If the character is not reserved - add it to the name of the pred
+            // If the character is not reserved - add it to the name of the pred
         } else if (!e.isConsumed() && !isReserved(e.getKeyChar())) {
-            this.removeSelectedText();
-            StringBuffer cValue = new StringBuffer(this.getText());
-            cValue.insert(this.getCaretPosition(), e.getKeyChar());
-            pos = this.getCaretPosition() + 1;
-            this.setText(cValue.toString());
-            this.searchForPredicate(this.getText());
-            this.setCaretPosition(pos);
+            removeSelectedText();
+            StringBuffer cValue = new StringBuffer(getText());
+            cValue.insert(getCaretPosition(), e.getKeyChar());
+            pos = getCaretPosition() + 1;
+            setText(cValue.toString());
+            searchForPredicate(getText());
+            setCaretPosition(pos);
             e.consume();
         }
     }
 
     /**
-     * @param aChar Character to test
+     * @param aChar
+     *            Character to test
      * @return true if the character is a reserved character.
      */
     private boolean isReserved(final char aChar) {
@@ -130,9 +140,9 @@ public final class PredicateNameEditor extends DataValueEditor {
     /**
      * Searches for a predicate in the database, whose name matches the supplied
      * argument.
-     *
-     * @param text The name of the predicate you are looking for in the
-     * database.
+     * 
+     * @param text
+     *            The name of the predicate you are looking for in the database.
      */
     public void searchForPredicate(final String text) {
         try {
@@ -144,7 +154,7 @@ public final class PredicateNameEditor extends DataValueEditor {
             }
 
             long newPredID = DBIndex.INVALID_ID;
-            Database db = this.getModel().getDB();
+            Database db = getModel().getDB();
             for (PredicateVocabElement pve : db.getPredVEs()) {
                 if (pve.getName().equals(getText())) {
                     newPredID = pve.getID();
@@ -164,16 +174,18 @@ public final class PredicateNameEditor extends DataValueEditor {
     }
 
     /**
-     * Update the model to reflect the value represented by the
-     * editor's text representation.
-     *
-     * @param newPredID the id of the new predicate data value to use for this
-     * predicate.
+     * Update the model to reflect the value represented by the editor's text
+     * representation.
+     * 
+     * @param newPredID
+     *            the id of the new predicate data value to use for this
+     *            predicate.
      */
     public void updateModelValue(final long newPredID) {
         try {
             // Make a new predicate data value
-            PredDataValue pdv = new PredDataValue(OpenSHAPA.getDB());
+            PredDataValue pdv =
+                    new PredDataValue(OpenSHAPA.getProjectController().getDB());
             if (newPredID == DBIndex.INVALID_ID) {
                 pdv.clearValue();
             } else {

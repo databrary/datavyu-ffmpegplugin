@@ -2,28 +2,27 @@ package org.openshapa.views.discrete.datavalues;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import org.openshapa.db.DataCell;
-import org.openshapa.db.Matrix;
-import org.openshapa.db.SystemErrorException;
-import org.openshapa.views.discrete.Selector;
 import java.util.Vector;
+
 import javax.swing.JTextArea;
-import org.apache.log4j.Logger;
+
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.FormalArgument.FArgType;
-import org.openshapa.db.PredDataValue;
-import org.openshapa.db.Predicate;
-import org.openshapa.db.VocabElement;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.Matrix;
+import org.openshapa.models.db.PredDataValue;
+import org.openshapa.models.db.Predicate;
+import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.VocabElement;
+import org.openshapa.models.db.FormalArgument.FArgType;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
+
+import com.usermetrix.jclient.UserMetrix;
 
 /**
  * JTextArea view of the Matrix (database cell) data.
  */
 public final class MatrixRootView extends JTextArea implements FocusListener {
-
-    /** The selection (used for cells) for the parent spreadsheet. */
-    private Selector sheetSelection;
 
     /** The parent cell for this JPanel. */
     private long parentCell = -1;
@@ -44,25 +43,23 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     private int numPredArgs;
 
     /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(MatrixRootView.class);
+    private UserMetrix logger = UserMetrix.getInstance(MatrixRootView.class);
 
     /**
      * Creates a new instance of MatrixV.
-     *
-     * @param cellSelection The parent selection for spreadsheet cells.
-     * @param cell The parent datacell for this spreadsheet cell.
-     * @param matrix The Matrix holding datavalues that this view label will
-     * represent.
+     * 
+     * @param cell
+     *            The parent datacell for this spreadsheet cell.
+     * @param matrix
+     *            The Matrix holding datavalues that this view label will
+     *            represent.
      */
-    public MatrixRootView(final Selector cellSelection,
-                          final DataCell cell,
-                          final Matrix matrix) {
+    public MatrixRootView(final DataCell cell, final Matrix matrix) {
         super();
 
         setLineWrap(true);
         setWrapStyleWord(true);
 
-        sheetSelection = cellSelection;
         parentCell = cell.getID();
         allEditors = new Vector<EditorComponent>();
         edTracker = new EditorTracker(this, allEditors);
@@ -71,15 +68,15 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
         setMatrix(matrix);
 
-        this.addFocusListener(this);
-        this.addFocusListener(edTracker);
-        this.addKeyListener(edTracker);
-        this.addMouseListener(edTracker);
+        addFocusListener(this);
+        addFocusListener(edTracker);
+        addKeyListener(edTracker);
+        addMouseListener(edTracker);
     }
 
     /**
-     * @return true if a viewport should force the Scrollables width
-     * to match its own.
+     * @return true if a viewport should force the Scrollables width to match
+     *         its own.
      */
     @Override
     public boolean getScrollableTracksViewportWidth() {
@@ -88,12 +85,13 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * Sets the matrix that this MatrixRootView will represent.
-     *
-     * @param m The Matrix to display.
+     * 
+     * @param m
+     *            The Matrix to display.
      */
     public void setMatrix(final Matrix m) {
         // Determine selected editor, and internal caret position.
-        int pos = this.getCaretPosition();
+        int pos = getCaretPosition();
         EditorComponent comp = edTracker.findEditor(pos);
         int edPos = comp.getCaretPosition();
 
@@ -107,27 +105,30 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
                 VocabElement newVE = m.getDB().getVocabElement(m.getMveID());
                 boolean hasPredChanged = hasPredicateVocabChanged(m);
 
-                DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
+                DataCell c =
+                        (DataCell) OpenSHAPA.getProjectController().getDB()
+                                .getCell(parentCell);
 
                 // No editors exist yet - build some to begin with.
                 if (allEditors.size() == 0) {
-                    allEditors.addAll(DataValueEditorFactory
-                                      .buildMatrix(this, c, m));
+                    allEditors.addAll(DataValueEditorFactory.buildMatrix(this,
+                            c, m));
                     ve = newVE;
 
-                // Check to see if the vocab for the matrix has changed - if so
-                // clear the current editors and start afresh.
+                    // Check to see if the vocab for the matrix has changed - if
+                    // so
+                    // clear the current editors and start afresh.
                 } else if (ve != null && !ve.equals(newVE) || hasPredChanged) {
                     if (hasPredChanged) {
                         edPos = 0;
                     }
                     allEditors.clear();
-                    allEditors.addAll(DataValueEditorFactory
-                                      .buildMatrix(this, c, m));
+                    allEditors.addAll(DataValueEditorFactory.buildMatrix(this,
+                            c, m));
                     ve = newVE;
 
-                // Vocab hasn't changed - only values for the matrix. Simply
-                // update the values.
+                    // Vocab hasn't changed - only values for the matrix. Simply
+                    // update the values.
                 } else {
                     for (EditorComponent ed : allEditors) {
                         ed.resetValue(c, m);
@@ -146,20 +147,19 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * Returns true if the vocab has changed for a predicate.
-     *
-     * @param m The matrix containing the predicate to alter.
-     *
+     * 
+     * @param m
+     *            The matrix containing the predicate to alter.
      * @return True if the predicate vocab has changed, false otherwise.
-     *
-     * @throws SystemErrorException If unable to determine if the predicate
-     * vocab has changed.
+     * @throws SystemErrorException
+     *             If unable to determine if the predicate vocab has changed.
      */
     public boolean hasPredicateVocabChanged(final Matrix m)
-    throws SystemErrorException {
+            throws SystemErrorException {
         boolean result = false;
 
         if (m.getNumArgs() == 1
-            && m.getArgCopy(0).getItsFargType() == FArgType.PREDICATE) {
+                && m.getArgCopy(0).getItsFargType() == FArgType.PREDICATE) {
             PredDataValue pdv = (PredDataValue) m.getArgCopy(0);
             Predicate p = pdv.getItsValue();
 
@@ -183,7 +183,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * Used in the UISpec4j tests.
-     *
+     * 
      * @return The editor tracker for this MatrixRootView.
      */
     public EditorTracker getEdTracker() {
@@ -192,25 +192,24 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * The action to invoke if the focus is gained by this MatrixRootView.
-     *
-     * @param fe The Focus Event that triggered this action.
+     * 
+     * @param fe
+     *            The Focus Event that triggered this action.
      */
     public void focusGained(final FocusEvent fe) {
         try {
-            // BugzID:320 Deselect Cells before selecting cell contents.
-            if (sheetSelection != null) {
-                sheetSelection.deselectAll();
-                sheetSelection.deselectOthers();
-            }
-
             // We need to remember which cell should be duplicated if the user
             // presses the enter key or selects New Cell from the menu.
             if (parentCell != -1) {
-                // method names don't reflect usage - we didn't really create this
-                // cell just now.
-                DataCell c = (DataCell) OpenSHAPA.getDB().getCell(parentCell);
-                OpenSHAPA.setLastCreatedColId(c.getItsColID());
-                OpenSHAPA.setLastCreatedCellId(parentCell);
+                // method names don't reflect usage - we didn't really create
+                // this cell just now.
+                DataCell c =
+                        (DataCell) OpenSHAPA.getProjectController().getDB()
+                                .getCell(parentCell);
+                OpenSHAPA.getProjectController().setLastCreatedColId(
+                        c.getItsColID());
+                OpenSHAPA.getProjectController().setLastSelectedCellId(
+                        parentCell);
             }
         } catch (SystemErrorException se) {
             logger.error("Unable to gain focus", se);
@@ -219,7 +218,9 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * The action to invoke if the focus is lost.
-     * @param fe The FocusEvent that triggered this action.
+     * 
+     * @param fe
+     *            The FocusEvent that triggered this action.
      */
     public void focusLost(final FocusEvent fe) {
         // do nothing

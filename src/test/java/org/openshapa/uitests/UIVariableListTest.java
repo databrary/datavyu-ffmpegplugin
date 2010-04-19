@@ -1,282 +1,260 @@
 package org.openshapa.uitests;
 
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
 import java.io.File;
+
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.JDialog;
+
+import org.fest.swing.core.GenericTypeMatcher;
+import org.fest.swing.core.KeyPressInfo;
+import org.fest.swing.data.TableCell;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JOptionPaneFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTableFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.timing.Timeout;
+import org.fest.swing.util.Platform;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.uispec4j.interception.MainClassAdapter;
-import org.uispec4j.interception.WindowInterceptor;
+
 import org.openshapa.OpenSHAPA;
+
+import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.NewDatabaseV;
+import org.openshapa.views.NewProjectV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.Table;
-import org.uispec4j.Trigger;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
-import org.uispec4j.interception.FileChooserHandler;
-import org.uispec4j.interception.WindowHandler;
+
+import org.testng.Assert;
+
+import org.testng.annotations.Test;
+
 
 /**
  * Test the creation of a new database.
- *
  */
-public final class UIVariableListTest extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /**
-     * Called after each test.
-     * @throws Exception
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-     /**
-     * Different cell variable types.
-     */
-    private static final String[] VAR_TYPES = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"
-    };
-
-
-    static {
-        UISpec4J.setWindowInterceptionTimeLimit(120000);
-        UISpec4J.init();
-    }
+public final class UIVariableListTest extends OpenSHAPATestClass {
 
     /**
      * Resource map to access error messages in resources.
      */
     private ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                      .getContext()
-                                      .getResourceMap(NewDatabaseV.class);
+        .getContext().getResourceMap(NewDatabaseV.class);
 
-
-     /**
+    /**
      * Test adding new variables with a script.
-     * @throws java.lang.Exception on any error
      */
-//    public void testAddingVariablesWithScript() throws Exception {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//
-//        // 1. Open and run script to populate database
-//        String root = System.getProperty("testPath");
-//        File demoFile = new File(root + "/ui/demo_data.rb");
-//        assertTrue(demoFile.exists());
-//
-//        WindowInterceptor
-//                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-//                    .triggerClick())
-//                .process(FileChooserHandler.init()
-//                    .assertIsOpenDialog()
-//                    .assertAcceptsFilesOnly()
-//                    .select(demoFile.getAbsolutePath()))
-//                .process(new WindowHandler() {
-//                    public Trigger process(Window console) {
-//                        return console.getButton("Close").triggerClick();
-//                    }
-//                })
-//                .run();
-//
-//
-//        // 1a. Check that variable list is populated with correct data
-//        Window varListWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Variable List").triggerClick());
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-//                window.getUIComponents(Spreadsheet.class)[0]
-//                .getAwtComponent()));
-//        assertTrue(varListWindow.getTable().getRowCount()
-//                == ss.getColumns().size());
-//            for (int j = 0; j < ss.getColumns().size(); j++) {
-//                assertTrue(inTable(ss.getColumns().elementAt(j).getHeaderName(),
-//                        varListWindow.getTable(), 1));
-//                assertTrue(inTable(ss.getColumns().elementAt(j).getHeaderType(),
-//                        varListWindow.getTable(), 2));
-//            }
-//    }
+    @Test public void testAddingVariablesWithScript() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data.rb");
+        Assert.assertTrue(demoFile.exists());
+
+        // 1. Run script to populate
+        if (Platform.isOSX()) {
+            UIUtils.runScript(demoFile);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
+
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
+            Thread.yield();
+        }
+
+        scriptConsole.button("closeButton").click();
+
+        // 2. Check that variable list is populated with correct data
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
+
+        DialogFixture vlDialog = mainFrameFixture.dialog();
+
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        Assert.assertEquals(vlDialog.table().rowCount(),
+            ssPanel.allColumns().size());
+
+        for (int i = 0; i < ssPanel.allColumns().size(); i++) {
+            Assert.assertTrue(inTable(
+                    ssPanel.allColumns().elementAt(i).getColumnName(),
+                    vlDialog.table(), 1));
+            Assert.assertTrue(inTable(
+                    ssPanel.allColumns().elementAt(i).getColumnType(),
+                    vlDialog.table(), 2));
+        }
+    }
 
     /**
      * Test adding new variables manually.
-     * @throws java.lang.Exception on any error
      */
-    public void testAddingVariablesManually() throws Exception {
-        //Preparation
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        String [] varNames = {"text", "predicate", "integer", "nominal",
-        "matrix", "float"};
-        String [] varTypes = {"TEXT", "PREDICATE", "INTEGER",
-        "NOMINAL", "MATRIX", "FLOAT"};
+    @Test public void testAddingVariablesManually() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Create a new variable, then check that the variable list
-        // is populated with correct data.
+        String[] varNames = {"t", "p", "i", "n", "m", "f"};
+        String[] varTypes = {
+                "text", "predicate", "integer", "nominal", "matrix", "float"
+            };
+
+        // 1. Create a new variable, then check that variable list is
+        // populated with correct data
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
+
+        DialogFixture vlDialog = mainFrameFixture.dialog();
+
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        int numCols = 0;
+
         for (int i = 0; i < varNames.length; i++) {
-            createNewVariable(varNames[i], varTypes[i]);
+            UIUtils.createNewVariable(mainFrameFixture, varNames[i],
+                varTypes[i]);
+            numCols++;
 
-            // 1a. Check that variable list is populated with correct data
-            Window varListWindow = WindowInterceptor.run(menuBar.getMenu(
-                    "Spreadsheet").getSubMenu("Variable List").triggerClick());
-            Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-                    window.getUIComponents(Spreadsheet.class)[0]
-                    .getAwtComponent()));
-            assertTrue(varListWindow.getTable().getRowCount() == ss.getColumns()
-                    .size());
-            for (int j = 0; j < ss.getColumns().size(); j++) {
-                assertTrue(inTable(ss.getColumns().elementAt(j).getHeaderName(),
-                        varListWindow.getTable(), 1));
-                assertTrue(inTable(ss.getColumns().elementAt(j).getHeaderType(),
-                        varListWindow.getTable(), 2));
+            // Check that variable list is populated with correct data
+            Assert.assertEquals(ssPanel.allColumns().size(), numCols);
+            Assert.assertEquals(vlDialog.table().rowCount(),
+                ssPanel.allColumns().size());
+
+            for (int j = 0; j < ssPanel.allColumns().size(); j++) {
+                Assert.assertTrue(inTable(
+                        ssPanel.allColumns().elementAt(j).getColumnName(),
+                        vlDialog.table(), 1));
+                Assert.assertTrue(inTable(
+                        ssPanel.allColumns().elementAt(j).getColumnType(),
+                        vlDialog.table(), 2));
             }
         }
     }
 
     /**
-     * Test removal with new database.
-     * @throws java.lang.Exception on any error
+     * Test adding new variables with a script.
      */
-//    public void testRemovalWithNewDatabase() throws Exception {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//
-//        // 1. Open and run script to populate database
-//        String root = System.getProperty("testPath");
-//        File demoFile = new File(root + "/ui/demo_data.rb");
-//        assertTrue(demoFile.exists());
-//
-//                WindowInterceptor
-//                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-//                    .triggerClick())
-//                .process(FileChooserHandler.init()
-//                    .assertIsOpenDialog()
-//                    .assertAcceptsFilesOnly()
-//                    .select(demoFile.getAbsolutePath()))
-//                .process(new WindowHandler() {
-//                    public Trigger process(final Window console) {
-//                        return console.getButton("Close").triggerClick();
-//                    }
-//                })
-//                .run();
-//
-//
-//        // 1a. Check that variable list is populated
-//         Window varListWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Variable List").triggerClick());
-//         assertTrue(varListWindow.getTable().getRowCount() > 0);
-//
-//        // 2. Create new database (and discard unsaved changes)
-//        WindowInterceptor
-//            .init(menuBar.getMenu("File").getSubMenu("New").triggerClick())
-//            .process(new WindowHandler() {
-//                public Trigger process(final Window changesDialog) {
-//
-//                     WindowInterceptor
-//                    .init(changesDialog.getButton("Ok").triggerClick())
-//                    .process(new WindowHandler() {
-//                        public Trigger process(final Window newDBWindow) {
-//                            newDBWindow.
-//                                    getTextBox("nameField").setText("newDB");
-//                            return newDBWindow.getButton("Ok").triggerClick();
-//                        }
-//                     }).run();
-//
-//                return changesDialog.getButton("Ok").triggerClick();
-//
-//                }
-//             })
-//             .run();
-//
-//        // 2b. Check that variable list is empty
-//        //BugzID:430
-//        //assertTrue(varListWindow.getTable().getRowCount() == 0);
-//                 varListWindow = WindowInterceptor.run(menuBar.getMenu(
-//                "Spreadsheet").getSubMenu("Variable List").triggerClick());
-//         assertTrue(varListWindow.getTable().getRowCount() == 0);
-//    }
+    @Test public void testRemovalWithNewDatabase() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-    /**
-     * Creates a new variable and checks that it has been created.
-     * @param varName String for variable name
-     * @param varType String for variable type
-     * @param varRadio String for corresponding radio button for varType
-     * @throws java.lang.Exception on any error
-     */
-    private void validateVariableType(final String varName,
-            final String varType,
-            final String varRadio) throws Exception {
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2a. Create new variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
-        newVarWindow.getButton("Ok").click();
-        //check that correct column has been created
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-                window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-        assertNotNull(ss.getSpreadsheetColumn(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
-                .equals(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
-                .equals(varType));
-        //check that column has no cells
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data.rb");
+        Assert.assertTrue(demoFile.exists());
+
+        // 1. Run script to populate
+        if (Platform.isOSX()) {
+            UIUtils.runScript(demoFile);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
+
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
+            Thread.yield();
+        }
+
+        scriptConsole.button("closeButton").click();
+
+        // 2. Check that variable list is populated
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
+
+        DialogFixture vlDialog = mainFrameFixture.dialog();
+
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        Assert.assertEquals(vlDialog.table().rowCount(),
+            ssPanel.allColumns().size());
+
+        // 3. Create new database (and discard unsaved changes)
+        if (Platform.isOSX()) {
+            mainFrameFixture.pressAndReleaseKey(KeyPressInfo.keyCode(
+                    KeyEvent.VK_N).modifiers(InputEvent.META_MASK));
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "New");
+        }
+
+        try {
+            JOptionPaneFixture warning = mainFrameFixture.optionPane();
+            warning.requireTitle("Unsaved changes");
+            warning.buttonWithText("OK").click();
+        } catch (Exception e) {
+            // Do nothing
+        }
+
+        DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
+                new GenericTypeMatcher<JDialog>(JDialog.class) {
+                    @Override protected boolean isMatching(
+                        final JDialog dialog) {
+                        return dialog.getClass().equals(NewProjectV.class);
+                    }
+                }, Timeout.timeout(5, TimeUnit.SECONDS));
+
+        newDatabaseDialog.textBox("nameField").enterText("n");
+
+        newDatabaseDialog.button("okButton").click();
+
+        // 4. Check that variable list is empty
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
+
+        vlDialog = mainFrameFixture.dialog();
+        Assert.assertTrue(vlDialog.table().rowCount() == 0);
+
     }
 
     /**
-     * Create a new variable.
-     * @param varName String for the name of the variable
-     * @param varType String for the variable type
-     * @throws java.lang.Exception on any error
-     */
-    private void createNewVariable(final String varName,
-            final String varType) throws Exception {
-        String varRadio = varType.toLowerCase();
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2a. Create new variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        newVarWindow.getButton("Ok").click();
-    }
-
-    /**
-     * Checks if String is in a Table column.
-     * @param item String to find
-     * @param t Table to look in
-     * @param column Column number
+     * Because variable list is not in order, checks if String is in a Table
+     * column.
+     *
+     * @param item
+     *            String to find
+     * @param t
+     *            Table to look in
+     * @param col
+     *            Column number
      * @return true if found, else false
      */
-    private Boolean inTable(final String item, final Table t,
-            final int column) {
-        for (int i = 0; i < t.getRowCount(); i++) {
-            if (item.equals(t.getContentAt(i, column))) {
+    private Boolean inTable(final String item, final JTableFixture t,
+        final int col) {
+
+        for (int i = 0; i < t.rowCount(); i++) {
+
+            if (item.equals(t.valueAt(TableCell.row(i).column(col)))) {
                 return true;
             }
         }
+
         return false;
     }
 }

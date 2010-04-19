@@ -2,29 +2,29 @@ require 'java'
 require 'csv'
 require 'time'
 
-import 'org.openshapa.db.Database'
-import 'org.openshapa.db.DataColumn'
-import 'org.openshapa.db.MatrixVocabElement'
-import 'org.openshapa.db.Matrix'
-import 'org.openshapa.db.FloatDataValue'
-import 'org.openshapa.db.IntDataValue'
-import 'org.openshapa.db.TextStringDataValue'
-import 'org.openshapa.db.QuoteStringDataValue'
-import 'org.openshapa.db.UndefinedDataValue'
-import 'org.openshapa.db.NominalDataValue'
-import 'org.openshapa.db.PredDataValue'
-import 'org.openshapa.db.Predicate'
-import 'org.openshapa.db.PredicateVocabElement'
-import 'org.openshapa.db.FloatFormalArg'
-import 'org.openshapa.db.IntFormalArg'
-import 'org.openshapa.db.NominalFormalArg'
-import 'org.openshapa.db.PredFormalArg'
-import 'org.openshapa.db.QuoteStringFormalArg'
-import 'org.openshapa.db.UnTypedFormalArg'
-import 'org.openshapa.db.DBElement'
-import 'org.openshapa.db.TimeStamp'
-import 'org.openshapa.db.DataCell'
-import 'org.openshapa.db.SystemErrorException'
+import 'org.openshapa.models.db.Database'
+import 'org.openshapa.models.db.DataColumn'
+import 'org.openshapa.models.db.MatrixVocabElement'
+import 'org.openshapa.models.db.Matrix'
+import 'org.openshapa.models.db.FloatDataValue'
+import 'org.openshapa.models.db.IntDataValue'
+import 'org.openshapa.models.db.TextStringDataValue'
+import 'org.openshapa.models.db.QuoteStringDataValue'
+import 'org.openshapa.models.db.UndefinedDataValue'
+import 'org.openshapa.models.db.NominalDataValue'
+import 'org.openshapa.models.db.PredDataValue'
+import 'org.openshapa.models.db.Predicate'
+import 'org.openshapa.models.db.PredicateVocabElement'
+import 'org.openshapa.models.db.FloatFormalArg'
+import 'org.openshapa.models.db.IntFormalArg'
+import 'org.openshapa.models.db.NominalFormalArg'
+import 'org.openshapa.models.db.PredFormalArg'
+import 'org.openshapa.models.db.QuoteStringFormalArg'
+import 'org.openshapa.models.db.UnTypedFormalArg'
+import 'org.openshapa.models.db.DBElement'
+import 'org.openshapa.models.db.TimeStamp'
+import 'org.openshapa.models.db.DataCell'
+import 'org.openshapa.models.db.SystemErrorException'
 
 begin
 
@@ -32,7 +32,7 @@ begin
 
   # Create a data columns
   puts "Set up columns.."
-  colnames = ["matrixNominal1", "matrixFloat1", "matrixInteger1", "matrixNominal2", "matrixFloat2", "matrixInteger2", "matrixMixed1", "matrixMixed2"]
+  colnames = ["mN1", "mF1", "mI1", "mN2", "mF2", "mI2", "mM1", "mM2"]
 
   for cc in 0...colnames.length
     if !$db.col_name_in_use(colnames[cc])
@@ -55,7 +55,7 @@ begin
   #  matID1 = mve1.get_id()
 
   # 2. Check if matrix already defined
-  mve1 = $db.get_vocab_element("matrixNominal1")
+  mve1 = $db.get_vocab_element("mN1")
   if mve1.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve1 = MatrixVocabElement.new(mve1)
@@ -67,7 +67,7 @@ begin
   matID1 = mve1.get_id()
 
   # 3. Check if matrix already defined
-  mve3 = $db.get_vocab_element("matrixFloat1")
+  mve3 = $db.get_vocab_element("mF1")
   if mve3.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve3 = MatrixVocabElement.new(mve3)
@@ -80,7 +80,7 @@ begin
   matID3 = mve3.get_id()
 
   # 4. Check if matrix already defined
-  mve4 = $db.get_vocab_element("matrixInteger1")
+  mve4 = $db.get_vocab_element("mI1")
   if mve4.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve4 = MatrixVocabElement.new(mve4)
@@ -106,7 +106,7 @@ begin
   #  matID5 = mve5.get_id()
 
   # 6. Check if matrix already defined
-  mve6 = $db.get_vocab_element("matrixNominal2")
+  mve6 = $db.get_vocab_element("mN2")
   if mve6.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve6 = MatrixVocabElement.new(mve6)
@@ -120,7 +120,7 @@ begin
   matID6 = mve6.get_id()
 
   # 7. Check if matrix already defined
-  mve7 = $db.get_vocab_element("matrixFloat2")
+  mve7 = $db.get_vocab_element("mF2")
   if mve7.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve7 = MatrixVocabElement.new(mve7)
@@ -135,7 +135,7 @@ begin
   matID7 = mve7.get_id()
 
   # 8. Check if matrix already defined
-  mve8 = $db.get_vocab_element("matrixInteger2")
+  mve8 = $db.get_vocab_element("mI2")
   if mve8.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve8 = MatrixVocabElement.new(mve8)
@@ -150,7 +150,7 @@ begin
   matID8 = mve8.get_id()
 
   # 9. Check if matrix already defined
-  mve9 = $db.get_vocab_element("matrixMixed1")
+  mve9 = $db.get_vocab_element("mM1")
   if mve9.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve9 = MatrixVocabElement.new(mve9)
@@ -169,7 +169,7 @@ begin
   matID9 = mve9.get_id()
 
   # 10. Check if matrix already defined
-  mve0 = $db.get_vocab_element("matrixMixed2")
+  mve0 = $db.get_vocab_element("mM2")
   if mve0.get_num_formal_args() == 1
     # Setup structure of matrix column
     mve0 = MatrixVocabElement.new(mve0)

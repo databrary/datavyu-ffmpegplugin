@@ -1,20 +1,19 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
-import java.io.IOException;
-import java.io.PipedInputStream;
 import javax.swing.JFrame;
-import org.apache.log4j.Logger;
+import javax.swing.JTextArea;
 
 /**
  * The dialog for the scripting console. Renders output from scripts and other
  * things which dumps things to the console. Implemented as a singleton. Only
  * A single console is used in OpenSHAPA.
  */
-public class ConsoleV extends OpenSHAPADialog {
+public final class ConsoleV extends OpenSHAPADialog {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(ListVariables.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(ListVariables.class);
 
     /** The instance of the console. */
     private static ConsoleV instance;
@@ -24,17 +23,19 @@ public class ConsoleV extends OpenSHAPADialog {
      *
      * @param parent The parent of this dialog.
      * @param modal Is the scripting console modal or not?
-     * @param scriptOutput The stream containing scripting data to be outputed
-     * to the console.
      */
     public ConsoleV(final java.awt.Frame parent,
-                    final boolean modal,
-                    final PipedInputStream scriptOutput) {
+                    final boolean modal) {
         super(parent, modal);
         initComponents();
         setName(this.getClass().getSimpleName());
+    }
 
-        new ReaderThread(scriptOutput).start();
+    /**
+     * @return The text area that makes up the console.
+     */
+    public JTextArea getConsole() {
+        return this.console;
     }
 
     /**
@@ -43,9 +44,7 @@ public class ConsoleV extends OpenSHAPADialog {
     public static ConsoleV getInstance() {
         if (instance == null) {
             JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-            PipedInputStream stream = OpenSHAPA.getConsoleOutputStream();
-
-            instance = new ConsoleV(mainFrame, false, stream);
+            instance = new ConsoleV(mainFrame, false);
         }
 
         return instance;
@@ -73,6 +72,7 @@ public class ConsoleV extends OpenSHAPADialog {
 
         console.setColumns(20);
         console.setRows(5);
+        console.setMinimumSize(new java.awt.Dimension(200, 150));
         console.setName("console"); // NOI18N
         jScrollPane1.setViewportView(console);
 
@@ -130,48 +130,4 @@ public class ConsoleV extends OpenSHAPADialog {
     private javax.swing.JTextArea console;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
-
-    /**
-     * Seperate thread for polling the incoming data from the scripting engine.
-     * The data from the scripting engine gets placed directly into the
-     * consoleOutput
-     */
-    class ReaderThread extends Thread {
-        /** The output from the scripting engine. */
-        private PipedInputStream output;
-
-        /** The size of the buffer to use while ingesting data. */
-        private static final int BUFFER_SIZE = 1024;
-
-        /**
-         * Constructor.
-         *
-         * @param scriptOutput The stream containing output from the scripting
-         * engine.
-         */
-        ReaderThread(final PipedInputStream scriptOutput) {
-            output = scriptOutput;
-        }
-
-        /**
-         * The method to invoke when the thread is started.
-         */
-        @Override
-        public void run() {
-            final byte[] buf = new byte[BUFFER_SIZE];
-            try {
-                while (true) {
-                    final int len = output.read(buf);
-                    if (len > 0) {
-                        console.append(new String(buf, 0, len));
-                        // Make sure the last line is always visible
-                        console.setCaretPosition(console.getDocument()
-                                                        .getLength());
-                    }
-                }
-            } catch (IOException e) {
-                logger.error(e);
-            }
-        }
-    }
 }

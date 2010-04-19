@@ -1,13 +1,12 @@
 package org.openshapa.views.discrete.datavalues.vocabelements;
 
-import java.awt.event.KeyEvent;
-import org.openshapa.db.SystemErrorException;
+import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.SystemErrorException;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
-import org.apache.log4j.Logger;
-import org.openshapa.db.VocabElement;
+import org.openshapa.models.db.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 
@@ -23,7 +22,8 @@ public final class VocabElementRootView extends JTextArea  {
     private EditorTracker edTracker;
 
     /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(VocabElementRootView.class);
+    private UserMetrix logger = UserMetrix
+            .getInstance(VocabElementRootView.class);
 
     /** Border to set the text area more aligned to the icons. */
     private static Border GAP_BORDER =

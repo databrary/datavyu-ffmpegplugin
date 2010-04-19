@@ -80,6 +80,22 @@
                 </Property>
               </Properties>
             </MenuItem>
+            <Menu class="javax.swing.JMenu" name="openRecentFileMenu">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="openRecentFileMenu" noResource="true"/>
+              </Properties>
+              <Events>
+                <EventHandler event="menuSelected" listener="javax.swing.event.MenuListener" parameters="javax.swing.event.MenuEvent" handler="openRecentFileMenuMenuSelected"/>
+              </Events>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
+                  <Properties>
+                    <Property name="enabled" type="boolean" value="false"/>
+                    <Property name="name" type="java.lang.String" value="jMenuItem2" noResource="true"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator7">
               <Properties>
                 <Property name="name" type="java.lang.String" value="jSeparator7" noResource="true"/>
@@ -192,7 +208,6 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="newCellLeftMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="newCellLeftMenuItemSingle.text"/>
                 <Property name="name" type="java.lang.String" value="newCellLeftMenuItem" noResource="true"/>
               </Properties>
               <Events>
@@ -201,7 +216,6 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="newCellRightMenuItem">
               <Properties>
-                <Property name="text" type="java.lang.String" resourceKey="newCellRightMenuItemSingle.text"/>
                 <Property name="name" type="java.lang.String" value="newCellRightMenuItem" noResource="true"/>
               </Properties>
               <Events>
@@ -218,7 +232,6 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="org.openshapa.views.OpenSHAPAView" id="deleteColumn" methodName="deleteColumn"/>
                 </Property>
-                <Property name="text" type="java.lang.String" resourceKey="deleteColumnMenuItemSingle.text"/>
                 <Property name="name" type="java.lang.String" value="deleteColumnMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
@@ -227,7 +240,6 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="org.openshapa.views.OpenSHAPAView" id="deleteCells" methodName="deleteCells"/>
                 </Property>
-                <Property name="text" type="java.lang.String" resourceKey="deleteCellMenuItemSingle.text"/>
                 <Property name="name" type="java.lang.String" value="deleteCellMenuItem" noResource="true"/>
               </Properties>
             </MenuItem>
@@ -369,14 +381,6 @@
                 <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="}"/>
                 <AuxValue name="JavaCodeGenerator_AddingCodePre" type="java.lang.String" value="if (OpenSHAPA.getPlatform() != Platform.MAC) {"/>
               </AuxValues>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="contentsMenuItem">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                  <action class="org.openshapa.views.OpenSHAPAView" id="runTests" methodName="runTests"/>
-                </Property>
-                <Property name="name" type="java.lang.String" value="contentsMenuItem" noResource="true"/>
-              </Properties>
             </MenuItem>
           </SubComponents>
         </Menu>

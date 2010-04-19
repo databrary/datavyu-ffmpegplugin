@@ -1,155 +1,181 @@
 package org.openshapa.uitests;
 
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.fixture.SpreadsheetColumnFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
 
-import org.uispec4j.interception.WindowInterceptor;
+import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
 
+import org.testng.Assert;
 
+import org.testng.annotations.Test;
 
 
 /**
  * Test for the New Variable window.
- *
  */
-public final class UINewVariableTest extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    static {
-      UISpec4J.init();
-    }
+public final class UINewVariableTest extends OpenSHAPATestClass {
 
     /**
      * Test creating a new TEXT variable.
-     * @throws java.lang.Exception on any error
      */
-    public void testTextVariable() throws Exception {
-        String varName = "text var";
-        String varType = "TEXT";
-        String varRadio = "text";
+    @Test public void testTextVariable() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        //check that column has no cells
-        validateVariableType(varName, varType, varRadio);
+        String varName = "t";
+        String varType = "TEXT";
+
+        // check that column has no cells
+        validateVariableType(varName, varType);
     }
 
     /**
      * Test creating a new PREDICATE variable.
-     * @throws java.lang.Exception on any error
      */
-    public void testPredicateVariable() throws Exception {
-        String varName = "pred var";
-        String varType = "PREDICATE";
-        String varRadio = "predicate";
+    @Test public void testPredicateVariable() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        //check that column has no cells
-        validateVariableType(varName, varType, varRadio);
+        String varName = "p";
+        String varType = "PREDICATE";
+
+        // check that column has no cells
+        validateVariableType(varName, varType);
     }
 
     /**
      * Test creating a new INTEGER variable.
-     * @throws java.lang.Exception on any error
      */
-    public void testIntegerVariable() throws Exception {
-        String varName = "int var";
-        String varType = "INTEGER";
-        String varRadio = "integer";
+    @Test public void testIntegerVariable() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        //check that column has no cells
-        validateVariableType(varName, varType, varRadio);
+        String varName = "i";
+        String varType = "INTEGER";
+
+        // check that column has no cells
+        validateVariableType(varName, varType);
     }
 
     /**
      * Test creating a new NOMINAL variable.
-     * @throws java.lang.Exception on any error
      */
-    public void testNominalVariable() throws Exception {
-        String varName = "nom var";
-        String varType = "NOMINAL";
-        String varRadio = "nominal";
+    @Test public void testNominalVariable() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        //check that column has no cells
-        validateVariableType(varName, varType, varRadio);
+        String varName = "n";
+        String varType = "NOMINAL";
+
+        // check that column has no cells
+        validateVariableType(varName, varType);
     }
 
     /**
      * Test creating a new MATRIX variable.
-     * @throws java.lang.Exception on any error
      */
-    public void testMatrixVariable() throws Exception {
-        String varName = "matrix var";
-        String varType = "MATRIX";
-        String varRadio = "matrix";
+    @Test public void testMatrixVariable() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        //check that column has no cells
-        validateVariableType(varName, varType, varRadio);
+        String varName = "m";
+        String varType = "MATRIX";
+
+        // check that column has no cells
+        validateVariableType(varName, varType);
     }
 
     /**
      * Test creating a new FLOAT variable.
-     * @throws java.lang.Exception on any error
      */
-    public void testFloatVariable() throws Exception {
-        String varName = "float var";
-        String varType = "FLOAT";
-        String varRadio = "float";
+    @Test public void testFloatVariable() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        //check that column has no cells
-        validateVariableType(varName, varType, varRadio);
+        String varName = "f";
+        String varType = "FLOAT";
+
+        // check that column has no cells
+        validateVariableType(varName, varType);
     }
 
     /**
      * Creates a new variable and checks that it has been created.
-     * @param varName String for variable name
-     * @param varType String for variable type
-     * @param varRadio String for corresponding radio button for varType
-     * @throws java.lang.Exception on any error
+     *
+     * @param varName
+     *            variable name
+     * @param varType
+     *            variable type
      */
     private void validateVariableType(final String varName,
-                                      final String varType,
-                                      final String varRadio) throws Exception {
-        // 1. Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        // 2a. Create new variable,
-        //open spreadsheet and check that it's there
-        Window newVarWindow = WindowInterceptor.run(menuBar.getMenu(
-                "Spreadsheet").getSubMenu("New Variable").triggerClick());
-        newVarWindow.getTextBox("nameField").insertText(varName, 0);
-        newVarWindow.getRadioButton(varRadio).click();
-        assertTrue(newVarWindow.getRadioButton(varRadio).isSelected());
-        newVarWindow.getButton("Ok").click();
-        //check that correct column has been created
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
-        assertNotNull(ss.getSpreadsheetColumn(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderName()
-                .equals(varName));
-        assertTrue(ss.getSpreadsheetColumn(varName).getHeaderType()
-                .equals(varType));
-        //check that column has no cells
-        assertTrue(ss.getSpreadsheetColumn(varName).getCells().isEmpty());
+        final String varType) {
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        // 1. Create new variable
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");
+
+        DialogFixture newVariableDialog = mainFrameFixture.dialog();
+        newVariableDialog.requireVisible();
+
+        JTextComponentFixture variableValueTextBox =
+            newVariableDialog.textBox();
+        variableValueTextBox.requireEmpty();
+        variableValueTextBox.requireEditable();
+        variableValueTextBox.enterText(varName);
+        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
+            .click();
+        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
+            .requireSelected();
+        newVariableDialog.button("okButton").click();
+
+        // 2. Check that column has been created
+        SpreadsheetColumnFixture col = ssPanel.column(varName);
+        Assert.assertNotNull(col);
+        Assert.assertEquals(col.getColumnType(), varType);
+
+        // 3. Check that column has no cells
+        Assert.assertTrue(col.numOfCells() == 0);
+    }
+
+    /**
+     * Test for Bug 326 - creating cell with + button.
+     */
+    @Test public void testBug326() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        String varName = "v";
+        String varType =
+            UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
+
+        // create cell with + button
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        // 1. Create new variable and check it
+        mainFrameFixture.button("newVarPlusButton").click();
+
+        DialogFixture newVariableDialog = mainFrameFixture.dialog();
+        newVariableDialog.requireVisible();
+
+        JTextComponentFixture variableValueTextBox =
+            newVariableDialog.textBox();
+        variableValueTextBox.requireEmpty();
+        variableValueTextBox.requireEditable();
+        variableValueTextBox.enterText(varName);
+        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
+            .click();
+        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
+            .requireSelected();
+        newVariableDialog.button("okButton").click();
+
+        // 2. Check that column has been created
+        SpreadsheetColumnFixture col = ssPanel.column(varName);
+        Assert.assertNotNull(col);
+        Assert.assertEquals(col.getColumnType(), varType);
+
+        // 3. Check that column has no cells
+        Assert.assertTrue(col.numOfCells() == 0);
     }
 }

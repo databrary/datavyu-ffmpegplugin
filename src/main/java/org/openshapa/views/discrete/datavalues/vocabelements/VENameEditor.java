@@ -1,11 +1,11 @@
 package org.openshapa.views.discrete.datavalues.vocabelements;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
-import org.openshapa.db.SystemErrorException;
-import org.openshapa.db.VocabElement;
+import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**
@@ -20,7 +20,7 @@ public final class VENameEditor extends EditorComponent {
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
 
     /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(VENameEditor.class);
+    private UserMetrix logger = UserMetrix.getInstance(VENameEditor.class);
 
     /** The parent editor window that this argument belongs too. */
     private VocabElementV parentView;
@@ -60,36 +60,7 @@ public final class VENameEditor extends EditorComponent {
     @Override
     public void keyTyped(final KeyEvent e) {
         // The backspace key removes digits from behind the caret.
-        if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-            && e.getKeyChar() == '\u0008') {
-
-            try {
-                removeBehindCaret();
-                model.setName(getText());
-
-                parentView.setHasChanged(true);
-                parentView.getParentDialog().updateDialogState();
-            } catch (SystemErrorException se) {
-                logger.error("Unable to backspace from predicate name", se);
-            }
-
-        // The delete key removes digits ahead of the caret.
-        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                   && e.getKeyChar() == '\u007F') {
-
-            try {
-                removeAheadOfCaret();
-                model.setName(getText());
-
-                parentView.setHasChanged(true);
-                parentView.getParentDialog().updateDialogState();
-            } catch (SystemErrorException se) {
-                logger.error("Unable to delete from predicate name", se);
-            }
-
-        // If the character is not reserved - add it to the name of the pred
-        } else if (!this.isReserved(e.getKeyChar())) {
-
+        if (!this.isReserved(e.getKeyChar())) {
             try {
                 removeSelectedText();
                 StringBuffer currentValue = new StringBuffer(getText());
@@ -128,8 +99,27 @@ public final class VENameEditor extends EditorComponent {
     public void keyPressed(final KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
+                try {
+                    removeBehindCaret();
+                    model.setName(getText());
+
+                    parentView.setHasChanged(true);
+                    parentView.getParentDialog().updateDialogState();
+                } catch (SystemErrorException se) {
+                    logger.error("Unable to backspace from predicate name", se);
+                }
+                e.consume();
+                break;
             case KeyEvent.VK_DELETE:
-                // Ignore - handled when the key is typed.
+                try {
+                    removeAheadOfCaret();
+                    model.setName(getText());
+
+                    parentView.setHasChanged(true);
+                    parentView.getParentDialog().updateDialogState();
+                } catch (SystemErrorException se) {
+                    logger.error("Unable to delete from predicate name", se);
+                }
                 e.consume();
                 break;
             default:

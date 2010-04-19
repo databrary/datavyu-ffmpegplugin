@@ -1,565 +1,385 @@
 package org.openshapa.uitests;
 
-import java.awt.Font;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import org.openshapa.Configuration;
+
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.SpreadsheetColumnFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.fixture.VocabEditorDialogFixture;
+import org.fest.swing.fixture.VocabElementFixture;
+import org.fest.swing.timing.Timeout;
+import org.fest.swing.util.Platform;
+
+import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.OpenSHAPAView;
-import org.openshapa.views.discrete.SpreadsheetCell;
+import org.openshapa.views.VocabEditorV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-import org.uispec4j.Cell;
-import org.uispec4j.Column;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.Trigger;
-import org.uispec4j.Window;
-import org.uispec4j.interception.FileChooserHandler;
-import org.uispec4j.interception.WindowHandler;
-import org.uispec4j.interception.WindowInterceptor;
+
+import org.testng.Assert;
+
+import org.testng.annotations.Test;
+
 
 /**
  * Test the ability to zoom in on the contents of a cell.
  */
-public final class UIZoomTest extends OpenSHAPAUISpecTestCase {
+public final class UIZoomTest extends OpenSHAPATestClass {
 
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
+    /** Min font size. */
+    public static final int MIN_FONT_SIZE = 10;
 
-     /**
-     * Called after each test.
-     * @throws Exception
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-//    public void testTrue() {
-//        assertTrue(true);
-//    }
+    /** Max font size. */
+    public static final int MAX_FONT_SIZE = 40;
 
     /**
      * Test zooming in and reset.
      */
-//   public void testZoomingIn() {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//        int startFontSize = 0;
-//
-//        // 1. Open and run script to populate database
-//        String root = System.getProperty("testPath");
-//        File demoFile = new File(root + "/ui/demo_data.rb");
-//        assertTrue(demoFile.exists());
-//
-//        WindowInterceptor
-//                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-//                    .triggerClick())
-//                .process(FileChooserHandler.init()
-//                    .assertIsOpenDialog()
-//                    .assertAcceptsFilesOnly()
-//                    .select(demoFile.getAbsolutePath()))
-//                .process(new WindowHandler() {
-//                    public Trigger process(Window console) {
-//                        return console.getButton("Close").triggerClick();
-//                    }
-//                })
-//                .run();
-//
-//        // 1a. Reset zoom and get start font size
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-//                window.getUIComponents(Spreadsheet.class)[0]
-//                .getAwtComponent()));
-//        menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-//            .getSubMenu("Reset Zoom").click();
-//        startFontSize = ss.getColumns().elementAt(0).getCells().elementAt(0)
-//                .getValueFont().getSize();
-//
-//        SpreadsheetPanel sp = (SpreadsheetPanel)window.getUIComponents(Spreadsheet.class)[0].getAwtComponent();
-//        SpreadsheetCell sc = (SpreadsheetCell)sp.getColumns().elementAt(0).getCells().elementAt(0);
-//        JTextArea textArea = sc.getDataView();
-//        startFontSize = textArea.getFont().getSize();
-//
-//        // 2. Test zooming in from start
-//        int currFontSize = 0;
-//        int numberOfZooms = 0;
-//
-//        int firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                .elementAt(0).getValueFont().getSize();
-//
-//        while (currFontSize < firstCellFontSize) {
-//            Font f = Configuration.getInstance().getSSDataFont();
-//            currFontSize = firstCellFontSize;
-//            //Zoom in
-//            menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-//                    .getSubMenu("Zoom In").click();
-//
-//
-//            f = Configuration.getInstance().getSSDataFont();
-//
-////            menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-////                    .getSubMenu("Zoom In").click();
-////            menuBar.getMenu("Spreadsheet").getSubMenu("Show Spreadsheet").click();
-////            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-////                    Spreadsheet.class)[0].getAwtComponent()));
-//            numberOfZooms++;
-//            firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                    .elementAt(0).getValueFont().getSize();
-//
-//
-//            //Check that all font sizes have increased
-//            for (Column col : ss.getColumns()) {
-//                for (Cell cell : col.getCells()) {
-//                    assertTrue(cell.getValueFont().getSize()
-//                            == firstCellFontSize);
-//                }
-//            }
-////            assertTrue((firstCellFontSize > currFontSize) || (numberOfZooms > 1));
-//        }
-//
-////        assertTrue(numberOfZooms > 1);
-//
-//        // 3. Reset zoom and check reset
-//        menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-//                    .getSubMenu("Reset Zoom").click();
-////        ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-////                    Spreadsheet.class)[0].getAwtComponent()));
-//        assertTrue(startFontSize == ss.getColumns().elementAt(0).getCells()
-//                    .elementAt(0).getValueFont().getSize());
-//
-//        currFontSize = Integer.MAX_VALUE;
-//        numberOfZooms = 0;
-//
-//        firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                .elementAt(0).getValueFont().getSize();
-//
-//        // 4. Zoom out fully
-//         while (currFontSize > firstCellFontSize) {
-//            currFontSize = firstCellFontSize;
-//            //Zoom out
-//            menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-//                    .getSubMenu("Zoom Out").click();
-////            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-////                    Spreadsheet.class)[0].getAwtComponent()));
-//            numberOfZooms++;
-//            firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                    .elementAt(0).getValueFont().getSize();
-//         }
-//
-//        assertTrue(currFontSize < OpenSHAPAView.ZOOM_DEFAULT_SIZE);
-////        assertTrue(currFontSize < startFontSize);
-//
-//        //5. Test zoom in from smallest
-//        currFontSize = 0;
-//        numberOfZooms = 0;
-//
-//        firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                .elementAt(0).getValueFont().getSize();
-//
-//        while (currFontSize < firstCellFontSize) {
-//            currFontSize = firstCellFontSize;
-//            //Zoom in
-//            menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-//                    .getSubMenu("Zoom In").click();
-////            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-////                    Spreadsheet.class)[0].getAwtComponent()));
-//            numberOfZooms++;
-//            firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                    .elementAt(0).getValueFont().getSize();
-//
-//            //Check that all font sizes have increased
-//            for (Column col : ss.getColumns()) {
-//                for (Cell cell : col.getCells()) {
-//                    assertTrue(cell.getValueFont().getSize()
-//                            == firstCellFontSize);
-//                }
-//            }
-////            assertTrue((firstCellFontSize > currFontSize)
-////                    || (numberOfZooms > 1));
-//            assertTrue(firstCellFontSize > currFontSize);
-////                    || (numberOfZooms > 1));
-//        }
-//
-//        assertTrue(numberOfZooms > 1);
-//    }
+    @Test public void testZoomingIn() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-    /**
-     * The aim of this test is to:
-     *  1. Test the zoom reset functionality
-     *  2. Test if zoom in is zooming in by the correct amount
-     *  3. Test if zooming in is bounded by the minimum and maximum zoom size
-     * 
-     * The correctness of the zoom behaviour is tested against the constants
-     * defined in OpenSHAPAView, namely ZOOM_DEFAULT_SIZE for the reset
-     * functionality, and ZOOM_INTERVAL for zooming in using the correct
-     * increment.
-     */
-    public void testZoomingIn2() {
-         //Preparation
-        final Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-
-
-        // 1. Open and run script to populate database
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
-        assertTrue(demoFile.exists());
+        Assert.assertTrue(demoFile.exists());
 
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile.getAbsolutePath()))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+        // 1. Run script to populate
+        if (Platform.isOSX()) {
+            UIUtils.runScript(demoFile);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        // 1a. Reset zoom and get start font size
-        menuBar.getMenu("Spreadsheet")
-               .getSubMenu("Zoom")
-               .getSubMenu("Reset Zoom").click();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
-        /* 1b. Get start font size, this is the size being currently displayed
-         * by the spreadsheet.
-         */
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-//                (window.getUIComponents(Spreadsheet.class)[0]
-//                        .getAwtComponent()));
-//
-//        SpreadsheetPanel sp = (SpreadsheetPanel)window.getUIComponents(Spreadsheet.class)[0].getAwtComponent();
-//        SpreadsheetCell sc = (SpreadsheetCell)sp.getColumns().elementAt(0).getCells().elementAt(0);
-//        JTextArea textArea = sc.getDataView();
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
 
-//        FontSizeSeeker fss = new FontSizeSeeker();
-//        fss.setWindow(window);
-//
-//        SwingUtilities.invokeAndWait(fss);
-//
-//        final int startSSFontSize = fss.getFontSize();
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
+            Thread.yield();
+        }
 
-//        startSSFontSize = ss.getColumns().elementAt(0).getCells().elementAt(0)
-//                .getValueFont().getSize();
+        scriptConsole.button("closeButton").click();
 
-        // 1c. The stored configuration value should have reset to default
-        int startConfigFontSize = Configuration.getInstance().getSSDataFont().getSize();
-//        System.out.println("Reset zoom size: Config file - " + startConfigFontSize + ", Spreadsheet - " + startSSFontSize);
-        assertEquals(OpenSHAPAView.ZOOM_DEFAULT_SIZE, startConfigFontSize);
+        // 2. Get the spreadsheet, check that cells do exist
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
-        // 1d. The starting font size should be the default font size
-//        assertEquals(OpenSHAPAView.ZOOM_DEFAULT_SIZE, startSSFontSize);
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0,
+            "Expecting columns to exist.");
 
-        // 2. Zoom in once
-        menuBar.getMenu("Spreadsheet")
-               .getSubMenu("Zoom")
-               .getSubMenu("Zoom In").click();
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            Assert.assertTrue(column.numOfCells() > 0,
+                "Expecting cells to exist.");
+        }
 
-        // 2a. Verify that we have zoomed in.
-        int newConfigFontSize = Configuration.getInstance()
-                .getSSDataFont().getSize();
-        assertTrue(newConfigFontSize > startConfigFontSize);
+        // 3. Reset the zoom size, and get the initial zoom size
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+            "Reset Zoom");
 
-//        int newSSFontSize = ss.getColumns().elementAt(0).getCells().elementAt(0)
-//                .getValueFont().getSize();
-//        int newSSFontSize = sc.getDataView().getFont().getSize();
-//        sp = (SpreadsheetPanel)window.getUIComponents(Spreadsheet.class)[0].getAwtComponent();
-//        sc = (SpreadsheetCell)sp.getColumns().elementAt(0).getCells().elementAt(0);
-//        textArea = sc.getDataView();
+        final int initialSize = spreadsheet.column(1).cell(1).cellValue().font()
+            .target().getSize();
 
-//        assertTrue(newSSFontSize > startSSFontSize);
+        Assert.assertTrue(initialSize == OpenSHAPAView.ZOOM_DEFAULT_SIZE,
+            "Initial zoom size incorrect.");
 
-        // 2b. Verify that we have zoomed in with the correct stepping
-//        assertEquals(newSSFontSize - startSSFontSize, OpenSHAPAView.ZOOM_INTERVAL);
-        assertEquals(newConfigFontSize - startConfigFontSize,
-                OpenSHAPAView.ZOOM_INTERVAL);
+        int previousSize = initialSize;
 
-        /* 2c. Verify that the zoom value is bounded between the minimum and
-         * maximum zoom size.
-         */
-//        assertTrue(OpenSHAPAView.ZOOM_MIN_SIZE <= newSSFontSize);
-//        assertTrue(newSSFontSize <= OpenSHAPAView.ZOOM_MAX_SIZE);
-        assertTrue(OpenSHAPAView.ZOOM_MIN_SIZE <= newConfigFontSize);
-        assertTrue(newConfigFontSize <= OpenSHAPAView.ZOOM_MAX_SIZE);
-    }
+        // 4. Zoom in
+        while (previousSize < OpenSHAPAView.ZOOM_MAX_SIZE) {
+            mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                "Zoom In");
 
-    /**
-     * These inner classes were created because I thought telling the
-     * application to perform zooms in the event dispatcher thread would solve
-     * the problem of not being able to retrieve the expected zoom value.
-     * However, this approach did not work.
-     */
-//    private class ZoomInHelper implements Runnable {
-//        MenuBar menuBar;
-//
-//        public void setMenuBar(MenuBar menuBar) {
-//            this.menuBar = menuBar;
-//        }
-//
-//        public void run() {
-//            System.out.println("In the AWT-EDT? " + SwingUtilities.isEventDispatchThread());
-//            menuBar.getMenu("Spreadsheet")
-//               .getSubMenu("Zoom")
-//               .getSubMenu("Zoom In").click();
-//        }
-//
-//    }
+            /*
+             * Test the font sizes of the first cell only because as the zoom
+             * size increases, cells may be pushed out of view. When this
+             * happens, Swing does not update the hidden cells, causing tests to
+             * fail.
+             */
+            spreadsheet.column(1).cell(1).cellValue().font().requireSize(
+                previousSize + OpenSHAPAView.ZOOM_INTERVAL);
 
-//    private class FontSizeSeeker implements Runnable {
-//        int fontSize;
-//        Window window;
-//
-//
-//        public int getFontSize() {
-//            return fontSize;
-//        }
-//
-//        public void setWindow(Window window) {
-//            this.window = window;
-//        }
-//
-//        public void run() {
-//            System.out.println("In the AWT-EDT? " + SwingUtilities.isEventDispatchThread());
-//            SpreadsheetPanel sp = (SpreadsheetPanel)window
-//                    .getUIComponents(Spreadsheet.class)[0]
-//                    .getAwtComponent();
-//            SpreadsheetCell sc = (SpreadsheetCell)sp
-//                    .getColumns()
-//                    .elementAt(0)
-//                    .getCells()
-//                    .elementAt(0);
-//            JTextArea textArea = sc.getDataView();
-//            fontSize = textArea.getFont().getSize();
-//            System.out.println("FSS: " + fontSize);
-//        }
-//
-//    }
+            previousSize = spreadsheet.column(1).cell(1).cellValue().font()
+                .target().getSize();
+        }
 
-    /**
-     * The aim of this test is to:
-     *  1. Test the zoom reset functionality
-     *  2. Test if zoom out is zooming out by the correct amount
-     *  3. Test if zooming out is bounded by the minimum and maximum zoom size
-     *
-     * The correctness of the zoom behaviour is tested against the constants
-     * defined in OpenSHAPAView, namely ZOOM_DEFAULT_SIZE for the reset
-     * functionality, and ZOOM_INTERVAL for zooming in using the correct
-     * increment.
-     */
-    public void testZoomingOut2() {
-        //Preparation
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
-        int startSSFontSize = 0;
+        Assert.assertTrue(previousSize == OpenSHAPAView.ZOOM_MAX_SIZE,
+            "Maximum zoom size not achieved.");
 
-        // 1. Open and run script to populate database
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
-        assertTrue(demoFile.exists());
+        // 5. Reset zoom, check reset.
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+            "Reset Zoom");
 
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile.getAbsolutePath()))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+        final int resetSize = spreadsheet.column(1).cell(1).cellValue().font()
+            .target().getSize();
 
-        // 1a. Reset zoom and get start font size
-        menuBar.getMenu("Spreadsheet")
-               .getSubMenu("Zoom")
-               .getSubMenu("Reset Zoom").click();
+        Assert.assertTrue(resetSize == OpenSHAPAView.ZOOM_DEFAULT_SIZE,
+            "Reset zoom size incorrect.");
 
-        /* 1b. Get start font size, this is the size being currently displayed
-         * by the spreadsheet.
-         */
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-//                (window.getUIComponents(Spreadsheet.class)[0]
-//                        .getAwtComponent()));
+        // 6. Zoom out all the way
+        previousSize = resetSize;
 
-//        startSSFontSize = ss.getColumns().elementAt(0).getCells().elementAt(0)
-//                .getValueFont().getSize();
+        while (previousSize > OpenSHAPAView.ZOOM_MIN_SIZE) {
+            mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom Out")
+                .click();
 
+            previousSize = spreadsheet.column(1).cell(1).cellValue().font()
+                .target().getSize();
+        }
 
-        // 1c. The stored configuration value should have reset to default
-        int startConfigFontSize = Configuration.getInstance().getSSDataFont().getSize();
-        assertEquals(OpenSHAPAView.ZOOM_DEFAULT_SIZE, startConfigFontSize);
+        Assert.assertTrue(previousSize == OpenSHAPAView.ZOOM_MIN_SIZE,
+            "Minimum zoom size not achieved.");
 
-        // 1d. The starting font size should be the default font size
-//        assertEquals(OpenSHAPAView.ZOOM_DEFAULT_SIZE, startSSFontSize);
+        // 7. Zoom in
+        while (previousSize < MAX_FONT_SIZE) {
+            mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                "Zoom In");
 
-        // 2. Zoom in once
-        menuBar.getMenu("Spreadsheet")
-               .getSubMenu("Zoom")
-               .getSubMenu("Zoom Out").click();
+            /*
+             * Test the font sizes of the first cell only because as the zoom
+             * size increases, cells may be pushed out of view. When this
+             * happens, Swing does not update the hidden cells, causing tests to
+             * fail.
+             */
+            spreadsheet.column(1).cell(1).cellValue().font().requireSize(
+                previousSize + OpenSHAPAView.ZOOM_INTERVAL);
 
-        // 2a. Verify that we have zoomed out.
-        int newConfigFontSize = Configuration.getInstance()
-                .getSSDataFont().getSize();
-        assertTrue(newConfigFontSize < startConfigFontSize);
+            previousSize = spreadsheet.column(1).cell(1).cellValue().font()
+                .target().getSize();
+        }
 
-//        int newSSFontSize = ss.getColumns().elementAt(0).getCells().elementAt(0)
-//                .getValueFont().getSize();
-//        assertTrue(newSSFontSize < startSSFontSize);
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+            "Zoom In");
 
-        // 2b. Verify that we have zoomed out with the correct stepping
-//        assertEquals(startSSFontSize - newSSFontSize, OpenSHAPAView.ZOOM_INTERVAL);
+        previousSize = spreadsheet.column(1).cell(1).cellValue().font().target()
+            .getSize();
 
-        /* 2c. Verify that the zoom value is bounded between the minimum and
-         * maximum zoom size.
-         */
-//        assertTrue(OpenSHAPAView.ZOOM_MIN_SIZE <= newSSFontSize);
-//        assertTrue(newSSFontSize <= OpenSHAPAView.ZOOM_MAX_SIZE);
-        assertTrue(OpenSHAPAView.ZOOM_MIN_SIZE <= newConfigFontSize);
-        assertTrue(newConfigFontSize <= OpenSHAPAView.ZOOM_MAX_SIZE);
+        Assert.assertTrue(previousSize == OpenSHAPAView.ZOOM_MAX_SIZE,
+            "Maximum zoom size not achieved.");
+
     }
 
     /**
      * Test zooming out and reset.
      */
-//    public void testZoomingOut() {
-//        //Preparation
-//        Window window = getMainWindow();
-//        MenuBar menuBar = window.getMenuBar();
-//        int startFontSize = 0;
-//
-//        // 1. Open and run script to populate database
-//        String root = System.getProperty("testPath");
-//        File demoFile = new File(root + "/ui/demo_data.rb");
-//        assertTrue(demoFile.exists());
-//
-//        WindowInterceptor
-//                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-//                    .triggerClick())
-//                .process(FileChooserHandler.init()
-//                    .assertIsOpenDialog()
-//                    .assertAcceptsFilesOnly()
-//                    .select(demoFile.getAbsolutePath()))
-//                .process(new WindowHandler() {
-//                    public Trigger process(Window console) {
-//                        return console.getButton("Close").triggerClick();
-//                    }
-//                })
-//                .run();
-//
-//        // 1a. Reset zoom and get start font size
-//        menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-//            .getSubMenu("Reset Zoom").click();
-//        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel) (
-//                window.getUIComponents(Spreadsheet.class)[0]
-//                .getAwtComponent()));
-//        startFontSize = ss.getColumns().elementAt(0).getCells().elementAt(0)
-//                .getValueFont().getSize();
-//
-//        // 2. Test zooming out from start
-//        int currFontSize = Integer.MAX_VALUE;
-//        int numberOfZooms = 0;
-//
-//        int firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                .elementAt(0).getValueFont().getSize();
-//
-//        while (currFontSize > firstCellFontSize) {
-//            currFontSize = firstCellFontSize;
-//            //Zoom in
-//            menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-//                    .getSubMenu("Zoom Out").click();
-//            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-//                    Spreadsheet.class)[0].getAwtComponent()));
-//            numberOfZooms++;
-//            firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                    .elementAt(0).getValueFont().getSize();
-//
-//            //Check that all font sizes have decreased
-//            for (Column col : ss.getColumns()) {
-//                for (Cell cell : col.getCells()) {
-//                    assertTrue(cell.getValueFont().getSize()
-//                            == firstCellFontSize);
-//                }
-//            }
-//            assertTrue((firstCellFontSize < currFontSize)
-//                    || (numberOfZooms > 1));
-//        }
-//
-//        assertTrue(numberOfZooms > 1);
-//
-//        // 3. Reset zoom and check reset
-//        menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-//                    .getSubMenu("Reset Zoom").click();
-//        ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-//                    Spreadsheet.class)[0].getAwtComponent()));
-//        assertTrue(startFontSize == ss.getColumns().elementAt(0).getCells()
-//                    .elementAt(0).getValueFont().getSize());
-//
-//        currFontSize = 0;
-//        numberOfZooms = 0;
-//
-//        firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                .elementAt(0).getValueFont().getSize();
-//
-//        // 4. Zoom in fully
-//         while (currFontSize < firstCellFontSize) {
-//            currFontSize = firstCellFontSize;
-//            //Zoom out
-//            menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-//                    .getSubMenu("Zoom In").click();
-//            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-//                    Spreadsheet.class)[0].getAwtComponent()));
-//            numberOfZooms++;
-//            firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                    .elementAt(0).getValueFont().getSize();
-//         }
-//
-//        assertTrue(currFontSize > startFontSize);
-//
-//        //5. Test zoom out from largest
-//        currFontSize = Integer.MAX_VALUE;
-//        numberOfZooms = 0;
-//
-//        firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                .elementAt(0).getValueFont().getSize();
-//
-//        while (currFontSize > firstCellFontSize) {
-//            currFontSize = firstCellFontSize;
-//            //Zoom out
-//            menuBar.getMenu("Spreadsheet").getSubMenu("Zoom")
-//                    .getSubMenu("Zoom Out").click();
-//            ss = new Spreadsheet((SpreadsheetPanel) (window.getUIComponents(
-//                    Spreadsheet.class)[0].getAwtComponent()));
-//            numberOfZooms++;
-//            firstCellFontSize = ss.getColumns().elementAt(0).getCells()
-//                    .elementAt(0).getValueFont().getSize();
-//
-//            //Check that all font sizes have increased
-//            for (Column col : ss.getColumns()) {
-//                for (Cell cell : col.getCells()) {
-//                    assertTrue(cell.getValueFont().getSize()
-//                            == firstCellFontSize);
-//                }
-//            }
-//            assertTrue((firstCellFontSize < currFontSize)
-//                    || (numberOfZooms > 1));
-//        }
-//
-//        assertTrue(numberOfZooms > 1);
-//    }
+    @Test public void testZoomingOut() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data.rb");
+        Assert.assertTrue(demoFile.exists());
+
+        // 1. Run script to populate
+        if (Platform.isOSX()) {
+            UIUtils.runScript(demoFile);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
+
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
+            Thread.yield();
+        }
+
+        scriptConsole.button("closeButton").click();
+
+        // 2. Get the spreadsheet, check that cells do exist
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0,
+            "Expecting columns to exist.");
+
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            Assert.assertTrue(column.numOfCells() > 0,
+                "Expecting cells to exist.");
+        }
+
+        // 3. Reset the zoom size, and get the initial zoom size
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+            "Reset Zoom");
+
+        final int initialSize = spreadsheet.column(1).cell(1).cellValue().font()
+            .target().getSize();
+
+        Assert.assertTrue(initialSize == OpenSHAPAView.ZOOM_DEFAULT_SIZE,
+            "Initial zoom size incorrect.");
+
+        int previousSize = initialSize;
+
+        // 4. Zoom out
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+            "Zoom Out");
+        previousSize = spreadsheet.column(1).cell(1).cellValue().font().target()
+            .getSize();
+        Assert.assertTrue(previousSize ==
+            (OpenSHAPAView.ZOOM_DEFAULT_SIZE - OpenSHAPAView.ZOOM_INTERVAL));
+
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+            "Zoom Out");
+
+        previousSize = spreadsheet.column(1).cell(1).cellValue().font().target()
+            .getSize();
+        Assert.assertTrue(previousSize == OpenSHAPAView.ZOOM_MIN_SIZE);
+
+        // 5. Zoom in all the way
+        while (previousSize < OpenSHAPAView.ZOOM_MAX_SIZE) {
+            mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+                "Zoom In");
+
+            previousSize = spreadsheet.column(1).cell(1).cellValue().font()
+                .target().getSize();
+        }
+
+        Assert.assertTrue(previousSize == OpenSHAPAView.ZOOM_MAX_SIZE,
+            "Maximum zoom size not achieved.");
+
+        // 6. Zoom out from max
+        while (previousSize > MIN_FONT_SIZE) {
+            mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom Out")
+                .click();
+
+            spreadsheet.column(1).cell(1).cellValue().font().requireSize(
+                previousSize - OpenSHAPAView.ZOOM_INTERVAL);
+
+            previousSize = spreadsheet.column(1).cell(1).cellValue().font()
+                .target().getSize();
+        }
+
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+            "Zoom Out");
+        previousSize = spreadsheet.column(1).cell(1).cellValue().font().target()
+            .getSize();
+        Assert.assertTrue(previousSize == OpenSHAPAView.ZOOM_MIN_SIZE);
+
+    }
+
+    /**
+     * Test to ensure vocab editor contents is not being zoomed.
+     */
+    @Test public void testBug635() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data.rb");
+        Assert.assertTrue(demoFile.exists());
+
+        // 1. Run script to populate
+        if (Platform.isOSX()) {
+            UIUtils.runScript(demoFile);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
+
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
+            Thread.yield();
+        }
+
+        scriptConsole.button("closeButton").click();
+
+        // 2. Get the spreadsheet, check that cells do exist
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0,
+            "Expecting columns to exist.");
+
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            Assert.assertTrue(column.numOfCells() > 0,
+                "Expecting cells to exist.");
+        }
+
+        // 3. Reset the zoom size, and get the initial zoom size
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+            "Reset Zoom");
+
+        final int initialSize = spreadsheet.column(1).cell(1).cellValue().font()
+            .target().getSize();
+
+        Assert.assertTrue(initialSize == OpenSHAPAView.ZOOM_DEFAULT_SIZE,
+            "Initial zoom size incorrect.");
+
+        int previousSize = initialSize;
+
+        //3a. Get initial zoom size of vocab editor window
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
+        int veFontSize = veDialog.allVocabElements().firstElement().value()
+            .font().target().getSize();
+
+        //Confirm that all VEs are the same size.
+        for (VocabElementFixture v : veDialog.allVocabElements()) {
+            Assert.assertEquals(veFontSize,
+                v.value().font().target().getSize());
+        }
+
+        // 4. Zoom in
+        previousSize = spreadsheet.column(1).cell(1).cellValue().font().target()
+            .getSize();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
+            "Zoom In");
+
+        /*
+         * Test the font sizes of the first cell only because as the zoom
+         * size increases, cells may be pushed out of view. When this
+         * happens, Swing does not update the hidden cells, causing tests to
+         * fail.
+         */
+        spreadsheet.column(1).cell(1).cellValue().font().requireSize(
+            previousSize + OpenSHAPAView.ZOOM_INTERVAL);
+
+        for (VocabElementFixture v : veDialog.allVocabElements()) {
+            Assert.assertEquals(veFontSize,
+                v.value().font().target().getSize());
+        }
+
+        // 5. Zoom out
+        previousSize = spreadsheet.column(1).cell(1).cellValue().font().target()
+            .getSize();
+
+        mainFrameFixture.menuItemWithPath("Spreadsheet", "Zoom", "Zoom Out")
+            .click();
+
+        spreadsheet.column(1).cell(1).cellValue().font().requireSize(
+            previousSize - OpenSHAPAView.ZOOM_INTERVAL);
+
+        for (VocabElementFixture v : veDialog.allVocabElements()) {
+            Assert.assertEquals(veFontSize,
+                v.value().font().target().getSize());
+        }
+    }
 }

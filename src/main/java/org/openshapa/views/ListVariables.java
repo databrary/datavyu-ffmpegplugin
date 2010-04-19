@@ -1,14 +1,14 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.db.DataColumn;
-import org.openshapa.db.Database;
-import org.openshapa.db.ExternalColumnListListener;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.DataColumn;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.ExternalColumnListListener;
+import org.openshapa.models.db.SystemErrorException;
 import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
-import org.apache.log4j.Logger;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
@@ -18,8 +18,8 @@ import org.jdesktop.application.ResourceMap;
 public final class ListVariables extends OpenSHAPADialog
 implements ExternalColumnListListener {
 
-    /** Logger for this class. */
-    private static Logger logger = Logger.getLogger(ListVariables.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(ListVariables.class);
 
     /** The column for if a variable is visible or not. */
     private static final int VCOLUMN = 0;
@@ -202,13 +202,14 @@ implements ExternalColumnListListener {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(ListVariables.class);
-        setTitle(resourceMap.getString("Form.title")); // NOI18N
-        setName("Form"); // NOI18N
+        setTitle(resourceMap.getString("variableListDialog.title")); // NOI18N
+        setName("variableListDialog"); // NOI18N
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
         variableList.setEnabled(false);
         variableList.setModel(tableModel);
+        variableList.setMinimumSize(new java.awt.Dimension(400, 200));
         variableList.setName("variableList");
         variableList.setRowSelectionAllowed(false);
         jScrollPane1.setViewportView(variableList);

@@ -1,11 +1,11 @@
 package org.openshapa.views.discrete.layouts;
 
-import org.openshapa.db.SystemErrorException;
+import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import java.util.Vector;
-import org.apache.log4j.Logger;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
@@ -27,9 +27,8 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
     /** Maximum pixels to scale to. */
     private static final int MAX_SCROLL_PIXELS = 10000;
 
-    /** Logger for this class. */
-    private static Logger logger =
-                              Logger.getLogger(SheetLayoutStrongTemporal.class);
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix.getInstance(SheetLayoutStrongTemporal.class);
 
     /**
      * SheetLayoutStrongTemporal constructor.

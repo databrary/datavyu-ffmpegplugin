@@ -255,7 +255,11 @@ implements FocusListener, KeyListener, MouseListener {
      * @param e The KeyEvent that triggered this action.
      */
     public void keyTyped(KeyEvent e) {
-        currentEditor.keyTyped(e);
+        // Key stroke is NOT delete or backspace - handle this within the crazy
+        // editors - otherwise we assume this has been handled by keyPressed.
+        if (!((e.getKeyChar() ==  '\u007F') || (e.getKeyChar() ==  '\u0008'))) {
+            currentEditor.keyTyped(e);
+        }
     }
 
     /**

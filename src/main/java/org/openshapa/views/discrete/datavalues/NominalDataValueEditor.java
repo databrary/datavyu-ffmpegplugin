@@ -1,15 +1,15 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
-import org.openshapa.db.DataCell;
-import org.openshapa.db.Matrix;
+import org.openshapa.models.db.DataCell;
+import org.openshapa.models.db.Matrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.apache.log4j.Logger;
-import org.openshapa.db.Database;
-import org.openshapa.db.NominalDataValue;
-import org.openshapa.db.PredDataValue;
-import org.openshapa.db.SystemErrorException;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.NominalDataValue;
+import org.openshapa.models.db.PredDataValue;
+import org.openshapa.models.db.SystemErrorException;
 
 /**
  * This class is the character editor of a NominalDataValue.
@@ -24,8 +24,8 @@ public final class NominalDataValueEditor extends DataValueEditor {
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n\"\u001B";
 
     /** The logger for this class. */
-    private static Logger logger = Logger
-                                   .getLogger(NominalDataValueEditor.class);
+    private UserMetrix logger = UserMetrix
+            .getInstance(NominalDataValueEditor.class);
 
     /**
      * Constructor.
@@ -99,7 +99,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
             && !isReserved(e.getKeyChar())) {
             this.removeSelectedText();
             StringBuffer currentValue = new StringBuffer(getText());
-
+            
             // If we have a delete or backspace key - do not insert.
             if (!(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                   && e.getKeyChar() == '\u007F') &&

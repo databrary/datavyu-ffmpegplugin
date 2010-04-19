@@ -1,96 +1,79 @@
 package org.openshapa.uitests;
 
+import java.awt.event.KeyEvent;
+
 import java.io.File;
-import org.uispec4j.interception.WindowInterceptor;
-import org.openshapa.views.discrete.SpreadsheetPanel;
-import java.util.Vector;
-import org.uispec4j.Cell;
-import org.uispec4j.Key;
-import org.uispec4j.MenuBar;
-import org.uispec4j.OpenSHAPAUISpecTestCase;
-import org.uispec4j.Spreadsheet;
-import org.uispec4j.TextBox;
-import org.uispec4j.Trigger;
-import org.uispec4j.UISpec4J;
-import org.uispec4j.Window;
-import org.uispec4j.interception.FileChooserHandler;
-import org.uispec4j.interception.WindowHandler;
+
+import org.fest.swing.core.KeyPressInfo;
+import org.fest.swing.core.matcher.JTextComponentMatcher;
+import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.timing.Timeout;
+import org.fest.swing.util.Platform;
+
+import org.openshapa.util.UIUtils;
+
+import org.testng.Assert;
+
+import org.testng.annotations.Test;
+
 
 /**
- * Bug 583.
- * Highlighting float value and pressing zero changes to "."
+ * Bug 583. Highlighting float value and pressing zero changes to "."
  */
-public final class UIBug583Test extends OpenSHAPAUISpecTestCase {
-
-    /**
-     * Initialiser called before each unit test.
-     *
-     * @throws java.lang.Exception When unable to initialise test
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-     /**
-     * Called after each test.
-     * @throws Exception on any error
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    static {
-      UISpec4J.init();
-    }
+public final class UIBug583Test extends OpenSHAPATestClass {
 
     /**
      * Bug 583 test with a range of values, including 0.
-     *
-     * @throws java.lang.Exception on any error
      */
-    public void testBug583() throws Exception {
-        String varName = "float";
-        String varType = "FLOAT";
+    @Test public void testBug583() throws InterruptedException {
+
+        /**
+         * Different cell variable types.
+         */
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        String[] floatCellValues = { /* BugzID:747-"0.000000", */
+                "0.123400", "0.246800", "0.370200", "0.493600", "0.617000",
+                "0.740400", "0.863800", "0.987200", "1.110600"
+            };
 
         String root = System.getProperty("testPath");
         File demoFile = new File(root + "/ui/demo_data.rb");
-        assertTrue(demoFile.exists());
+        Assert.assertTrue(demoFile.exists());
 
-         // Retrieve the components
-        Window window = getMainWindow();
-        MenuBar menuBar = window.getMenuBar();
+        // 1. Run script to populate
+        if (Platform.isOSX()) {
+            UIUtils.runScript(demoFile);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
 
-        // 1. Open and run script to populate database
-        WindowInterceptor
-                .init(menuBar.getMenu("Script").getSubMenu("Run script")
-                    .triggerClick())
-                .process(FileChooserHandler.init()
-                    .assertIsOpenDialog()
-                    .assertAcceptsFilesOnly()
-                    .select(demoFile))
-                .process(new WindowHandler() {
-                    public Trigger process(Window console) {
-                        return console.getButton("Close").triggerClick();
-                    }
-                })
-                .run();
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
 
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
 
-        // 2. Get float column
-        Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-                (window.getUIComponents(Spreadsheet.class)[0]
-                .getAwtComponent()));
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-        assertTrue(cells.size() > 0);
-        // 3. Select all and press 0 for each cell.
-        for (Cell c : cells) {
-            c.selectAllAndTypeKey(Cell.VALUE, Key.d0);
-            TextBox t = c.getValue();
-            //BugzID:747 - assertTrue(t.getText().equalsIgnoreCase("0.0"));
+        while ((System.currentTimeMillis() < maxTime) &&
+                (!scriptConsole.textBox().text().contains("Finished"))) {
+            Thread.yield();
+        }
+
+        scriptConsole.button("closeButton").click();
+
+        // 2. Get each float cell
+        for (String floatVal : floatCellValues) {
+            JTextComponentFixture cellValue = mainFrameFixture.textBox(
+                    JTextComponentMatcher.withText(floatVal));
+            cellValue.selectAll();
+            cellValue.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_0));
+            Assert.assertEquals(cellValue.text(), "0.0");
         }
     }
 }
-
