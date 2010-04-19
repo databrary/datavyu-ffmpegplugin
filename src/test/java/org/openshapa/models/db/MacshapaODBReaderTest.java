@@ -10692,23 +10692,23 @@ public class MacshapaODBReaderTest {
 
         if ( errorsDetected )
         {
-            org.junit.Assert.fail("errors detected during load.");
+            Assert.fail("errors detected during load.");
         }
 
         if ( warningsIssued )
         {
-            org.junit.Assert.fail("warnings issued during load.");
+            Assert.fail("warnings issued during load.");
         }
 
         if ( nlDumpMismatch )
         {
-            org.junit.Assert.fail(
+            Assert.fail(
                 "actual nl db dump output doesn't match expected dump ourput.");
         }
 
         if ( crDumpMismatch )
         {
-            org.junit.Assert.fail(
+            Assert.fail(
                 "actual cr db dump output doesn't match expected dump ourput.");
         }
 
