@@ -6,7 +6,8 @@
         Will coerce the name to a valid predicate name.
 
 
-      WARNING  74 (Line 231:87): Encountered excess arguments in a predicate value.  The excess arguments were discarded.
+      WARNING  66 (Line 231:79): Encountered a formal argument whose name does not match the expected formal argumentname.
+        The formal argument appeared in a predicate value.  The expected formal argument will be used.
 
 
       WARNING  66 (Line 232:70): Encountered a formal argument whose name does not match the expected formal argumentname.

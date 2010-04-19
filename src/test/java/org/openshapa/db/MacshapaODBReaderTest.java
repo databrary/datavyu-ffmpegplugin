@@ -7729,6 +7729,2489 @@ public class MacshapaODBReaderTest {
 
     } /* MacshapaODBReaderTest::parserTest198() */
 
+    
+    // The round trip tests take valid MacSHAPA ODB databases, read them in
+    // write them back out again, and verify that the output file matches the
+    // the expected output file, and that no errors or warnings were issued 
+    // in the process.
+    //
+    // If you add a new round trip test, be sure to verify that the expected
+    // output file is readable without warnings or errors by MacSHAPA, and 
+    // that the database read by MacSHAPA contains the expected data.
+    //
+    // The initial set of round trip test data bases were taken from the 
+    // Databases and Databases from Hell folders in the MacSHAPA development 
+    // folder.
+    //
+    // In general, the listingFile and errorFile passed to runRoundTripTest
+    // will be null.  However, we retain the option of generating listing and
+    // error files for debugging purposes.
+    //
+    // Similarly, the error and warning limits passed into runRoundTripTest()
+    // should be 1, although we may wish to increase these limits temporarily 
+    // for debugging purposes.
+
+    @Test
+    public void roundTripTest00()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest00()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_00_in__21variables.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_00__21variables.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_00__21variables.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_00_nl_out__21variables.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_00_cr_out__21variables.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_00_nl_out__21variables.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_00_cr_out__21variables.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest00() */
+
+
+    @Test
+    public void roundTripTest01()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest01()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_01_in__Bad_Sync.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_01__Bad_Sync.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_01__Bad_Sync.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_01_nl_out__Bad_Sync.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_01_cr_out__Bad_Sync.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_01_nl_out__Bad_Sync.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_01_cr_out__Bad_Sync.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest01() */
+
+
+    @Test
+    public void roundTripTest02()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest02()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_02_in__Comparison.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_02__Comparison.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_02__Comparison.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_02_nl_out__Comparison.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_02_cr_out__Comparison.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_02_nl_out__Comparison.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_02_cr_out__Comparison.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest02() */
+
+
+    @Test
+    public void roundTripTest03()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest03()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_03_in__Cycles_Test.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_03__Cycles_Test.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_03__Cycles_Test.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_03_nl_out__Cycles_Test.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_03_cr_out__Cycles_Test.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_03_nl_out__Cycles_Test.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_03_cr_out__Cycles_Test.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest03() */
+
+
+    @Test
+    public void roundTripTest04()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest04()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_04_in__Edit.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_04__rtt_04_in__Edit.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_04__rtt_04_in__Edit.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_04_nl_out__Edit.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_04_cr_out__Edit.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_04_nl_out__Edit.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_04_cr_out__Edit.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest04() */
+
+
+    @Test
+    public void roundTripTest05()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest05()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_05_in__Encoding_Editor_Test_1.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_05__Encoding_Editor_Test_1.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_05__Encoding_Editor_Test_1.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_05_nl_out__Encoding_Editor_Test_1.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_05_cr_out__Encoding_Editor_Test_1.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_05_nl_out__Encoding_Editor_Test_1.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_05_cr_out__Encoding_Editor_Test_1.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest05() */
+
+
+    @Test
+    public void roundTripTest06()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest06()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_06_in__Encoding_Editor_Test_2.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_06__Encoding_Editor_Test_2.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_06__Encoding_Editor_Test_2.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_06_nl_out__Encoding_Editor_Test_2.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_06_cr_out__Encoding_Editor_Test_2.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_06_nl_out__Encoding_Editor_Test_2.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_06_cr_out__Encoding_Editor_Test_2.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest06() */
+
+
+    @Test
+    public void roundTripTest07()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest07()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_07_in__Encoding_Editor_Test_3.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_07__Encoding_Editor_Test_3.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_07__Encoding_Editor_Test_3.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_07_nl_out__Encoding_Editor_Test_3.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_07_cr_out__Encoding_Editor_Test_3.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_07_nl_out__Encoding_Editor_Test_3.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_07_cr_out__Encoding_Editor_Test_3.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest07() */
+
+
+    @Test
+    public void roundTripTest08()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest08()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_08_in__FRED.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_08__FRED.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_08__FRED.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_08_nl_out__FRED.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_08_cr_out__FRED.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_08_nl_out__FRED.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_08_cr_out__FRED.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest08() */
+
+
+    @Test
+    public void roundTripTest09()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest09()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_09_in__Format.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_09__Format.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_09__Format.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_09_nl_out__Format.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_09_cr_out__Format.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_09_nl_out__Format.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_09_cr_out__Format.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest09() */
+
+
+    @Test
+    public void roundTripTest10()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest10()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_10_in__Jeff.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_10__Jeff.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_10__Jeff.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_10_nl_out__Jeff.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_10_cr_out__Jeff.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_10_nl_out__Jeff.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_10_cr_out__Jeff.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest10() */
+
+
+    @Test
+    public void roundTripTest11()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest11()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_11_in__LSA_Test_0.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_11__LSA_Test_0.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_11__LSA_Test_0.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_11_nl_out__LSA_Test_0.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_11_cr_out__LSA_Test_0.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_11_nl_out__LSA_Test_0.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_11_cr_out__LSA_Test_0.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest11() */
+
+
+    @Test
+    public void roundTripTest12()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest12()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_12_in__LimitingMatrixTest.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_12__LimitingMatrixTest.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_12__LimitingMatrixTest.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_12_nl_out__LimitingMatrixTest.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_12_cr_out__LimitingMatrixTest.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_12_nl_out__LimitingMatrixTest.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_12_cr_out__LimitingMatrixTest.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest12() */
+
+
+    @Test
+    public void roundTripTest13()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest13()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_13_in__Long.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_13__Long.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_13__Long.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_13_nl_out__Long.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_13_cr_out__Long.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_13_nl_out__Long.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_13_cr_out__Long.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest13() */
+
+
+    @Test
+    public void roundTripTest14()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest14()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_14_in__MCGILL.hell.1.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_14__MCGILL.hell.1.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_14__MCGILL.hell.1.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_14_nl_out__MCGILL.hell.1.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_14_cr_out__MCGILL.hell.1.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_14_nl_out__MCGILL.hell.1.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_14_cr_out__MCGILL.hell.1.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest14() */
+
+
+    @Test
+    public void roundTripTest15()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest15()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_15_in__MSAVTA.1.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_15__MSAVTA.1.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_15__MSAVTA.1.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_15_nl_out__MSAVTA.1.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_15_cr_out__MSAVTA.1.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_15_nl_out__MSAVTA.1.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_15_cr_out__MSAVTA.1.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest15() */
+
+
+    @Test
+    public void roundTripTest16()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest16()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_16_in__NASA.hell.1.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_16__NASA.hell.1.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_16__NASA.hell.1.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_16_nl_out__NASA.hell.1.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_16_cr_out__NASA.hell.1.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_16_nl_out__NASA.hell.1.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_16_cr_out__NASA.hell.1.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest16() */
+
+
+    @Test
+    public void roundTripTest17()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest17()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_17_in__OQL_Mod_Test_00.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_17__OQL_Mod_Test_00.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_17__OQL_Mod_Test_00.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_17_nl_out__OQL_Mod_Test_00.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_17_cr_out__OQL_Mod_Test_00.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_17_nl_out__OQL_Mod_Test_00.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_17_cr_out__OQL_Mod_Test_00.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest17() */
+
+
+    @Test
+    public void roundTripTest18()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest18()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_18_in__OQL_Mod_Test_01.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_18__OQL_Mod_Test_01.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_18__OQL_Mod_Test_01.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_18_nl_out__OQL_Mod_Test_01.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_18_cr_out__OQL_Mod_Test_01.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_18_nl_out__OQL_Mod_Test_01.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_18_cr_out__OQL_Mod_Test_01.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest18() */
+
+
+    @Test
+    public void roundTripTest19()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest19()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_19_in__OQL_Mod_Test_02.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_19__OQL_Mod_Test_02.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_19__OQL_Mod_Test_02.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_19_nl_out__OQL_Mod_Test_02.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_19_cr_out__OQL_Mod_Test_02.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_19_nl_out__OQL_Mod_Test_02.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_19_cr_out__OQL_Mod_Test_02.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest19() */
+
+
+    @Test
+    public void roundTripTest20()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest20()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_20_in__OQL_Mod_Test_03.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_20__OQL_Mod_Test_03.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_20__OQL_Mod_Test_03.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_20_nl_out__OQL_Mod_Test_03.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_20_cr_out__OQL_Mod_Test_03.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_20_nl_out__OQL_Mod_Test_03.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_20_cr_out__OQL_Mod_Test_03.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest20() */
+
+
+    @Test
+    public void roundTripTest21()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest21()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_21_in__OQL_Mod_Test_04.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_21__OQL_Mod_Test_04.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_21__OQL_Mod_Test_04.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_21_nl_out__OQL_Mod_Test_04.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_21_cr_out__OQL_Mod_Test_04.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_21_nl_out__OQL_Mod_Test_04.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_21_cr_out__OQL_Mod_Test_04.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest21() */
+
+
+    @Test
+    public void roundTripTest22()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest22()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_22_in__OQL_Mod_Test_05.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_22__OQL_Mod_Test_05.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_22__OQL_Mod_Test_05.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_22_nl_out__OQL_Mod_Test_05.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_22_cr_out__OQL_Mod_Test_05.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_22_nl_out__OQL_Mod_Test_05.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_22_cr_out__OQL_Mod_Test_05.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest22() */
+
+
+    @Test
+    public void roundTripTest23()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest23()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_23_in__OQL_Mod_Test_06.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_23__OQL_Mod_Test_06.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_23__OQL_Mod_Test_06.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_23_nl_out__OQL_Mod_Test_06.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_23_cr_out__OQL_Mod_Test_06.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_23_nl_out__OQL_Mod_Test_06.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_23_cr_out__OQL_Mod_Test_06.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest23() */
+
+
+    @Test
+    public void roundTripTest24()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest24()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_24_in__OQL_Mod_Test_07.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_24__OQL_Mod_Test_07.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_24__OQL_Mod_Test_07.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_24_nl_out__OQL_Mod_Test_07.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_24_cr_out__OQL_Mod_Test_07.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_24_nl_out__OQL_Mod_Test_07.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_24_cr_out__OQL_Mod_Test_07.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest24() */
+
+
+    @Test
+    public void roundTripTest25()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest25()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_25_in__OQL_Mod_Test_08.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_25__OQL_Mod_Test_08.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_25__OQL_Mod_Test_08.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_25_nl_out__OQL_Mod_Test_08.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_25_cr_out__OQL_Mod_Test_08.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_25_nl_out__OQL_Mod_Test_08.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_25_cr_out__OQL_Mod_Test_08.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest25() */
+
+
+    @Test
+    public void roundTripTest26()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest26()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_26_in__OQL_Mod_Test_09.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_26__OQL_Mod_Test_09.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_26__OQL_Mod_Test_09.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_26_nl_out__OQL_Mod_Test_09.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_26_cr_out__OQL_Mod_Test_09.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_26_nl_out__OQL_Mod_Test_09.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_26_cr_out__OQL_Mod_Test_09.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest26() */
+
+
+    @Test
+    public void roundTripTest27()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest27()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_27_in__OQL_Mod_Test_10.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_27__OQL_Mod_Test_10.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_27__OQL_Mod_Test_10.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_27_nl_out__OQL_Mod_Test_10.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_27_cr_out__OQL_Mod_Test_10.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_27_nl_out__OQL_Mod_Test_10.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_27_cr_out__OQL_Mod_Test_10.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest27() */
+
+
+    @Test
+    public void roundTripTest28()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest28()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_28_in__OQL_Mod_Test_11.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_28__OQL_Mod_Test_11.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_28__OQL_Mod_Test_11.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_28_nl_out__OQL_Mod_Test_11.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_28_cr_out__OQL_Mod_Test_11.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_28_nl_out__OQL_Mod_Test_11.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_28_cr_out__OQL_Mod_Test_11.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest28() */
+
+
+    @Test
+    public void roundTripTest29()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest29()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_29_in__OQL_Mod_Test_12.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_29__OQL_Mod_Test_12.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_29__OQL_Mod_Test_12.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_29_nl_out__OQL_Mod_Test_12.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_29_cr_out__OQL_Mod_Test_12.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_29_nl_out__OQL_Mod_Test_12.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_29_cr_out__OQL_Mod_Test_12.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest29() */
+
+
+    @Test
+    public void roundTripTest30()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest30()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_30_in__SCIENCE.1.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_30__SCIENCE.1.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_30__SCIENCE.1.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_30_nl_out__SCIENCE.1.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_30_cr_out__SCIENCE.1.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_30_nl_out__SCIENCE.1.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_30_cr_out__SCIENCE.1.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest30() */
+
+
+    @Test
+    public void roundTripTest31()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest31()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_31_in__Small.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_31__Small.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_31__Small.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_31_nl_out__Small.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_31_cr_out__Small.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_31_nl_out__Small.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_31_cr_out__Small.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest31() */
+
+
+    @Test
+    public void roundTripTest32()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest32()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_32_in__Stamp_New_Cell_Test_JRM.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_32__Stamp_New_Cell_Test_JRM.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_32__Stamp_New_Cell_Test_JRM.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_32_nl_out__Stamp_New_Cell_Test_JRM.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_32_cr_out__Stamp_New_Cell_Test_JRM.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_32_nl_out__Stamp_New_Cell_Test_JRM.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_32_cr_out__Stamp_New_Cell_Test_JRM.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest32() */
+
+
+    @Test
+    public void roundTripTest33()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest33()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_33_in__Stamped.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_33__Stamped.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_33__Stamped.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_33_nl_out__Stamped.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_33_cr_out__Stamped.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_33_nl_out__Stamped.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_33_cr_out__Stamped.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest33() */
+
+
+    @Test
+    public void roundTripTest34()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest34()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_34_in__StatsTest.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_34__StatsTest.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_34__StatsTest.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_34_nl_out__StatsTest.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_34_cr_out__StatsTest.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_34_nl_out__StatsTest.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_34_cr_out__StatsTest.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest34() */
+
+
+    @Test
+    public void roundTripTest35()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest35()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_35_in__Test.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_35__Test.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_35__Test.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_35_nl_out__Test.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_35_cr_out__Test.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_35_nl_out__Test.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_35_cr_out__Test.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest35() */
+
+
+    @Test
+    public void roundTripTest36()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest36()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_36_in__Vocab_Filter_Test.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_36__Vocab_Filter_Test.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_36__Vocab_Filter_Test.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_36_nl_out__Vocab_Filter_Test.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_36_cr_out__Vocab_Filter_Test.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_36_nl_out__Vocab_Filter_Test.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_36_cr_out__Vocab_Filter_Test.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest36() */
+
+
+    @Test
+    public void roundTripTest37()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest37()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_37_in__b_and_g.test.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_37__b_and_g.test.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_37__b_and_g.test.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_37_nl_out__b_and_g.test.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_37_cr_out__b_and_g.test.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_37_nl_out__b_and_g.test.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_37_cr_out__b_and_g.test.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest37() */
+
+
+    @Test
+    public void roundTripTest38()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest38()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_38_in__content_mem_loss.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_38__content_mem_loss.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_38__content_mem_loss.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_38_nl_out__content_mem_loss.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_38_cr_out__content_mem_loss.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_38_nl_out__content_mem_loss.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_38_cr_out__content_mem_loss.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest38() */
+
+
+    @Test
+    public void roundTripTest39()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest39()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_39_in__dummy5.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_39__dummy5.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_39__dummy5.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_39_nl_out__dummy5.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_39_cr_out__dummy5.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_39_nl_out__dummy5.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_39_cr_out__dummy5.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest39() */
+
+
+    @Test
+    public void roundTripTest40()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest40()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_40_in__evening_greg.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_40__evening_greg.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_40__evening_greg.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_40_nl_out__evening_greg.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_40_cr_out__evening_greg.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_40_nl_out__evening_greg.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_40_cr_out__evening_greg.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest40() */
+
+
+    @Test
+    public void roundTripTest41()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest41()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_41_in__garbage1.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_41__garbage1.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_41__garbage1.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_41_nl_out__garbage1.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_41_cr_out__garbage1.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_41_nl_out__garbage1.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_41_cr_out__garbage1.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest41() */
+
+
+    @Test
+    public void roundTripTest42()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest42()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_42_in__kathy.test.1.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_42__kathy.test.1.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_42__kathy.test.1.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_42_nl_out__kathy.test.1.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_42_cr_out__kathy.test.1.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_42_nl_out__kathy.test.1.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_42_cr_out__kathy.test.1.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest42() */
+
+
+    @Test
+    public void roundTripTest43()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest43()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_43_in__meeting.5.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_43__meeting.5.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_43__meeting.5.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_43_nl_out__meeting.5.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_43_cr_out__meeting.5.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_43_nl_out__meeting.5.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_43_cr_out__meeting.5.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest43() */
+
+
+    @Test
+    public void roundTripTest44()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest44()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_44_in__mtest.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_44__mtest.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_44__mtest.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_44_nl_out__mtest.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_44_cr_out__mtest.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_44_nl_out__mtest.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_44_cr_out__mtest.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest44() */
+
+
+    @Test
+    public void roundTripTest45()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest45()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_45_in__nasa.1.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_45__nasa.1.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_45__nasa.1.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_45_nl_out__nasa.1.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_45_cr_out__nasa.1.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_45_nl_out__nasa.1.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_45_cr_out__nasa.1.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest45() */
+
+
+    @Test
+    public void roundTripTest46()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest46()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_46_in__nasa.2.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_46__nasa.2.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_46__nasa.2.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_46_nl_out__nasa.2.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_46_cr_out__nasa.2.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_46_nl_out__nasa.2.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_46_cr_out__nasa.2.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest46() */
+
+
+    @Test
+    public void roundTripTest47()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest47()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_47_in__nasa.3.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_47__nasa.3.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_47__nasa.3.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_47_nl_out__nasa.3.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_47_cr_out__nasa.3.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_47_nl_out__nasa.3.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_47_cr_out__nasa.3.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest47() */
+
+
+    @Test
+    public void roundTripTest48()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest48()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_48_in__nominal_1024.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_48__nominal_1024.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_48__nominal_1024.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_48_nl_out__nominal_1024.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_48_cr_out__nominal_1024.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_48_nl_out__nominal_1024.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_48_cr_out__nominal_1024.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest48() */
+
+
+    @Test
+    public void roundTripTest49()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest49()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_49_in__penny.test.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_49__penny.test.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_49__penny.test.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_49_nl_out__penny.test.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_49_cr_out__penny.test.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_49_nl_out__penny.test.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_49_cr_out__penny.test.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest49() */
+
+
+    @Test
+    public void roundTripTest50()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest50()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_50_in__penny.tester.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_50__penny.tester.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_50__penny.tester.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_50_nl_out__penny.tester.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_50_cr_out__penny.tester.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_50_nl_out__penny.tester.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_50_cr_out__penny.tester.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest50() */
+
+
+    @Test
+    public void roundTripTest51()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest51()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_51_in__print_2_pages.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_51__print_2_pages.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_51__print_2_pages.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_51_nl_out__print_2_pages.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_51_cr_out__print_2_pages.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_51_nl_out__print_2_pages.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_51_cr_out__print_2_pages.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest51() */
+
+
+    @Test
+    public void roundTripTest52()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest52()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_52_in__query.nominals.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_52__query.nominals.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_52__query.nominals.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_52_nl_out__query.nominals.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_52_cr_out__query.nominals.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_52_nl_out__query.nominals.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_52_cr_out__query.nominals.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest52() */
+
+
+    @Test
+    public void roundTripTest53()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest53()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_53_in__query.test.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_53__query.test.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_53__query.test.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_53_nl_out__query.test.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_53_cr_out__query.test.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_53_nl_out__query.test.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_53_cr_out__query.test.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest53() */
+
+
+    @Test
+    public void roundTripTest54()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest54()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_54_in__senso.1.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_54__senso.1.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_54__senso.1.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_54_nl_out__senso.1.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_54_cr_out__senso.1.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_54_nl_out__senso.1.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_54_cr_out__senso.1.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest54() */
+
+
+    @Test
+    public void roundTripTest55()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest55()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_55_in__sync_and_stamps.VCR.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_55__sync_and_stamps.VCR.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_55__sync_and_stamps.VCR.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_55_nl_out__sync_and_stamps.VCR.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_55_cr_out__sync_and_stamps.VCR.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_55_nl_out__sync_and_stamps.VCR.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_55_cr_out__sync_and_stamps.VCR.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest55() */
+
+
+    @Test
+    public void roundTripTest56()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest56()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_56_in__sync_and_stamps.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_56__sync_and_stamps.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_56__sync_and_stamps.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_56_nl_out__sync_and_stamps.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_56_cr_out__sync_and_stamps.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_56_nl_out__sync_and_stamps.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_56_cr_out__sync_and_stamps.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest56() */
+
+
+    @Test
+    public void roundTripTest57()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest57()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_57_in__truncate.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_57__truncate.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_57__truncate.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_57_nl_out__truncate.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_57_cr_out__truncate.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_57_nl_out__truncate.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_57_cr_out__truncate.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest57() */
+
+
+    @Test
+    public void roundTripTest58()
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::roundTripTest58()";
+        final boolean saveOutputFiles = false;
+        final int errorLimit = 1;
+        final int warningLimit = 1;
+        final String inputFile =
+                "/db/odb/round_trip_test/rtt_58_in__waterbath5.odb";
+        final String listingFile =
+                null; // "/db/odb/round_trip_test/rtt_58__waterbath5.lst";
+        final String errorFile =
+                null; // "/db/odb/round_trip_test/rtt_58__waterbath5.err";
+        final String nlDumpFile =
+                "/db/odb/round_trip_test/rtt_58_nl_out__waterbath5.odb";
+        final String crDumpFile =
+                "/db/odb/round_trip_test/rtt_58_cr_out__waterbath5.odb";
+        final String expNLDumpFile =
+                "/db/odb/round_trip_test/rtt_58_nl_out__waterbath5.odb.exp";
+        final String expCRDumpFile =
+                "/db/odb/round_trip_test/rtt_58_cr_out__waterbath5.odb.exp";
+
+        runRoundTripTest(inputFile,
+                listingFile,
+                errorFile,
+                nlDumpFile,
+                crDumpFile,
+                expNLDumpFile,
+                expCRDumpFile,
+                saveOutputFiles,
+                errorLimit,
+                warningLimit);
+
+        return;
+
+    } /* MacshapaODBReaderTest::roundTripTest58() */
+
+
+//    @Test
+//    public void roundTripTest59()
+//        throws SystemErrorException,
+//               LogicErrorException,
+//               java.io.IOException
+//    {
+//        final String mName = "MacshapaODBReaderTest::roundTripTest59()";
+//        final boolean saveOutputFiles = false;
+//        final int errorLimit = 1;
+//        final int warningLimit = 1;
+//        final String inputFile =
+//                "/db/odb/round_trip_test/rtt_59_in__.odb";
+//        final String listingFile =
+//                null; // "/db/odb/round_trip_test/rtt_59__.lst";
+//        final String errorFile =
+//                null; // "/db/odb/round_trip_test/rtt_59__.err";
+//        final String nlDumpFile =
+//                "/db/odb/round_trip_test/rtt_59_nl_out__.odb";
+//        final String crDumpFile =
+//                "/db/odb/round_trip_test/rtt_59_cr_out__.odb";
+//        final String expNLDumpFile =
+//                "/db/odb/round_trip_test/rtt_59_nl_out__.odb.exp";
+//        final String expCRDumpFile =
+//                "/db/odb/round_trip_test/rtt_59_cr_out__.odb.exp";
+//
+//        runRoundTripTest(inputFile,
+//                listingFile,
+//                errorFile,
+//                nlDumpFile,
+//                crDumpFile,
+//                expNLDumpFile,
+//                expCRDumpFile,
+//                saveOutputFiles,
+//                errorLimit,
+//                warningLimit);
+//
+//        return;
+//
+//    } /* MacshapaODBReaderTest::roundTripTest59() */
+
+
+
 
 //    /**
 //     * Test of get_next_token method, of class MacshapaODBReader.
@@ -8068,4 +10551,169 @@ public class MacshapaODBReaderTest {
         return;
 
     } /* Macshapa_DBReaderTest::runParserTest() */
+
+
+    private void runRoundTripTest(String inputFileName,
+                                  String listingFileName,
+                                  String errorFileName,
+                                  String nlDumpFileName,
+                                  String crDumpFileName,
+                                  String expectedNLDumpFileName,
+                                  String expectedCRDumpFileName,
+                                  boolean saveOutputFiles,
+                                  int errorLimit,
+                                  int warningLimit)
+        throws SystemErrorException,
+               LogicErrorException,
+               java.io.IOException
+    {
+        final String mName = "MacshapaODBReaderTest::runRoundTripTest()";
+        boolean errorsDetected = false;
+        boolean warningsIssued = false;
+        boolean nlDumpMismatch = false;
+        boolean crDumpMismatch = false;
+        String root = System.getProperty("testPath");
+        File input = new File(root + inputFileName);
+        FileReader reader = new FileReader(input);
+        BufferedReader input_stream = new BufferedReader(reader);
+        File listing = new File(root + listingFileName);
+        File errors = new File(root + errorFileName);
+        File nlDump = new File(root + nlDumpFileName);
+        File crDump = new File(root + crDumpFileName);
+        File expected_nl_dump = new File(root + expectedNLDumpFileName);
+        File expected_cr_dump = new File(root + expectedCRDumpFileName);
+        MacshapaODBReader modbr = null;
+        MacshapaDatabase db = null;
+        java.io.PrintStream listing_stream = null;
+        java.io.PrintStream error_stream = null;
+        java.io.PrintStream nl_dump_stream = null;
+        java.io.PrintStream cr_dump_stream = null;
+
+        if ( listingFileName != null )
+        {
+            if ( ! listing.createNewFile() )
+            {
+                throw new SystemErrorException(mName + "can't create listing file");
+            }
+            listing_stream = new PrintStream(listing);
+        }
+
+        if ( errorFileName != null )
+        {
+            if ( ! errors.createNewFile() )
+            {
+                throw new SystemErrorException(mName + "can't create error file");
+            }
+            error_stream = new PrintStream(errors);
+        }
+
+        if ( ! nlDump.createNewFile() )
+        {
+            throw new SystemErrorException(mName + 
+                    "can't create new line dump file");
+        }
+        nl_dump_stream = new PrintStream(nlDump);
+
+        if ( ! crDump.createNewFile() )
+        {
+            throw new SystemErrorException(mName +
+                    "can't create carriage return dump file");
+        }
+        cr_dump_stream = new PrintStream(crDump);
+
+
+        modbr = new MacshapaODBReader(input_stream,
+                listing_stream,
+                error_stream);
+
+        modbr.max_errors = errorLimit;
+        modbr.max_warnings = warningLimit;
+
+        db = modbr.readDB();
+
+        if ( modbr.error_count > 0 )
+        {
+            errorsDetected = true;
+        }
+
+        if ( modbr.warning_count > 0 )
+        {
+            warningsIssued = true;
+        }
+
+        db.toMODBFile(nl_dump_stream, "\n");
+
+        db.toMODBFile(cr_dump_stream, "\r");
+
+        input_stream.close();
+
+        if ( listing_stream != null )
+        {
+            listing_stream.close();
+        }
+
+        if ( error_stream != null )
+        {
+            error_stream.close();
+        }
+
+        nl_dump_stream.close();
+
+        cr_dump_stream.close();
+
+        if ( ! this.compareFiles(expected_nl_dump, nlDump) )
+        {
+            nlDumpMismatch = true;
+        }
+
+        if ( ! this.compareFiles(expected_cr_dump, crDump) )
+        {
+            crDumpMismatch = true;
+        }
+
+        if ( ( ! saveOutputFiles ) &&
+             ( ! nlDumpMismatch ) )
+        {
+            if ( ! nlDump.delete() )
+            {
+                throw new SystemErrorException(mName +
+                        "can't delete new line dump file");
+            }
+        }
+
+        if ( ( ! saveOutputFiles ) &&
+             ( ! crDumpMismatch ) )
+        {
+            if ( ! crDump.delete() )
+            {
+                throw new SystemErrorException(mName +
+                        "can't delete new carriage return dump file");
+            }
+        }
+
+        if ( errorsDetected )
+        {
+            org.junit.Assert.fail("errors detected during load.");
+        }
+
+        if ( warningsIssued )
+        {
+            org.junit.Assert.fail("warnings issued during load.");
+        }
+
+        if ( nlDumpMismatch )
+        {
+            org.junit.Assert.fail(
+                "actual nl db dump output doesn't match expected dump ourput.");
+        }
+
+        if ( crDumpMismatch )
+        {
+            org.junit.Assert.fail(
+                "actual cr db dump output doesn't match expected dump ourput.");
+        }
+
+        return;
+
+    } /* Macshapa_DBReaderTest::runRoundTripTest() */
 }

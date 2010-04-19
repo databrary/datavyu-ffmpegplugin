@@ -1,0 +1,378 @@
+; MacSHAPA Open Database
+( setf macshapa-db
+ '(
+    ( HEADER>
+      (
+        ( NAME> "StatsTest.odb" )
+        ( VERSION> 1 )
+        ( DEBUG-LEVEL> 0 )
+        ( MAX-ERRORS> 1 )
+        ( MAX-WARNINGS> 1 )
+      )
+    )
+    ( USER>
+      (
+        ( PREDICATE-DEFINITIONS>
+          (
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DECLARATIONS>
+          (
+            ( |Platykurtosis|
+              (
+                ( TYPE> <<NOMINAL>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 183 )
+              )
+            )
+            ( |Skewness|
+              (
+                ( TYPE> <<NOMINAL>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |Contents Report|
+              (
+                ( TYPE> <<NOMINAL>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 183 )
+              )
+            )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DEFINITIONS>
+          (
+            ( |Platykurtosis|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 3600 )
+                      ( OFFSET> 3960 )
+                      ( |<val>| |more| )
+                    )
+                    (
+                      ( ONSET> 3600 )
+                      ( OFFSET> 4080 )
+                      ( |<val>| |more| )
+                    )
+                    (
+                      ( ONSET> 3600 )
+                      ( OFFSET> 4200 )
+                      ( |<val>| |more| )
+                    )
+                    (
+                      ( ONSET> 3600 )
+                      ( OFFSET> 4320 )
+                      ( |<val>| |more| )
+                    )
+                    (
+                      ( ONSET> 3600 )
+                      ( OFFSET> 4440 )
+                      ( |<val>| |more| )
+                    )
+                    (
+                      ( ONSET> 7200 )
+                      ( OFFSET> 7540 )
+                      ( |<val>| |some| )
+                    )
+                    (
+                      ( ONSET> 7200 )
+                      ( OFFSET> 7740 )
+                      ( |<val>| |some| )
+                    )
+                    (
+                      ( ONSET> 7200 )
+                      ( OFFSET> 7800 )
+                      ( |<val>| |some| )
+                    )
+                    (
+                      ( ONSET> 7200 )
+                      ( OFFSET> 7860 )
+                      ( |<val>| |some| )
+                    )
+                    (
+                      ( ONSET> 7200 )
+                      ( OFFSET> 8060 )
+                      ( |<val>| |some| )
+                    )
+                  )
+                )
+              )
+            )
+            ( |Skewness|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 3600 )
+                      ( OFFSET> 3960 )
+                      ( |<val>| |none| )
+                    )
+                    (
+                      ( ONSET> 3600 )
+                      ( OFFSET> 4080 )
+                      ( |<val>| |none| )
+                    )
+                    (
+                      ( ONSET> 3600 )
+                      ( OFFSET> 4200 )
+                      ( |<val>| |none| )
+                    )
+                    (
+                      ( ONSET> 3600 )
+                      ( OFFSET> 4320 )
+                      ( |<val>| |none| )
+                    )
+                    (
+                      ( ONSET> 3600 )
+                      ( OFFSET> 4440 )
+                      ( |<val>| |none| )
+                    )
+                    (
+                      ( ONSET> 7200 )
+                      ( OFFSET> 7560 )
+                      ( |<val>| |right| )
+                    )
+                    (
+                      ( ONSET> 7200 )
+                      ( OFFSET> 7680 )
+                      ( |<val>| |right| )
+                    )
+                    (
+                      ( ONSET> 7200 )
+                      ( OFFSET> 7800 )
+                      ( |<val>| |right| )
+                    )
+                    (
+                      ( ONSET> 7200 )
+                      ( OFFSET> 7860 )
+                      ( |<val>| |right| )
+                    )
+                    (
+                      ( ONSET> 7200 )
+                      ( OFFSET> 8100 )
+                      ( |<val>| |right| )
+                    )
+                  )
+                )
+              )
+            )
+            ( |Contents Report|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 120 )
+                      ( |<val>| |one| )
+                    )
+                    (
+                      ( ONSET> 3660 )
+                      ( OFFSET> 3720 )
+                      ( |<val>| |two| )
+                    )
+                    (
+                      ( ONSET> 3780 )
+                      ( OFFSET> 3840 )
+                      ( |<val>| |two| )
+                    )
+                    (
+                      ( ONSET> 7260 )
+                      ( OFFSET> 7320 )
+                      ( |<val>| |three| )
+                    )
+                    (
+                      ( ONSET> 7320 )
+                      ( OFFSET> 7440 )
+                      ( |<val>| |three| )
+                    )
+                    (
+                      ( ONSET> 7440 )
+                      ( OFFSET> 7620 )
+                      ( |<val>| |three| )
+                    )
+                    (
+                      ( ONSET> 10800 )
+                      ( OFFSET> 10860 )
+                      ( |<val>| |right skew| )
+                    )
+                    (
+                      ( ONSET> 10800 )
+                      ( OFFSET> 10920 )
+                      ( |<val>| |right skew| )
+                    )
+                    (
+                      ( ONSET> 10800 )
+                      ( OFFSET> 10980 )
+                      ( |<val>| |right skew| )
+                    )
+                    (
+                      ( ONSET> 10800 )
+                      ( OFFSET> 11400 )
+                      ( |<val>| |right skew| )
+                    )
+                    (
+                      ( ONSET> 14400 )
+                      ( OFFSET> 14460 )
+                      ( |<val>| |left skew| )
+                    )
+                    (
+                      ( ONSET> 14400 )
+                      ( OFFSET> 14880 )
+                      ( |<val>| |left skew| )
+                    )
+                    (
+                      ( ONSET> 14400 )
+                      ( OFFSET> 14940 )
+                      ( |<val>| |left skew| )
+                    )
+                    (
+                      ( ONSET> 14400 )
+                      ( OFFSET> 15000 )
+                      ( |<val>| |left skew| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 18060 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 18060 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 18480 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 18480 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 18600 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 18600 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 18600 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 18600 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 18720 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 18720 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 19140 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 18000 )
+                      ( OFFSET> 19140 )
+                      ( |<val>| |platykurtosis| )
+                    )
+                    (
+                      ( ONSET> 21600 )
+                      ( OFFSET> 21660 )
+                      ( |<val>| |leptokurtosis| )
+                    )
+                    (
+                      ( ONSET> 21600 )
+                      ( OFFSET> 22080 )
+                      ( |<val>| |leptokurtosis| )
+                    )
+                    (
+                      ( ONSET> 21600 )
+                      ( OFFSET> 22080 )
+                      ( |<val>| |leptokurtosis| )
+                    )
+                    (
+                      ( ONSET> 21600 )
+                      ( OFFSET> 22080 )
+                      ( |<val>| |leptokurtosis| )
+                    )
+                    (
+                      ( ONSET> 21600 )
+                      ( OFFSET> 22200 )
+                      ( |<val>| |leptokurtosis| )
+                    )
+                    (
+                      ( ONSET> 21600 )
+                      ( OFFSET> 22200 )
+                      ( |<val>| |leptokurtosis| )
+                    )
+                    (
+                      ( ONSET> 21600 )
+                      ( OFFSET> 22200 )
+                      ( |<val>| |leptokurtosis| )
+                    )
+                    (
+                      ( ONSET> 21600 )
+                      ( OFFSET> 22320 )
+                      ( |<val>| |leptokurtosis| )
+                    )
+                    (
+                      ( ONSET> 21600 )
+                      ( OFFSET> 22320 )
+                      ( |<val>| |leptokurtosis| )
+                    )
+                    (
+                      ( ONSET> 21600 )
+                      ( OFFSET> 22320 )
+                      ( |<val>| |leptokurtosis| )
+                    )
+                    (
+                      ( ONSET> 21600 )
+                      ( OFFSET> 22740 )
+                      ( |<val>| |leptokurtosis| )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+    ( QUERY>
+      (
+      )
+    )
+    ( SYSTEM>
+      (
+        ( SHAPA-PANE-VARS>
+          (
+            |Contents Report|
+            |Skewness|
+            |Platykurtosis|
+          )
+        )
+      )
+    )
+  )
+)

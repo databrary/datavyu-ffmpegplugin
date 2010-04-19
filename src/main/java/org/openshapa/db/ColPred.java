@@ -134,8 +134,11 @@ implements InternalMatrixVocabElementListener {
      *
      * @date 2008/08/10
      */
-    public ColPred(Database db, long mveID, Vector<DataValue> argList)
-    throws SystemErrorException {
+    public ColPred(Database db, 
+                   long mveID,
+                   Vector<DataValue> argList)
+        throws SystemErrorException
+    {
         super(db);
 
         final String mName = "ColPred::ColPred(db, mveID, argList): ";
@@ -282,29 +285,37 @@ implements InternalMatrixVocabElementListener {
      *
      * @date 2008/08/10
      */
-    public long getCellID() {
+    public long getCellID()
+    {
         return this.cellID;
     }
 
+
+    // getMveID()
     /**
      * @return The ID of the matrix vocab element that serves as a template
      * (if any - INVALID_ID if none) for this column predicate.
      *
      * @date 2008/08/10
      */
-    public long getMveID() {
+    public long getMveID()
+    {
         return this.mveID;
     }
 
+
+    // getMveName()
     /**
      * @return A copy of the name of the column that this ColPred represents.
      *
      * @date 2008/08/10
      */
-    public String getMveName() {
+    public String getMveName()
+    {
         return new String(this.mveName);
     }
 
+    // setMveID()
     /**
      * Set the ID of the matrix vocab element of which this instance of ColPred
      * will contain a value. If requested, try to salvage (copy) the argument
@@ -318,8 +329,10 @@ implements InternalMatrixVocabElementListener {
      *
      * @date 2008/08/10
      */
-    public void setMveID(long mveID, boolean salvage)
-    throws SystemErrorException {
+    public void setMveID(long mveID,
+                         boolean salvage)
+        throws SystemErrorException
+    {
         final String mName = "ColPred::setMveID(mveID, preserveArgs): ";
         int i;
         int newNumArgs;
@@ -416,7 +429,8 @@ implements InternalMatrixVocabElementListener {
         }
 
         return;
-    }
+
+    } // ColPred::setMveID(mveID, preserveArgs)
 
     // getVarLen()
     /**
@@ -658,6 +672,7 @@ implements InternalMatrixVocabElementListener {
 
     } /* ColPred::MVEDeleted() */
 
+    // argListToDBString()
     /**
      * @return The current argument list as a string that can be dumped to a
      * database file.
@@ -667,8 +682,10 @@ implements InternalMatrixVocabElementListener {
      *
      * @date 2007/08/23
      */
-    protected String argListToDBString() throws SystemErrorException {
-        final String mName = "Predicate::argListToDBString(): ";
+    protected String argListToDBString() 
+        throws SystemErrorException
+    {
+        final String mName = "ColPred::argListToDBString(): ";
         int i = 0;
         int numArgs = 0;
         String s;
@@ -707,8 +724,10 @@ implements InternalMatrixVocabElementListener {
 
         return s;
 
-    }
+    } // ColPred::argListToDBString()
 
+
+    // argListToString()
     /**
      * @return The formal argument list as a string in the format:
      * (value0, value1, ..., valueN).
@@ -718,7 +737,9 @@ implements InternalMatrixVocabElementListener {
      *
      * @date 2007/08/23
      */
-    protected String argListToString() throws SystemErrorException {
+    protected String argListToString() 
+        throws SystemErrorException
+    {
         final String mName = "ColPred::argListToString(): ";
         int i = 0;
         int numArgs = 0;
@@ -758,8 +779,9 @@ implements InternalMatrixVocabElementListener {
 
         return s;
 
-    }
+    } // ColPred::argListToString()
 
+    // insertInIndex()
     /**
      * This method is called when the DataCell whose value contains this
      * instance of ColPred is first inserted in the database and becomes the
@@ -778,7 +800,9 @@ implements InternalMatrixVocabElementListener {
      *
      * @date 2008/08/08
      */
-    protected void insertInIndex(long DCID) throws SystemErrorException {
+    protected void insertInIndex(long DCID) 
+        throws SystemErrorException
+    {
         final String mName = "ColPred::insertInIndex(): ";
 
         this.getDB().idx.addElement(this);
@@ -805,8 +829,9 @@ implements InternalMatrixVocabElementListener {
 
         return;
 
-    }
+    } // ColPred::insertInIndex()
 
+    // lookupMatrixVE()
     /**
      * Given an ID, attempt to look up the associated MatrixVocabElement in the
      * database associated with the instance of ColPred.  Return a reference to
@@ -823,7 +848,8 @@ implements InternalMatrixVocabElementListener {
      * @date 2007/08/20
      */
     private MatrixVocabElement lookupMatrixVE(long mveID)
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         final String mName = "ColPred::lookupMatrixVE(mveID): ";
         DBElement dbe;
         MatrixVocabElement mve;
@@ -850,8 +876,9 @@ implements InternalMatrixVocabElementListener {
 
         return mve;
 
-    }
+    } // ColPred::lookupMatrixVE(mveID)
 
+    // removeFromIndex(long DCID)
     /**
      * This method is called when the DataCell whose value contains this
      * instance of ColPred is deleted from the database, and thus all the
@@ -872,7 +899,9 @@ implements InternalMatrixVocabElementListener {
      *
      * @date 2008/08/08
      */
-    protected void removeFromIndex(long DCID) throws SystemErrorException {
+    protected void removeFromIndex(long DCID) 
+        throws SystemErrorException
+    {
         final String mName = "ColPred::removeFromIndex(): ";
 
         if ( this.cellID != DCID )
@@ -901,8 +930,9 @@ implements InternalMatrixVocabElementListener {
 
         return;
 
-    }
+    } // ColPred::removeFromIndex()
 
+    // toDBString()
     /**
      * @return A representation of the ColPred as a database string. (This is
      * intended for debugging purposses).
@@ -1070,7 +1100,12 @@ implements InternalMatrixVocabElementListener {
      *
      * Changes;
      *
-     *    - None.
+     *    - As it turns out, MacSHAPA doesn't let column predicates appear 
+     *      in vocab lists.  To support this, I modified the method to refrain
+     *      from adding the column predicate name to the vocab list.  However,
+     *      we must still pass the update local vocab message on to any
+     *      predicate or column predicate arguments.
+     *                                                  JRM -- 4/18/10
      *
      * @param dc -- reference to the data column containing this column predicate.
      *
@@ -1093,7 +1128,9 @@ implements InternalMatrixVocabElementListener {
 
         if ( this.mveID != DBIndex.INVALID_ID )
         {
-            dc.toMODBFile_update_local_vocab_list(this.mveID);
+            // don't do this any more -- MacSHAPA barfs if a column name
+            // appears in local vocab list.     -- JRM
+            // dc.toMODBFile_update_local_vocab_list(this.mveID);
 
             if ( this.argList == null )
             {
@@ -1124,7 +1161,7 @@ implements InternalMatrixVocabElementListener {
 
 
 
-
+    // toString()
     /**
      * @return A string representaiton of this ColPred.
      */
@@ -1144,8 +1181,10 @@ implements InternalMatrixVocabElementListener {
 
         return (s);
 
-    }
+    } // ColPred::toString()
 
+
+    // blindCopyArgList()
     /**
      * Given a reference to a Vector containing an argument list for the ColPred
      * indicated by the current value of mveID, copy the argument list without
@@ -1214,8 +1253,10 @@ implements InternalMatrixVocabElementListener {
 
         return newArgList;
 
-    }
+    } // ColPred::blindCopyArgList(srcArgList)
 
+
+    // constructEmptyArgList()
     /**
      * Given a reference to a MatrixVocabElement, construct an empty argument
      * list as directed by the column predicate formal argument list of the
@@ -1287,6 +1328,7 @@ implements InternalMatrixVocabElementListener {
     } /* ColPred::constructEmptyArgList(pve) */
 
 
+    // copyArgList()
     /**
      * Given a reference to a Vector containing an argument list for the ColPred
      * indicated by the current value of mveID, attempt to make a copy of that
@@ -1332,6 +1374,12 @@ implements InternalMatrixVocabElementListener {
 
         if ( srcArgList.size() != numArgs )
         {
+            // TODO: delete this eventually
+            System.out.printf("mve.getName() = %s\n", mve.getName());
+            System.out.printf("numArgs = %d, srcArgList.size() = %d.\n",
+                              numArgs, srcArgList.size());
+            System.out.printf("srcArgList = %s\n", srcArgList.toString());
+
             throw new SystemErrorException(mName + "arg list size mis-match");
         }
 
@@ -1679,6 +1727,7 @@ implements InternalMatrixVocabElementListener {
     } /* ColPred::ColPred::copyArgList(srcArgList, clearID) */
 
 
+    // deregisterWithMve()
     /**
      * If the ColPred is defined (i.e. this.mveID is not DBIndex.INVALID_ID,
      * deregister the ColPred with its matrix vocab element as an internal
@@ -1766,6 +1815,7 @@ implements InternalMatrixVocabElementListener {
     } /* ColPred::deregisterWithMVE() */
 
 
+    // getArg()
     /**
      * Gets the datavalue for a specified argument.
      *
@@ -1835,6 +1885,7 @@ implements InternalMatrixVocabElementListener {
     } /* ColPred::getArg() */
 
 
+    // getArgCopy()
     /**
      * Gets a copy of a datavalue of the specified arguments.
      *
@@ -1984,6 +2035,7 @@ implements InternalMatrixVocabElementListener {
     } /* ColPred::registerWithMve() */
 
 
+    // replaceArg()
     /**
      * Replace the n-th argument with the supplied data value.
      *
@@ -2318,7 +2370,7 @@ implements InternalMatrixVocabElementListener {
     } /* ColPred::updateForMVEDefChange() */
 
 
-
+    // updateForMveDeletion()
     /**
      * It the supplied mveID matches this.mveID, set this.mveID to INVALID_ID.
      *
@@ -2333,8 +2385,10 @@ implements InternalMatrixVocabElementListener {
      *
      * @date 2008/08/10
      */
-    protected void updateForMVEDeletion(Database db, long deletedMveID)
-    throws SystemErrorException {
+    protected void updateForMVEDeletion(Database db,
+                                        long deletedMveID)
+        throws SystemErrorException
+    {
         final String mName = "ColPred::updateForMVEDeletion(): ";
         int i;
         int numArgs;
@@ -2550,9 +2604,8 @@ implements InternalMatrixVocabElementListener {
     } /* Predicate::updateForPVEDefChange() */
 
 
+    // updateForPVEDeletion()
     /**
-     * updateForPVEDeletion()
-     *
      * If the column predicate is defined, scan its argument list and
      * pass the update for pve deletion message to any predicate or column
      * predicate data values that may appear in the argument list.
@@ -2670,9 +2723,8 @@ implements InternalMatrixVocabElementListener {
     } /* Predicate::updateForPVEDeletion() */
 
 
+    // updateIndexForReplacement()
     /**
-     * updateIndexForReplacement()
-     *
      * When the old incarnation of the canonnical version of a DataCell is
      * replaced with the new, we must update the index so that DataValues,
      * column predicates, and predicates that don't appear in the new
@@ -3067,7 +3119,7 @@ implements InternalMatrixVocabElementListener {
              // ( this.id == oldColPred.id ) &&
              // ( this.mveID == oldColPred.mveID ) &&
              // ( this.mveID != DBIndex.INVALID_ID )
-       {
+        {
             assert( cascadeMveMod );
             assert( cascadeMveID == this.mveID );
             assert( this.getID() == oldColPred.getID() );
@@ -3259,9 +3311,8 @@ implements InternalMatrixVocabElementListener {
     } /* ColPred::updateIndexForReplacement() */
 
 
+    // validateArgAsignment()
     /**
-     * validateArgAsignment()
-     *
      * Verify that the supplied data value is an acceptable value to assign
      * to the supplied formal argument.  Throw a system error if it is not.
      * This method is a pure sanity checking method -- it should always pass.
@@ -3657,9 +3708,8 @@ implements InternalMatrixVocabElementListener {
     } /* ColPred::validateArgAsignment() */
 
 
+    // validateColumnPredicate()
     /**
-     * validateColumnPredicate()
-     *
      * Verify that the column predicate is consistant with the target
      * MatrixVocabElement (if any).  This is purely
      * a sanity checking routine.  The test should always pass.
@@ -3753,9 +3803,8 @@ implements InternalMatrixVocabElementListener {
     } /* ColPred::validateColumnPredicate() */
 
 
+    // validateColPredArgList()
     /**
-     * validateColPredArgList()
-     *
      * Verify that the arguments of the column predicate are of type and value
      * consistant with the target MatrixVocabElement.  This is purely
      * a sanity checking routine.  The test should always pass.
@@ -3853,9 +3902,8 @@ implements InternalMatrixVocabElementListener {
     } /* Predicate::validateColPredArgList() */
 
 
+    // validateReplacementArg()
     /**
-     * validateReplacementArg()
-     *
      * Given a reference to a formal argument, the old value of that argument,
      * and a proposed replacement argument, verify that the new argument is a
      * valid replacement value.  Note that the old argument may be null if
@@ -4662,9 +4710,8 @@ implements InternalMatrixVocabElementListener {
     } /* ColPred::validateReplacementArg() */
 
 
+    // validateReplacementColPred()
     /**
-     * validateReplacementColPred()
-     *
      * Verify that this Column Predicate is a valid replacement for the supplied
      * old Column Predicate.  This method is called when a new version of a
      * DataCell is about to replace an old version as the cannonical incarnation
@@ -5047,9 +5094,8 @@ implements InternalMatrixVocabElementListener {
     /*************************** Overrides: **********************************/
     /*************************************************************************/
 
+    // clearID()
     /**
-     * clearID()
-     *
      * Call the superclass version of the method, and then pass the clear id
      * message on to the argument list.
      *
@@ -5089,9 +5135,8 @@ implements InternalMatrixVocabElementListener {
     /************************ Class Methods: *********************************/
     /*************************************************************************/
 
+    // Construct()
     /**
-     * Construct()
-     *
      * Several versions of this class method, all with the objective of
      * constructing instances of ColPred.
      *

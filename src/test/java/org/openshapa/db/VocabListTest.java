@@ -15,6 +15,7 @@ public class VocabListTest {
     private PrintStream outStream;
     private boolean verbose;
     private Database odb;
+    private Database mdb;
 
     public VocabListTest() {
     }
@@ -24,6 +25,7 @@ public class VocabListTest {
         outStream = System.out;
         verbose = true;
         odb = new ODBCDatabase();
+        mdb = new MacshapaDatabase();
     }
 
     @After
@@ -155,6 +157,13 @@ public class VocabListTest {
 
         assertTrue(preds.isEmpty());
         assertTrue(matricies.isEmpty());
+
+        matricies = mdb.vl.getMatricies();
+        preds = mdb.vl.getPreds();
+
+        assertTrue(preds.isEmpty());
+        assertTrue(matricies.isEmpty());
+
     }
 
     /**
@@ -166,7 +175,8 @@ public class VocabListTest {
      */
     @Test
     public void TestGetPredsAndMatricies2()
-    throws SystemErrorException {
+        throws SystemErrorException
+    {
         UnTypedFormalArg foxtrot = new UnTypedFormalArg(odb, "<foxtrot>");
         UnTypedFormalArg golf = new UnTypedFormalArg(odb, "<golf>");
         UnTypedFormalArg hotel = new UnTypedFormalArg(odb, "<hotel>");

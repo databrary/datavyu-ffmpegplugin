@@ -1,0 +1,232 @@
+; MacSHAPA Open Database
+( setf macshapa-db
+ '(
+    ( HEADER>
+      (
+        ( NAME> "Comparison.odb" )
+        ( VERSION> 1 )
+        ( DEBUG-LEVEL> 0 )
+        ( MAX-ERRORS> 1 )
+        ( MAX-WARNINGS> 1 )
+      )
+    )
+    ( USER>
+      (
+        ( PREDICATE-DEFINITIONS>
+          (
+            ( |PREDICT| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<MITIGATION>| ) ) ) )
+            ( |REASON| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<MITIGATION>| ) ) ) )
+            ( |OBSERVE| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<MITIGATION>| ) ) ) )
+            ( |ANNOUNCE| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<MITIGATION>| ) ) ) )
+            ( |ACKNOWL| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<TO>| |<MITIGATION>| ) ) ) )
+            ( |COMMAND| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<SPEAKER>| |<TO>| |<MITIGATION>| ) ) ) )
+            ( |GOAL| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<TEMPERATURE>| |<VOLUME>| |<FLOWRATE>| ) ) ) )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DECLARATIONS>
+          (
+            ( |speechcode|
+              (
+                ( TYPE> <<PREDICATE>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |speechcode1|
+              (
+                ( TYPE> <<PREDICATE>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DEFINITIONS>
+          (
+            ( |speechcode|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 360 )
+                      ( |<val>| ( |GOAL| |+| |+| |+| ) )
+                    )
+                    (
+                      ( ONSET> 420 )
+                      ( OFFSET> 540 )
+                      ( |<val>| ( |COMMAND| |Sam| |Tom| |+1| ) )
+                    )
+                    (
+                      ( ONSET> 600 )
+                      ( OFFSET> 660 )
+                      ( |<val>| ( |ACKNOWL| |Tom| |Sam| -1 ) )
+                    )
+                    (
+                      ( ONSET> 660 )
+                      ( OFFSET> 1140 )
+                      ( |<val>| ( |ANNOUNCE| |Sam| 0 ) )
+                    )
+                    (
+                      ( ONSET> 1500 )
+                      ( OFFSET> 1800 )
+                      ( |<val>| ( |OBSERVE| |Sam| 0 ) )
+                    )
+                    (
+                      ( ONSET> 1800 )
+                      ( OFFSET> 1860 )
+                      ( |<val>| ( |ACKNOWL| |Tom| |Sam| -1 ) )
+                    )
+                    (
+                      ( ONSET> 1920 )
+                      ( OFFSET> 2040 )
+                      ( |<val>| ( |COMMAND| |Sam| |Tom| -1 ) )
+                    )
+                    (
+                      ( ONSET> 2160 )
+                      ( OFFSET> 2220 )
+                      ( |<val>| ( |ACKNOWL| |Tom| |Sam| -1 ) )
+                    )
+                    (
+                      ( ONSET> 2280 )
+                      ( OFFSET> 2400 )
+                      ( |<val>| ( |OBSERVE| |Tom| -1 ) )
+                    )
+                    (
+                      ( ONSET> 3660 )
+                      ( OFFSET> 3720 )
+                      ( |<val>| ( |REASON| |Tom| 0 ) )
+                    )
+                    (
+                      ( ONSET> 3780 )
+                      ( OFFSET> 3900 )
+                      ( |<val>| ( |REASON| |Tom| 0 ) )
+                    )
+                    (
+                      ( ONSET> 3900 )
+                      ( OFFSET> 4080 )
+                      ( |<val>| ( |PREDICT| |Tom| 0 ) )
+                    )
+                    (
+                      ( ONSET> 3960 )
+                      ( OFFSET> 4020 )
+                      ( |<val>| ( |OBSERVE| |Sam| 0 ) )
+                    )
+                    (
+                      ( ONSET> 4080 )
+                      ( OFFSET> 4140 )
+                      ( |<val>| ( |OBSERVE| |Tom| 0 ) )
+                    )
+                  )
+                )
+                ( VOCAB> ( |ACKNOWL| |ANNOUNCE| |COMMAND| |GOAL| |OBSERVE| |PREDICT| |REASON| ) )
+              )
+            )
+            ( |speechcode1|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 60 )
+                      ( OFFSET> 360 )
+                      ( |<val>| ( |GOAL| |+| |+| |+| ) )
+                    )
+                    (
+                      ( ONSET> 420 )
+                      ( OFFSET> 540 )
+                      ( |<val>| ( |COMMAND| |Sam| |Tom| |+1| ) )
+                    )
+                    (
+                      ( ONSET> 600 )
+                      ( OFFSET> 660 )
+                      ( |<val>| ( |ACKNOWL| |Tom| |Sam| -1 ) )
+                    )
+                    (
+                      ( ONSET> 660 )
+                      ( OFFSET> 780 )
+                      ( |<val>| ( |ANNOUNCE| |Sam| 0 ) )
+                    )
+                    (
+                      ( ONSET> 780 )
+                      ( OFFSET> 1260 )
+                      ( |<val>| ( |ANNOUNCE| |Tom| 0 ) )
+                    )
+                    (
+                      ( ONSET> 1260 )
+                      ( OFFSET> 1440 )
+                      ( |<val>| ( |OBSERVE| |Sam| 0 ) )
+                    )
+                    (
+                      ( ONSET> 1440 )
+                      ( OFFSET> 1560 )
+                      ( |<val>| ( |OBSERVE| |Sam| 0 ) )
+                    )
+                    (
+                      ( ONSET> 1680 )
+                      ( OFFSET> 1800 )
+                      ( |<val>| ( |OBSERVE| |Sam| 0 ) )
+                    )
+                    (
+                      ( ONSET> 1800 )
+                      ( OFFSET> 1860 )
+                      ( |<val>| ( |ANNOUNCE| |Sam| 0 ) )
+                    )
+                    (
+                      ( ONSET> 1920 )
+                      ( OFFSET> 2040 )
+                      ( |<val>| ( |COMMAND| |Sam| |Tom| -1 ) )
+                    )
+                    (
+                      ( ONSET> 2460 )
+                      ( OFFSET> 2520 )
+                      ( |<val>| ( |REASON| |Tom| 0 ) )
+                    )
+                    (
+                      ( ONSET> 2580 )
+                      ( OFFSET> 2700 )
+                      ( |<val>| ( |REASON| |Tom| 0 ) )
+                    )
+                    (
+                      ( ONSET> 2760 )
+                      ( OFFSET> 2820 )
+                      ( |<val>| ( |OBSERVE| |Sam| 0 ) )
+                    )
+                  )
+                )
+                ( VOCAB> ( |ACKNOWL| |ANNOUNCE| |COMMAND| |GOAL| |OBSERVE| |REASON| ) )
+              )
+            )
+          )
+        )
+      )
+    )
+    ( QUERY>
+      (
+        () 
+        ( |query| ( |or| ( |and| |<arg1>| |<arg2>| ( |le| ( |minus| |?onstate| ( TIME> 600 ) ) |?onsys| ) ( |ge| ( |minus| |?onstate| ( TIME> 300 ) ) |?onsys| ) ) ( |and| |<arg1>| |<arg2>| ( |ge| ( |minus| |?onstate| ( TIME> 300 ) ) |?offsys| ) ( |le| ( |minus| |?onstate| ( TIME> 600 ) ) |?offsys| ) ) ( |and| |<arg1>| |<arg2>| ( |ge| ( |minus| |?onstate| ( TIME> 300 ) ) |?onsys| ) ( |le| ( |minus| |?onstate| ( TIME> 600 ) ) |?offsys| ) ) ) ( |print| |?ordstate| |?ordsys| |?v| ) ) 
+        ( |query| ( |and| |<arg1>| ( |ge| |?a| 21 ) |<arg3>| ( |ge| |?onstate| |?onsys| ) ( |le| |?onstate| |?offsys| ) ) ( |print| |?ordsys| |?a| |?ordstate| |?b| |?c| |?d| ) ) 
+        ( |query| ( |or| ( |and| |<arg1>| ( |ge| |?a| 23 ) |<arg3>| ( |ge| |?onstate| |?onsys| ) ( |le| |?onstate| |?offsys| ) ) ( |and| |<arg1>| ( |ge| |?a| 23 ) |<arg3>| ( |le| |?offstate| |?offsys| ) ( |ge| |?offstate| |?onsys| ) ) ) ( |print| |?ordsys| |?a| |?ordstate| |?b| |?c| |?d| ) ) 
+        ( |query| ( |and| |<arg1>| |<arg2>| ( |le| ( |minus| |?onstate| ( TIME> 300 ) ) |?offsys| ) ( |ge| ( |minus| |?onstate| ( TIME> 300 ) ) |?onsys| ) ) ( |print| |?ordsys| |?ordstate| |?v| ) ) 
+        ( |query| ( |or| ( |speechcode| |<ord>| |<onset>| |<offset>| ( |COMMAND| |?sp| |<TO>| -1 ) ) ( |speechcode| |<ord>| |<onset>| |<offset>| ( |ACKNOWL| |?sp| |<TO>| -1 ) ) ( |speechcode| |<ord>| |<onset>| |<offset>| ( |ANNOUNCE| |?sp| -1 ) ) ( |speechcode| |<ord>| |<onset>| |<offset>| ( |OBSERVE| |?sp| -1 ) ) ( |speechcode| |<ord>| |<onset>| |<offset>| ( |REASON| |?sp| -1 ) ) ( |speechcode| |<ord>| |<onset>| |<offset>| ( |PREDICT| |?sp| -1 ) ) ) ( |print| |?sp| ) ) 
+        ( |query| ( |and| ( |speechcode| |?eord| |?eon| |?eoff| |?b| ) |<arg2>| ( |le| |?c| 23 ) ( |ge| |?eon| |?son| ) ( |le| |?eon| |?soff| ) ) ( |print| |?eord| |?b| |?c| ) ) 
+        ( |query| ( |or| ( |and| |<arg1>| |<arg2>| ( |ge| |?onv| ( |minus| |?onh| ( TIME> 600 ) ) ) ( |le| |?onv| ( |minus| |?onh| ( TIME> 300 ) ) ) ) ) ( |print| |?ordh| |?ordv| |?val| ) ) 
+        ( |query| ( |or| ( |and| |<arg1>| |<arg2>| ( |ge| |?onv| ( |minus| |?onh| ( TIME> 600 ) ) ) ( |le| |?onv| ( |minus| |?onh| ( TIME> 300 ) ) ) ) ( |and| |<arg1>| |<arg2>| ( |le| |?offv| ( |minus| |?onh| ( TIME> 300 ) ) ) ( |ge| |?offv| ( |minus| |?onh| ( TIME> 600 ) ) ) ) ) ( |print| |?ordh| |?ordv| |?val| ) ) 
+        ( |query| |<condition>| ( |print| |?ord1| |?on1| |?off1| ) ) 
+        ( |query| ( |and| |<arg1>| |<arg2>| ( |le| |?onv| ( |plus| |?onh| ( TIME> 300 ) ) ) ( |ge| |?offv| ( |plus| |?onh| ( TIME> 300 ) ) ) ) ( |print| |?ordv| |?ordh| |?v| ) ) 
+        ( |query| ( |and| ( |speechcode| |?orda| |?ona| |?offa| ( |ANNOUNCE| |<SPEAKER>| 0 ) ) ( |speechcode| |?ordo| |?ono| |?offo| ( |OBSERVE| |<SPEAKER>| |<MITIGATION>| ) ) ( |gt| |?ono| |?offa| ) ( |not| ( |and| ( |speechcode| |<ord>| |?ono2| |?offo2| ( |OBSERVE| |<SPEAKER>| |<MITIGATION>| ) ) ( |gt| |?ono2| |?offa| ) ( |lt| |?ono2| |?ono| ) ) ) ) ( |print| |?orda| |?ordo| ) ) 
+      )
+    )
+    ( SYSTEM>
+      (
+        ( SHAPA-PANE-VARS>
+          (
+            |speechcode1|
+            |speechcode|
+          )
+        )
+      )
+    )
+  )
+)

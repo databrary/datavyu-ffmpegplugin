@@ -484,10 +484,6 @@ Spreadsheet Variable Cell Definition:
 00229                        ( OFFSET> 64 ) 
 00230                        ( |<arg1>| "first arg" ) 
 00231                        ( |<arg2>| ( |an integer var| 1 2 3 4 ) ) ; reference to a spreadsheet variable
-
-      WARNING 126 (Line 231:55): Encountered type mismatch between argument and formal argument.  Argument replaced with an undefined value.
-
-      WARNING 126 (Line 231:57): Encountered type mismatch between argument and formal argument.  Argument replaced with an undefined value.
 00232                      )
 00233                    )
 00234                  )
@@ -498,7 +494,7 @@ Spreadsheet Variable Cell Definition:
 	ord = 9
 	onset = 00:00:01:004
 	offset = 00:00:01:004
-	value = "first arg", an integer var(1, <onset>, <offset>, 4)
+	value = "first arg", an integer var(1, 2, 3, 4)
 00236                )
 00237              )
 00238              

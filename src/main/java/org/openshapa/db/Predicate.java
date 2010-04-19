@@ -56,13 +56,17 @@ public class Predicate extends DBElement
      *
      */
 
-    /** ID of the represented predicate */
+    /** ID of the represented predicate, or the INVALID_ID if the predicate
+     *  is undefined.
+     */
     protected long pveID = DBIndex.INVALID_ID;
 
-    /** Name of the represented predicate */
+    /** Name of the represented predicate, or the empty string if the predicate
+     *  is undefined.
+     */
     protected String predName = null;
 
-    /** Argument list of the predicate */
+    /** Argument list of the predicate, or null if the predicate is undefined */
     protected Vector<DataValue> argList = null;
 
     /** Whether the predicate has a variable length argument list */
@@ -1498,6 +1502,9 @@ public class Predicate extends DBElement
 
         if ( srcArgList.size() != numArgs )
         {
+             // TODO: delete these print statements eventually
+             System.out.printf("srcArgList.size() = %d, numArgs = %d\n", srcArgList.size(), numArgs);
+             System.out.printf("pve.toString() = %s\n", pve.toString());
             throw new SystemErrorException(mName + "arg list size mis-match");
         }
 
@@ -1561,6 +1568,8 @@ public class Predicate extends DBElement
                                 ": column predicate, or undefined DV " +
                                 "expected.");
                     }
+                    // TODO: delete this eventually
+                    // assert( cdv != null );
                     break;
 
                 case FLOAT:
@@ -1588,6 +1597,8 @@ public class Predicate extends DBElement
                                 "Type mismatch for arg " + i + ": float DV, " +
                                 "or undefined DV expected.");
                     }
+                    // TODO: delete this eventually
+                    // assert( cdv != null );
                     break;
 
                 case INTEGER:
@@ -1615,6 +1626,8 @@ public class Predicate extends DBElement
                                 "Type mismatch for arg " + i + ": integer " +
                                 "DV, or undefined DV expected.");
                     }
+                    // TODO: delete this eventually
+                    // assert( cdv != null );
                     break;
 
                 case NOMINAL:
@@ -1642,6 +1655,8 @@ public class Predicate extends DBElement
                                 "Type mismatch for arg " + i + ": nominal DV, "
                                 + "or undefined DV expected.");
                     }
+                    // TODO: delete this eventually
+                    // assert( cdv != null );
                     break;
 
                 case PREDICATE:
@@ -1669,6 +1684,8 @@ public class Predicate extends DBElement
                                 "Type mismatch for arg " + i + ": predicate " +
                                 "DV, or undefined DV expected.");
                     }
+                    // TODO: delete this eventually
+                    // assert( cdv != null );
                     break;
 
                 case TIME_STAMP:
@@ -1696,6 +1713,8 @@ public class Predicate extends DBElement
                                 "Type mismatch for arg " + i + ": time stamp " +
                                 "DV, or undefined DV expected.");
                     }
+                    // TODO: Delete this eventually
+                    // assert( cdv != null );
                     break;
 
                 case QUOTE_STRING:
@@ -1725,6 +1744,8 @@ public class Predicate extends DBElement
                                 "Type mismatch for arg " + i + ": quote " +
                                 "string DV, or undefined DV expected.");
                     }
+                    // TODO: delete this eventually
+                    // assert( cdv != null );
                     break;
 
                 case TEXT:
@@ -1753,6 +1774,8 @@ public class Predicate extends DBElement
                                 "Type mismatch for arg " + i + ": text " +
                                 "string DV, or undefined DV expected.");
                     }
+                    // TODO: delete this eventually
+                    // assert( cdv != null );
                     break;
 
                 case UNTYPED:
@@ -1761,6 +1784,14 @@ public class Predicate extends DBElement
                     } catch (CloneNotSupportedException e) {
                         throw new SystemErrorException("Unable to clone dv.");
                     }
+                    // TODO: delete this eventually
+                    if ( cdv == null ) // TODO: delete this eventually
+                    {
+                        System.out.printf("null cdv.  dv.toDBString = %s\ndv.toString = %s\n",
+                                          dv.toDBString(), dv.toString());
+                        cdv = new PredDataValue((PredDataValue)dv);
+                    }
+                    assert( cdv != null );
                     break;
 
                 case UNDEFINED:
@@ -1775,6 +1806,9 @@ public class Predicate extends DBElement
                     /* break statement commented out to keep compiler happy */
                     // break;
             }
+
+            // TODO: delete this eventually
+            // assert ( cdv != null );
 
             if ( clearID )
             {

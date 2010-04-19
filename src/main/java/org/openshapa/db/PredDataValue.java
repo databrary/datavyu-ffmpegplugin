@@ -147,11 +147,16 @@ public final class PredDataValue extends DataValue
      * not been implemented.
      */
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    protected Object clone() 
+        throws CloneNotSupportedException
+    {
         PredDataValue clone;
-        try {
+
+        try
+        {
             clone = new PredDataValue(this);
-        } catch (SystemErrorException e) {
+        }
+        catch (SystemErrorException e) {
             clone = null;
         }
 

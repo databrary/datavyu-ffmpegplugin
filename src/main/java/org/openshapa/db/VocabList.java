@@ -1275,8 +1275,11 @@ public class VocabList {
         this.db.cascadeEnd();
 
         return;
-    }
 
+    } /* VocabList::removeVocabElement(targetID) */
+
+
+    // VocabList::replaceVocabElement()
     /**
      * Search the index for an instance of DBElement with the same id as that
      * of the supplied instance.
@@ -1531,7 +1534,8 @@ public class VocabList {
                 farg = mve.getFormalArg(i);
                 cpFarg = mve.getCPFormalArg(i + 3);
 
-                if ( ! FormalArgument.FormalArgsAreEquivalent(farg, cpFarg) )
+                if ( ! FormalArgument.MVEAndCPArgsAreEquivalent(farg, cpFarg,
+                        this.db.typedColPredFormalArgsSupported()) )
                 {
                     throw new SystemErrorException(mName +
                             "regular / cp formal arg mismatch");

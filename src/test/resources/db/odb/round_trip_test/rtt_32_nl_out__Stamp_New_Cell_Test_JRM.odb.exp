@@ -1,0 +1,93 @@
+; MacSHAPA Open Database
+( setf macshapa-db
+ '(
+    ( HEADER>
+      (
+        ( NAME> "Stamp_New_Cell_Test_JRM.odb" )
+        ( VERSION> 1 )
+        ( DEBUG-LEVEL> 0 )
+        ( MAX-ERRORS> 1 )
+        ( MAX-WARNINGS> 1 )
+      )
+    )
+    ( USER>
+      (
+        ( PREDICATE-DEFINITIONS>
+          (
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DECLARATIONS>
+          (
+            ( |test_2|
+              (
+                ( TYPE> <<TEXT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |test_3|
+              (
+                ( TYPE> <<TEXT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |test_1|
+              (
+                ( TYPE> <<TEXT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DEFINITIONS>
+          (
+            ( |test_2|
+              (
+                ( CELLS>
+                  (
+                  )
+                )
+              )
+            )
+            ( |test_3|
+              (
+                ( CELLS>
+                  (
+                  )
+                )
+              )
+            )
+            ( |test_1|
+              (
+                ( CELLS>
+                  (
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+    ( QUERY>
+      (
+      )
+    )
+    ( SYSTEM>
+      (
+        ( SHAPA-PANE-VARS>
+          (
+            |test_1|
+            |test_2|
+            |test_3|
+          )
+        )
+      )
+    )
+  )
+)

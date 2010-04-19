@@ -315,8 +315,8 @@
 
 00269              |verbal| 
 
-      WARNING  87 (Line 267:13): Encountered reference to an undefined spreadsheet variable in the list associated with the SYSTEM> SHAPA-PANE-VARS> attribute.
-        The entry in the shapa pane variables list will be ignored.
+      WARNING  88 (Line 267:13): Encountered reference to a system spreadsheet variable in the list associated with the SYSTEM> SHAPA-PANE-VARS> attribute.
+        Since system spreadsheet variables never appear on the spreadsheet, the entry will be ignored.
 
 00270              19 ; a random atom
 

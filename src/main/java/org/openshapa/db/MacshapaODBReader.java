@@ -25029,15 +25029,17 @@ public class MacshapaODBReader
                          // break;
 
                 } /* end switch */
-                
-                if ( ( next_arg == null ) && ( ! this.abort_parse ) )
+
+                if ( ( next_arg == null ) && 
+                     ( ! done ) &&
+                     ( ! this.abort_parse ) )
                 {
                     // construct an empty argument
                     next_arg = new UndefinedDataValue(this.db, 
                                                       next_farg.getID());
-               }
+                }
                 
-                if ( ! this.abort_parse )
+                if ( ( ! done ) && ( ! this.abort_parse ) )
                 {
                     argList.add(next_arg);
                     next_arg = null;
@@ -25387,12 +25389,15 @@ public class MacshapaODBReader
         boolean varLen = false;
         int arg_num = 0;
         int num_fargs = 0;
+        int i;
         PredicateVocabElement pve = null;
         Predicate value = null; 
         Vector<DataValue> argList = null;
         FormalArgument next_farg = null;
         DataValue next_arg = null;
         DataValue arg = null;
+        DataValue test_dv_in = null;
+        DataValue test_dv_out = null;
 
         if ( this.abort_parse )
         {
@@ -25491,7 +25496,6 @@ public class MacshapaODBReader
             }
             
             value = new Predicate(this.db);
-
         }
         else /* eat the left paren & pred name tokens, and set up to parse the 
               * argument list 
@@ -25667,29 +25671,64 @@ public class MacshapaODBReader
                     next_arg = null;
                 }
 
-                if ( ( ! this.abort_parse ) && ( ! done ) )
+                if ( ( ! this.abort_parse ) &&
+                     ( ! done ) &&
+                     ( (this.l0_tok).code != R_PAREN_TOK ) &&
+                     ( arg_num + 1 >= num_fargs ) )
                 {
-                    /* in the case of a system variable length predicate that 
-                     * is not a predicate associated with a spreadsheet variable 
-                     * (i.e. and(), or(), etc.) we need to add new formal 
-                     * arguments as necessary.  Do this as follows:
+                    /* We are about to run out of formal arguments before we
+                     * run out of arguments.  This is always an error for
+                     * fixed length predicates, and should never happen with
+                     * user defined variable length predicates, as the
+                     * definition written to the file should contain sufficent
+                     * arguments for all instances of the predicate.
+                     *
+                     * However, if it happens for a system defined variable
+                     * length predicate, we must create a new formal argument
+                     * so as to avoid an excess arguments error.
+                     *
+                     * Test for this situation, and deal with it below.
                      */
-
-                    if ( ( num_fargs <= arg_num ) &&
-                         ( pve.getVarLen() ) &&
-                         ( pve.getSystem() ) )
+                    if ( ( pve.getSystem() ) &&
+                         ( pve.getVarLen() ) )
                     {
-                        /* note that addArgToPredVE() adds an argument
-                         * to the target variable length predicate vocab
-                         * element, and returns a copy of the revised PVE.
+                        /* addArgToPredVE() adds an argument to the target
+                         * variable length predicate vocab element, and
+                         * returns a copy of the revised PVE.
                          */
                         pve = this.db.addArgToPredVE(pve.getID());
 
                         /* we must also update numFargs */
                         num_fargs = pve.getNumFormalArgs();
 
-                        assert( num_fargs > arg_num );
+                        assert( num_fargs > arg_num + 1 );
                     }
+                }
+
+                if ( ( ! this.abort_parse ) && ( ! done ) )
+                {
+                    //TODO: delete this if all goes well
+//                    /* in the case of a system variable length predicate that
+//                     * is not a predicate associated with a spreadsheet variable
+//                     * (i.e. and(), or(), etc.) we need to add new formal
+//                     * arguments as necessary.  Do this as follows:
+//                     */
+//
+//                    if ( ( num_fargs <= arg_num ) &&
+//                         ( pve.getVarLen() ) &&
+//                         ( pve.getSystem() ) )
+//                    {
+//                        /* note that addArgToPredVE() adds an argument
+//                         * to the target variable length predicate vocab
+//                         * element, and returns a copy of the revised PVE.
+//                         */
+//                        pve = this.db.addArgToPredVE(pve.getID());
+//
+//                        /* we must also update numFargs */
+//                        num_fargs = pve.getNumFormalArgs();
+//
+//                        assert( num_fargs > arg_num );
+//                    }
                     
                     arg_num++;
                     
@@ -25812,6 +25851,24 @@ public class MacshapaODBReader
              * a predicate data value, and return it. */
             if ( ! this.abort_parse )
             {
+                assert( num_fargs == argList.size() );
+
+                for ( i = 0; i < num_fargs; i++ )
+                {
+                    test_dv_in = argList.get(i);
+                    test_dv_out = update_for_farg_list_extensions(test_dv_in);
+                    if ( test_dv_in != test_dv_out )
+                    {
+                        arg = argList.set(i, test_dv_out);
+
+                        if ( arg != test_dv_in )
+                        {
+                            throw new SystemErrorException(mName +
+                                    "replaced wrong dv in argList?!?");
+                        }
+                    }
+                }
+
                 value = new Predicate(this.db, pve.getID(), argList);
                 arg = new PredDataValue(this.db, farg.getID(), value);
             }
@@ -25821,6 +25878,190 @@ public class MacshapaODBReader
         return(arg);
 
     } /* MacshapaODBReader::parse_pred_value() */
+
+
+    /*************************************************************************
+     *
+     * update_for_farg_list_extensions()
+     *
+     * While parsing a predicate or column predicate, it is possible that a
+     * system, variable length, predicate will appear several times in the
+     * argument list, and that arguments will be added during a later
+     * appearance that are not reflected in an earlier appearance.
+     *
+     * This will cause a failure when we try to construct the target predicate
+     * or column predicate as the argument list we pass to the Prdicate or
+     * Column Predicate constructor will contain an instance of the variable
+     * length system predicate with too few arguments.
+     *
+     * This function exists to correct this issue -- it scans the supplied
+     * data value for such instances of variable length system predicates, and
+     * checks them to see if they have too few arguments.  
+     * 
+     * If such instances are detected, the method constructs a new data value
+     * of containing a predicate with the correct number of formal arguments,
+     * and returns that data value.
+     *
+     * If no such instances are detected, the method simply returns the supplied
+     * data value.
+     *
+     * appends undefined data values to the argument lists
+     * as required.
+     *
+     *                                                     - 2/7/10
+     *
+     * Parameters:
+     *
+     *    - dv: Reference to the data value to be checked for instances of
+     *          variable length system predicates.
+     *
+     * Returns:  Void.
+     *
+     * Changes:
+     *
+     *  - None.
+     *
+     *************************************************************************/
+
+    private DataValue update_for_farg_list_extensions(DataValue dv_in)
+        throws SystemErrorException
+    {
+        final String mName =
+                "macshapa_odb_reader::update_for_farg_list_extensions()";
+        DBElement dbe = null;
+        Predicate new_pred = null;
+        PredicateVocabElement pve = null;
+        DataValue dv_out = null;
+        DataValue test_dv_in = null;
+        DataValue test_dv_out = null;
+        PredDataValue pdv_in = null;
+        PredDataValue pdv_out = null;
+        ColPredDataValue cpdv_in = null;
+        ColPredDataValue cpdv_out = null;
+        int i;
+        int argListLen = 0;
+        int fargListLen = 0;
+
+        if ( dv_in == null )
+        {
+            throw new SystemErrorException(mName + "dv_in null on entry.");
+        }
+
+        if ( dv_in instanceof PredDataValue )
+        {
+            pdv_in = (PredDataValue)dv_in;
+
+            if ( ( pdv_in.itsValue != null ) &&
+                 ( pdv_in.itsValue.pveID != DBIndex.INVALID_ID ) )
+            {
+                dbe = this.db.idx.getElement(pdv_in.itsValue.pveID);
+
+                if ( dbe instanceof PredicateVocabElement )
+                {
+                    pve = (PredicateVocabElement)dbe;
+                    fargListLen = pve.getNumFormalArgs();
+                }
+                else
+                {
+                    throw new SystemErrorException(mName +
+                                                   "dbe not a pve?!?");
+                }
+
+                argListLen = pdv_in.itsValue.getNumArgs();
+
+                if ( fargListLen == argListLen )
+                {
+                    pdv_out = pdv_in;
+                }
+                else if ( ( fargListLen > argListLen ) &&
+                        ( pve.getSystem() ) &&
+                        ( pve.getVarLen() ) )
+                {
+                    new_pred = new Predicate(this.db, pdv_in.itsValue.pveID);
+                    pdv_out = new PredDataValue(this.db, 
+                                                pdv_in.itsFargID, 
+                                                new_pred);
+                }
+                else
+                {
+                    throw new SystemErrorException(mName + 
+                            "unexpected discrepency in farg/arg list lengths");
+                }
+
+                i = 0;
+                while ( i < argListLen )
+                {
+                    test_dv_in = pdv_in.itsValue.getArg(i);
+                    test_dv_out =
+                            this.update_for_farg_list_extensions(test_dv_in);
+                    if ( ( test_dv_in != test_dv_out ) ||
+                         ( pdv_in != pdv_out ) )
+                    {
+                        pdv_out.itsValue.replaceArg(i, test_dv_out);
+                    }
+
+                    i++;
+                }
+
+                dv_out = pdv_out;
+            }
+            else /* pdv_in is an undefined predicate -- just return it */
+            {
+                dv_out = dv_in;
+            }
+        }
+        else if ( dv_in instanceof ColPredDataValue )
+        {
+            cpdv_in = (ColPredDataValue)dv_in;
+
+            if ( ( cpdv_in.itsValue != null ) &&
+                 ( cpdv_in.itsValue.mveID != DBIndex.INVALID_ID ) )
+            {
+
+                argListLen = cpdv_in.itsValue.getNumArgs();
+
+                /* the cpdv_out local variable isn't needed at present --
+                 * it is used to make this case look like the previous predicate
+                 * case, and to make it easy to allow for variable length
+                 * system matricies in the future.
+                 *
+                 * In the code as written at present, cpdv_in and cpdv_out
+                 * always refer to the same instance of ColPredDataValue
+                 */
+                cpdv_out = cpdv_in;
+
+                i = 0;
+                while ( i < argListLen )
+                {
+                    test_dv_in = cpdv_in.itsValue.getArg(i);
+                    test_dv_out =
+                            this.update_for_farg_list_extensions(test_dv_in);
+                    if ( test_dv_in != test_dv_out )
+                    {
+                        cpdv_out.itsValue.replaceArg(i, test_dv_out);
+                    }
+
+                    i++;
+                }
+
+                dv_out = cpdv_out;
+
+            }
+            else
+            {
+                dv_out = dv_in;
+            }
+        }
+        else
+        {
+            dv_out = dv_in;
+        }
+
+        assert( dv_out != null );
+
+        return dv_out;
+
+    } // macshapa_odb_reader::update_for_farg_list_extensions()
 
 
     /*************************************************************************

@@ -438,6 +438,7 @@ public class MatrixVocabElement extends VocabElement
      *
      *   - None.
      */
+    @Override
     public void setSystem()
         throws SystemErrorException
     {
@@ -480,8 +481,16 @@ public class MatrixVocabElement extends VocabElement
      *      column predicate formal argument list.
      *
      *                                           -- 8/09/08
+     *
+     *    - Modified function to respect the new
+     *      typedColPredFormalArgsSupported() method of Database.  When this
+     *      method returns true, we proceed as before.  When it returns false,
+     *      contruct an untyped formal argument of the same name as the supplied
+     *      formal argument, and append it to the column predicate argument
+     *      list.
+     *                                           -- 1/24/10
      */
-
+    @Override
     public void appendFormalArg(FormalArgument newArg)
         throws SystemErrorException
     {
@@ -571,8 +580,17 @@ public class MatrixVocabElement extends VocabElement
 
         super.appendFormalArg(newArg);
 
-        this.appendCPFormalArg(newArg.CopyFormalArg(true, true));
+        if ( this.getDB().typedColPredFormalArgsSupported() )
+        {
+            this.appendCPFormalArg(newArg.CopyFormalArg(true, true));
+        }
+        else
+        {
+            UnTypedFormalArg cpArg = null;
 
+            cpArg = new UnTypedFormalArg(this.getDB(), newArg.getFargName());
+            this.appendCPFormalArg(cpArg);
+        }
         return;
 
     } /* MatrixVocabElement::appendFormalArg() */
@@ -592,7 +610,7 @@ public class MatrixVocabElement extends VocabElement
      *      formal argument list.
      *                                           -- 8/9/08
      */
-
+    @Override
     public void deleteFormalArg(int n)
         throws SystemErrorException
     {
@@ -638,7 +656,8 @@ public class MatrixVocabElement extends VocabElement
         fa = this.getFormalArg(n);
         cpfa = this.getCPFormalArg(n + 3);
 
-        if ( ! FormalArgument.FormalArgsAreEquivalent(fa, cpfa) )
+        if ( ! FormalArgument.MVEAndCPArgsAreEquivalent(fa, cpfa,
+                this.getDB().typedColPredFormalArgsSupported()) )
         {
             System.out.printf("  fa = %s\n", fa.toDBString());
             System.out.printf("cpfa = %s\n", cpfa.toDBString());
@@ -670,6 +689,7 @@ public class MatrixVocabElement extends VocabElement
      *
      *   - None.
      */
+    @Override
     protected FormalArgument getFormalArg(int n)
         throws SystemErrorException
     {
@@ -707,6 +727,7 @@ public class MatrixVocabElement extends VocabElement
      *
      *   - None.
      */
+    @Override
     public FormalArgument getFormalArgCopy(int n)
         throws SystemErrorException
     {
@@ -745,7 +766,7 @@ public class MatrixVocabElement extends VocabElement
      *
      *    - None.
      */
-
+    @Override
     public int getNumFormalArgs()
         throws SystemErrorException
     {
@@ -775,8 +796,16 @@ public class MatrixVocabElement extends VocabElement
      *
      *    - Updated function to insert a copy of the supplied formal argument
      *      in the column predicate formal argument list.
+     *
+     *    - Modified function to respect the new
+     *      typedColPredFormalArgsSupported() method of Database.  When this
+     *      method returns true, we proceed as before.  When it returns false,
+     *      contruct an untyped formal argument of the same name as the supplied
+     *      formal argument, and insert it to the column predicate argument
+     *      list.
+     *                                           -- 1/24/10
      */
-
+    @Override
     public void insertFormalArg(FormalArgument newArg,
                                 int n)
         throws SystemErrorException
@@ -820,7 +849,7 @@ public class MatrixVocabElement extends VocabElement
                     "newArg.getFargName() isn't unique.");
         }
 
-        switch ( type )
+        switch ( this.type )
         {
             case FLOAT:
                 if ( ! ( newArg instanceof FloatFormalArg ) )
@@ -873,8 +902,17 @@ public class MatrixVocabElement extends VocabElement
 
         super.insertFormalArg(newArg, n);
 
-        this.insertCPFormalArg(newArg.CopyFormalArg(true, true),
-                                                            n + 3);
+        if ( this.getDB().typedColPredFormalArgsSupported() )
+        {
+            this.insertCPFormalArg(newArg.CopyFormalArg(true, true), n + 3);
+        }
+        else
+        {
+            UnTypedFormalArg cpArg = null;
+
+            cpArg = new UnTypedFormalArg(this.getDB(), newArg.getFargName());
+            this.insertCPFormalArg(cpArg, n + 3);
+        }
 
         return;
 
@@ -900,6 +938,7 @@ public class MatrixVocabElement extends VocabElement
      *    - None.
      */
 
+    @Override
     public boolean isWellFormed(boolean newVE)
         throws SystemErrorException
     {
@@ -1122,6 +1161,7 @@ public class MatrixVocabElement extends VocabElement
      *   - None.
      */
 
+    @Override
     public void propagateID()
         throws SystemErrorException
     {
@@ -1167,9 +1207,16 @@ public class MatrixVocabElement extends VocabElement
      *
      * Changes:
      *
-     *    - None.
+     *    - Modified function to respect the new
+     *      typedColPredFormalArgsSupported() method of Database.  When this
+     *      method returns true, we proceed as before.  When it returns false,
+     *      contruct an untyped formal argument of the same name as the supplied
+     *      formal argument, and use it to replace the old formal argument
+     *      in the column predicate argument list.
+     *
+     *                                           -- 1/24/10
      */
-
+    @Override
     public void replaceFormalArg(FormalArgument newArg,
                                  int n)
         throws SystemErrorException
@@ -1255,14 +1302,25 @@ public class MatrixVocabElement extends VocabElement
         {
             if ( oldArg.getFargType() != newArg.getFargType() )
             {
-                throw new SystemErrorException(mName + "Attempt to replace " +
-                        "old fArg with new fArg with the same ID but of " +
-                        "different type.");
+                throw new SystemErrorException(mName + "Attempt to " +
+                        "replace old fArg with new fArg with the same " +
+                        "ID but of different type.");
             }
 
-            newCPArg = newArg.CopyFormalArg(true, true);
+            if ( this.getDB().typedColPredFormalArgsSupported() )
+            {
 
-            assert( oldCPArg.getFargType() == newCPArg.getFargType() );
+                newCPArg = newArg.CopyFormalArg(true, true);
+
+                assert( oldCPArg.getFargType() == newCPArg.getFargType() );
+
+            }
+            else
+            {
+                newCPArg = new UnTypedFormalArg(this.getDB(),
+                                                newArg.getFargName());
+
+            }
 
             if ( oldCPArg.getID() != DBIndex.INVALID_ID )
             {
@@ -1271,7 +1329,15 @@ public class MatrixVocabElement extends VocabElement
         }
         else
         {
-            newCPArg = newArg.CopyFormalArg(true, true);
+            if ( this.getDB().typedColPredFormalArgsSupported() )
+            {
+                newCPArg = newArg.CopyFormalArg(true, true);
+            }
+            else
+            {
+                newCPArg = new UnTypedFormalArg(this.getDB(),
+                                                newArg.getFargName());
+            }
         }
 
         for ( FormalArgument t : this.cpfArgList )
@@ -1324,14 +1390,20 @@ public class MatrixVocabElement extends VocabElement
      *
      * Changes:
      *
-     *    - None.
+     *    - Added code to support the new typedColPredFormalArgsSupported()
+     *      supported features method in Database.  When this method returns
+     *      true, we proceed as before.  When it returns false, all column
+     *      predicate formal arguments must be untyped -- and thus we must
+     *      verify that the supplied formal argument is untyped.
+     *
+     *                                          -- 1/23/10
      *
      */
 
     private void appendCPFormalArg(FormalArgument newArg)
         throws SystemErrorException
     {
-        final String mName = "VocabElement::appendCPFormalArg(): ";
+        final String mName = "MatrixVocabElement::appendCPFormalArg(): ";
 
         if ( cpfArgList == null )
         {
@@ -1356,6 +1428,15 @@ public class MatrixVocabElement extends VocabElement
             throw new SystemErrorException(mName + "newArg name not unique.");
         }
 
+        if ( ! this.getDB().typedColPredFormalArgsSupported() )
+        {
+            if ( newArg.getFargType() != FormalArgument.FArgType.UNTYPED )
+            {
+                throw new SystemErrorException(mName + "typed column " +
+                        "predicate formal args not permitted in this database.");
+            }
+        }
+
         cpfArgList.add(newArg);
 
         newArg.setItsVocabElement(this);
@@ -1376,11 +1457,18 @@ public class MatrixVocabElement extends VocabElement
      * Note that the method presumes that this.db has been initialized prior
      * to the method's invocation.
      *
-     *                                           -- 8/9/08
+     *                                          -- 8/9/08
      *
      * Changes:
      *
-     *    - None.
+     *    - Added code to support the new typedColPredFormalArgsSupported()
+     *      supported features method in Database.  When this method returns
+     *      true, we proceed as before.  When it returns false, all column
+     *      predicate formal arguments must be untyped -- and thus we create
+     *      the <ord>, <onset>, and <offset> formal arguments as untyped
+     *      formal arguments, instead of int, time, and time respectively.
+     *
+     *                                          -- 1/23/10
      */
 
     private void constructInitCPfArgList()
@@ -1407,20 +1495,40 @@ public class MatrixVocabElement extends VocabElement
                     "this.colPredFormalArgList.size() != 0?!?");
         }
 
-        fa = new IntFormalArg(this.getDB(), "<ord>");
-        fa.setItsVocabElement(this);
-        fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
-        this.cpfArgList.add(fa);
+        if ( this.getDB().typedColPredFormalArgsSupported() )
+        {
+            fa = new IntFormalArg(this.getDB(), "<ord>");
+            fa.setItsVocabElement(this);
+            fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
+            this.cpfArgList.add(fa);
 
-        fa = new TimeStampFormalArg(this.getDB(), "<onset>");
-        fa.setItsVocabElement(this);
-        fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
-        this.cpfArgList.add(fa);
+            fa = new TimeStampFormalArg(this.getDB(), "<onset>");
+            fa.setItsVocabElement(this);
+            fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
+            this.cpfArgList.add(fa);
 
-        fa = new TimeStampFormalArg(this.getDB(), "<offset>");
-        fa.setItsVocabElement(this);
-        fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
-        this.cpfArgList.add(fa);
+            fa = new TimeStampFormalArg(this.getDB(), "<offset>");
+            fa.setItsVocabElement(this);
+            fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
+            this.cpfArgList.add(fa);
+        }
+        else
+        {
+            fa = new UnTypedFormalArg(this.getDB(), "<ord>");
+            fa.setItsVocabElement(this);
+            fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
+            this.cpfArgList.add(fa);
+
+            fa = new UnTypedFormalArg(this.getDB(), "<onset>");
+            fa.setItsVocabElement(this);
+            fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
+            this.cpfArgList.add(fa);
+
+            fa = new UnTypedFormalArg(this.getDB(), "<offset>");
+            fa.setItsVocabElement(this);
+            fa.setItsVocabElementID(this.getID());  /* will be INVALID_ID */
+            this.cpfArgList.add(fa);
+        }
 
         if ( this.cpfArgList.size() != 3 )
         {
@@ -1443,7 +1551,13 @@ public class MatrixVocabElement extends VocabElement
      *
      * Changes:
      *
-     *    - None.
+     *    - Added code to support the new typedColPredFormalArgsSupported()
+     *      supported features method in Database.  When this method returns
+     *      true, we proceed as before.  When it returns false, all column
+     *      predicate formal arguments must be untyped -- and thus we must
+     *      verify this in this mentod.
+     *
+     *                                          -- 1/23/10
      *
      */
 
@@ -1456,34 +1570,69 @@ public class MatrixVocabElement extends VocabElement
         FormalArgument cpfa = null;
         FormalArgument fa = null;
 
-        if ( ( this.cpfArgList.size() < 4 ) ||
-             ( this.cpfArgList.size() != ( this.fArgList.size() + 3 ) ) )
+        if ( this.getDB().typedColPredFormalArgsSupported() )
         {
-            return false;
-        }
+            if ( ( this.cpfArgList.size() < 4 ) ||
+                 ( this.cpfArgList.size() != ( this.fArgList.size() + 3 ) ) )
+            {
+                return false;
+            }
 
-        cpfa = cpfArgList.get(0);
-        if ( ( cpfa == null ) ||
-             ( ! ( cpfa instanceof IntFormalArg ) ) ||
-             ( cpfa.getFargName().compareTo("<ord>") != 0 ) )
-        {
-            return false;
-        }
+            cpfa = cpfArgList.get(0);
+            if ( ( cpfa == null ) ||
+                 ( ! ( cpfa instanceof IntFormalArg ) ) ||
+                 ( cpfa.getFargName().compareTo("<ord>") != 0 ) )
+            {
+                return false;
+            }
 
-        cpfa = cpfArgList.get(1);
-        if ( ( cpfa == null ) ||
-             ( ! ( cpfa instanceof TimeStampFormalArg ) ) ||
-             ( cpfa.getFargName().compareTo("<onset>") != 0 ) )
-        {
-            return false;
-        }
+            cpfa = cpfArgList.get(1);
+            if ( ( cpfa == null ) ||
+                 ( ! ( cpfa instanceof TimeStampFormalArg ) ) ||
+                 ( cpfa.getFargName().compareTo("<onset>") != 0 ) )
+            {
+                return false;
+            }
 
-        cpfa = cpfArgList.get(2);
-        if ( ( cpfa == null ) ||
-             ( ! ( cpfa instanceof TimeStampFormalArg ) ) ||
-             ( cpfa.getFargName().compareTo("<offset>") != 0 ) )
+            cpfa = cpfArgList.get(2);
+            if ( ( cpfa == null ) ||
+                 ( ! ( cpfa instanceof TimeStampFormalArg ) ) ||
+                 ( cpfa.getFargName().compareTo("<offset>") != 0 ) )
+            {
+                return false;
+            }
+        }
+        else
         {
-            return false;
+            if ( ( this.cpfArgList.size() < 4 ) ||
+                 ( this.cpfArgList.size() != ( this.fArgList.size() + 3 ) ) )
+            {
+                return false;
+            }
+
+            cpfa = cpfArgList.get(0);
+            if ( ( cpfa == null ) ||
+                 ( ! ( cpfa instanceof UnTypedFormalArg ) ) ||
+                 ( cpfa.getFargName().compareTo("<ord>") != 0 ) )
+            {
+                return false;
+            }
+
+            cpfa = cpfArgList.get(1);
+            if ( ( cpfa == null ) ||
+                 ( ! ( cpfa instanceof UnTypedFormalArg ) ) ||
+                 ( cpfa.getFargName().compareTo("<onset>") != 0 ) )
+            {
+                return false;
+            }
+
+            cpfa = cpfArgList.get(2);
+            if ( ( cpfa == null ) ||
+                 ( ! ( cpfa instanceof UnTypedFormalArg ) ) ||
+                 ( cpfa.getFargName().compareTo("<offset>") != 0 ) )
+            {
+                return false;
+            }
         }
 
         i = 3;
@@ -1497,7 +1646,8 @@ public class MatrixVocabElement extends VocabElement
             {
                 return false;
             }
-            else if ( ! FormalArgument.FormalArgsAreEquivalent(fa, cpfa) )
+            else if ( ! FormalArgument.MVEAndCPArgsAreEquivalent(fa, cpfa,
+                               this.getDB().typedColPredFormalArgsSupported()))
             {
                 return false;
             }
@@ -1943,12 +2093,18 @@ public class MatrixVocabElement extends VocabElement
      *
      * Changes:
      *
-     *    - None.
+     *    - Added code to support the new typedColPredFormalArgsSupported()
+     *      supported features method in Database.  When this method returns
+     *      true, we proceed as before.  When it returns false, all column
+     *      predicate formal arguments must be untyped -- and thus we must
+     *      verify that the supplied formal argument is untyped.
+     *
+     *                                          -- 1/23/10
      *
      */
 
     private void insertCPFormalArg(FormalArgument newArg,
-                                     int n)
+                                   int n)
         throws SystemErrorException
     {
         final String mName = "VocabElement::insertCPFormalArg(): ";
@@ -1984,6 +2140,15 @@ public class MatrixVocabElement extends VocabElement
         {
             /* n-1-th formal argument doesn't exist -- scream and die */
             throw new SystemErrorException(mName + "n > cp arg list len");
+        }
+
+        if ( ! this.getDB().typedColPredFormalArgsSupported() )
+        {
+            if ( ! ( newArg.getFargType() != FormalArgument.FArgType.UNTYPED ) )
+            {
+                throw new SystemErrorException(mName + "typed column " +
+                        "predicate formal args not permitted in this database.");
+            }
         }
 
         cpfArgList.insertElementAt(newArg, n);

@@ -294,7 +294,7 @@
                     (
                       ( ONSET> 420 )
                       ( OFFSET> 540 )
-                      ( |<val>| "Sam:  Tom, you can do the hydraulic side and I\'ll do the heat side." )
+                      ( |<val>| "Sam:  Tom, you can do the hydraulic side and I'll do the heat side." )
                     )
                     (
                       ( ONSET> 600 )
@@ -304,12 +304,12 @@
                     (
                       ( ONSET> 660 )
                       ( OFFSET> 780 )
-                      ( |<val>| "Sam:  I\'ll set heater up to 8 for now." )
+                      ( |<val>| "Sam:  I'll set heater up to 8 for now." )
                     )
                     (
                       ( ONSET> 780 )
                       ( OFFSET> 1260 )
-                      ( |<val>| "Tom:  OK.  First to increase flowrate I\'m going to open the input valve a bit more and open up the output valve." )
+                      ( |<val>| "Tom:  OK.  First to increase flowrate I'm going to open the input valve a bit more and open up the output valve." )
                     )
                     (
                       ( ONSET> 1260 )
@@ -329,12 +329,12 @@
                     (
                       ( ONSET> 1800 )
                       ( OFFSET> 1860 )
-                      ( |<val>| "Sam:  ...so I\'ll send it up to 9." )
+                      ( |<val>| "Sam:  ...so I'll send it up to 9." )
                     )
                     (
                       ( ONSET> 1920 )
                       ( OFFSET> 2040 )
-                      ( |<val>| "Sam:  You haven\'t done anything to the mixer value and volume is going up pretty fast." )
+                      ( |<val>| "Sam:  You haven't done anything to the mixer value and volume is going up pretty fast." )
                     )
                     (
                       ( ONSET> 2160 )
@@ -354,7 +354,7 @@
                     (
                       ( ONSET> 2580 )
                       ( OFFSET> 2700 )
-                      ( |<val>| "Tom:  Oh!  It\'s because I forgot to open the mixer valve." )
+                      ( |<val>| "Tom:  Oh!  It's because I forgot to open the mixer valve." )
                     )
                     (
                       ( ONSET> 2700 )
@@ -369,27 +369,27 @@
                     (
                       ( ONSET> 2880 )
                       ( OFFSET> 3000 )
-                      ( |<val>| "Tom:  ...and that\'s what it\'s doing." )
+                      ( |<val>| "Tom:  ...and that's what it's doing." )
                     )
                     (
                       ( ONSET> 3000 )
                       ( OFFSET> 3120 )
-                      ( |<val>| "Tom:  Oh hell!  It\'s going down again." )
+                      ( |<val>| "Tom:  Oh hell!  It's going down again." )
                     )
                     (
                       ( ONSET> 3120 )
                       ( OFFSET> 3180 )
-                      ( |<val>| "Tom:  So I\'ll open the output a bit." )
+                      ( |<val>| "Tom:  So I'll open the output a bit." )
                     )
                     (
                       ( ONSET> 3300 )
                       ( OFFSET> 3480 )
-                      ( |<val>| "Sam:  Why don\'t you let it settle rather than keeping on playing with it?" )
+                      ( |<val>| "Sam:  Why don't you let it settle rather than keeping on playing with it?" )
                     )
                     (
                       ( ONSET> 3540 )
                       ( OFFSET> 3840 )
-                      ( |<val>| "Tom:  Oh well...I don\'t think I play with it too much." )
+                      ( |<val>| "Tom:  Oh well...I don't think I play with it too much." )
                     )
                     (
                       ( ONSET> 3840 )
@@ -399,12 +399,12 @@
                     (
                       ( ONSET> 4200 )
                       ( OFFSET> 4320 )
-                      ( |<val>| "Sam:  Temperature\'s still rising." )
+                      ( |<val>| "Sam:  Temperature's still rising." )
                     )
                     (
                       ( ONSET> 4500 )
                       ( OFFSET> 4680 )
-                      ( |<val>| "Tom:  You\'ve confused me about the flowrate now, Sam!" )
+                      ( |<val>| "Tom:  You've confused me about the flowrate now, Sam!" )
                     )
                   )
                 )

@@ -490,7 +490,7 @@ Spreadsheet Variable Cell Definition:
 	onset = 00:00:00:000
 	offset = 00:00:00:000
 	value = query(a predicate var(<ord>, <onset>, <offset>, ?val), print(?val, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>))
-00231          ( |or| |<arg1>| |<arg2>| |<arg3>| |<arg4>| |<arg5>| |<arg6>| |<arg7>| |<arg>| ) ; should cause excess arg warning
+00231          ( |or| |<arg1>| |<arg2>| |<arg3>| |<arg4>| |<arg5>| |<arg6>| |<arg7>| |<arg>| ) ; should cause farg mismatch warning, and add <arg0> to the formal argument list for or()
 
 
 Spreadsheet Variable Cell Definition:
@@ -500,7 +500,8 @@ Spreadsheet Variable Cell Definition:
 	value = or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>)
 00232          ( |or| |<arg1>| |<arg2>| |<arg3>| |<arg4>| |<arg5>| |<arg6>| |<arg>| ) ; should cause farg mismatch warning
 
-      WARNING  74 (Line 231:87): Encountered excess arguments in a predicate value.  The excess arguments were discarded.
+      WARNING  66 (Line 231:79): Encountered a formal argument whose name does not match the expected formal argumentname.
+        The formal argument appeared in a predicate value.  The expected formal argument will be used.
 
 
 
@@ -508,7 +509,7 @@ Spreadsheet Variable Cell Definition:
 	ord = 3
 	onset = 00:00:00:000
 	offset = 00:00:00:000
-	value = or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>)
+	value = or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>, <arg0>)
 00233          ( |pred_2| |<arg1>| )
 
       WARNING  66 (Line 232:70): Encountered a formal argument whose name does not match the expected formal argumentname.
@@ -520,7 +521,7 @@ Spreadsheet Variable Cell Definition:
 	ord = 4
 	onset = 00:00:00:000
 	offset = 00:00:00:000
-	value = or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>)
+	value = or(<arg1>, <arg2>, <arg3>, <arg4>, <arg5>, <arg6>, <arg7>, <arg0>)
 00234          ( |pred_2| |<arg1>| |<arg2>| ) ; should cause excess arguments warning
 
 

@@ -1275,9 +1275,8 @@ public abstract class FormalArgument
      } /* FormalArgument::FormalArgsAreEquivalent() */
 
 
+    // FormalArgsAreEquivalentModuloID()
     /**
-     * FormalArgsAreEquivalentModuloID()
-     *
      * Test to see if two formal arguments are equivalent modulo ID.
      *
      * We say that two formal argument are equivalent modulo ID if they are of
@@ -1301,7 +1300,7 @@ public abstract class FormalArgument
      {
          final String mName = "FormalArgument::FormalArgsAreEquivalentModulo()";
          boolean argsAreEquivalent = true;
-         boolean verbose = true;
+         boolean verbose = false;
 
          if ( ( fa0 == null ) || ( fa1 == null ) )
          {
@@ -1574,5 +1573,156 @@ public abstract class FormalArgument
          return argsAreEquivalent;
 
      } /* FormalArgument::FormalArgsAreEquivalentModuloID() */
+
+
+    /**
+     * MVEAndCPArgsAreEquivalent()
+     *
+     * Test to see if two formal arguments -- one from a matrix vocab element
+     * and the other form the associated column predicate are equivalent.
+     *
+     * When typedColPredFormalArgsSupported is true, we say that
+     * two such formal argument are equivalent if they have the same name,
+     * are of the same type, have the same subtyping restrictions, and have
+     * the same name and host VocabElement.  However, their IDs must either
+     * be invalid, or not equal each other.
+     *
+     * When typedColPredFormalArgsSupported() is false, we say that
+     * two such formal arguments are equivalent if they have the same name,
+     * the column predicate argument is untyped, and the matrix vocab element
+     * argument is of any type.  As before, the IDs of the formal arguments
+     * must either be invalid, of not equal to each other.
+     * This method exists to facilitate sanity checking on the column predicate
+     * formal argument list maintained by MatrixVocabElements so as to
+     * facilitate use of the column predicate implied by matrix vocab elements.
+     *
+     *                                                   -- 1/24/10
+     *
+     * Changes:
+     *
+     *    - None.
+     */
+
+     protected static boolean MVEAndCPArgsAreEquivalent(
+                                        FormalArgument mveFArg,
+                                        FormalArgument cpFArg,
+                                        boolean typedColPredFormalArgsSupported)
+         throws SystemErrorException
+     {
+         final String mName = "FormalArgument::MVEAndCPArgsAreEquivalent()";
+         boolean argsAreEquivalent = true;
+         boolean verbose = true;
+
+         if ( typedColPredFormalArgsSupported )
+         {
+             argsAreEquivalent =
+                     FormalArgument.FormalArgsAreEquivalent(mveFArg, cpFArg);
+         }
+         else /* cpFArg must be untyped */
+         {
+             if ( ( mveFArg == null ) || ( cpFArg == null ) )
+             {
+                 throw new SystemErrorException(mName +
+                        ": mveFArg or cpFArg null on entry.");
+
+             }
+             else if ( mveFArg == cpFArg )
+             {
+                 argsAreEquivalent = false;
+             }
+             else if ( mveFArg.getItsVocabElementID() !=
+                       cpFArg.getItsVocabElementID() )
+             {
+                 argsAreEquivalent = false;
+
+                 if ( verbose )
+                 {
+                     System.out.printf("%s: cpFArg.getItsVocabElementID() = " +
+                             "%d != cpFArg.getItsVocabElementID() = %d\n",
+                             mName,
+                             mveFArg.getItsVocabElementID(),
+                             cpFArg.getItsVocabElementID());
+                 }
+             }
+             else if ( ( mveFArg.getID() == cpFArg.getID() ) &&
+                       ( mveFArg.getID() != DBIndex.INVALID_ID ) )
+             {
+                 argsAreEquivalent = false;
+
+                 if ( verbose )
+                 {
+                     System.out.printf("%s: mveFArg.getID() = %d == " +
+                             "cpFArg.getID() = %d\n",
+                             mName,
+                             mveFArg.getID(),
+                             cpFArg.getID());
+                 }
+             }
+             else if ( mveFArg.getFargName().compareTo(cpFArg.getFargName())
+                       != 0 )
+             {
+                 argsAreEquivalent = false;
+
+                 if ( verbose )
+                 {
+                     System.out.printf("%s: mveFArg.getFargName() = \"%s\" != " +
+                             "cpFArg.getFargName() = \"%s\"\n",
+                             mName,
+                             mveFArg.getFargName(),
+                             cpFArg.getFargName());
+                 }
+             }
+             else if ( cpFArg.getFargType() != FormalArgument.FArgType.UNTYPED )
+             {
+                 argsAreEquivalent = false;
+
+                 if ( verbose )
+                 {
+                     System.out.printf("%s: cpFarg.getFargType() = \"%s\" " +
+                             "when only untyped formal args supported.\n" +
+                             mName,
+                             cpFArg.getFargType().toString());
+                 }
+             }
+             else
+             {
+                 switch ( mveFArg.getFargType() )
+                 {
+                     case COL_PREDICATE:
+                     case FLOAT:
+                     case INTEGER:
+                     case NOMINAL:
+                     case PREDICATE:
+                     case QUOTE_STRING:
+                     case TEXT:
+                     case TIME_STAMP:
+                     case UNTYPED:
+                         // do nothing -- all of these are fine.
+                         break;
+
+                     case UNDEFINED:
+                         throw new SystemErrorException(mName +
+                                 "mveFArg of undefined type??");
+                         /* we comment out the following break statement to
+                          * keep the compiler from complaining.
+                          */
+                         //break;
+
+                     default:
+                         throw new SystemErrorException(mName +
+                                 "mveFArg of unknown type??");
+                         /* we comment out the following break statement to
+                          * keep the compiler from complaining.
+                          */
+                         //break;
+                 }
+             }
+
+         }
+
+
+         return argsAreEquivalent;
+
+     } /* FormalArgument::MVEAndCPArgsAreEquivalent() */
 
 } /* Class FormalArgument */

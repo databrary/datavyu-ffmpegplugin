@@ -1,0 +1,512 @@
+; MacSHAPA Open Database
+( setf macshapa-db
+ '(
+    ( HEADER>
+      (
+        ( NAME> "OQL_Mod_Test_09.odb" )
+        ( VERSION> 1 )
+        ( DEBUG-LEVEL> 0 )
+        ( MAX-ERRORS> 1 )
+        ( MAX-WARNINGS> 1 )
+      )
+    )
+    ( USER>
+      (
+        ( PREDICATE-DEFINITIONS>
+          (
+            ( |comment| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<text>| ) ) ) )
+            ( |p1| ( ( VARIABLE-LENGTH> FALSE ) ( FORMAL-ARG-LIST> ( |<arg>| ) ) ) )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DECLARATIONS>
+          (
+            ( |nominal_1|
+              (
+                ( TYPE> <<NOMINAL>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |nominal_3|
+              (
+                ( TYPE> <<NOMINAL>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |text_1|
+              (
+                ( TYPE> <<TEXT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |float_1|
+              (
+                ( TYPE> <<FLOAT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |text_2|
+              (
+                ( TYPE> <<TEXT>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |matrix_1|
+              (
+                ( TYPE> <<MATRIX>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |int_1|
+              (
+                ( TYPE> <<INTEGER>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |nominal_2|
+              (
+                ( TYPE> <<NOMINAL>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+            ( |pred_1|
+              (
+                ( TYPE> <<PREDICATE>> )
+                ( VARIABLE-LENGTH> FALSE )
+                ( FORMAL-ARG-LIST> ( |<ord>| |<onset>| |<offset>| |<val>| ) )
+                ( COLUMN-WIDTH> 200 )
+              )
+            )
+          )
+        )
+        ( SPREADSHEET-VARIABLE-DEFINITIONS>
+          (
+            ( |nominal_1|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 301 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |A Nominal| )
+                    )
+                    (
+                      ( ONSET> 302 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |<val>| )
+                    )
+                    (
+                      ( ONSET> 303 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |<val>| )
+                    )
+                  )
+                )
+              )
+            )
+            ( |nominal_3|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |<val>| )
+                    )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |<val>| )
+                    )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |<val>| )
+                    )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |<val>| )
+                    )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |<val>| )
+                    )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |<val>| )
+                    )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |<val>| )
+                    )
+                  )
+                )
+              )
+            )
+            ( |text_1|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 121 )
+                      ( OFFSET> 0 )
+                      ( |<val>| "" )
+                    )
+                    (
+                      ( ONSET> 122 )
+                      ( OFFSET> 0 )
+                      ( |<val>| "This is a text string" )
+                    )
+                  )
+                )
+              )
+            )
+            ( |float_1|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 241 )
+                      ( OFFSET> 0 )
+                      ( |<val>| 0.000000 )
+                    )
+                    (
+                      ( ONSET> 242 )
+                      ( OFFSET> 0 )
+                      ( |<val>| 1.000000 )
+                    )
+                  )
+                )
+              )
+            )
+            ( |text_2|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| "" )
+                    )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| "" )
+                    )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| "" )
+                    )
+                    (
+                      ( ONSET> 0 )
+                      ( OFFSET> 0 )
+                      ( |<val>| "" )
+                    )
+                  )
+                )
+              )
+            )
+            ( |matrix_1|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 1 )
+                      ( OFFSET> 0 )
+                      ( |<val>| 1 )
+                    )
+                    (
+                      ( ONSET> 2 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( TIME> 1 ) )
+                    )
+                    (
+                      ( ONSET> 3 )
+                      ( OFFSET> 0 )
+                      ( |<val>| 1.000000 )
+                    )
+                    (
+                      ( ONSET> 4 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |NOMINAL| )
+                    )
+                    (
+                      ( ONSET> 5 )
+                      ( OFFSET> 0 )
+                      ( |<val>| "quote string" )
+                    )
+                    (
+                      ( ONSET> 6 )
+                      ( OFFSET> 0 )
+                      ( |<val>| "" )
+                    )
+                    (
+                      ( ONSET> 7 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( |p1| "a predicate" ) )
+                    )
+                    (
+                      ( ONSET> 8 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |<val>| )
+                    )
+                    (
+                      ( ONSET> 9 )
+                      ( OFFSET> 0 )
+                      ( |<val>| |<val>| )
+                    )
+                  )
+                )
+                ( VOCAB> ( |p1| ) )
+              )
+            )
+            ( |int_1|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 181 )
+                      ( OFFSET> 0 )
+                      ( |<val>| 0 )
+                    )
+                    (
+                      ( ONSET> 182 )
+                      ( OFFSET> 0 )
+                      ( |<val>| 1 )
+                    )
+                  )
+                )
+              )
+            )
+            ( |nominal_2|
+              (
+                ( CELLS>
+                  (
+                  )
+                )
+              )
+            )
+            ( |pred_1|
+              (
+                ( CELLS>
+                  (
+                    (
+                      ( ONSET> 61 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( |p1| 1 ) )
+                    )
+                    (
+                      ( ONSET> 62 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( |p1| ( TIME> 1 ) ) )
+                    )
+                    (
+                      ( ONSET> 63 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( |p1| 1.000000 ) )
+                    )
+                    (
+                      ( ONSET> 64 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( |p1| |a nominal| ) )
+                    )
+                    (
+                      ( ONSET> 65 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( |p1| "a quote string" ) )
+                    )
+                    (
+                      ( ONSET> 66 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( |p1| ( |p1| |<arg>| ) ) )
+                    )
+                    (
+                      ( ONSET> 67 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( |p1| |<arg>| ) )
+                    )
+                    (
+                      ( ONSET> 68 )
+                      ( OFFSET> 0 )
+                      ( |<val>| ( |p1| |<arg>| ) )
+                    )
+                    (
+                      ( ONSET> 69 )
+                      ( OFFSET> 0 )
+                      ( |<val>| () )
+                    )
+                    (
+                      ( ONSET> 70 )
+                      ( OFFSET> 0 )
+                      ( |<val>| () )
+                    )
+                  )
+                )
+                ( VOCAB> ( |p1| ) )
+              )
+            )
+          )
+        )
+      )
+    )
+    ( QUERY>
+      (
+        ( |comment| "This database contains queries intended to test a variety of additons to the query language." ) 
+        () 
+        ( |comment| "Start by testing the type predicates:" ) 
+        ( |comment| "Check behaviour in a matrix variable.  Note that there should be two cells that satisfy the empty() predicate." ) 
+        ( |query| ( |and| ( |matrix_1| |?ord| |<onset>| |<offset>| |?val| ) ( |isinteger| |?val| ) ) ( |print| |?val| "is an integer" ) ) 
+        ( |query| ( |and| ( |matrix_1| |?ord| |<onset>| |<offset>| |?val| ) ( |isfloat| |?val| ) ) ( |print| |?val| "is a float" ) ) 
+        ( |query| ( |and| ( |matrix_1| |?ord| |<onset>| |<offset>| |?val| ) ( |isnominal| |?val| ) ) ( |print| |?val| "is a nominal" ) ) 
+        ( |query| ( |and| ( |matrix_1| |?ord| |<onset>| |<offset>| |?val| ) ( |isqstring| |?val| ) ) ( |print| |?val| "is a quote string" ) ) 
+        ( |query| ( |and| ( |matrix_1| |?ord| |<onset>| |<offset>| |?val| ) ( |ispred| |?val| ) ) ( |print| |?val| "is a predicate" ) ) 
+        ( |query| ( |and| ( |matrix_1| |?ord| |<onset>| |<offset>| |?val| ) ( |isempty| |?val| ) ) ( |print| |?val| "is an empty matrix argument" ) ) 
+        () 
+        ( |comment| "Now check behaviour in a predicate variable.  Note that while an empty quote string is still a quote string, an empty predicate is not a predicate.  Also, observe that each of the references to the empty predicate should be satisfied twice." ) 
+        ( |query| ( |and| ( |pred_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |ispred| |?val| ) ) ( |print| |?val| "is a predicate." ) ) 
+        ( |query| ( |and| ( |pred_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |isempty| |?val| ) ) ( |print| |?val| "is empty." ) ) 
+        ( |query| ( |and| ( |pred_1| |?ord| |<onset>| |<offset>| ( |p1| |?val| ) ) ( |isinteger| |?val| ) ) ( |print| |?val| "which appears as an argument of p1() in cell" |?ord| "is an integer" ) ) 
+        ( |query| ( |and| ( |pred_1| |?ord| |<onset>| |<offset>| ( |p1| |?val| ) ) ( |istime| |?val| ) ) ( |print| |?val| "which appears as an argument of p1() in cell" |?ord| "is a time" ) ) 
+        ( |query| ( |and| ( |pred_1| |?ord| |<onset>| |<offset>| ( |p1| |?val| ) ) ( |isfloat| |?val| ) ) ( |print| |?val| "which appears as an argument of p1() in cell" |?ord| "is a float" ) ) 
+        ( |query| ( |and| ( |pred_1| |?ord| |<onset>| |<offset>| ( |p1| |?val| ) ) ( |isnominal| |?val| ) ) ( |print| |?val| "which appears as an argument of p1() in cell" |?ord| "is a nominal" ) ) 
+        ( |query| ( |and| ( |pred_1| |?ord| |<onset>| |<offset>| ( |p1| |?val| ) ) ( |isqstring| |?val| ) ) ( |print| |?val| "which appears as an argument of p1() in cell" |?ord| "is a quote string" ) ) 
+        ( |query| ( |and| ( |pred_1| |?ord| |<onset>| |<offset>| ( |p1| |?val| ) ) ( |isqstring| |?val| ) ) ( |print| |?val| "which appears as an argument of p1() in cell" |?ord| "is a quote string" ) ) 
+        ( |query| ( |and| ( |pred_1| |?ord| |<onset>| |<offset>| ( |p1| |?val| ) ) ( |istext| |?val| ) ) ( |print| |?val| "which appears as an argument of p1() in cell" |?ord| "is text.  This query should not be satisfied." ) ) 
+        ( |query| ( |and| ( |pred_1| |?ord| |<onset>| |<offset>| ( |p1| |?val| ) ) ( |ispred| |?val| ) ) ( |print| |?val| "which appears as an argument of p1() in cell" |?ord| "is a predicate" ) ) 
+        ( |query| ( |and| ( |pred_1| |?ord| |<onset>| |<offset>| ( |p1| |?val| ) ) ( |isempty| |?val| ) ) ( |print| |?val| "which appears as an argument of p1() in cell" |?ord| "is empty" ) ) 
+        () 
+        ( |comment| "check behaviour in a text variable:" ) 
+        ( |query| ( |and| ( |text_1| |?ord| |<onset>| |<offset>| |?val| ) ( |istext| |?val| ) ) ( |print| |?val| "is a sample of text" ) ) 
+        ( |query| ( |and| ( |text_1| |?ord| |<onset>| |<offset>| |?val| ) ( |isempty| |?val| ) ) ( |print| |?val| "is empty" |?ord| ) ) 
+        ( |query| ( |and| ( |text_1| |?ord| |<onset>| |<offset>| |?val| ) ( |isempty| |?val| ) ( |istext| |?val| ) ) ( |print| |?val| "is an empty text string." |?ord| ) ) 
+        ( |query| ( |and| ( |text_1| |?ord| |<onset>| |<offset>| |?val| ) ( |not| ( |isempty| |?val| ) ) ( |istext| |?val| ) ) ( |print| |?val| "is a non-empty text string." |?ord| ) ) 
+        () 
+        ( |comment| "check behaviour in an integer variable." ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |isinteger| |?val| ) ) ( |print| |?val| "is an integer." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |not| ( |isinteger| |?val| ) ) ) ( |print| |?val| "is not an integer.  This query should not be satisfied." ) ) 
+        () 
+        ( |comment| "check behaviour in a float variable" ) 
+        ( |query| ( |and| ( |float_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |isfloat| |?val| ) ) ( |print| |?val| "is a float" ) ) 
+        ( |query| ( |and| ( |float_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |not| ( |isfloat| |?val| ) ) ) ( |print| |?val| "is not a float.  This query should not be satisfied." ) ) 
+        () 
+        ( |comment| "check behaviour in a nominal variable" ) 
+        ( |query| ( |and| ( |nominal_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |isnominal| |?val| ) ) ( |print| |?val| "is a nominal" ) ) 
+        ( |query| ( |and| ( |nominal_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |isempty| |?val| ) ) ( |print| |?val| "is empty" ) ) 
+        ( |query| ( |and| ( |nominal_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |isnominal| |?val| ) ( |isempty| |?val| ) ) ( |print| |?val| "is an empty nominal" ) ) 
+        ( |query| ( |and| ( |nominal_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |isnominal| |?val| ) ( |not| ( |isempty| |?val| ) ) ) ( |print| |?val| "is a non-empty nominal" ) ) 
+        () 
+        ( |comment| "putting things together:" ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |?ord| |?on| |<offset>| |?val| ) ( |pred_1| |?ord| |?on| |<offset>| |?val| ) ( |text_1| |?ord| |?on| |<offset>| |?val| ) ( |int_1| |?ord| |?on| |<offset>| |?val| ) ( |float_1| |?ord| |?on| |<offset>| |?val| ) ( |nominal_1| |?ord| |?on| |<offset>| |?val| ) ) ( |isinteger| |?val| ) ) ( |print| |?val| "is an integer" |?ord| |?on| ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |?ord| |?on| |<offset>| |?val| ) ( |pred_1| |?ord| |?on| |<offset>| |?val| ) ( |text_1| |?ord| |?on| |<offset>| |?val| ) ( |int_1| |?ord| |?on| |<offset>| |?val| ) ( |float_1| |?ord| |?on| |<offset>| |?val| ) ( |nominal_1| |?ord| |?on| |<offset>| |?val| ) ) ( |isfloat| |?val| ) ) ( |print| |?val| "is a float" |?ord| |?on| ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |?ord| |?on| |<offset>| |?val| ) ( |pred_1| |?ord| |?on| |<offset>| |?val| ) ( |text_1| |?ord| |?on| |<offset>| |?val| ) ( |int_1| |?ord| |?on| |<offset>| |?val| ) ( |float_1| |?ord| |?on| |<offset>| |?val| ) ( |nominal_1| |?ord| |?on| |<offset>| |?val| ) ) ( |istime| |?val| ) ) ( |print| |?val| "is a time" |?ord| |?on| ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |?ord| |?on| |<offset>| |?val| ) ( |pred_1| |?ord| |?on| |<offset>| |?val| ) ( |text_1| |?ord| |?on| |<offset>| |?val| ) ( |int_1| |?ord| |?on| |<offset>| |?val| ) ( |float_1| |?ord| |?on| |<offset>| |?val| ) ( |nominal_1| |?ord| |?on| |<offset>| |?val| ) ) ( |istext| |?val| ) ) ( |print| |?val| "is text" |?ord| |?on| ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |?ord| |?on| |<offset>| |?val| ) ( |pred_1| |?ord| |?on| |<offset>| |?val| ) ( |text_1| |?ord| |?on| |<offset>| |?val| ) ( |int_1| |?ord| |?on| |<offset>| |?val| ) ( |float_1| |?ord| |?on| |<offset>| |?val| ) ( |nominal_1| |?ord| |?on| |<offset>| |?val| ) ) ( |istext| |?val| ) ( |not| ( |isempty| |?val| ) ) ) ( |print| |?val| "is non-empty text" |?ord| |?on| ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |?ord| |?on| |<offset>| |?val| ) ( |pred_1| |?ord| |?on| |<offset>| |?val| ) ( |text_1| |?ord| |?on| |<offset>| |?val| ) ( |int_1| |?ord| |?on| |<offset>| |?val| ) ( |float_1| |?ord| |?on| |<offset>| |?val| ) ( |nominal_1| |?ord| |?on| |<offset>| |?val| ) ) ( |istext| |?val| ) ( |isempty| |?val| ) ) ( |print| |?val| "is empty text" |?ord| |?on| ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |?ord| |?on| |<offset>| |?val| ) ( |pred_1| |?ord| |?on| |<offset>| |?val| ) ( |text_1| |?ord| |?on| |<offset>| |?val| ) ( |int_1| |?ord| |?on| |<offset>| |?val| ) ( |float_1| |?ord| |?on| |<offset>| |?val| ) ( |nominal_1| |?ord| |?on| |<offset>| |?val| ) ) ( |isnominal| |?val| ) ) ( |print| |?val| "is a nominal" |?ord| |?on| ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |?ord| |?on| |<offset>| |?val| ) ( |pred_1| |?ord| |?on| |<offset>| |?val| ) ( |text_1| |?ord| |?on| |<offset>| |?val| ) ( |int_1| |?ord| |?on| |<offset>| |?val| ) ( |float_1| |?ord| |?on| |<offset>| |?val| ) ( |nominal_1| |?ord| |?on| |<offset>| |?val| ) ) ( |isnominal| |?val| ) ( |not| ( |isempty| |?val| ) ) ) ( |print| |?val| "is a non-empty nominal" |?ord| |?on| ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |?ord| |?on| |<offset>| |?val| ) ( |pred_1| |?ord| |?on| |<offset>| |?val| ) ( |text_1| |?ord| |?on| |<offset>| |?val| ) ( |int_1| |?ord| |?on| |<offset>| |?val| ) ( |float_1| |?ord| |?on| |<offset>| |?val| ) ( |nominal_1| |?ord| |?on| |<offset>| |?val| ) ) ( |isnominal| |?val| ) ( |isempty| |?val| ) ) ( |print| |?val| "is an empty nominal" |?ord| |?on| ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |?ord| |?on| |<offset>| |?val| ) ( |pred_1| |?ord| |?on| |<offset>| |?val| ) ( |text_1| |?ord| |?on| |<offset>| |?val| ) ( |int_1| |?ord| |?on| |<offset>| |?val| ) ( |float_1| |?ord| |?on| |<offset>| |?val| ) ( |nominal_1| |?ord| |?on| |<offset>| |?val| ) ) ( |ispred| |?val| ) ) ( |print| |?val| "is a predicate" |?ord| |?on| ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |?ord| |?on| |<offset>| |?val| ) ( |pred_1| |?ord| |?on| |<offset>| |?val| ) ( |text_1| |?ord| |?on| |<offset>| |?val| ) ( |int_1| |?ord| |?on| |<offset>| |?val| ) ( |float_1| |?ord| |?on| |<offset>| |?val| ) ( |nominal_1| |?ord| |?on| |<offset>| |?val| ) ) ( |isempty| |?val| ) ) ( |print| |?val| "is empty" |?ord| |?on| ) ) 
+        () 
+        () 
+        ( |comment| "Now, make sure computed values work correctly." ) 
+        ( |query| ( |and| ( |text_1| |<ord>| |?on| |<offset>| |<val>| ) ( |istime| ( |times| |?on| 1.000000 ) ) ) ( |print| |?on| "is a time.  This query should not be satisfied." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |assign| |?compVal| ( |times| |?val| 1 ) ) ( |isinteger| |?compVal| ) ) ( |print| |?compVal| "is an integer." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |assign| |?compVal| ( |times| |?val| ( TIME> 1 ) ) ) ( |istime| |?compVal| ) ) ( |print| |?compVal| "is a time." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |assign| |?compVal| ( |times| |?val| 1.000000 ) ) ( |isfloat| |?compVal| ) ) ( |print| |?compVal| "is a float." ) ) 
+        () 
+        () 
+        ( |comment| "Finally, lets try to break things:" ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |or| ( |isinteger| |<arg>| ) ( |istime| |<arg>| ) ( |isfloat| |<arg>| ) ( |istext| |<arg>| ) ( |isqstring| |<arg>| ) ( |ispred| |<arg>| ) ) ) ( |print| "This query should not generate output." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |or| ( |isinteger| ( |eq| |?val| 1 ) ) ( |istime| ( |eq| |?val| 1 ) ) ( |isfloat| ( |eq| |?val| 1 ) ) ( |istext| ( |eq| |?val| 1 ) ) ( |isqstring| ( |eq| |?val| 1 ) ) ( |ispred| ( |eq| |?val| 1 ) ) ( |isempty| ( |eq| |?val| 1 ) ) ) ) ( |print| "This query should not generate output." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |or| ( |isinteger| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ) ( |istime| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ) ( |isfloat| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ) ( |istext| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ) ( |isqstring| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ) ( |ispred| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ) ( |isempty| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ) ) ) ( |print| "This query should not generate output." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |or| ( |isinteger| ( |or| |<arg1>| ) ) ( |istime| ( |or| |<arg1>| ) ) ( |isfloat| ( |or| |<arg1>| ) ) ( |istext| ( |or| |<arg1>| ) ) ( |isqstring| ( |or| |<arg1>| ) ) ( |ispred| ( |or| |<arg1>| ) ) ( |isempty| ( |or| |<arg1>| ) ) ) ) ( |print| "This query should not generate output." ) ) 
+        () 
+        () 
+        () 
+        ( |comment| "Now, test the min() and max() predicates" ) 
+        ( |comment| "First, make sure that the min() and max() predicates can handle all flavors of data." ) 
+        ( |query| ( |or| ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |isinteger| |?val1| ) ( |istime| |?val1| ) ( |isfloat| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |or| ( |isinteger| |?val2| ) ( |istime| |?val2| ) ( |isfloat| |?val2| ) ) ( |not| ( |isempty| |?val1| ) ) ( |not| ( |isempty| |?val2| ) ) ) ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |istext| |?val1| ) ( |isqstring| |?val1| ) ( |isnominal| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |or| ( |istext| |?val2| ) ( |isqstring| |?val2| ) ( |isnominal| |?val2| ) ) ( |not| ( |isempty| |?val1| ) ) ( |not| ( |isempty| |?val2| ) ) ) ) ( |print| "max(" |?val1| |?val2| ") = " ( |max| |?val1| |?val2| ) ) ) 
+        ( |query| ( |or| ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |isinteger| |?val1| ) ( |istime| |?val1| ) ( |isfloat| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |or| ( |isinteger| |?val2| ) ( |istime| |?val2| ) ( |isfloat| |?val2| ) ) ( |not| ( |isempty| |?val1| ) ) ( |not| ( |isempty| |?val2| ) ) ( |ne| |?val1| |?val2| ) ) ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |istext| |?val1| ) ( |isqstring| |?val1| ) ( |isnominal| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |or| ( |istext| |?val2| ) ( |isqstring| |?val2| ) ( |isnominal| |?val2| ) ) ( |not| ( |isempty| |?val1| ) ) ( |not| ( |isempty| |?val2| ) ) ( |ne| |?val1| |?val2| ) ) ) ( |print| "max(" |?val1| |?val2| ") = " ( |max| |?val1| |?val2| ) ) ) 
+        ( |query| ( |or| ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |isinteger| |?val1| ) ( |istime| |?val1| ) ( |isfloat| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |or| ( |isinteger| |?val2| ) ( |istime| |?val2| ) ( |isfloat| |?val2| ) ) ( |not| ( |isempty| |?val1| ) ) ( |not| ( |isempty| |?val2| ) ) ) ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |istext| |?val1| ) ( |isqstring| |?val1| ) ( |isnominal| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |or| ( |istext| |?val2| ) ( |isqstring| |?val2| ) ( |isnominal| |?val2| ) ) ( |not| ( |isempty| |?val1| ) ) ( |not| ( |isempty| |?val2| ) ) ) ) ( |print| "min(" |?val1| |?val2| ") = " ( |min| |?val1| |?val2| ) ) ) 
+        ( |query| ( |or| ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |isinteger| |?val1| ) ( |istime| |?val1| ) ( |isfloat| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |or| ( |isinteger| |?val2| ) ( |istime| |?val2| ) ( |isfloat| |?val2| ) ) ( |not| ( |isempty| |?val1| ) ) ( |not| ( |isempty| |?val2| ) ) ( |ne| |?val1| |?val2| ) ) ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |istext| |?val1| ) ( |isqstring| |?val1| ) ( |isnominal| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |or| ( |istext| |?val2| ) ( |isqstring| |?val2| ) ( |isnominal| |?val2| ) ) ( |not| ( |isempty| |?val1| ) ) ( |not| ( |isempty| |?val2| ) ) ( |ne| |?val1| |?val2| ) ) ) ( |print| "min(" |?val1| |?val2| ") = " ( |min| |?val1| |?val2| ) ) ) 
+        () 
+        ( |comment| "Now, use min() & max in the condition side of the query." ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |eq| ( |min| |?val1| |?val2| ) ( |max| |?val1| |?val2| ) ) ) ( |print| "min(" |?val1| |?val2| ") = max(" |?val1| |?val2| ") = " ( |min| |?val1| |?val2| ) ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |eq| ( |min| |?val1| |?val2| ) ( |max| |?val1| |?val2| ) ) ) ( |print| "min(" |?val1| |?val2| ") = max(" |?val1| |?val2| ") = " ( |min| |?val1| |?val2| ) ) ) 
+        ( |query| ( |and| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val3| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val4| ) ( |ge| ( |max| ( |max| ( |times| |?val1| 2 ) ( |times| |?val2| 3 ) ) ( |max| ( |times| |?val3| 5 ) ( |times| |?val4| 7 ) ) ) 1 ) ) ( |print| "max(max(" ( |times| |?val1| 2 ) ( |times| |?val2| 3 ) "),max(" ( |times| |?val3| 5 ) ( |times| |?val4| 7 ) ")) =" ( |max| ( |max| ( |times| |?val1| 2 ) ( |times| |?val2| 3 ) ) ( |max| ( |times| |?val3| 5 ) ( |times| |?val4| 7 ) ) ) ">= 1" ) ) 
+        () 
+        () 
+        ( |comment| "Now, try to break min() and max():" ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |ne| ( |max| |?val1| |<y>| ) 0 ) ) ( |print| "This query should not generate output." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |ne| ( |min| |?val1| |<y>| ) 0 ) ) ( |print| "This query should not generate output." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |ne| ( |max| |?val1| ( |p1| |<arg>| ) ) 0 ) ) ( |print| "This query should not generate output." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |ne| ( |min| |?val1| ( |p1| |<arg>| ) ) 0 ) ) ( |print| "This query should not generate output." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |ne| ( |max| |?val1| ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ) 0 ) ) ( |print| "This query should not generate output." ) ) 
+        ( |query| ( |and| ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |ne| ( |min| |?val1| ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ) 0 ) ) ( |print| "This query should not generate output." ) ) 
+        () 
+        () 
+        () 
+        ( |comment| "now test the concat() and concatq() predicates:" ) 
+        ( |comment| "the following query finds two values of identical type, and then prints their concat() and concatq()." ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |or| ( |and| ( |isinteger| |?val1| ) ( |isinteger| |?val2| ) ) ( |and| ( |istime| |?val1| ) ( |istime| |?val2| ) ) ( |and| ( |isfloat| |?val1| ) ( |isfloat| |?val2| ) ) ( |and| ( |istext| |?val1| ) ( |istext| |?val2| ) ) ( |and| ( |isqstring| |?val1| ) ( |isqstring| |?val2| ) ) ( |and| ( |isnominal| |?val1| ) ( |isnominal| |?val2| ) ) ( |and| ( |ispred| |?val1| ) ( |ispred| |?val2| ) ) ) ) ( |print| "concat:  " ( |concat| |?val1| " -- " |?val2| ) "concatq:  " ( |concatq| |?val1| " -- " |?val2| ) ) ) 
+        ( |comment| "This query tests the use of a string returned by the concat() predicate as an argument to a boolean predicate." ) 
+        ( |query| ( |and| ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |substring| |?val1| ( |concat| |?val1| |?val2| ) ) ) ( |print| |?val1| |?val2| ( |concat| |?val1| |?val2| ) ( |concatq| |?val1| |?val2| ) ) ) 
+        ( |comment| "The following query finds two values of the same type, and uses them to test nesting of the concat() and concatq() predicates.  Note the check of the difference between these two predicates." ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val2| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val2| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val2| ) ) ( |or| ( |and| ( |isinteger| |?val1| ) ( |isinteger| |?val2| ) ) ( |and| ( |istime| |?val1| ) ( |istime| |?val2| ) ) ( |and| ( |isfloat| |?val1| ) ( |isfloat| |?val2| ) ) ( |and| ( |istext| |?val1| ) ( |istext| |?val2| ) ) ( |and| ( |isqstring| |?val1| ) ( |isqstring| |?val2| ) ) ( |and| ( |isnominal| |?val1| ) ( |isnominal| |?val2| ) ) ( |and| ( |ispred| |?val1| ) ( |ispred| |?val2| ) ) ) ( |substring| ( |concat| |?val1| ) ( |concat| |?val1| |?val2| ) ) ) ( |print| ( |concat| "concat(?val1,?val2) returns '" ( |concat| |?val1| |?val2| ) "'.   concatq(?val1,?val2) returns '" ( |concatq| |?val1| |?val2| ) "'." ) ) ) 
+        ( |comment| "Now pass a constructed predicate to concat()" ) 
+        ( |query| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val| ) ( |print| ( |concat| "This predicate was constructed:  " ( |p1| |?val| ) ) ) ) 
+        () 
+        () 
+        ( |comment| "Now test the cmin() and cmax() predicates" ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ) ( |cmax| |?val1| ) ) 
+        ( |query| ( |and| ( |or| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |pred_1| |<ord>| |<onset>| |<offset>| ( |p1| |?val1| ) ) ( |text_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |int_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |float_1| |<ord>| |<onset>| |<offset>| |?val1| ) ( |nominal_1| |<ord>| |?on1| |<offset>| |?val1| ) ) ) ( |cmin| |?val1| ) ) 
+        () 
+        ( |comment| "Some further tests for cmin() & cmax() to test fixes for Bug #272      JRM - 8/26/94" ) 
+        ( |query| ( |text_1| |<ord>| |<onset>| |<offset>| |?v| ) ( |cmin| |?v| ) ) 
+        ( |query| ( |nominal_1| |<ord>| |<onset>| |<offset>| |?v| ) ( |cmin| |?v| ) ) 
+        ( |query| ( |text_2| |<ord>| |<onset>| |<offset>| |?v| ) ( |cmax| |?v| ) ) 
+        ( |query| ( |nominal_3| |<ord>| |<onset>| |<offset>| |?v| ) ( |cmax| |?v| ) ) 
+        ( |query| ( |matrix_1| |<ord>| |<onset>| |<offset>| |?v| ) ( |cmin| |?v| ) ) 
+        ( |query| ( |matrix_1| 6 |<onset>| |<offset>| |?v| ) ( |cmax| |?v| ) ) 
+      )
+    )
+    ( SYSTEM>
+      (
+        ( SHAPA-PANE-VARS>
+          (
+            |matrix_1|
+            |pred_1|
+            |text_1|
+            |text_2|
+            |int_1|
+            |float_1|
+            |nominal_1|
+            |nominal_2|
+            |nominal_3|
+          )
+        )
+      )
+    )
+  )
+)

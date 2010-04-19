@@ -6,10 +6,6 @@
         Will coerce the name to a valid predicate name.
 
 
-      WARNING 126 (Line 231:55): Encountered type mismatch between argument and formal argument.  Argument replaced with an undefined value.
-
-      WARNING 126 (Line 231:57): Encountered type mismatch between argument and formal argument.  Argument replaced with an undefined value.
-
       WARNING  68 (Line 255:35): Encountered a predicate value with an invalid predicate name.
         Will coerce the name to a valid predicate name.
 

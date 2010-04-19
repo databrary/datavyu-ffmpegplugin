@@ -70,7 +70,8 @@ public class MacshapaDatabase extends Database {
 
     public final static int MACSHAPA_TICKS_PER_SECOND = 60;
 
-    public final static String QUERY_VAR_NAME = "###QUERY VAR###";
+    // public final static String QUERY_VAR_NAME = "###QUERY VAR###";
+    public final static String QUERY_VAR_NAME = "###QueryVar###";
 
     public final static long MAX_INT = 10000;
     public final static long MIN_INT = -10000;
@@ -236,23 +237,109 @@ public class MacshapaDatabase extends Database {
     /*************************************************************************/
 
     @Override
-    public boolean floatSubrangeSupported()         { return false; }
+    public boolean floatSubrangeSupported()             { return false; }
     @Override
-    public boolean integerSubrangeSupported()       { return false; }
+    public boolean integerSubrangeSupported()           { return false; }
     @Override
-    public boolean nominalSubrangeSupported()       { return false; }
+    public boolean nominalSubrangeSupported()           { return false; }
     @Override
-    public boolean predSubrangeSupported()          { return false; }
+    public boolean predSubrangeSupported()              { return false; }
     @Override
-    public boolean tickSizeAgjustmentSupported()    { return false; }
+    public boolean tickSizeAgjustmentSupported()        { return false; }
 
     // TODO: Set this back to false ASAP -- it is a temporary compromise that
     //       should be reversed as soon as we have the regular openshapa
     //       database up and running.
     @Override
-    public boolean typedFormalArgsSupported()       { return true; }
+    public boolean typedFormalArgsSupported()           { return true; }
     @Override
-    public boolean queryVariablesSupported()        { return true; }
+    public boolean queryVariablesSupported()            { return true; }
+    @Override
+    public boolean typedColPredFormalArgsSupported()    { return false; }
+
+
+
+
+    /*************************************************************************/
+    /************************ Class Methods: *********************************/
+    /*************************************************************************/
+
+    /*************************************************************************/
+    /*********************** Shadowed Class Methods: *************************/
+    /*************************************************************************/
+    // MacSHAPA and OpenSHAPA have slightly different definitions of valid
+    // data values.  Shadow the appropriate class methods here to reflect this:
+
+    // IsValidTextString() -- shadows version in Database.java
+    /**
+     * Test to see if a string contains a valid text string -- that is a string
+     * that can appear as the value of a cell in a text column variable.
+     * Return true if it does, and false if it doesn't.
+     *
+     * Here, we follow the old MacSHAPA definition of a text string which
+     * is is as follows:
+     *
+     *  <char> --> Any character in the standard roman character set,
+     *		   hexadecimal values 0x00 to 0xFF.
+     *
+     *  <bs> --> back space (i.e. ASCII code 0x08)
+     *
+     *  <text_string_char> --> ( <char> - ( <bs> ) )
+     *
+     *  <text_string> --> (<text_string_char>)*
+     *
+     * Note that the MacSHAPA definition of the text string makes used of
+     * characters beyond 0x7F (the end point of the ASCII character set).
+     * I'm not sure what Java will do with the characters, but it will probably
+     * be different from the Mac
+     *                                           -- 1/18/10
+     *
+     * Changes:
+     *
+     *    - None.
+     *
+     */
+
+    public static boolean IsValidTextString(Object obj)
+        throws SystemErrorException
+    {
+
+        final String mName = "MacshapaDatabase::IsValidTextString(): ";
+        char ch;
+        int i;
+        int len;
+
+        if ( obj == null )
+        {
+            throw new SystemErrorException(mName + "obj null on entry.");
+        }
+        else if ( ! ( obj instanceof String ) )
+        {
+            return false;
+        }
+
+        /* If we get this far, we know that obj is a String */
+
+        String s = (String)obj;
+
+        len = s.length();
+
+        for ( i = 0; i < len; i++ ) {
+
+            ch = s.charAt(i);
+
+            if ( ( ch < 0 ) || ( ch > 0xFF ) || ( ch == '\b') )
+            {
+                // string contains a character that can't appear in a
+                // text string.
+                System.out.printf("%s: the bad char is %d\n", mName, (int)ch);
+                return false;
+            }
+        }
+
+        return true;
+
+    } /* MacshapaDatabase::IsValidTextString() */
 
 
     /*************************************************************************/

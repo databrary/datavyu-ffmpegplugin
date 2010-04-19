@@ -175,7 +175,7 @@ public final class TextStringDataValue extends DataValue
         else if ( ! ( getDB().IsValidTextString(value) ) )
         {
             throw new SystemErrorException(mName +
-                                           "value not valid quote string");
+                                           "value not valid test string");
         }
         else
         {
@@ -299,18 +299,19 @@ public final class TextStringDataValue extends DataValue
 
         if ( ( this.itsValue != null ) && ( this.itsValue.length() > 0 ) )
         {
+            // verify that the value is a valid text string
+
+            if ( ! Database.IsValidTextString(this.itsValue) )
+            {
+                throw new SystemErrorException(mName +
+                        "itsValue not a valid text string?!?");
+            }
+
             for ( i = 0; i < this.itsValue.length(); i++ )
             {
                 ch = this.itsValue.charAt(i);
 
-                if ( ( ch < 0 ) || ( ch > 0x7F ) || ( ch == '\b') )
-                {
-                    // string contains a character that can't appear in a
-                    // text string.
-                    throw new SystemErrorException(mName +
-                            "itsValue contains an illegal character.");
-                }
-                else if ( ( ch == '\'' ) || ( ch == '\"' ) || ( ch == '\\' ) )
+                if ( ( ch == '\"' ) || ( ch == '\\' ) )
                 {
                     // the next character must be escaped.
                     tmp.append('\\');
