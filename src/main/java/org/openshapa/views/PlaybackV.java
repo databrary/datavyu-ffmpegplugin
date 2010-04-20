@@ -357,7 +357,7 @@ public final class PlaybackV extends OpenSHAPADialog {
         speedLabel.setFont(new Font("Tahoma", Font.BOLD, fontSize));
         speedLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1,
                 1, 2));
-        speedLabel.setName("lblSpeed");
+        speedLabel.setName("speedLabel");
         speedLabel.setText("0");
         timestampPanel.add(speedLabel);
 
@@ -751,7 +751,7 @@ public final class PlaybackV extends OpenSHAPADialog {
         speedLabel.setFont(new Font("Tahoma", Font.BOLD, fontSize));
         speedLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1,
                 1, 2));
-        speedLabel.setName("lblSpeed");
+        speedLabel.setName("speedLabel");
         speedLabel.setText("0");
         timestampPanel.add(speedLabel);
 
