@@ -273,10 +273,6 @@ public final class UIImageUtils {
                 double normDistance = pixelDistance(i1Color, i2Color)
                     / MAX_PIXEL_DISTANCE * 255;
 
-                if (normDistance > 0) {
-                    System.err.println(normDistance);
-                }
-
                 int color = i1Color.getRGB() & 0x00FFFFFF; // mask away any
                                                            // alpha
 
