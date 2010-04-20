@@ -148,6 +148,8 @@ public final class PlaybackV extends OpenSHAPADialog {
 
     private long offsetTime;
 
+    private final long delay = 100;
+
     /**
      * Constructor. Creates the playback UI.
      *
@@ -538,6 +540,7 @@ public final class PlaybackV extends OpenSHAPADialog {
         gridButtonPanel.add(findTextField, "w 80!, h 45!");
 
         // Jog back button
+        jogBackButton.setMultiClickThreshhold(delay); // TODO refactor magic num.
         jogBackButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     jogBackAction(e);
@@ -566,6 +569,7 @@ public final class PlaybackV extends OpenSHAPADialog {
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
         // Jog forward button
+        jogForwardButton.setMultiClickThreshhold(delay);
         jogForwardButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     jogForwardAction(e);
@@ -935,6 +939,7 @@ public final class PlaybackV extends OpenSHAPADialog {
         gridButtonPanel.add(findTextField, "w 80!, h 45!");
 
         // Jog back button
+        jogBackButton.setMultiClickThreshhold(delay);
         jogBackButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     jogBackAction(e);
@@ -963,6 +968,7 @@ public final class PlaybackV extends OpenSHAPADialog {
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
         // Jog forward button
+        jogForwardButton.setMultiClickThreshhold(delay);
         jogForwardButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     jogForwardAction(e);
