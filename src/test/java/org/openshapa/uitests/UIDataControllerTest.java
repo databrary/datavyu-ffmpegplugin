@@ -43,6 +43,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.models.db.TimeStamp;
 
 import org.openshapa.util.UIImageUtils;
+import org.openshapa.views.continuous.quicktime.QTDataViewer;
 
 import org.testng.Assert;
 
@@ -696,8 +697,14 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
+        QTDataViewer vid = ((QTDataViewer) it.next());
+        while (!vid.hasDrawn()) {
+            System.err.println("yielding");
+            Thread.yield();
+        }
+
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
