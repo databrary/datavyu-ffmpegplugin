@@ -707,7 +707,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
             + vid.getInsets().top);
         vid.setAlwaysOnTop(true);
-        vid.invalidate();
+        vid.seekTo(0);
 
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 
