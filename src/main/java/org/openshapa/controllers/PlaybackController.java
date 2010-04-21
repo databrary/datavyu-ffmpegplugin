@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SimpleTimeZone;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -313,18 +315,16 @@ public final class PlaybackController implements PlaybackListener,
                 public void run() {
                     int mul = 1;
 
-                    if ((evt.getModifiers() & InputEvent.SHIFT_DOWN_MASK)
-                            == InputEvent.SHIFT_DOWN_MASK) {
-                        System.out.println("Shift jog");
+                    if ((evt.getModifiers() & InputEvent.SHIFT_MASK)
+                            == InputEvent.SHIFT_MASK) {
                         mul = SHIFTJOG;
                     }
 
-                    final int ctrlShiftJogMask = (InputEvent.SHIFT_DOWN_MASK
-                            | InputEvent.CTRL_DOWN_MASK);
+                    final int ctrlShiftJogMask = (InputEvent.SHIFT_MASK
+                            | InputEvent.CTRL_MASK);
 
                     if ((evt.getModifiers() & ctrlShiftJogMask)
                             == ctrlShiftJogMask) {
-                        System.out.println("Ctrl shift jog");
                         mul = CTRLSHIFTJOG;
                     }
 
@@ -352,13 +352,13 @@ public final class PlaybackController implements PlaybackListener,
                 public void run() {
                     int mul = 1;
 
-                    if ((evt.getModifiers() & InputEvent.SHIFT_DOWN_MASK)
-                            == InputEvent.SHIFT_DOWN_MASK) {
+                    if ((evt.getModifiers() & InputEvent.SHIFT_MASK)
+                            == InputEvent.SHIFT_MASK) {
                         mul = SHIFTJOG;
                     }
 
-                    final int ctrlShiftJogMask = (InputEvent.SHIFT_DOWN_MASK
-                            | InputEvent.CTRL_DOWN_MASK);
+                    final int ctrlShiftJogMask = (InputEvent.SHIFT_MASK
+                            | InputEvent.CTRL_MASK);
 
                     if ((evt.getModifiers() & ctrlShiftJogMask)
                             == ctrlShiftJogMask) {
@@ -998,6 +998,18 @@ public final class PlaybackController implements PlaybackListener,
     public Set<DataViewer> getDataViewers() {
         System.out.println("PlaybackController.getDataViewers()");
         System.out.println(Thread.currentThread().getName());
+
+        try {
+            return executor.submit(new Callable<Set<DataViewer>>() {
+                        public Set<DataViewer> call() throws Exception {
+                            return viewers;
+                        }
+                    }).get();
+        } catch (InterruptedException e) {
+            logger.error("Executor thread interrupted", e);
+        } catch (ExecutionException e) {
+            logger.error("Failed to retrieve result", e);
+        }
 
         return viewers;
     }
