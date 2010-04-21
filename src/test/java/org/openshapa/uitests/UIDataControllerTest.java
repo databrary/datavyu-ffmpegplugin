@@ -709,7 +709,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile));
+                refImageFile, 0.07, 0.1));
 
         // 2. Fast forward video to end and confirm you've reached end (1min)
         dcf.pressFastForwardButton();
@@ -730,7 +730,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         refImageFile = new File(root + "/ui/head_turns600h1mt.png");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.02, 0.1));
+                refImageFile, 0.14, 0.1));
 
         // 3. Press play, should start playing again
         dcf.pressPlayButton();
