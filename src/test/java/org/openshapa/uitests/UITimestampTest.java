@@ -33,7 +33,7 @@ public final class UITimestampTest extends OpenSHAPATestClass {
     /**
      * Test editing the onset and offset timestamps.
      */
-    @Test public void testTimestampEditing() {
+    /*@Test*/ public void testTimestampEditing() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         JTextComponentFixture onset, offset;
@@ -97,7 +97,7 @@ public final class UITimestampTest extends OpenSHAPATestClass {
     /**
      * Test pasting the onset and offset timestamps.
      */
-    @Test public void testTimestampPasting() {
+    /*@Test*/ public void testTimestampPasting() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         JTextComponentFixture onset, offset;
@@ -139,7 +139,7 @@ public final class UITimestampTest extends OpenSHAPATestClass {
     /**
      * Test deleting the onset and offset timestamps.
      */
-    @Test public void testTimestampDeletion() throws BadLocationException {
+    /*@Test*/ public void testTimestampDeletion() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String[] testInput = {

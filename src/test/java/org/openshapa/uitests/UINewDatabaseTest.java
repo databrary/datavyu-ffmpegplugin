@@ -43,7 +43,7 @@ public final class UINewDatabaseTest extends OpenSHAPATestClass {
     /**
      * Test new spreadsheet.
      */
-    @Test public void testNewSpreadsheet() {
+    /*@Test*/ public void testNewSpreadsheet() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -152,7 +152,7 @@ public final class UINewDatabaseTest extends OpenSHAPATestClass {
      */
     // BugzID:938 - Expecting the new database dialog to remain open.
     // Must write test to check that this is true.
-    // @Test
+    // /*@Test*/
     // public void testBug576() {
     // System.err.println("testBug576");
     // String root = System.getProperty("testPath");

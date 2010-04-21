@@ -26,7 +26,7 @@ public final class UIBug652Test extends OpenSHAPATestClass {
     /**
      * Test for closing window and creating new predicate.
      */
-    @Test public void testNewPredicateAfterClose() {
+    /*@Test*/ public void testNewPredicateAfterClose() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
@@ -76,7 +76,7 @@ public final class UIBug652Test extends OpenSHAPATestClass {
     /**
      * Test for running script, then creating predicates.
      */
-    @Test public void testNewPredicateAfterScript() {
+    /*@Test*/ public void testNewPredicateAfterScript() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");

@@ -26,7 +26,7 @@ public final class UIBug308Test extends OpenSHAPATestClass {
      * Test creating a new variable. Then try to create variable with same name.
      * Type is selected randomly since it should not affect this.
      */
-    @Test public void testDuplicateName() {
+    /*@Test*/ public void testDuplicateName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "v";

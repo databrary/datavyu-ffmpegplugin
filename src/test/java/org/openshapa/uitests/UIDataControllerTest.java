@@ -217,7 +217,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * @throws Exception
      *             any exception
      */
-    @Test public void testStandardSequence1() throws Exception {
+    /*@Test*/ public void testStandardSequence1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         mainFrameFixture.clickMenuItemWithPath("Controller",
             "Data Viewer Controller");
@@ -279,7 +279,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Bug720.
      * Go Back should contain default value of 00:00:05:000.
      */
-    @Test public void testBug720() {
+    /*@Test*/ public void testBug720() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -309,7 +309,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * resulting in multiple forward shuttle presses being necessary to get
      * a positive playback speed again.
      */
-    @Test public void testBug778() throws IOException {
+    /*@Test*/ public void testBug778() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -421,7 +421,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * do), press shuttle forward again. I often see this going to 1/16x for
      * some reason.
      */
-    @Test public void testBug794() {
+    /*@Test*/ public void testBug794() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -522,7 +522,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Unpause/play the movie, voila, cannot play the movie
      * using that button anymore.
      */
-    @Test public void testBug798() throws IOException {
+    /*@Test*/ public void testBug798() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet

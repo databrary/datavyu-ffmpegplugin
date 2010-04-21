@@ -32,7 +32,7 @@ public final class UIVisualCellTest extends OpenSHAPATestClass {
      * Checks if multiline text wrapping is working.
      * @throws IOException if can't load image file
      */
-    @Test public void testMultilineTextWrapping() throws IOException {
+    /*@Test*/ public void testMultilineTextWrapping() throws IOException {
 
         // Create new text cell
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
@@ -69,7 +69,7 @@ public final class UIVisualCellTest extends OpenSHAPATestClass {
     }
 
 //    Can be deleted
-//    @Test public void testVideoCapture() throws IOException {
+//    /*@Test*/ public void testVideoCapture() throws IOException {
 //
 //            System.err.println(new Exception().getStackTrace()[0].getMethodName());
 //

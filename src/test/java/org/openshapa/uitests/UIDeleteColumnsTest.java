@@ -29,7 +29,7 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
     /**
      * Test for deletion of columns. Delete columns one by one.
      */
-    @Test public void testDeleteSingleColumns() {
+    /*@Test*/ public void testDeleteSingleColumns() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -84,7 +84,7 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
     /**
      * Test for deletion of columns. Delete all columns at once
      */
-    @Test public void testDeleteMultipleColumns() {
+    /*@Test*/ public void testDeleteMultipleColumns() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");

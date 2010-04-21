@@ -26,7 +26,7 @@ public final class UIBug497Test extends OpenSHAPATestClass {
     /**
      * Bug 497 integer test.
      */
-    @Test public void testBug497Integer() {
+    /*@Test*/ public void testBug497Integer() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";
@@ -66,7 +66,7 @@ public final class UIBug497Test extends OpenSHAPATestClass {
     /**
      * Bug 497 float test.
      */
-    @Test public void testBug497Float() {
+    /*@Test*/ public void testBug497Float() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "f";
