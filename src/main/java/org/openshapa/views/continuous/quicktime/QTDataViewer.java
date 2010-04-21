@@ -34,13 +34,12 @@ import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 
 import com.usermetrix.jclient.UserMetrix;
-import quicktime.std.movies.MovieDrawingComplete;
 
 
 /**
  * The viewer for a quicktime video file.
  */
-public final class QTDataViewer extends JFrame implements DataViewer, MovieDrawingComplete {
+public final class QTDataViewer extends JFrame implements DataViewer {
 
     /** How many milliseconds in a second? */
     private static final int MILLI = 1000;
@@ -92,9 +91,6 @@ public final class QTDataViewer extends JFrame implements DataViewer, MovieDrawi
     /** Has the size of the window had its aspect ratio corrected? */
     private boolean updatedAspect;
 
-    /** Has the first frame been drawn? */
-    private boolean hasDrawn;
-
     // ------------------------------------------------------------------------
     // [initialization]
     //
@@ -110,7 +106,6 @@ public final class QTDataViewer extends JFrame implements DataViewer, MovieDrawi
             playing = false;
             aspectRatio = 0.0f;
             updatedAspect = false;
-            hasDrawn = false;
 
             // Initalise QTJava.
             QTSession.open();
@@ -211,7 +206,6 @@ public final class QTDataViewer extends JFrame implements DataViewer, MovieDrawi
             // Set the time scale for our movie to milliseconds (i.e. 1000 ticks
             // per second.
             movie.setTimeScale(Constants.TICKS_PER_SECOND);
-            movie.setDrawingCompleteProc(StdQTConstants.movieDrawingCallWhenChanged, this);
 
             visualTrack = movie.getIndTrackType(1,
                     StdQTConstants.visualMediaCharacteristic,
@@ -395,19 +389,8 @@ public final class QTDataViewer extends JFrame implements DataViewer, MovieDrawi
         return new DefaultTrackPainter();
     }
 
-    /**
-     * The method is called by the movie tool box when drawing is completed.
-     *
-     * @param m The movie that has completed drawing.
-     * @return 0 always.
-     */
-    public int execute(final Movie m) {
-        hasDrawn = true;
-        return 0;
-    }
-
-    public boolean hasDrawn() {
-        return hasDrawn;
+    public int maxLoadedTime() throws Exception {
+        return movie.maxLoadedTimeInMovie();
     }
 
     // ------------------------------------------------------------------------

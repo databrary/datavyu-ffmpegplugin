@@ -647,7 +647,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * When a video finishes playing, hitting play does nothing.
      * I expected it to play again.
      */
-    @Test public void testBug464() throws IOException {
+    @Test public void testBug464() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -698,7 +698,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         Iterator it = dcf.getDataViewers().iterator();
 
         QTDataViewer vid = ((QTDataViewer) it.next());
-        while (!vid.hasDrawn()) {
+        while (vid.maxLoadedTime() == 0) {
             System.err.println("yielding");
             Thread.yield();
         }
@@ -716,7 +716,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.07, 0.1));
+                refImageFile, 0.14, 0.1));
 
         // 2. Fast forward video to end and confirm you've reached end (1min)
         dcf.pressFastForwardButton();
