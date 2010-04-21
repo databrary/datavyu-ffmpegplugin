@@ -713,8 +713,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         File tempFile = new File(root + "/ui/temp.png");
 
-        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
-        UIImageUtils.captureAsScreenshot(vid, tempFile);
+//        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
         /*
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
                 refImageFile, 0.14, 0.1));
@@ -737,7 +736,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         vid.setVisible(true);
         vid.toFront();
         refImageFile = new File(root + "/ui/head_turns600h1mt.png");
-        vidImage = UIImageUtils.captureAsScreenshot(vid);
+        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
                 refImageFile, 0.14, 0.1));
 
@@ -750,8 +749,10 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             TimeStamp currTS = new TimeStamp(currTime);
             TimeStamp oneMin = new TimeStamp("00:01:00:000");
             Assert.assertTrue(currTS.le(oneMin));
-            tempFile = new File(root + "/ui/temp1.png");
+
+            UIImageUtils.captureAsScreenshot(vid, tempFile);
             vidImage = UIImageUtils.captureAsScreenshot(vid);
+            tempFile = new File(root + "/ui/temp1.png");
             UIImageUtils.captureAsScreenshot(vid, tempFile);
             dcf.pressPauseButton();
             Assert.assertFalse(UIImageUtils.areImagesEqual(vidImage,
