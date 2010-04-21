@@ -696,12 +696,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
-
         QTDataViewer vid = ((QTDataViewer) it.next());
-        while (vid.maxLoadedTime() == 0) {
-            System.err.println("yielding");
-            Thread.yield();
-        }
+
 
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
@@ -711,6 +707,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
             + vid.getInsets().top);
         vid.setAlwaysOnTop(true);
+        vid.invalidate();
 
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 

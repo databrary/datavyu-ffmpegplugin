@@ -389,10 +389,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         return new DefaultTrackPainter();
     }
 
-    public int maxLoadedTime() throws Exception {
-        return movie.maxLoadedTimeInMovie();
-    }
-
     // ------------------------------------------------------------------------
     // [generated]
     //
