@@ -30,7 +30,7 @@ public final class UIBug496Test extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*@Test*/ public void testBug496() throws Exception {
+    @Test public void testBug496() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";

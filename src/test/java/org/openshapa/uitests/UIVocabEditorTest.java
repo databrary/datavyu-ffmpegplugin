@@ -56,7 +56,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor is being populated.
      */
-    /*@Test*/ public void testLoading() {
+    @Test public void testLoading() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Check that vocab editor is empty
@@ -108,7 +108,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate.
      */
-    /*@Test*/ public void testNewPredicateNoEdit() {
+    @Test public void testNewPredicateNoEdit() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new predicate
@@ -144,7 +144,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and replacing VE name.
      */
-    /*@Test*/ public void testNewPredicateReplaceVEName() {
+    @Test public void testNewPredicateReplaceVEName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new predicate
@@ -193,7 +193,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and adding to VE name.
      */
-    /*@Test*/ public void testNewPredicateAddingVEName() {
+    @Test public void testNewPredicateAddingVEName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new predicate
@@ -236,7 +236,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and adding to VE argument.
      */
-    /*@Test*/ public void testNewPredicateAddingVEArgument() {
+    @Test public void testNewPredicateAddingVEArgument() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new predicate
@@ -295,7 +295,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and adding to VE argument.
      */
-    /*@Test*/ public void testNewPredicateReplaceVEArgument() {
+    @Test public void testNewPredicateReplaceVEArgument() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new predicate
@@ -357,7 +357,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
      * @throws BadLocationException
      *             if point not valid
      */
-    /*@Test*/ public void testRevertButton1() throws BadLocationException {
+    @Test public void testRevertButton1() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // Test input
@@ -439,7 +439,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
      * @throws BadLocationException
      *             if point not found
      */
-    /*@Test*/ public void testRevertButton2() throws BadLocationException {
+    @Test public void testRevertButton2() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // Test input
@@ -593,7 +593,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
      * @throws BadLocationException
      *             if point not found
      */
-    /*@Test*/ public void testRevertButton3a() throws BadLocationException {
+    @Test public void testRevertButton3a() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // Test input
@@ -896,7 +896,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/o script.
      */
-    /*@Test*/ public void testAddNewPredicateAndRevert1() {
+    @Test public void testAddNewPredicateAndRevert1() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new predicate
@@ -922,7 +922,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/ script.
      */
-    /*@Test*/ public void testAddNewPredicateAndRevert2() {
+    @Test public void testAddNewPredicateAndRevert2() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
@@ -977,7 +977,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/o script.
      */
-    /*@Test*/ public void testAddNewMatrixAndRevert1() {
+    @Test public void testAddNewMatrixAndRevert1() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new predicate
@@ -1003,7 +1003,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test vocab editor creating new predicate and reverting w/ script.
      */
-    /*@Test*/ public void testAddNewMatrixAndRevert2() {
+    @Test public void testAddNewMatrixAndRevert2() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
@@ -1058,7 +1058,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     /**
      * Test adding a new matrix after script via vocab editor.
      */
-    /*@Test*/ public void testAddNewMatrix() {
+    @Test public void testAddNewMatrix() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script

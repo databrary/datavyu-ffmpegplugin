@@ -25,7 +25,7 @@ public final class UIBug493Test extends OpenSHAPATestClass {
     /**
      * Bug 493 test.
      */
-    /*@Test*/ public void testBug493() {
+    @Test public void testBug493() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "t";
