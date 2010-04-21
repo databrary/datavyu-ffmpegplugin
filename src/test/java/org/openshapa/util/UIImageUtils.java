@@ -186,6 +186,7 @@ public final class UIImageUtils {
             // Compensate for frame boundary
             locOnScreen.setLocation(locOnScreen.x + frame.getInsets().left,
                 locOnScreen.y + frame.getInsets().top);
+//              locOnScreen.setLocation(locOnScreen.x, locOnScreen.y);
             bounds.setRect(0, 0,
                 bounds.getWidth() - frame.getInsets().left
                 - frame.getInsets().right,
