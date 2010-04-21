@@ -733,6 +733,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         vid.setVisible(true);
         vid.toFront();
+        Thread.sleep(5000);
         refImageFile = new File(root + "/ui/head_turns600h1mt.png");
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
         final String tempFolder = System.getProperty("java.io.tmpdir");
