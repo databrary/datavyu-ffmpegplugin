@@ -69,7 +69,6 @@ public final class UIImageUtils {
         final File refFile, final double pixThreshold,
         final double errThreshold) throws IOException {
         final String tempFolder = System.getProperty("java.io.tmpdir");
-        System.err.println("temp: " + tempFolder);
 
         // Load image from file
         BufferedImage refImage = ImageIO.read(refFile);
@@ -112,6 +111,8 @@ public final class UIImageUtils {
         if (!withinThreshold) {
             ImageIO.write(maskImage(uiImage, refImage), "png",
                 new File(tempFolder + "/areImagesEqual.png"));
+            ImageIO.write(uiImage, "png",
+                new File(tempFolder + "/capturedImage.png"));
         }
 
         return withinThreshold;
