@@ -1,6 +1,5 @@
 package org.openshapa.views.discrete;
 
-import com.sun.java.swing.SwingUtilities2;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -42,6 +41,8 @@ import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
 
+import com.sun.java.swing.SwingUtilities2;
+
 import com.usermetrix.jclient.UserMetrix;
 
 
@@ -63,22 +64,20 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /** Border to use when a cell is highlighted and overlapping cell. */
     private static final Border HIGHLIGHT_OVERLAP_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0,
-                    new Color(175, 175, 175)),
+                new MatteBorder(0, 0, 1, 0, new Color(175, 175, 175)),
                 new MatteBorder(0, 0, 3, 0,
                     Configuration.getInstance().getSSOverlapColour())),
-            new MatteBorder(3,
-                3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
+            new MatteBorder(3, 3, 0, 3,
+                Configuration.getInstance().getSSSelectedColour()));
 
     /** Border to use when a cell is selected. */
     private static final Border FILL_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0,
-                    new Color(175, 175, 175)),
+                new MatteBorder(0, 0, 1, 0, new Color(175, 175, 175)),
                 new MatteBorder(0, 0, 3, 0,
                     Configuration.getInstance().getSSSelectedColour())),
-            new MatteBorder(3,
-                3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
+            new MatteBorder(3, 3, 0, 3,
+                Configuration.getInstance().getSSSelectedColour()));
 
     /** Border to use when a cell is selected. */
     private static final Border FILL_OVERLAP_BORDER = HIGHLIGHT_OVERLAP_BORDER;
@@ -86,23 +85,20 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /** Border to use for normal cell. No extra information to show. */
     private static final Border NORMAL_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0,
-                    new Color(175, 175, 175)),
+                new MatteBorder(0, 0, 1, 0, new Color(175, 175, 175)),
                 new MatteBorder(0, 0, 3, 0,
                     Configuration.getInstance().getSSBackgroundColour())),
-            new MatteBorder(
-                3, 3, 0, 3,
+            new MatteBorder(3, 3, 0, 3,
                 Configuration.getInstance().getSSBackgroundColour()));
 
     /** Border to use if cell overlaps with another. */
     public static final Border OVERLAP_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0,
-                    new Color(175, 175, 175)),
+                new MatteBorder(0, 0, 1, 0, new Color(175, 175, 175)),
                 new MatteBorder(0, 0, 3, 0,
                     Configuration.getInstance().getSSOverlapColour())),
-            new MatteBorder(3,
-                3, 0, 3, Configuration.getInstance().getSSBackgroundColour()));
+            new MatteBorder(3, 3, 0, 3,
+                Configuration.getInstance().getSSBackgroundColour()));
 
     /** Border to use for normal cell if there is no strut (abuts prev cell). */
     public static final Border STRUT_BORDER = BorderFactory.createMatteBorder(0,
@@ -193,8 +189,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
         DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
-            .getCell(
-                cellID);
+            .getCell(cellID);
 
         // Check the selected state of the datacell
         // If it is already selected in the database, we need to inform
@@ -333,8 +328,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      */
     public long getOnsetTicks() throws SystemErrorException {
         DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
-            .getCell(
-                cellID);
+            .getCell(cellID);
 
         return dc.getOnset().getTime();
     }
@@ -347,8 +341,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      */
     public long getOffsetTicks() throws SystemErrorException {
         DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
-            .getCell(
-                cellID);
+            .getCell(cellID);
 
         return dc.getOffset().getTime();
     }
@@ -358,8 +351,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      */
     public long getOrdinal() throws SystemErrorException {
         DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
-            .getCell(
-                cellID);
+            .getCell(cellID);
 
         return dc.getOrd();
     }
@@ -515,9 +507,9 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
                     cell.getItsColID());
                 OpenSHAPA.getProjectController().setLastSelectedCellId(
                     cell.getID());
-                OpenSHAPA.getDataController().setFindTime(
-                    dcell.getOnset().getTime());
-                OpenSHAPA.getDataController().setFindOffsetField(
+                OpenSHAPA.getPlaybackController().setFindTime(dcell.getOnset()
+                    .getTime());
+                OpenSHAPA.getPlaybackController().setFindOffsetField(
                     dcell.getOffset().getTime());
             }
         } catch (SystemErrorException e) {
@@ -623,11 +615,10 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      */
     public void DCellChanged(final Database db, final long colID,
         final long cellID, final boolean ordChanged, final int oldOrd,
-        final int newOrd, final boolean onsetChanged,
-        final TimeStamp oldOnset, final TimeStamp newOnset,
-        final boolean offsetChanged, final TimeStamp oldOffset,
-        final TimeStamp newOffset, final boolean valChanged,
-        final Matrix oldVal, final Matrix newVal,
+        final int newOrd, final boolean onsetChanged, final TimeStamp oldOnset,
+        final TimeStamp newOnset, final boolean offsetChanged,
+        final TimeStamp oldOffset, final TimeStamp newOffset,
+        final boolean valChanged, final Matrix oldVal, final Matrix newVal,
         final boolean selectedChanged, final boolean oldSelected,
         final boolean newSelected, final boolean commentChanged,
         final String oldComment, final String newComment) {

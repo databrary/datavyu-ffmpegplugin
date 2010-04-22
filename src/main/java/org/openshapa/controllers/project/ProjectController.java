@@ -9,13 +9,14 @@ import javax.swing.filechooser.FileFilter;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.controllers.PlaybackController;
+
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.TrackSettings;
 import org.openshapa.models.project.ViewerSetting;
 
-import org.openshapa.views.DataControllerV;
 import org.openshapa.views.MixerControllerV;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
@@ -234,7 +235,9 @@ public final class ProjectController {
 
         // Use the plugin manager to load up the data viewers
         PluginManager pm = PluginManager.getInstance();
-        DataControllerV dataController = OpenSHAPA.getDataController();
+
+        PlaybackController playbackController = OpenSHAPA
+            .getPlaybackController();
 
         // Load the plugins required for each media file
         boolean showController = false;
@@ -253,13 +256,14 @@ public final class ProjectController {
             viewer.setDataFeed(file);
             viewer.setOffset(setting.getOffset());
 
-            dataController.addViewer(viewer, setting.getOffset());
-            dataController.addTrack(plugin.getTypeIcon(),
+            playbackController.addViewer(viewer, setting.getOffset());
+            playbackController.addTrack(plugin.getTypeIcon(),
                 file.getAbsolutePath(), file.getName(), viewer.getDuration(),
                 setting.getOffset(), viewer.getTrackPainter());
         }
 
-        MixerControllerV mixerController = dataController.getMixerController();
+        MixerControllerV mixerController =
+            playbackController.getMixerController();
 
         for (TrackSettings setting : project.getTrackSettings()) {
             mixerController.setTrackInterfaceSettings(setting.getFilePath(),
@@ -281,12 +285,13 @@ public final class ProjectController {
             return;
         }
 
-        DataControllerV dataController = OpenSHAPA.getDataController();
+        PlaybackController playbackController = OpenSHAPA
+            .getPlaybackController();
 
         // Gather the data viewer settings
         List<ViewerSetting> viewerSettings = new LinkedList<ViewerSetting>();
 
-        for (DataViewer viewer : dataController.getDataViewers()) {
+        for (DataViewer viewer : playbackController.getDataViewers()) {
             ViewerSetting vs = new ViewerSetting();
             vs.setFilePath(viewer.getDataFeed().getAbsolutePath());
             vs.setOffset(viewer.getOffset());
@@ -301,7 +306,7 @@ public final class ProjectController {
         List<TrackSettings> trackSettings = new LinkedList<TrackSettings>();
 
         for (TrackModel model
-            : dataController.getMixerController().getAllTrackModels()) {
+            : playbackController.getMixerController().getAllTrackModels()) {
             TrackSettings ts = new TrackSettings();
             ts.setFilePath(model.getTrackId());
             ts.setBookmarkPosition(model.getBookmark());
