@@ -711,11 +711,10 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 
-//        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
-        /*
+        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
+
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.14, 0.1));
-         */
+                refImageFile, 0.02, 0.1));
 
         // 2. Fast forward video to end and confirm you've reached end (1min)
         dcf.pressFastForwardButton();
@@ -734,12 +733,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         vid.setVisible(true);
         vid.toFront();
         refImageFile = new File(root + "/ui/head_turns600h1mt.png");
-        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
-        final String tempFolder = System.getProperty("java.io.tmpdir");
-File tempFile = new File(tempFolder + "/temp1.png");
-UIImageUtils.captureAsScreenshot(vid, tempFile);
+        vidImage = UIImageUtils.captureAsScreenshot(vid);
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.14, 0.1));
+                refImageFile, 0.02, 0.1));
 
         // 3. Press play, should start playing again
         dcf.pressPlayButton();
@@ -750,11 +746,7 @@ UIImageUtils.captureAsScreenshot(vid, tempFile);
             TimeStamp currTS = new TimeStamp(currTime);
             TimeStamp oneMin = new TimeStamp("00:01:00:000");
             Assert.assertTrue(currTS.le(oneMin));
-tempFile = new File(tempFolder + "/temp2.png");
-            UIImageUtils.captureAsScreenshot(vid, tempFile);
             vidImage = UIImageUtils.captureAsScreenshot(vid);
-            tempFile = new File(tempFolder + "/temp3.png");
-            UIImageUtils.captureAsScreenshot(vid, tempFile);
             dcf.pressPauseButton();
             Assert.assertFalse(UIImageUtils.areImagesEqual(vidImage,
                     refImageFile, 0.02, 0.1));
