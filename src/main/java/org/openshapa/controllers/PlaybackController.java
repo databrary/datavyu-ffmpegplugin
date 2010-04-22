@@ -1002,6 +1002,11 @@ public final class PlaybackController implements PlaybackListener,
         try {
             return executor.submit(new Callable<Set<DataViewer>>() {
                         public Set<DataViewer> call() throws Exception {
+                            System.out.println(
+                                "PlaybackController.getDataViewers().new Callable<Set<DataViewer>>() {...}.call()");
+                            System.out.println(
+                                Thread.currentThread().getName());
+
                             return viewers;
                         }
                     }).get();
@@ -1225,13 +1230,13 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     /** Simulates jog back button click. */
-    public void pressJogBackButton() {
-        playbackView.pressJogBackButton();
+    public void pressJogBackButton(final int modifiers) {
+        playbackView.pressJogBackButton(modifiers);
     }
 
     /** Simulates jog forward button click. */
-    public void pressJogForwardButton() {
-        playbackView.pressJogForwardButton();
+    public void pressJogForwardButton(final int modifiers) {
+        playbackView.pressJogForwardButton(modifiers);
     }
 
     /**
