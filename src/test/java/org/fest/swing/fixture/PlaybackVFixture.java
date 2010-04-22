@@ -222,15 +222,16 @@ public class PlaybackVFixture extends DialogFixture {
      * Returns set of all dataviewers.
      * @return Set<DataViewers> dataviewers
      */
-    public final Set<DataViewer> getDataViewers() {
-
-        // Just wait a second before queuing up request for data viewers.
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
-
-        return OpenSHAPA.getPlaybackController().getDataViewers();
-    }
+    //No method "getPlaybackController"
+//    public final Set<DataViewer> getDataViewers() {
+//
+//        // Just wait a second before queuing up request for data viewers.
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//        }
+//
+//        return OpenSHAPA.getPlaybackController().getDataViewers();
+//    }
 
 }
