@@ -115,7 +115,11 @@ public final class SaveDatabaseFileC {
             saveAsCSV(fos, db);
             fos.close();
         } catch (IOException ie) {
-            logger.error("Unable to save as CSV.", ie);
+            ResourceMap rMap =
+                    Application.getInstance(OpenSHAPA.class).getContext()
+                            .getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString(
+                    "UnableToSave.message", outFile), ie);
         }
     }
 
