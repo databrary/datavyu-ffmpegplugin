@@ -233,4 +233,13 @@ public class PlaybackVFixture extends DialogFixture {
         return OpenSHAPA.getPlaybackController().getDataViewers();
     }
 
+    /**
+     * Track mixer controller contains all track related components.
+     * @return The track mixer controller
+     */
+    public final MixerControllerFixture getTrackMixerController() {
+        return new MixerControllerFixture(robot,
+                OpenSHAPA.getPlaybackController().getMixerController());
+    }
+
 }

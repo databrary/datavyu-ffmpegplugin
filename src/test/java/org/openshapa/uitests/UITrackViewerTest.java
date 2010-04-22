@@ -1,43 +1,40 @@
 package org.openshapa.uitests;
 
-import java.awt.Frame;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import static org.fest.reflect.core.Reflection.method;
 
+import java.awt.Frame;
 import java.awt.Point;
 
 import java.io.File;
 
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.filechooser.FileFilter;
 
-import org.fest.swing.edt.GuiActionRunner;
-import org.fest.swing.edt.GuiTask;
-import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.fixture.JPopupMenuFixture;
 import org.fest.swing.fixture.NeedleFixture;
+import org.fest.swing.fixture.PlaybackVFixture;
 import org.fest.swing.fixture.RegionFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.fixture.TrackFixture;
+import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
+import org.openshapa.OpenSHAPA;
+
 import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.TimeStamp;
 
 import org.openshapa.util.UIUtils;
 
-import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
+import org.openshapa.views.PlaybackV;
 import org.openshapa.views.continuous.PluginManager;
 import org.openshapa.views.discrete.SpreadsheetPanel;
-
-import org.openshapa.models.db.TimeStamp;
 
 import org.testng.Assert;
 
@@ -65,12 +62,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         //3. Open track view
-        dcf.pressShowTracksButton();
+        pvf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -80,35 +77,30 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             final PluginManager pm = PluginManager.getInstance();
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
 
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
         } else {
-            dcf.button("addDataButton").click();
+            pvf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        Iterator it = pvf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 100));
 
         //4. Move needle to 6 seconds on data controller time.
         boolean lessThan6seconds = true;
@@ -117,8 +109,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             TimeStamp currTS;
 
             try {
-                dcf.getTrackMixerController().getNeedle().drag(1);
-                currTS = new TimeStamp(dcf.getCurrentTime());
+                pvf.getTrackMixerController().getNeedle().drag(1);
+                currTS = new TimeStamp(pvf.getCurrentTime());
                 lessThan6seconds = currTS.lt(new TimeStamp("00:00:06:000"));
             } catch (SystemErrorException ex) {
                 Logger.getLogger(UITrackViewerTest.class.getName()).log(
@@ -126,8 +118,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             }
         }
 
-        Assert.assertEquals(dcf.getCurrentTime(),
-            dcf.getTrackMixerController().getNeedle()
+        Assert.assertEquals(pvf.getCurrentTime(),
+            pvf.getTrackMixerController().getNeedle()
                 .getCurrentTimeAsTimeStamp());
     }
 
@@ -147,12 +139,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         //3. Open track view
-        dcf.pressShowTracksButton();
+        pvf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -162,39 +154,34 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             final PluginManager pm = PluginManager.getInstance();
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
 
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
         } else {
-            dcf.button("addDataButton").click();
+            pvf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        Iterator it = pvf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 100));
 
         //4. Move needle beyond end time
-        NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
-        int widthOfTrack = dcf.getTrackMixerController().getTracksEditor()
+        NeedleFixture needle = pvf.getTrackMixerController().getNeedle();
+        int widthOfTrack = pvf.getTrackMixerController().getTracksEditor()
             .getTrack(0).getWidthInPixels();
 
         while (needle.getCurrentTimeAsLong() <= 0) {
@@ -232,12 +219,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         //3. Open track view
-        dcf.pressShowTracksButton();
+        pvf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -247,39 +234,34 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             final PluginManager pm = PluginManager.getInstance();
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
 
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
         } else {
-            dcf.button("addDataButton").click();
+            pvf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        Iterator it = pvf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 100));
 
-        RegionFixture region = dcf.getTrackMixerController().getRegion();
-        NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
-        int widthOfTrack = dcf.getTrackMixerController().getTracksEditor()
+        RegionFixture region = pvf.getTrackMixerController().getRegion();
+        NeedleFixture needle = pvf.getTrackMixerController().getNeedle();
+        int widthOfTrack = pvf.getTrackMixerController().getTracksEditor()
             .getTrack(0).getWidthInPixels();
 
         // TEST1. Right region beyond start + needle stays same
@@ -321,8 +303,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         try {
             endTS = new TimeStamp(region.getEndTimeAsTimeStamp());
-            Assert.assertTrue((endTS.ge(new TimeStamp("00:00:30:000"))) &&
-                (endTS.le(new TimeStamp("00:00:50:000"))));
+            Assert.assertTrue((endTS.ge(new TimeStamp("00:00:30:000")))
+                && (endTS.le(new TimeStamp("00:00:50:000"))));
         } catch (SystemErrorException ex) {
             Logger.getLogger(UITrackViewerTest.class.getName()).log(
                 Level.SEVERE, null, ex);
@@ -344,8 +326,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         try {
             startTS = new TimeStamp(region.getStartTimeAsTimeStamp());
-            Assert.assertTrue((startTS.ge(new TimeStamp("00:00:00:000"))) &&
-                (startTS.le(new TimeStamp("00:00:40:000"))));
+            Assert.assertTrue((startTS.ge(new TimeStamp("00:00:00:000")))
+                && (startTS.le(new TimeStamp("00:00:40:000"))));
         } catch (SystemErrorException ex) {
             Logger.getLogger(UITrackViewerTest.class.getName()).log(
                 Level.SEVERE, null, ex);
@@ -378,12 +360,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         //3. Open track view
-        dcf.pressShowTracksButton();
+        pvf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -393,38 +375,33 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             final PluginManager pm = PluginManager.getInstance();
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
 
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
         } else {
-            dcf.button("addDataButton").click();
+            pvf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        Iterator it = pvf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 100));
 
         //4. Drag track
-        TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
+        TrackFixture track = pvf.getTrackMixerController().getTracksEditor()
             .getTrack(0);
         Assert.assertEquals(track.getOffsetTimeAsLong(), 0);
 
@@ -727,4 +704,4 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 //            .getSnapMarker().isVisible());
 //        track2.releaseLeftMouse();
 //    }
- }
+}
