@@ -4,8 +4,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -147,8 +149,6 @@ public final class PlaybackV extends OpenSHAPADialog {
     private long onsetTime;
 
     private long offsetTime;
-
-    private final long delay = 100;
 
     /**
      * Constructor. Creates the playback UI.
@@ -540,7 +540,6 @@ public final class PlaybackV extends OpenSHAPADialog {
         gridButtonPanel.add(findTextField, "w 80!, h 45!");
 
         // Jog back button
-        jogBackButton.setMultiClickThreshhold(delay); // TODO refactor magic num.
         jogBackButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     jogBackAction(e);
@@ -569,7 +568,6 @@ public final class PlaybackV extends OpenSHAPADialog {
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
         // Jog forward button
-        jogForwardButton.setMultiClickThreshhold(delay);
         jogForwardButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     jogForwardAction(e);
@@ -939,7 +937,6 @@ public final class PlaybackV extends OpenSHAPADialog {
         gridButtonPanel.add(findTextField, "w 80!, h 45!");
 
         // Jog back button
-        jogBackButton.setMultiClickThreshhold(delay);
         jogBackButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     jogBackAction(e);
@@ -968,7 +965,6 @@ public final class PlaybackV extends OpenSHAPADialog {
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
         // Jog forward button
-        jogForwardButton.setMultiClickThreshhold(delay);
         jogForwardButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     jogForwardAction(e);
@@ -1152,14 +1148,47 @@ public final class PlaybackV extends OpenSHAPADialog {
         syncButton.doClick();
     }
 
-    /** Simulates jog back button click. */
-    public void pressJogBackButton() {
-        jogBackButton.doClick();
+
+    /**
+     * Simulates jog back button click.
+     *
+     * @param modifiers Modifiers that were held down.
+     * @see {@link InputEvent#getModifiers()}
+     */
+    public void pressJogBackButton(final int modifiers) {
+        long time = System.currentTimeMillis();
+
+        MouseEvent press = new MouseEvent(jogBackButton,
+                MouseEvent.MOUSE_PRESSED, time, modifiers, 3, 3, 1, // Single click
+                false, MouseEvent.BUTTON1);
+
+        MouseEvent release = new MouseEvent(jogBackButton,
+                MouseEvent.MOUSE_RELEASED, time, modifiers, 3, 3, 1, // Single click
+                false, MouseEvent.BUTTON1);
+
+        jogBackButton.dispatchEvent(press);
+        jogBackButton.dispatchEvent(release);
     }
 
-    /** Simulates jog forward button click. */
-    public void pressJogForwardButton() {
-        jogForwardButton.doClick();
+    /**
+     * Simulates jog forward button click.
+     *
+     * @param modifiers Modifiers that were held down.
+     * @see {@link InputEvent#getModifiers()}
+     */
+    public void pressJogForwardButton(final int modifiers) {
+        long time = System.currentTimeMillis();
+
+        MouseEvent press = new MouseEvent(jogForwardButton,
+                MouseEvent.MOUSE_PRESSED, time, modifiers, 3, 3, 1, // Single click
+                false, MouseEvent.BUTTON1);
+
+        MouseEvent release = new MouseEvent(jogForwardButton,
+                MouseEvent.MOUSE_RELEASED, time, modifiers, 3, 3, 1, // Single click
+                false, MouseEvent.BUTTON1);
+
+        jogForwardButton.dispatchEvent(press);
+        jogForwardButton.dispatchEvent(release);
     }
 
     /**
