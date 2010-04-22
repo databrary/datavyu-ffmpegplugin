@@ -226,8 +226,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void addDataEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.addDataEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
 
@@ -251,8 +249,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void findEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.findEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
                 public void run() {
@@ -278,8 +274,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void forwardEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.forwardEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
                 public void run() {
@@ -291,9 +285,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void goBackEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.goBackEvent()");
-        System.out.println(Thread.currentThread().getName());
-
         Runnable task = new Runnable() {
                 public void run() {
                     jump(-evt.getGoTime());
@@ -307,8 +298,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void jogBackEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.jogBackEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
 
@@ -345,8 +334,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void jogForwardEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.jogForwardEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
                 public void run() {
@@ -382,8 +369,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void newCellEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.newCellEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
 
@@ -396,8 +381,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void setNewCellOffsetEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.setNewCellOffsetEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
                 public void run() {
@@ -410,8 +393,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void newCellSetOnsetEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.newCellSetOnsetEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
                 public void run() {
@@ -423,8 +404,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void pauseEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.pauseEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
 
@@ -463,8 +442,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void playEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.playEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         // BugzID:464 - When stopped at the end of the region of interest.
         // pressing play jumps the stream back to the start of the video before
@@ -487,9 +464,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void rewindEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.rewindEvent()");
-        System.out.println(Thread.currentThread().getName());
-
         Runnable task = new Runnable() {
                 public void run() {
                     playAt(REWIND_RATE);
@@ -500,8 +474,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void setCellOffsetEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.setCellOffsetEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
                 public void run() {
@@ -514,9 +486,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void setCellOnsetEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.setCellOnsetEvent()");
-        System.out.println(Thread.currentThread().getName());
-
 
         Runnable task = new Runnable() {
                 public void run() {
@@ -528,8 +497,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void showTracksEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.showTracksEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
 
@@ -570,8 +537,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void shuttleBackEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.shuttleBackEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
 
@@ -605,8 +570,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void shuttleForwardEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.shuttleForwardEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
                 public void run() {
@@ -640,8 +603,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void stopEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.stopEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
 
@@ -666,9 +627,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     public void clockStart(final long time) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.clockStart()");
-        System.out.println(Thread.currentThread().getName());
 
         resetSync();
 
@@ -696,9 +654,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     public void clockTick(final long time) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.clockTick()");
-        System.out.println(Thread.currentThread().getName());
 
         try {
             setCurrentTime(time);
@@ -781,9 +736,6 @@ public final class PlaybackController implements PlaybackListener,
     public void clockStop(final long time) {
         assert !SwingUtilities.isEventDispatchThread();
 
-        System.out.println("PlaybackController.clockStop()");
-        System.out.println(Thread.currentThread().getName());
-
         resetSync();
         setCurrentTime(time);
 
@@ -799,9 +751,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     public void clockRate(final float rate) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.clockRate()");
-        System.out.println(Thread.currentThread().getName());
 
         resetSync();
 
@@ -849,9 +798,6 @@ public final class PlaybackController implements PlaybackListener,
     public void clockStep(final long time) {
         assert !SwingUtilities.isEventDispatchThread();
 
-        System.out.println("PlaybackController.clockStep()");
-        System.out.println(Thread.currentThread().getName());
-
         resetSync();
         setCurrentTime(time);
 
@@ -861,9 +807,6 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void dispose() {
-        System.out.println("PlaybackController.dispose()");
-        System.out.println(Thread.currentThread().getName());
-
         executor.shutdown();
         mixerControllerV.removeAll();
     }
@@ -872,9 +815,6 @@ public final class PlaybackController implements PlaybackListener,
      * @return the mixer controller.
      */
     public MixerControllerV getMixerController() {
-        System.out.println("PlaybackController.getMixerController()");
-        System.out.println(Thread.currentThread().getName());
-
         return mixerControllerV;
     }
 
@@ -886,9 +826,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     public void setCurrentTime(final long milliseconds) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.setCurrentTime()");
-        System.out.println(Thread.currentThread().getName());
 
         resetSync();
 
@@ -913,8 +850,6 @@ public final class PlaybackController implements PlaybackListener,
      * @return True if the controller contained this viewer.
      */
     public boolean shutdown(final DataViewer viewer) {
-        System.out.println("PlaybackController.shutdown()");
-        System.out.println(Thread.currentThread().getName());
 
         // Was the viewer removed.
         final boolean removed = viewers.remove(viewer);
@@ -996,17 +931,10 @@ public final class PlaybackController implements PlaybackListener,
      * @return set of dataviewers.
      */
     public Set<DataViewer> getDataViewers() {
-        System.out.println("PlaybackController.getDataViewers()");
-        System.out.println(Thread.currentThread().getName());
 
         try {
             return executor.submit(new Callable<Set<DataViewer>>() {
                         public Set<DataViewer> call() throws Exception {
-                            System.out.println(
-                                "PlaybackController.getDataViewers().new Callable<Set<DataViewer>>() {...}.call()");
-                            System.out.println(
-                                Thread.currentThread().getName());
-
                             return viewers;
                         }
                     }).get();
@@ -1033,9 +961,6 @@ public final class PlaybackController implements PlaybackListener,
         final String name, final long duration, final long offset,
         final TrackPainter trackPainter) {
 
-        System.out.println("PlaybackController.addTrack()");
-        System.out.println(Thread.currentThread().getName());
-
         Runnable edtTask = new Runnable() {
                 public void run() {
                     mixerControllerV.addNewTrack(icon, mediaPath, name,
@@ -1057,9 +982,6 @@ public final class PlaybackController implements PlaybackListener,
     public void addDataViewerToProject(final String pluginName,
         final String filePath) {
 
-        System.out.println("PlaybackController.addDataViewerToProject()");
-        System.out.println(Thread.currentThread().getName());
-
         Runnable task = new Runnable() {
                 public void run() {
                     OpenSHAPA.getProjectController().projectChanged();
@@ -1077,8 +999,6 @@ public final class PlaybackController implements PlaybackListener,
      * @param offset The offset value in milliseconds.
      */
     public void addViewer(final DataViewer viewer, final long offset) {
-        System.out.println("PlaybackController.addViewer()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
 
@@ -1123,8 +1043,6 @@ public final class PlaybackController implements PlaybackListener,
      * @param e event
      */
     public void tracksControllerChanged(final TracksControllerEvent e) {
-        System.out.println("PlaybackController.tracksControllerChanged()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
 
@@ -1246,8 +1164,6 @@ public final class PlaybackController implements PlaybackListener,
      *            The time to use when populating the find field.
      */
     public void setFindTime(final long milliseconds) {
-        System.out.println("PlaybackController.setFindTime()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable edtTask = new Runnable() {
 
@@ -1266,8 +1182,6 @@ public final class PlaybackController implements PlaybackListener,
      *            The time to use when populating the find field.
      */
     public void setFindOffsetField(final long milliseconds) {
-        System.out.println("PlaybackController.setFindOffsetField()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable edtTask = new Runnable() {
 
@@ -1284,8 +1198,6 @@ public final class PlaybackController implements PlaybackListener,
      * Action to invoke when the user holds shift down.
      */
     public void findOffsetAction() {
-        System.out.println("PlaybackController.findOffsetAction()");
-        System.out.println(Thread.currentThread().getName());
 
         Runnable task = new Runnable() {
                 public void run() {
@@ -1307,9 +1219,6 @@ public final class PlaybackController implements PlaybackListener,
     private void playAt(final float rate) {
         assert !SwingUtilities.isEventDispatchThread();
 
-        System.out.println("PlaybackController.playAt()");
-        System.out.println(Thread.currentThread().getName());
-
         shuttleDirection = ShuttleDirection.UNDEFINED;
         playbackModel.setShuttleRate(0);
         playbackModel.setPauseRate(0);
@@ -1322,9 +1231,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     private void shuttle(final ShuttleDirection direction) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.shuttle()");
-        System.out.println(Thread.currentThread().getName());
 
         int shuttleRate = playbackModel.getShuttleRate();
         float rate = SHUTTLE_RATES[shuttleRate];
@@ -1362,8 +1268,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     private void shuttleAt(final float rate) {
         assert !SwingUtilities.isEventDispatchThread();
-        System.out.println("PlaybackController.shuttleAt()");
-        System.out.println(Thread.currentThread().getName());
 
         clock.setRate(rate);
         clock.start();
@@ -1375,9 +1279,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     private void jump(final long step) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.jump()");
-        System.out.println(Thread.currentThread().getName());
 
         clock.stop();
         clock.setRate(0);
@@ -1395,9 +1296,6 @@ public final class PlaybackController implements PlaybackListener,
     private void jumpTo(final long time) {
         assert !SwingUtilities.isEventDispatchThread();
 
-        System.out.println("PlaybackController.jumpTo()");
-        System.out.println(Thread.currentThread().getName());
-
         clock.stop();
         clock.setRate(PLAY_RATE);
         clock.setTime(time);
@@ -1410,9 +1308,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     private void openVideo(final OpenSHAPAFileChooser jd) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.openVideo()");
-        System.out.println(Thread.currentThread().getName());
 
         PluginManager pm = PluginManager.getInstance();
 
@@ -1434,9 +1329,6 @@ public final class PlaybackController implements PlaybackListener,
     private void resetSync() {
         assert !SwingUtilities.isEventDispatchThread();
 
-        System.out.println("PlaybackController.resetSync()");
-        System.out.println(Thread.currentThread().getName());
-
         playbackModel.setLastSync(0);
     }
 
@@ -1447,9 +1339,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     private long getCurrentTime() {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.getCurrentTime()");
-        System.out.println(Thread.currentThread().getName());
 
         return clock.getTime();
     }
@@ -1467,9 +1356,6 @@ public final class PlaybackController implements PlaybackListener,
     private void addDataViewer(final ImageIcon icon, final DataViewer viewer,
         final File f, final TrackPainter trackPainter) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.addDataViewer()");
-        System.out.println(Thread.currentThread().getName());
 
         addViewer(viewer, 0);
 
@@ -1491,9 +1377,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     private int findShuttleIndex(final float pRate) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.findShuttleIndex()");
-        System.out.println(Thread.currentThread().getName());
 
         if (pRate == 0) {
             return 0;
@@ -1520,9 +1403,6 @@ public final class PlaybackController implements PlaybackListener,
     private void handleNeedleEvent(final NeedleEvent e) {
         assert !SwingUtilities.isEventDispatchThread();
 
-        System.out.println("PlaybackController.handleNeedleEvent()");
-        System.out.println(Thread.currentThread().getName());
-
         long newTime = e.getTime();
 
         if (newTime < playbackModel.getWindowPlayStart()) {
@@ -1548,9 +1428,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     private void handleMarkerEvent(final MarkerEvent e) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.handleMarkerEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         final long newWindowTime = e.getTime();
         final long tracksTime = mixerControllerV.getCurrentTime();
@@ -1579,9 +1456,6 @@ public final class PlaybackController implements PlaybackListener,
     private void handleEndMarkerEvent(final long newWindowTime,
         final long tracksTime) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.handleEndMarkerEvent()");
-        System.out.println(Thread.currentThread().getName());
 
         final long maxDuration = playbackModel.getMaxDuration();
         long windowPlayEnd;
@@ -1616,9 +1490,6 @@ public final class PlaybackController implements PlaybackListener,
         final long tracksTime) {
         assert !SwingUtilities.isEventDispatchThread();
 
-        System.out.println("PlaybackController.handleStartMarkerEvent()");
-        System.out.println(Thread.currentThread().getName());
-
         final long windowPlayEnd = playbackModel.getWindowPlayEnd();
         long windowPlayStart;
 
@@ -1652,9 +1523,6 @@ public final class PlaybackController implements PlaybackListener,
     private void handleCarriageEvent(final CarriageEvent e) {
         assert !SwingUtilities.isEventDispatchThread();
 
-        System.out.println("PlaybackController.handleCarriageEvent()");
-        System.out.println(Thread.currentThread().getName());
-
         switch (e.getEventType()) {
 
         case OFFSET_CHANGE:
@@ -1677,11 +1545,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     private void handleCarriageOffsetChangeEvent(final CarriageEvent e) {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println(
-            "PlaybackController.handleCarriageOffsetChangeEvent()");
-        System.out.println(Thread.currentThread().getName());
-
 
         // Look through our data viewers and update the offset
         for (DataViewer viewer : viewers) {
@@ -1750,9 +1613,6 @@ public final class PlaybackController implements PlaybackListener,
      */
     private void setRegionOfInterestAction() {
         assert !SwingUtilities.isEventDispatchThread();
-
-        System.out.println("PlaybackController.setRegionOfInterestAction()");
-        System.out.println(Thread.currentThread().getName());
 
         final long newWindowPlayStart = playbackView.getFindTime();
         final long newWindowPlayEnd = playbackView.getFindOffsetTime();
