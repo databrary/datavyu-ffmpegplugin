@@ -100,22 +100,6 @@ public final class Configuration {
         // Set custom font
         String fontFileName = "/fonts/DejaVuSansCondensed.ttf";
 
-        try {
-            newFont = Font.createFont(Font.TRUETYPE_FONT,
-                    getClass().getResourceAsStream(fontFileName));
-            properties.setSSDataFont(newFont.deriveFont(DATA_FONT_SIZE));
-            properties.setSSLabelFont(newFont.deriveFont(LABEL_FONT_SIZE));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.err.println(fontFileName
-                + " can't be loaded. Using default font");
-        }
-
-        properties.setSSOrdinalColour(DEFAULT_ORDINAL);
-        properties.setSSTimestampColour(DEFAULT_TIMESTAMP);
-        properties.setSSBackgroundColour(DEFAULT_BACKGROUND);
-        properties.setSSForegroundColour(DEFAULT_FOREGROUND);
-
         // Properties not loaded from disk - initalise to default and save.
         if (properties == null) {
             properties = new ConfigProperties();
@@ -135,6 +119,22 @@ public final class Configuration {
 
             save();
         }
+
+        try {
+            newFont = Font.createFont(Font.TRUETYPE_FONT,
+                    getClass().getResourceAsStream(fontFileName));
+            properties.setSSDataFont(newFont.deriveFont(DATA_FONT_SIZE));
+            properties.setSSLabelFont(newFont.deriveFont(LABEL_FONT_SIZE));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.err.println(fontFileName
+                + " can't be loaded. Using default font");
+        }
+
+        properties.setSSOrdinalColour(DEFAULT_ORDINAL);
+        properties.setSSTimestampColour(DEFAULT_TIMESTAMP);
+        properties.setSSBackgroundColour(DEFAULT_BACKGROUND);
+        properties.setSSForegroundColour(DEFAULT_FOREGROUND);
 
         if (properties.getLCDirectory() == null) {
             properties.setLCDirectory(System.getProperty("user.home"));
