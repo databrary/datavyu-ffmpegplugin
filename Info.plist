@@ -33,7 +33,7 @@
       <string>1.5</string>
       <key>ClassPath</key>
       <array>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa/1.04B/openshapa-1.04B.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa/1.05/openshapa-1.05.jar</string>
         <string>$JAVAROOT/repo/javax/script/script-api/1.1/script-api-1.1.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.4.0/jruby-complete-1.4.0.jar</string>
