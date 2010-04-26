@@ -12,6 +12,9 @@ import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.project.Project;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import org.openshapa.OpenSHAPA;
 
 /**
  * Master controller for handling project and database file saving logic.
@@ -86,9 +89,17 @@ public final class SaveC {
             fos.flush();
             fos.close();
         } catch (FileNotFoundException e) {
-            logger.error("Unable to find file.", e);
+            ResourceMap rMap =
+                    Application.getInstance(OpenSHAPA.class).getContext()
+                            .getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString(
+                    "UnableToSave.message", projectFile), e);
         } catch (IOException e) {
-            logger.error("Unable to read file.", e);
+            ResourceMap rMap =
+                    Application.getInstance(OpenSHAPA.class).getContext()
+                            .getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString(
+                    "UnableToSave.message", projectFile), e);
         }
     }
 }
