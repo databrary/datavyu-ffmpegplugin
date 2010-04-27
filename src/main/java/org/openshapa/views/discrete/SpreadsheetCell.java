@@ -41,6 +41,8 @@ import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
 
+import com.sun.java.swing.SwingUtilities2;
+
 import com.usermetrix.jclient.UserMetrix;
 
 
@@ -211,8 +213,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
         ord.setFont(Configuration.getInstance().getSSLabelFont());
         ord.setForeground(Configuration.getInstance().getSSOrdinalColour());
 
-//        ord.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
-//            new Boolean(true));
+        ord.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+            new Boolean(true));
         ord.setToolTipText(rMap.getString("ord.tooltip"));
         ord.addMouseListener(this);
         ord.setFocusable(true);
@@ -223,8 +225,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
         onset.setFont(Configuration.getInstance().getSSLabelFont());
         onset.setForeground(Configuration.getInstance().getSSTimestampColour());
 
-//        onset.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
-//            new Boolean(true));
+        onset.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+            new Boolean(true));
         onset.setToolTipText(rMap.getString("onset.tooltip"));
         onset.addFocusListener(this);
         onset.addMouseListener(this);
@@ -235,8 +237,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
         offset.setForeground(Configuration.getInstance()
             .getSSTimestampColour());
 
-//        offset.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
-//            new Boolean(true));
+        offset.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+            new Boolean(true));
         offset.setToolTipText(rMap.getString("offset.tooltip"));
         offset.addFocusListener(this);
         offset.addMouseListener(this);
@@ -246,8 +248,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
         dataPanel.setForeground(Configuration.getInstance()
             .getSSForegroundColour());
-//        dataPanel.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
-//            new Boolean(true));
+        dataPanel.putClientProperty(SwingUtilities2.AA_TEXT_PROPERTY_KEY,
+            new Boolean(true));
 
         dataPanel.setMatrix(dc.getVal());
         dataPanel.setOpaque(false);
