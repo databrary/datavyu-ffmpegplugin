@@ -810,7 +810,9 @@ public final class UIPlaybackTest extends OpenSHAPATestClass {
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
+
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile, 0.15, 0.1));
 
         // 2. Fast forward video to end and confirm you've reached end (1min)
         pvf.pressFastForwardButton();
@@ -830,8 +832,8 @@ public final class UIPlaybackTest extends OpenSHAPATestClass {
         vid.toFront();
         refImageFile = new File(root + "/ui/head_turns600h1mt.png");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile,
-                0.2, 0.1));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile, 0.15, 0.1));
 
         // 3. Press play, should start playing again
         pvf.pressPlayButton();
@@ -845,7 +847,7 @@ public final class UIPlaybackTest extends OpenSHAPATestClass {
             vidImage = UIImageUtils.captureAsScreenshot(vid);
             pvf.pressPauseButton();
             Assert.assertFalse(UIImageUtils.areImagesEqual(vidImage,
-                    refImageFile, 0.1, 0.1));
+                    refImageFile, 0.15, 0.1));
         } catch (SystemErrorException ex) {
             Logger.getLogger(UIPlaybackTest.class.getName()).log(Level.SEVERE,
                 null, ex);
