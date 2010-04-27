@@ -714,7 +714,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
 
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.02, 0.1));
+                refImageFile, 0.05, 0.1));
 
         // 2. Fast forward video to end and confirm you've reached end (1min)
         dcf.pressFastForwardButton();
@@ -735,7 +735,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         refImageFile = new File(root + "/ui/head_turns600h1mt.png");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.02, 0.1));
+                refImageFile, 0.15, 0.1));
 
         // 3. Press play, should start playing again
         dcf.pressPlayButton();
@@ -749,7 +749,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             vidImage = UIImageUtils.captureAsScreenshot(vid);
             dcf.pressPauseButton();
             Assert.assertFalse(UIImageUtils.areImagesEqual(vidImage,
-                    refImageFile, 0.02, 0.1));
+                    refImageFile, 0.15, 0.1));
         } catch (SystemErrorException ex) {
             Logger.getLogger(UIDataControllerTest.class.getName()).log(
                 Level.SEVERE, null, ex);
@@ -766,8 +766,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Expect: New cell created.
      * Actual: Dang nabbit error
      */
-    //Commented because it was failing. Need to work out why.
-    /*@Test*/ public void testBug1204() {
+    @Test public void testBug1204() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
