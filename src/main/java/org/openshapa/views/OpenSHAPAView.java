@@ -644,11 +644,9 @@ public final class OpenSHAPAView extends FrameView
     }
 
     /**
-     * Action for showing the spreadsheet.
+     * Clears the contents of the spreadsheet.
      */
-    @Action public void showSpreadsheet() {
-        weakTemporalOrderMenuItem.setSelected(false);
-        strongTemporalOrderMenuItem.setSelected(false);
+    public void clearSpreadsheet() {
         panel.removeAll();
 
         // Create a fresh spreadsheet component and redraw the component.
@@ -656,6 +654,15 @@ public final class OpenSHAPAView extends FrameView
             panel.deregisterListeners();
             panel.removeFileDropEventListener(this);
         }
+    }
+
+    /**
+     * Action for showing the spreadsheet.
+     */
+    @Action public void showSpreadsheet() {
+        weakTemporalOrderMenuItem.setSelected(false);
+        strongTemporalOrderMenuItem.setSelected(false);
+        this.clearSpreadsheet();
 
         panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
         panel.registerListeners();

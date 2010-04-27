@@ -152,7 +152,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
     /**
      * Find and delete SpreadsheetCell by its ID.
-     * 
+     *
      * @param cellID
      *            ID of cell to find and delete.
      */
