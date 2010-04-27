@@ -181,11 +181,6 @@ public final class PlaybackV extends OpenSHAPADialog {
 
     }
 
-    public static void main(final String[] args) {
-        PlaybackV test = new PlaybackV(null, false, null);
-        test.show();
-    }
-
     /**
      * Add listener interested in playback UI events.
      *
@@ -1437,5 +1432,4 @@ public final class PlaybackV extends OpenSHAPADialog {
             listener.setNewCellOffsetEvent(event);
         }
     }
-
 }

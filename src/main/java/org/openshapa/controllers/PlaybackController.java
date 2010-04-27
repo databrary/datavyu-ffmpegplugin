@@ -44,7 +44,6 @@ import org.openshapa.util.ClockTimer;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer.ClockListener;
 
-import org.openshapa.views.DataControllerV;
 import org.openshapa.views.MixerControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.PlaybackV;
@@ -159,7 +158,7 @@ public final class PlaybackController implements PlaybackListener,
     // [static]
     //
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(DataControllerV.class);
+    private UserMetrix logger = UserMetrix.getInstance(PlaybackController.class);
 
     // -------------------------------------------------------------------------
     //
@@ -505,7 +504,7 @@ public final class PlaybackController implements PlaybackListener,
 
                     ResourceMap resourceMap = Application.getInstance(
                             org.openshapa.OpenSHAPA.class).getContext()
-                        .getResourceMap(DataControllerV.class);
+                        .getResourceMap(PlaybackV.class);
 
                     if (tracksPanelEnabled) {
 
