@@ -567,22 +567,24 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      *             If unable to save file.
      * @throws SystemErrorException
      */
-    private void loadODBTest(final String inputFile,
+    private void legacyFileLoadTest(final String inputFile,
         final String expectedOutputFile) throws IOException {
-        // THIS TEST NEEDS TO BE MADE MORE RIGOROUS. RIGHT
-        // NOW IT JUST OPENS A FILE AND CHECKS THERE IS SOME DATA
-
         String root = System.getProperty("testPath");
 
-        File odbFile = new File(root + "/ui/" + inputFile);
-        Assert.assertTrue(odbFile.exists());
+        File iFile = new File(root + "/ui/" + inputFile);
+        File eoFile = new File(root + "/ui/" + expectedOutputFile);
+        Assert.assertTrue(iFile.exists());
 
         // 1. Load ODB File
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
-            fc.setFileFilter(new MODBFilter());
-            fc.setSelectedFile(odbFile);
+            if (inputFile.endsWith("odb")) {
+                fc.setFileFilter(new MODBFilter());
+            } else if (inputFile.endsWith("shapa")) {
+                fc.setFileFilter(new SHAPAFilter());
+            }
+            fc.setSelectedFile(iFile);
 
             method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
                 OpenSHAPA.getView()).invoke(fc);
@@ -597,9 +599,15 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
                 // Do nothing
             }
 
-            mainFrameFixture.fileChooser().component().setFileFilter(
+            if (inputFile.endsWith("odb")) {
+                mainFrameFixture.fileChooser().component().setFileFilter(
                 new MODBFilter());
-            mainFrameFixture.fileChooser().selectFile(odbFile).approve();
+            } else if (inputFile.endsWith("shapa")) {
+                mainFrameFixture.fileChooser().component().setFileFilter(
+                new SHAPAFilter());
+            }
+
+            mainFrameFixture.fileChooser().selectFile(iFile).approve();
         }
 
         // Check that the title bar file name does not have an asterix
@@ -611,6 +619,17 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
         Assert.assertNotNull(ssPanel.allColumns());
+
+        //Save file as a CSV and compare to reference file
+        File outputFile = saveAsCSV(expectedOutputFile + "new.csv");
+
+        Assert.assertTrue(outputFile.exists(),
+            "Expecting output CSV to exist.");
+        Assert.assertTrue(eoFile.exists(),
+            "Expecting reference output to exist.");
+
+        Assert.assertTrue(UIUtils.areFilesSameLineComp(outputFile, eoFile),
+                "Expecting files to be the same.");
     }
 
     /**
@@ -645,7 +664,16 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     @Test public void testLoadingODB1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        loadODBTest("macshapa-file.odb", null);
+        legacyFileLoadTest("macshapa-file.odb", "odfCSV.csv");
+    }
+
+     /**
+     * Test loading an SHAPA file.
+     * @throws Exception on any error.
+     */
+    @Test public void testLoadingSHAPA1() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        legacyFileLoadTest("test.shapa", "modify-test-out.csv");
     }
 
     /**
