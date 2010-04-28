@@ -869,4 +869,47 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // At this point it should remember location2
         fileLocationTest("location1/location1.opf", "location2");
     }
+
+    /**
+     * Test for saving into a directory where user does not have write 
+     * permissions.
+     */
+    @Test public void saveToDirectoryWithoutPermissions() {
+        final String root = System.getProperty("testPath") + "/ui/";
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+
+        //Check if directory exists and you do not have permission
+        File noWrite = new File(root + "/noWrite/");
+        Assert.assertTrue(noWrite.exists());
+        Assert.assertTrue(noWrite.isDirectory());
+
+        //Try to save to directory and confirm that warning dialog pops up
+        // Check that asterisk is present
+        Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
+
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+
+            File toSave = new File(noWrite.getAbsolutePath() + "/" + "test.opf");
+
+            fc.setSelectedFile(toSave);
+
+            method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                OpenSHAPA.getView()).invoke(fc);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Save");
+
+            File toSave = new File(noWrite.getAbsolutePath() + "/" + "test.opf");
+            mainFrameFixture.fileChooser().selectFile(toSave).approve();
+        }
+
+        JOptionPaneFixture warning = mainFrameFixture.optionPane();
+        warning.requireTitle("Warning:");
+        warning.requireWarningMessage();
+        warning.buttonWithText("OK").click();
+
+        // Check that asterisk is present
+        Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
+    }
 }
