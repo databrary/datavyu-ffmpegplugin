@@ -57,8 +57,8 @@ import org.openshapa.views.NewVariableV;
  * OpenSHAPA database as a spreadsheet.
  */
 public final class SpreadsheetPanel extends JPanel
-implements /*ExternalColumnListListener,*/ ComponentListener,
-           CellSelectionListener, ColumnSelectionListener, KeyEventDispatcher {
+implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
+           KeyEventDispatcher {
 
     /** Scrollable view inserted into the JScrollPane. */
     private SpreadsheetView mainView;
@@ -307,16 +307,6 @@ implements /*ExternalColumnListListener,*/ ComponentListener,
      * @param db Database to set
      */
     public void setDatabase(final Database db) {
-        // check if we need to deregister
-        /*
-        if ((database != null) && (database != db)) {
-            try {
-                database.deregisterColumnListListener(this);
-            } catch (SystemErrorException e) {
-                logger.error("deregisterColumnListListener failed", e);
-            }
-        }*/
-
         // set the database
         database = db;
 
@@ -328,17 +318,8 @@ implements /*ExternalColumnListListener,*/ ComponentListener,
             logger.error("setTemporalOrdering failed", e);
         }*/
 
-        // register as a columnListListener
-        /*
-        try {
-            db.registerColumnListListener(this);
-        } catch (SystemErrorException e) {
-            logger.error("registerColumnListListener failed", e);
-        }*/
-
         // setName to remember screen locations
         setName(this.getClass().getSimpleName() + db.getName());
-
         deselectAll();
     }
 
@@ -347,54 +328,6 @@ implements /*ExternalColumnListListener,*/ ComponentListener,
      */
     public Database getDatabase() {
         return (database);
-    }
-
-    /**
-     * Action to invoke when a column is removed from a database.
-     *
-     * @param db The database that the column has been removed from.
-     * @param colID The id of the freshly removed column.
-     * @param oldCov The column order vector prior to the deletion.
-     * @param newCov The column order vector after to the deletion.
-     */
-    public void colDeletion(final Database db,
-                            final long colID,
-                            final Vector<Long> oldCov,
-                            final Vector<Long> newCov) {
-        deselectAll();
-        removeColumn(colID);
-        relayoutCells();
-    }
-
-    /**
-     * Action to invoke when a column is added to a database.
-     *
-     * @param db The database that the column has been added to.
-     * @param colID The id of the newly added column.
-     * @param oldCov The column order vector prior to the insertion.
-     * @param newCov The column order vector after to the insertion.
-     */
-    public void colInsertion(final Database db,
-                             final long colID,
-                             final Vector<Long> oldCov,
-                             final Vector<Long> newCov) {
-        deselectAll();
-        addColumn(db, colID);
-    }
-
-    /**
-     * Action to invoke when the column order vector is edited (i.e, the order
-     * of the columns is changed without any insertions or deletions).
-     *
-     * @param db The database that the column has been added to.
-     * @param oldCov The column order vector prior to the insertion.
-     * @param newCov The column order vector after to the insertion.
-     */
-    public void colOrderVectorEdited(final Database db,
-                                     final Vector<Long> oldCov,
-                                     final Vector<Long> newCov) {
-        // do nothing for now
-        return;
     }
 
     /**
