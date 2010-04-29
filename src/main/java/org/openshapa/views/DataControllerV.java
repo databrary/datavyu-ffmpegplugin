@@ -2038,6 +2038,7 @@ public final class DataControllerV extends OpenSHAPADialog
                 playbackModel.setWindowPlayEnd(newWindowPlayStart);
                 mixerControllerV.setPlayRegionEnd(newWindowPlayStart);
             }
+            mixerControllerV.getNeedleController().fixNeedle();
         } catch (ParseException e) {
             logger.error("Unable to set playback region of interest", e);
         }

@@ -45,9 +45,6 @@ public final class TracksEditorController implements TrackMouseEventListener {
     /** Viewable model. */
     private final ViewableModel viewableModel;
 
-    /** Should tracks be snapped when moving. */
-    private boolean allowSnap;
-
     /** Handles the selection model for tracks. */
     private final CarriageSelection selectionHandler;
 
@@ -58,7 +55,6 @@ public final class TracksEditorController implements TrackMouseEventListener {
         tracks = new LinkedList<Track>();
         viewableModel = new ViewableModel();
         snapMarkerController = new SnapMarkerController();
-        allowSnap = false;
         selectionHandler = new CarriageSelection();
         initView();
     }
@@ -229,7 +225,6 @@ public final class TracksEditorController implements TrackMouseEventListener {
                 tc.setTrackOffset(newOffset);
                 snapMarkerController.setMarkerTime(-1);
 
-                if (allowSnap) {
                     final SnapPoint snapPoint = snapOffset(mediaPath,
                             snapTemporalPosition);
                     tc.setMoveable(snapPoint == null);
@@ -241,7 +236,6 @@ public final class TracksEditorController implements TrackMouseEventListener {
                             snapPoint.snapMarkerPosition);
                         tc.setTrackOffset(newOffset + snapPoint.snapOffset);
                     }
-                }
 
                 return true;
             }
@@ -415,17 +409,6 @@ public final class TracksEditorController implements TrackMouseEventListener {
         }
 
         return false;
-    }
-
-    /**
-     * Switches the snapping functionality on or off.
-     *
-     * @param allowSnap
-     *            true if carriage movement should have assisted
-     *            synchronization, false otherwise
-     */
-    public void setAllowSnap(final boolean allowSnap) {
-        this.allowSnap = allowSnap;
     }
 
     /**

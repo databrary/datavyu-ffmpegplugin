@@ -23,6 +23,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.EventListenerList;
 
 import net.miginfocom.swing.MigLayout;
+import org.openshapa.OpenSHAPA;
 
 import org.openshapa.controllers.component.NeedleController;
 import org.openshapa.controllers.component.RegionController;
@@ -135,13 +136,13 @@ public class MixerControllerV implements NeedleEventListener,
         bookmarkButton.setEnabled(false);
         bookmarkButton.setName("bookmarkButton");
 
-        JToggleButton snapToggleButton = new JToggleButton("Snap");
-        snapToggleButton.addActionListener(new ActionListener() {
+        JButton snapRegion = new JButton("Snap");
+        snapRegion.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    snapToggleHandler(e);
+                    snapRegionHandler(e);
                 }
             });
-        snapToggleButton.setName("snapToggleButton");
+        snapRegion.setName("snapToggleButton");
 
         JButton zoomInButton = new JButton("( + )");
         zoomInButton.addActionListener(new ActionListener() {
@@ -163,7 +164,7 @@ public class MixerControllerV implements NeedleEventListener,
 
         tracksPanel.add(lockToggle);
         tracksPanel.add(bookmarkButton);
-        tracksPanel.add(snapToggleButton);
+        tracksPanel.add(snapRegion);
         tracksPanel.add(zoomInButton);
         tracksPanel.add(zoomOutButton, "wrap");
 
@@ -559,9 +560,8 @@ public class MixerControllerV implements NeedleEventListener,
      */
     private void rescale() {
         long range = maxEnd - minStart;
-        long mid = range / 2;
-        long newStart = mid - (range / zoomSetting / 2);
-        long newEnd = mid + (range / zoomSetting / 2);
+        long newStart = minStart;
+        long newEnd = range / zoomSetting;
 
         if (zoomSetting == 1) {
             newStart = minStart;
@@ -614,9 +614,9 @@ public class MixerControllerV implements NeedleEventListener,
      * @param e
      *            expecting the event to be generated from a JToggleButton
      */
-    private void snapToggleHandler(final ActionEvent e) {
-        JToggleButton toggle = (JToggleButton) e.getSource();
-        tracksEditorController.setAllowSnap(toggle.isSelected());
+    private void snapRegionHandler(final ActionEvent e) {
+        OpenSHAPA.getDataController().setRegionOfInterestAction();
+
     }
 
     /**

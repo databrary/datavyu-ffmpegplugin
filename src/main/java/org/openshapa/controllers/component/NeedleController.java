@@ -10,6 +10,7 @@ import java.util.SimpleTimeZone;
 import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
+import org.openshapa.OpenSHAPA;
 
 import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.NeedleEventListener;
@@ -200,7 +201,18 @@ public class NeedleController {
             }
             fireNeedleEvent(Math.round(newTime));
         }
+    }
 
+    /**
+     * Checks that the needle is in a valid position and fixes it if it isn't.
+     */
+    public void fixNeedle() {
+        RegionController rc = OpenSHAPA.getDataController().getMixerController().getRegionController();
+        if (getCurrentTime() > rc.getRegionModel().getRegionEnd()) {
+            setCurrentTime(rc.getRegionModel().getRegionEnd());
+        } else if (getCurrentTime() < rc.getRegionModel().getRegionStart()) {
+            setCurrentTime(rc.getRegionModel().getRegionStart());
+        }
     }
 
 }
