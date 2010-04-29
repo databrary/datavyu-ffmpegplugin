@@ -27,6 +27,7 @@ import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.SwingUtilities;
 
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
@@ -185,8 +186,10 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      *            selection.
      */
     public void insertCellByID(final Database db, final long cellID,
-            final CellSelectionListener cellSelL) {
+                               final CellSelectionListener cellSelL) {
         try {
+            System.out.println("Blah: " + SwingUtilities.isEventDispatchThread());
+
             DataCell dc = (DataCell) db.getCell(cellID);
             SpreadsheetCell nCell = new SpreadsheetCell(db, dc, cellSelL);
             db.registerDataCellListener(dc.getID(), nCell);

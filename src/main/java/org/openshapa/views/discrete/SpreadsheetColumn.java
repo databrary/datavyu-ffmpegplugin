@@ -14,10 +14,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -279,33 +281,46 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param db The database.
      */
     public void endCascade(final Database db) {
-        if (colChanges.colDeleted) {
-            // Not tested yet should be handled by ColumnListener in spreadsheet
-            return;
-        }
+        Runnable edtTask = new Runnable() {
+            public void run() {
+                if (colChanges.colDeleted) {
+                    // Not tested yet should be handled by ColumnListener in spreadsheet
+                    return;
+                }
 
-        if (colChanges.cellDeleted.size() > 0) {
-            for (Long cellID : colChanges.cellDeleted) {
-                datapanel.deleteCellByID(cellID);
-            }
-        }
-        if (colChanges.cellInserted.size() > 0) {
-            for (Long cellID : colChanges.cellInserted) {
-                datapanel.insertCellByID(db, cellID, cellSelList);
-            }
-        }
+                if (colChanges.cellDeleted.size() > 0) {
+                    for (Long cellID : colChanges.cellDeleted) {
+                        datapanel.deleteCellByID(cellID);
+                    }
+                }
+                if (colChanges.cellInserted.size() > 0) {
+                    for (Long cellID : colChanges.cellInserted) {
+                        datapanel.insertCellByID(db, cellID, cellSelList);
+                    }
+                }
 
-        if (colChanges.nameChanged) {
-            try {
-                DataColumn dbColumn = db.getDataColumn(dbColID);
-                this.setText(dbColumn.getName()
-                             + "  (" + dbColumn.getItsMveType() + ")");
-            } catch (SystemErrorException e) {
-                logger.error("Problem getting data column", e);
-            }
-        }
+                if (colChanges.nameChanged) {
+                    try {
+                        DataColumn dbColumn = db.getDataColumn(dbColID);
+                        setText(dbColumn.getName()
+                                + "  (" + dbColumn.getItsMveType() + ")");
+                    } catch (SystemErrorException e) {
+                        logger.error("Problem getting data column", e);
+                    }
+                }
 
-        colChanges.reset();
+                colChanges.reset();
+            }
+        };
+
+        try {
+            SwingUtilities.invokeAndWait(edtTask);
+        } catch (InvocationTargetException ie) {
+            logger.error("Event Dispatch Thread - failed", ie);
+        } catch (InterruptedException ie) {
+            logger.error("Event Dispatch Thread - failed", ie);
+        }
+        //SwingUtilities.invokeLater(edtTask);
     }
 
     /**

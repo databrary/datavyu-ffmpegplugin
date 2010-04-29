@@ -601,7 +601,9 @@ public final class OpenSHAPAView extends FrameView
      * Action for creating a new variable.
      */
     @Action public void showNewVariableForm() {
-        new NewVariableC();
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        NewVariableV view = new NewVariableV(mainFrame, false);
+        OpenSHAPA.getApplication().show(view);
     }
 
     /**
@@ -1140,8 +1142,6 @@ public final class OpenSHAPAView extends FrameView
             runRecentScriptMenu.remove(1);
         }
 
-//        LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
-
         for (File f : OpenSHAPA.getLastScriptsExecuted()) {
             runRecentScriptMenu.add(createScriptMenuItemFromFile(f));
         }
@@ -1407,13 +1407,11 @@ public final class OpenSHAPAView extends FrameView
     }
 
     /**
-     * Returns SpreadsheetPanel
+     * Returns SpreadsheetPanel.
      *
      * @return SpreadsheetPanel panel
      */
     public SpreadsheetPanel getSpreadsheetPanel() {
         return panel;
     }
-
-
 }

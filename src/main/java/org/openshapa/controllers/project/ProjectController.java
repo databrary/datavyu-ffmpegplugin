@@ -1,9 +1,13 @@
 package org.openshapa.controllers.project;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
+import javax.swing.SwingUtilities;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -12,12 +16,16 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.PlaybackController;
 
 import org.openshapa.models.component.TrackModel;
+import org.openshapa.models.db.Database;
+import org.openshapa.models.db.ExternalColumnListListener;
 import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.TrackSettings;
 import org.openshapa.models.project.ViewerSetting;
 
 import org.openshapa.views.MixerControllerV;
+import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 import org.openshapa.views.continuous.PluginManager;
@@ -26,7 +34,8 @@ import org.openshapa.views.continuous.PluginManager;
 /**
  * This class is responsible for managing a project.
  */
-public final class ProjectController {
+public final class ProjectController
+implements ExternalColumnListListener {
 
     /** The current project we are working on. */
     private Project project;
@@ -42,6 +51,10 @@ public final class ProjectController {
 
     /** The id of the last datacell that was created. */
     private long lastCreatedColID;
+
+    /** The logger for this class. */
+    private UserMetrix logger = UserMetrix
+                                .getInstance(ProjectController.class);
 
     /**
      * Controller state
@@ -111,6 +124,11 @@ public final class ProjectController {
      */
     public void setDatabase(final MacshapaDatabase newDB) {
         db = newDB;
+        try {
+            db.registerColumnListListener(this);
+        } catch (SystemErrorException e) {
+            logger.error("deregisterColumnListListener failed", e);
+        }
     }
 
     /**
@@ -339,6 +357,75 @@ public final class ProjectController {
      */
     public Project getProject() {
         return project;
+    }
+
+
+    // ------------------------------------------------------------------------
+    // ExternalColumnListListener Implementation
+    //
+    // ------------------------------------------------------------------------
+
+    /**
+     * Action to invoke when a column is removed from a database.
+     *
+     * @param theDB The database that the column has been removed from.
+     * @param colID The id of the freshly removed column.
+     * @param oldCov The column order vector prior to the deletion.
+     * @param newCov The column order vector after to the deletion.
+     */
+    public void colDeletion(final Database theDB,
+                            final long colID,
+                            final Vector<Long> oldCov,
+                            final Vector<Long> newCov) {
+        Runnable edtTask = new Runnable() {
+            public void run() {
+                OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
+                                                           .getMainView();
+                s.getSpreadsheetPanel().deselectAll();
+                s.getSpreadsheetPanel().removeColumn(colID);
+                s.getSpreadsheetPanel().relayoutCells();
+            }
+        };
+        SwingUtilities.invokeLater(edtTask);
+    }
+
+    /**
+     * Action to invoke when a column is added to a database.
+     *
+     * @param theDB The database that the column has been added to.
+     * @param colID The id of the newly added column.
+     * @param oldCov The column order vector prior to the insertion.
+     * @param newCov The column order vector after to the insertion.
+     */
+    public void colInsertion(final Database theDB,
+                             final long colID,
+                             final Vector<Long> oldCov,
+                             final Vector<Long> newCov) {
+        Runnable edtTask = new Runnable() {
+            public void run() {
+                OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
+                                                           .getMainView();
+                s.getSpreadsheetPanel().deselectAll();
+                s.getSpreadsheetPanel().addColumn(theDB, colID);
+                s.getSpreadsheetPanel().relayoutCells();
+            }
+        };
+        SwingUtilities.invokeLater(edtTask);
+    }
+
+    /**
+     * Action to invoke when the column order vector is edited (i.e, the order
+     * of the columns is changed without any insertions or deletions).
+     *
+     * @param theDB The database that the column has been added to.
+     * @param oldCov The column order vector prior to the insertion.
+     * @param newCov The column order vector after to the insertion.
+     */
+    public void colOrderVectorEdited(final Database theDB,
+                                     final Vector<Long> oldCov,
+                                     final Vector<Long> newCov) {
+        // Do nothing for now
+        return;
     }
 
 }

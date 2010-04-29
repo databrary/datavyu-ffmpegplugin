@@ -37,13 +37,11 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.OpenSHAPA.Platform;
-import org.openshapa.controllers.NewVariableC;
 import org.openshapa.event.component.FileDropEvent;
 import org.openshapa.event.component.FileDropEventListener;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
-import org.openshapa.models.db.ExternalColumnListListener;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.ArrayDirection;
 import org.openshapa.views.discrete.layouts.SheetLayout;
@@ -51,13 +49,15 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.JFrame;
+import org.openshapa.views.NewVariableV;
 
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
  * OpenSHAPA database as a spreadsheet.
  */
 public final class SpreadsheetPanel extends JPanel
-implements ExternalColumnListListener, ComponentListener,
+implements /*ExternalColumnListListener,*/ ComponentListener,
            CellSelectionListener, ColumnSelectionListener, KeyEventDispatcher {
 
     /** Scrollable view inserted into the JScrollPane. */
@@ -223,7 +223,7 @@ implements ExternalColumnListListener, ComponentListener,
      * @param db database.
      * @param colID ID of the column to add.
      */
-    private void addColumn(final Database db, final long colID) {
+    public void addColumn(final Database db, final long colID) {
         // Remove previous instance of newVar from the header.
         headerView.remove(newVar);
 
@@ -264,7 +264,7 @@ implements ExternalColumnListListener, ComponentListener,
      *
      * @param colID ID of column to remove
      */
-    private void removeColumn(final long colID) {
+    public void removeColumn(final long colID) {
         for (SpreadsheetColumn col : columns) {
             if (col.getColID() == colID) {
                 col.deregisterListeners();
@@ -308,13 +308,14 @@ implements ExternalColumnListListener, ComponentListener,
      */
     public void setDatabase(final Database db) {
         // check if we need to deregister
+        /*
         if ((database != null) && (database != db)) {
             try {
                 database.deregisterColumnListListener(this);
             } catch (SystemErrorException e) {
                 logger.error("deregisterColumnListListener failed", e);
             }
-        }
+        }*/
 
         // set the database
         database = db;
@@ -328,11 +329,12 @@ implements ExternalColumnListListener, ComponentListener,
         }*/
 
         // register as a columnListListener
+        /*
         try {
             db.registerColumnListListener(this);
         } catch (SystemErrorException e) {
             logger.error("registerColumnListListener failed", e);
-        }
+        }*/
 
         // setName to remember screen locations
         setName(this.getClass().getSimpleName() + db.getName());
@@ -642,7 +644,9 @@ implements ExternalColumnListListener, ComponentListener,
      */
     @Action
     public void openNewVarMenu() {
-        new NewVariableC();
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        NewVariableV view = new NewVariableV(mainFrame, false);
+        OpenSHAPA.getApplication().show(view);
     }
 
     /**

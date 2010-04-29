@@ -1,30 +1,23 @@
 package org.openshapa.views;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.Column;
-import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
-import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MatrixVocabElement;
-import org.openshapa.models.db.NominalFormalArg;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.controllers.NewVariableC;
 
 /**
  * The dialog for users to add new variables to the spreadsheet.
  */
 public final class NewVariableV extends OpenSHAPADialog {
 
-    /** The database to add the new variable too. */
-    private Database model;
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(NewVariableV.class);
 
     /**
      * Constructor, creates a new form to create a new variable.
-     * 
+     *
      * @param parent
      *            The parent of this form.
      * @param modal
@@ -34,8 +27,6 @@ public final class NewVariableV extends OpenSHAPADialog {
         super(parent, modal);
         initComponents();
         setName(this.getClass().getSimpleName());
-
-        model = OpenSHAPA.getProjectController().getDB();
 
         // init button group
         buttonGroup1.add(textTypeButton);
@@ -313,46 +304,17 @@ public final class NewVariableV extends OpenSHAPADialog {
 
     /**
      * The action to invoke when the user selects the ok button.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_okButtonActionPerformed
         try {
-            Column.isValidColumnName(OpenSHAPA.getProjectController().getDB(),
-                    getVariableName());
-            DataColumn dc =
-                    new DataColumn(model, getVariableName(), getVariableType());
-            long id = model.addColumn(dc);
-            dc = model.getDataColumn(id);
-
-            // If the column is a matrix - default to a single nominal variable
-            // rather than untyped.
-            if (matrixTypeButton.isSelected()) {
-                MatrixVocabElement mve = model.getMatrixVE(dc.getItsMveID());
-                mve.deleteFormalArg(0);
-                mve.appendFormalArg(new NominalFormalArg(model, "<arg0>"));
-                model.replaceMatrixVE(mve);
-            }
-
-            // Display any changes.
-            SpreadsheetPanel view =
-                    (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
-                            .getComponent();
-            view.relayoutCells();
-
+            NewVariableC newVarC = new NewVariableC(getVariableName(),
+                                                    getVariableType());
+            newVarC.execute();
             dispose();
             finalize();
-
-            // Whoops, user has done something strange - show warning dialog.
-        } catch (LogicErrorException fe) {
-            OpenSHAPA.getApplication().showWarningDialog(fe);
-
-            // Whoops, programmer has done something strange - show error
-            // message.
-        } catch (SystemErrorException e) {
-            logger.error("Unable to add variable to database", e);
-            OpenSHAPA.getApplication().showErrorDialog();
 
             // Whoops, unable to destroy dialog correctly.
         } catch (Throwable e) {
@@ -362,7 +324,7 @@ public final class NewVariableV extends OpenSHAPADialog {
 
     /**
      * The action to invoke when the user selects the cancel button.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      */
