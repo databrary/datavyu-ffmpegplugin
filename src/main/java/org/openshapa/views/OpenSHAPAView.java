@@ -34,7 +34,6 @@ import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.DeleteCellC;
 import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.controllers.NewProjectC;
-import org.openshapa.controllers.NewVariableC;
 import org.openshapa.controllers.OpenC;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
@@ -58,6 +57,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.controllers.CreateAdjacentCellC;
 
 
 /**
@@ -1308,7 +1308,10 @@ public final class OpenSHAPAView extends FrameView
      */
     private void newCellLeftMenuItemActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellLeftMenuItemActionPerformed
-        new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.LEFT);
+
+        CreateAdjacentCellC cellC = new CreateAdjacentCellC(
+                                panel.getSelectedCells(), ArrayDirection.LEFT);
+        cellC.execute();
     } // GEN-LAST:event_newCellLeftMenuItemActionPerformed
 
     /**
@@ -1320,7 +1323,10 @@ public final class OpenSHAPAView extends FrameView
      */
     private void newCellRightMenuItemActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellRightMenuItemActionPerformed
-        new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.RIGHT);
+
+        CreateAdjacentCellC cellC = new CreateAdjacentCellC(
+                               panel.getSelectedCells(), ArrayDirection.RIGHT);
+        cellC.execute();
     } // GEN-LAST:event_newCellRightMenuItemActionPerformed
 
     /**
