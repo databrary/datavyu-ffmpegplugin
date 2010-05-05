@@ -368,15 +368,7 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void newCellEvent(final PlaybackEvent evt) {
-
-        Runnable task = new Runnable() {
-
-                public void run() {
-                    new CreateNewCellC();
-                }
-            };
-
-        executor.submit(task);
+        executor.submit(new CreateNewCellC());
     }
 
     public void setNewCellOffsetEvent(final PlaybackEvent evt) {
@@ -392,14 +384,7 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void newCellSetOnsetEvent(final PlaybackEvent evt) {
-
-        Runnable task = new Runnable() {
-                public void run() {
-                    new CreateNewCellC(getCurrentTime());
-                }
-            };
-
-        executor.submit(task);
+        executor.submit(new CreateNewCellC(getCurrentTime()));
     }
 
     public void pauseEvent(final PlaybackEvent evt) {

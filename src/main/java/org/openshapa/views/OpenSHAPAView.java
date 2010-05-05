@@ -1296,7 +1296,8 @@ public final class OpenSHAPAView extends FrameView
      */
     private void newCellMenuItemActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellMenuItemActionPerformed
-        new CreateNewCellC();
+        CreateNewCellC cellC = new CreateNewCellC();
+        cellC.execute();
     } // GEN-LAST:event_newCellMenuItemActionPerformed
 
     /**
