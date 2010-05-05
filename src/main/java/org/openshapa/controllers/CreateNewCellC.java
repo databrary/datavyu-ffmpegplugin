@@ -268,11 +268,6 @@ public final class CreateNewCellC extends SwingWorker<Object, String> {
             logger.error("Unable to create new cell.", se);
         }
 
-        // Needs to be shifted to the callback where the cell is created.
-        //view.deselectAll();
-        //view.relayoutCells();
-        //view.highlightCell(cellID);
-
         return null;
     }
 }

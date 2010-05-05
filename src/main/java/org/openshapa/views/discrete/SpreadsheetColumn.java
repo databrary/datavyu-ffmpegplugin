@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
-import org.openshapa.models.db.ExternalCascadeListener;
-import org.openshapa.models.db.ExternalDataColumnListener;
 import org.openshapa.models.db.SystemErrorException;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -14,12 +12,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -29,8 +25,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
  * Spreadsheet window.
  */
 public final class SpreadsheetColumn extends JLabel
-implements ExternalDataColumnListener, ExternalCascadeListener,
-           MouseListener, MouseMotionListener {
+implements MouseListener, MouseMotionListener {
 
     /** Database reference. */
     private Database database;
@@ -43,9 +38,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
 
     /** The logger for this class. */
     private UserMetrix logger = UserMetrix.getInstance(SpreadsheetColumn.class);
-
-    /** Records changes to column during a cascade. */
-    private ColumnChanges colChanges;
 
     /** Default column width. */
     private static final int DEFAULT_COLUMN_WIDTH = 230;
@@ -73,40 +65,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
 
     /** column selection listener to notify of column selection changes. */
     private ColumnSelectionListener columnSelList;
-
-    /**
-     * Private class for recording the changes reported by the listener
-     * callbacks on this column.
-     */
-    private final class ColumnChanges {
-        /** nameChanged. */
-        private boolean nameChanged;
-        /** List of cell IDs of newly inserted cells. */
-        private Vector<Long> cellInserted;
-        /** List of cell IDs of deleted cells. */
-        private Vector<Long> cellDeleted;
-        /** colDeleted. */
-        private boolean colDeleted;
-
-        /**
-         * ColumnChanges constructor.
-         */
-        private ColumnChanges() {
-            cellInserted = new Vector<Long>();
-            cellDeleted = new Vector<Long>();
-            reset();
-        }
-
-        /**
-         * Reset the ColumnChanges flags and lists.
-         */
-        private void reset() {
-            nameChanged = false;
-            cellInserted.clear();
-            cellDeleted.clear();
-            colDeleted = false;
-        }
-    }
 
     /**
      * Creates new SpreadsheetColumn.
@@ -145,7 +103,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
         } catch (SystemErrorException e) {
             logger.error("Problem retrieving DataColumn", e);
         }
-        colChanges = new ColumnChanges();
     }
 
     /**
@@ -153,13 +110,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * this class of events.
      */
     public void registerListeners() {
-        try {
-            database.registerDataColumnListener(dbColID, this);
-            database.registerCascadeListener(this);
-            datapanel.registerListeners();
-        } catch (SystemErrorException e) {
-            logger.error("Unable to register listeners for the column.", e);
-        }
+        datapanel.registerListeners();
     }
 
     /**
@@ -167,13 +118,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * notiying it of events.
      */
     public void deregisterListeners() {
-        try {
-            database.deregisterDataColumnListener(dbColID, this);
-            database.deregisterCascadeListener(this);
-            datapanel.deregisterListeners();
-        } catch (SystemErrorException e) {
-            logger.error("Unable to register listeners for the column.", e);
-        }
+        datapanel.deregisterListeners();
     }
 
     /**
@@ -269,134 +214,21 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
     }
 
     /**
-     * Called at the beginning of a cascade of changes through the database.
-     * @param db The database.
+     * Removes a cell view from the spreadsheet.
+     *
+     * @param cellID The id of the cell view to remove from the column.
      */
-    public void beginCascade(final Database db) {
-        colChanges.reset();
+    public void deleteCellByID(final long cellID) {
+        datapanel.deleteCellByID(cellID);
     }
 
     /**
-     * Called at the end of a cascade of changes through the database.
-     * @param db The database.
+     * Inserts a cell view into the spreadsheet.
+     *
+     * @param cellID The ID of the cell to add a view for into the spreadsheet.
      */
-    public void endCascade(final Database db) {
-        Runnable edtTask = new Runnable() {
-            public void run() {
-                if (colChanges.colDeleted) {
-                    // Not tested yet should be handled by ColumnListener in spreadsheet
-                    return;
-                }
-
-                if (colChanges.cellDeleted.size() > 0) {
-                    for (Long cellID : colChanges.cellDeleted) {
-                        datapanel.deleteCellByID(cellID);
-                    }
-                }
-                if (colChanges.cellInserted.size() > 0) {
-                    for (Long cellID : colChanges.cellInserted) {
-                        datapanel.insertCellByID(db, cellID, cellSelList);
-                    }
-                }
-
-                if (colChanges.nameChanged) {
-                    try {
-                        DataColumn dbColumn = db.getDataColumn(dbColID);
-                        setText(dbColumn.getName()
-                                + "  (" + dbColumn.getItsMveType() + ")");
-                    } catch (SystemErrorException e) {
-                        logger.error("Problem getting data column", e);
-                    }
-                }
-
-                colChanges.reset();
-            }
-        };
-
-        try {
-            SwingUtilities.invokeAndWait(edtTask);
-        } catch (InvocationTargetException ie) {
-            logger.error("Event Dispatch Thread - failed", ie);
-        } catch (InterruptedException ie) {
-            logger.error("Event Dispatch Thread - failed", ie);
-        }
-        //SwingUtilities.invokeLater(edtTask);
-    }
-
-    /**
-     * Called when a DataCell is deleted from the DataColumn.
-     * @param db The database the column belongs to.
-     * @param colID The ID assigned to the DataColumn.
-     * @param cellID ID of the DataCell that is being deleted.
-     */
-    public void DColCellDeletion(final Database db,
-                                 final long colID,
-                                 final long cellID) {
-        colChanges.cellDeleted.add(cellID);
-    }
-
-
-    /**
-     * Called when a DataCell is inserted in the vocab list.
-     * @param db The database the column belongs to.
-     * @param colID The ID assigned to the DataColumn.
-     * @param cellID ID of the DataCell that is being inserted.
-     */
-    public void DColCellInsertion(final Database db,
-                                  final long colID,
-                                  final long cellID) {
-        colChanges.cellInserted.add(cellID);
-    }
-
-    /**
-     * Called when one fields of the target DataColumn are changed.
-     * @param db The database.
-     * @param colID The ID assigned to the DataColumn.
-     * @param nameChanged indicates whether the name changed.
-     * @param oldName reference to oldName.
-     * @param newName reference to newName.
-     * @param hiddenChanged indicates the hidden field changed.
-     * @param oldHidden Old Hidden value.
-     * @param newHidden New Hidden value.
-     * @param readOnlyChanged indicates the readOnly field changed.
-     * @param oldReadOnly Old ReadOnly value.
-     * @param newReadOnly New ReadOnly value.
-     * @param varLenChanged indicates the varLen field changed.
-     * @param oldVarLen Old varLen value.
-     * @param newVarLen New varLen value.
-     * @param selectedChanged indicates the selection status of the DataColumn
-     * has changed.
-     * @param oldSelected Old Selected value.
-     * @param newSelected New Selected value.
-     */
-    public void DColConfigChanged(final Database db,
-                                  final long colID,
-                                  final boolean nameChanged,
-                                  final String oldName,
-                                  final String newName,
-                                  final boolean hiddenChanged,
-                                  final boolean oldHidden,
-                                  final boolean newHidden,
-                                  final boolean readOnlyChanged,
-                                  final boolean oldReadOnly,
-                                  final boolean newReadOnly,
-                                  final boolean varLenChanged,
-                                  final boolean oldVarLen,
-                                  final boolean newVarLen,
-                                  final boolean selectedChanged,
-                                  final boolean oldSelected,
-                                  final boolean newSelected) {
-        colChanges.nameChanged = nameChanged;
-    }
-
-    /**
-     * Called when the DataColumn of interest is deleted.
-     * @param db The database.
-     * @param colID The ID assigned to the DataColumn.
-     */
-    public void DColDeleted(final Database db,
-                            final long colID) {
-        colChanges.colDeleted = true;
+    public void insertCellByID(final long cellID) {
+        datapanel.insertCellByID(database, cellID, cellSelList);
     }
 
     /**

@@ -17,8 +17,10 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+
 import java.io.File;
 import java.io.IOException;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -35,30 +37,47 @@ import javax.swing.Box.Filler;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+
 import org.openshapa.OpenSHAPA;
+
 import org.openshapa.OpenSHAPA.Platform;
+
 import org.openshapa.event.component.FileDropEvent;
 import org.openshapa.event.component.FileDropEventListener;
+
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
 import org.openshapa.models.db.SystemErrorException;
+
 import org.openshapa.util.ArrayDirection;
+
 import org.openshapa.views.discrete.layouts.SheetLayout;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+
 import javax.swing.JFrame;
+
 import org.openshapa.views.NewVariableV;
+
 
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
  * OpenSHAPA database as a spreadsheet.
  */
-public final class SpreadsheetPanel extends JPanel
-implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
-           KeyEventDispatcher {
+public final class SpreadsheetPanel extends JPanel implements ComponentListener,
+    CellSelectionListener, ColumnSelectionListener, KeyEventDispatcher {
+
+    /** Default height for the viewport if no cells yet. */
+    private static final int DEFAULT_HEIGHT = 50;
+
+    /** To use when navigating left. */
+    static final int LEFT_DIR = -1;
+
+    /** To use when navigating right. */
+    static final int RIGHT_DIR = 1;
 
     /** Scrollable view inserted into the JScrollPane. */
     private SpreadsheetView mainView;
@@ -83,15 +102,6 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
 
     /** Strut used to expand the viewport to fill the scrollpane. */
     private Filler viewportStrut;
-
-    /** Default height for the viewport if no cells yet. */
-    private static final int DEFAULT_HEIGHT = 50;
-
-    /** To use when navigating left. */
-    static final int LEFT_DIR = -1;
-
-    /** To use when navigating right. */
-    static final int RIGHT_DIR = 1;
 
     /** New variable button to be added to the column header panel. */
     private JButton newVar = new JButton();
@@ -120,8 +130,8 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
 
         headerView = new JPanel();
         headerView.setLayout(new BoxLayout(headerView, BoxLayout.X_AXIS));
-        headerView.setBorder(
-                      BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
+        headerView.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0,
+                Color.BLACK));
         headerView.setName("headerView");
 
         columns = new Vector<SpreadsheetColumn>();
@@ -138,15 +148,16 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
 
         // set strut for headerView - necessary while there are no col headers
         d = new Dimension(0, SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
+
         Filler headerStrut = new Filler(d, d, d);
         headerView.add(headerStrut);
 
         // Set a border for the top right corner
         JPanel rightCorner = new JPanel();
-        rightCorner.setBorder(
-                      BorderFactory.createMatteBorder(1, 1, 1, 0, Color.BLACK));
+        rightCorner.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0,
+                Color.BLACK));
         scrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER,
-                rightCorner);
+            rightCorner);
 
         // set the database and layout the columns
         setDatabase(db);
@@ -156,23 +167,21 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
         // add a listener for window resize events
         scrollPane.addComponentListener(this);
 
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                      .getContext()
-                                      .getResourceMap(SpreadsheetPanel.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(SpreadsheetPanel.class);
 
         // Set up the add new variable button
-        newVar.setBorder(BorderFactory
-                         .createMatteBorder(0, 0, 0, 1, Color.black));
+        newVar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1,
+                Color.black));
         newVar.setName("newVarPlusButton");
         newVar.setToolTipText(rMap.getString("add.tooltip"));
 
-        ActionMap aMap = Application.getInstance(OpenSHAPA.class)
-                                    .getContext()
-                                    .getActionMap(SpreadsheetPanel.class, this);
+        ActionMap aMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getActionMap(SpreadsheetPanel.class, this);
         newVar.setAction(aMap.get("openNewVarMenu"));
         newVar.setText(" + ");
         newVar.setSize(newVar.getWidth(),
-                       SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
+            SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
         headerView.add(newVar);
 
         // Enable drag and drop support.
@@ -188,7 +197,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      */
     public void registerListeners() {
         KeyboardFocusManager m = KeyboardFocusManager
-                                 .getCurrentKeyboardFocusManager();
+            .getCurrentKeyboardFocusManager();
         m.addKeyEventDispatcher(this);
     }
 
@@ -198,7 +207,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      */
     public void deregisterListeners() {
         KeyboardFocusManager m = KeyboardFocusManager
-                                 .getCurrentKeyboardFocusManager();
+            .getCurrentKeyboardFocusManager();
         m.removeKeyEventDispatcher(this);
     }
 
@@ -206,11 +215,14 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * Populate from the database.
      */
     private void buildColumns() {
+
         try {
             Vector<Long> dbColIds = getDatabase().getColOrderVector();
 
             for (int i = 0; i < dbColIds.size(); i++) {
                 addColumn(getDatabase(), dbColIds.elementAt(i));
+                database.registerDataColumnListener(dbColIds.elementAt(i),
+                    OpenSHAPA.getProjectController());
             }
         } catch (SystemErrorException e) {
             logger.error("Failed to populate Spreadsheet.", e);
@@ -224,6 +236,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * @param colID ID of the column to add.
      */
     public void addColumn(final Database db, final long colID) {
+
         // Remove previous instance of newVar from the header.
         headerView.remove(newVar);
 
@@ -236,6 +249,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
 
         // add the headerpanel to the scrollpane headerviewport
         headerView.add(col);
+
         // add the new variable '+' button to the header.
         headerView.add(newVar);
 
@@ -246,8 +260,8 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
     /**
      * Remove all the columns from the spreadsheet panel.
      */
-    @Override
-    public void removeAll() {
+    @Override public void removeAll() {
+
         for (SpreadsheetColumn col : columns) {
             col.deregisterListeners();
             col.clear();
@@ -265,14 +279,13 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * @param colID ID of column to remove
      */
     public void removeColumn(final long colID) {
-        for (SpreadsheetColumn col : columns) {
-            if (col.getColID() == colID) {
-                col.deregisterListeners();
-                mainView.remove(col.getDataPanel());
-                headerView.remove(col);
-                columns.remove(col);
-                break;
-            }
+        SpreadsheetColumn col = getColumn(colID);
+
+        if (col != null) {
+            col.deregisterListeners();
+            mainView.remove(col.getDataPanel());
+            headerView.remove(col);
+            columns.remove(col);
         }
     }
 
@@ -285,15 +298,37 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
     }
 
     /**
+     * Gets the view representation of a column from the database.
+     *
+     * @param colID The ID of the column to fetch from the spreadsheetPanel.
+     *
+     * @return The view representation of the spreadsheet column.
+     */
+    public SpreadsheetColumn getColumn(final long colID) {
+
+        for (SpreadsheetColumn col : columns) {
+
+            if (col.getColID() == colID) {
+                return col;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Deselect all selected items in the Spreadsheet.
      */
     public void deselectAll() {
+
         for (SpreadsheetColumn col : columns) {
+
             if (col.isSelected()) {
                 col.setSelected(false);
             }
 
             for (SpreadsheetCell cell : col.getCells()) {
+
                 if (cell.isSelected()) {
                     cell.setSelected(false);
                 }
@@ -307,6 +342,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * @param db Database to set
      */
     public void setDatabase(final Database db) {
+
         // set the database
         database = db;
 
@@ -347,25 +383,28 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * otherwise
      */
     public boolean dispatchKeyEvent(final KeyEvent e) {
+
         // Quick filter - if we aren't dealing with a key press and left or
         // right arrow. Forget about it - just chuck it back to Java to deal
         // with.
-        if (e.getID() == KeyEvent.KEY_PRESSED
-            && (e.getKeyCode() == KeyEvent.VK_LEFT
-                || e.getKeyCode() == KeyEvent.VK_RIGHT)) {
+        if ((e.getID() == KeyEvent.KEY_PRESSED)
+                && ((e.getKeyCode() == KeyEvent.VK_LEFT)
+                    || (e.getKeyCode() == KeyEvent.VK_RIGHT))) {
 
             // User is attempting to move to the column to the left.
-            if (e.getKeyCode() == KeyEvent.VK_LEFT
-                && platformCellMovementMask(e)) {
+            if ((e.getKeyCode() == KeyEvent.VK_LEFT)
+                    && platformCellMovementMask(e)) {
                 highlightAdjacentCell(LEFT_DIR);
                 e.consume();
+
                 return true;
 
-            // User is attempting to move to the column to the right.
-            } else if (e.getKeyCode() == KeyEvent.VK_RIGHT
-                       && platformCellMovementMask(e)) {
+                // User is attempting to move to the column to the right.
+            } else if ((e.getKeyCode() == KeyEvent.VK_RIGHT)
+                    && platformCellMovementMask(e)) {
                 highlightAdjacentCell(RIGHT_DIR);
                 e.consume();
+
                 return true;
             }
         }
@@ -380,36 +419,40 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * adjacent column.
      */
     private void highlightAdjacentCell(final int direction) {
+
         // No cell selected - simply return, can't move left or right.
         if (highlightedCell == null) {
             return;
         }
 
         for (int colID = 0; colID < columns.size(); colID++) {
+
             for (int cellID = 0; cellID < columns.get(colID).getCells().size();
-                 cellID++) {
+                    cellID++) {
 
                 // For each of the cells in the columns - look for the
                 // highlighted cell.
-                SpreadsheetCell cell = columns.get(colID)
-                                              .getCells().get(cellID);
+                SpreadsheetCell cell = columns.get(colID).getCells().get(
+                        cellID);
 
                 if (cell.getCellID() == highlightedCell.getCellID()) {
 
                     // Find column in the desired direction
                     int newColID = colID + direction;
-                    if (newColID >= 0 && newColID < columns.size()) {
+
+                    if ((newColID >= 0) && (newColID < columns.size())) {
 
                         // Find the most appopriate cell in the new
                         // column.
                         int newCellID = Math.min(cellID,
-                            (columns.get(newColID).getCells().size() - 1));
+                                (columns.get(newColID).getCells().size() - 1));
 
                         SpreadsheetCell newCell = columns.get(newColID)
-                                                  .getCells().get(newCellID);
+                            .getCells().get(newCellID);
                         newCell.requestFocus();
                         newCell.setHighlighted(true);
                         setHighlightedCell(newCell);
+
                         return;
                     }
                 }
@@ -426,15 +469,18 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
         try {
             Vector<DataColumn> cols = database.getDataColumns();
             int numCols = cols.size();
+
             for (int i = 0; i < numCols; i++) {
                 DataColumn col = cols.elementAt(i);
+
                 if (col.getSelected()) {
                     selcols.add(col);
                 }
             }
         } catch (SystemErrorException e) {
-           logger.error("Unable to set new cell stop time.", e);
+            logger.error("Unable to set new cell stop time.", e);
         }
+
         return selcols;
     }
 
@@ -458,11 +504,15 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
             // For each of the selected cells search to see if we have a column
             // to the left.
             for (DataCell cell : selectedCells) {
+
                 for (int i = 0; i < columnOrder.size(); i++) {
+
                     if (columnOrder.get(i) == cell.getItsColID()) {
+
                         // We have at least one column to the left of the cells.
-                        if ((i + dir.getModifier()) >= 0
-                            && (i + dir.getModifier()) < columnOrder.size()) {
+                        if (((i + dir.getModifier()) >= 0)
+                                && ((i + dir.getModifier())
+                                    < columnOrder.size())) {
                             result++;
                         }
 
@@ -489,20 +539,24 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
         try {
             Vector<DataColumn> cols = database.getDataColumns();
             int numCols = cols.size();
+
             for (int i = 0; i < numCols; i++) {
                 DataColumn col = cols.elementAt(i);
                 int numCells = col.getNumCells();
+
                 for (int j = 1; j <= numCells; j++) {
-                    DataCell dc = (DataCell) col.getDB()
-                                                .getCell(col.getID(), j);
+                    DataCell dc = (DataCell) col.getDB().getCell(col.getID(),
+                            j);
+
                     if (dc.getSelected()) {
                         selcells.add(dc);
                     }
                 }
             }
         } catch (SystemErrorException e) {
-           logger.error("Unable to set new cell stop time.", e);
+            logger.error("Unable to set new cell stop time.", e);
         }
+
         return selcells;
     }
 
@@ -512,11 +566,15 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * @param cellID The id of the cell to mark as highlighted.
      */
     public void highlightCell(final long cellID) {
+
         for (SpreadsheetColumn col : getColumns()) {
+
             for (SpreadsheetCell cell : col.getCells()) {
+
                 if (cell.getCellID() == cellID) {
                     cell.setHighlighted(true);
                     setHighlightedCell(cell);
+
                     return;
                 }
             }
@@ -539,10 +597,12 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * @param e Component event.
      */
     public void componentResized(final ComponentEvent e) {
+
         // resize the strut height to at least the size of the viewport.
         Dimension d = new Dimension(0,
-                                   scrollPane.getViewportBorderBounds().height);
+                scrollPane.getViewportBorderBounds().height);
         viewportStrut.changeShape(d, d, d);
+
         // force a validate of the contents.
         revalidate();
     }
@@ -575,8 +635,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * Method to invoke when the user clicks on the "+" icon in the spreadsheet
      * header.
      */
-    @Action
-    public void openNewVarMenu() {
+    @Action public void openNewVarMenu() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         NewVariableV view = new NewVariableV(mainFrame, false);
         OpenSHAPA.getApplication().show(view);
@@ -590,17 +649,22 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      */
     public void moveColumnLeft(final long colID, final int positions) {
         int columnIndex = -1;
+
         // What index does the given column sit at
         for (int i = 0; i < columns.size(); i++) {
+
             if (columns.elementAt(i).getColID() == colID) {
                 columnIndex = i;
             }
         }
+
         if (columnIndex >= 0) {
             int newIndex = columnIndex - positions;
+
             if (newIndex < 0) {
                 newIndex = 0;
             }
+
             shuffleColumn(columnIndex, newIndex);
             relayoutCells();
             invalidate();
@@ -616,14 +680,18 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      */
     public void moveColumnRight(final long colID, final int positions) {
         int columnIndex = -1;
+
         // What index does the column sit at
         for (int i = 0; i < columns.size(); i++) {
-                        if (columns.elementAt(i).getColID() == colID) {
+
+            if (columns.elementAt(i).getColID() == colID) {
                 columnIndex = i;
             }
         }
+
         if (columnIndex >= 0) {
             int newIndex = columnIndex + positions;
+
             if (newIndex < columns.size()) {
                 shuffleColumn(columnIndex, newIndex);
                 relayoutCells();
@@ -640,14 +708,17 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * @param destination index of the destination column
      */
     private void shuffleColumn(final int source, final int destination) {
-        if (source >= columns.size() || destination >= columns.size()) {
+
+        if ((source >= columns.size()) || (destination >= columns.size())) {
             return;
         }
+
         if (source == destination) {
             return;
         }
 
         try {
+
             // Write the new column order back to the database.
             Vector<Long> orderVec = database.getColOrderVector();
 
@@ -668,9 +739,11 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
         // Reorder the header components
         Vector<Component> newHeaders = new Vector<Component>();
         Component[] headers = headerView.getComponents();
+
         for (int i = 0; i < headers.length; i++) {
             newHeaders.add(headers[i]);
         }
+
         Component sourceHeaderComponent = newHeaders.elementAt(source + 1);
         newHeaders.removeElementAt(source + 1);
         newHeaders.insertElementAt(sourceHeaderComponent, destination + 1);
@@ -678,9 +751,11 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
         // Reorder the data components
         Vector<Component> newData = new Vector<Component>();
         Component[] data = mainView.getComponents();
+
         for (int i = 0; i < data.length; i++) {
             newData.add(data[i]);
         }
+
         Component sourceDataComponent = newData.elementAt(source + 1);
         newData.removeElementAt(source + 1);
         newData.insertElementAt(sourceDataComponent, destination + 1);
@@ -691,6 +766,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
 
         // Re-insert components into the containers
         for (int i = 0; i < headers.length; i++) {
+
             if (i < data.length) {
                 headerView.add(newHeaders.elementAt(i));
                 mainView.add(newData.elementAt(i));
@@ -706,15 +782,18 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * @param cell The cell to use as the end point for the selection.
      */
     public void addCellToContinousSelection(final SpreadsheetCell cell) {
+
         try {
+
             if (lastSelectedCell != null) {
-                DataCell c1 = (DataCell) database
-                                         .getCell(lastSelectedCell.getCellID());
+                DataCell c1 = (DataCell) database.getCell(
+                        lastSelectedCell.getCellID());
                 DataCell c2 = (DataCell) database.getCell(cell.getCellID());
 
                 // We can only do continous selections in a single column at
                 // at the moment.
                 if (c1.getItsColID() == c2.getItsColID()) {
+
                     // Deselect the highlighted cell.
                     if (highlightedCell != null) {
                         highlightedCell.setHighlighted(false);
@@ -723,16 +802,22 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
                     }
 
                     for (SpreadsheetColumn col : getColumns()) {
+
                         if (c1.getItsColID() == col.getColID()) {
+
                             // Perform continous selection.
                             boolean addToSelection = false;
+
                             for (SpreadsheetCell c : col.getCells()) {
+
                                 if (!addToSelection) {
                                     c.setSelected(false);
                                 }
 
-                                if (c.equals(cell) || c.equals(lastSelectedCell)) {
+                                if (c.equals(cell)
+                                        || c.equals(lastSelectedCell)) {
                                     addToSelection = !addToSelection;
+
                                     // We always include start and end cells.
                                     c.setSelected(true);
                                 }
@@ -761,6 +846,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      */
     public void addCellToSelection(final SpreadsheetCell cell) {
         clearColumnSelection();
+
         if (highlightedCell != null) {
             highlightedCell.setHighlighted(false);
             highlightedCell.setSelected(true);
@@ -777,6 +863,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * @param cell The cell to highlight.
      */
     public void setHighlightedCell(final SpreadsheetCell cell) {
+
         if (highlightedCell != null) {
             highlightedCell.setSelected(false);
             highlightedCell.setHighlighted(false);
@@ -796,6 +883,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
         lastSelectedCell = null;
 
         for (SpreadsheetColumn col : getColumns()) {
+
             for (SpreadsheetCell cell : col.getCells()) {
                 cell.setSelected(false);
                 cell.setHighlighted(false);
@@ -817,6 +905,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * Clears the current column selection.
      */
     public void clearColumnSelection() {
+
         for (SpreadsheetColumn col : getColumns()) {
             col.setSelected(false);
         }
@@ -830,13 +919,15 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * @return true if the input mask is used, false otherwise.
      */
     private boolean platformCellMovementMask(final KeyEvent e) {
-        if (OpenSHAPA.getPlatform() == Platform.MAC
-                && e.getModifiers() == InputEvent.ALT_MASK) {
+
+        if ((OpenSHAPA.getPlatform() == Platform.MAC)
+                && (e.getModifiers() == InputEvent.ALT_MASK)) {
             return true;
-        } else if (OpenSHAPA.getPlatform() == Platform.WINDOWS
-                && e.getModifiers() == InputEvent.CTRL_MASK) {
+        } else if ((OpenSHAPA.getPlatform() == Platform.WINDOWS)
+                && (e.getModifiers() == InputEvent.CTRL_MASK)) {
             return true;
         }
+
         return false;
     }
 
@@ -845,8 +936,8 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      *
      * @param listener The listener to add.
      */
-    public void addFileDropEventListener(
-            final FileDropEventListener listener) {
+    public void addFileDropEventListener(final FileDropEventListener listener) {
+
         synchronized (this) {
             fileDropListeners.add(listener);
         }
@@ -858,7 +949,8 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      * @param listener The listener to remove.
      */
     public void removeFileDropEventListener(
-            final FileDropEventListener listener) {
+        final FileDropEventListener listener) {
+
         synchronized (this) {
             fileDropListeners.remove(listener);
         }
@@ -871,7 +963,9 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
      */
     private void notifyFileDropEventListeners(final Iterable<File> files) {
         final FileDropEvent event = new FileDropEvent(this, files);
+
         synchronized (this) {
+
             for (FileDropEventListener listener : fileDropListeners) {
                 listener.filesDropped(event);
             }
@@ -900,12 +994,15 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
             DataFlavor[] flavors = tr.getTransferDataFlavors();
 
             for (int type = 0; type < flavors.length; type++) {
+
                 if (flavors[type].isFlavorJavaFileListType()) {
                     dtde.acceptDrop(DnDConstants.ACTION_REFERENCE);
 
                     List fileList = new LinkedList();
+
                     try {
                         fileList = (List) tr.getTransferData(flavors[type]);
+
                         // If we made it this far, everything worked.
                         dtde.dropComplete(true);
                     } catch (UnsupportedFlavorException e) {
@@ -915,6 +1012,7 @@ implements ComponentListener, CellSelectionListener, ColumnSelectionListener,
                     }
 
                     notifyFileDropEventListeners(fileList);
+
                     return;
                 }
             }

@@ -95,11 +95,6 @@ public class CreateAdjacentCellC extends SwingWorker<Object, String> {
                 }
             }
 
-            // Needs to be shifted to the callback where the cell is created.
-            //view.deselectAll();
-            //view.relayoutCells();
-            //view.highlightCell(cellID);
-
         } catch (SystemErrorException se) {
             logger.error("Unable to create cell in adjacent column", se);
 
