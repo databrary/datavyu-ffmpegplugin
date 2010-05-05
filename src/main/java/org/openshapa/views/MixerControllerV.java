@@ -8,7 +8,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
+import java.text.DecimalFormat;
+
 import java.util.EventObject;
+import java.util.Timer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -18,11 +23,15 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 
 import net.miginfocom.swing.MigLayout;
+
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.controllers.component.NeedleController;
@@ -32,15 +41,15 @@ import org.openshapa.controllers.component.TrackController;
 import org.openshapa.controllers.component.TracksEditorController;
 
 import org.openshapa.event.component.CarriageEvent;
+import org.openshapa.event.component.CarriageEvent.EventType;
 import org.openshapa.event.component.CarriageEventListener;
 import org.openshapa.event.component.MarkerEvent;
 import org.openshapa.event.component.MarkerEventListener;
 import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.NeedleEventListener;
 import org.openshapa.event.component.TracksControllerEvent;
-import org.openshapa.event.component.TracksControllerListener;
-import org.openshapa.event.component.CarriageEvent.EventType;
 import org.openshapa.event.component.TracksControllerEvent.TracksEvent;
+import org.openshapa.event.component.TracksControllerListener;
 
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
@@ -64,10 +73,10 @@ public class MixerControllerV implements NeedleEventListener,
     private JLayeredPane layeredPane;
 
     /**
-     * Zoomed into the display by how much. Values should only be 1, 2, 4, 8,
-     * 16, 32.
+     * Zoomed into the display by how much, as a percentage.
+     * Ranges from 1 to 3200% (32x).
      */
-    private int zoomSetting = 1;
+    private int zoomSetting = 100;
 
     /**
      * The value of the longest video's time length in milliseconds.
@@ -97,6 +106,12 @@ public class MixerControllerV implements NeedleEventListener,
     private JButton bookmarkButton;
 
     private JScrollBar tracksScrollBar;
+
+    private JSlider zoomSlide;
+
+    /** Zoom icon. */
+    private final ImageIcon zoomIcon = new ImageIcon(getClass().getResource(
+                "/icons/magnifier.png"));
 
     /**
      * Create a new MixerController.
@@ -136,37 +151,43 @@ public class MixerControllerV implements NeedleEventListener,
         bookmarkButton.setEnabled(false);
         bookmarkButton.setName("bookmarkButton");
 
-        JButton snapRegion = new JButton("Snap");
+        JButton snapRegion = new JButton("Snap Region");
         snapRegion.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     snapRegionHandler(e);
                 }
             });
-        snapRegion.setName("snapToggleButton");
+        snapRegion.setName("snapRegionButton");
 
-        JButton zoomInButton = new JButton("( + )");
-        zoomInButton.addActionListener(new ActionListener() {
+        zoomSlide = new JSlider(JSlider.HORIZONTAL, 100, 3200, 100);
+        zoomSlide.setToolTipText("1.00x");
+        zoomSlide.addChangeListener(new ChangeListener() {
+                public void stateChanged(final ChangeEvent e) {
+                    zoomScale(e);
+
+                    if (!zoomSlide.getValueIsAdjusting()) {
+                        zoomSlide.setToolTipText(
+                            ((float) zoomSlide.getValue() / 100) + "x");
+                    }
+                }
+            });
+        zoomSlide.setName("zoomSlider");
+        zoomSlide.setBackground(tracksPanel.getBackground());
+
+        JButton zoomRegionButton = new JButton("", zoomIcon);
+        zoomRegionButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    zoomInScale(e);
+                    zoomToRegion(e);
                     zoomTracks(e);
                 }
             });
-        zoomInButton.setName("zoomInButton");
-
-        JButton zoomOutButton = new JButton("( - )");
-        zoomOutButton.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    zoomOutScale(e);
-                    zoomTracks(e);
-                }
-            });
-        zoomOutButton.setName("zoomOutButton");
+        zoomRegionButton.setName("zoomRegionButton");
 
         tracksPanel.add(lockToggle);
         tracksPanel.add(bookmarkButton);
         tracksPanel.add(snapRegion);
-        tracksPanel.add(zoomInButton);
-        tracksPanel.add(zoomOutButton, "wrap");
+        tracksPanel.add(zoomRegionButton);
+        tracksPanel.add(zoomSlide, "wrap");
 
         // Add the timescale
         timescaleController = new TimescaleController();
@@ -199,6 +220,7 @@ public class MixerControllerV implements NeedleEventListener,
         tracksScrollPane.setHorizontalScrollBarPolicy(
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         tracksScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        tracksScrollPane.setName("jScrollPane");
 
         // Set an explicit size of the scroll pane
         {
@@ -277,6 +299,7 @@ public class MixerControllerV implements NeedleEventListener,
         tracksScrollBar.setBlockIncrement(Integer.MAX_VALUE / 10);
         tracksScrollBar.addAdjustmentListener(this);
         tracksScrollBar.setValueIsAdjusting(false);
+        tracksScrollBar.setName("horizontalScrollBar");
 
         layeredPane.add(tracksScrollBar, Integer.valueOf(100));
 
@@ -393,34 +416,92 @@ public class MixerControllerV implements NeedleEventListener,
     }
 
     /**
-     * Zooms into the displayed scale and re-adjusts the timing needle
-     * accordingly.
-     *
-     * @param evt
-     */
-    public final void zoomInScale(final ActionEvent evt) {
-        zoomSetting = zoomSetting * 2;
+    * Zooms into the displayed scale and re-adjusts the timing needle
+    * accordingly.
+    *
+    * @param evt
+    */
+    public final void zoomToRegion(final ActionEvent evt) {
+        long regionSize = regionController.getRegionModel().getRegionEnd()
+            - regionController.getRegionModel().getRegionStart();
 
-        if (zoomSetting > 32) {
-            zoomSetting = 32;
+        if (regionSize <= 0) {
+            return;
         }
 
+        long totalSize = timescaleController.getViewableModel().getEnd();
+
+        long zoom = 100 * totalSize / regionSize;
+
+
+        if (zoom < 100) {
+            zoom = 100;
+        } else if (zoom > 3200) {
+            zoom = 3200;
+        }
+
+        zoomSetting = (int) zoom;
+        zoomSlide.setValue(zoomSetting);
         rescale();
         updateTracksScrollBar();
+
     }
 
     /**
-     * Zooms out of the displayed scale and re-adjusts the timing needle
-     * accordingly.
-     *
-     * @param evt The event to handle.
+     * Smooth animation for zoom.
+     * @param goalZoom goal zoom value for animation
      */
-    public final void zoomOutScale(final ActionEvent evt) {
-        zoomSetting = zoomSetting / 2;
+    private final void smoothZoom(final int goalZoom) {
 
-        if (zoomSetting < 1) {
-            zoomSetting = 1;
+        // Newton motion equations
+        int v = 0;
+        int a = 5;
+        int currZoom = zoomSlide.getValue();
+        int startingZoom = zoomSlide.getValue();
+        Timer timer = new Timer();
+
+        while (currZoom < goalZoom) {
+            currZoom++;
+            zoomSetting = currZoom;
+            zoomSlide.setValue(zoomSetting);
+            rescale();
+            updateTracksScrollBar();
         }
+
+        while (currZoom > goalZoom) {
+            currZoom--;
+            zoomSetting = currZoom;
+            zoomSlide.setValue(zoomSetting);
+            rescale();
+            updateTracksScrollBar();
+        }
+
+// while (zoomSetting != goalZoom) { timer.schedule(new TimerTask() {
+//
+// public void run() { //less than midpoint, accelerate if (Math.abs(currZoom -
+// startingZoom) < Math.abs(currZoom - goalZoom)) { v = v + a; if (currZoom <
+// goalZoom) { currZoom = currZoom + v; } else if (currZoom > goalZoom) {
+// currZoom = currZoom - v; }
+//
+// zoomSetting = currZoom; zoomSlide.setValue(zoomSetting); rescale();
+// updateTracksScrollBar(); } else { v = v - a; if (currZoom < goalZoom) { if
+// (goalZoom > currZoom + v) { currZoom = goalZoom; } else { currZoom = currZoom
+// + v; } } else if (currZoom > goalZoom) { if (goalZoom < currZoom - v) {
+// currZoom = goalZoom; } else { currZoom = currZoom - v; } }
+//
+//
+// zoomSetting = currZoom; zoomSlide.setValue(zoomSetting); rescale();
+// updateTracksScrollBar(); } } }, 100); }
+    }
+
+    /**
+    * Zooms into the displayed scale and re-adjusts the timing needle
+    * accordingly.
+    *
+    * @param evt
+    */
+    public final void zoomScale(final ChangeEvent evt) {
+        zoomSetting = zoomSlide.getValue();
 
         rescale();
         updateTracksScrollBar();
@@ -449,7 +530,7 @@ public class MixerControllerV implements NeedleEventListener,
         // If there are no more tracks, reset.
         if (maxEnd == 0) {
             maxEnd = 60000;
-            zoomSetting = 1;
+            zoomSetting = 100;
         }
 
         // Update zoom window scale
@@ -471,7 +552,7 @@ public class MixerControllerV implements NeedleEventListener,
         tracksEditorController.removeAllTracks();
 
         maxEnd = 60000;
-        zoomSetting = 1;
+        zoomSetting = 100;
         rescale();
         zoomTracks(null);
 
@@ -536,17 +617,21 @@ public class MixerControllerV implements NeedleEventListener,
      */
     private int zoomIntervals(final int zoomValue) {
         assert (zoomValue >= 1);
-        assert (zoomValue <= 32);
+        assert (zoomValue <= 3200);
 
-        if (zoomValue <= 2) {
+        if (zoomValue <= 200) {
             return 20;
         }
 
-        if (zoomValue <= 8) {
+        if (zoomValue <= 500) {
+            return 15;
+        }
+
+        if (zoomValue <= 1200) {
             return 10;
         }
 
-        if (zoomValue <= 32) {
+        if (zoomValue <= 3200) {
             return 5;
         }
 
@@ -560,10 +645,11 @@ public class MixerControllerV implements NeedleEventListener,
      */
     private void rescale() {
         long range = maxEnd - minStart;
-        long newStart = minStart;
-        long newEnd = range / zoomSetting;
+        long newStart = regionController.getRegionModel().getRegionStart();
+        long newEnd = regionController.getRegionModel().getRegionStart()
+            + (range / (zoomSetting / 100));
 
-        if (zoomSetting == 1) {
+        if (zoomSetting == 100) {
             newStart = minStart;
             newEnd = maxEnd;
         }
@@ -643,7 +729,7 @@ public class MixerControllerV implements NeedleEventListener,
 
         /*
          *  Calculate the new window start and end only if the bar is being
-         *  scrolled.
+         * scrolled.
          */
         if (e.getValueIsAdjusting()) {
             long newWindowStart = (long) ((startValue

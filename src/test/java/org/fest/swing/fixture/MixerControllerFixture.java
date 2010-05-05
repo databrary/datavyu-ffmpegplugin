@@ -42,8 +42,8 @@ public class MixerControllerFixture {
      * Get snap toggle button.
      * @return JToggleButtonFixture for Snap toggle button
      */
-    public final JToggleButtonFixture getSnapToggleButton() {
-        return new JToggleButtonFixture(r, "snapToggleButton");
+    public final JToggleButtonFixture getSnapRegionButton() {
+        return new JToggleButtonFixture(r, "snapRegionButton");
     }
 
     /**
@@ -80,5 +80,33 @@ public class MixerControllerFixture {
     public final TracksEditorFixture getTracksEditor() {
         return new TracksEditorFixture(r,
                 mixControl.getTracksEditorController());
+    }
+
+    /**
+     * @return fixture for the zoom slider
+     */
+    public final JSliderFixture getZoomSlider() {
+        return new JSliderFixture(r, "zoomSlider");
+    }
+
+    /**
+     * Press zoom region button that zooms to the selected region.
+     */
+    public void pressZoomRegionButton() {
+        new JButtonFixture(r, "zoomRegionButton").click();
+    }
+
+    /**
+     * @return fixture for the track scroll pane, for vertical scrolling.
+     */
+    public JScrollPaneFixture getScrollPane() {
+        return new JScrollPaneFixture(r, "jScrollPane");
+    }
+
+    /**
+     * @return fixture for the horizontal scroll bar.
+     */
+    public JScrollBarFixture getHorizontalScrollBar() {
+        return new JScrollBarFixture(r, "horizontalScrollBar");
     }
 }
