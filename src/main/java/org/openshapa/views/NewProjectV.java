@@ -7,6 +7,8 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.controllers.NewProjectC;
+
 import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
@@ -209,6 +211,7 @@ public final class NewProjectV extends OpenSHAPADialog {
         try {
             OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
                 .getMainView();
+
             // clear the contents of the existing spreadsheet.
             OpenSHAPA.getProjectController().setLastCreatedCellId(0);
             s.clearSpreadsheet();
@@ -237,6 +240,7 @@ public final class NewProjectV extends OpenSHAPADialog {
             logger.error("Unable to create new database", ex);
         } catch (LogicErrorException ex) {
             OpenSHAPA.getApplication().showWarningDialog(ex);
+            new NewProjectC();
         } catch (Throwable ex) {
             logger.error("Unable to clean up the new project view.");
         }
