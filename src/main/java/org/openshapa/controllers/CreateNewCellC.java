@@ -168,7 +168,6 @@ public final class CreateNewCellC extends SwingWorker<Object, String> {
                     cellID = model.insertdCell(cell, 1);
                     OpenSHAPA.getProjectController().setLastCreatedCellId(
                         cellID);
-
                 }
 
                 OpenSHAPA.getProjectController().setLastCreatedColId(
@@ -221,8 +220,8 @@ public final class CreateNewCellC extends SwingWorker<Object, String> {
 
                 // else check for Situation 3: User is or was editing an
                 // existing cell and has requested a new cell
-                if (OpenSHAPA.getProjectController().getLastSelectedCellId()
-                        != 0) {
+                if (OpenSHAPA.getProjectController().getLastSelectedCellId() !=
+                        0) {
                     DataCell dc = (DataCell) model.getCell(OpenSHAPA
                             .getProjectController().getLastSelectedCellId());
                     DataCell cell = new DataCell(model, dc.getItsColID(),
@@ -248,8 +247,8 @@ public final class CreateNewCellC extends SwingWorker<Object, String> {
                     return null;
                 }
 
-                if (OpenSHAPA.getProjectController().getLastCreatedColId()
-                        == 0) {
+                if (OpenSHAPA.getProjectController().getLastCreatedColId() ==
+                        0) {
                     OpenSHAPA.getProjectController().setLastCreatedColId(
                         model.getDataColumns().get(0).getID());
                 }
