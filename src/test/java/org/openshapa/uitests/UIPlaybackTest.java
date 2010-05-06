@@ -833,7 +833,7 @@ public final class UIPlaybackTest extends OpenSHAPATestClass {
         refImageFile = new File(root + "/ui/head_turns600h1mt.png");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.15, 0.1));
+                refImageFile, 0.14, 0.08));
 
         // 3. Press play, should start playing again
         pvf.pressPlayButton();
@@ -846,8 +846,9 @@ public final class UIPlaybackTest extends OpenSHAPATestClass {
             Assert.assertTrue(currTS.le(oneMin));
             vidImage = UIImageUtils.captureAsScreenshot(vid);
             pvf.pressPauseButton();
+            System.err.println("final assert");
             Assert.assertFalse(UIImageUtils.areImagesEqual(vidImage,
-                    refImageFile, 0.15, 0.1));
+                    refImageFile, 0.14, 0.08));
         } catch (SystemErrorException ex) {
             Logger.getLogger(UIPlaybackTest.class.getName()).log(Level.SEVERE,
                 null, ex);
@@ -916,7 +917,7 @@ public final class UIPlaybackTest extends OpenSHAPATestClass {
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 300));
+        vidWindow.moveTo(new Point(pvf.component().getWidth() + 310, 300));
 
         // 5. Play video then create a new cell using Num0
         // Play video
@@ -966,7 +967,7 @@ public final class UIPlaybackTest extends OpenSHAPATestClass {
         // 2. Open Data Viewer Controller
         mainFrameFixture.clickMenuItemWithPath("Controller",
             "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
         final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
