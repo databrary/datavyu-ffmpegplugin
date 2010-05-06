@@ -701,8 +701,7 @@ public class MixerControllerV implements NeedleEventListener,
      *            expecting the event to be generated from a JToggleButton
      */
     private void snapRegionHandler(final ActionEvent e) {
-        OpenSHAPA.getDataController().setRegionOfInterestAction();
-
+        OpenSHAPA.getPlaybackController().setRegionOfInterestAction();
     }
 
     /**

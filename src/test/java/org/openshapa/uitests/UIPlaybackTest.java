@@ -1,49 +1,43 @@
 package org.openshapa.uitests;
 
-import java.awt.Frame;
-
-import java.io.IOException;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import static org.fest.reflect.core.Reflection.method;
 
+import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
+import java.io.IOException;
 
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.filechooser.FileFilter;
 
-import org.fest.swing.edt.GuiActionRunner;
-import org.fest.swing.edt.GuiTask;
-import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.PlaybackVFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
+import org.openshapa.OpenSHAPA;
+
 import org.openshapa.models.db.SystemErrorException;
-
-import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.DataControllerV;
-import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.continuous.PluginManager;
-import org.openshapa.views.discrete.SpreadsheetPanel;
-
 import org.openshapa.models.db.TimeStamp;
 
 import org.openshapa.util.UIImageUtils;
-import org.openshapa.views.continuous.quicktime.QTDataViewer;
+import org.openshapa.util.UIUtils;
+
+import org.openshapa.views.OpenSHAPAFileChooser;
+import org.openshapa.views.PlaybackV;
+import org.openshapa.views.continuous.PluginManager;
+import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -53,7 +47,7 @@ import org.testng.annotations.Test;
 /**
  * Test for the DataController.
  */
-public final class UIDataControllerTest extends OpenSHAPATestClass {
+public final class UIPlaybackTest extends OpenSHAPATestClass {
 
     /**
      * Nominal test input.
@@ -117,9 +111,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         mainFrameFixture.clickMenuItemWithPath("Controller",
             "Data Viewer Controller");
 
-        DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        PlaybackVFixture pvf = new PlaybackVFixture(mainFrameFixture.robot,
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         // 3. Create new cell - so we have something to send key to because
         SpreadsheetColumnFixture column = ssPanel.column(varName);
@@ -131,13 +124,13 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD3);
         }
 
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:200");
+        Assert.assertEquals(pvf.getCurrentTime(), "00:00:00:200");
 
         for (int i = 0; i < 2; i++) {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD1);
         }
 
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:120");
+        Assert.assertEquals(pvf.getCurrentTime(), "00:00:00:120");
 
         // 5. Test Create New Cell with Onset.
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
@@ -165,14 +158,14 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD3);
         }
 
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:320");
+        Assert.assertEquals(pvf.getCurrentTime(), "00:00:00:320");
 
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD3);
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_DIVIDE);
         Assert.assertEquals(cell2.onsetTimestamp().text(), "00:00:00:360");
 
         // 8. Change cell offset.
-        dcf.pressSetOffsetButton();
+        pvf.pressSetOffsetButton();
         Assert.assertEquals(cell2.offsetTimestamp().text(), "00:00:00:360");
 
         // 9. Jog back and forward, then create a new cell with onset
@@ -180,7 +173,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD1);
         }
 
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:280");
+        Assert.assertEquals(pvf.getCurrentTime(), "00:00:00:280");
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
 
         SpreadsheetCellFixture cell3 = column.cell(3);
@@ -192,23 +185,24 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 10. Test data controller view onset, offset and find.
         for (int cellId = 1; cellId <= column.numOfCells(); cellId++) {
             cell1 = column.cell(cellId);
+            System.out.println("Cell ID: " + cell1.ordinalLabel().text());
 
             // ssPanel.deselectAll();
             column.click();
             cell1.fillSelectCell(true);
-            Assert.assertEquals(dcf.getFindOnset(),
+            Assert.assertEquals(pvf.getFindOnset(),
                 cell1.onsetTimestamp().text());
-            Assert.assertEquals(dcf.getFindOffset(),
+            Assert.assertEquals(pvf.getFindOffset(),
                 cell1.offsetTimestamp().text());
-            dcf.pressFindButton();
-            Assert.assertEquals(dcf.getCurrentTime(),
+            pvf.pressFindButton();
+            Assert.assertEquals(pvf.getCurrentTime(),
                 cell1.onsetTimestamp().text());
-            dcf.pressShiftFindButton();
-            Assert.assertEquals(dcf.getCurrentTime(),
+            pvf.pressShiftFindButton();
+            Assert.assertEquals(pvf.getCurrentTime(),
                 cell1.offsetTimestamp().text());
         }
 
-        dcf.close();
+        pvf.close();
     }
 
     /**
@@ -223,9 +217,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(300, 300));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -233,42 +227,174 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         Assert.assertTrue(videoFile.exists());
 
         if (Platform.isOSX()) {
+
+            // TODO change this, it won't work.
             final PluginManager pm = PluginManager.getInstance();
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
 
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
         } else {
-            dcf.button("addDataButton").click();
+            pvf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
-        dcf.close();
+        pvf.close();
 
         // Text
         standardSequence1("t", "text", textTestInput, textTestInput);
+    }
+
+    /**
+     * Runs standardsequence1 for different variable types (except matrix and
+     * predicate), side by side.
+     * @throws Exception
+     *             any exception
+     */
+    @Test public void testStandardSequence2() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+
+        final PlaybackVFixture pvf = new PlaybackVFixture(
+                mainFrameFixture.robot,
+                (PlaybackV) mainFrameFixture.dialog().component());
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+
+            final PluginManager pm = PluginManager.getInstance();
+
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
+
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
+        } else {
+            pvf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        pvf.close();
 
         // Integer
         standardSequence1("i", "integer", integerTestInput,
             expectedIntegerTestOutput);
+    }
+
+    /**
+     * Runs standardsequence1 for different variable types (except matrix and
+     * predicate), side by side.
+     * @throws Exception
+     *             any exception
+     */
+    @Test public void testStandardSequence3() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+
+        final PlaybackVFixture pvf = new PlaybackVFixture(
+                mainFrameFixture.robot,
+                (PlaybackV) mainFrameFixture.dialog().component());
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+
+            final PluginManager pm = PluginManager.getInstance();
+
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
+
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
+        } else {
+            pvf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        pvf.close();
 
         // Float
         standardSequence1("f", "float", floatTestInput,
             expectedFloatTestOutput);
+    }
+
+    /**
+     * Runs standardsequence1 for different variable types (except matrix and
+     * predicate), side by side.
+     * @throws Exception
+     *             any exception
+     */
+    @Test public void testStandardSequence4() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+
+        final PlaybackVFixture pvf = new PlaybackVFixture(
+                mainFrameFixture.robot,
+                (PlaybackV) mainFrameFixture.dialog().component());
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+
+            final PluginManager pm = PluginManager.getInstance();
+
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
+
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
+        } else {
+            pvf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        pvf.close();
 
         // Nominal
         standardSequence1("n", "nominal", nominalTestInput,
@@ -292,13 +418,12 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        PlaybackVFixture pvf = new PlaybackVFixture(mainFrameFixture.robot,
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         // 3. Confirm that Go Back text field is 00:00:05:000
         Assert.assertEquals("00:00:05:000",
-            dcf.textBox("goBackTextField").text());
+            pvf.textBox("goBackTextField").text());
     }
 
     /**
@@ -322,9 +447,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -334,35 +459,30 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             final PluginManager pm = PluginManager.getInstance();
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
 
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
         } else {
-            dcf.button("addDataButton").click();
+            pvf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        Iterator it = pvf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 100));
 
         vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
             + vid.getInsets().top);
@@ -371,47 +491,45 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
         // 3. Play movie for 5 seconds
-        dcf.pressPlayButton();
+        pvf.pressPlayButton();
 
         // Using Thread.sleep to wait for 5 seconds.
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(
-                Level.SEVERE, null, ex);
+            Logger.getLogger(UIPlaybackTest.class.getName()).log(Level.SEVERE,
+                null, ex);
         }
 
         // 3. Press shuttle back 7 times and ensure its negative
         for (int i = 0; i < 7; i++) {
-            dcf.pressShuttleBackButton();
+            pvf.pressShuttleBackButton();
         }
 
-        Assert.assertEquals(dcf.getSpeed(), "-2");
+        Assert.assertEquals(pvf.getSpeed(), "-2");
 
         // Wait 2 seconds
         // Using Thread.sleep to wait for 2 seconds.
         try {
             Thread.sleep(4000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(
-                Level.SEVERE, null, ex);
+            Logger.getLogger(UIPlaybackTest.class.getName()).log(Level.SEVERE,
+                null, ex);
         }
 
         // 4. Check that speed has returned to 0 and time is 0
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
+        Assert.assertEquals(pvf.getCurrentTime(), "00:00:00:000");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
-        Assert.assertEquals(dcf.getSpeed(), "0");
+        Assert.assertEquals(pvf.getSpeed(), "0");
 
         // 5. Press forward shuttle once and confirm that it's positive
-        dcf.pressShuttleForwardButton();
-        Assert.assertEquals(dcf.getSpeed(), "1/32");
+        pvf.pressShuttleForwardButton();
+        Assert.assertEquals(pvf.getSpeed(), "1/32");
     }
 
     /**
@@ -434,9 +552,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -446,49 +564,44 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             final PluginManager pm = PluginManager.getInstance();
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
 
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
         } else {
-            dcf.button("addDataButton").click();
+            pvf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        Iterator it = pvf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 100));
 
         // 3. Shuttle forward to 4x
-        dcf.pressPlayButton();
+        pvf.pressPlayButton();
 
         // Wait for it to actually start playing
-        while (dcf.getCurrentTime().equals("00:00:00:000")) {
+        while (pvf.getCurrentTime().equals("00:00:00:000")) {
             System.err.println("Waiting...");
         }
 
-        while (!dcf.getSpeed().equals("4")) {
-            String preSpeed = dcf.getSpeed();
-            dcf.pressShuttleForwardButton();
+        while (!pvf.getSpeed().equals("4")) {
+            String preSpeed = pvf.getSpeed();
+            pvf.pressShuttleForwardButton();
 
-            String postSpeed = dcf.getSpeed();
+            String postSpeed = pvf.getSpeed();
 
             Assert.assertNotSame(preSpeed, postSpeed);
         }
@@ -497,17 +610,17 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         try {
             Thread.sleep(4000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(
-                Level.SEVERE, null, ex);
+            Logger.getLogger(UIPlaybackTest.class.getName()).log(Level.SEVERE,
+                null, ex);
         }
 
         // 3. Press pause
-        dcf.pressPauseButton();
-        Assert.assertEquals(dcf.getSpeed(), "[4]");
+        pvf.pressPauseButton();
+        Assert.assertEquals(pvf.getSpeed(), "[4]");
 
         // 4. Press shuttle and check that it continues at 8
-        dcf.pressShuttleForwardButton();
-        Assert.assertEquals(dcf.getSpeed(), "8");
+        pvf.pressShuttleForwardButton();
+        Assert.assertEquals(pvf.getSpeed(), "8");
     }
 
     /**
@@ -535,9 +648,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -547,35 +660,30 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             final PluginManager pm = PluginManager.getInstance();
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
 
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
         } else {
-            dcf.button("addDataButton").click();
+            pvf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        Iterator it = pvf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 100));
         vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
             + vid.getInsets().top);
         vid.setAlwaysOnTop(true);
@@ -583,22 +691,21 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
         // 2. Shuttle forward to 4x
-        dcf.pressPlayButton();
+        pvf.pressPlayButton();
 
         // Wait for it to actually start playing
-        while (dcf.getCurrentTime().equals("00:00:00:000")) {
+        while (pvf.getCurrentTime().equals("00:00:00:000")) {
             System.err.println("Waiting...");
         }
 
-        while (!dcf.getSpeed().equals("4")) {
-            String preSpeed = dcf.getSpeed();
-            dcf.pressShuttleForwardButton();
+        while (!pvf.getSpeed().equals("4")) {
+            String preSpeed = pvf.getSpeed();
+            pvf.pressShuttleForwardButton();
 
-            String postSpeed = dcf.getSpeed();
+            String postSpeed = pvf.getSpeed();
 
             Assert.assertNotSame(preSpeed, postSpeed);
         }
@@ -607,39 +714,37 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         try {
             Thread.sleep(4000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(
-                Level.SEVERE, null, ex);
+            Logger.getLogger(UIPlaybackTest.class.getName()).log(Level.SEVERE,
+                null, ex);
         }
 
         // 3. Press pause
-        dcf.pressPauseButton();
-        Assert.assertEquals(dcf.getSpeed(), "[4]");
+        pvf.pressPauseButton();
+        Assert.assertEquals(pvf.getSpeed(), "[4]");
 
         // 4. Press rewind to zero
-        dcf.pressRewindButton();
+        pvf.pressRewindButton();
 
         // Using Thread.sleep to wait for 4 seconds.
         try {
             Thread.sleep(4000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(
-                Level.SEVERE, null, ex);
+            Logger.getLogger(UIPlaybackTest.class.getName()).log(Level.SEVERE,
+                null, ex);
         }
 
         // Check that its 0 time and speed
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
-        Assert.assertEquals(dcf.getSpeed(), "0");
+        Assert.assertEquals(pvf.getCurrentTime(), "00:00:00:000");
+        Assert.assertEquals(pvf.getSpeed(), "0");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
         // 5. Press pause and ensure it does nothing
-        dcf.pressPauseButton();
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
-        Assert.assertEquals(dcf.getSpeed(), "0");
+        pvf.pressPauseButton();
+        Assert.assertEquals(pvf.getCurrentTime(), "00:00:00:000");
+        Assert.assertEquals(pvf.getSpeed(), "0");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
     }
 
     /**
@@ -647,7 +752,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * When a video finishes playing, hitting play does nothing.
      * I expected it to play again.
      */
-    @Test public void testBug464() throws Exception {
+    @Test public void testBug464() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -660,9 +765,10 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                (PlaybackV) mainFrameFixture.dialog().component());
+
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -672,43 +778,35 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             final PluginManager pm = PluginManager.getInstance();
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
 
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
         } else {
-            dcf.button("addDataButton").click();
+            pvf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        Iterator it = pvf.getDataViewers().iterator();
+
         Frame vid = ((Frame) it.next());
-
-
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 100));
 
         vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
             + vid.getInsets().top);
         vid.setAlwaysOnTop(true);
 
-        
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
@@ -717,42 +815,43 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
                 refImageFile, 0.15, 0.1));
 
         // 2. Fast forward video to end and confirm you've reached end (1min)
-        dcf.pressFastForwardButton();
+        pvf.pressFastForwardButton();
 
         // Using Thread.sleep to wait for 5 seconds.
         try {
             Thread.sleep(8000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(
-                Level.SEVERE, null, ex);
+            Logger.getLogger(UIPlaybackTest.class.getName()).log(Level.SEVERE,
+                null, ex);
         }
 
         // Check time
-        Assert.assertEquals(dcf.getCurrentTime(), "00:01:00:000");
+        Assert.assertEquals(pvf.getCurrentTime(), "00:01:00:000");
 
         vid.setVisible(true);
         vid.toFront();
         refImageFile = new File(root + "/ui/head_turns600h1mt.png");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.15, 0.1));
+                refImageFile, 0.14, 0.08));
 
         // 3. Press play, should start playing again
-        dcf.pressPlayButton();
+        pvf.pressPlayButton();
 
-        String currTime = dcf.getCurrentTime();
+        String currTime = pvf.getCurrentTime();
 
         try {
             TimeStamp currTS = new TimeStamp(currTime);
             TimeStamp oneMin = new TimeStamp("00:01:00:000");
             Assert.assertTrue(currTS.le(oneMin));
             vidImage = UIImageUtils.captureAsScreenshot(vid);
-            dcf.pressPauseButton();
+            pvf.pressPauseButton();
+            System.err.println("final assert");
             Assert.assertFalse(UIImageUtils.areImagesEqual(vidImage,
-                    refImageFile, 0.15, 0.1));
+                    refImageFile, 0.14, 0.08));
         } catch (SystemErrorException ex) {
-            Logger.getLogger(UIDataControllerTest.class.getName()).log(
-                Level.SEVERE, null, ex);
+            Logger.getLogger(UIPlaybackTest.class.getName()).log(Level.SEVERE,
+                null, ex);
         }
     }
 
@@ -766,9 +865,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Expect: New cell created.
      * Actual: Dang nabbit error
      */
-    //Commented out. Passing on local machine, failing on server. Possibly EDT
-    //related.
-    /*@Test*/ public void testBug1204() {
+    @Test public void testBug1204() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -781,9 +878,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(300, 300));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         // 3. Create a new variable
         UIUtils.createNewVariable(mainFrameFixture, "t",
@@ -797,39 +894,34 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             final PluginManager pm = PluginManager.getInstance();
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
 
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
         } else {
-            dcf.button("addDataButton").click();
+            pvf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // Get video window
-        Iterator it = dcf.getDataViewers().iterator();
+        Iterator it = pvf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 300));
+        vidWindow.moveTo(new Point(pvf.component().getWidth() + 310, 300));
 
         // 5. Play video then create a new cell using Num0
         // Play video
-        dcf.pressPlayButton();
+        pvf.pressPlayButton();
 
         // 4. Create a new cell using Num0
         // The first line is really just to delay things.
@@ -861,10 +953,10 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     /**
      * Bug891.
      * Set New Cell Offset changes offset of selected cell rather than
-     * last created cell
+     * last created cell.
+     * BugzID:1652
      */
-    //Passing on local machine, failing on server. Possibly EDT related.
-    /*@Test*/ public void testBug891() {
+    @Test public void testBug891() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -875,11 +967,11 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 2. Open Data Viewer Controller
         mainFrameFixture.clickMenuItemWithPath("Controller",
             "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        final PlaybackVFixture pvf = new PlaybackVFixture(
                 mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                (PlaybackV) mainFrameFixture.dialog().component());
 
         // 3. Open video
         String root = System.getProperty("testPath");
@@ -889,35 +981,30 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             final PluginManager pm = PluginManager.getInstance();
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+            for (FileFilter f : pm.getPluginFileFilters()) {
+                fc.addChoosableFileFilter(f);
+            }
 
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
+            fc.setSelectedFile(videoFile);
+            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
+                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
         } else {
-            dcf.button("addDataButton").click();
+            pvf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
+            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // Get video window
-        Iterator it = dcf.getDataViewers().iterator();
+        Iterator it = pvf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 300));
+        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 300));
 
         // 4. Create a new variable
         UIUtils.createNewVariable(mainFrameFixture, "p",
@@ -925,7 +1012,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         // 5. Play video then create a new cell using Num0
         // Play video
-        dcf.pressPlayButton();
+        pvf.pressPlayButton();
 
         // Create new cell
         ssPanel.column("p").click();
@@ -944,10 +1031,10 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         Assert.assertEquals(ssPanel.column("q").allCells().size(), 1);
 
         // 7. Pause video
-        dcf.pressPauseButton();
+        pvf.pressPauseButton();
 
         // 8. Select first cell and press Set New Cell Offset
-        String offsetTime = dcf.getCurrentTime();
+        String offsetTime = pvf.getCurrentTime();
 
         SpreadsheetCellFixture firstCell = ssPanel.column("p").cell(1);
         firstCell.borderSelectCell(true);
@@ -958,10 +1045,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             "00:00:00:000");
 
         Assert.assertTrue(firstCell.isSelected());
-        dcf.pressSetNewCellOffsetButton();
+        pvf.pressSetNewCellOffsetButton();
         Assert.assertEquals(firstCell.offsetTimestamp().text(), "00:00:00:000");
-        Assert.assertEquals(secondCell.offsetTimestamp().text(),
-            offsetTime);
+        Assert.assertEquals(secondCell.offsetTimestamp().text(), offsetTime);
 
     }
 }

@@ -102,7 +102,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
      *             on any error
      */
     // BugzID:1351
-    /*@Test*/ public void testDeleteFloatCell() throws Exception {
+    @Test public void testDeleteFloatCell() throws Exception {
         String type = "FLOAT";
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         testDeleteCellValue(type);

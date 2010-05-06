@@ -207,11 +207,17 @@ public final class NewProjectV extends OpenSHAPADialog {
             .getResourceMap(NewProjectV.class);
 
         try {
+            OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
+                .getMainView();
+            // clear the contents of the existing spreadsheet.
+            OpenSHAPA.getProjectController().setLastCreatedCellId(0);
+            s.clearSpreadsheet();
 
             if (!isValidProjectName(getProjectName())) {
                 throw new LogicErrorException(r.getString("Error.invalidName"));
             }
 
+            // Create a new database and display it.
             MacshapaDatabase database = new MacshapaDatabase(
                     Constants.TICKS_PER_SECOND);
             database.setName(getProjectName());
@@ -219,10 +225,6 @@ public final class NewProjectV extends OpenSHAPADialog {
 
             OpenSHAPA.getProjectController().createNewProject(getProjectName());
             OpenSHAPA.getProjectController().setDatabase(database);
-
-            OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
-                .getMainView();
-
             s.showSpreadsheet();
 
             // Update the name of the window to include the name we just

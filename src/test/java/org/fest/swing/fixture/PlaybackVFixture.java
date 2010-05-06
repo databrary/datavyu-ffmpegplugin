@@ -223,15 +223,24 @@ public class PlaybackVFixture extends DialogFixture {
      * @return Set<DataViewers> dataviewers
      */
     //No method "getPlaybackController"
-//    public final Set<DataViewer> getDataViewers() {
-//
-//        // Just wait a second before queuing up request for data viewers.
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//        }
-//
-//        return OpenSHAPA.getPlaybackController().getDataViewers();
-//    }
+    public final Set<DataViewer> getDataViewers() {
+
+        // Just wait a second before queuing up request for data viewers.
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
+
+        return OpenSHAPA.getPlaybackController().getDataViewers();
+    }
+
+    /**
+     * Track mixer controller contains all track related components.
+     * @return The track mixer controller
+     */
+    public final MixerControllerFixture getTrackMixerController() {
+        return new MixerControllerFixture(robot,
+                OpenSHAPA.getPlaybackController().getMixerController());
+    }
 
 }
