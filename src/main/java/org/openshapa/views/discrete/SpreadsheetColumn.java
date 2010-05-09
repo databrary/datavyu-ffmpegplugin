@@ -16,6 +16,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import org.jdesktop.swingworker.SwingWorker;
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -178,21 +179,29 @@ implements MouseListener, MouseMotionListener {
 
     /**
      * Set the selected state for the DataColumn this displays.
+     *
      * @param isSelected Selected state.
      */
     public void setSelected(final boolean isSelected) {
-        try {
-            DataColumn dc = database.getDataColumn(dbColID);
-            this.selected = isSelected;
+        SwingWorker backgroundTask = new SwingWorker<Object, String>() {
+            @Override protected Object doInBackground() {
+                try {
+                    DataColumn dc = database.getDataColumn(dbColID);
+                    selected = isSelected;
 
-            dc.setSelected(isSelected);
-            database.replaceColumn(dc);
+                    dc.setSelected(isSelected);
+                    database.replaceColumn(dc);
 
-        } catch (SystemErrorException e) {
-           logger.error("Failed setting column select state.", e);
-        }
+                } catch (SystemErrorException e) {
+                   logger.error("Failed setting column select state.", e);
+                }
 
-        if (selected) {
+                return null;
+            }
+        };
+        backgroundTask.execute();
+
+        if (isSelected) {
             setBackground(Configuration.getInstance().getSSSelectedColour());
         } else {
             setBackground(backColor);
