@@ -687,7 +687,8 @@ public final class OpenSHAPAView extends FrameView
      * Action for removing cells from the database.
      */
     @Action public void deleteCells() {
-        new DeleteCellC(panel.getSelectedCells());
+        DeleteCellC task = new DeleteCellC(panel.getSelectedCells());
+        task.execute();
     }
 
     /**

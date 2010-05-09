@@ -568,6 +568,10 @@ public final class ProjectController implements ExternalColumnListListener,
                                     c.getCollID());
                             col.deleteCellByID(c.getCellID());
                         }
+
+                        OpenSHAPAView v = (OpenSHAPAView) OpenSHAPA
+                                           .getApplication().getMainView();
+                        v.showSpreadsheet();
                     }
 
                     if (colChanges.cellInserted.size() > 0) {

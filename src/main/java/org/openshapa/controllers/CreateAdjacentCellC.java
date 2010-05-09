@@ -61,6 +61,7 @@ public class CreateAdjacentCellC extends SwingWorker<Object, String> {
     @Override protected Object doInBackground() {
 
         try {
+            logger.usage("Creating Adjacent Cell: " + dir);
             long cellID = 0;
 
             // Get the column that is the parent of the source cell.

@@ -155,6 +155,7 @@ public final class CreateNewCellC extends SwingWorker<Object, String> {
 
             // check for Situation 1: one or more selected columns
             for (DataColumn col : selectedColumns) {
+                logger.usage("Creating cell in selected column");
                 MatrixVocabElement mve = model.getMatrixVE(col.getItsMveID());
                 DataCell cell = new DataCell(col.getDB(), col.getID(),
                         mve.getID());
@@ -183,6 +184,7 @@ public final class CreateNewCellC extends SwingWorker<Object, String> {
 
                 // else check for Situation 2: one or more selected cells
                 for (DataCell cell : selectedCells) {
+                    logger.usage("Creating cell in selected cell");
 
                     // reget the selected cell from the database using its id
                     // in case a previous insert has changed its ordinal.
@@ -217,11 +219,12 @@ public final class CreateNewCellC extends SwingWorker<Object, String> {
             }
 
             if (!newcelladded && multiadd) {
-
                 // else check for Situation 3: User is or was editing an
                 // existing cell and has requested a new cell
                 if (OpenSHAPA.getProjectController().getLastSelectedCellId()
                         != 0) {
+                    logger.usage("Creating cell below edited/existing cell");
+
                     DataCell dc = (DataCell) model.getCell(OpenSHAPA
                             .getProjectController().getLastSelectedCellId());
                     DataCell cell = new DataCell(model, dc.getItsColID(),
@@ -241,6 +244,7 @@ public final class CreateNewCellC extends SwingWorker<Object, String> {
                 // else go with Situation 4: Video controller requested
                 // - create in the same column as the last created cell or
                 // the last focused cell.
+                logger.usage("Creating cell below last created/focused cell");
 
                 // BugzID:779 - Check for presence of columns, else return
                 if (model.getDataColumns().size() == 0) {
