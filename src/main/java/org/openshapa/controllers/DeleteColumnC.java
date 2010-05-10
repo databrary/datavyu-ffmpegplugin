@@ -21,7 +21,7 @@ public final class DeleteColumnC {
 
     /**
      * Constructor.
-     *
+     * 
      * @param colsToDelete
      *            The columns to remove from the database/spreadsheet.
      */

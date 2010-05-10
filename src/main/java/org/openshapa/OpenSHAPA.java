@@ -3,8 +3,8 @@ package org.openshapa;
 import java.awt.KeyEventDispatcher;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
 
 import java.io.File;
 
@@ -28,7 +28,6 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
 
-import org.openshapa.controllers.PlaybackController;
 import org.openshapa.controllers.project.ProjectController;
 
 import org.openshapa.models.db.LogicErrorException;
@@ -40,6 +39,7 @@ import org.openshapa.util.Constants;
 import org.openshapa.util.MacHandler;
 
 import org.openshapa.views.AboutV;
+import org.openshapa.views.DataControllerV;
 import org.openshapa.views.ListVariables;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
@@ -48,6 +48,8 @@ import org.openshapa.views.continuous.PluginManager;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 
 
 /**
@@ -77,7 +79,6 @@ public final class OpenSHAPA extends SingleFrameApplication
 
     /** All the supported platforms that OpenSHAPA runs on. */
     public enum Platform {
-
         /** Generic Mac platform. I.e. Tiger, Leopard, Snow Leopard. */
         MAC,
 
@@ -109,8 +110,8 @@ public final class OpenSHAPA extends SingleFrameApplication
     /** The view to use when listing all variables in the database. */
     private ListVariables listVarView;
 
-    /** Playback controller. */
-    private PlaybackController playbackController;
+    /** The view to use for the quick time video controller. */
+    private DataControllerV dataController;
 
     /** The view to use when displaying information about OpenSHAPA. */
     private AboutV aboutWindow;
@@ -202,6 +203,26 @@ public final class OpenSHAPA extends SingleFrameApplication
             }
         }
 
+        // BugzID:784 - Shift key is passed to Data Controller.
+        if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
+
+            if (evt.getID() == KeyEvent.KEY_PRESSED) {
+                dataController.setShiftMask(true);
+            } else {
+                dataController.setShiftMask(false);
+            }
+        }
+
+        // BugzID:736 - Control key is passed to Data Controller.
+        if (evt.getKeyCode() == KeyEvent.VK_CONTROL) {
+
+            if (evt.getID() == KeyEvent.KEY_PRESSED) {
+                dataController.setCtrlMask(true);
+            } else {
+                dataController.setCtrlMask(false);
+            }
+        }
+
         /**
          * The following cases handle numpad keystrokes.
          */
@@ -226,75 +247,108 @@ public final class OpenSHAPA extends SingleFrameApplication
         switch (evt.getKeyCode()) {
 
         case KeyEvent.VK_DIVIDE:
-            playbackController.pressSetCellOnset();
+            dataController.pressSetCellOnset();
+
             break;
 
         case KeyEvent.VK_ASTERISK:
         case KeyEvent.VK_MULTIPLY:
-            playbackController.pressSetCellOffset();
+            dataController.pressSetCellOffset();
+
             break;
 
         case KeyEvent.VK_NUMPAD7:
-            playbackController.pressRewind();
+            dataController.pressRewind();
+
             break;
 
         case KeyEvent.VK_NUMPAD8:
-            playbackController.pressPlay();
+            dataController.pressPlay();
+
             break;
 
         case KeyEvent.VK_NUMPAD9:
-            playbackController.pressForward();
+            dataController.pressForward();
+
             break;
 
         case KeyEvent.VK_NUMPAD4:
-            playbackController.pressShuttleBack();
+            dataController.pressShuttleBack();
+
             break;
 
         case KeyEvent.VK_NUMPAD2:
-            playbackController.pressPause();
+            dataController.pressPause();
+
             break;
 
         case KeyEvent.VK_NUMPAD6:
-            playbackController.pressShuttleForward();
+            dataController.pressShuttleForward();
+
             break;
 
         case KeyEvent.VK_NUMPAD1:
-            playbackController.pressJogBackButton(evt.getModifiers());
+
+            // We don't do the press Jog thing for jogging - as users often
+            // just hold the button down... Which causes weird problems when
+            // attempting to do multiple presses.
+            dataController.jogBackAction();
+
             break;
 
         case KeyEvent.VK_NUMPAD5:
-            playbackController.pressStop();
+            dataController.pressStop();
+
             break;
 
         case KeyEvent.VK_NUMPAD3:
-            playbackController.pressJogForwardButton(evt.getModifiers());
+
+            // We don't do the press Jog thing for jogging - as users often
+            // just hold the button down... Which causes weird problems when
+            // attempting to do multiple presses.
+            dataController.jogForwardAction();
+
             break;
 
         case KeyEvent.VK_NUMPAD0:
-            playbackController.pressCreateNewCellSettingOffset();
+            dataController.pressCreateNewCellSettingOffset();
+
             break;
 
         case KeyEvent.VK_DECIMAL:
-            playbackController.pressSetNewCellOnset();
+            dataController.pressSetNewCellOnset();
+
             break;
 
         case KeyEvent.VK_SUBTRACT:
-            playbackController.pressGoBack();
+            dataController.pressGoBack();
+
             break;
 
         case KeyEvent.VK_ADD:
 
-            playbackController.pressFind();
+            if (modifiers == InputEvent.SHIFT_MASK) {
+                dataController.pressFind();
+                dataController.findOffsetAction();
+            } else if (modifiers == InputEvent.CTRL_MASK) {
+                dataController.pressFind();
+                dataController.setRegionOfInterestAction();
+            } else {
+                dataController.pressFind();
+            }
+
             break;
 
         case KeyEvent.VK_ENTER:
-            playbackController.pressCreateNewCell();
+            dataController.pressCreateNewCell();
+
             break;
 
         default:
 
             // Do nothing with the key.
             result = false;
+
             break;
         }
 
@@ -305,7 +359,7 @@ public final class OpenSHAPA extends SingleFrameApplication
      * Action for showing the quicktime video controller.
      */
     public void showDataController() {
-        OpenSHAPA.getApplication().show(playbackController.getDialog());
+        OpenSHAPA.getApplication().show(dataController);
     }
 
     /**
@@ -555,7 +609,8 @@ public final class OpenSHAPA extends SingleFrameApplication
         getApplication().addExitListener(new ExitListenerImpl());
 
         // Create video controller.
-        playbackController = new PlaybackController();
+        dataController = new DataControllerV(OpenSHAPA.getApplication()
+                .getMainFrame(), false);
 
     }
 
@@ -667,10 +722,14 @@ public final class OpenSHAPA extends SingleFrameApplication
     }
 
     /**
-     * @return The playback controller.
+     * Gets the single instance of the data controller that is currently used
+     * with OpenSHAPA.
+     *
+     * @return The single data controller in use with this instance of
+     *         OpenSHAPA.
      */
-    public static PlaybackController getPlaybackController() {
-        return OpenSHAPA.getApplication().playbackController;
+    public static DataControllerV getDataController() {
+        return OpenSHAPA.getApplication().dataController;
     }
 
     /**
@@ -712,7 +771,6 @@ public final class OpenSHAPA extends SingleFrameApplication
      *            The command line arguments passed to OpenSHAPA.
      */
     public static void main(final String[] args) {
-
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
 
@@ -761,8 +819,9 @@ public final class OpenSHAPA extends SingleFrameApplication
 
     public void resetApp() {
         closeOpenedWindows();
-        playbackController.dispose();
-        playbackController = new PlaybackController();
+        this.dataController.dispose();
+        this.dataController = new DataControllerV(OpenSHAPA.getApplication()
+                .getMainFrame(), false);
     }
 
     public void closeOpenedWindows() {
@@ -774,10 +833,7 @@ public final class OpenSHAPA extends SingleFrameApplication
         while (!windows.empty()) {
             Window window = windows.pop();
             window.setVisible(false);
-
-            WindowEvent wev = new WindowEvent(window,
-                    WindowEvent.WINDOW_CLOSING);
-            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+            window.dispose();
         }
     }
 

@@ -1,7 +1,6 @@
 package org.openshapa.uitests;
 
 import java.io.File;
-import java.util.Collection;
 
 import java.util.Vector;
 
@@ -64,7 +63,7 @@ public final class UIBug65Test extends OpenSHAPATestClass {
         // 2. Save column vector
         JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanel sp = (SpreadsheetPanel) ssPanel.component();
-        Collection<SpreadsheetColumn> vecSCBefore = sp.getColumns();
+        Vector<SpreadsheetColumn> vecSCBefore = sp.getColumns();
 
         // 3. Press "Show spreadsheet"
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
@@ -73,7 +72,7 @@ public final class UIBug65Test extends OpenSHAPATestClass {
         // 4. Get columns again and confirm unchanged
         JPanelFixture ssPanel2 = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanel sp2 = (SpreadsheetPanel) ssPanel.component();
-        Collection<SpreadsheetColumn> vecSCAfter = sp.getColumns();
+        Vector<SpreadsheetColumn> vecSCAfter = sp.getColumns();
 
         Assert.assertEquals(vecSCBefore, vecSCAfter);
     }

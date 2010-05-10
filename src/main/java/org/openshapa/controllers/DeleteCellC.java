@@ -21,7 +21,7 @@ public final class DeleteCellC {
 
     /**
      * Constructor.
-     *
+     * 
      * @param cellsToDelete
      *            The cells to delete from the spreadsheet.
      */

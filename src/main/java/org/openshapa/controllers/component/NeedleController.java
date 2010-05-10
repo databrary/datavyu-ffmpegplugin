@@ -207,7 +207,7 @@ public class NeedleController {
      * Checks that the needle is in a valid position and fixes it if it isn't.
      */
     public void fixNeedle() {
-        RegionController rc = OpenSHAPA.getPlaybackController().getMixerController().getRegionController();
+        RegionController rc = OpenSHAPA.getDataController().getMixerController().getRegionController();
         if (getCurrentTime() > rc.getRegionModel().getRegionEnd()) {
             setCurrentTime(rc.getRegionModel().getRegionEnd());
         } else if (getCurrentTime() < rc.getRegionModel().getRegionStart()) {

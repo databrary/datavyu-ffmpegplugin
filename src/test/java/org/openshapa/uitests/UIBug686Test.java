@@ -1,8 +1,9 @@
 package org.openshapa.uitests;
 
+import java.awt.Frame;
+
 import static org.fest.reflect.core.Reflection.method;
 
-import java.awt.Frame;
 import java.awt.Point;
 
 import java.io.File;
@@ -11,20 +12,18 @@ import java.util.Iterator;
 
 import javax.swing.filechooser.FileFilter;
 
+import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.fixture.PlaybackVFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
-import org.openshapa.OpenSHAPA;
-
 import org.openshapa.util.UIUtils;
 
+import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.PlaybackV;
 import org.openshapa.views.continuous.PluginManager;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
@@ -55,9 +54,9 @@ public final class UIBug686Test extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final PlaybackVFixture pvf = new PlaybackVFixture(
+        final DataControllerFixture dcf = new DataControllerFixture(
                 mainFrameFixture.robot,
-                (PlaybackV) mainFrameFixture.dialog().component());
+                (DataControllerV) mainFrameFixture.dialog().component());
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -76,32 +75,32 @@ public final class UIBug686Test extends OpenSHAPATestClass {
 
             fc.setSelectedFile(videoFile);
             method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
-                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
+                .in((DataControllerV) dcf.component()).invoke(fc);
         } else {
-            pvf.button("addDataButton").click();
+            dcf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
+            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // 2. Get window
-        Iterator it = pvf.getDataViewers().iterator();
+        Iterator it = dcf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 100));
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
         // 2. Jog forward and check
-        pvf.pressJogForwardButton();
-        pvf.label("timestampLabel").requireText("00:00:00:040");
-        pvf.pressJogForwardButton();
-        pvf.label("timestampLabel").requireText("00:00:00:080");
+        dcf.pressJogForwardButton();
+        dcf.label("timestampLabel").requireText("00:00:00:040");
+        dcf.pressJogForwardButton();
+        dcf.label("timestampLabel").requireText("00:00:00:080");
 
         // 3. Jog back and check
-        pvf.pressJogBackButton();
-        pvf.label("timestampLabel").requireText("00:00:00:040");
-        pvf.pressJogBackButton();
-        pvf.label("timestampLabel").requireText("00:00:00:000");
+        dcf.pressJogBackButton();
+        dcf.label("timestampLabel").requireText("00:00:00:040");
+        dcf.pressJogBackButton();
+        dcf.label("timestampLabel").requireText("00:00:00:000");
     }
 }

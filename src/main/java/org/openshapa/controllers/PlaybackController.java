@@ -44,6 +44,7 @@ import org.openshapa.util.ClockTimer;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer.ClockListener;
 
+import org.openshapa.views.DataControllerV;
 import org.openshapa.views.MixerControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.PlaybackV;
@@ -158,8 +159,7 @@ public final class PlaybackController implements PlaybackListener,
     // [static]
     //
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(
-            PlaybackController.class);
+    private UserMetrix logger = UserMetrix.getInstance(DataControllerV.class);
 
     // -------------------------------------------------------------------------
     //
@@ -254,27 +254,18 @@ public final class PlaybackController implements PlaybackListener,
                 public void run() {
                     final int modifiers = evt.getModifiers();
 
-                    // BugzID:1312
-                    if (!clock.isStopped()) {
-                        clock.stop();
-                        clock.setRate(0);
-                    }
-
                     if ((modifiers & InputEvent.SHIFT_MASK)
                             == InputEvent.SHIFT_MASK) {
                         System.out.println("shift mask");
-                        clock.stop();
-                        clock.setTime(evt.getOffsetTime());
+                        jumpTo(evt.getOffsetTime());
                     } else if ((modifiers & InputEvent.CTRL_MASK)
                             == InputEvent.CTRL_MASK) {
                         System.out.println("ctrl mask");
-                        clock.stop();
-                        clock.setTime(evt.getOnsetTime());
+                        jumpTo(evt.getOnsetTime());
                         setRegionOfInterestAction();
                     } else {
-                        clock.stop();
-                        clock.setTime(evt.getOnsetTime());
                         System.out.println("no mask");
+                        jumpTo(evt.getOnsetTime());
                     }
                 }
             };
@@ -378,7 +369,15 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void newCellEvent(final PlaybackEvent evt) {
-        executor.submit(new CreateNewCellC());
+
+        Runnable task = new Runnable() {
+
+                public void run() {
+                    new CreateNewCellC();
+                }
+            };
+
+        executor.submit(task);
     }
 
     public void setNewCellOffsetEvent(final PlaybackEvent evt) {
@@ -394,8 +393,14 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     public void newCellSetOnsetEvent(final PlaybackEvent evt) {
-        System.out.println("PlaybackController.newCellSetOnsetEvent()");
-        executor.submit(new CreateNewCellC(getCurrentTimeEDT()));
+
+        Runnable task = new Runnable() {
+                public void run() {
+                    new CreateNewCellC(getCurrentTime());
+                }
+            };
+
+        executor.submit(task);
     }
 
     public void pauseEvent(final PlaybackEvent evt) {
@@ -500,7 +505,7 @@ public final class PlaybackController implements PlaybackListener,
 
                     ResourceMap resourceMap = Application.getInstance(
                             org.openshapa.OpenSHAPA.class).getContext()
-                        .getResourceMap(PlaybackV.class);
+                        .getResourceMap(DataControllerV.class);
 
                     if (tracksPanelEnabled) {
 
@@ -1047,17 +1052,14 @@ public final class PlaybackController implements PlaybackListener,
 
                     case NEEDLE_EVENT:
                         handleNeedleEvent((NeedleEvent) e.getEventObject());
-
                         break;
 
                     case MARKER_EVENT:
                         handleMarkerEvent((MarkerEvent) e.getEventObject());
-
                         break;
 
                     case CARRIAGE_EVENT:
                         handleCarriageEvent((CarriageEvent) e.getEventObject());
-
                         break;
 
                     default:
@@ -1341,23 +1343,6 @@ public final class PlaybackController implements PlaybackListener,
         return clock.getTime();
     }
 
-    private long getCurrentTimeEDT() {
-
-        try {
-            return executor.submit(new Callable<Long>() {
-                        public Long call() throws Exception {
-                            return clock.getTime();
-                        }
-                    }).get();
-        } catch (InterruptedException e) {
-            logger.error("Executor thread interrupted", e);
-        } catch (ExecutionException e) {
-            logger.error("Failed to retrieve result", e);
-        }
-
-        return clock.getTime();
-    }
-
     /**
      * Adds a data viewer to this data controller.
      *
@@ -1451,12 +1436,10 @@ public final class PlaybackController implements PlaybackListener,
 
         case START_MARKER:
             handleStartMarkerEvent(newWindowTime, tracksTime);
-
             break;
 
         case END_MARKER:
             handleEndMarkerEvent(newWindowTime, tracksTime);
-
             break;
 
         default:
@@ -1544,14 +1527,12 @@ public final class PlaybackController implements PlaybackListener,
 
         case OFFSET_CHANGE:
             handleCarriageOffsetChangeEvent(e);
-
             break;
 
         case BOOKMARK_CHANGED:
         case BOOKMARK_SAVE:
             OpenSHAPA.getProjectController().projectChanged();
             OpenSHAPA.getApplication().updateTitle();
-
             break;
 
         default:
@@ -1630,7 +1611,7 @@ public final class PlaybackController implements PlaybackListener,
      * Sets the playback region of interest to lie from the find time to offset
      * time.
      */
-    public void setRegionOfInterestAction() {
+    private void setRegionOfInterestAction() {
         assert !SwingUtilities.isEventDispatchThread();
 
         final long newWindowPlayStart = playbackView.getFindTime();

@@ -33,7 +33,9 @@ import org.openshapa.OpenSHAPA.Platform;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.DeleteCellC;
 import org.openshapa.controllers.DeleteColumnC;
+import org.openshapa.controllers.NewDatabaseC;
 import org.openshapa.controllers.NewProjectC;
+import org.openshapa.controllers.NewVariableC;
 import org.openshapa.controllers.OpenC;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
@@ -57,7 +59,6 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
-import org.openshapa.controllers.CreateAdjacentCellC;
 
 
 /**
@@ -263,6 +264,16 @@ public final class OpenSHAPAView extends FrameView
         } else {
             mainFrame.setTitle(rMap.getString("Application.title") + " - "
                 + "Project1" + extension + postFix);
+        }
+    }
+
+    /**
+     * Action for creating a new database.
+     */
+    @Action public void showNewDatabaseForm() {
+
+        if (OpenSHAPA.getApplication().safeQuit()) {
+            new NewDatabaseC();
         }
     }
 
@@ -601,9 +612,7 @@ public final class OpenSHAPAView extends FrameView
      * Action for creating a new variable.
      */
     @Action public void showNewVariableForm() {
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        NewVariableV view = new NewVariableV(mainFrame, false);
-        OpenSHAPA.getApplication().show(view);
+        new NewVariableC();
     }
 
     /**
@@ -635,9 +644,11 @@ public final class OpenSHAPAView extends FrameView
     }
 
     /**
-     * Clears the contents of the spreadsheet.
+     * Action for showing the spreadsheet.
      */
-    public void clearSpreadsheet() {
+    @Action public void showSpreadsheet() {
+        weakTemporalOrderMenuItem.setSelected(false);
+        strongTemporalOrderMenuItem.setSelected(false);
         panel.removeAll();
 
         // Create a fresh spreadsheet component and redraw the component.
@@ -645,15 +656,6 @@ public final class OpenSHAPAView extends FrameView
             panel.deregisterListeners();
             panel.removeFileDropEventListener(this);
         }
-    }
-
-    /**
-     * Action for showing the spreadsheet.
-     */
-    @Action public void showSpreadsheet() {
-        weakTemporalOrderMenuItem.setSelected(false);
-        strongTemporalOrderMenuItem.setSelected(false);
-        this.clearSpreadsheet();
 
         panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
         panel.registerListeners();
@@ -1142,6 +1144,8 @@ public final class OpenSHAPAView extends FrameView
             runRecentScriptMenu.remove(1);
         }
 
+//        LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
+
         for (File f : OpenSHAPA.getLastScriptsExecuted()) {
             runRecentScriptMenu.add(createScriptMenuItemFromFile(f));
         }
@@ -1296,8 +1300,7 @@ public final class OpenSHAPAView extends FrameView
      */
     private void newCellMenuItemActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellMenuItemActionPerformed
-        CreateNewCellC cellC = new CreateNewCellC();
-        cellC.execute();
+        new CreateNewCellC();
     } // GEN-LAST:event_newCellMenuItemActionPerformed
 
     /**
@@ -1309,10 +1312,7 @@ public final class OpenSHAPAView extends FrameView
      */
     private void newCellLeftMenuItemActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellLeftMenuItemActionPerformed
-
-        CreateAdjacentCellC cellC = new CreateAdjacentCellC(
-                                panel.getSelectedCells(), ArrayDirection.LEFT);
-        cellC.execute();
+        new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.LEFT);
     } // GEN-LAST:event_newCellLeftMenuItemActionPerformed
 
     /**
@@ -1324,10 +1324,7 @@ public final class OpenSHAPAView extends FrameView
      */
     private void newCellRightMenuItemActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellRightMenuItemActionPerformed
-
-        CreateAdjacentCellC cellC = new CreateAdjacentCellC(
-                               panel.getSelectedCells(), ArrayDirection.RIGHT);
-        cellC.execute();
+        new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.RIGHT);
     } // GEN-LAST:event_newCellRightMenuItemActionPerformed
 
     /**
@@ -1414,11 +1411,13 @@ public final class OpenSHAPAView extends FrameView
     }
 
     /**
-     * Returns SpreadsheetPanel.
+     * Returns SpreadsheetPanel
      *
      * @return SpreadsheetPanel panel
      */
     public SpreadsheetPanel getSpreadsheetPanel() {
         return panel;
     }
+
+
 }

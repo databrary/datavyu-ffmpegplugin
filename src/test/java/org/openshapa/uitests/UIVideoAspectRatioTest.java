@@ -1,33 +1,35 @@
 package org.openshapa.uitests;
 
+import java.awt.Frame;
+
+import java.io.IOException;
+
 import static org.fest.reflect.core.Reflection.method;
 
-import java.awt.Frame;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
-import java.io.IOException;
 
 import java.util.Iterator;
 
 import javax.swing.filechooser.FileFilter;
 
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiTask;
+import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.fixture.PlaybackVFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
-import org.openshapa.OpenSHAPA;
-
 import org.openshapa.util.UIImageUtils;
 import org.openshapa.util.UIUtils;
 
+import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.PlaybackV;
 import org.openshapa.views.continuous.PluginManager;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
@@ -59,9 +61,9 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final PlaybackVFixture pvf = new PlaybackVFixture(
+        final DataControllerFixture dcf = new DataControllerFixture(
                 mainFrameFixture.robot,
-                (PlaybackV) mainFrameFixture.dialog().component());
+                (DataControllerV) mainFrameFixture.dialog().component());
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -71,30 +73,35 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             final PluginManager pm = PluginManager.getInstance();
 
-            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-            fc.setVisible(false);
+            GuiActionRunner.execute(new GuiTask() {
+                    public void executeInEDT() {
+                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                        fc.setVisible(false);
 
-            for (FileFilter f : pm.getPluginFileFilters()) {
-                fc.addChoosableFileFilter(f);
-            }
+                        for (FileFilter f : pm.getPluginFileFilters()) {
+                            fc.addChoosableFileFilter(f);
+                        }
 
-            fc.setSelectedFile(videoFile);
-            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
-                .in(OpenSHAPA.getPlaybackController()).invoke(fc);
+                        fc.setSelectedFile(videoFile);
+                        method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class).in(
+                            (DataControllerV) dcf.component()).invoke(fc);
+                    }
+                });
         } else {
-            pvf.button("addDataButton").click();
+            dcf.button("addDataButton").click();
 
-            JFileChooserFixture jfcf = pvf.fileChooser(Timeout.timeout(30000));
+            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
             jfcf.selectFile(videoFile).approve();
         }
 
         // 2. Get window
-        Iterator it = pvf.getDataViewers().iterator();
+        Iterator it = dcf.getDataViewers().iterator();
 
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(pvf.component().getWidth() + 10, 100));
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
         vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
             + vid.getInsets().top);
@@ -103,8 +110,10 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
         vid.toFront();
 
-        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
+        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(
+                vid);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
 
         // 3. Get aspect video dimensions
         double beforeResizeWidth = UIImageUtils.getInternalRectangle(vid)
@@ -119,8 +128,10 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
         // a. Check that ratio remains the same
         refImageFile = new File(root + "/ui/head_turns150h0t.png");
         vid.toFront();
-        vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
+        vidImage = UIImageUtils.captureAsScreenshot(
+                vid);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
 
         Assert.assertTrue(Math.abs(
                 UIImageUtils.getInternalRectangle(vid).getWidth()
@@ -139,8 +150,10 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
         // a. Check that ratio remains the same
         refImageFile = new File(root + "/ui/head_turns450h0t.png");
         vid.toFront();
-        vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
+        vidImage = UIImageUtils.captureAsScreenshot(
+                vid);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
+                refImageFile));
 
         Assert.assertTrue(Math.abs(
                 UIImageUtils.getInternalRectangle(vid).getWidth()

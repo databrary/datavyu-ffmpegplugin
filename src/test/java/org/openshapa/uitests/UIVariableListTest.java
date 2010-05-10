@@ -28,6 +28,7 @@ import org.openshapa.OpenSHAPA;
 
 import org.openshapa.util.UIUtils;
 
+import org.openshapa.views.NewDatabaseV;
 import org.openshapa.views.NewProjectV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
@@ -40,6 +41,12 @@ import org.testng.annotations.Test;
  * Test the creation of a new database.
  */
 public final class UIVariableListTest extends OpenSHAPATestClass {
+
+    /**
+     * Resource map to access error messages in resources.
+     */
+    private ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+        .getContext().getResourceMap(NewDatabaseV.class);
 
     /**
      * Test adding new variables with a script.

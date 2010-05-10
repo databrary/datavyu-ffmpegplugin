@@ -1,32 +1,25 @@
 package org.fest.swing.fixture;
 
 import java.awt.event.KeyEvent;
-
 import java.util.Set;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-
 import org.fest.swing.core.Robot;
-
-import org.openshapa.OpenSHAPA;
-
-import org.openshapa.views.PlaybackV;
+import org.openshapa.views.DataControllerV;
 import org.openshapa.views.continuous.DataViewer;
-
 
 /**
  * Fixture for OpenSHAPA DataController.
  */
-public class PlaybackVFixture extends DialogFixture {
-
+public class DataControllerFixture extends DialogFixture {
     /**
      * Constructor.
      * @param robot main frame fixture robot
      * @param target data controller class
      */
-    public PlaybackVFixture(final Robot robot, final PlaybackV target) {
+    public DataControllerFixture(final Robot robot,
+            final DataControllerV target) {
         super(robot, target);
     }
 
@@ -35,11 +28,8 @@ public class PlaybackVFixture extends DialogFixture {
      * @return String of currentTime.
      */
     public final String getCurrentTime() {
-        System.out.println("PlaybackVFixture.getCurrentTime()");
-        System.out.println(Thread.currentThread().getName());
-
         return new JLabelFixture(robot,
-                findByName("timestampLabel", JLabel.class)).text();
+            findByName("timestampLabel", JLabel.class)).text();
     }
 
     /**
@@ -54,10 +44,8 @@ public class PlaybackVFixture extends DialogFixture {
      * Press find button.
      */
     public final void pressFindButton() {
-        System.out.println("PlaybackVFixture.pressFindButton()");
-        System.out.println(Thread.currentThread().getName());
-        new JButtonFixture(robot, findByName("findButton", JButton.class))
-            .click();
+        new JButtonFixture(robot,
+            findByName("findButton", JButton.class)).click();
     }
 
     /**
@@ -80,24 +68,24 @@ public class PlaybackVFixture extends DialogFixture {
      * Press rewind button.
      */
     public final void pressRewindButton() {
-        new JButtonFixture(robot, findByName("rewindButton", JButton.class))
-            .click();
+        new JButtonFixture(robot,
+            findByName("rewindButton", JButton.class)).click();
     }
 
     /**
      * Press fast forward button.
      */
     public final void pressFastForwardButton() {
-        new JButtonFixture(robot, findByName("forwardButton", JButton.class))
-            .click();
+        new JButtonFixture(robot,
+            findByName("forwardButton", JButton.class)).click();
     }
 
     /**
      * Press fast forward button.
      */
     public final void pressPlayButton() {
-        new JButtonFixture(robot, findByName("playButton", JButton.class))
-            .click();
+        new JButtonFixture(robot,
+            findByName("playButton", JButton.class)).click();
     }
 
     /**
@@ -112,8 +100,8 @@ public class PlaybackVFixture extends DialogFixture {
      * Press stop button.
      */
     public final void pressStopButton() {
-        new JButtonFixture(robot, findByName("stopButton", JButton.class))
-            .click();
+        new JButtonFixture(robot,
+            findByName("stopButton", JButton.class)).click();
     }
 
     /**
@@ -128,24 +116,24 @@ public class PlaybackVFixture extends DialogFixture {
      * Press jog back button.
      */
     public final void pressJogBackButton() {
-        new JButtonFixture(robot, findByName("jogBackButton", JButton.class))
-            .click();
+        new JButtonFixture(robot,
+            findByName("jogBackButton", JButton.class)).click();
     }
 
     /**
      * Press jog forward button.
      */
     public final void pressJogForwardButton() {
-        new JButtonFixture(robot, findByName("jogForwardButton", JButton.class))
-            .click();
+        new JButtonFixture(robot,
+            findByName("jogForwardButton", JButton.class)).click();
     }
 
     /**
      * Press pause button.
      */
     public final void pressPauseButton() {
-        new JButtonFixture(robot, findByName("pauseButton", JButton.class))
-            .click();
+        new JButtonFixture(robot,
+            findByName("pauseButton", JButton.class)).click();
     }
 
     /**
@@ -176,16 +164,14 @@ public class PlaybackVFixture extends DialogFixture {
      * Press Show Tracks button.
      */
     public final void pressShowTracksButton() {
-        new JButtonFixture(robot, findByName("showTracksButton", JButton.class))
-            .click();
+        new JButtonFixture(robot,
+            findByName("showTracksButton", JButton.class)).click();
     }
 
     /**
      * Press Shift + Find Button.
      */
     public final void pressShiftFindButton() {
-        System.out.println("PlaybackVFixture.pressShiftFindButton()");
-        System.out.println(Thread.currentThread().getName());
         robot.pressModifiers(KeyEvent.SHIFT_MASK);
         pressFindButton();
         robot.releaseModifiers(KeyEvent.SHIFT_MASK);
@@ -197,7 +183,7 @@ public class PlaybackVFixture extends DialogFixture {
      */
     public final String getFindOnset() {
         return new JTextComponentFixture(robot,
-                findByName("findOnsetLabel", JTextField.class)).text();
+            findByName("findOnsetLabel", JTextField.class)).text();
     }
 
     /**
@@ -206,7 +192,7 @@ public class PlaybackVFixture extends DialogFixture {
      */
     public final String getFindOffset() {
         return new JTextComponentFixture(robot,
-                findByName("findOffsetLabel", JTextField.class)).text();
+            findByName("findOffsetLabel", JTextField.class)).text();
     }
 
     /**
@@ -214,24 +200,24 @@ public class PlaybackVFixture extends DialogFixture {
      * @return String from speed label
      */
     public final String getSpeed() {
-        return new JLabelFixture(robot, findByName("speedLabel", JLabel.class))
-            .text();
+        return new JLabelFixture(robot,
+                findByName("lblSpeed", JLabel.class)).text();
     }
 
     /**
      * Returns set of all dataviewers.
      * @return Set<DataViewers> dataviewers
      */
-    //No method "getPlaybackController"
-//    public final Set<DataViewer> getDataViewers() {
-//
-//        // Just wait a second before queuing up request for data viewers.
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//        }
-//
-//        return OpenSHAPA.getPlaybackController().getDataViewers();
-//    }
+    public final Set<DataViewer> getDataViewers() {
+        return ((DataControllerV) target).getDataViewers();
+    }
 
+    /**
+     * Track mixer controller contains all track related components.
+     * @return The track mixer controller
+     */
+    public final MixerControllerFixture getTrackMixerController() {
+        return new MixerControllerFixture(robot,
+                ((DataControllerV) target).getMixerController());
+    }
 }
