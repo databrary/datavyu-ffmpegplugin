@@ -53,7 +53,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement to ensure needle time is the same as the clock time.
     */
-    /*@Test*/ public void testNeedleMovement() {
+    @Test public void testNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -135,7 +135,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test needle movement to ensure needle can't go beyond start or end.
      */
-    /*@Test*/ public void testRangeOfNeedleMovement() {
+    @Test public void testRangeOfNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -220,7 +220,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * 6. Left region can't cross (go beyond) right
      * 7. Right region can't cross left
      */
-    /*@Test*/ public void testRegionMovement() {
+    @Test public void testRegionMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -366,7 +366,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test moving track while locked and unlocked.
      */
-    /*@Test*/ public void testLockUnlockTrack() {
+    @Test public void testLockUnlockTrack() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -449,7 +449,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /*@Test*/ public void testTrackSnapping() {
+    @Test public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -730,7 +730,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test for Unlock Lock with zooming.
      */
-    /*@Test*/ public void testZoomLockUnlockTrack() {
+    @Test public void testLockUnlockTrackWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -831,7 +831,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * Test needle movement to ensure needle can't go beyond start or end,
      * with zoom applied.
      */
-    /*@Test*/ public void testRangeOfNeedleMovementWithZoom() {
+    @Test public void testRangeOfNeedleMovementWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1027,7 +1027,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                         fc.setSelectedFile(videoFile2);
                         method("openVideo").withParameterTypes(
                             OpenSHAPAFileChooser.class).in(
-                            (PlaybackV) dcf.component()).invoke(fc);
+                            (DataControllerV) dcf.component()).invoke(fc);
                     }
                 });
         } else {
@@ -1218,88 +1218,5 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         Assert.assertTrue(dcf.getTrackMixerController().getTracksEditor()
             .getSnapMarker().isVisible());
         track2.releaseLeftMouse();
-    }
-
-    /**
-     * Test moving track while locked and unlocked.
-     */
-    /*@Test*/ public void testLockUnlockTrack() {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
-        // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
-        Assert.assertTrue(videoFile.exists());
-
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
-
-        // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
-
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
-
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
-
-        // 4. Drag track
-        TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
-            .getTrack(0);
-        Assert.assertEquals(track.getOffsetTimeAsLong(), 0);
-
-        while (track.getOffsetTimeAsLong() <= 0) {
-            track.drag(150);
-        }
-
-        long offset = track.getOffsetTimeAsLong();
-        Assert.assertTrue(offset > 0, "offset=" + offset);
-
-        // 5. Lock track
-        track.pressLockButton();
-
-        // 6. Try to drag track, shouldn't be able to.
-        track.drag(150);
-        Assert.assertEquals(track.getOffsetTimeAsLong(), offset);
-        track.drag(-100);
-        Assert.assertEquals(track.getOffsetTimeAsLong(), offset);
     }
 }
