@@ -931,6 +931,292 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         needle.drag(-1 * widthOfTrack);
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:30:000");
          */
+    }
 
+    /**
+     * Test snapping tracks.
+     */
+    @Test public void testTrackSnappingWithZoom() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller and get starting time
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+
+        final DataControllerFixture dcf = new DataControllerFixture(
+                mainFrameFixture.robot,
+                (DataControllerV) mainFrameFixture.dialog().component());
+
+        // 3. Open track view
+        dcf.pressShowTracksButton();
+
+        JSliderFixture zoomSlider = dcf.getTrackMixerController()
+            .getZoomSlider();
+
+        // c. Open first video
+        String root = System.getProperty("testPath");
+        final File videoFile1 = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile1.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                    public void executeInEDT() {
+                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                        fc.setVisible(false);
+
+                        for (FileFilter f : pm.getPluginFileFilters()) {
+                            fc.addChoosableFileFilter(f);
+                        }
+
+                        fc.setSelectedFile(videoFile1);
+                        method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class).in(
+                            (DataControllerV) dcf.component()).invoke(fc);
+                    }
+                });
+        } else {
+            boolean worked = false;
+            JFileChooserFixture jfcf = null;
+
+            do {
+                dcf.button("addDataButton").click();
+
+                try {
+                    jfcf = dcf.fileChooser();
+                    jfcf.selectFile(videoFile1).approve();
+                    worked = true;
+                } catch (Exception e) {
+                    // keep trying
+                }
+            } while (worked == false);
+        }
+
+        // 2. Get first window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid1 = ((Frame) it.next());
+        FrameFixture vidWindow1 = new FrameFixture(mainFrameFixture.robot,
+                vid1);
+
+        vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        // c. Open second video
+        final File videoFile2 = new File(root + "/ui/head_turns_copy.mov");
+        Assert.assertTrue(videoFile2.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                    public void executeInEDT() {
+                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                        fc.setVisible(false);
+
+                        for (FileFilter f : pm.getPluginFileFilters()) {
+                            fc.addChoosableFileFilter(f);
+                        }
+
+                        fc.setSelectedFile(videoFile2);
+                        method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class).in(
+                            (DataControllerV) dcf.component()).invoke(fc);
+                    }
+                });
+        } else {
+            boolean worked = false;
+            JFileChooserFixture jfcf = null;
+
+            do {
+                dcf.button("addDataButton").click();
+
+                try {
+                    jfcf = dcf.fileChooser();
+                    jfcf.selectFile(videoFile2).approve();
+                    worked = true;
+                } catch (Exception e) {
+                    // keep trying
+                }
+            } while (worked == false);
+        }
+
+        // 2. Get second window
+        it = dcf.getDataViewers().iterator();
+
+        Frame vid2 = ((Frame) it.next());
+        FrameFixture vidWindow2 = new FrameFixture(mainFrameFixture.robot,
+                vid2);
+
+        vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
+
+        //Zoom
+        zoomSlider.slideToMaximum();
+
+        // 3. Move needle 50 pixels
+        NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
+
+        while (needle.getCurrentTimeAsLong() <= 0) {
+            needle.drag(100);
+        }
+
+        long snapPoint1 = needle.getCurrentTimeAsLong();
+
+        Assert.assertTrue(snapPoint1 > 0);
+
+        // 4. Add bookmark to Track 1 using button
+        // a. Click track 1 to select
+        TrackFixture track1 = dcf.getTrackMixerController().getTracksEditor()
+            .getTrack(0);
+
+        while (!track1.isSelected()) {
+            track1.click();
+        }
+
+        Assert.assertTrue(track1.isSelected());
+
+        // b. Click add bookmark button
+        dcf.getTrackMixerController().pressBookmarkButton();
+        Assert.assertEquals(snapPoint1, track1.getBookmarkTimeAsLong());
+
+        // c. Click track 1 to deselect
+        while (track1.isSelected()) {
+            track1.click();
+        }
+
+        Assert.assertFalse(track1.isSelected());
+
+        // 5. Move needle another 50 pixels
+        while (needle.getCurrentTimeAsLong() <= (1.9 * snapPoint1)) {
+            dcf.getTrackMixerController().getNeedle().drag(100);
+        }
+
+        Assert.assertTrue(needle.getCurrentTimeAsLong() > snapPoint1);
+
+        long snapPoint2 = dcf.getTrackMixerController().getNeedle()
+            .getCurrentTimeAsLong();
+        Assert.assertTrue(snapPoint2 > (1.9 * snapPoint1));
+
+        // 6. Add bookmark to Track 2 using right click popup menu
+        TrackFixture track2 = dcf.getTrackMixerController().getTracksEditor()
+            .getTrack(1);
+        JPopupMenuFixture popup = track2.showPopUpMenu();
+        popup.menuItemWithPath("Set bookmark").click();
+        Assert.assertEquals(snapPoint2, track2.getBookmarkTimeAsLong());
+
+        while (track2.isSelected()) {
+            track2.click();
+        }
+
+        Assert.assertFalse(track2.isSelected());
+
+        // Move needle away
+        while (needle.getCurrentTimeAsLong() <= snapPoint2) {
+            needle.drag(100);
+        }
+
+        Assert.assertTrue(needle.getCurrentTimeAsLong() > snapPoint2);
+
+        // 7. Drag track 1 to snap
+        // a. Drag 1 pixel to see what 1 pixel equals in time
+        track1.drag(10);
+
+        long tempTime = track1.getOffsetTimeAsLong();
+        track1.drag(1);
+
+        long onePixelTime = track1.getOffsetTimeAsLong() - tempTime;
+
+        // b. Drag away from start marker
+        track1.drag(10);
+
+        // c. Drag 1 pixel at a time until it snaps
+
+        long newTime = onePixelTime;
+        long oldTime = 0;
+
+        while ((!dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
+                    .isVisible())
+                || (Math.abs((newTime - oldTime) - onePixelTime) < 2)) {
+
+            // Check if we've snapped
+            if (
+                dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
+                    .isVisible() && (newTime > (10 * onePixelTime))) {
+                System.err.println("Snapped while moving");
+                System.err.println("New time=" + newTime);
+                System.err.println("Old time=" + oldTime);
+                System.err.println("onePixelTime=" + onePixelTime);
+
+                break;
+            }
+
+            // Check we haven't gone too far
+            if (newTime > snapPoint1) {
+                track1.releaseLeftMouse();
+                Assert.assertTrue(false, "passed snap point");
+            }
+
+            oldTime = track1.getOffsetTimeAsLong();
+            track1.dragWithoutReleasing(1);
+            newTime = track1.getOffsetTimeAsLong();
+        }
+
+        System.err.println("Snapped?");
+        System.err.println("New time=" + newTime);
+        System.err.println("Old time=" + oldTime);
+        System.err.println("onePixelTime=" + onePixelTime);
+        System.err.println("snapPoint2=" + snapPoint2);
+        System.err.println("snapPoint1=" + snapPoint1);
+        System.err.println("trackOffset=" + track1.getOffsetTimeAsLong());
+
+        // d. Check if snapped
+        Assert.assertEquals(track1.getOffsetTimeAsLong(),
+            snapPoint2 - snapPoint1);
+        Assert.assertTrue(dcf.getTrackMixerController().getTracksEditor()
+            .getSnapMarker().isVisible());
+        track1.releaseLeftMouse();
+
+        // 8. Drag track 1 to snap from the other direction
+        // a. Drag track away
+        track1.drag(35);
+
+        // b. Drag 1 pixel at a time until it snaps
+        newTime = track1.getOffsetTimeAsLong();
+        oldTime = newTime + onePixelTime;
+
+        while (Math.abs((oldTime - newTime) - onePixelTime) < 2) {
+
+            // Check if we've snapped
+            if (
+                dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
+                    .isVisible() && (newTime > (10 * onePixelTime))) {
+                break;
+            }
+
+            // Check we haven't gone too far
+            if (newTime < 0) {
+                track1.releaseLeftMouse();
+                Assert.assertTrue(false, "passed snap point");
+            }
+
+            oldTime = track1.getOffsetTimeAsLong();
+            track1.dragWithoutReleasing(-1);
+            newTime = track1.getOffsetTimeAsLong();
+        }
+
+        System.err.print(newTime - oldTime + "," + onePixelTime);
+
+        // b. Check if snapped
+        Assert.assertEquals(track1.getOffsetTimeAsLong(),
+            snapPoint2 - snapPoint1);
+        Assert.assertTrue(dcf.getTrackMixerController().getTracksEditor()
+            .getSnapMarker().isVisible());
+        track2.releaseLeftMouse();
     }
 }
