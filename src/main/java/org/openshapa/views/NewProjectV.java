@@ -14,6 +14,7 @@ import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.controllers.NewProjectC;
 
 
 /**
@@ -235,6 +236,7 @@ public final class NewProjectV extends OpenSHAPADialog {
             logger.error("Unable to create new database", ex);
         } catch (LogicErrorException ex) {
             OpenSHAPA.getApplication().showWarningDialog(ex);
+            new NewProjectC();
         } catch (Throwable ex) {
             logger.error("Unable to clean up the new project view.");
         }
