@@ -3,7 +3,6 @@ package org.openshapa.controllers.project;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,7 +18,6 @@ import org.openshapa.controllers.PlaybackController;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
-import org.openshapa.models.db.ExternalCascadeListener;
 import org.openshapa.models.db.ExternalColumnListListener;
 import org.openshapa.models.db.ExternalDataColumnListener;
 import org.openshapa.models.db.MacshapaDatabase;
@@ -41,7 +39,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
  * This class is responsible for managing a project.
  */
 public final class ProjectController implements ExternalColumnListListener,
-    ExternalDataColumnListener, ExternalCascadeListener {
+    ExternalDataColumnListener {
 
     /** The current project we are working on. */
     private Project project;
@@ -73,9 +71,6 @@ public final class ProjectController implements ExternalColumnListListener,
     /** Last option used for saving. */
     private FileFilter lastSaveOption;
 
-    /** The changes made to the column. */
-    private ColumnChanges colChanges;
-
     /**
      * Default constructor.
      */
@@ -83,7 +78,6 @@ public final class ProjectController implements ExternalColumnListListener,
         project = new Project();
         changed = false;
         newProject = true;
-        colChanges = new ColumnChanges();
     }
 
     /**
@@ -95,7 +89,6 @@ public final class ProjectController implements ExternalColumnListListener,
         this.project = projectModel;
         changed = false;
         newProject = false;
-        colChanges = new ColumnChanges();
     }
 
     /**
@@ -148,10 +141,9 @@ public final class ProjectController implements ExternalColumnListListener,
         db = newDB;
 
         try {
-            db.registerCascadeListener(this);
             db.registerColumnListListener(this);
         } catch (SystemErrorException e) {
-            logger.error("registerColumnListListener failed", e);
+            logger.error("deregisterColumnListListener failed", e);
         }
     }
 
@@ -479,8 +471,17 @@ public final class ProjectController implements ExternalColumnListListener,
      */
     public void DColCellDeletion(final Database db, final long colID,
         final long cellID) {
+        Runnable edtTask = new Runnable() {
+                public void run() {
+                    OpenSHAPAView view = (OpenSHAPAView) OpenSHAPA
+                        .getApplication().getMainView();
+                    SpreadsheetPanel spreadsheet = view.getSpreadsheetPanel();
+                    SpreadsheetColumn col = spreadsheet.getColumn(colID);
+                    col.deleteCellByID(cellID);
+                }
+            };
 
-        colChanges.cellDeleted.add(new Change(colID, cellID));
+        SwingUtilities.invokeLater(edtTask);
     }
 
 
@@ -492,8 +493,22 @@ public final class ProjectController implements ExternalColumnListListener,
      */
     public void DColCellInsertion(final Database db, final long colID,
         final long cellID) {
+        Runnable edtTask = new Runnable() {
+                public void run() {
+                    OpenSHAPAView view = (OpenSHAPAView) OpenSHAPA
+                        .getApplication().getMainView();
+                    SpreadsheetPanel spreadsheet = view.getSpreadsheetPanel();
+                    SpreadsheetColumn col = spreadsheet.getColumn(colID);
+                    col.insertCellByID(cellID);
 
-        colChanges.cellInserted.add(new Change(colID, cellID));
+                    // Force the update of the spreadsheet.
+                    spreadsheet.deselectAll();
+                    spreadsheet.relayoutCells();
+                    spreadsheet.highlightCell(cellID);
+                }
+            };
+
+        SwingUtilities.invokeLater(edtTask);
     }
 
     /**
@@ -526,10 +541,28 @@ public final class ProjectController implements ExternalColumnListListener,
         final boolean newVarLen, final boolean selectedChanged,
         final boolean oldSelected, final boolean newSelected) {
 
+        if (nameChanged) {
+            Runnable edtTask = new Runnable() {
+                    public void run() {
 
-        Change c = new Change(colID, 0);
-        c.changed = true;
-        colChanges.nameChanged.add(c);
+                        try {
+                            DataColumn dbColumn = db.getDataColumn(colID);
+                            OpenSHAPAView view = (OpenSHAPAView) OpenSHAPA
+                                .getApplication().getMainView();
+                            SpreadsheetPanel spreadsheet =
+                                view.getSpreadsheetPanel();
+                            SpreadsheetColumn col = spreadsheet.getColumn(
+                                    colID);
+                            col.setText(dbColumn.getName() + "  ("
+                                + dbColumn.getItsMveType() + ")");
+                        } catch (SystemErrorException e) {
+                            logger.error("Problem getting data column", e);
+                        }
+                    }
+                };
+
+            SwingUtilities.invokeLater(edtTask);
+        }
     }
 
     /**
@@ -539,172 +572,5 @@ public final class ProjectController implements ExternalColumnListListener,
      */
     public void DColDeleted(final Database db, final long colID) {
         // Not handled - should be handled by ColumnListener in spreadsheet.
-    }
-
-    /**
-     * Called at the beginning of a cascade of changes through the database.
-     * @param db The database.
-     */
-    public void beginCascade(final Database db) {
-        colChanges.reset();
-    }
-
-    /**
-     * Called at the end of a cascade of changes through the database.
-     * @param db The database.
-     */
-    public void endCascade(final Database db) {
-        Runnable edtTask = new Runnable() {
-                public void run() {
-
-                    if (colChanges.cellDeleted.size() > 0) {
-
-                        for (Change c : colChanges.cellDeleted) {
-                            OpenSHAPAView view = (OpenSHAPAView) OpenSHAPA
-                                .getApplication().getMainView();
-                            SpreadsheetPanel spreadsheet =
-                                view.getSpreadsheetPanel();
-                            SpreadsheetColumn col = spreadsheet.getColumn(
-                                    c.getCollID());
-                            col.deleteCellByID(c.getCellID());
-                        }
-                    }
-
-                    if (colChanges.cellInserted.size() > 0) {
-
-                        for (Change c : colChanges.cellInserted) {
-                            OpenSHAPAView view = (OpenSHAPAView) OpenSHAPA
-                                .getApplication().getMainView();
-                            SpreadsheetPanel spreadsheet =
-                                view.getSpreadsheetPanel();
-                            SpreadsheetColumn col = spreadsheet.getColumn(
-                                    c.getCollID());
-                            col.insertCellByID(c.getCellID());
-
-                            // Force the update of the spreadsheet.
-                            spreadsheet.deselectAll();
-                            spreadsheet.relayoutCells();
-                            spreadsheet.highlightCell(c.getCellID());
-                        }
-                    }
-
-                    if (colChanges.nameChanged.size() > 0) {
-
-                        for (Change c : colChanges.nameChanged) {
-                            if (c.isColChanged()) {
-                                try {
-                                    DataColumn dbColumn = db.getDataColumn(
-                                            c.getCollID());
-                                    OpenSHAPAView view = (OpenSHAPAView)
-                                        OpenSHAPA.getApplication()
-                                        .getMainView();
-                                    SpreadsheetPanel spreadsheet =
-                                        view.getSpreadsheetPanel();
-                                    SpreadsheetColumn col =
-                                        spreadsheet.getColumn(c.getCollID());
-                                    col.setText(dbColumn.getName() + "  ("
-                                        + dbColumn.getItsMveType() + ")");
-                                } catch (SystemErrorException e) {
-                                    logger.error("Problem getting data column",
-                                        e);
-                                }
-                            }
-                        }
-                    }
-
-                    colChanges.reset();
-                }
-            };
-
-        try {
-            SwingUtilities.invokeAndWait(edtTask);
-        } catch (InvocationTargetException ie) {
-            logger.error("Event Dispatch Thread - failed", ie);
-        } catch (InterruptedException ie) {
-            logger.error("Event Dispatch Thread - failed", ie);
-        }
-    }
-
-    /**
-     * Private class for recording information about a particular change to
-     * the spreadsheet view.
-     */
-    private final class Change {
-
-        /** The ID of the column we are performing a change for. */
-        private long collID;
-
-        /** The ID of the cell we are manipulating. */
-        private long cellID;
-
-        /** Has the name of the column changed? */
-        private boolean changed;
-
-        /**
-         * Constructor.
-         *
-         * @param newColID The ID of the column we are changing.
-         * @param newCelID the ID of the cell we are manipulating.
-         */
-        private Change(final long newColID, final long newCelID) {
-            collID = newColID;
-            cellID = newCelID;
-        }
-
-        /**
-         * @return The ID of the column we are changing.
-         */
-        public long getCollID() {
-            return collID;
-        }
-
-        /**
-         * @return The ID of the cell we are changing.
-         */
-        public long getCellID() {
-            return cellID;
-        }
-
-        /**
-         * @return has the column changed or not.
-         */
-        public boolean isColChanged() {
-            return changed;
-        }
-    }
-
-    /**
-     * Private class for recording the changes reported by the listener
-     * callbacks on this column.
-     */
-    private final class ColumnChanges {
-
-        /** The list of column name changes. */
-        private Vector<Change> nameChanged;
-
-        /** List of cell IDs of newly inserted cells. */
-        private Vector<Change> cellInserted;
-
-        /** List of cell IDs of deleted cells. */
-        private Vector<Change> cellDeleted;
-
-        /**
-         * ColumnChanges constructor.
-         */
-        private ColumnChanges() {
-            cellInserted = new Vector<Change>();
-            cellDeleted = new Vector<Change>();
-            nameChanged = new Vector<Change>();
-            reset();
-        }
-
-        /**
-         * Reset the ColumnChanges flags and lists.
-         */
-        private void reset() {
-            nameChanged.clear();
-            cellInserted.clear();
-            cellDeleted.clear();
-        }
     }
 }
