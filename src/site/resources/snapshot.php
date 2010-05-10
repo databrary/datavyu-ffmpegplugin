@@ -11,11 +11,11 @@ while ($file = readdir($dh)) {
         $date = explode(".", $chunks[3]);
 
         if (strlen($date[0]) == 10) {
-            $date[0] = $date[0]."0000";
+            $date[0] = $date[0]."5959";
         }
 
         if (strlen($date[0]) == 8) {
-            $date[0] = $date[0]."000000";
+            $date[0] = $date[0]."235959";
         }
 
         if ($files[$date[0]] == null) {
