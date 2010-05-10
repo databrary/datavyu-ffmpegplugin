@@ -223,6 +223,12 @@ public final class OpenDatabaseFileC {
                         result = result.concat(new String(buff));
                         // Move over the escape character.
                         i++;
+                    } else if (line.charAt(i) == '\\'
+                               && line.charAt(i + 1) == '-') {
+                        char[] buff = {'-'};
+                        result = result.concat(new String(buff));
+                        // Move over the escape character.
+                        i++;
                     } else {
                         result += line.charAt(i);
                     }
@@ -533,8 +539,9 @@ public final class OpenDatabaseFileC {
         String line = csvFile.readLine();
         while (line != null && Character.isDigit(line.charAt(0))) {
             // Parse arguments - for predicate vocab element.
-            String[] token = line.split("[:-]+");
-            PredicateVocabElement pve = new PredicateVocabElement(db, token[1]);
+            String[] token = line.split(":|(?<!\\\\)-");
+            PredicateVocabElement pve = new PredicateVocabElement(db,
+                                        this.stripEscChars(token[1]));
             for (String arg : token[2].split(",")) {
                 pve.appendFormalArg(parseFormalArgument(arg, db));
             }
@@ -563,6 +570,7 @@ public final class OpenDatabaseFileC {
             final Database db) throws SystemErrorException {
         FormalArgument fa;
         String[] formalArgument = content.split("\\|");
+        formalArgument[0] = this.stripEscChars(formalArgument[0]);
 
         // Add text formal argument.
         if (formalArgument[1].equalsIgnoreCase("quote_string")) {
@@ -613,7 +621,7 @@ public final class OpenDatabaseFileC {
             SystemErrorException, LogicErrorException {
         // Determine the variable name and type.
         String[] tokens = line.split("\\(");
-        String varName = tokens[0].trim();
+        String varName = this.stripEscChars(tokens[0].trim());
         String varType = tokens[1].substring(0, tokens[1].indexOf(")"));
 
         // Create variable to put cells within.
@@ -642,7 +650,7 @@ public final class OpenDatabaseFileC {
         } else if (getVarType(varType)
                    == MatrixVocabElement.MatrixType.MATRIX) {
             // Read matrix variable - Build vocab for matrix.
-            String[] vocabString = tokens[1].split("-");
+            String[] vocabString = tokens[1].split("(?<!\\\\)-");
 
             // Get the vocab element for the matrix and clean it up to be
             // populated with arguments from the CSV file.

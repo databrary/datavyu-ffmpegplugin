@@ -5,11 +5,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+
 import java.util.Vector;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+
 import org.openshapa.OpenSHAPA;
+
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.FormalArgument;
@@ -21,7 +24,11 @@ import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.db.MatrixVocabElement.MatrixType;
 
 import com.usermetrix.jclient.UserMetrix;
+
 import java.io.FileOutputStream;
+
+import org.openshapa.util.StringUtils;
+
 
 /**
  * Controller for saving the database to disk.
@@ -45,12 +52,12 @@ public final class SaveDatabaseFileC {
      * desired location.
      */
     public void saveDatabase(final File destinationFile,
-                             final MacshapaDatabase db)
-    throws LogicErrorException {
+        final MacshapaDatabase db) throws LogicErrorException {
+
         // We bypass any overwrite checks here.
         String outputFile = destinationFile.getName().toLowerCase();
         String extension = outputFile.substring(outputFile.lastIndexOf('.'),
-                                                outputFile.length());
+                outputFile.length());
 
         if (extension.equals(".csv")) {
             saveAsCSV(destinationFile.toString(), db);
@@ -71,27 +78,25 @@ public final class SaveDatabaseFileC {
      *      disk (usually because of permissions errors).
      */
     public void saveAsMacSHAPADB(final String outFile,
-                                 final MacshapaDatabase db)
-    throws LogicErrorException {
+        final MacshapaDatabase db) throws LogicErrorException {
 
         try {
             logger.usage("saving database as ODB");
+
             PrintStream outStream = new PrintStream(outFile);
             db.toMODBFile(outStream, "\r");
             outStream.close();
 
         } catch (FileNotFoundException e) {
-            ResourceMap rMap =
-                    Application.getInstance(OpenSHAPA.class).getContext()
-                            .getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString(
-                    "UnableToSave.message", outFile), e);
+            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                .getContext().getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString("UnableToSave.message",
+                    outFile), e);
         } catch (IOException e) {
-            ResourceMap rMap =
-                    Application.getInstance(OpenSHAPA.class).getContext()
-                            .getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString(
-                    "UnableToSave.message", outFile), e);
+            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                .getContext().getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString("UnableToSave.message",
+                    outFile), e);
         } catch (SystemErrorException e) {
             logger.error("Can't write macshapa db file '" + outFile + "'", e);
         }
@@ -109,17 +114,17 @@ public final class SaveDatabaseFileC {
      *      because of permissions errors).
      */
     public void saveAsCSV(final String outFile, final MacshapaDatabase db)
-    throws LogicErrorException {
+        throws LogicErrorException {
+
         try {
             FileOutputStream fos = new FileOutputStream(outFile);
             saveAsCSV(fos, db);
             fos.close();
         } catch (IOException ie) {
-            ResourceMap rMap =
-                    Application.getInstance(OpenSHAPA.class).getContext()
-                            .getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString(
-                    "UnableToSave.message", outFile), ie);
+            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                .getContext().getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString("UnableToSave.message",
+                    outFile), ie);
         }
     }
 
@@ -135,32 +140,37 @@ public final class SaveDatabaseFileC {
      *      because of permissions errors).
      */
     public void saveAsCSV(final OutputStream outStream,
-                          final MacshapaDatabase db)
-    throws LogicErrorException {
+        final MacshapaDatabase db) throws LogicErrorException {
+
         try {
             logger.usage("saving database as CSV to stream");
+
             // Dump out an identifier for the version of file.
             PrintStream ps = new PrintStream(outStream);
             ps.println("#2");
 
             // Dump out all the predicates held within the database.
             Vector<PredicateVocabElement> predicates = db.getPredVEs();
+
             if (predicates.size() > 0) {
                 int counter = 0;
 
                 for (PredicateVocabElement pve : predicates) {
-                    ps.printf("%d:%s-", counter,  pve.getName());
+                    ps.printf("%d:%s-", counter,
+                        StringUtils.escapeCSV(pve.getName()));
+
                     for (int j = 0; j < pve.getNumFormalArgs(); j++) {
                         FormalArgument fa = pve.getFormalArgCopy(j);
-                        String name =
-                                fa.getFargName().substring(1,
-                                        fa.getFargName().length() - 1);
-                        ps.printf("%s|%s", name, fa.getFargType().toString());
+                        String name = fa.getFargName().substring(1,
+                                fa.getFargName().length() - 1);
+                        ps.printf("%s|%s", StringUtils.escapeCSV(name),
+                            fa.getFargType().toString());
 
-                        if (j < pve.getNumFormalArgs() - 1) {
+                        if (j < (pve.getNumFormalArgs() - 1)) {
                             ps.print(',');
                         }
                     }
+
                     ps.println();
                     counter++;
                 }
@@ -168,28 +178,33 @@ public final class SaveDatabaseFileC {
 
             // Dump out the data from all the columns.
             Vector<Long> colIds = db.getColOrderVector();
+
             for (int i = 0; i < colIds.size(); i++) {
                 DataColumn dc = db.getDataColumn(colIds.get(i));
                 boolean isMatrix = false;
-                ps.printf("%s (%s)", dc.getName(), dc.getItsMveType());
+                ps.printf("%s (%s)", StringUtils.escapeCSV(dc.getName()),
+                    dc.getItsMveType());
 
                 // If we a matrix type - we need to dump the formal args.
                 MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
+
                 if (dc.getItsMveType() == MatrixType.MATRIX) {
                     isMatrix = true;
                     ps.print('-');
+
                     for (int j = 0; j < mve.getNumFormalArgs(); j++) {
                         FormalArgument fa = mve.getFormalArgCopy(j);
-                        String name =
-                                fa.getFargName().substring(1,
-                                        fa.getFargName().length() - 1);
-                        ps.printf("%s|%s", name, fa.getFargType().toString());
+                        String name = fa.getFargName().substring(1,
+                                fa.getFargName().length() - 1);
+                        ps.printf("%s|%s", StringUtils.escapeCSV(name),
+                            fa.getFargType().toString());
 
-                        if (j < mve.getNumFormalArgs() - 1) {
+                        if (j < (mve.getNumFormalArgs() - 1)) {
                             ps.print(',');
                         }
                     }
                 }
+
                 ps.println();
 
                 for (int j = 1; j <= dc.getNumCells(); j++) {
@@ -202,7 +217,7 @@ public final class SaveDatabaseFileC {
                     }
 
                     ps.printf("%s,%s,%s", c.getOnset().toString(),
-                            c.getOffset().toString(), value);
+                        c.getOffset().toString(), value);
                     ps.println();
                 }
             }
