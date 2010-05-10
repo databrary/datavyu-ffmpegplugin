@@ -207,6 +207,9 @@ public final class NewProjectV extends OpenSHAPADialog {
             .getResourceMap(NewProjectV.class);
 
         try {
+            OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
+            // clear the contents of the existing spreadsheet.
+            OpenSHAPA.getProjectController().setLastCreatedCellId(0);
 
             if (!isValidProjectName(getProjectName())) {
                 throw new LogicErrorException(r.getString("Error.invalidName"));
@@ -219,9 +222,6 @@ public final class NewProjectV extends OpenSHAPADialog {
 
             OpenSHAPA.getProjectController().createNewProject(getProjectName());
             OpenSHAPA.getProjectController().setDatabase(database);
-
-            OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
-                .getMainView();
 
             s.showSpreadsheet();
 

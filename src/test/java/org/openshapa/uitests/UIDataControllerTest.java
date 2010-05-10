@@ -714,7 +714,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
 
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.15, 0.1));
+                refImageFile, 0.14, 0.08));
 
         // 2. Fast forward video to end and confirm you've reached end (1min)
         dcf.pressFastForwardButton();
@@ -735,7 +735,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         refImageFile = new File(root + "/ui/head_turns600h1mt.png");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.15, 0.1));
+                refImageFile, 0.14, 0.08));
 
         // 3. Press play, should start playing again
         dcf.pressPlayButton();
@@ -749,7 +749,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             vidImage = UIImageUtils.captureAsScreenshot(vid);
             dcf.pressPauseButton();
             Assert.assertFalse(UIImageUtils.areImagesEqual(vidImage,
-                    refImageFile, 0.15, 0.1));
+                    refImageFile, 0.14, 0.08));
         } catch (SystemErrorException ex) {
             Logger.getLogger(UIDataControllerTest.class.getName()).log(
                 Level.SEVERE, null, ex);
@@ -766,9 +766,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Expect: New cell created.
      * Actual: Dang nabbit error
      */
-    //Commented out. Passing on local machine, failing on server. Possibly EDT
-    //related.
-    /*@Test*/ public void testBug1204() {
+    @Test public void testBug1204() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -825,7 +823,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 300));
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 310, 300));
 
         // 5. Play video then create a new cell using Num0
         // Play video
@@ -917,7 +915,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         Frame vid = ((Frame) it.next());
         FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 300));
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 310, 300));
 
         // 4. Create a new variable
         UIUtils.createNewVariable(mainFrameFixture, "p",
