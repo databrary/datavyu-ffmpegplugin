@@ -53,7 +53,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement to ensure needle time is the same as the clock time.
     */
-    /*@Test*/ public void testNeedleMovement() {
+    @Test public void testNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -135,7 +135,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test needle movement to ensure needle can't go beyond start or end.
      */
-    /*@Test*/ public void testRangeOfNeedleMovement() {
+    @Test public void testRangeOfNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -220,7 +220,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * 6. Left region can't cross (go beyond) right
      * 7. Right region can't cross left
      */
-    /*@Test*/ public void testRegionMovement() {
+    @Test public void testRegionMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -366,7 +366,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test moving track while locked and unlocked.
      */
-    /*@Test*/ public void testLockUnlockTrack() {
+    @Test public void testLockUnlockTrack() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -449,7 +449,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /*@Test*/ public void testTrackSnapping() {
+    @Test public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -730,7 +730,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test for Unlock Lock with zooming.
      */
-    /*@Test*/ public void testZoomLockUnlockTrack() {
+    @Test public void testLockUnlockTrackWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -936,7 +936,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /*@Test*/ public void testTrackSnappingWithZoom() {
+    @Test public void testTrackSnappingWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet

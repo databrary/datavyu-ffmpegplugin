@@ -419,6 +419,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // Check the title - asterisk present
         Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
+
         // 3. Save project file. Not expecting anything except a save
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
@@ -909,7 +910,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * Test for saving into a directory where user does not have write 
      * permissions.
      */
-    /*@Test*/ public void saveToDirectoryWithoutPermissions() {
+    @Test public void saveToDirectoryWithoutPermissions() {
         final String root = System.getProperty("testPath") + "/ui/";
         final String tempFolder = System.getProperty("java.io.tmpdir");
 

@@ -107,7 +107,7 @@ public final class UIUtils {
             return false;
         }
 
-        while (line1 != null && line2 != null) {
+        while (line1 != null || line2 != null) {
             if (!line1.equals(line2)) {
                 return false;
             }
