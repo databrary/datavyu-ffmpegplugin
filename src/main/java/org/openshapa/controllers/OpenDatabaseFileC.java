@@ -483,7 +483,7 @@ public final class OpenDatabaseFileC {
 
             // BugzID: 1075 - If the line ends with an escaped new line - add
             // the next line to the current text field.
-            while (line.endsWith("\\")) {
+            while (line.endsWith("\\") && !line.endsWith("\\\\")) {
                 line = csvFile.readLine();
                 String content = tokens[tokens.length - 1];
                 content = content.substring(0, content.length() - 1);
