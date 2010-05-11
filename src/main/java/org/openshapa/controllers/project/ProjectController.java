@@ -5,7 +5,12 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
+
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 
@@ -239,10 +244,23 @@ public final class ProjectController {
         // Load the plugins required for each media file
         boolean showController = false;
 
+        boolean missingFiles = false;
+
+        List<String> missingFilesList = new LinkedList<String>();
+
+        // Load the viewer settings.
         for (ViewerSetting setting : project.getViewerSettings()) {
             showController = true;
 
             File file = new File(setting.getFilePath());
+
+            if (!file.exists()) {
+                missingFiles = true;
+                missingFilesList.add(file.getAbsolutePath());
+
+                continue;
+            }
+
             Plugin plugin = pm.getAssociatedPlugin(setting.getPluginName());
 
             if (plugin == null) {
@@ -262,14 +280,41 @@ public final class ProjectController {
         MixerControllerV mixerController = dataController.getMixerController();
 
         for (TrackSettings setting : project.getTrackSettings()) {
+            File file = new File(setting.getFilePath());
+
+            if (!file.exists()) {
+                continue;
+            }
+
             mixerController.setTrackInterfaceSettings(setting.getFilePath(),
                 setting.getBookmarkPosition(), setting.isLocked());
+        }
+
+        if (missingFiles) {
+            JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                .getContext().getResourceMap(OpenSHAPA.class);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("The following files are missing:\n\n");
+
+            for (String filePath : missingFilesList) {
+                sb.append(filePath);
+                sb.append('\n');
+            }
+
+            JOptionPane.showMessageDialog(mainFrame, sb.toString(),
+                rMap.getString("FileNotFound.title"),
+                JOptionPane.WARNING_MESSAGE);
+
+            showController = true;
         }
 
         // Show the data controller
         if (showController) {
             OpenSHAPA.getApplication().showDataController();
         }
+
     }
 
     /**
