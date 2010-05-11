@@ -121,6 +121,13 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
+            Thread.yield();
+        }
         scriptConsole.button("closeButton").click();
 
         // Check that asterisk is present
