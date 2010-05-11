@@ -152,29 +152,23 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
     /**
      * Find and delete SpreadsheetCell by its ID.
-     * 
+     *
      * @param cellID
      *            ID of cell to find and delete.
      */
     public void deleteCellByID(final long cellID) {
-        try {
-            for (SpreadsheetCell cell : cells) {
-                if (cell.getCellID() == cellID) {
-                    OpenSHAPA.getProjectController().getDB()
-                            .deregisterDataCellListener(cellID, cell);
-                    cells.remove(cell);
-                    this.remove(cell);
-                    break;
-                }
+        for (SpreadsheetCell cell : cells) {
+            if (cell.getCellID() == cellID) {
+                cells.remove(cell);
+                this.remove(cell);
+                break;
             }
-        } catch (SystemErrorException se) {
-            logger.error("Unable to delete cell by ID", se);
         }
     }
 
     /**
      * Insert a new SpreadsheetCell given the cells ID.
-     * 
+     *
      * @param db
      *            The database holding the cell that is being inserted into this
      *            column data panel.
