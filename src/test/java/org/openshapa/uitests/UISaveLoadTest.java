@@ -721,7 +721,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test public void testSaveOPF1() throws Exception {
+    /*BugzID:1751 @Test*/ public void testSaveOPF1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
@@ -745,7 +745,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test public void testSaveOPF2() throws Exception {
+    /*BugzID:1751 @Test*/ public void testSaveOPF2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
@@ -769,7 +769,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test public void testSaveOPF3() throws Exception {
+    /*BugzID:1751 @Test*/ public void testSaveOPF3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
