@@ -9,14 +9,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Vector;
 
+import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JDialog;
 
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
+import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
@@ -42,6 +43,7 @@ import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
 import org.openshapa.util.FileFilters.OPFFilter;
 
+import org.openshapa.views.DataControllerV;
 import org.openshapa.views.NewProjectV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.discrete.SpreadsheetPanel;
@@ -918,6 +920,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     // Need to figure out to how to set readonly permissions on file across
     // operating systems.
     /*@Test*/ public void saveToDirectoryWithoutPermissions() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         final String root = System.getProperty("testPath") + "/ui/";
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
@@ -967,6 +971,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      *  Having \ as the last character in a text field breaks the file.
      */
     @Test public void testBug1568() throws IOException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
         String root = System.getProperty("testPath");
@@ -992,13 +998,16 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
         // Add text to cells
-        Vector <SpreadsheetCellFixture> cells = spreadsheet.column(0).allCells();
+        Vector<SpreadsheetCellFixture> cells = spreadsheet.column(0).allCells();
 
         spreadsheet.column(0).cell(1).cellValue().enterText("this ends in \\");
-        spreadsheet.column(0).cell(1).cellValue().requireText("this ends in \\");
+        spreadsheet.column(0).cell(1).cellValue().requireText(
+            "this ends in \\");
 
-        spreadsheet.column(0).cell(2).cellValue().enterText("this also ends in \\");
-        spreadsheet.column(0).cell(2).cellValue().requireText("this also ends in \\");
+        spreadsheet.column(0).cell(2).cellValue().enterText(
+            "this also ends in \\");
+        spreadsheet.column(0).cell(2).cellValue().requireText(
+            "this also ends in \\");
 
 
         // 2. Save the file
@@ -1006,9 +1015,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
 
-                fc.setFileFilter(new OPFFilter());
+            fc.setFileFilter(new OPFFilter());
 
-               toSave = new File(tempFolder + "/slashFile.opf");
+            toSave = new File(tempFolder + "/slashFile.opf");
 
             fc.setSelectedFile(toSave);
 
@@ -1017,14 +1026,14 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
 
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new OPFFilter());
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                new OPFFilter());
 
             toSave = new File(tempFolder + "/slashFile.opf");
             mainFrameFixture.fileChooser().selectFile(toSave).approve();
         }
 
-        String justSavedPath = tempFolder +  "/slashFile.opf";
+        String justSavedPath = tempFolder + "/slashFile.opf";
 
         File justSaved = new File(justSavedPath);
         Assert.assertTrue(justSaved.exists(), "Expecting saved file to exist.");
@@ -1032,14 +1041,64 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // 3. Check that the generated file is correct
         loadFile(toSave);
 
-        //Check loaded project
+        // Check loaded project
         jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+
         SpreadsheetPanelFixture ss = new SpreadsheetPanelFixture(
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        Vector <SpreadsheetCellFixture> cs = ss.column(0).allCells();
+        Vector<SpreadsheetCellFixture> cs = ss.column(0).allCells();
 
         ss.column(0).cell(1).cellValue().requireText("this ends in \\");
 
         ss.column(0).cell(2).cellValue().requireText("this also ends in \\");
+    }
+
+    /**
+     *  Bug 1694 - Test handling of missing video file.
+     */
+    @Test public void testMissingVideoFiles() throws IOException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        String root = System.getProperty("testPath") + "/ui/";
+        File missingVidFile = new File(root + "/missingVideo.opf");
+        Assert.assertTrue(missingVidFile.exists(),
+            "Expecting demo_data_to_csv.rb to exist");
+
+        // 1. Load  File
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+
+            fc.setFileFilter(new OPFFilter());
+
+            fc.setSelectedFile(missingVidFile);
+
+            method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                OpenSHAPA.getView()).invoke(fc);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
+
+            try {
+                JOptionPaneFixture warning = mainFrameFixture.optionPane();
+                warning.requireTitle("Unsaved changes");
+                warning.buttonWithText("OK").click();
+            } catch (Exception e) {
+                // Do nothing
+            }
+
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                new OPFFilter());
+
+            mainFrameFixture.fileChooser().selectFile(missingVidFile).approve();
+        }
+
+        // Expecting warning
+        mainFrameFixture.optionPane().requireTitle("Missing files")
+            .buttonWithText("OK").click();
+
+        // Check that data controller is opened
+        final DataControllerFixture dcf = new DataControllerFixture(
+                mainFrameFixture.robot,
+                (DataControllerV) mainFrameFixture.dialog().component());
     }
 }
