@@ -2,7 +2,6 @@ package org.fest.swing.fixture;
 
 import java.awt.event.KeyEvent;
 
-import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -10,10 +9,8 @@ import javax.swing.JTextField;
 
 import org.fest.swing.core.Robot;
 
-import org.openshapa.OpenSHAPA;
 
 import org.openshapa.views.PlaybackV;
-import org.openshapa.views.continuous.DataViewer;
 
 
 /**

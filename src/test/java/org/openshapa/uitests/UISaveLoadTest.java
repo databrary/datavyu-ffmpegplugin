@@ -128,6 +128,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
                 && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
+
         scriptConsole.button("closeButton").click();
 
         // Check that asterisk is present
@@ -587,11 +588,13 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
+
             if (inputFile.endsWith("odb")) {
                 fc.setFileFilter(new MODBFilter());
             } else if (inputFile.endsWith("shapa")) {
                 fc.setFileFilter(new SHAPAFilter());
             }
+
             fc.setSelectedFile(iFile);
 
             method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
@@ -609,10 +612,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
             if (inputFile.endsWith("odb")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
-                new MODBFilter());
+                    new MODBFilter());
             } else if (inputFile.endsWith("shapa")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
-                new SHAPAFilter());
+                    new SHAPAFilter());
             }
 
             mainFrameFixture.fileChooser().selectFile(iFile).approve();
@@ -628,7 +631,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         Assert.assertNotNull(ssPanel.allColumns());
 
-        //Save file as a CSV and compare to reference file
+        // Save file as a CSV and compare to reference file
         File outputFile = saveAsCSV(expectedOutputFile + "new.csv");
 
         Assert.assertTrue(outputFile.exists(),
@@ -637,7 +640,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             "Expecting reference output to exist.");
 
         Assert.assertTrue(UIUtils.areFilesSameLineComp(outputFile, eoFile),
-                "Expecting files to be the same.");
+            "Expecting files to be the same.");
     }
 
     /**
@@ -670,16 +673,16 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * Test loading an ODB file.
      * @throws Exception on any error.
      */
-    /*@Test*/ public void testLoadingODB1() throws Exception {
+    @Test public void testLoadingODB1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         legacyFileLoadTest("macshapa-file.odb", "odfCSV.csv");
     }
 
-     /**
-     * Test loading an SHAPA file.
-     * @throws Exception on any error.
-     */
-    /*@Test*/ public void testLoadingSHAPA1() throws Exception {
+    /**
+    * Test loading an SHAPA file.
+    * @throws Exception on any error.
+    */
+    @Test public void testLoadingSHAPA1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         legacyFileLoadTest("test.shapa", "modify-test-out.csv");
     }
@@ -689,7 +692,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*@Test*/ public void testSaveAsCSV1() throws Exception {
+    @Test public void testSaveAsCSV1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedCSV", "csv");
     }
@@ -699,7 +702,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*@Test*/ public void testSaveAsCSV2() throws Exception {
+    @Test public void testSaveAsCSV2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedCSV.csv", "csv");
     }
@@ -709,7 +712,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     * @throws java.lang.Exception
     *             on any error
     */
-    /*@Test*/ public void testSaveAsOPF1() throws Exception {
+    @Test public void testSaveAsOPF1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
@@ -733,7 +736,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*@Test*/ public void testSaveAsOPF2() throws Exception {
+    @Test public void testSaveAsOPF2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
@@ -757,7 +760,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*@Test*/ public void testSaveAsOPF3() throws Exception {
+    @Test public void testSaveAsOPF3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
@@ -781,7 +784,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*@Test*/ public void testSaveAsCSV3() throws Exception {
+    @Test public void testSaveAsCSV3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedCSV.shapa", "csv");
     }
@@ -793,7 +796,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*@Test*/ public void testSaveCSV1() throws Exception {
+    @Test public void testSaveCSV1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV", "csv");
     }
@@ -803,7 +806,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     * @throws java.lang.Exception
     *             on any error
     */
-    /*@Test*/ public void testSaveCSV2() throws Exception {
+    @Test public void testSaveCSV2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV.csv", "csv");
     }
@@ -813,7 +816,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     * @throws java.lang.Exception
     *             on any error
     */
-    /*@Test*/ public void testSaveCSV3() throws Exception {
+    @Test public void testSaveCSV3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV.shapa", "csv");
     }
@@ -907,19 +910,21 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test for saving into a directory where user does not have write 
+     * Test for saving into a directory where user does not have write
      * permissions.
      */
+    // Need to figure out to how to set readonly permissions on file across
+    // operating systems.
     /*@Test*/ public void saveToDirectoryWithoutPermissions() {
         final String root = System.getProperty("testPath") + "/ui/";
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
-        //Check if directory exists and you do not have permission
+        // Check if directory exists and you do not have permission
         File noWrite = new File(root + "/noWrite/");
         Assert.assertTrue(noWrite.exists());
         Assert.assertTrue(noWrite.isDirectory());
 
-        //Try to save to directory and confirm that warning dialog pops up
+        // Try to save to directory and confirm that warning dialog pops up
         // Check that asterisk is present
         Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
@@ -927,7 +932,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
 
-            File toSave = new File(noWrite.getAbsolutePath() + "/" + "test.opf");
+            File toSave = new File(noWrite.getAbsolutePath() + "/"
+                    + "test.opf");
 
             fc.setSelectedFile(toSave);
 
@@ -936,15 +942,16 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save");
 
-            File toSave = new File(noWrite.getAbsolutePath() + "/" + "test.opf");
+            File toSave = new File(noWrite.getAbsolutePath() + "/"
+                    + "test.opf");
             mainFrameFixture.fileChooser().selectFile(toSave).approve();
         }
 
-        //Should try to overwrite
+        // Should try to overwrite
         mainFrameFixture.optionPane().requireTitle("Confirm overwrite")
-                .buttonWithText("Overwrite").click();
+            .buttonWithText("Overwrite").click();
 
-        //Test for this error message
+        // Test for this error message
         JOptionPaneFixture warning = mainFrameFixture.optionPane();
         warning.requireTitle("Warning:");
         warning.requireWarningMessage();
