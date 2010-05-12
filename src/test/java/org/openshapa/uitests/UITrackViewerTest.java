@@ -909,7 +909,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         needle.drag(-1 * widthOfTrack);
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:000");
 
-        //Drag back to half way
+        // Drag back to half way
         while (needle.getCurrentTimeAsLong() <= 0) {
             needle.drag(widthOfTrack);
         }
@@ -917,19 +917,20 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:30:000");
 
         /*BugzID:1734
-         dcf.getTrackMixerController().getHorizontalScrollBar().scrollToMaximum();
-
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:30:000");
-
-        while (needle.getCurrentTimeAsLong() <= 0) {
-            needle.drag(widthOfTrack);
-        }
-
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:01:00:000");
-
-        // 5. Move needle beyond start time
-        needle.drag(-1 * widthOfTrack);
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:30:000");
+         * dcf.getTrackMixerController().getHorizontalScrollBar().scrollToMaximum();
+         *
+         * Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+         * "00:00:30:000");
+         *
+         * while (needle.getCurrentTimeAsLong() <= 0) { needle.drag(widthOfTrack);
+         * }
+         *
+         * Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+         * "00:01:00:000");
+         *
+         * // 5. Move needle beyond start time needle.drag(-1 * widthOfTrack);
+         * Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+         * "00:00:30:000");
          */
     }
 
@@ -1056,7 +1057,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
 
-        //Zoom
+        // Zoom
         zoomSlider.slideToMaximum();
 
         // 3. Move needle 50 pixels

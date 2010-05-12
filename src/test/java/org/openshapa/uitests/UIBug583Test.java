@@ -27,7 +27,7 @@ public final class UIBug583Test extends OpenSHAPATestClass {
     /**
      * Bug 583 test with a range of values, including 0.
      */
-    @Test public void testBug583() throws InterruptedException {
+    /*//@Test*/ public void testBug583() throws InterruptedException {
 
         /**
          * Different cell variable types.

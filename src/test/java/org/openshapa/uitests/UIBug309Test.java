@@ -32,7 +32,7 @@ public final class UIBug309Test extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    @Test public void testEnterInsteadOfClicking() throws Exception {
+    /*//@Test*/ public void testEnterInsteadOfClicking() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "v";

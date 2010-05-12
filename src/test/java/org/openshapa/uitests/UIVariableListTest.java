@@ -51,7 +51,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Test adding new variables with a script.
      */
-    @Test public void testAddingVariablesWithScript() {
+    /*//@Test*/ public void testAddingVariablesWithScript() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -108,7 +108,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Test adding new variables manually.
      */
-    @Test public void testAddingVariablesManually() {
+    /*//@Test*/ public void testAddingVariablesManually() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String[] varNames = {"t", "p", "i", "n", "m", "f"};
@@ -153,7 +153,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Test adding new variables with a script.
      */
-    @Test public void testRemovalWithNewDatabase() {
+    /*//@Test*/ public void testRemovalWithNewDatabase() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
