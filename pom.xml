@@ -447,6 +447,20 @@
               </tasks>
             </configuration>
           </execution>
+          <execution>
+            <id>noWrite-directory</id>
+            <phase>test</phase>
+            <configuration>
+              <tasks>
+                <taskdef
+                 name="chmod"
+                 classname="org.apache.tools.ant.taskdefs.Chmod"/>
+                <chmod
+                 file="src/test/resources/ui/noWrite/test.opf"
+                 perm="444"/>
+              </tasks>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
 
