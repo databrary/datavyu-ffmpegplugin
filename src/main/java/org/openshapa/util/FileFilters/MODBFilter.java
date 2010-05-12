@@ -13,7 +13,7 @@ public class MODBFilter extends FileFilter {
      */
     @Override
     public String getDescription() {
-        return "MacSHAPA open database file";
+        return "MacSHAPA open database file (*.odb)";
     }
 
     /**

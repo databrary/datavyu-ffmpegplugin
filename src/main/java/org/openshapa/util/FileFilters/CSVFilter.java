@@ -13,7 +13,7 @@ public final class CSVFilter extends FileFilter {
      */
     @Override
     public String getDescription() {
-        return "CSV file";
+        return "CSV file (*.csv)";
     }
 
     /**

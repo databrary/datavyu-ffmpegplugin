@@ -441,6 +441,9 @@ public final class OpenSHAPAView extends FrameView
                 saveC.saveProject(new File(fc.getSelectedFile().getParent(),
                         archiveName), projController.getProject(),
                     projController.getDB());
+                projController.setProjectDirectory(fc.getSelectedFile()
+                    .getParent());
+
             }
 
             projController.setLastSaveOption(filter);
