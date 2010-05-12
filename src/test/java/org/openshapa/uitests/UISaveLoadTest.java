@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Vector;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,18 +21,19 @@ import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JPanelFixture;
+import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.controllers.project.ProjectController;
 
 import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
 
 import org.openshapa.util.UIUtils;
@@ -959,5 +961,85 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         // Check that asterisk is present
         Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
+    }
+
+    /**
+     *  Having \ as the last character in a text field breaks the file.
+     */
+    @Test public void testBug1568() throws IOException {
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+
+        String root = System.getProperty("testPath");
+        File toSave = null;
+
+        // Create new text variable
+        UIUtils.createNewVariable(mainFrameFixture, "t", "text");
+
+        // Create new cells
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        spreadsheet.column("t").click();
+
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
+        spreadsheet.column("t").click();
+
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
+        // Check that asterisk is present
+        Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
+
+        // Add text to cells
+        Vector <SpreadsheetCellFixture> cells = spreadsheet.column(0).allCells();
+
+        spreadsheet.column(0).cell(1).cellValue().enterText("this ends in \\");
+        spreadsheet.column(0).cell(1).cellValue().requireText("this ends in \\");
+
+        spreadsheet.column(0).cell(2).cellValue().enterText("this also ends in \\");
+        spreadsheet.column(0).cell(2).cellValue().requireText("this also ends in \\");
+
+
+        // 2. Save the file
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+
+                fc.setFileFilter(new OPFFilter());
+
+               toSave = new File(tempFolder + "/slashFile.opf");
+
+            fc.setSelectedFile(toSave);
+
+            method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                OpenSHAPA.getView()).invoke(fc);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+
+                mainFrameFixture.fileChooser().component().setFileFilter(
+                    new OPFFilter());
+
+            toSave = new File(tempFolder + "/slashFile.opf");
+            mainFrameFixture.fileChooser().selectFile(toSave).approve();
+        }
+
+        String justSavedPath = tempFolder +  "/slashFile.opf";
+
+        File justSaved = new File(justSavedPath);
+        Assert.assertTrue(justSaved.exists(), "Expecting saved file to exist.");
+
+        // 3. Check that the generated file is correct
+        loadFile(toSave);
+
+        //Check loaded project
+        jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ss = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        Vector <SpreadsheetCellFixture> cs = ss.column(0).allCells();
+
+        ss.column(0).cell(1).cellValue().requireText("this ends in \\");
+
+        ss.column(0).cell(2).cellValue().requireText("this also ends in \\");
     }
 }
