@@ -1187,6 +1187,13 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // a. Drag track away
         track1.drag(35);
 
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                Level.SEVERE, null, ex);
+        }
+
         // b. Drag 1 pixel at a time until it snaps
         newTime = track1.getOffsetTimeAsLong();
         oldTime = newTime + onePixelTime;
@@ -1208,6 +1215,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
             oldTime = track1.getOffsetTimeAsLong();
             track1.dragWithoutReleasing(-1);
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                    Level.SEVERE, null, ex);
+            }
+
             newTime = track1.getOffsetTimeAsLong();
         }
 
