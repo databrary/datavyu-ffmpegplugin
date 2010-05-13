@@ -919,7 +919,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     // Need to figure out to how to set readonly permissions on file across
     // operating systems.
-    @Test public void saveToDirectoryWithoutPermissions() {
+    @Test public void saveWithoutPermissions() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         final String root = System.getProperty("testPath") + "/ui/";
