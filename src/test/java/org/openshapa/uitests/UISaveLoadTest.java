@@ -919,16 +919,18 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     // Need to figure out to how to set readonly permissions on file across
     // operating systems.
-    /*@Test*/ public void saveToDirectoryWithoutPermissions() {
+    @Test public void saveToDirectoryWithoutPermissions() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         final String root = System.getProperty("testPath") + "/ui/";
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
-        // Check if directory exists and you do not have permission
-        File noWrite = new File(root + "/noWrite/");
+        // Check if file exists and you do not have permission
+        File noWrite = new File(root + "/noWrite/test.opf");
+        noWrite.setReadOnly();
         Assert.assertTrue(noWrite.exists());
-        Assert.assertTrue(noWrite.isDirectory());
+        Assert.assertTrue(noWrite.isFile());
+        Assert.assertFalse(noWrite.canWrite());
 
         // Try to save to directory and confirm that warning dialog pops up
         // Check that asterisk is present
@@ -938,10 +940,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
 
-            File toSave = new File(noWrite.getAbsolutePath() + "/"
-                    + "test.opf");
-
-            fc.setSelectedFile(toSave);
+            fc.setSelectedFile(noWrite);
 
             method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
                 OpenSHAPA.getView()).invoke(fc);

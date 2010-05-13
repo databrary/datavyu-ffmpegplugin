@@ -208,14 +208,7 @@
       <id>maven</id>
       <url>http://repo1.maven.org/maven2</url>
       <layout>default</layout>
-    </repository>
-
-    <!-- For camel -->
-    <repository>
-      <id>maven</id>
-      <url>http://repo.fusesource.com/maven2/</url>
-      <layout>default</layout>
-    </repository>
+    </repository>    
   </repositories>
 
   <!-- External plugin repositories - where to find third-part dependencies. -->
@@ -404,12 +397,6 @@
             <artifactId>ant-optional</artifactId>
             <version>1.5.2</version>
           </dependency>
-
-          <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-web-standalone</artifactId>
-            <version>2.2.0</version>
-          </dependency>
         </dependencies>
 
         <groupId>org.apache.maven.plugins</groupId>
@@ -457,27 +444,6 @@
                  file="src/main/resources/org/openshapa/resources/OpenSHAPA.properties"
                  match="Application.build =(.*)"
                  replace="Application.build = b:none"/>
-              </tasks>
-            </configuration>
-          </execution>
-          <execution>
-            <id>noWrite-directory</id>
-            <phase>test</phase>
-            <configuration>
-              <tasks>
-                <taskdef
-                 name="attrib"
-                 classname="org.apache.tools.ant.taskdefs.optional.Windows.Attrib"/>
-                <attrib
-                 file="src/test/resources/ui/noWrite/test.opf"
-                 readonly="true"
-                 type="file"/>
-                 <taskdef
-                 name="chmod"
-                 classname="org.apache.tools.ant.taskdefs.Chmod"/>
-                <chmod
-                 file="src/test/resources/ui/noWrite/test.opf"
-                 perm="444"/>
               </tasks>
             </configuration>
           </execution>
