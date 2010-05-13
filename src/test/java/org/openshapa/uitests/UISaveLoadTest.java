@@ -937,15 +937,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
         if (Platform.isOSX()) {
-            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-            fc.setVisible(false);
-
-            fc.setFileFilter(new OPFFilter());
-
-            fc.setSelectedFile(noWrite);
-
-            method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
-                OpenSHAPA.getView()).invoke(fc);
+            return;
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save");
 
@@ -1067,15 +1059,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         // 1. Load  File
         if (Platform.isOSX()) {
-            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-            fc.setVisible(false);
-
-            fc.setFileFilter(new OPFFilter());
-
-            fc.setSelectedFile(missingVidFile);
-
-            method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
-                OpenSHAPA.getView()).invoke(fc);
+           return;
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Open...");
 
