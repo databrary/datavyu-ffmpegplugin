@@ -213,13 +213,19 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
             // Do nothing
         }
 
-        DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
-                new GenericTypeMatcher<JDialog>(JDialog.class) {
-                    @Override protected boolean isMatching(
-                        final JDialog dialog) {
-                        return dialog.getClass().equals(NewProjectV.class);
-                    }
-                }, Timeout.timeout(5, TimeUnit.SECONDS));
+        DialogFixture newDatabaseDialog;
+
+        try {
+            newDatabaseDialog = mainFrameFixture.dialog();
+        } catch (Exception e) {
+            newDatabaseDialog = mainFrameFixture.dialog(
+                    new GenericTypeMatcher<JDialog>(JDialog.class) {
+                        @Override protected boolean isMatching(
+                            final JDialog dialog) {
+                            return dialog.getClass().equals(NewProjectV.class);
+                        }
+                    }, Timeout.timeout(5, TimeUnit.SECONDS));
+        }
 
         newDatabaseDialog.textBox("nameField").enterText("n");
 

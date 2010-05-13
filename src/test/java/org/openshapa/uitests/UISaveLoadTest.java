@@ -266,13 +266,19 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         }
 
         // Get New Database dialog
-        DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
-                new GenericTypeMatcher<JDialog>(JDialog.class) {
-                    @Override protected boolean isMatching(
-                        final JDialog dialog) {
-                        return dialog.getClass().equals(NewProjectV.class);
-                    }
-                }, Timeout.timeout(10, TimeUnit.SECONDS));
+        DialogFixture newDatabaseDialog;
+
+        try {
+            newDatabaseDialog = mainFrameFixture.dialog();
+        } catch (Exception e) {
+            newDatabaseDialog = mainFrameFixture.dialog(
+                    new GenericTypeMatcher<JDialog>(JDialog.class) {
+                        @Override protected boolean isMatching(
+                            final JDialog dialog) {
+                            return dialog.getClass().equals(NewProjectV.class);
+                        }
+                    }, Timeout.timeout(5, TimeUnit.SECONDS));
+        }
 
         newDatabaseDialog.textBox("nameField").enterText("n");
 
@@ -1059,7 +1065,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         // 1. Load  File
         if (Platform.isOSX()) {
-           return;
+            return;
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Open...");
 
