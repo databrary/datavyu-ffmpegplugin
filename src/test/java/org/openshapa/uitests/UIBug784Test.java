@@ -32,7 +32,7 @@ public final class UIBug784Test extends OpenSHAPATestClass {
     /**
      * Test for Bug784.
      */
-    /*//@Test*/ public void testBug784() {
+    @Test public void testBug784() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "v";
@@ -53,12 +53,12 @@ public final class UIBug784Test extends OpenSHAPATestClass {
         ssPanel.column("v").click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        //4. Set onset and offset
+        // 4. Set onset and offset
         SpreadsheetCellFixture cell = ssPanel.column("v").cell(1);
         cell.onsetTimestamp().enterText("111111111");
         cell.offsetTimestamp().enterText("222222222");
 
-        //5. Open Dataviewer Controller
+        // 5. Open Dataviewer Controller
         mainFrameFixture.clickMenuItemWithPath("Controller",
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(300, 300));
@@ -67,21 +67,21 @@ public final class UIBug784Test extends OpenSHAPATestClass {
                 mainFrameFixture.robot,
                 (DataControllerV) mainFrameFixture.dialog().component());
 
-        //*. Highlight select cell because of BugzID:1430
+        // *. Highlight select cell because of BugzID:1430
         cell.fillSelectCell(true);
 
-        //6. Test Find by clicking button
+        // 6. Test Find by clicking button
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         dcf.pressFindButton();
         Assert.assertEquals(dcf.getCurrentTime(), "11:11:11:111");
 
-        //7. Test Shift-Find by clicking button
+        // 7. Test Shift-Find by clicking button
         mainFrameFixture.pressKey(KeyEvent.VK_SHIFT);
         dcf.pressFindButton();
         mainFrameFixture.releaseKey(KeyEvent.VK_SHIFT);
         Assert.assertEquals(dcf.getCurrentTime(), "22:22:22:222");
 
-        //8. Test Find again by clicking button
+        // 8. Test Find again by clicking button
         dcf.pressFindButton();
         Assert.assertEquals(dcf.getCurrentTime(), "11:11:11:111");
     }

@@ -89,17 +89,17 @@ public class OpenSHAPATestClass {
     @AfterMethod protected final void restartApplication() {
         System.err.println("restarting Application.");
 
-        //OpenSHAPA.getApplication().resetApp();
+        // OpenSHAPA.getApplication().resetApp();
         OpenSHAPA.getApplication().closeOpenedWindows();
 
         mainFrameFixture = OpenSHAPAInstance.getFixture();
 
-        //Try and close any filechoosers that are open
+        // Try and close any filechoosers that are open
         try {
             JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
             jfcf.cancel();
         } catch (Exception e) {
-            //Do nothing
+            // Do nothing
         }
 
         // Create a new project, this is for the discard changes dialog.
@@ -120,16 +120,17 @@ public class OpenSHAPATestClass {
 
         // Get New Database dialog
         DialogFixture newDatabaseDialog;
+
         try {
             newDatabaseDialog = mainFrameFixture.dialog();
         } catch (Exception e) {
-             newDatabaseDialog = mainFrameFixture.dialog(
-                new GenericTypeMatcher<JDialog>(JDialog.class) {
-                    @Override protected boolean isMatching(
-                        final JDialog dialog) {
-                        return dialog.getClass().equals(NewProjectV.class);
-                    }
-                }, Timeout.timeout(5, TimeUnit.SECONDS));
+            newDatabaseDialog = mainFrameFixture.dialog(
+                    new GenericTypeMatcher<JDialog>(JDialog.class) {
+                        @Override protected boolean isMatching(
+                            final JDialog dialog) {
+                            return dialog.getClass().equals(NewProjectV.class);
+                        }
+                    }, Timeout.timeout(5, TimeUnit.SECONDS));
         }
 
         newDatabaseDialog.textBox("nameField").enterText("n");

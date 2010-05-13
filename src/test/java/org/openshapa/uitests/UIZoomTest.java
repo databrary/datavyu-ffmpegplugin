@@ -37,7 +37,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
     /**
      * Test zooming in and reset.
      */
-    /*//@Test*/ public void testZoomingIn() {
+    @Test public void testZoomingIn() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -61,8 +61,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -170,7 +170,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
     /**
      * Test zooming out and reset.
      */
-    /*//@Test*/ public void testZoomingOut() {
+    @Test public void testZoomingOut() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -194,8 +194,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -231,8 +231,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
             "Zoom Out");
         previousSize = spreadsheet.column(1).cell(1).cellValue().font().target()
             .getSize();
-        Assert.assertTrue(previousSize ==
-            (OpenSHAPAView.ZOOM_DEFAULT_SIZE - OpenSHAPAView.ZOOM_INTERVAL));
+        Assert.assertTrue(previousSize
+            == (OpenSHAPAView.ZOOM_DEFAULT_SIZE - OpenSHAPAView.ZOOM_INTERVAL));
 
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
             "Zoom Out");
@@ -276,7 +276,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
     /**
      * Test to ensure vocab editor contents is not being zoomed.
      */
-    /*//@Test*/ public void testBug635() {
+    @Test public void testBug635() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -300,8 +300,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -332,7 +332,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
 
         int previousSize = initialSize;
 
-        //3a. Get initial zoom size of vocab editor window
+        // 3a. Get initial zoom size of vocab editor window
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
 
         VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
@@ -341,7 +341,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         int veFontSize = veDialog.allVocabElements().firstElement().value()
             .font().target().getSize();
 
-        //Confirm that all VEs are the same size.
+        // Confirm that all VEs are the same size.
         for (VocabElementFixture v : veDialog.allVocabElements()) {
             Assert.assertEquals(veFontSize,
                 v.value().font().target().getSize());
@@ -354,10 +354,9 @@ public final class UIZoomTest extends OpenSHAPATestClass {
             "Zoom In");
 
         /*
-         * Test the font sizes of the first cell only because as the zoom
-         * size increases, cells may be pushed out of view. When this
-         * happens, Swing does not update the hidden cells, causing tests to
-         * fail.
+         * Test the font sizes of the first cell only because as the zoom size
+         * increases, cells may be pushed out of view. When this happens, Swing
+         * does not update the hidden cells, causing tests to fail.
          */
         spreadsheet.column(1).cell(1).cellValue().font().requireSize(
             previousSize + OpenSHAPAView.ZOOM_INTERVAL);

@@ -29,7 +29,7 @@ public final class UIBug65Test extends OpenSHAPATestClass {
     /**
      * Test that the order of columns remains the same.
      */
-    /*//@Test*/ public void testColumnOrder() {
+    @Test public void testColumnOrder() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -53,8 +53,8 @@ public final class UIBug65Test extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 

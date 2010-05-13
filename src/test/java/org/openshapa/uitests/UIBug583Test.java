@@ -27,7 +27,7 @@ public final class UIBug583Test extends OpenSHAPATestClass {
     /**
      * Bug 583 test with a range of values, including 0.
      */
-    /*//@Test*/ public void testBug583() throws InterruptedException {
+    @Test public void testBug583() throws InterruptedException {
 
         /**
          * Different cell variable types.
@@ -60,8 +60,8 @@ public final class UIBug583Test extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 

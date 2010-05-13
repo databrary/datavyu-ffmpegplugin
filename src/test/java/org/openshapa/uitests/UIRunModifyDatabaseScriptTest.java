@@ -73,7 +73,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
      * @throws IOException
      *             if file read issues.
      */
-    /*//@Test*/ public void testModifySpreadsheet() throws IOException {
+    @Test public void testModifySpreadsheet() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Open and run script to populate database
@@ -100,10 +100,11 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
+
         scriptConsole.button("closeButton").click();
 
         // 1a. Check that database is populated

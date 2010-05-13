@@ -53,7 +53,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement to ensure needle time is the same as the clock time.
     */
-    /*//@Test*/ public void testNeedleMovement() {
+    @Test public void testNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -135,7 +135,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test needle movement to ensure needle can't go beyond start or end.
      */
-    /*//@Test*/ public void testRangeOfNeedleMovement() {
+    @Test public void testRangeOfNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -220,7 +220,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * 6. Left region can't cross (go beyond) right
      * 7. Right region can't cross left
      */
-    /*//@Test*/ public void testRegionMovement() {
+    @Test public void testRegionMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -366,7 +366,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test moving track while locked and unlocked.
      */
-    /*//@Test*/ public void testLockUnlockTrack() {
+    @Test public void testLockUnlockTrack() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -449,7 +449,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /*//@Test*/ public void testTrackSnapping() {
+    @Test public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -730,7 +730,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test for Unlock Lock with zooming.
      */
-    /*//@Test*/ public void testLockUnlockTrackWithZoom() {
+    @Test public void testLockUnlockTrackWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -831,7 +831,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * Test needle movement to ensure needle can't go beyond start or end,
      * with zoom applied.
      */
-    /*//@Test*/ public void testRangeOfNeedleMovementWithZoom() {
+    @Test public void testRangeOfNeedleMovementWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1150,9 +1150,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                 dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
                     .isVisible() && (newTime > (10 * onePixelTime))) {
                 System.err.println("Snapped while moving");
-                System.err.println("New time=" + newTime);
-                System.err.println("Old time=" + oldTime);
-                System.err.println("onePixelTime=" + onePixelTime);
 
                 break;
             }
@@ -1167,14 +1164,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             track1.dragWithoutReleasing(1);
             newTime = track1.getOffsetTimeAsLong();
         }
-
-        System.err.println("Snapped?");
-        System.err.println("New time=" + newTime);
-        System.err.println("Old time=" + oldTime);
-        System.err.println("onePixelTime=" + onePixelTime);
-        System.err.println("snapPoint2=" + snapPoint2);
-        System.err.println("snapPoint1=" + snapPoint1);
-        System.err.println("trackOffset=" + track1.getOffsetTimeAsLong());
 
         // d. Check if snapped
         Assert.assertEquals(track1.getOffsetTimeAsLong(),
@@ -1195,18 +1184,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
 
         while ((!dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
-                    .isVisible()) || 
-                    (Math.abs((oldTime - newTime) - onePixelTime) < 2)) {
+                    .isVisible())
+                || (Math.abs((oldTime - newTime) - onePixelTime) < 2)) {
 
             // Check if we've snapped
             if (
                 dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
                     .isVisible()
                     && (newTime < (startTime - (10 * onePixelTime)))) {
-                System.err.println("Snapped");
-                System.err.println("newTime = " + newTime);
-                System.err.println("startTime = " + startTime);
-                System.err.println("startTime - (10 * onePixelTime) = " + (startTime - (10 * onePixelTime)));
                 break;
             }
 

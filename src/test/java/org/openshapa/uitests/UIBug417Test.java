@@ -43,7 +43,7 @@ public final class UIBug417Test extends OpenSHAPATestClass {
      * Test creating a variable with the same name. Type is selected randomly
      * since it should not affect this
      */
-    /*//@Test*/ public void testDuplicateName() {
+    @Test public void testDuplicateName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "v";
@@ -91,8 +91,8 @@ public final class UIBug417Test extends OpenSHAPATestClass {
         JOptionPaneFixture warning = newVariableDialog.optionPane();
         warning.requireTitle("Warning:");
         Assert.assertNotNull(warning.label("OptionPane.label").text());
-        Assert.assertTrue(warning.label("OptionPane.label").text().length() >
-            1);
+        Assert.assertTrue(warning.label("OptionPane.label").text().length()
+            > 1);
         warning.requireMessage(rMap.getString("Error.exists", varName));
         warning.buttonWithText("OK").click();
     }
@@ -100,7 +100,7 @@ public final class UIBug417Test extends OpenSHAPATestClass {
     /**
      * Test creating a variable with a reserved name.
      */
-    /*//@Test*/ public void testReservedName() {
+    @Test public void testReservedName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "ge";
@@ -141,8 +141,8 @@ public final class UIBug417Test extends OpenSHAPATestClass {
         JOptionPaneFixture warning = newVariableDialog.optionPane();
         warning.requireTitle("Warning:");
         Assert.assertNotNull(warning.label("OptionPane.label").text());
-        Assert.assertTrue(warning.label("OptionPane.label").text().length() >
-            1);
+        Assert.assertTrue(warning.label("OptionPane.label").text().length()
+            > 1);
         warning.requireMessage(rMap.getString("Error.system", varName));
         warning.buttonWithText("OK").click();
     }
@@ -150,7 +150,7 @@ public final class UIBug417Test extends OpenSHAPATestClass {
     /**
      * Test invalid column name.
      */
-    /*//@Test*/ public void testInvalidColumnName() {
+    @Test public void testInvalidColumnName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "(hello)";
@@ -191,8 +191,8 @@ public final class UIBug417Test extends OpenSHAPATestClass {
         JOptionPaneFixture warning = newVariableDialog.optionPane();
         warning.requireTitle("Warning:");
         Assert.assertNotNull(warning.label("OptionPane.label").text());
-        Assert.assertTrue(warning.label("OptionPane.label").text().length() >
-            1);
+        Assert.assertTrue(warning.label("OptionPane.label").text().length()
+            > 1);
         warning.requireMessage(rMap.getString("Error.invalid", varName));
         warning.buttonWithText("OK").click();
     }

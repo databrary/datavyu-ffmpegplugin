@@ -63,8 +63,8 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -88,7 +88,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testDeleteNominalCell() throws Exception {
+    @Test public void testDeleteNominalCell() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String type = "NOMINAL";
@@ -114,7 +114,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testDeleteIntCell() throws Exception {
+    @Test public void testDeleteIntCell() throws Exception {
         String type = "INTEGER";
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         testDeleteCellValue(type);
@@ -126,7 +126,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testDeleteTextCell() throws Exception {
+    @Test public void testDeleteTextCell() throws Exception {
         String type = "TEXT";
 
         System.err.println(new Exception().getStackTrace()[0].getMethodName());

@@ -22,6 +22,7 @@ import org.testng.Assert;
 
 import org.testng.annotations.Test;
 
+
 /**
  * Test the visual aspects of cells.
  */
@@ -31,7 +32,7 @@ public final class UIVisualCellTest extends OpenSHAPATestClass {
      * Checks if multiline text wrapping is working.
      * @throws IOException if can't load image file
      */
-    /*//@Test*/ public void testMultilineTextWrapping() throws IOException {
+    @Test public void testMultilineTextWrapping() throws IOException {
 
         // Create new text cell
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);

@@ -30,7 +30,7 @@ public final class UIBug496Test extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testBug496() throws Exception {
+    @Test public void testBug496() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";
@@ -38,7 +38,7 @@ public final class UIBug496Test extends OpenSHAPATestClass {
         String varRadio = varType.toLowerCase() + "TypeButton";
         String testInput = "2398392310820831";
 
-        //Get Spreadsheet
+        // Get Spreadsheet
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());

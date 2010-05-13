@@ -32,7 +32,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
      * be deleted but the cell graphics for the last cell are not removed.
      * Select cells in one column, delete, repeat.
      */
-    /*//@Test*/ public void testBug713() {
+    @Test public void testBug713() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -56,8 +56,8 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -82,8 +82,8 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         while (numColumns > 0) {
 
             // Select all cells in a column
-            for (SpreadsheetCellFixture cell :
-                spreadsheet.column(numColumns - 1).allCells()) {
+            for (SpreadsheetCellFixture cell
+                : spreadsheet.column(numColumns - 1).allCells()) {
                 cell.fillSelectCell(true);
             }
 
@@ -96,8 +96,8 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
             spreadsheet = new SpreadsheetPanelFixture(mainFrameFixture.robot,
                     (SpreadsheetPanel) jPanel.component());
 
-            Assert.assertFalse(spreadsheet.column(numColumns - 1).numOfCells() >
-                0, "Expecting no cells in the column.");
+            Assert.assertFalse(spreadsheet.column(numColumns - 1).numOfCells()
+                > 0, "Expecting no cells in the column.");
             numColumns--;
         }
 
@@ -115,7 +115,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
     /**
      * Select one cell, delete, repeat.
      */
-    /*//@Test*/ public void testDeleteSingleCells() {
+    @Test public void testDeleteSingleCells() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -139,8 +139,8 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -201,7 +201,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
     /**
      * Select all cells, then delete.
      */
-    /*//@Test*/ public void testDeleteAllCellsInSpreadsheet() {
+    @Test public void testDeleteAllCellsInSpreadsheet() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -225,8 +225,8 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 

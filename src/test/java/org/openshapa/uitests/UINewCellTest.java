@@ -67,14 +67,15 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     private String[] floatTestInput = {
             "1a.9", "10-43.2", "!289(", "178.&", "0~~~)", "If x?7 then. x? 2 ",
-            "589.138085638", "000389.5", "-0.1", "0.2", /*BugzID:1634:"-0.0", *"-", "-0",*/
+            "589.138085638", "000389.5", "-0.1", "0.2", /*BugzID:1634:"-0.0",
+                                                         *"-", "-0",*/
             /*BugzID1640:"-.34", "-23.34",*/ ".34", "12.34", "-123"
         };
 
     /**
      * Test creating a new NOMINAL cell.
      */
-    /*//@Test*/ public void testNewNominalCell() {
+    @Test public void testNewNominalCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "n";
@@ -94,7 +95,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test pasting in Nominal cell.
      */
-    /*//@Test*/ public void testNominalPasting() {
+    @Test public void testNominalPasting() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "n";
@@ -112,7 +113,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new NOMINAL cell with more advanced input. BugzID:1203
      */
-    /*//@Test*/ public void testNewAdvancedNominalCell() {
+    @Test public void testNewAdvancedNominalCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "n";
@@ -159,7 +160,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new TEXT cell.
      */
-    /*//@Test*/ public void testNewTextCell() {
+    @Test public void testNewTextCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "t";
@@ -176,7 +177,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test pasting in TEXT cell.
      */
-    /*//@Test*/ public void testTextPasting() {
+    @Test public void testTextPasting() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "t";
@@ -189,7 +190,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test pasting in INTEGER cell.
      */
-    /*//@Test*/ public void testIntegerPasting() {
+    @Test public void testIntegerPasting() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";
@@ -206,7 +207,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new TEXT cell with more advanced input.
      */
-    /*//@Test*/ public void testNewAdvancedTextCell() {
+    @Test public void testNewAdvancedTextCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "t";
@@ -243,7 +244,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testNewFloatCell() throws Exception {
+    @Test public void testNewFloatCell() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "f";
@@ -261,9 +262,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test pasting with INTEGER cell.
+     * Test pasting with FLOAT cell.
      */
-///*//@Test*/ public void testFloatPasting() {
+// @Test public void testFloatPasting() {
 // System.err.println(new Exception().getStackTrace()[0].getMethodName());
 //
 // String varName = "f";
@@ -281,7 +282,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new FLOAT cell with advanced input. BugzID:1201
      */
-    /*//@Test*/ public void testNewAdvancedFloatCell() {
+    @Test public void testNewAdvancedFloatCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "f";
@@ -329,7 +330,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new INTEGER cell.
      */
-    /*//@Test*/ public void testNewIntegerCell() {
+    @Test public void testNewIntegerCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";
@@ -348,7 +349,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new INTEGER cell with advanced input. BugzID:1202
      */
-    /*//@Test*/ public void testNewAdvancedIntegerCell() {
+    @Test public void testNewAdvancedIntegerCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";
@@ -391,7 +392,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*//@Test*/ public void testNewMatrixCellSingleArgNominal() {
+    @Test public void testNewMatrixCellSingleArgNominal() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
@@ -439,7 +440,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell. BugzID:1198
      */
-    /*//@Test*/ public void testNewMatrixCellSingleArgFloat() {
+    @Test public void testNewMatrixCellSingleArgFloat() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
@@ -477,7 +478,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         String[] expectedFloatTestOutput = {
                 "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-                "389.5", "-0.1", "0.2", /*BugzID1634:"0", "0", "0",*/ /*BugzID1640: "-0.34", "-23.34",*/
+                "389.5", "-0.1", "0.2", /*BugzID1634:"0", "0", "0",*/
+                                        /*BugzID1640: "-0.34", "-23.34",*/
                 "0.34", "12.34", "-123"
             };
 
@@ -488,7 +490,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell. BugzID:1199
      */
-    /*//@Test*/ public void testNewMatrixCellSingleArgInteger() {
+    @Test public void testNewMatrixCellSingleArgInteger() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
@@ -536,7 +538,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell. BugzID:1199
      */
-    /*//@Test*/ public void testNewMatrixCellDoubleArgInteger() {
+    @Test public void testNewMatrixCellDoubleArgInteger() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         /**
@@ -591,8 +593,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
-            new String[expectedInt2TestOutput.length]
-            [expectedInt2TestOutput.length][2];
+            new String[expectedInt2TestOutput.length][expectedInt2TestOutput.length][2];
 
         // String[] expectedInt2bTempOutput =
         // {"19", "-43210", "289", "178", "<int1>", "72",
@@ -601,8 +602,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String[] expectedInt2bTempOutput = {"19", "-43210"};
 
         String[][] expectedInt2bTestOutput =
-            new String[expectedInt2TestOutput.length]
-            [expectedInt2TestOutput.length];
+            new String[expectedInt2TestOutput.length][expectedInt2TestOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
 
@@ -632,7 +632,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*//@Test*/ public void testNewMatrixCellDoubleArgNominal() {
+    @Test public void testNewMatrixCellDoubleArgNominal() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         /**
@@ -725,7 +725,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*//@Test*/ public void testNewMatrixCellDoubleArgFloat() {
+    @Test public void testNewMatrixCellDoubleArgFloat() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         /**
@@ -777,14 +777,12 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
-            new String[expectedFloat2TestOutput.length]
-            [expectedFloat2TestOutput.length][2];
+            new String[expectedFloat2TestOutput.length][expectedFloat2TestOutput.length][2];
 
         String[] expectedInt2bTempOutput = {"1.9", "-43.21"};
 
         String[][] expectedInt2bTestOutput =
-            new String[expectedFloat2TestOutput.length]
-            [expectedFloat2TestOutput.length];
+            new String[expectedFloat2TestOutput.length][expectedFloat2TestOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
 

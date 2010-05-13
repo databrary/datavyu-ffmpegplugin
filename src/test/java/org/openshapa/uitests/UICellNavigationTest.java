@@ -32,7 +32,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
     /**
      * Test movement left to right using key presses.
      */
-    /*//@Test*/ public void testLeftRightCellNavigation() {
+    @Test public void testLeftRightCellNavigation() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -56,8 +56,8 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 
@@ -122,7 +122,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
     /**
      * Test movement up down for text cells with multiple lines.
      */
-    /*//@Test*/ public void testUpDownMultilineCells() {
+    @Test public void testUpDownMultilineCells() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -146,8 +146,8 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
 
-        while ((System.currentTimeMillis() < maxTime) &&
-                (!scriptConsole.textBox().text().contains("Finished"))) {
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
             Thread.yield();
         }
 

@@ -43,7 +43,7 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
     /**
      * Test new spreadsheet.
      */
-    /*//@Test*/ public void testNewSpreadsheet() {
+    @Test public void testNewSpreadsheet() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
@@ -152,7 +152,7 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
      * Should display warning if database has no name and database window should
      * remain open.
      */
-    /*//@Test*/ public void testBug938() {
+    @Test public void testBug938() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = System.getProperty("testPath");
