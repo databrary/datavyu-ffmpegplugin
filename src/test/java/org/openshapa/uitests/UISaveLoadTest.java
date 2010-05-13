@@ -940,6 +940,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
 
+            fc.setFileFilter(new OPFFilter());
+
             fc.setSelectedFile(noWrite);
 
             method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
