@@ -1187,23 +1187,20 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // a. Drag track away
         track1.drag(35);
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(UITrackViewerTest.class.getName()).log(
-                Level.SEVERE, null, ex);
-        }
-
         // b. Drag 1 pixel at a time until it snaps
         newTime = track1.getOffsetTimeAsLong();
         oldTime = newTime + onePixelTime;
+
+        long startTime = newTime;
+
 
         while (Math.abs((oldTime - newTime) - onePixelTime) < 2) {
 
             // Check if we've snapped
             if (
                 dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
-                    .isVisible() && (newTime > (10 * onePixelTime))) {
+                    .isVisible()
+                    && (newTime < (startTime - (10 * onePixelTime)))) {
                 break;
             }
 
@@ -1215,13 +1212,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
             oldTime = track1.getOffsetTimeAsLong();
             track1.dragWithoutReleasing(-1);
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(UITrackViewerTest.class.getName()).log(
-                    Level.SEVERE, null, ex);
-            }
 
             newTime = track1.getOffsetTimeAsLong();
         }
