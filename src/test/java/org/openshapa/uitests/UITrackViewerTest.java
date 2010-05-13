@@ -1201,6 +1201,10 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                 dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
                     .isVisible()
                     && (newTime < (startTime - (10 * onePixelTime)))) {
+                System.err.println("Snapped");
+                System.err.println("newTime = " + newTime);
+                System.err.println("startTime = " + startTime);
+                System.err.println("startTime - (10 * onePixelTime) = " + (startTime - (10 * onePixelTime)));
                 break;
             }
 
