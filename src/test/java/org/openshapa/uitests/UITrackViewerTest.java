@@ -1194,7 +1194,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         long startTime = newTime;
 
 
-        while (Math.abs((oldTime - newTime) - onePixelTime) < 2) {
+        while ((!dcf.getTrackMixerController().getTracksEditor().getSnapMarker()
+                    .isVisible()) || 
+                    (Math.abs((oldTime - newTime) - onePixelTime) < 2)) {
 
             // Check if we've snapped
             if (
