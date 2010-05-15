@@ -72,6 +72,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public VocabEditorV(final Frame parent, final boolean modal) {
         super(parent, modal);
 
+        logger.usage("vocEd - show");
+
         db = OpenSHAPA.getProjectController().getDB();
         initComponents();
         setName(this.getClass().getSimpleName());
@@ -128,6 +130,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void addPredicate() {
         try {
+            logger.usage("vocEd - add predicate");
             PredicateVocabElement pve =
                     new PredicateVocabElement(db, "predicate" + numNewPreds);
             addVocabElement(pve);
@@ -146,6 +149,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void addMatrix() {
         try {
+            logger.usage("vocEd - add matrix");
             MatrixVocabElement mve =
                     new MatrixVocabElement(db, "matrix" + numNewMats);
             mve.setType(MatrixType.MATRIX);
@@ -186,6 +190,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void moveArgumentLeft() {
         try {
+            logger.error("vocEd - move argument left");
             VocabElement ve = selectedVocabElement.getModel();
             ve.deleteFormalArg(selectedArgumentI);
             ve.insertFormalArg(selectedArgument.getModel(),
@@ -205,6 +210,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void moveArgumentRight() {
         try {
+            logger.error("vocEd - move argument right");
             VocabElement ve = selectedVocabElement.getModel();
             ve.deleteFormalArg(selectedArgumentI);
             ve.insertFormalArg(selectedArgument.getModel(),
@@ -226,6 +232,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         try {
             VocabElement ve = selectedVocabElement.getModel();
             String type = (String) argTypeComboBox.getSelectedItem();
+            logger.usage("vocEd - add argument:" + type);
             String newArgName = "<arg" + ve.getNumFormalArgs() + ">";
             FormalArgument fa;
 
@@ -257,6 +264,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void setVaryingArgs() {
+        logger.usage("vocEd - toggle vary args");
         if (selectedVocabElement != null) {
             try {
                 selectedVocabElement.getModel().setVarLen(
@@ -275,11 +283,13 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public void delete() {
         // User has vocab element selected - mark it for deletion.
         if (selectedVocabElement != null && selectedArgument == null) {
+            logger.usage("vocEd - delete element");
             veViewsToDeleteCompletely.add(selectedVocabElement);
             selectedVocabElement.setDeleted(true);
 
             // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
+            logger.usage("vocEd - delete argument");
             VocabElement ve = selectedVocabElement.getModel();
             try {
                 ve.deleteFormalArg(selectedArgumentI);
@@ -299,6 +309,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void revertChanges() {
         try {
+            logger.usage("vocEd - revert");
             ArrayList<VocabElementV> toDelete = new ArrayList<VocabElementV>();
 
             for (VocabElementV view : veViews) {
@@ -340,6 +351,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void applyChanges() {
+        logger.usage("vocEd - apply");
         try {
             for (VocabElementV view : veViewsToDeleteCompletely) {
                 db.removeVocabElement(view.getModel().getID());
@@ -417,6 +429,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void ok() {
+        logger.usage("vocEd - ok");
         applyChanges();
         try {
             dispose();
@@ -431,6 +444,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void closeWindow() {
+        logger.usage("vocEd - close");
         try {
             dispose();
             finalize();

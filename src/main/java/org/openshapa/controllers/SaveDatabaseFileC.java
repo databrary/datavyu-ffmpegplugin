@@ -81,7 +81,7 @@ public final class SaveDatabaseFileC {
         final MacshapaDatabase db) throws LogicErrorException {
 
         try {
-            logger.usage("saving database as ODB");
+            logger.usage("save database as ODB");
 
             PrintStream outStream = new PrintStream(outFile);
             db.toMODBFile(outStream, "\r");
@@ -143,7 +143,7 @@ public final class SaveDatabaseFileC {
         final MacshapaDatabase db) throws LogicErrorException {
 
         try {
-            logger.usage("saving database as CSV to stream");
+            logger.usage("save database as CSV to stream");
 
             // Dump out an identifier for the version of file.
             PrintStream ps = new PrintStream(outStream);

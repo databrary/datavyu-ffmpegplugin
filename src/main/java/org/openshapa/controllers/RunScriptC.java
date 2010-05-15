@@ -104,7 +104,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     }
 
     @Override protected Object doInBackground() {
-        logger.usage("running script");
+        logger.usage("run script");
 
         ReaderThread t = new ReaderThread();
         t.start();

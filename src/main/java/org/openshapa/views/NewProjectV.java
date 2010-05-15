@@ -45,6 +45,7 @@ public final class NewProjectV extends OpenSHAPADialog {
      */
     public NewProjectV(final Frame parent, final boolean modal) {
         super(parent, modal);
+        logger.usage("newProj - show");
         initComponents();
 
         // Need to set a unique name so that we save and restore session data
@@ -208,6 +209,7 @@ public final class NewProjectV extends OpenSHAPADialog {
             .getResourceMap(NewProjectV.class);
 
         try {
+            logger.usage("create new project");
             OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
             // clear the contents of the existing spreadsheet.
             OpenSHAPA.getProjectController().setLastCreatedCellId(0);

@@ -23,6 +23,7 @@ public final class SetNewCellStartTimeC {
      */
     public SetNewCellStartTimeC(final long milliseconds) {
         try {
+            logger.usage("set new cell onset");
             Database model = OpenSHAPA.getProjectController().getDB();
 
             DataCell cell =

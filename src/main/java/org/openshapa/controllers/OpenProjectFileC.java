@@ -29,7 +29,6 @@ public final class OpenProjectFileC {
      * @return valid project if file was opened and loaded, null otherwise.
      */
     public Project open(final File inFile) {
-        logger.usage("opening from file");
         Yaml yaml = new Yaml(new Loader(new OpenSHAPAProjectConstructor()));
         try {
             BufferedReader in = new BufferedReader(new FileReader(inFile));
@@ -58,7 +57,6 @@ public final class OpenProjectFileC {
      * @return valid project if stream was deserialized, null otherwise.
      */
     public Project open(final InputStream inStream) {
-        logger.usage("opening from stream");
         Yaml yaml = new Yaml(new Loader(new OpenSHAPAProjectConstructor()));
         Object o = yaml.load(inStream);
 

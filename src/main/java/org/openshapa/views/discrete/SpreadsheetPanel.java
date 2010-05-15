@@ -652,6 +652,7 @@ implements ExternalColumnListListener, ComponentListener,
      * column.
      */
     public void moveColumnLeft(final long colID, final int positions) {
+        logger.usage("move column left");
         int columnIndex = -1;
         // What index does the given column sit at
         for (int i = 0; i < columns.size(); i++) {
@@ -678,6 +679,7 @@ implements ExternalColumnListListener, ComponentListener,
      * column.
      */
     public void moveColumnRight(final long colID, final int positions) {
+        logger.usage("move column right");
         int columnIndex = -1;
         // What index does the column sit at
         for (int i = 0; i < columns.size(); i++) {
