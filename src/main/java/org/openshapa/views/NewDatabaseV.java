@@ -30,6 +30,7 @@ public final class NewDatabaseV extends OpenSHAPADialog {
      */
     public NewDatabaseV(final Frame parent, final boolean modal) {
         super(parent, modal);
+        logger.usage("newDB - show");
         initComponents();
 
         // Need to set a unique name so that we save and restore session data
@@ -231,6 +232,7 @@ public final class NewDatabaseV extends OpenSHAPADialog {
      */
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_okButtonActionPerformed
         try {
+            logger.usage("create new database");
             MacshapaDatabase model = new MacshapaDatabase(Constants.TICKS_PER_SECOND);
             ResourceMap r =
                     Application.getInstance(OpenSHAPA.class).getContext()

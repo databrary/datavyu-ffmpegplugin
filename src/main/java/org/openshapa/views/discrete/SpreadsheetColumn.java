@@ -192,6 +192,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param colWidth Column width to set in pixels.
      */
     public void setWidth(final int colWidth) {
+        logger.usage("set column width");
         width = colWidth;
         Dimension dim = getHeaderSize();
         this.setPreferredSize(dim);
@@ -235,6 +236,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      */
     public void setSelected(final boolean isSelected) {
         try {
+            logger.usage("select column");
             DataColumn dc = database.getDataColumn(dbColID);
             this.selected = isSelected;
 

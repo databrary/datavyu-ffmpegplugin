@@ -59,6 +59,8 @@ public final class CreateNewCellC {
         long cellID = 0;
 
         try {
+            logger.usage("create adjacent cells:" + direction);
+
             // Get the column that is the parent of the source cell.
             for (DataCell sourceCell : sourceCells) {
                 long sourceColumn = sourceCell.getItsColID();
@@ -196,6 +198,7 @@ public final class CreateNewCellC {
         boolean newcelladded = false;
         // check for Situation 1: one or more selected columns
         for (DataColumn col : view.getSelectedCols()) {
+            logger.usage("create cell in selected column");
             MatrixVocabElement mve = model.getMatrixVE(col.getItsMveID());
             DataCell cell = new DataCell(col.getDB(), col.getID(), mve.getID());
             cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
@@ -220,6 +223,7 @@ public final class CreateNewCellC {
             Iterator<DataCell> itCells = view.getSelectedCells().iterator();
 
             while (itCells.hasNext()) {
+                logger.usage("create cell below selected cell");
                 // reget the selected cell from the database using its id
                 // in case a previous insert has changed its ordinal.
                 // recasting to DataCell without checking as the iterator
@@ -253,6 +257,7 @@ public final class CreateNewCellC {
             // else check for Situation 3: User is or was editing an
             // existing cell and has requested a new cell
             if (OpenSHAPA.getProjectController().getLastSelectedCellId() != 0) {
+                logger.usage("create cell while editing existing cell");
                 DataCell dc =
                         (DataCell) model
                                 .getCell(OpenSHAPA.getProjectController()
@@ -270,6 +275,7 @@ public final class CreateNewCellC {
         }
 
         if (!newcelladded) {
+            logger.usage("create cell in same location as last created cell");
             // else go with Situation 4: Video controller requested
             // - create in the same column as the last created cell or
             // the last focused cell.

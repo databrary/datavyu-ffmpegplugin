@@ -19,7 +19,7 @@ public final class SetSheetLayoutC {
      * @param type The layout type to use on the spreadsheet.
      */
     public SetSheetLayoutC(final SheetLayoutType type) {
-        logger.usage("setting spreadsheet layout:" + type.toString());
+        logger.usage("set spreadsheet layout:" + type.toString());
         SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
                                                             .getMainView()
                                                             .getComponent();

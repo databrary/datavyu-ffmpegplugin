@@ -69,7 +69,7 @@ public final class SaveC {
                             final MacshapaDatabase database)
     throws LogicErrorException {
         try {
-            logger.usage("saving project");
+            logger.usage("save project");
             FileOutputStream fos = new FileOutputStream(projectFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
 

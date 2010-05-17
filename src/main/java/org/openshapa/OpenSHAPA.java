@@ -588,6 +588,7 @@ public final class OpenSHAPA extends SingleFrameApplication
         // Now that openshapa is up - we may need to ask the user if can send
         // gather logs.
         if (Configuration.getInstance().getCanSendLogs() == null) {
+            logger.usage("show usermetrix dialog");
             show(new UserMetrixV(VIEW.getFrame(), true));
         }
 

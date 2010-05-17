@@ -28,6 +28,8 @@ public class SetSelectedCellStartTimeC {
      */
     public SetSelectedCellStartTimeC(final long milliseconds) {
 
+        logger.usage("set selected cell onset");
+
         // Get the view for this controller (the main spreadsheet panel.
         SpreadsheetPanel view =
                 (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()

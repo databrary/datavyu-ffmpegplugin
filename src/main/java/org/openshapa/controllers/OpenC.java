@@ -49,12 +49,12 @@ public final class OpenC {
     public void openProject(final File projectFile) {
         // If project is archive - open it as such.
         if (projectFile.getName().endsWith(".opf")) {
-            logger.usage("opening project archive");
+            logger.usage("open project archive");
             openProjectArchive(projectFile);
 
         // Otherwise project is uncompressed.
         } else {
-            logger.usage("opening legacy shapa");
+            logger.usage("open legacy shapa");
             OpenProjectFileC opc = new OpenProjectFileC();
             project = opc.open(projectFile);
 
