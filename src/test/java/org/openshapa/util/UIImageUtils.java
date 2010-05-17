@@ -78,6 +78,8 @@ public final class UIImageUtils {
                 || !(uiImage.getWidth() == refImage.getWidth())) {
             ImageIO.write(uiImage, "png",
                 new File(tempFolder + "/areImagesEqual.png"));
+            System.err.println("Image written to: " + tempFolder
+                + "/areImagesEqual.png");
         }
 
         Assert.assertEquals(uiImage.getHeight(), refImage.getHeight());
@@ -111,8 +113,12 @@ public final class UIImageUtils {
         if (!withinThreshold) {
             ImageIO.write(maskImage(uiImage, refImage), "png",
                 new File(tempFolder + "/areImagesEqual.png"));
+            System.err.println("Image written to: " + tempFolder
+                + "/areImagesEqual.png");
             ImageIO.write(uiImage, "png",
                 new File(tempFolder + "/capturedImage.png"));
+            System.err.println("Image written to: " + tempFolder
+                + "/capturedImage.png");
         }
 
         return withinThreshold;
@@ -179,21 +185,23 @@ public final class UIImageUtils {
     }
 
     public static Rectangle getInternalRectangle(Frame frame) {
+
         // Create Rectangle around component
-            Point locOnScreen = frame.getLocationOnScreen();
-            Rectangle bounds = frame.getBounds();
+        Point locOnScreen = frame.getLocationOnScreen();
+        Rectangle bounds = frame.getBounds();
 
-            // Compensate for frame boundary
-            locOnScreen.setLocation(locOnScreen.x + frame.getInsets().left,
-                locOnScreen.y + frame.getInsets().top);
-            bounds.setRect(0, 0,
-                bounds.getWidth() - frame.getInsets().left
-                - frame.getInsets().right,
-                bounds.getHeight() - frame.getInsets().top
-                - frame.getInsets().bottom);
+        // Compensate for frame boundary
+        locOnScreen.setLocation(locOnScreen.x + frame.getInsets().left,
+            locOnScreen.y + frame.getInsets().top);
+        bounds.setRect(0, 0,
+            bounds.getWidth() - frame.getInsets().left
+            - frame.getInsets().right,
+            bounds.getHeight() - frame.getInsets().top
+            - frame.getInsets().bottom);
 
-            bounds.setLocation(locOnScreen);
-            return bounds;
+        bounds.setLocation(locOnScreen);
+
+        return bounds;
     }
 
     /**
