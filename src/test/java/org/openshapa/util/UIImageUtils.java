@@ -85,11 +85,12 @@ public final class UIImageUtils {
         // Check that images are the same size
         if (!(uiImage.getHeight() == refImage.getHeight())
                 || !(uiImage.getWidth() == refImage.getWidth())) {
-            File sameSize = new File(tempFolder + "/" + filePrefix
-                    + "/sameSize.png");
-            ImageIO.write(uiImage, "png", sameSize);
+            ImageIO.write(uiImage, "png",
+                new File(tempFolder + "/" + filePrefix
+                    + "/sameSize.png"));
             System.err.println("Image written to: "
-                + sameSize.getAbsolutePath());
+                + tempFolder + "/" + filePrefix
+                + "/sameSize.png");
         }
 
         Assert.assertEquals(uiImage.getHeight(), refImage.getHeight());
@@ -121,17 +122,19 @@ public final class UIImageUtils {
         System.err.println("Error=" + error);
 
         if (!withinThreshold) {
-            File maskImage = new File(tempFolder + "/" + filePrefix
-                    + "/maskImage.png");
-            ImageIO.write(maskImage(uiImage, refImage), "png", maskImage);
+            ImageIO.write(maskImage(uiImage, refImage), "png",
+                new File(tempFolder + "/" + filePrefix
+                    + "/maskImage.png"));
             System.err.println("Image written to: "
-                + maskImage.getAbsolutePath());
+                + tempFolder + "/" + filePrefix
+                + "/maskImage.png");
 
-            File capturedImage = new File(tempFolder + "/" + filePrefix
-                    + "/capturedImage.png");
-            ImageIO.write(uiImage, "png", capturedImage);
+            ImageIO.write(uiImage, "png",
+                new File(tempFolder + "/" + filePrefix
+                    + "/capturedImage.png"));
             System.err.println("Image written to: "
-                + capturedImage.getAbsolutePath());
+                + tempFolder + "/" + filePrefix
+                + "/capturedImage.png");
         }
 
         return withinThreshold;
