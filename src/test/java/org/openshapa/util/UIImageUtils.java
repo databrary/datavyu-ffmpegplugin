@@ -70,16 +70,26 @@ public final class UIImageUtils {
         final double errThreshold) throws IOException {
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
+        String filePrefix = "";
+
+        int i = 1;
+
+        do {
+            filePrefix = new Exception().getStackTrace()[i].getMethodName();
+            i++;
+        } while ((filePrefix.equals("areImagesEqual")) && (i < 5));
+
         // Load image from file
         BufferedImage refImage = ImageIO.read(refFile);
 
         // Check that images are the same size
         if (!(uiImage.getHeight() == refImage.getHeight())
                 || !(uiImage.getWidth() == refImage.getWidth())) {
-            ImageIO.write(uiImage, "png",
-                new File(tempFolder + "/areImagesEqual.png"));
-            System.err.println("Image written to: " + tempFolder
-                + "/areImagesEqual.png");
+            File sameSize = new File(tempFolder + "/" + filePrefix
+                    + "/sameSize.png");
+            ImageIO.write(uiImage, "png", sameSize);
+            System.err.println("Image written to: "
+                + sameSize.getAbsolutePath());
         }
 
         Assert.assertEquals(uiImage.getHeight(), refImage.getHeight());
@@ -111,14 +121,17 @@ public final class UIImageUtils {
         System.err.println("Error=" + error);
 
         if (!withinThreshold) {
-            ImageIO.write(maskImage(uiImage, refImage), "png",
-                new File(tempFolder + "/areImagesEqual.png"));
-            System.err.println("Image written to: " + tempFolder
-                + "/areImagesEqual.png");
-            ImageIO.write(uiImage, "png",
-                new File(tempFolder + "/capturedImage.png"));
-            System.err.println("Image written to: " + tempFolder
-                + "/capturedImage.png");
+            File maskImage = new File(tempFolder + "/" + filePrefix
+                    + "/maskImage.png");
+            ImageIO.write(maskImage(uiImage, refImage), "png", maskImage);
+            System.err.println("Image written to: "
+                + maskImage.getAbsolutePath());
+
+            File capturedImage = new File(tempFolder + "/" + filePrefix
+                    + "/capturedImage.png");
+            ImageIO.write(uiImage, "png", capturedImage);
+            System.err.println("Image written to: "
+                + capturedImage.getAbsolutePath());
         }
 
         return withinThreshold;
