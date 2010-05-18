@@ -8,6 +8,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -32,6 +35,7 @@ import org.openshapa.models.component.ViewableModel;
 import org.openshapa.models.component.TrackModel.TrackState;
 
 import org.openshapa.views.component.TrackPainter;
+import org.openshapa.views.continuous.CustomActionListener;
 
 
 /**
@@ -68,6 +72,12 @@ public final class TrackController {
     private final ImageIcon lockIcon = new ImageIcon(getClass().getResource(
                 "/icons/track-lock.png"));
 
+    private final JButton actionButton1;
+
+    private final JButton actionButton2;
+
+    private final JButton actionButton3;
+
     /** Viewable model. */
     private final ViewableModel viewableModel;
 
@@ -79,6 +89,9 @@ public final class TrackController {
      * the track.
      */
     private final EventListenerList listenerList;
+
+    /** Listeners interested in custom action button events. */
+    private final List<CustomActionListener> buttonListeners;
 
     /** States. */
     // can the carriage be moved using the mouse when snap is switched on
@@ -108,6 +121,8 @@ public final class TrackController {
         trackPainter.setTrackModel(trackModel);
 
         listenerList = new EventListenerList();
+
+        buttonListeners = new LinkedList<CustomActionListener>();
 
         final TrackPainterListener painterListener = new TrackPainterListener();
         trackPainter.addMouseListener(painterListener);
@@ -141,13 +156,13 @@ public final class TrackController {
 
         trackLabel.setName("trackLabel");
 
-        final JPanel header = new JPanel(new MigLayout("ins 0, wrap 3"));
+        final JPanel header = new JPanel(new MigLayout("ins 0, wrap 4"));
         header.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 0, 1, BORDER_COLOR),
                 BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         header.setBackground(Color.LIGHT_GRAY);
-        header.add(trackLabel, "w 96!, span 3");
-        header.add(iconLabel, "span 3, w 96!, h 32!");
+        header.add(trackLabel, "w 96!, span 4");
+        header.add(iconLabel, "span 4, w 96!, h 32!");
 
         // Set up the button used for locking/unlocking track movement
         lockUnlockButton = new JButton(unlockIcon);
@@ -160,6 +175,44 @@ public final class TrackController {
             });
         header.add(lockUnlockButton, "w 20!, h 20!");
         lockUnlockButton.setName("lockUnlockButton");
+
+        // Set up the custom actions buttons
+        actionButton1 = new JButton();
+        actionButton1.setName("actionButton1");
+        actionButton1.addActionListener(new ActionListener() {
+                public void actionPerformed(final ActionEvent e) {
+
+                    for (CustomActionListener listener : buttonListeners) {
+                        listener.handleActionButtonEvent1(e);
+                    }
+                }
+            });
+        header.add(actionButton1, "w 20!, h 20!");
+
+        actionButton2 = new JButton();
+        actionButton2.setName("actionButton2");
+        actionButton2.addActionListener(new ActionListener() {
+                public void actionPerformed(final ActionEvent e) {
+
+                    for (CustomActionListener listener : buttonListeners) {
+                        listener.handleActionButtonEvent2(e);
+                    }
+                }
+            });
+        header.add(actionButton2, "w 20!, h 20!");
+
+        actionButton3 = new JButton();
+        actionButton3.setName("actionButton3");
+        actionButton3.addActionListener(new ActionListener() {
+
+                public void actionPerformed(final ActionEvent e) {
+
+                    for (CustomActionListener listener : buttonListeners) {
+                        listener.handleActionButtonEvent3(e);
+                    }
+                }
+            });
+        header.add(actionButton3, "w 20!, h 20!");
 
         view.add(header, "w 100!, h 75!");
 
@@ -380,6 +433,84 @@ public final class TrackController {
     }
 
     /**
+     * Set up the UI for the first custom action button.
+     *
+     * @param show true if the button should be shown.
+     * @param icon icon to use for the button.
+     */
+    public void setActionButtonUI1(final boolean show, final ImageIcon icon) {
+
+        if (show) {
+            actionButton1.setVisible(true);
+            actionButton1.setEnabled(true);
+
+            if (icon != null) {
+                actionButton1.setIcon(icon);
+                actionButton1.setContentAreaFilled(false);
+                actionButton1.setBorderPainted(false);
+            } else {
+                actionButton1.setContentAreaFilled(true);
+                actionButton1.setBorderPainted(true);
+            }
+        } else {
+            actionButton1.setVisible(false);
+            actionButton1.setEnabled(false);
+        }
+    }
+
+    /**
+     * Set up the UI for the second custom action button.
+     *
+     * @param show true if the button should be shown.
+     * @param icon icon to use for the button.
+     */
+    public void setActionButtonUI2(final boolean show, final ImageIcon icon) {
+
+        if (show) {
+            actionButton2.setVisible(true);
+            actionButton2.setEnabled(true);
+
+            if (icon != null) {
+                actionButton2.setIcon(icon);
+                actionButton2.setContentAreaFilled(false);
+                actionButton2.setBorderPainted(false);
+            } else {
+                actionButton2.setContentAreaFilled(true);
+                actionButton2.setBorderPainted(true);
+            }
+        } else {
+            actionButton2.setVisible(false);
+            actionButton2.setEnabled(false);
+        }
+    }
+
+    /**
+     * Set up the UI for the third custom action button.
+     *
+     * @param show true if the button should be shown.
+     * @param icon icon to use for the button.
+     */
+    public void setActionButtonUI3(final boolean show, final ImageIcon icon) {
+
+        if (show) {
+            actionButton3.setVisible(true);
+            actionButton3.setEnabled(true);
+
+            if (icon != null) {
+                actionButton3.setIcon(icon);
+                actionButton3.setContentAreaFilled(false);
+                actionButton3.setBorderPainted(false);
+            } else {
+                actionButton3.setContentAreaFilled(true);
+                actionButton3.setBorderPainted(true);
+            }
+        } else {
+            actionButton3.setVisible(false);
+            actionButton3.setEnabled(false);
+        }
+    }
+
+    /**
      * Request a bookmark.
      */
     private void setBookmarkAction() {
@@ -441,12 +572,40 @@ public final class TrackController {
     }
 
     /**
+     * Register a custom action button listener.
+     *
+     * @param listener listener to register.
+     */
+    public void addCustomActionListener(final CustomActionListener listener) {
+
+        synchronized (this) {
+            buttonListeners.add(listener);
+        }
+    }
+
+    /**
+     * Remove a custom action button listener.
+     *
+     * @param listener listener to remove.
+     */
+    public void removeCustomActionListener(
+        final CustomActionListener listener) {
+
+        synchronized (this) {
+            buttonListeners.remove(listener);
+        }
+    }
+
+    /**
      * Register a mouse listener.
      *
      * @param listener listener to register.
      */
     public void addMouseListener(final MouseListener listener) {
-        view.addMouseListener(listener);
+
+        synchronized (this) {
+            view.addMouseListener(listener);
+        }
     }
 
     /**
@@ -455,7 +614,10 @@ public final class TrackController {
      * @param listener listener to remove.
      */
     public void removeMouseListener(final MouseListener listener) {
-        view.removeMouseListener(listener);
+
+        synchronized (this) {
+            view.removeMouseListener(listener);
+        }
     }
 
     /**
