@@ -50,7 +50,9 @@ public final class QTPlugin implements Plugin {
      * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon1()
      */
     public ImageIcon getActionButtonIcon1() {
-        return null;
+        URL typeIconURL = getClass().getResource("/icons/audio-volume.png");
+
+        return new ImageIcon(typeIconURL);
     }
 
     /*
@@ -69,12 +71,13 @@ public final class QTPlugin implements Plugin {
         return null;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * This action is associated with the volume control option.
+     *
      * @see org.openshapa.views.continuous.Plugin#isActionSupported1()
      */
     public boolean isActionSupported1() {
-        return false;
+        return true;
     }
 
     /*

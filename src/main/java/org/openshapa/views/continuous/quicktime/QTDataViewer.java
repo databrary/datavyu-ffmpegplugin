@@ -2,10 +2,21 @@ package org.openshapa.views.continuous.quicktime;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import java.io.File;
 
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.openshapa.util.Constants;
 
@@ -92,6 +103,12 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** Has the size of the window had its aspect ratio corrected? */
     private boolean updatedAspect;
 
+    /** Volume slider. */
+    private JSlider volumeSlider;
+
+    /** Dialog containing volume slider. */
+    private JDialog volumeDialog;
+
     // ------------------------------------------------------------------------
     // [initialization]
     //
@@ -115,7 +132,41 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             logger.error("Unable to create QTVideoViewer", e);
         }
 
+        volumeSlider = new JSlider(JSlider.VERTICAL, 0, 100, 70);
+        volumeSlider.setMajorTickSpacing(10);
+        volumeSlider.setPaintTicks(true);
+        volumeSlider.addChangeListener(new ChangeListener() {
+                public void stateChanged(final ChangeEvent e) {
+                    handleVolumeSliderEvent(e);
+                }
+            });
+
+        volumeDialog = new JDialog();
+        volumeDialog.setUndecorated(true);
+        volumeDialog.setVisible(false);
+        volumeDialog.setLayout(new MigLayout("", "[center]", ""));
+        volumeDialog.setSize(50, 125);
+        volumeDialog.getContentPane().add(volumeSlider, "pushx, pushy");
+        volumeDialog.addMouseListener(new MouseAdapter() {
+                @Override public void mouseClicked(final MouseEvent e) {
+                    volumeDialog.setVisible(false);
+                }
+            });
+
         initComponents();
+    }
+
+    private void handleVolumeSliderEvent(final ChangeEvent e) {
+
+        if (movie != null) {
+
+            try {
+                movie.setVolume(volumeSlider.getValue() / 100F);
+            } catch (StdQTException ex) {
+                logger.error("Unable to set volume", ex);
+            }
+        }
+
     }
 
     // ------------------------------------------------------------------------
@@ -203,6 +254,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
+            movie.setVolume(0.7F);
 
             // Set the time scale for our movie to milliseconds (i.e. 1000 ticks
             // per second.
@@ -390,17 +442,25 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         return new DefaultTrackPainter();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.openshapa.views.continuous.CustomActionListener#handleActionButtonEvent1(java.awt.event.ActionEvent)
+    /**
+     * Shows an interface for toggling the playback volume.
+     *
+     * @see org.openshapa.views.continuous.CustomActionListener
+     *      #handleActionButtonEvent1(java.awt.event.ActionEvent)
      */
     public void handleActionButtonEvent1(final ActionEvent event) {
-        // Do nothing; not supported.
+
+        JButton button = (JButton) event.getSource();
+
+        // Show the volume frame.
+        volumeDialog.setVisible(true);
+        volumeDialog.setLocation(button.getLocationOnScreen());
     }
 
     /*
      * (non-Javadoc)
-     * @see org.openshapa.views.continuous.CustomActionListener#handleActionButtonEvent2(java.awt.event.ActionEvent)
+     * @see org.openshapa.views.continuous.CustomActionListener
+     * #handleActionButtonEvent2(java.awt.event.ActionEvent)
      */
     public void handleActionButtonEvent2(final ActionEvent event) {
         // Do nothing; not supported.
@@ -408,7 +468,8 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
     /*
      * (non-Javadoc)
-     * @see org.openshapa.views.continuous.CustomActionListener#handleActionButtonEvent3(java.awt.event.ActionEvent)
+     * @see org.openshapa.views.continuous.CustomActionListener
+     * #handleActionButtonEvent3(java.awt.event.ActionEvent)
      */
     public void handleActionButtonEvent3(final ActionEvent event) {
         // Do nothing; not supported.
@@ -453,6 +514,8 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         } catch (QTException e) {
             logger.error("Couldn't kill", e);
         }
+
+        volumeDialog.setVisible(false);
 
         parent.shutdown(this);
     }
