@@ -248,6 +248,8 @@ public final class ProjectController {
 
         List<String> missingFilesList = new LinkedList<String>();
 
+        MixerControllerV mixerController = dataController.getMixerController();
+
         // Load the viewer settings.
         for (ViewerSetting setting : project.getViewerSettings()) {
             showController = true;
@@ -275,9 +277,12 @@ public final class ProjectController {
             dataController.addTrack(plugin.getTypeIcon(),
                 file.getAbsolutePath(), file.getName(), viewer.getDuration(),
                 setting.getOffset(), viewer.getTrackPainter());
-        }
 
-        MixerControllerV mixerController = dataController.getMixerController();
+            mixerController.bindTrackActions(file.getAbsolutePath(), viewer,
+                plugin.isActionSupported1(), plugin.getActionButtonIcon1(),
+                plugin.isActionSupported2(), plugin.getActionButtonIcon2(),
+                plugin.isActionSupported3(), plugin.getActionButtonIcon3());
+        }
 
         for (TrackSettings setting : project.getTrackSettings()) {
             File file = new File(setting.getFilePath());

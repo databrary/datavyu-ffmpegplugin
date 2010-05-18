@@ -911,8 +911,8 @@ public final class PlaybackController implements PlaybackListener,
                         OpenSHAPA.getProjectController().projectChanged();
 
                         // Remove the data viewer from the tracks panel.
-                        mixerControllerV.removeTrack(viewer.getDataFeed()
-                            .getAbsolutePath());
+                        mixerControllerV.deregisterTrack(viewer.getDataFeed()
+                            .getAbsolutePath(), viewer);
                         OpenSHAPA.getApplication().updateTitle();
                     }
 
@@ -1052,14 +1052,17 @@ public final class PlaybackController implements PlaybackListener,
 
                     case NEEDLE_EVENT:
                         handleNeedleEvent((NeedleEvent) e.getEventObject());
+
                         break;
 
                     case MARKER_EVENT:
                         handleMarkerEvent((MarkerEvent) e.getEventObject());
+
                         break;
 
                     case CARRIAGE_EVENT:
                         handleCarriageEvent((CarriageEvent) e.getEventObject());
+
                         break;
 
                     default:
@@ -1320,6 +1323,10 @@ public final class PlaybackController implements PlaybackListener,
             dataViewer.setDataFeed(f);
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                 dataViewer.getTrackPainter());
+            mixerControllerV.bindTrackActions(f.getAbsolutePath(), dataViewer,
+                plugin.isActionSupported1(), plugin.getActionButtonIcon1(),
+                plugin.isActionSupported2(), plugin.getActionButtonIcon2(),
+                plugin.isActionSupported3(), plugin.getActionButtonIcon3());
         }
     }
 
@@ -1436,10 +1443,12 @@ public final class PlaybackController implements PlaybackListener,
 
         case START_MARKER:
             handleStartMarkerEvent(newWindowTime, tracksTime);
+
             break;
 
         case END_MARKER:
             handleEndMarkerEvent(newWindowTime, tracksTime);
+
             break;
 
         default:
@@ -1527,12 +1536,14 @@ public final class PlaybackController implements PlaybackListener,
 
         case OFFSET_CHANGE:
             handleCarriageOffsetChangeEvent(e);
+
             break;
 
         case BOOKMARK_CHANGED:
         case BOOKMARK_SAVE:
             OpenSHAPA.getProjectController().projectChanged();
             OpenSHAPA.getApplication().updateTitle();
+
             break;
 
         default:

@@ -344,6 +344,10 @@ public final class DataControllerV extends OpenSHAPADialog
             dataViewer.setDataFeed(f);
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                 dataViewer.getTrackPainter());
+            mixerControllerV.bindTrackActions(f.getAbsolutePath(), dataViewer,
+                plugin.isActionSupported1(), plugin.getActionButtonIcon1(),
+                plugin.isActionSupported2(), plugin.getActionButtonIcon2(),
+                plugin.isActionSupported3(), plugin.getActionButtonIcon3());
         }
     }
 
@@ -641,8 +645,8 @@ public final class DataControllerV extends OpenSHAPADialog
             OpenSHAPA.getProjectController().projectChanged();
 
             // Remove the data viewer from the tracks panel.
-            mixerControllerV.removeTrack(viewer.getDataFeed()
-                .getAbsolutePath());
+            mixerControllerV.deregisterTrack(viewer.getDataFeed()
+                .getAbsolutePath(), viewer);
             OpenSHAPA.getApplication().updateTitle();
         }
 
@@ -1567,10 +1571,12 @@ public final class DataControllerV extends OpenSHAPADialog
 
         case START_MARKER:
             handleStartMarkerEvent(newWindowTime, tracksTime);
+
             break;
 
         case END_MARKER:
             handleEndMarkerEvent(newWindowTime, tracksTime);
+
             break;
 
         default:
@@ -1654,12 +1660,14 @@ public final class DataControllerV extends OpenSHAPADialog
 
         case OFFSET_CHANGE:
             handleCarriageOffsetChangeEvent(e);
+
             break;
 
         case BOOKMARK_CHANGED:
         case BOOKMARK_SAVE:
             OpenSHAPA.getProjectController().projectChanged();
             OpenSHAPA.getApplication().updateTitle();
+
             break;
 
         default:
@@ -2038,6 +2046,7 @@ public final class DataControllerV extends OpenSHAPADialog
                 playbackModel.setWindowPlayEnd(newWindowPlayStart);
                 mixerControllerV.setPlayRegionEnd(newWindowPlayStart);
             }
+
             mixerControllerV.getNeedleController().fixNeedle();
         } catch (ParseException e) {
             logger.error("Unable to set playback region of interest", e);

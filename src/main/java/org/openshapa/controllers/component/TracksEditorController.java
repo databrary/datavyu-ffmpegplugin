@@ -23,6 +23,7 @@ import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
 
 import org.openshapa.views.component.TrackPainter;
+import org.openshapa.views.continuous.CustomActionListener;
 
 
 /**
@@ -152,6 +153,54 @@ public final class TracksEditorController implements TrackMouseEventListener {
     }
 
     /**
+     * Bind track actions to a data viewer.
+     *
+     * @param mediaPath Absolute path to the media file
+     * @param dataViewer Viewer to bind
+     * @param actionSupported1 is the first custom action supported
+     * @param actionIcon1 icon associated with the first custom action
+     * @param actionSupported2 is the second custom action supported
+     * @param actionIcon2 icon associated with the second custom action
+     * @param actionSupported3 is the third custom action supported
+     * @param actionIcon3 icon associated with the third custom action
+     */
+    public void bindTrackActions(final String mediaPath,
+        final CustomActionListener dataViewer, final boolean actionSupported1,
+        final ImageIcon actionIcon1, final boolean actionSupported2,
+        final ImageIcon actionIcon2, final boolean actionSupported3,
+        final ImageIcon actionIcon3) {
+
+        for (Track track : tracks) {
+
+            if (track.mediaPath.equals(mediaPath)) {
+                TrackController tc = track.trackController;
+                tc.addCustomActionListener(dataViewer);
+                tc.setActionButtonUI1(actionSupported1, actionIcon1);
+                tc.setActionButtonUI2(actionSupported2, actionIcon2);
+                tc.setActionButtonUI3(actionSupported3, actionIcon3);
+            }
+        }
+    }
+
+    /**
+     * Unbind track actions from a dataviewer.
+     *
+     * @param mediaPath Absolute path to the media file
+     * @param dataViewer Viewer to unbind
+     */
+    public void unbindTrackActions(final String mediaPath,
+        final CustomActionListener dataViewer) {
+
+        for (Track track : tracks) {
+
+            if (track.mediaPath.equals(mediaPath)) {
+                TrackController tc = track.trackController;
+                tc.removeCustomActionListener(dataViewer);
+            }
+        }
+    }
+
+    /**
      * Remove a specific track from the controller. Also deregisters the given
      * listener from the track.
      *
@@ -225,17 +274,17 @@ public final class TracksEditorController implements TrackMouseEventListener {
                 tc.setTrackOffset(newOffset);
                 snapMarkerController.setMarkerTime(-1);
 
-                    final SnapPoint snapPoint = snapOffset(mediaPath,
-                            snapTemporalPosition);
-                    tc.setMoveable(snapPoint == null);
+                final SnapPoint snapPoint = snapOffset(mediaPath,
+                        snapTemporalPosition);
+                tc.setMoveable(snapPoint == null);
 
-                    if (snapPoint == null) {
-                        snapMarkerController.setMarkerTime(-1);
-                    } else {
-                        snapMarkerController.setMarkerTime(
-                            snapPoint.snapMarkerPosition);
-                        tc.setTrackOffset(newOffset + snapPoint.snapOffset);
-                    }
+                if (snapPoint == null) {
+                    snapMarkerController.setMarkerTime(-1);
+                } else {
+                    snapMarkerController.setMarkerTime(
+                        snapPoint.snapMarkerPosition);
+                    tc.setTrackOffset(newOffset + snapPoint.snapOffset);
+                }
 
                 return true;
             }
