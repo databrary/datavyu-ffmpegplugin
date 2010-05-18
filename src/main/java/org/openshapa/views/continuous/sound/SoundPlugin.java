@@ -34,8 +34,60 @@ public class SoundPlugin implements Plugin {
         return filter;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getTypeIcon()
+     */
     public ImageIcon getTypeIcon() {
         return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon1()
+     */
+    public ImageIcon getActionButtonIcon1() {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon2()
+     */
+    public ImageIcon getActionButtonIcon2() {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon3()
+     */
+    public ImageIcon getActionButtonIcon3() {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#isActionSupported1()
+     */
+    public boolean isActionSupported1() {
+        return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#isActionSupported2()
+     */
+    public boolean isActionSupported2() {
+        return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#isActionSupported3()
+     */
+    public boolean isActionSupported3() {
+        return false;
     }
 
 }

@@ -1,6 +1,7 @@
 package org.openshapa.views.continuous.sound;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 
 import java.io.File;
 
@@ -489,6 +490,30 @@ public final class SoundDataViewer extends JFrame implements DataViewer {
         return new DefaultTrackPainter();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.CustomActionListener#handleActionButtonEvent1(java.awt.event.ActionEvent)
+     */
+    public void handleActionButtonEvent1(final ActionEvent event) {
+        // Do nothing; not supported.
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.CustomActionListener#handleActionButtonEvent2(java.awt.event.ActionEvent)
+     */
+    public void handleActionButtonEvent2(final ActionEvent event) {
+        // Do nothing; not supported.
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.CustomActionListener#handleActionButtonEvent3(java.awt.event.ActionEvent)
+     */
+    public void handleActionButtonEvent3(final ActionEvent event) {
+        // Do nothing; not supported.
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -743,4 +768,5 @@ public final class SoundDataViewer extends JFrame implements DataViewer {
 
         }
     }
+
 }

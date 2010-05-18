@@ -1,6 +1,7 @@
 package org.openshapa.views.continuous.quicktime;
 
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 
 import java.io.File;
 
@@ -389,6 +390,30 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         return new DefaultTrackPainter();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.CustomActionListener#handleActionButtonEvent1(java.awt.event.ActionEvent)
+     */
+    public void handleActionButtonEvent1(final ActionEvent event) {
+        // Do nothing; not supported.
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.CustomActionListener#handleActionButtonEvent2(java.awt.event.ActionEvent)
+     */
+    public void handleActionButtonEvent2(final ActionEvent event) {
+        // Do nothing; not supported.
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.CustomActionListener#handleActionButtonEvent3(java.awt.event.ActionEvent)
+     */
+    public void handleActionButtonEvent3(final ActionEvent event) {
+        // Do nothing; not supported.
+    }
+
     // ------------------------------------------------------------------------
     // [generated]
     //
@@ -405,13 +430,14 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("QTDataViewerDialog"); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
-        });
+                public void windowClosing(
+                    final java.awt.event.WindowEvent evt) {
+                    formWindowClosing(evt);
+                }
+            });
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * Action to invoke when the QTDataViewer window is closing (clean itself
