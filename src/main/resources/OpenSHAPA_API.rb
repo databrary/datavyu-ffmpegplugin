@@ -1,3 +1,8 @@
+#-------------------------------------------------------------------
+# OpenSHAPA API v 0.8
+# Please read the function headers for information on how to use them.
+#-------------------------------------------------------------------
+
 require 'java'
 require 'csv'
 require 'time'
@@ -254,7 +259,7 @@ end
 # Arguments:
 # => name (optional): The name of the variable being created
 # => var  (required): The Ruby container of the variable to be put into the database.  This is the return value of
-#         create_new_variable or getVariable that has been modified.
+#         createNewVariable or getVariable that has been modified.
 # Usage:
 #       trial = getVariable("trial")
 #       ** Do some modification to trial
@@ -404,7 +409,7 @@ def make_rel(relname, var_to_copy, multiple_to_keep, *args_to_keep)
 end
 
 #-------------------------------------------------------------------
-# Method name: create_new_variable
+# Method name: createNewVariable
 # Function: Creates a brand new blank variable with argument *args and name name.
 # Arguments:
 # => name (required): The OpenSHAPA name of the variable being retrieved
@@ -413,12 +418,12 @@ end
 # Returns:
 # => A Ruby object representation of the variable inside OpenSHAPA.
 # Usage:
-#       trial = create_new_variable("trial", "trialnum", "unit")
+#       trial = createNewVariable("trial", "trialnum", "unit")
 #       blank_cell = trial.make_new_cell()
 #       setVariable(trial)
 #-------------------------------------------------------------------
 
-def create_new_variable(name, *args)
+def createNewVariable(name, *args)
   v = Variable.new
   
   v.name = name
@@ -448,8 +453,8 @@ end
 # that contains a cell with a number for that block, and another
 # blank column for the free coding within that block.
 #-----------------------------------------------------------#
-def make_duration_block_rel(relname, binding, var_to_copy, block_dur, skip_blocks)
-  block_var = create_new_variable(relname + "_blocks", "block_num")
+def makeDurationBlockRel(relname, var_to_copy, binding, block_dur, skip_blocks)
+  block_var = createNewVariable(relname + "_blocks", "block_num")
   rel_var = make_rel(relname, var_to_copy, 0)
   
   var_to_copy = getVariable(var_to_copy)
