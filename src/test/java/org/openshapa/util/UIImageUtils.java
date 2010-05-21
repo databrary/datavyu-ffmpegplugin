@@ -87,10 +87,10 @@ public final class UIImageUtils {
                 || !(uiImage.getWidth() == refImage.getWidth())) {
             ImageIO.write(uiImage, "png",
                 new File(tempFolder + "/" + filePrefix
-                    + "/sameSize.png"));
+                    + "sameSize.png"));
             System.err.println("Image written to: "
                 + tempFolder + "/" + filePrefix
-                + "/sameSize.png");
+                + "sameSize.png");
         }
 
         Assert.assertEquals(uiImage.getHeight(), refImage.getHeight());
@@ -124,17 +124,17 @@ public final class UIImageUtils {
         if (!withinThreshold) {
             ImageIO.write(maskImage(uiImage, refImage), "png",
                 new File(tempFolder + "/" + filePrefix
-                    + "/maskImage.png"));
+                    + "maskImage.png"));
             System.err.println("Image written to: "
                 + tempFolder + "/" + filePrefix
-                + "/maskImage.png");
+                + "maskImage.png");
 
             ImageIO.write(uiImage, "png",
                 new File(tempFolder + "/" + filePrefix
-                    + "/capturedImage.png"));
+                    + "capturedImage.png"));
             System.err.println("Image written to: "
                 + tempFolder + "/" + filePrefix
-                + "/capturedImage.png");
+                + "capturedImage.png");
         }
 
         return withinThreshold;
