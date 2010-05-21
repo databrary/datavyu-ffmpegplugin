@@ -863,7 +863,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * last created cell
      */
     // Passing on local machine, failing on server. Possibly EDT related.
-    /*@Test*/ public void testBug891() {
+    @Test public void testBug891() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
