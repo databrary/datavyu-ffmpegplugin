@@ -40,10 +40,10 @@ public class MixerControllerFixture {
 
     /**
      * Get snap toggle button.
-     * @return JToggleButtonFixture for Snap toggle button
+     * @return JButtonFixture for Snap Region button
      */
-    public final JToggleButtonFixture getSnapRegionButton() {
-        return new JToggleButtonFixture(r, "snapRegionButton");
+    public final JButtonFixture getSnapRegionButton() {
+        return new JButtonFixture(r, "snapRegionButton");
     }
 
     /**

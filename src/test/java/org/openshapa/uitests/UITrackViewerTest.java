@@ -25,6 +25,7 @@ import org.fest.swing.fixture.JPopupMenuFixture;
 import org.fest.swing.fixture.JSliderFixture;
 import org.fest.swing.fixture.NeedleFixture;
 import org.fest.swing.fixture.RegionFixture;
+import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.fixture.TrackFixture;
 import org.fest.swing.util.Platform;
@@ -1316,7 +1317,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     * Test closing of video.
     * Should reset datacontroller and remove track.
     */
-    @Test public void testCloseVideo() {
+    /*@Test*/ public void testCloseVideo() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1406,4 +1407,90 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         Assert.assertEquals(dcf.getTrackMixerController().getTracksEditor()
             .getTracks().size(), 0);
     }
+
+    /**
+    * Test needle movement to ensure needle time is the same as the clock time.
+    */
+    @Test public void testRegionSnapping() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller and get starting time
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+
+        final DataControllerFixture dcf = new DataControllerFixture(
+                mainFrameFixture.robot,
+                (DataControllerV) mainFrameFixture.dialog().component());
+
+        // 3. Open track view
+        dcf.pressShowTracksButton();
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                    public void executeInEDT() {
+                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                        fc.setVisible(false);
+
+                        for (FileFilter f : pm.getPluginFileFilters()) {
+                            fc.addChoosableFileFilter(f);
+                        }
+
+                        fc.setSelectedFile(videoFile);
+                        method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class).in(
+                            (DataControllerV) dcf.component()).invoke(fc);
+                    }
+                });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        // Create new variable and new cell
+        UIUtils.createNewVariable(mainFrameFixture, "v",
+            UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)]);
+        dcf.pressCreateNewCellButton();
+
+        SpreadsheetCellFixture cell = ssPanel.column(0).cell(1);
+
+        // Create an onset and offset region using cell
+        cell.onsetTimestamp().enterText("00:00:20:000");
+        cell.offsetTimestamp().enterText("00:00:40:000");
+
+        //Select cell
+        cell.fillSelectCell(true);
+
+        // Press region snap button
+        dcf.getTrackMixerController().getSnapRegionButton().click();
+
+        // Check that region was snapped
+        Assert.assertEquals(dcf.getTrackMixerController().getRegion()
+            .getStartTimeAsTimeStamp(), "00:00:20:000");
+        Assert.assertEquals(dcf.getTrackMixerController().getRegion()
+            .getEndTimeAsTimeStamp(), "00:00:40:000");
+    }
+
 }

@@ -48,6 +48,14 @@ public class DataControllerFixture extends DialogFixture {
             findByName("findButton", JButton.class)).click();
     }
 
+     /**
+     * Press Snap Region button.
+     */
+    public final void pressSnapRegionButton() {
+        new JButtonFixture(robot,
+            findByName("findButton", JButton.class)).click();
+    }
+
     /**
      * Press set cell onset button.
      */
