@@ -3,6 +3,7 @@ package org.openshapa.util;
 import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -24,7 +25,6 @@ import javax.imageio.ImageIO;
 
 import org.testng.Assert;
 
-import quicktime.std.movies.Movie;
 
 
 /**
@@ -200,6 +200,44 @@ public final class UIImageUtils {
         }
     }
 
+    /**
+    * Captures screenshot of component and saves to a file.
+    * @param dialog JComponent to capture screenshot
+    * @param saveAs file name
+    */
+    public static void captureAsScreenshot(final Dialog dialog,
+        final File saveAs) {
+
+        try {
+            Robot robot = new Robot();
+            Rectangle bounds = getInternalRectangle(dialog);
+            BufferedImage bi = robot.createScreenCapture(bounds);
+            ImageIO.write(bi, "png", saveAs);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+    * Captures screenshot of component and returns bufferedImage.
+    * @param dialog JComponent to capture screenshot
+    */
+    public static BufferedImage captureAsScreenshot(final Dialog dialog) {
+        BufferedImage bi = null;
+
+        try {
+            Robot robot = new Robot();
+            Rectangle bounds = getInternalRectangle(dialog);
+            bi = robot.createScreenCapture(bounds);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+
+        return bi;
+    }
+
     public static Rectangle getInternalRectangle(Frame frame) {
 
         // Create Rectangle around component
@@ -214,6 +252,26 @@ public final class UIImageUtils {
             - frame.getInsets().right,
             bounds.getHeight() - frame.getInsets().top
             - frame.getInsets().bottom);
+
+        bounds.setLocation(locOnScreen);
+
+        return bounds;
+    }
+
+    public static Rectangle getInternalRectangle(Dialog dialog) {
+
+        // Create Rectangle around component
+        Point locOnScreen = dialog.getLocationOnScreen();
+        Rectangle bounds = dialog.getBounds();
+
+        // Compensate for frame boundary
+        locOnScreen.setLocation(locOnScreen.x + dialog.getInsets().left,
+            locOnScreen.y + dialog.getInsets().top);
+        bounds.setRect(0, 0,
+            bounds.getWidth() - dialog.getInsets().left
+            - dialog.getInsets().right,
+            bounds.getHeight() - dialog.getInsets().top
+            - dialog.getInsets().bottom);
 
         bounds.setLocation(locOnScreen);
 
