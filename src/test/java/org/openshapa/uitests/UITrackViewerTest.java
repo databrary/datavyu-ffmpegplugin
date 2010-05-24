@@ -54,7 +54,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement to ensure needle time is the same as the clock time.
     */
-    /*@Test*/ public void testNeedleMovement() {
+    @Test public void testNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -136,7 +136,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test needle movement to ensure needle can't go beyond start or end.
      */
-    /*@Test*/ public void testRangeOfNeedleMovement() {
+    @Test public void testRangeOfNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -221,7 +221,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * 6. Left region can't cross (go beyond) right
      * 7. Right region can't cross left
      */
-    /*@Test*/ public void testRegionMovement() {
+    @Test public void testRegionMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -367,7 +367,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test moving track while locked and unlocked.
      */
-    /*@Test*/ public void testLockUnlockTrack() {
+    @Test public void testLockUnlockTrack() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -450,7 +450,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /*@Test*/ public void testTrackSnapping() {
+    @Test public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -733,7 +733,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test for Unlock Lock with zooming.
      */
-    /*@Test*/ public void testLockUnlockTrackWithZoom() {
+    @Test public void testLockUnlockTrackWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -834,7 +834,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * Test needle movement to ensure needle can't go beyond start or end,
      * with zoom applied.
      */
-    /*@Test*/ public void testRangeOfNeedleMovementWithZoom() {
+    @Test public void testRangeOfNeedleMovementWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -940,7 +940,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /*@Test*/ public void testTrackSnappingWithZoom() {
+    @Test public void testTrackSnappingWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1317,7 +1317,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     * Test closing of video.
     * Should reset datacontroller and remove track.
     */
-    /*@Test*/ public void testCloseVideo() {
+    @Test public void testCloseVideo() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1472,6 +1472,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // Create new variable and new cell
         UIUtils.createNewVariable(mainFrameFixture, "v",
             UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)]);
+        ssPanel.column(0).click();
         dcf.pressCreateNewCellButton();
 
         SpreadsheetCellFixture cell = ssPanel.column(0).cell(1);
@@ -1480,7 +1481,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         cell.onsetTimestamp().enterText("00:00:20:000");
         cell.offsetTimestamp().enterText("00:00:40:000");
 
-        //Select cell
+        // Select cell
         cell.fillSelectCell(true);
 
         // Press region snap button
