@@ -11,7 +11,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SimpleTimeZone;
@@ -57,6 +56,7 @@ import org.openshapa.views.continuous.Plugin;
 import org.openshapa.views.continuous.PluginManager;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.util.LinkedHashSet;
 
 
 /**
@@ -307,7 +307,7 @@ public final class DataControllerV extends OpenSHAPADialog
         }
 
         setName(this.getClass().getSimpleName());
-        viewers = new HashSet<DataViewer>();
+        viewers = new LinkedHashSet<DataViewer>();
 
         playbackModel = new PlaybackModel();
         playbackModel.setPauseRate(0);
