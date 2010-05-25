@@ -2049,7 +2049,15 @@ public final class DataControllerV extends OpenSHAPADialog
                 mixerControllerV.setPlayRegionEnd(newWindowPlayStart);
             }
 
-            mixerControllerV.getNeedleController().fixNeedle();
+            final long currentTime = mixerControllerV.getCurrentTime();
+
+            if (currentTime > newWindowPlayEnd) {
+                mixerControllerV.setCurrentTime(newWindowPlayEnd);
+                clock.setTime(newWindowPlayEnd);
+            } else if (currentTime < newWindowPlayStart) {
+                mixerControllerV.setCurrentTime(newWindowPlayStart);
+                clock.setTime(newWindowPlayStart);
+            }
         } catch (ParseException e) {
             logger.error("Unable to set playback region of interest", e);
         }
