@@ -1539,6 +1539,7 @@ public final class PlaybackController implements PlaybackListener,
 
             break;
 
+        case CARRIAGE_LOCK:
         case BOOKMARK_CHANGED:
         case BOOKMARK_SAVE:
             OpenSHAPA.getProjectController().projectChanged();
