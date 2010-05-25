@@ -4,17 +4,21 @@ import javax.swing.JComponent;
 
 import org.openshapa.models.component.TimescaleModel;
 import org.openshapa.models.component.ViewableModel;
+
 import org.openshapa.views.component.TimescalePainter;
+
 
 /**
  * Timescale controller is responsible for managing a TimescalePainter
  */
-public class TimescaleController {
+public final class TimescaleController {
+
     /** View */
-    private transient final TimescalePainter view;
+    private final TimescalePainter view;
+
     /** Models */
-    private transient final TimescaleModel timescaleModel;
-    private transient final ViewableModel viewableModel;
+    private final TimescaleModel timescaleModel;
+    private final ViewableModel viewableModel;
 
     public TimescaleController() {
         view = new TimescalePainter();
@@ -39,28 +43,29 @@ public class TimescaleController {
      *            them are major intervals and 8 are minor intervals.
      */
     public void setConstraints(final long start, final long end,
-            final int intervals) {
+        final int intervals) {
         viewableModel.setZoomWindowStart(start);
         viewableModel.setZoomWindowEnd(end);
 
-        final int effectiveWidth =
-                view.getWidth() - timescaleModel.getPaddingLeft()
-                        - timescaleModel.getPaddingRight();
+        final int effectiveWidth = view.getWidth()
+            - timescaleModel.getPaddingLeft()
+            - timescaleModel.getPaddingRight();
         timescaleModel.setEffectiveWidth(effectiveWidth);
 
-        final int majorWidth =
-                effectiveWidth / timescaleModel.getMajorIntervals();
+        final int majorWidth = effectiveWidth
+            / timescaleModel.getMajorIntervals();
         timescaleModel.setMajorWidth(majorWidth);
 
         viewableModel.setIntervalWidth((float) majorWidth / (float) intervals);
         viewableModel.setIntervalTime((float) (end - start)
-                / (float) (timescaleModel.getMajorIntervals() * intervals));
+            / (float) (timescaleModel.getMajorIntervals() * intervals));
 
         view.setViewableModel(viewableModel);
         view.setTimescaleModel(timescaleModel);
     }
 
     public void setViewableModel(final ViewableModel viewableModel) {
+
         /*
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
@@ -69,8 +74,8 @@ public class TimescaleController {
         this.viewableModel.setIntervalTime(viewableModel.getIntervalTime());
         this.viewableModel.setIntervalWidth(viewableModel.getIntervalWidth());
         this.viewableModel.setZoomWindowEnd(viewableModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(viewableModel
-                .getZoomWindowStart());
+        this.viewableModel.setZoomWindowStart(
+            viewableModel.getZoomWindowStart());
         view.setViewableModel(this.viewableModel);
     }
 
@@ -78,6 +83,7 @@ public class TimescaleController {
      * @return a clone of the viewable model in use
      */
     public ViewableModel getViewableModel() {
+
         // return a clone to avoid model tainting
         return viewableModel.clone();
     }
