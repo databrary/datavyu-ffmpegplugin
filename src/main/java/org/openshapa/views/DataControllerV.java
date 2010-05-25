@@ -56,6 +56,7 @@ import org.openshapa.views.continuous.Plugin;
 import org.openshapa.views.continuous.PluginManager;
 
 import com.usermetrix.jclient.UserMetrix;
+
 import java.util.LinkedHashSet;
 
 
@@ -1663,6 +1664,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
             break;
 
+        case CARRIAGE_LOCK:
         case BOOKMARK_CHANGED:
         case BOOKMARK_SAVE:
             OpenSHAPA.getProjectController().projectChanged();

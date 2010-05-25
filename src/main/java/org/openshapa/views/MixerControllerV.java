@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
-
 import java.util.EventObject;
 import java.util.Timer;
 
@@ -826,6 +825,15 @@ public final class MixerControllerV implements NeedleEventListener,
      * @param e the event to handle
      */
     public void saveBookmark(final CarriageEvent e) {
+        fireTracksControllerEvent(TracksEvent.CARRIAGE_EVENT, e);
+    }
+
+    /**
+     * Track lock state changed.
+     *
+     * @param e the event to handle
+     */
+    public void lockStateChanged(final CarriageEvent e) {
         fireTracksControllerEvent(TracksEvent.CARRIAGE_EVENT, e);
     }
 
