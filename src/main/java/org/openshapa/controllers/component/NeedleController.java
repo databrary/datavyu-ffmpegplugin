@@ -13,8 +13,6 @@ import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
-import org.openshapa.OpenSHAPA;
-
 import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.NeedleEventListener;
 
@@ -27,17 +25,17 @@ import org.openshapa.views.component.NeedlePainter;
 /**
  * NeedleController is responsible for managing a NeedlePainter
  */
-public class NeedleController {
+public final class NeedleController {
 
     /** View */
-    private transient final NeedlePainter view;
+    private final NeedlePainter view;
 
     /** Models */
-    private transient final NeedleModel needleModel;
+    private final NeedleModel needleModel;
     private final ViewableModel viewableModel;
 
     /** Listeners interested in needle painter events */
-    private transient final EventListenerList listenerList;
+    private final EventListenerList listenerList;
 
     public NeedleController() {
         view = new NeedlePainter();
