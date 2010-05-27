@@ -32,6 +32,15 @@ public class DataControllerFixture extends DialogFixture {
             findByName("timestampLabel", JLabel.class)).text();
     }
 
+     /**
+     * Go back time.
+     * @return String of goBackTime.
+     */
+    public final String getGoBackTime() {
+        return new JTextComponentFixture(robot,
+            findByName("goBackTextField", JTextField.class)).text();
+    }
+
     /**
      * Press set offset button.
      */
@@ -78,6 +87,14 @@ public class DataControllerFixture extends DialogFixture {
     public final void pressRewindButton() {
         new JButtonFixture(robot,
             findByName("rewindButton", JButton.class)).click();
+    }
+
+     /**
+     * Press go back button.
+     */
+    public final void pressGoBackButton() {
+        new JButtonFixture(robot,
+            findByName("goBackButton", JButton.class)).click();
     }
 
     /**
@@ -192,6 +209,16 @@ public class DataControllerFixture extends DialogFixture {
     public final String getFindOnset() {
         return new JTextComponentFixture(robot,
             findByName("findOnsetLabel", JTextField.class)).text();
+    }
+
+     /**
+     * Returns findOnset time.
+     * @return String of find onset time.
+     */
+    public final void setFindOnset(String value) {
+        JTextComponentFixture findOnset = new JTextComponentFixture(robot,
+            findByName("findOnsetLabel", JTextField.class));
+        findOnset.selectAll().enterText(value);
     }
 
     /**
