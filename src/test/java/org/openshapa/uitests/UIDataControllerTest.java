@@ -14,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
+import java.util.Date;
 
 import java.util.Iterator;
 
@@ -44,7 +45,6 @@ import org.openshapa.models.db.TimeStamp;
 
 import org.openshapa.util.UIImageUtils;
 
-import org.openshapa.views.continuous.quicktime.QTDataViewer;
 
 import org.testng.Assert;
 
@@ -834,6 +834,14 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // The first line is really just to delay things.
         ssPanel.column("t").click();
         ssPanel.column("t").pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
+
+        Date start = new Date();
+        while(ssPanel.column("t").allCells().size() == 0) {
+            Date now = new Date();
+            if ((now.getTime() - start.getTime()) > 3000) {
+                break;
+            }
+        }
 
         // Check that cell exists
         Assert.assertEquals(ssPanel.column("t").allCells().size(), 1);
