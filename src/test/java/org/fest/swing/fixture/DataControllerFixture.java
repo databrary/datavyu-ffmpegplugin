@@ -41,6 +41,14 @@ public class DataControllerFixture extends DialogFixture {
             findByName("goBackTextField", JTextField.class)).text();
     }
 
+     /**
+     * Set go back time.
+     */
+    public final void setGoBackTime(String value) {
+        new JTextComponentFixture(robot,
+            findByName("goBackTextField", JTextField.class)).selectAll().enterText(value);
+    }
+
     /**
      * Press set offset button.
      */

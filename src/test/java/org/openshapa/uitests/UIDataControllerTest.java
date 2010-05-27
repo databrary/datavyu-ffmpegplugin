@@ -14,8 +14,8 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
-import java.util.Date;
 
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.swing.filechooser.FileFilter;
@@ -44,7 +44,6 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.models.db.TimeStamp;
 
 import org.openshapa.util.UIImageUtils;
-
 
 import org.testng.Assert;
 
@@ -142,29 +141,31 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         // Test Jogging back and forth with Ctrl.
         for (int i = 0; i < 5; i++) {
-            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD3, Platform.controlOrCommandMask());
+            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD3,
+                Platform.controlOrCommandMask());
         }
 
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:02:120");
 
         for (int i = 0; i < 5; i++) {
-            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD1, Platform.controlOrCommandMask());
-        }
-
-       Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:120");
-
-        // Test Jogging back and forth with Shift.
-        /*BugzID:1720 - for (int i = 0; i < 5; i++) {
-            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD3, KeyEvent.SHIFT_MASK);
-        }
-
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:01:120");
-
-        for (int i = 0; i < 5; i++) {
-            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD1, KeyEvent.SHIFT_MASK);
+            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD1,
+                Platform.controlOrCommandMask());
         }
 
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:120");
+
+        // Test Jogging back and forth with Shift.
+        /*BugzID:1720 - for (int i = 0; i < 5; i++) {
+         *  mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD3,
+         * KeyEvent.SHIFT_MASK); }
+         *
+         * Assert.assertEquals(dcf.getCurrentTime(), "00:00:01:120");
+         *
+         * for (int i = 0; i < 5; i++) {
+         * mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD1,
+         * KeyEvent.SHIFT_MASK); }
+         *
+         * Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:120");
          */
 
         // 5. Test Create New Cell with Onset.
@@ -245,7 +246,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * @throws Exception
      *             any exception
      */
-    /*@Test*/ public void testStandardSequence1() throws Exception {
+    @Test public void testStandardSequence1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         mainFrameFixture.clickMenuItemWithPath("Controller",
             "Data Viewer Controller");
@@ -307,7 +308,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Bug720.
      * Go Back should contain default value of 00:00:05:000.
      */
-    /*@Test*/ public void testBug720() {
+    @Test public void testBug720() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -337,7 +338,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * resulting in multiple forward shuttle presses being necessary to get
      * a positive playback speed again.
      */
-    /*@Test*/ public void testBug778() throws IOException {
+    @Test public void testBug778() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -449,7 +450,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * do), press shuttle forward again. I often see this going to 1/16x for
      * some reason.
      */
-    /*@Test*/ public void testBug794() {
+    @Test public void testBug794() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -550,7 +551,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Unpause/play the movie, voila, cannot play the movie
      * using that button anymore.
      */
-    /*@Test*/ public void testBug798() throws IOException {
+    @Test public void testBug798() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -675,7 +676,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * When a video finishes playing, hitting play does nothing.
      * I expected it to play again.
      */
-    /*@Test*/ public void testBug464() throws Exception {
+    @Test public void testBug464() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -794,7 +795,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Expect: New cell created.
      * Actual: Dang nabbit error
      */
-    /*@Test*/ public void testBug1204() {
+    @Test public void testBug1204() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -863,8 +864,10 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ssPanel.column("t").pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
 
         Date start = new Date();
-        while(ssPanel.column("t").allCells().size() == 0) {
+
+        while (ssPanel.column("t").allCells().size() == 0) {
             Date now = new Date();
+
             if ((now.getTime() - start.getTime()) > 3000) {
                 break;
             }
@@ -898,7 +901,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * last created cell
      */
     // Passing on local machine, failing on server. Possibly EDT related.
-    /*@Test*/ public void testBug891() {
+    @Test public void testBug891() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1043,9 +1046,13 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD1);
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
-        /*BugzID1720: mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD1, KeyEvent.SHIFT_MASK);
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");*/
-        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD1, Platform.controlOrCommandMask());
+
+        /*BugzID1720:
+         * mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD1,
+         * KeyEvent.SHIFT_MASK);
+         *Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");*/
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD1,
+            Platform.controlOrCommandMask());
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
 
         // Move to end and try to jog forward
@@ -1054,9 +1061,92 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         Assert.assertEquals(dcf.getCurrentTime(), "00:01:00:000");
         mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_NUMPAD3);
         Assert.assertEquals(dcf.getCurrentTime(), "00:01:00:000");
-        /*BugzID1720: mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD3, KeyEvent.SHIFT_MASK);
-        Assert.assertEquals(dcf.getCurrentTime(), "00:01:00:000");*/
-        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD3, Platform.controlOrCommandMask());
+
+        /*BugzID1720:
+         * mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD3,
+         * KeyEvent.SHIFT_MASK);
+         *Assert.assertEquals(dcf.getCurrentTime(), "00:01:00:000");*/
+        mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD3,
+            Platform.controlOrCommandMask());
         Assert.assertEquals(dcf.getCurrentTime(), "00:01:00:000");
+    }
+
+    /**
+     * Tests go back.
+     * @throws SystemErrorException
+     */
+    @Test public void goBackTests() throws SystemErrorException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+
+        final DataControllerFixture dcf = new DataControllerFixture(
+                mainFrameFixture.robot,
+                (DataControllerV) mainFrameFixture.dialog().component());
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                    public void executeInEDT() {
+                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                        fc.setVisible(false);
+
+                        for (FileFilter f : pm.getPluginFileFilters()) {
+                            fc.addChoosableFileFilter(f);
+                        }
+
+                        fc.setSelectedFile(videoFile);
+                        method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class).in(
+                            (DataControllerV) dcf.component()).invoke(fc);
+                    }
+                });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // Confirm we're at the beginning and try to jog back
+        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
+        dcf.pressGoBackButton();
+        TimeStamp currTS = new TimeStamp(dcf.getCurrentTime());
+        Assert.assertTrue((currTS.gt(new TimeStamp("00:00:00:000")))
+            && (currTS.lt(new TimeStamp("00:0:05:000"))));
+
+        // Move to end and go back
+        dcf.setFindOnset("00:01:00:000");
+        dcf.pressFindButton();
+        Assert.assertEquals(dcf.getCurrentTime(), "00:01:00:000");
+        dcf.pressGoBackButton();
+
+        currTS = new TimeStamp(dcf.getCurrentTime());
+        Assert.assertTrue((currTS.gt(new TimeStamp("00:00:55:000")))
+            && (currTS.lt(new TimeStamp("00:01:00:000"))));
+
+        // Move to end and go back 30 seconds
+        dcf.setGoBackTime("00:00:30:000");
+        dcf.pressFindButton();
+        dcf.pressGoBackButton();
+        currTS = new TimeStamp(dcf.getCurrentTime());
+        Assert.assertTrue((currTS.gt(new TimeStamp("00:00:30:000")))
+            && (currTS.lt(new TimeStamp("00:00:35:000"))));
+
+        // Move to end and go back more than 1 minute
+        dcf.setGoBackTime("03:00:00:000");
+        dcf.pressFindButton();
+        dcf.pressGoBackButton();
+        currTS = new TimeStamp(dcf.getCurrentTime());
+        Assert.assertTrue((currTS.gt(new TimeStamp("00:00:00:000")))
+            && (currTS.lt(new TimeStamp("00:00:05:000"))));
+
     }
 }
