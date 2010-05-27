@@ -1,6 +1,27 @@
 #-------------------------------------------------------------------
 # OpenSHAPA API v 0.8
 # Please read the function headers for information on how to use them.
+
+# Licensing information:
+# Copyright (c) 2010 OpenSHAPA Foundation
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 #-------------------------------------------------------------------
 
 require 'java'
@@ -497,6 +518,36 @@ def make_duration_trial_rel(relname, var_to_copy, skip_trials)
   
 end
 
+def create_mutually_exclusive(name, var1, var2)
+  var1 = getVariable(var1)
+  var2 = getVariable(var2)
+  
+  args = var1.arglist + var2.arglist
+  mutex = create_new_variable(name, args)
+  
+  usedV2Cells
+  for v1cell in var1.cells
+    prev_over = false
+    within = false
+    next_over = false
+    for v2cell in var2.cells
+      if v2cell.onset < v1cell.onset and v2cell.offset > v2cell.onset
+        prev_over = v2cell
+      end
+      if v2cell.onset >= v1cell.onset and v2cell.onset <= v1cell.offset \
+        and v2cell.offset < v1cell.offset and v2cell.offset > v1cell.onset
+        if within == false
+          within = Array.new
+        end
+        within << v2cell
+      end
+      if v2cell.onset < v1cell.offset and v2cell.offset > v1cell.offset
+        next_over = v2cell
+      end
+    end
+    if prev_over != false
+      
+end
 #-----------------------------------------------------------------
 # USER EDITABLE SECTION: Use this section between begin and end
 # to make your scripts.
