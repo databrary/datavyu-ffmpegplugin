@@ -1120,7 +1120,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         dcf.pressGoBackButton();
         TimeStamp currTS = new TimeStamp(dcf.getCurrentTime());
         Assert.assertTrue((currTS.gt(new TimeStamp("00:00:00:000")))
-            && (currTS.lt(new TimeStamp("00:0:05:000"))));
+            && (currTS.lt(new TimeStamp("00:00:05:000"))));
 
         // Move to end and go back
         dcf.setFindOnset("00:01:00:000");
