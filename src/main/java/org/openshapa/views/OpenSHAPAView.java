@@ -33,7 +33,6 @@ import org.openshapa.OpenSHAPA.Platform;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.DeleteCellC;
 import org.openshapa.controllers.DeleteColumnC;
-import org.openshapa.controllers.NewDatabaseC;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.controllers.NewVariableC;
 import org.openshapa.controllers.OpenC;
@@ -264,16 +263,6 @@ public final class OpenSHAPAView extends FrameView
         } else {
             mainFrame.setTitle(rMap.getString("Application.title") + " - "
                 + "Project1" + extension + postFix);
-        }
-    }
-
-    /**
-     * Action for creating a new database.
-     */
-    @Action public void showNewDatabaseForm() {
-
-        if (OpenSHAPA.getApplication().safeQuit()) {
-            new NewDatabaseC();
         }
     }
 
