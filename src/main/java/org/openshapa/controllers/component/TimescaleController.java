@@ -10,6 +10,7 @@ import org.openshapa.event.component.NeedleEventListener;
 
 import org.openshapa.models.component.TimescaleModel;
 import org.openshapa.models.component.ViewableModel;
+import org.openshapa.util.NeedleTimeCalculator;
 import org.openshapa.views.component.TimescalePainter;
 
 /**
@@ -153,42 +154,13 @@ public final class TimescaleController {
         @Override
         public void mouseClicked(final MouseEvent e) {
             if (e.getClickCount() == 2) {
-                moveNeedleToPosition(e.getX());
+                int time = NeedleTimeCalculator.getNeedleTime(e.getX(),
+                    view.getSize().width, viewableModel,
+                    timescaleModel.getPaddingLeft());
+
+                fireNeedleEvent(time);
             }
         }
-    }
-
-    /**
-     * Moves the needle to a given position and notifies all listeners.
-     * @param x The new position of the needle.
-     */
-    private void moveNeedleToPosition(int x) {
-        // Bound the x values
-        if (x < 0) {
-            x = 0;
-        }
-        if (x > view.getSize().width) {
-            x = view.getSize().width;
-        }
-
-        // Calculate the time represented by the new location
-        float ratio =
-                viewableModel.getIntervalWidth()
-                        / viewableModel.getIntervalTime();
-        float newTime =
-                (x - timescaleModel.getPaddingLeft() + viewableModel
-                        .getZoomWindowStart()
-                        * ratio)
-                        / ratio;
-
-        if (newTime < 0) {
-            newTime = 0;
-        }
-        if (newTime > viewableModel.getZoomWindowEnd()) {
-            newTime = viewableModel.getZoomWindowEnd();
-        }
-
-        fireNeedleEvent(Math.round(newTime));
     }
 
 }

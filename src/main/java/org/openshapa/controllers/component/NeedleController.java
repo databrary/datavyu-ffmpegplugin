@@ -16,6 +16,7 @@ import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.NeedleEventListener;
 import org.openshapa.models.component.NeedleModel;
 import org.openshapa.models.component.ViewableModel;
+import org.openshapa.util.NeedleTimeCalculator;
 import org.openshapa.views.component.NeedlePainter;
 
 /**
@@ -175,40 +176,16 @@ public final class NeedleController {
 
         @Override
         public void mouseDragged(final MouseEvent e) {
-            moveNeedleToPosition(e.getX());
+
+            int time = NeedleTimeCalculator.getNeedleTime(e.getX(),
+                    view.getSize().width, viewableModel,
+                    needleModel.getPaddingLeft());
+
+            fireNeedleEvent(time);
         }
     }
 
-    /**
-     * Moves the needle to a given position and notifies all listeners.
-     * @param x The new position of the needle.
-     */
-    private void moveNeedleToPosition(int x) {
-        // Bound the x values
-        if (x < 0) {
-            x = 0;
-        }
-        if (x > view.getSize().width) {
-            x = view.getSize().width;
-        }
 
-        // Calculate the time represented by the new location
-        float ratio =
-                viewableModel.getIntervalWidth()
-                        / viewableModel.getIntervalTime();
-        float newTime =
-                (x - needleModel.getPaddingLeft() + (viewableModel
-                        .getZoomWindowStart())
-                        * ratio)
-                        / ratio;
-        if (newTime < 0) {
-            newTime = 0;
-        }
-        if (newTime > viewableModel.getZoomWindowEnd()) {
-            newTime = viewableModel.getZoomWindowEnd();
-        }
-        fireNeedleEvent(Math.round(newTime));
-    }
 
     /**
      * Checks that the needle is in a valid position and fixes it if it isn't.
