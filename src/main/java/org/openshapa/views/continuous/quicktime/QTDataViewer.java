@@ -4,14 +4,12 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -46,6 +44,7 @@ import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.ImageIcon;
 
 
 /**
@@ -109,6 +108,12 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /** Dialog containing volume slider. */
     private JDialog volumeDialog;
 
+    /** Stores the desired volume the plugin should play at. */
+    private float volume = 1f;
+
+    /** Is the plugin visible? */
+    private boolean isVisible = true;
+
     // ------------------------------------------------------------------------
     // [initialization]
     //
@@ -159,14 +164,22 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     private void handleVolumeSliderEvent(final ChangeEvent e) {
 
         if (movie != null) {
-
-            try {
-                movie.setVolume(volumeSlider.getValue() / 100F);
-            } catch (StdQTException ex) {
-                logger.error("Unable to set volume", ex);
-            }
+            volume = volumeSlider.getValue() / 100F;
+            setVolume();
         }
 
+    }
+
+    private void setVolume() {
+        try {
+            if (isVisible) {
+                movie.setVolume(volume);
+            } else {
+                movie.setVolume(0F);
+            }
+        } catch (StdQTException ex) {
+            logger.error("Unable to set volume", ex);
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -463,7 +476,17 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * #handleActionButtonEvent2(java.awt.event.ActionEvent)
      */
     public void handleActionButtonEvent2(final ActionEvent event) {
-        // Do nothing; not supported.
+        isVisible = !isVisible;
+        this.setVisible(isVisible);
+        setVolume();
+        JButton button = (JButton) event.getSource();
+        if (isVisible) {
+            button.setIcon(
+                    new ImageIcon(getClass().getResource("/icons/eye.png")));
+        } else {
+            button.setIcon(
+                  new ImageIcon(getClass().getResource("/icons/eye-shut.png")));
+        }
     }
 
     /*
