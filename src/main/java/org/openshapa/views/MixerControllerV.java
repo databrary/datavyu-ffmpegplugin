@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
-
 import java.util.EventObject;
 import java.util.Timer;
 
@@ -189,7 +188,7 @@ public final class MixerControllerV implements NeedleEventListener,
 
         // Add the timescale
         timescaleController = new TimescaleController();
-        
+
         timescaleController.addNeedleEventListener(this);
 
         JComponent timescaleView = timescaleController.getView();
