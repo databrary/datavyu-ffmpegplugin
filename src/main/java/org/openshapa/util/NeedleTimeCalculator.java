@@ -7,6 +7,7 @@ package org.openshapa.util;
 
 import org.openshapa.models.component.ViewableModel;
 
+
 /**
  *
  *
@@ -27,20 +28,20 @@ public final class NeedleTimeCalculator {
      * @return The timestamp (rounded to an int) that the needle is pointing to.
      */
     public static int getNeedleTime(final int xIn, final int maxX,
-            final ViewableModel vm, final int paddingLeft) {
+        final ViewableModel vm, final int paddingLeft) {
 
         // Bound the x value (0 - maxX)
         int x = Math.min(Math.max(0, xIn), maxX);
 
         // Calculate the time represented by the new location
-        float ratio =
-                vm.getIntervalWidth()
-                        / vm.getIntervalTime();
-        float newTime =
-                (x - paddingLeft + (vm.getZoomWindowStart()) * ratio) / ratio;
+        float ratio = vm.getIntervalWidth() / vm.getIntervalTime();
+        float newTime = (x - paddingLeft + ((vm.getZoomWindowStart()) * ratio))
+            / ratio;
+
         if (newTime < 0) {
             newTime = 0;
         }
+
         if (newTime > vm.getZoomWindowEnd()) {
             newTime = vm.getZoomWindowEnd();
         }
