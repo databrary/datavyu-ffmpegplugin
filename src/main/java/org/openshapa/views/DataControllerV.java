@@ -297,7 +297,7 @@ public final class DataControllerV extends OpenSHAPADialog
      *            Should the dialog be modal or not?
      */
     public DataControllerV(final java.awt.Frame parent, final boolean modal) {
-        super(parent, modal);        
+        super(parent, modal);
 
         clock.registerListener(this);
 
