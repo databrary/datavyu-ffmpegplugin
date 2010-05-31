@@ -33,6 +33,7 @@ import org.openshapa.event.PlaybackListener;
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.MarkerEvent;
 import org.openshapa.event.component.NeedleEvent;
+import org.openshapa.event.component.TimescaleEvent;
 import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
@@ -841,7 +842,6 @@ public final class PlaybackController implements PlaybackListener,
 
     }
 
-
     /**
      * Remove the specifed viewer from the controller.
      *
@@ -1062,6 +1062,12 @@ public final class PlaybackController implements PlaybackListener,
 
                     case CARRIAGE_EVENT:
                         handleCarriageEvent((CarriageEvent) e.getEventObject());
+
+                        break;
+
+                    case TIMESCALE_EVENT:
+                        handleTimescaleEvent((TimescaleEvent)
+                            e.getEventObject());
 
                         break;
 
@@ -1409,8 +1415,22 @@ public final class PlaybackController implements PlaybackListener,
      */
     private void handleNeedleEvent(final NeedleEvent e) {
         assert !SwingUtilities.isEventDispatchThread();
+        gotoTime(e.getTime());
+    }
 
-        long newTime = e.getTime();
+    /**
+     * Handles a TimescaleEvent.
+     * @param e The timescale event that triggered this action.
+     */
+    private void handleTimescaleEvent(final TimescaleEvent e) {
+        assert !SwingUtilities.isEventDispatchThread();
+        gotoTime(e.getTime());
+    }
+
+    private void gotoTime(final long time) {
+        assert !SwingUtilities.isEventDispatchThread();
+
+        long newTime = time;
 
         if (newTime < playbackModel.getWindowPlayStart()) {
             newTime = playbackModel.getWindowPlayStart();

@@ -40,6 +40,7 @@ import org.openshapa.controllers.SetSelectedCellStopTimeC;
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.MarkerEvent;
 import org.openshapa.event.component.NeedleEvent;
+import org.openshapa.event.component.TimescaleEvent;
 import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
@@ -1528,6 +1529,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
             break;
 
+        case TIMESCALE_EVENT:
+            handleTimescaleEvent((TimescaleEvent) e.getEventObject());
+
+            break;
+
         default:
             break;
         }
@@ -1541,7 +1547,19 @@ public final class DataControllerV extends OpenSHAPADialog
      *            The Needle event that triggered this action.
      */
     private void handleNeedleEvent(final NeedleEvent e) {
-        long newTime = e.getTime();
+        gotoTime(e.getTime());
+    }
+
+    /**
+     * Handles a TimescaleEvent.
+     * @param e The timescale event that triggered this action.
+     */
+    private void handleTimescaleEvent(final TimescaleEvent e) {
+        gotoTime(e.getTime());
+    }
+
+    private void gotoTime(final long time) {
+        long newTime = time;
 
         if (newTime < playbackModel.getWindowPlayStart()) {
             newTime = playbackModel.getWindowPlayStart();

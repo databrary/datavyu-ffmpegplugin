@@ -43,6 +43,8 @@ import org.openshapa.event.component.MarkerEvent;
 import org.openshapa.event.component.MarkerEventListener;
 import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.NeedleEventListener;
+import org.openshapa.event.component.TimescaleEvent;
+import org.openshapa.event.component.TimescaleListener;
 import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerEvent.TracksEvent;
 import org.openshapa.event.component.TracksControllerListener;
@@ -58,7 +60,8 @@ import org.openshapa.views.continuous.CustomActionListener;
  * This class manages the tracks information interface.
  */
 public final class MixerControllerV implements NeedleEventListener,
-    MarkerEventListener, CarriageEventListener, AdjustmentListener {
+    MarkerEventListener, CarriageEventListener, AdjustmentListener,
+    TimescaleListener {
 
     /** Root interface panel. */
     private JPanel tracksPanel;
@@ -188,8 +191,7 @@ public final class MixerControllerV implements NeedleEventListener,
 
         // Add the timescale
         timescaleController = new TimescaleController();
-
-        timescaleController.addNeedleEventListener(this);
+        timescaleController.addTimescaleEventListener(this);
 
         JComponent timescaleView = timescaleController.getView();
 
@@ -847,6 +849,10 @@ public final class MixerControllerV implements NeedleEventListener,
      */
     public void selectionChanged(final CarriageEvent e) {
         bookmarkButton.setEnabled(tracksEditorController.hasSelectedTracks());
+    }
+
+    public void jumpToTime(final TimescaleEvent e) {
+        fireTracksControllerEvent(TracksEvent.TIMESCALE_EVENT, e);
     }
 
     /**
