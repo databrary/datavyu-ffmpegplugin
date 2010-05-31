@@ -445,18 +445,16 @@ public final class DataControllerV extends OpenSHAPADialog
                          * Use offsets to determine if the video file should
                          * start playing.
                          */
+
                         if (!v.isPlaying()
-                                && (time >= v.getOffset())
-                                && (time < v.getOffset() + v.getDuration())) {
+                                && isWithinPlayRange(time, v)) {
                             v.seekTo(time - v.getOffset());
                             v.play();
                         }
 
                         // BugzID:1797 - Viewers who are "playing" outside their
                         // timeframe should be asked to stop.
-                        if (v.isPlaying()
-                                && ((time < v.getOffset())
-                                || (time > v.getOffset() + v.getDuration()))) {
+                        if (v.isPlaying() && !isWithinPlayRange(time, v)) {
                             v.stop();
                         }
 
@@ -503,6 +501,17 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     /**
+     * Determines whether a DataViewer has data for the desired time.
+     * @param time The time we wish to play at or seek to.
+     * @param view The DataViewer to check.
+     * @return True if data exists at this time, and false otherwise.
+     */
+    private boolean isWithinPlayRange(final long time, final DataViewer view) {
+        return (time >= view.getOffset())
+                && (time < view.getOffset() + view.getDuration());
+    }
+
+    /**
      * @param time
      *            Current clock time in milliseconds.
      */
@@ -512,9 +521,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         for (DataViewer viewer : viewers) {
             viewer.stop();
-            if (time > viewer.getOffset()
-                            && (time < viewer.getOffset()
-                                + viewer.getDuration())) {
+            if (isWithinPlayRange(time, viewer)) {
                 viewer.seekTo(time - viewer.getOffset());
             }
         }
@@ -538,9 +545,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
             for (DataViewer viewer : viewers) {
                 viewer.stop();
-                if (time > viewer.getOffset()
-                            && (time < viewer.getOffset()
-                                + viewer.getDuration())) {
+                if (isWithinPlayRange(time, viewer)) {
                     viewer.setPlaybackSpeed(rate);
                 }
             }
@@ -569,9 +574,7 @@ public final class DataControllerV extends OpenSHAPADialog
         setCurrentTime(time);
 
         for (DataViewer viewer : viewers) {
-            if (time > viewer.getOffset()
-                            && (time < viewer.getOffset()
-                                + viewer.getDuration())) {
+            if (isWithinPlayRange(time, viewer)) {
                 viewer.seekTo(time - viewer.getOffset());
             }
         }
