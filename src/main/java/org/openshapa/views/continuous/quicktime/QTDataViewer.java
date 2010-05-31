@@ -170,6 +170,11 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
     }
 
+    /**
+     * Sets the volume of the movie to the level of the slider bar, or to 0
+     * if the track is hidden from view (this means hiding the track mutes
+     * the volume).
+     */
     private void setVolume() {
         try {
             if (isVisible) {
@@ -465,9 +470,13 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
         JButton button = (JButton) event.getSource();
 
-        // Show the volume frame.
-        volumeDialog.setVisible(true);
-        volumeDialog.setLocation(button.getLocationOnScreen());
+        // BugzID:1400 - We don't allow volume changes while the track is
+        // hidden from view.
+        if (isVisible) {
+            // Show the volume frame.
+            volumeDialog.setVisible(true);
+            volumeDialog.setLocation(button.getLocationOnScreen());
+        }
     }
 
     /*
