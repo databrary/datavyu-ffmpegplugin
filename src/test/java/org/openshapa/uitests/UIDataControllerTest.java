@@ -1120,7 +1120,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         dcf.pressGoBackButton();
         TimeStamp currTS = new TimeStamp(dcf.getCurrentTime());
         Assert.assertTrue((currTS.gt(new TimeStamp("00:00:00:000")))
-            && (currTS.lt(new TimeStamp("00:00:05:000"))));
+            && (currTS.lt(new TimeStamp("00:00:05:000"))), currTS.toHMSFString());
 
         // Move to end and go back
         dcf.setFindOnset("00:01:00:000");
@@ -1130,7 +1130,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         currTS = new TimeStamp(dcf.getCurrentTime());
         Assert.assertTrue((currTS.gt(new TimeStamp("00:00:55:000")))
-            && (currTS.lt(new TimeStamp("00:01:00:000"))));
+            && (currTS.lt(new TimeStamp("00:01:00:000"))), currTS.toHMSFString());
 
         // Move to end and go back 30 seconds
         dcf.setGoBackTime("00:00:30:000");
@@ -1138,7 +1138,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         dcf.pressGoBackButton();
         currTS = new TimeStamp(dcf.getCurrentTime());
         Assert.assertTrue((currTS.gt(new TimeStamp("00:00:30:000")))
-            && (currTS.lt(new TimeStamp("00:00:35:000"))));
+            && (currTS.lt(new TimeStamp("00:00:35:000"))), currTS.toHMSFString());
 
         // Move to end and go back more than 1 minute
         dcf.setGoBackTime("03:00:00:000");
@@ -1146,7 +1146,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         dcf.pressGoBackButton();
         currTS = new TimeStamp(dcf.getCurrentTime());
         Assert.assertTrue((currTS.gt(new TimeStamp("00:00:00:000")))
-            && (currTS.lt(new TimeStamp("00:00:05:000"))));
+            && (currTS.lt(new TimeStamp("00:00:05:000"))), currTS.toHMSFString());
 
     }
 }
