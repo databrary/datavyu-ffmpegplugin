@@ -1,13 +1,20 @@
 package org.fest.swing.fixture;
 
+import java.awt.Point;
+
+import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
+
 import org.openshapa.controllers.component.TimescaleController;
+
 import org.openshapa.util.UIUtils;
+
 
 /**
  * Fixture for OpenSHAPA TimescalePainter.
  */
 public class TimescaleFixture extends ComponentFixture {
+
     /** The underlying timescale controller. */
     private TimescaleController timescaleC;
 
@@ -17,7 +24,7 @@ public class TimescaleFixture extends ComponentFixture {
      * @param target TimescaleController
      */
     public TimescaleFixture(final Robot robot,
-            final TimescaleController target) {
+        final TimescaleController target) {
         super(robot, target.getView());
         timescaleC = target;
     }
@@ -62,5 +69,21 @@ public class TimescaleFixture extends ComponentFixture {
      */
     public String getZoomStartTimeAsTimeStamp() {
         return UIUtils.millisecondsToTimestamp(getZoomStartTimeAsLong());
+    }
+
+    public void doubleClickAt(final int pixel) {
+        Point topLeft = target.getBounds().getLocation();
+        int width = target.getWidth();
+        Point click = null;
+
+        if (pixel > width) {
+            click = new Point(topLeft.x + width,
+                    topLeft.y + (target.getHeight() / 2));
+        } else {
+            click = new Point(topLeft.x + pixel,
+                    topLeft.y + (target.getHeight() / 2));
+        }
+
+        robot.click(target, click, MouseButton.LEFT_BUTTON, 2);
     }
 }
