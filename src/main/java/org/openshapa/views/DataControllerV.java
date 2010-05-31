@@ -417,19 +417,22 @@ public final class DataControllerV extends OpenSHAPADialog
         try {
             setCurrentTime(time);
 
-            // We are playing back at a rate which is to fast and probably won't
-            // allow us to stream all the information at the file. We fake play
-            // back by doing a bunch of seekTo's.
+            // We are playing back at a rate which is too fast and probably
+            // won't allow us to stream all the information at the file. We fake
+            // playback by doing a bunch of seekTo's.
             if (playbackModel.isFakePlayback()) {
 
                 for (DataViewer v : viewers) {
-                    v.seekTo(time - v.getOffset());
+                    if (time > v.getOffset()
+                            && (time < v.getOffset() + v.getDuration())) {
+                        v.seekTo(time - v.getOffset());
+                    }
                 }
 
                 // DataViewer is responsible for playing video.
             } else {
 
-                // Synchronise viewers only if we have exceded our pulse time.
+                // Synchronise viewers only if we have exceeded our pulse time.
                 if ((time - playbackModel.getLastSync())
                         > (SYNC_PULSE * clock.getRate())) {
                     long thresh = (long) (SYNC_THRESH
@@ -442,10 +445,21 @@ public final class DataControllerV extends OpenSHAPADialog
                          * Use offsets to determine if the video file should
                          * start playing.
                          */
-                        if ((time >= v.getOffset()) && !v.isPlaying()) {
+                        if (!v.isPlaying()
+                                && (time >= v.getOffset())
+                                && (time < v.getOffset() + v.getDuration())) {
                             v.seekTo(time - v.getOffset());
                             v.play();
                         }
+
+                        // BugzID:1797 - Viewers who are "playing" outside their
+                        // timeframe should be asked to stop.
+                        if (v.isPlaying()
+                                && ((time < v.getOffset())
+                                || (time > v.getOffset() + v.getDuration()))) {
+                            v.stop();
+                        }
+
 
                         /*
                          * Only synchronise the data viewers if we have a
@@ -498,7 +512,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
         for (DataViewer viewer : viewers) {
             viewer.stop();
-            viewer.seekTo(time - viewer.getOffset());
+            if (time > viewer.getOffset()
+                            && (time < viewer.getOffset()
+                                + viewer.getDuration())) {
+                viewer.seekTo(time - viewer.getOffset());
+            }
         }
     }
 
@@ -510,6 +528,8 @@ public final class DataControllerV extends OpenSHAPADialog
         resetSync();
         lblSpeed.setText(FloatUtils.doubleToFractionStr(new Double(rate)));
 
+        long time = getCurrentTime();
+
         // If rate is faster than two times - we need to fake playback to give
         // the illusion of 'smooth'. We do this by stopping the dataviewer and
         // doing many seekTo's to grab individual frames.
@@ -517,13 +537,16 @@ public final class DataControllerV extends OpenSHAPADialog
             playbackModel.setFakePlayback(true);
 
             for (DataViewer viewer : viewers) {
-                viewer.setPlaybackSpeed(rate);
                 viewer.stop();
+                if (time > viewer.getOffset()
+                            && (time < viewer.getOffset()
+                                + viewer.getDuration())) {
+                    viewer.setPlaybackSpeed(rate);
+                }
             }
 
             // Rate is less than two times - use the data viewer internal code
-            // to
-            // draw every frame.
+            // to draw every frame.
         } else {
             playbackModel.setFakePlayback(false);
 
@@ -546,7 +569,11 @@ public final class DataControllerV extends OpenSHAPADialog
         setCurrentTime(time);
 
         for (DataViewer viewer : viewers) {
-            viewer.seekTo(time - viewer.getOffset());
+            if (time > viewer.getOffset()
+                            && (time < viewer.getOffset()
+                                + viewer.getDuration())) {
+                viewer.seekTo(time - viewer.getOffset());
+            }
         }
     }
 
