@@ -6,13 +6,11 @@ import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
-import org.openshapa.event.component.NeedleEvent;
-import org.openshapa.event.component.NeedleEventListener;
+import org.openshapa.event.component.TimescaleEvent;
+import org.openshapa.event.component.TimescaleListener;
 
 import org.openshapa.models.component.TimescaleModel;
 import org.openshapa.models.component.ViewableModel;
-
-import org.openshapa.util.NeedleTimeCalculator;
 
 import org.openshapa.views.component.TimescalePainter;
 
@@ -32,9 +30,6 @@ public final class TimescaleController {
     /** Listeners interested in needle painter events */
     private final EventListenerList listenerList;
 
-    private TimescaleListener timescaleListener = new TimescaleListener();
-
-
     public TimescaleController() {
         view = new TimescalePainter();
 
@@ -44,56 +39,11 @@ public final class TimescaleController {
         timescaleModel.setPaddingRight(20);
 
         viewableModel = new ViewableModel();
+
+        final TimescaleEventListener listener = new TimescaleEventListener();
+        view.addMouseListener(listener);
+
         listenerList = new EventListenerList();
-        view.addMouseListener(timescaleListener);
-    }
-
-    /**
-     * Register the listener to be notified of needle events
-     *
-     * @param listener
-     */
-    public void addNeedleEventListener(final NeedleEventListener listener) {
-
-        synchronized (this) {
-            listenerList.add(NeedleEventListener.class, listener);
-        }
-    }
-
-    /**
-     * Removed the listener from being notified of needle events
-     *
-     * @param listener
-     */
-    public void removeNeedleEventListener(final NeedleEventListener listener) {
-
-        synchronized (this) {
-            listenerList.remove(NeedleEventListener.class, listener);
-        }
-    }
-
-    /**
-     * Used to fire a new event informing listeners about the new needle time.
-     *
-     * @param newTime
-     */
-    private void fireNeedleEvent(final long newTime) {
-
-        synchronized (this) {
-            NeedleEvent e = new NeedleEvent(this, newTime);
-            Object[] listeners = listenerList.getListenerList();
-
-            /*
-             * The listener list contains the listening class and then the
-             * listener instance.
-             */
-            for (int i = 0; i < listeners.length; i += 2) {
-
-                if (listeners[i] == NeedleEventListener.class) {
-                    ((NeedleEventListener) listeners[i + 1]).needleMoved(e);
-                }
-            }
-        }
     }
 
     /**
@@ -160,18 +110,78 @@ public final class TimescaleController {
         return view;
     }
 
+    public void addTimescaleEventListener(final TimescaleListener listener) {
+
+        synchronized (this) {
+            listenerList.add(TimescaleListener.class, listener);
+        }
+    }
+
+    public void removeTimescaleEventListener(final TimescaleListener listener) {
+
+        synchronized (this) {
+            listenerList.remove(TimescaleListener.class, listener);
+        }
+    }
+
+    /**
+     * Used to fire a new event informing listeners about the new needle time.
+     *
+     * @param newTime
+     */
+    private void fireJumpEvent(final long jumpTime) {
+
+        synchronized (this) {
+            TimescaleEvent e = new TimescaleEvent(this, jumpTime);
+            Object[] listeners = listenerList.getListenerList();
+
+            /*
+             * The listener list contains the listening class and then the
+             * listener instance.
+             */
+            for (int i = 0; i < listeners.length; i += 2) {
+
+                if (listeners[i] == TimescaleListener.class) {
+                    ((TimescaleListener) listeners[i + 1]).jumpToTime(e);
+                }
+            }
+        }
+    }
+
     /**
      * Inner class used to handle intercepted events.
      */
-    private class TimescaleListener extends MouseInputAdapter {
+    private class TimescaleEventListener extends MouseInputAdapter {
         @Override public void mouseClicked(final MouseEvent e) {
 
             if (e.getClickCount() == 2) {
-                int time = NeedleTimeCalculator.getNeedleTime(e.getX(),
-                        view.getSize().width, viewableModel,
-                        timescaleModel.getPaddingLeft());
+                int x = e.getX();
 
-                fireNeedleEvent(time);
+                // Bound the x values
+                if (x < 0) {
+                    x = 0;
+                }
+
+                if (x > view.getSize().width) {
+                    x = view.getSize().width;
+                }
+
+                // Calculate the time represented by the new location
+                float ratio = viewableModel.getIntervalWidth()
+                    / viewableModel.getIntervalTime();
+                float newTime = (x - timescaleModel.getPaddingLeft()
+                        + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
+
+                if (newTime < 0) {
+                    newTime = 0;
+                }
+
+                if (newTime > viewableModel.getZoomWindowEnd()) {
+                    newTime = viewableModel.getZoomWindowEnd();
+                }
+
+                fireJumpEvent(Math.round(newTime));
+
             }
         }
     }

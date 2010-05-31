@@ -13,15 +13,11 @@ import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
-import org.openshapa.OpenSHAPA;
-
 import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.NeedleEventListener;
 
 import org.openshapa.models.component.NeedleModel;
 import org.openshapa.models.component.ViewableModel;
-
-import org.openshapa.util.NeedleTimeCalculator;
 
 import org.openshapa.views.component.NeedlePainter;
 
@@ -166,25 +162,10 @@ public final class NeedleController {
         return view;
     }
 
-
-    /**
-     * Checks that the needle is in a valid position and fixes it if it isn't.
-     */
-    public void fixNeedle() {
-        RegionController rc = OpenSHAPA.getDataController().getMixerController()
-            .getRegionController();
-
-        if (getCurrentTime() > rc.getRegionModel().getRegionEnd()) {
-            setCurrentTime(rc.getRegionModel().getRegionEnd());
-        } else if (getCurrentTime() < rc.getRegionModel().getRegionStart()) {
-            setCurrentTime(rc.getRegionModel().getRegionStart());
-        }
-    }
-
     /**
      * Inner class used to handle intercepted events.
      */
-    private class NeedleListener extends MouseInputAdapter {
+    private final class NeedleListener extends MouseInputAdapter {
         private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(
                 Cursor.E_RESIZE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
@@ -204,12 +185,32 @@ public final class NeedleController {
         }
 
         @Override public void mouseDragged(final MouseEvent e) {
+            int x = e.getX();
 
-            int time = NeedleTimeCalculator.getNeedleTime(e.getX(),
-                    view.getSize().width, viewableModel,
-                    needleModel.getPaddingLeft());
+            // Bound the x values
+            if (x < 0) {
+                x = 0;
+            }
 
-            fireNeedleEvent(time);
+            if (x > view.getSize().width) {
+                x = view.getSize().width;
+            }
+
+            // Calculate the time represented by the new location
+            float ratio = viewableModel.getIntervalWidth()
+                / viewableModel.getIntervalTime();
+            float newTime = (x - needleModel.getPaddingLeft()
+                    + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
+
+            if (newTime < 0) {
+                newTime = 0;
+            }
+
+            if (newTime > viewableModel.getZoomWindowEnd()) {
+                newTime = viewableModel.getZoomWindowEnd();
+            }
+
+            fireNeedleEvent(Math.round(newTime));
         }
     }
 
