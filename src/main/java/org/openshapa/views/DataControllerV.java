@@ -297,8 +297,7 @@ public final class DataControllerV extends OpenSHAPADialog
      *            Should the dialog be modal or not?
      */
     public DataControllerV(final java.awt.Frame parent, final boolean modal) {
-        super(parent, modal);
-
+        super(parent, modal);        
 
         clock.registerListener(this);
 
@@ -423,8 +422,9 @@ public final class DataControllerV extends OpenSHAPADialog
             if (playbackModel.isFakePlayback()) {
 
                 for (DataViewer v : viewers) {
-                    if (time > v.getOffset()
-                            && (time < v.getOffset() + v.getDuration())) {
+
+                    if ((time > v.getOffset())
+                            && (time < (v.getOffset() + v.getDuration()))) {
                         v.seekTo(time - v.getOffset());
                     }
                 }
@@ -446,8 +446,7 @@ public final class DataControllerV extends OpenSHAPADialog
                          * start playing.
                          */
 
-                        if (!v.isPlaying()
-                                && isWithinPlayRange(time, v)) {
+                        if (!v.isPlaying() && isWithinPlayRange(time, v)) {
                             v.seekTo(time - v.getOffset());
                             v.play();
                         }
@@ -508,7 +507,7 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private boolean isWithinPlayRange(final long time, final DataViewer view) {
         return (time >= view.getOffset())
-                && (time < view.getOffset() + view.getDuration());
+            && (time < (view.getOffset() + view.getDuration()));
     }
 
     /**
@@ -521,6 +520,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         for (DataViewer viewer : viewers) {
             viewer.stop();
+
             if (isWithinPlayRange(time, viewer)) {
                 viewer.seekTo(time - viewer.getOffset());
             }
@@ -545,6 +545,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
             for (DataViewer viewer : viewers) {
                 viewer.stop();
+
                 if (isWithinPlayRange(time, viewer)) {
                     viewer.setPlaybackSpeed(rate);
                 }
@@ -574,6 +575,7 @@ public final class DataControllerV extends OpenSHAPADialog
         setCurrentTime(time);
 
         for (DataViewer viewer : viewers) {
+
             if (isWithinPlayRange(time, viewer)) {
                 viewer.seekTo(time - viewer.getOffset());
             }
@@ -1369,6 +1371,8 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void openVideoButtonActionPerformed(
         final java.awt.event.ActionEvent evt) {
+        logger.usage("Add data");
+
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
         PluginManager pm = PluginManager.getInstance();
 
@@ -1398,10 +1402,12 @@ public final class DataControllerV extends OpenSHAPADialog
                 DataControllerV.class);
 
         if (tracksPanelEnabled) {
+            logger.usage("Show tracks");
 
             // Panel is being displayed, hide it
             button.setIcon(resourceMap.getIcon("showTracksButton.show.icon"));
         } else {
+            logger.usage("Hide tracks");
 
             // Panel is hidden, show it
             button.setIcon(resourceMap.getIcon("showTracksButton.hide.icon"));
@@ -1513,6 +1519,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks the set cell onset button.
      */
     @Action public void setCellOnsetAction() {
+        logger.usage("Set cell onset");
         new SetSelectedCellStartTimeC(getCurrentTime());
     }
 
@@ -1520,6 +1527,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the set cell offest button.
      */
     @Action public void setCellOffsetAction() {
+        logger.usage("Set cell offset");
         new SetSelectedCellStopTimeC(getCurrentTime());
         setFindOffsetField(getCurrentTime());
     }
@@ -1887,6 +1895,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the play button.
      */
     @Action public void playAction() {
+        logger.usage("Play");
 
         // BugzID:464 - When stopped at the end of the region of interest.
         // pressing play jumps the stream back to the start of the video before
@@ -1903,6 +1912,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the fast foward button.
      */
     @Action public void forwardAction() {
+        logger.usage("Fast forward");
         playAt(FFORWARD_RATE);
     }
 
@@ -1910,6 +1920,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the rewind button.
      */
     @Action public void rewindAction() {
+        logger.usage("Rewind");
         playAt(REWIND_RATE);
     }
 
@@ -1917,6 +1928,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the pause button.
      */
     @Action public void pauseAction() {
+        logger.usage("Pause");
 
         // Resume from pause at playback rate prior to pause.
         if (clock.isStopped()) {
@@ -1936,6 +1948,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the stop button.
      */
     @Action public void stopAction() {
+        logger.usage("Stop event");
         clock.stop();
         clock.setRate(0);
         playbackModel.setShuttleRate(0);
@@ -1949,6 +1962,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * @todo proper behaviour for reversing shuttle direction?
      */
     @Action public void shuttleForwardAction() {
+        logger.usage("Shuttle forward");
 
         if ((clock.getTime() <= 0)
                 && ((playbackModel.getShuttleRate() != 0)
@@ -1977,6 +1991,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the shuttle back button.
      */
     @Action public void shuttleBackAction() {
+        logger.usage("Shuttle back");
 
         if ((clock.getTime() <= 0)
                 && ((playbackModel.getShuttleRate() != 0)
@@ -2049,6 +2064,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the find button.
      */
     @Action public void findAction() {
+        logger.usage("Find");
 
         if (shiftMask) {
             findOffsetAction();
@@ -2117,6 +2133,8 @@ public final class DataControllerV extends OpenSHAPADialog
     @Action public void goBackAction() {
 
         try {
+            logger.usage("Go back");
+
             long j = -CLOCK_FORMAT.parse(goBackTextField.getText()).getTime();
             jump(j);
 
@@ -2132,6 +2150,8 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the jog backwards button.
      */
     @Action public void jogBackAction() {
+        logger.usage("Jog back");
+
         int mul = 1;
 
         if (shiftMask) {
@@ -2157,6 +2177,8 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the jog forwards button.
      */
     @Action public void jogForwardAction() {
+        logger.usage("Jog forward");
+
         int mul = 1;
 
         if (shiftMask) {
@@ -2266,6 +2288,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the create new cell button.
      */
     @Action public void createCellAction() {
+        logger.usage("New cell");
         new CreateNewCellC();
     }
 
@@ -2273,6 +2296,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the new cell button.
      */
     @Action public void createNewCellAction() {
+        logger.usage("New cell set onset");
         new CreateNewCellC(getCurrentTime());
     }
 
@@ -2280,6 +2304,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the new cell onset button.
      */
     @Action public void setNewCellStopTime() {
+        logger.usage("Set new cell offset");
         new SetNewCellStopTimeC(getCurrentTime());
         setFindOffsetField(getCurrentTime());
     }
