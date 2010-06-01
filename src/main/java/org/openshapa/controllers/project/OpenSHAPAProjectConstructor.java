@@ -41,18 +41,20 @@ public class OpenSHAPAProjectConstructor extends Constructor {
 
             final int projectVersion = (Integer) values.get("version");
 
-            if (projectVersion >= 4) {
-                project.setOriginalProjectDirectory((String) values.get(
-                        "origpath"));
-            }
-
             if (projectVersion <= 2) {
                 Map vs = (Map) values.get("viewerSettings");
                 vs.values();
                 project.setViewerSettings(vs.values());
-            } else {
+            }
+
+            if (projectVersion >= 3) {
                 project.setViewerSettings((List) values.get("viewerSettings"));
                 project.setTrackSettings((List) values.get("trackSettings"));
+            }
+
+            if (projectVersion >= 4) {
+                project.setOriginalProjectDirectory((String) values.get(
+                        "origpath"));
             }
 
             return project;

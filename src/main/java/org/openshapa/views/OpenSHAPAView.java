@@ -211,8 +211,8 @@ public final class OpenSHAPAView extends FrameView
                 KeyEvent.VK_R, keyMask));
 
         // Set the show spreadsheet accelrator to F5.
-        showSpreadsheetMenuItem
-                .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+        showSpreadsheetMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_F5, 0));
 
         if (panel != null) {
             panel.deregisterListeners();
@@ -298,8 +298,16 @@ public final class OpenSHAPAView extends FrameView
                 if ((projController.getLastSaveOption() instanceof SHAPAFilter)
                         || (projController.getLastSaveOption()
                             instanceof OPFFilter)) {
+
+                    // BugzID:1804 - Need to store the original absolute path of the
+                    // project file so that we can build relative paths to search when
+                    // loading, if the project file is moved around.
+                    projController.setOriginalProjectDirectory(
+                        projController.getProjectDirectory());
+
                     projController.updateProject();
                     projController.setLastSaveOption(new OPFFilter());
+
 
                     saveController.saveProject(new File(
                             projController.getProjectDirectory(),
@@ -427,6 +435,14 @@ public final class OpenSHAPAView extends FrameView
 
                 // Send it off to the controller
                 projController.setProjectName(archiveName);
+
+                // BugzID:1804 - Need to store the original absolute path of the
+                // project file so that we can build relative paths to search when
+                // loading, if the project file is moved around.
+                projController.setOriginalProjectDirectory(fc.getSelectedFile()
+                    .getParent());
+
+                projController.updateProject();
                 saveC.saveProject(new File(fc.getSelectedFile().getParent(),
                         archiveName), projController.getProject(),
                     projController.getDB());
@@ -1090,7 +1106,7 @@ public final class OpenSHAPAView extends FrameView
     } // </editor-fold>//GEN-END:initComponents
 
     private void openRecentFileMenuMenuSelected(
-        final javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_openRecentFileMenuMenuSelected
+        final javax.swing.event.MenuEvent evt) { //GEN-FIRST:event_openRecentFileMenuMenuSelected
 
         // Flush the menu - excluding the top menu item.
         int size = openRecentFileMenu.getMenuComponentCount();
@@ -1103,7 +1119,7 @@ public final class OpenSHAPAView extends FrameView
             openRecentFileMenu.add(createRecentFileMenuItem(file));
         }
 
-    }//GEN-LAST:event_openRecentFileMenuMenuSelected
+    } //GEN-LAST:event_openRecentFileMenuMenuSelected
 
     /**
      * The action to invoke when the user selects 'strong temporal ordering'.

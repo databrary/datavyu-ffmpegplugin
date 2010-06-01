@@ -74,11 +74,6 @@ public final class SaveC {
         try {
             logger.usage("save project");
 
-            // BugzID:1804 - Need to store the original absolute path of the
-            // project file so that we can build relative paths to search when
-            // loading, if the project file is moved around.
-            project.setOriginalProjectDirectory(projectFile.getAbsolutePath());
-
             FileOutputStream fos = new FileOutputStream(projectFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
 
@@ -92,7 +87,7 @@ public final class SaveC {
             new SaveDatabaseFileC().saveAsCSV(zos, database);
             zos.closeEntry();
 
-            // TODO: put additional zip entries here
+            // BugzID:1806
             for (ViewerSetting vs : project.getViewerSettings()) {
                 ZipEntry vsEntry = new ZipEntry(vs.getSettingsId());
                 zos.putNextEntry(vsEntry);

@@ -234,6 +234,14 @@ public final class ProjectController {
         return project.getProjectDirectory();
     }
 
+    public void setOriginalProjectDirectory(final String directory) {
+        project.setOriginalProjectDirectory(directory);
+    }
+
+    public String getOriginalProjectDirectory() {
+        return project.getOriginalProjectDirectory();
+    }
+
     /**
      * Load the settings from the current project.
      */
@@ -281,18 +289,24 @@ public final class ProjectController {
             DataViewer viewer = plugin.getNewDataViewer();
             viewer.setDataFeed(file);
 
-            // TODO: load settings here, if null settings do something else
-            setting.getSettingsInputStream();
+            if (setting.getSettingsId() != null) {
 
-            // TODO: remove this
-            viewer.setOffset(setting.getOffset());
+                // new project file
+                viewer.loadSettings(setting.getSettingsInputStream());
+            } else {
 
-            dataController.addViewer(viewer, setting.getOffset());
+                // old project file
+                viewer.setOffset(setting.getOffset());
 
-            // TODO: load offset from viewer
+                // Force user to save in new format
+                projectChanged();
+            }
+
+            dataController.addViewer(viewer, viewer.getOffset());
+
             dataController.addTrack(plugin.getTypeIcon(),
                 file.getAbsolutePath(), file.getName(), viewer.getDuration(),
-                setting.getOffset(), viewer.getTrackPainter());
+                viewer.getOffset(), viewer.getTrackPainter());
 
             mixerController.bindTrackActions(file.getAbsolutePath(), viewer,
                 plugin.isActionSupported1(), plugin.getActionButtonIcon1(),
@@ -350,10 +364,6 @@ public final class ProjectController {
      */
     public void updateProject() {
 
-        if (!changed && !newProject) {
-            return;
-        }
-
         DataControllerV dataController = OpenSHAPA.getDataController();
 
         // Gather the data viewer settings
@@ -364,15 +374,12 @@ public final class ProjectController {
         for (DataViewer viewer : dataController.getDataViewers()) {
             ViewerSetting vs = new ViewerSetting();
             vs.setFilePath(viewer.getDataFeed().getAbsolutePath());
-            vs.setOffset(viewer.getOffset());
             vs.setPluginName(viewer.getClass().getName());
 
             // BugzID:1806
             vs.setSettingsId(Integer.toString(settingsId));
             settingsId++;
-
-            // TODO: get viewer to write data.
-            vs.getSettingsOutputStream();
+            viewer.storeSettings(vs.getSettingsOutputStream());
 
             viewerSettings.add(vs);
         }
@@ -412,7 +419,7 @@ public final class ProjectController {
     }
 
     /**
-     * @return a deep-copy clone of the current project.
+     * @return the current project model.
      */
     public Project getProject() {
         return project;

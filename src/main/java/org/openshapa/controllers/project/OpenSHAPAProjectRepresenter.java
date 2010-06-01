@@ -54,9 +54,6 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             map.put("feed", viewerSetting.getFilePath());
             map.put("plugin", viewerSetting.getPluginName());
 
-            // TODO: remove this
-            map.put("offset", Long.toString(viewerSetting.getOffset()));
-
             // BugzID:1806
             map.put("settingsId", viewerSetting.getSettingsId());
             map.put("version", ViewerSetting.VERSION);
