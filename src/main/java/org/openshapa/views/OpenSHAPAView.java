@@ -142,23 +142,23 @@ public final class OpenSHAPAView extends FrameView
 
         manager.addKeyEventDispatcher(new KeyEventDispatcher() {
 
-                /**
-                 * Dispatches the keystroke to the correct action.
-                 *
-                 * @param evt
-                 *            The event that triggered this action.
-                 * @return true if the KeyboardFocusManager should take no further
-                 *         action with regard to the KeyEvent; false otherwise.
-                 */
-                public boolean dispatchKeyEvent(final KeyEvent evt) {
+            /**
+             * Dispatches the keystroke to the correct action.
+             *
+             * @param evt
+             *            The event that triggered this action.
+             * @return true if the KeyboardFocusManager should take no further
+             *         action with regard to the KeyEvent; false otherwise.
+             */
+            public boolean dispatchKeyEvent(final KeyEvent evt) {
 
-                    // Pass the keyevent onto the keyswitchboard so that it can
-                    // route it to the correct action.
-                    spreadsheetMenuMenuSelected(null);
+                // Pass the keyevent onto the keyswitchboard so that it can
+                // route it to the correct action.
+                spreadsheetMenuMenuSelected(null);
 
-                    return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
-                }
-            });
+                return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
+            }
+        });
 
         // generated GUI builder code
         initComponents();
@@ -176,8 +176,6 @@ public final class OpenSHAPAView extends FrameView
         strongTemporalOrderMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_T, InputEvent.SHIFT_MASK | keyMask));
 
-        // This just sets the visual appearance of the accelerator - the actual
-        // short cut is handled in org.openshapa.OpenSHAPA.dispatchKeyEvent.
         // Set zoom in to keyMask + '+'
         zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
                 keyMask));
@@ -680,6 +678,7 @@ public final class OpenSHAPAView extends FrameView
         setComponent(panel);
         getComponent().revalidate();
         getComponent().resetKeyboardActions();
+        getComponent().requestFocus();
     }
 
     /**
@@ -1106,7 +1105,7 @@ public final class OpenSHAPAView extends FrameView
     } // </editor-fold>//GEN-END:initComponents
 
     private void openRecentFileMenuMenuSelected(
-        final javax.swing.event.MenuEvent evt) { //GEN-FIRST:event_openRecentFileMenuMenuSelected
+        final javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_openRecentFileMenuMenuSelected
 
         // Flush the menu - excluding the top menu item.
         int size = openRecentFileMenu.getMenuComponentCount();
@@ -1119,7 +1118,7 @@ public final class OpenSHAPAView extends FrameView
             openRecentFileMenu.add(createRecentFileMenuItem(file));
         }
 
-    } //GEN-LAST:event_openRecentFileMenuMenuSelected
+    }//GEN-LAST:event_openRecentFileMenuMenuSelected
 
     /**
      * The action to invoke when the user selects 'strong temporal ordering'.
