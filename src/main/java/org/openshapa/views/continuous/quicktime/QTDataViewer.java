@@ -6,8 +6,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -516,11 +519,25 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     }
 
     public void loadSettings(final InputStream is) {
-        // TODO Auto-generated method stub
+        Properties settings = new Properties();
+
+        try {
+            settings.load(is);
+            setOffset(Long.parseLong(settings.getProperty("offset")));
+        } catch (IOException e) {
+            logger.error("Error loading settings", e);
+        }
     }
 
     public void storeSettings(final OutputStream os) {
-        // TODO Auto-generated method stub
+        Properties settings = new Properties();
+        settings.setProperty("offset", Long.toString(getOffset()));
+
+        try {
+            settings.store(os, null);
+        } catch (IOException e) {
+            logger.error("Error saving settings", e);
+        }
     }
 
     // ------------------------------------------------------------------------
