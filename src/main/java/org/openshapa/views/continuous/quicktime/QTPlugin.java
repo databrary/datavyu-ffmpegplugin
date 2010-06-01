@@ -69,7 +69,9 @@ public final class QTPlugin implements Plugin {
      * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon3()
      */
     public ImageIcon getActionButtonIcon3() {
-        return null;
+        URL typeIconURL = getClass().getResource("/icons/resize.png");
+
+        return new ImageIcon(typeIconURL);
     }
 
     /**
@@ -94,7 +96,7 @@ public final class QTPlugin implements Plugin {
      * @see org.openshapa.views.continuous.Plugin#isActionSupported3()
      */
     public boolean isActionSupported3() {
-        return false;
+        return true;
     }
 
 }
