@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.layouts;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetCell;
@@ -14,8 +15,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 public class SheetLayoutWeakTemporal extends SheetLayout {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix
-            .getInstance(SheetLayoutWeakTemporal.class);
+    private Logger logger = UserMetrix.getLogger(SheetLayoutWeakTemporal.class);
 
     /** Temporal ordering information for each column in the layout. */
     private Vector<ColumnTemporalInfo> colsInfo;

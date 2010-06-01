@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import org.openshapa.models.db.DataCell;
@@ -24,8 +25,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n\"\u001B";
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix
-            .getInstance(NominalDataValueEditor.class);
+    private Logger logger = UserMetrix.getLogger(NominalDataValueEditor.class);
 
     /**
      * Constructor.

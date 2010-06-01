@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.Database;
@@ -38,6 +39,5 @@ public final class SetNewCellStartTimeC {
     }
 
     /** The logger for this class. */
-    private UserMetrix logger =
-            UserMetrix.getInstance(SetNewCellStartTimeC.class);
+    private Logger logger = UserMetrix.getLogger(SetNewCellStartTimeC.class);
 }

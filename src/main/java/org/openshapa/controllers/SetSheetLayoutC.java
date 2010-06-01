@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetPanel;
@@ -11,7 +12,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 public final class SetSheetLayoutC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SetSheetLayoutC.class);
+    private Logger logger = UserMetrix.getLogger(SetSheetLayoutC.class);
 
     /**
      * Constructor - creates and invokes the controller.

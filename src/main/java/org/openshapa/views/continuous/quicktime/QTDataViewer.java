@@ -1,5 +1,6 @@
 package org.openshapa.views.continuous.quicktime;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -63,7 +64,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     //
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(QTDataViewer.class);
+    private Logger logger = UserMetrix.getLogger(QTDataViewer.class);
 
     // ------------------------------------------------------------------------
     //

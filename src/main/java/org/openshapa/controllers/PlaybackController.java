@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.event.InputEvent;
 
 import java.io.File;
@@ -160,7 +161,7 @@ public final class PlaybackController implements PlaybackListener,
     // [static]
     //
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(DataControllerV.class);
+    private Logger logger = UserMetrix.getLogger(DataControllerV.class);
 
     // -------------------------------------------------------------------------
     //

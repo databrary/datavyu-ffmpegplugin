@@ -1,5 +1,6 @@
 package org.openshapa.logging;
 
+import com.usermetrix.jclient.Logger;
 import org.openshapa.event.PlaybackEvent;
 import org.openshapa.event.PlaybackListener;
 
@@ -11,7 +12,7 @@ import com.usermetrix.jclient.UserMetrix;
  */
 public class PlaybackLogging implements PlaybackListener {
 
-    private final UserMetrix logger = UserMetrix.getInstance(
+    private final Logger logger = UserMetrix.getLogger(
             PlaybackLogging.class);
 
     public void addDataEvent(final PlaybackEvent evt) {

@@ -1,6 +1,7 @@
 package org.openshapa.views.discrete;
 
 import com.sun.java.swing.SwingUtilities2;
+import com.usermetrix.jclient.Logger;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -166,7 +167,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     private CellSelectionListener cellSelL;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SpreadsheetCell.class);
+    private Logger logger = UserMetrix.getLogger(SpreadsheetCell.class);
 
     /**
      * Creates new form SpreadsheetCell.

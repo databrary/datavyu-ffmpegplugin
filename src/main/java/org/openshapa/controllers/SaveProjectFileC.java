@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -20,7 +21,7 @@ import com.usermetrix.jclient.UserMetrix;
 public final class SaveProjectFileC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SaveProjectFileC.class);
+    private Logger logger = UserMetrix.getLogger(SaveProjectFileC.class);
 
     /**
      * Saves the OpenSHAPA project to disk.

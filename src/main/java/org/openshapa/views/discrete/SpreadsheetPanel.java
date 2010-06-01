@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -73,7 +74,7 @@ implements ExternalColumnListListener, ComponentListener,
     private Vector<SpreadsheetColumn> columns;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SpreadsheetPanel.class);
+    private Logger logger = UserMetrix.getLogger(SpreadsheetPanel.class);
 
     /** Reference to the spreadsheet layout handler. */
     private SheetLayout sheetLayout;

@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -47,7 +48,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     private JTextArea console = null;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(RunScriptC.class);
+    private Logger logger = UserMetrix.getLogger(RunScriptC.class);
 
     /** output stream for messages coming from the scripting engine. */
     private PipedInputStream consoleOutputStream;

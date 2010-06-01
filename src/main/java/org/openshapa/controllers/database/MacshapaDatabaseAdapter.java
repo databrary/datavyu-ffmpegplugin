@@ -1,5 +1,6 @@
 package org.openshapa.controllers.database;
 
+import com.usermetrix.jclient.Logger;
 import org.openshapa.models.database.DeprecatedDatabase;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
@@ -15,8 +16,7 @@ import com.usermetrix.jclient.UserMetrix;
 public class MacshapaDatabaseAdapter implements
         DeprecatedDatabase<MacshapaDatabase> {
 
-    private UserMetrix logger =
-            UserMetrix.getInstance(MacshapaDatabaseAdapter.class);
+    private Logger logger = UserMetrix.getLogger(MacshapaDatabaseAdapter.class);
 
     private MacshapaDatabase db;
 

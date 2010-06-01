@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.KeyEventDispatcher;
@@ -79,7 +80,7 @@ public final class OpenSHAPAView extends FrameView
     public static final int ZOOM_MIN_SIZE = 8;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(OpenSHAPAView.class);
+    private Logger logger = UserMetrix.getLogger(OpenSHAPAView.class);
 
     /** The spreadsheet panel for this view. */
     private SpreadsheetPanel panel;

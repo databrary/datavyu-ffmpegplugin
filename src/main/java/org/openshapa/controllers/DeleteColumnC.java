@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import java.util.Vector;
 
 import org.openshapa.OpenSHAPA;
@@ -17,7 +18,7 @@ import com.usermetrix.jclient.UserMetrix;
 public final class DeleteColumnC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(DeleteColumnC.class);
+    private Logger logger = UserMetrix.getLogger(DeleteColumnC.class);
 
     /**
      * Constructor.

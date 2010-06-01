@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -28,8 +29,7 @@ public final class TimeStampTextField extends JTextField implements
     private TimeStampDataValueEditor myEditor;
 
     /** The logger for this class. */
-    private UserMetrix logger =
-            UserMetrix.getInstance(TimeStampTextField.class);
+    private Logger logger = UserMetrix.getLogger(TimeStampTextField.class);
 
     /**
      * Creates a new instance of MatrixV.

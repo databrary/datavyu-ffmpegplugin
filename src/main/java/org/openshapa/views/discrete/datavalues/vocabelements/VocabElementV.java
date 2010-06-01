@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues.vocabelements;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.BorderLayout;
 import org.openshapa.OpenSHAPA;
@@ -69,8 +70,7 @@ public class VocabElementV extends JPanel {
                 BorderFactory.createEmptyBorder(3, 0, 3, 0));
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix
-            .getInstance(VocabElementV.class);
+    private Logger logger = UserMetrix.getLogger(VocabElementV.class);
 
     public VocabElementV(VocabElement vocabElement, VocabEditorV vev) {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)

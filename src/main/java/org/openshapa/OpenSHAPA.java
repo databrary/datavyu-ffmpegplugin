@@ -46,10 +46,9 @@ import org.openshapa.views.UserMetrixV;
 import org.openshapa.views.continuous.PluginManager;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
+import com.usermetrix.jclient.Logger;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
 
 
 /**
@@ -99,7 +98,7 @@ public final class OpenSHAPA extends SingleFrameApplication
     private JRubyScriptEngineManager m;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(OpenSHAPA.class);
+    private Logger logger = UserMetrix.getLogger(OpenSHAPA.class);
 
     /** The list of scripts that the user has last invoked. */
     private List<File> lastScriptsExecuted;
@@ -533,7 +532,7 @@ public final class OpenSHAPA extends SingleFrameApplication
                 rMap.getString("Application.version") + ":"
                 + rMap.getString("Application.build"));
             UserMetrix.initalise(config);
-            logger = UserMetrix.getInstance(OpenSHAPA.class);
+            logger = UserMetrix.getLogger(OpenSHAPA.class);
 
             // If the user hasn't specified, we don't send error logs.
             if (Configuration.getInstance().getCanSendLogs() == null) {

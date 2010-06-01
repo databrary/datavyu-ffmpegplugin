@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 
@@ -35,8 +36,7 @@ public final class PredicateNameEditor extends DataValueEditor {
     static final String PREDNAME_RESERVED_CHARS = ")(<>|,;\t\n";
 
     /** The logger for this class. */
-    private UserMetrix logger =
-            UserMetrix.getInstance(PredicateNameEditor.class);
+    private Logger logger = UserMetrix.getLogger(PredicateNameEditor.class);
 
     /**
      * Constructor.

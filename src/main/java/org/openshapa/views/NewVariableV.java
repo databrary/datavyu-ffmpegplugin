@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Column;
 import org.openshapa.models.db.DataColumn;
@@ -20,7 +21,7 @@ public final class NewVariableV extends OpenSHAPADialog {
     /** The database to add the new variable too. */
     private Database model;
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(NewVariableV.class);
+    private Logger logger = UserMetrix.getLogger(NewVariableV.class);
 
     /**
      * Constructor, creates a new form to create a new variable.

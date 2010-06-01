@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
 import javax.swing.JFrame;
@@ -13,7 +14,7 @@ import javax.swing.JTextArea;
 public final class ConsoleV extends OpenSHAPADialog {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(ListVariables.class);
+    private Logger logger = UserMetrix.getLogger(ListVariables.class);
 
     /** The instance of the console. */
     private static ConsoleV instance;

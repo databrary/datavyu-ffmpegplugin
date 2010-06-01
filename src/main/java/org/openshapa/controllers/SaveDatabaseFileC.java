@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -36,7 +37,7 @@ import org.openshapa.util.StringUtils;
 public final class SaveDatabaseFileC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SaveDatabaseFileC.class);
+    private Logger logger = UserMetrix.getLogger(SaveDatabaseFileC.class);
 
     /**
      * Saves the database to the specified destination, if the file ends with
