@@ -1,12 +1,16 @@
 package org.openshapa.controllers;
 
 import com.usermetrix.jclient.UserMetrix;
+
 import java.io.File;
 import java.io.FileInputStream;
+
 import java.util.zip.ZipInputStream;
 
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.project.Project;
+import org.openshapa.models.project.ViewerSetting;
+
 
 /**
  * Controller for opening OpenSHAPA databases and project files.
@@ -47,21 +51,23 @@ public final class OpenC {
      * @param projectFile The file to use when opening a file as a project.
      */
     public void openProject(final File projectFile) {
+
         // If project is archive - open it as such.
         if (projectFile.getName().endsWith(".opf")) {
             logger.usage("open project archive");
             openProjectArchive(projectFile);
 
-        // Otherwise project is uncompressed.
+            // Otherwise project is uncompressed.
         } else {
             logger.usage("open legacy shapa");
+
             OpenProjectFileC opc = new OpenProjectFileC();
             project = opc.open(projectFile);
 
             if (project != null) {
                 OpenDatabaseFileC odc = new OpenDatabaseFileC();
                 database = odc.open(new File(projectFile.getParent(),
-                                             project.getDatabaseFileName()));
+                            project.getDatabaseFileName()));
             }
         }
     }
@@ -72,17 +78,29 @@ public final class OpenC {
      * @param archiveFile The archive to open as a project.
      */
     private void openProjectArchive(final File archiveFile) {
+
         try {
             FileInputStream fis = new FileInputStream(archiveFile);
             ZipInputStream zis = new ZipInputStream(fis);
 
             zis.getNextEntry();
-            OpenProjectFileC opc =  new OpenProjectFileC();
+
+            OpenProjectFileC opc = new OpenProjectFileC();
             project = opc.open(zis);
 
             zis.getNextEntry();
+
             OpenDatabaseFileC odc = new OpenDatabaseFileC();
             database = odc.openAsCSV(zis);
+
+            // BugzID:1806
+            for (ViewerSetting vs : project.getViewerSettings()) {
+
+                if (vs.getSettingsId() != null) {
+                    zis.getNextEntry();
+                    vs.copySettings(zis);
+                }
+            }
 
             fis.close();
             zis.close();

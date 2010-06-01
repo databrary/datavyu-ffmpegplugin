@@ -615,6 +615,11 @@
     	<version>3.7.2</version>
     	<classifier>swing</classifier>
     </dependency>
+    <dependency>
+    	<groupId>commons-io</groupId>
+    	<artifactId>commons-io</artifactId>
+    	<version>1.4</version>
+    </dependency>
   </dependencies>
   
 </project>

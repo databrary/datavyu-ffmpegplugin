@@ -6,9 +6,11 @@ import java.util.TreeMap;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.TrackSettings;
 import org.openshapa.models.project.ViewerSetting;
+
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
+
 
 /**
  * Used to create a custom YAML representation of an openshapa project.
@@ -36,6 +38,7 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             map.put("dbFile", project.getDatabaseFileName());
             map.put("viewerSettings", project.getViewerSettings());
             map.put("trackSettings", project.getTrackSettings());
+
             return representMapping("!project", map, Boolean.FALSE);
         }
     }
@@ -49,7 +52,14 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             Map<String, Object> map = new TreeMap<String, Object>();
             map.put("feed", viewerSetting.getFilePath());
             map.put("plugin", viewerSetting.getPluginName());
+
+            // TODO: remove this
             map.put("offset", Long.toString(viewerSetting.getOffset()));
+
+            // BugzID:1806
+            map.put("settingsId", viewerSetting.getSettingsId());
+            map.put("version", ViewerSetting.VERSION);
+
             return representMapping("!vs", map, Boolean.FALSE);
         }
     }
@@ -63,8 +73,10 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             Map<String, Object> map = new TreeMap<String, Object>();
             map.put("feed", interfaceSettings.getFilePath());
             map.put("locked", interfaceSettings.isLocked());
-            map.put("bookmark", Long.toString(interfaceSettings
-                    .getBookmarkPosition()));
+            map.put("bookmark",
+                Long.toString(interfaceSettings.getBookmarkPosition()));
+            map.put("version", TrackSettings.VERSION);
+
             return representMapping("!ts", map, Boolean.FALSE);
         }
     }

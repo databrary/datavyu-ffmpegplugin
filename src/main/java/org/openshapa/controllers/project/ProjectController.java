@@ -271,9 +271,16 @@ public final class ProjectController {
 
             DataViewer viewer = plugin.getNewDataViewer();
             viewer.setDataFeed(file);
+
+            // TODO: load settings here, if null settings do something else
+            setting.getSettingsInputStream();
+
+            // TODO: remove this
             viewer.setOffset(setting.getOffset());
 
             dataController.addViewer(viewer, setting.getOffset());
+
+            // TODO: load offset from viewer
             dataController.addTrack(plugin.getTypeIcon(),
                 file.getAbsolutePath(), file.getName(), viewer.getDuration(),
                 setting.getOffset(), viewer.getTrackPainter());
@@ -336,11 +343,20 @@ public final class ProjectController {
         // Gather the data viewer settings
         List<ViewerSetting> viewerSettings = new LinkedList<ViewerSetting>();
 
+        int settingsId = 1;
+
         for (DataViewer viewer : dataController.getDataViewers()) {
             ViewerSetting vs = new ViewerSetting();
             vs.setFilePath(viewer.getDataFeed().getAbsolutePath());
             vs.setOffset(viewer.getOffset());
             vs.setPluginName(viewer.getClass().getName());
+
+            // BugzID:1806
+            vs.setSettingsId(Integer.toString(settingsId));
+            settingsId++;
+
+            // TODO: get viewer to write data.
+            vs.getSettingsOutputStream();
 
             viewerSettings.add(vs);
         }

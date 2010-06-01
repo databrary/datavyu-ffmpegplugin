@@ -6,10 +6,12 @@ import java.util.Map;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.TrackSettings;
 import org.openshapa.models.project.ViewerSetting;
+
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
+
 
 /**
  * Used to construct an openshapa project from its YAML representation.
@@ -36,7 +38,9 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             Project project = new Project();
             project.setProjectName((String) values.get("name"));
             project.setDatabaseFileName((String) values.get("dbFile"));
+
             final int projectVersion = (Integer) values.get("version");
+
             if (projectVersion <= 2) {
                 Map vs = (Map) values.get("viewerSettings");
                 vs.values();
@@ -45,6 +49,7 @@ public class OpenSHAPAProjectConstructor extends Constructor {
                 project.setViewerSettings((List) values.get("viewerSettings"));
                 project.setTrackSettings((List) values.get("trackSettings"));
             }
+
             return project;
         }
     }
@@ -60,8 +65,20 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             ViewerSetting vs = new ViewerSetting();
             vs.setFilePath((String) values.get("feed"));
             vs.setPluginName((String) values.get("plugin"));
+
             // WARNING: SnakeYAML refuses to parse this as a Long.
+            // TODO: remove this
             vs.setOffset(Long.parseLong((String) values.get("offset")));
+
+            // BugzID:1806
+            Object version = values.get("version");
+
+            if (version == null) {
+                vs.setSettingsId(null);
+            } else {
+                vs.setSettingsId((String) values.get("settingsId"));
+            }
+
             return vs;
         }
     }
@@ -77,8 +94,9 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             TrackSettings is = new TrackSettings();
             is.setFilePath((String) values.get("feed"));
             is.setLocked((Boolean) values.get("locked"));
-            is.setBookmarkPosition(Long.parseLong((String) values
-                    .get("bookmark")));
+            is.setBookmarkPosition(Long.parseLong(
+                    (String) values.get("bookmark")));
+
             return is;
         }
     }
