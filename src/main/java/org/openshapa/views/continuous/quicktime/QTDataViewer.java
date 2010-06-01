@@ -6,6 +6,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -44,6 +46,7 @@ import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 
 import com.usermetrix.jclient.UserMetrix;
+
 import javax.swing.ImageIcon;
 
 
@@ -176,7 +179,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * the volume).
      */
     private void setVolume() {
+
         try {
+
             if (isVisible) {
                 movie.setVolume(volume);
             } else {
@@ -473,6 +478,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         // BugzID:1400 - We don't allow volume changes while the track is
         // hidden from view.
         if (isVisible) {
+
             // Show the volume frame.
             volumeDialog.setVisible(true);
             volumeDialog.setLocation(button.getLocationOnScreen());
@@ -488,13 +494,15 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         isVisible = !isVisible;
         this.setVisible(isVisible);
         setVolume();
+
         JButton button = (JButton) event.getSource();
+
         if (isVisible) {
-            button.setIcon(
-                    new ImageIcon(getClass().getResource("/icons/eye.png")));
+            button.setIcon(new ImageIcon(
+                    getClass().getResource("/icons/eye.png")));
         } else {
-            button.setIcon(
-                  new ImageIcon(getClass().getResource("/icons/eye-shut.png")));
+            button.setIcon(new ImageIcon(
+                    getClass().getResource("/icons/eye-shut.png")));
         }
     }
 
@@ -505,6 +513,14 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      */
     public void handleActionButtonEvent3(final ActionEvent event) {
         // Do nothing; not supported.
+    }
+
+    public void loadSettings(final InputStream is) {
+        // TODO Auto-generated method stub
+    }
+
+    public void storeSettings(final OutputStream os) {
+        // TODO Auto-generated method stub
     }
 
     // ------------------------------------------------------------------------
