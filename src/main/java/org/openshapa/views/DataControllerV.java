@@ -299,6 +299,7 @@ public final class DataControllerV extends OpenSHAPADialog
     public DataControllerV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
 
+
         clock.registerListener(this);
 
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
@@ -423,8 +424,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
                 for (DataViewer v : viewers) {
 
-                    if ((time > v.getOffset())
-                            && (time < (v.getOffset() + v.getDuration()))) {
+                    if ((time > v.getOffset()) && isWithinPlayRange(time, v)) {
                         v.seekTo(time - v.getOffset());
                     }
                 }

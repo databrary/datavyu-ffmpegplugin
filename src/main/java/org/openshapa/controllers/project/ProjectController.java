@@ -20,6 +20,8 @@ import org.openshapa.models.project.Project;
 import org.openshapa.models.project.TrackSettings;
 import org.openshapa.models.project.ViewerSetting;
 
+import org.openshapa.util.FileUtils;
+
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.MixerControllerV;
 import org.openshapa.views.continuous.DataViewer;
@@ -257,8 +259,15 @@ public final class ProjectController {
             File file = new File(setting.getFilePath());
 
             if (!file.exists()) {
+
+                // BugzID:1804 - If absolute path does not find the file, look
+                // in the relative path
+                file = FileUtils.getRelativeFile(project, file);
+            }
+
+            if (!file.exists()) {
                 missingFiles = true;
-                missingFilesList.add(file.getAbsolutePath());
+                missingFilesList.add(setting.getFilePath());
 
                 continue;
             }
@@ -293,6 +302,13 @@ public final class ProjectController {
 
         for (TrackSettings setting : project.getTrackSettings()) {
             File file = new File(setting.getFilePath());
+
+            if (!file.exists()) {
+
+                // BugzID:1804 - If absolute path does not find the file, look
+                // in the relative path
+                file = FileUtils.getRelativeFile(project, file);
+            }
 
             if (!file.exists()) {
                 continue;
