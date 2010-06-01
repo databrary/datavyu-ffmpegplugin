@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -12,9 +13,12 @@ import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.project.Project;
 
 import com.usermetrix.jclient.UserMetrix;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+
 import org.openshapa.OpenSHAPA;
+
 
 /**
  * Master controller for handling project and database file saving logic.
@@ -33,8 +37,7 @@ public final class SaveC {
      * @throws LogicErrorException If unable to save the database.
      */
     public void saveDatabase(final String databaseFile,
-                             final MacshapaDatabase database)
-    throws LogicErrorException {
+        final MacshapaDatabase database) throws LogicErrorException {
         this.saveDatabase(new File(databaseFile), database);
     }
 
@@ -47,11 +50,11 @@ public final class SaveC {
      * @throws LogicErrorException If unable to save the database.
      */
     public void saveDatabase(final File databaseFile,
-                             final MacshapaDatabase database)
-    throws LogicErrorException {
+        final MacshapaDatabase database) throws LogicErrorException {
         logger.usage("saving database");
+
         SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
-            saveDBC.saveDatabase(databaseFile, database);
+        saveDBC.saveDatabase(databaseFile, database);
     }
 
     /**
@@ -64,12 +67,17 @@ public final class SaveC {
      * @throws LogicErrorException If unable to save the entire project to
      * disk.
      */
-    public void saveProject(final File projectFile,
-                            final Project project,
-                            final MacshapaDatabase database)
-    throws LogicErrorException {
+    public void saveProject(final File projectFile, final Project project,
+        final MacshapaDatabase database) throws LogicErrorException {
+
         try {
             logger.usage("save project");
+
+            // BugzID:1804 - Need to store the original absolute path of the
+            // project file so that we can build relative paths to search when
+            // loading, if the project file is moved around.
+            project.setOriginalProjectDirectory(projectFile.getAbsolutePath());
+
             FileOutputStream fos = new FileOutputStream(projectFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
 
@@ -89,17 +97,15 @@ public final class SaveC {
             fos.flush();
             fos.close();
         } catch (FileNotFoundException e) {
-            ResourceMap rMap =
-                    Application.getInstance(OpenSHAPA.class).getContext()
-                            .getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString(
-                    "UnableToSave.message", projectFile), e);
+            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                .getContext().getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString("UnableToSave.message",
+                    projectFile), e);
         } catch (IOException e) {
-            ResourceMap rMap =
-                    Application.getInstance(OpenSHAPA.class).getContext()
-                            .getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString(
-                    "UnableToSave.message", projectFile), e);
+            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                .getContext().getResourceMap(OpenSHAPA.class);
+            throw new LogicErrorException(rMap.getString("UnableToSave.message",
+                    projectFile), e);
         }
     }
 }

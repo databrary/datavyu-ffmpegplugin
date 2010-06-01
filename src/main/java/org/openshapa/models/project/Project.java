@@ -3,6 +3,7 @@ package org.openshapa.models.project;
 import java.util.LinkedList;
 import java.util.List;
 
+
 /**
  * This class represents a project in OpenSHAPA. A project manages the different
  * files used by OpenSHAPA, such as database files and media files.
@@ -10,13 +11,21 @@ import java.util.List;
 public final class Project implements Cloneable {
 
     /** Project specification version. */
-    public static final int VERSION = 3;
+    public static final int VERSION = 4;
+
     /** Name of this project. */
     private String projectName;
+
     /** Database file name. */
     private String databaseFileName;
+
     /** The directory that the project file resides in. */
     private String projectDirectory;
+
+    /** The directory that the project file was saved to. Could be the same as
+     * the project directory, and could importantly be blank in the case of
+     * loading older project files. */
+    private String originalProjectDirectory;
 
     private List<ViewerSetting> viewerSettings;
 
@@ -32,20 +41,23 @@ public final class Project implements Cloneable {
 
     /**
      * Private copy constructor.
-     * 
+     *
      * @param other
      */
     private Project(final Project other) {
         projectName = other.projectName;
         databaseFileName = other.databaseFileName;
         projectDirectory = other.projectDirectory;
+        originalProjectDirectory = other.originalProjectDirectory;
 
         viewerSettings = new LinkedList<ViewerSetting>();
+
         for (ViewerSetting vs : other.viewerSettings) {
             viewerSettings.add(vs.clone());
         }
 
         interfaceSettings = new LinkedList<TrackSettings>();
+
         for (TrackSettings is : other.interfaceSettings) {
             interfaceSettings.add(is.clone());
         }
@@ -80,15 +92,18 @@ public final class Project implements Cloneable {
      *            The new name to use for this project.
      */
     public void setProjectName(final String newProjectName) {
+
         // Check Pre-conditions.
         assert (newProjectName != null);
 
         // Set the name of the project.
         String name = newProjectName;
         int match = name.lastIndexOf(".");
+
         if (match != -1) {
             name = name.substring(0, match);
         }
+
         if (name.equals("")) {
             name = "Project1";
         }
@@ -96,9 +111,12 @@ public final class Project implements Cloneable {
         projectName = name;
     }
 
-    public void setViewerSettings(final Iterable<ViewerSetting> viewerSettings) {
+    public void setViewerSettings(
+        final Iterable<ViewerSetting> viewerSettings) {
+
         if (viewerSettings != null) {
             this.viewerSettings = new LinkedList<ViewerSetting>();
+
             for (ViewerSetting viewerSetting : viewerSettings) {
                 this.viewerSettings.add(viewerSetting);
             }
@@ -106,9 +124,11 @@ public final class Project implements Cloneable {
     }
 
     public void setTrackSettings(
-            final Iterable<TrackSettings> interfaceSettings) {
+        final Iterable<TrackSettings> interfaceSettings) {
+
         if (interfaceSettings != null) {
             this.interfaceSettings = new LinkedList<TrackSettings>();
+
             for (TrackSettings interfaceSetting : interfaceSettings) {
                 this.interfaceSettings.add(interfaceSetting);
             }
@@ -142,8 +162,20 @@ public final class Project implements Cloneable {
         this.projectDirectory = projectDirectory;
     }
 
-    @Override
-    public Project clone() {
+    /** @return the directory the project file was saved to. */
+    public String getOriginalProjectDirectory() {
+        return originalProjectDirectory;
+    }
+
+    /** @param originalProjectDirectory sets the directory the project file was
+     * saved to.
+     */
+    public void setOriginalProjectDirectory(
+        final String originalProjectDirectory) {
+        this.originalProjectDirectory = originalProjectDirectory;
+    }
+
+    @Override public Project clone() {
         return new Project(this);
     }
 
