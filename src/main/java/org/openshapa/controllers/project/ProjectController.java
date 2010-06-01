@@ -297,9 +297,6 @@ public final class ProjectController {
 
                 // old project file
                 viewer.setOffset(setting.getOffset());
-
-                // Force user to save in new format
-                projectChanged();
             }
 
             dataController.addViewer(viewer, viewer.getOffset());

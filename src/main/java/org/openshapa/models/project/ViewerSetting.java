@@ -101,11 +101,14 @@ public class ViewerSetting implements Cloneable {
      * @param is InputStream to copy from.
      */
     public void copySettings(final InputStream is) {
+
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         try {
             IOUtils.copy(is, os);
+
             settingsData = os.toByteArray();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -75,7 +75,12 @@ public class OpenSHAPAProjectConstructor extends Constructor {
 
             // WARNING: SnakeYAML refuses to parse this as a Long.
             // TODO: remove this
-            vs.setOffset(Long.parseLong((String) values.get("offset")));
+            String offset = (String) values.get("offset");
+
+            if (offset != null) {
+                vs.setOffset(Long.parseLong(offset));
+            }
+
 
             // BugzID:1806
             Object version = values.get("version");

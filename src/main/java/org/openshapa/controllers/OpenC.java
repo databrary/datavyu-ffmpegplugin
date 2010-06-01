@@ -5,6 +5,8 @@ import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
 import java.io.FileInputStream;
 
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import org.openshapa.models.db.MacshapaDatabase;
@@ -80,30 +82,26 @@ public final class OpenC {
     private void openProjectArchive(final File archiveFile) {
 
         try {
-            FileInputStream fis = new FileInputStream(archiveFile);
-            ZipInputStream zis = new ZipInputStream(fis);
+            ZipFile zf = new ZipFile(archiveFile);
 
-            zis.getNextEntry();
-
+            ZipEntry zProj = zf.getEntry("project");
             OpenProjectFileC opc = new OpenProjectFileC();
-            project = opc.open(zis);
+            project = opc.open(zf.getInputStream(zProj));
 
-            zis.getNextEntry();
-
+            ZipEntry zDb = zf.getEntry("db");
             OpenDatabaseFileC odc = new OpenDatabaseFileC();
-            database = odc.openAsCSV(zis);
+            database = odc.openAsCSV(zf.getInputStream(zDb));
 
             // BugzID:1806
             for (ViewerSetting vs : project.getViewerSettings()) {
 
                 if (vs.getSettingsId() != null) {
-                    zis.getNextEntry();
-                    vs.copySettings(zis);
+                    ZipEntry entry = zf.getEntry(vs.getSettingsId());
+                    vs.copySettings(zf.getInputStream(entry));
                 }
             }
 
-            fis.close();
-            zis.close();
+            zf.close();
         } catch (Exception e) {
             logger.error("Unable to open project archive", e);
         }
