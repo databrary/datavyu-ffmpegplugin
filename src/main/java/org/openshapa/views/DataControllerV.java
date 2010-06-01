@@ -2301,7 +2301,7 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     /**
-     * Action to invoke when the user clicks on the new cell onset button.
+     * Action to invoke when the user clicks on the new cell offset button.
      */
     @Action public void setNewCellStopTime() {
         logger.usage("Set new cell offset");

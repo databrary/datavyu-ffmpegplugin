@@ -232,8 +232,9 @@ public final class CreateNewCellC {
                 DataCell cell =
                         new DataCell(model, dc.getItsColID(), dc.getItsMveID());
                 if (multiadd) {
-                    cell.setOnset(dc.getOnset());
-                    cell.setOffset(dc.getOffset());
+                    // BugzID:1837 - We want a zero onset here.
+                    cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND,
+                            onset));
                     cellID = model.insertdCell(cell, dc.getOrd() + 1);
                     OpenSHAPA.getProjectController().setLastCreatedCellId(
                             cellID);
@@ -264,8 +265,8 @@ public final class CreateNewCellC {
                                         .getLastSelectedCellId());
                 DataCell cell =
                         new DataCell(model, dc.getItsColID(), dc.getItsMveID());
-                cell.setOnset(dc.getOnset());
-                cell.setOffset(dc.getOffset());
+                // BugzID:1837 - We want a zero onset here.
+                cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
                 cellID = model.insertdCell(cell, dc.getOrd() + 1);
                 OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
                 OpenSHAPA.getProjectController().setLastCreatedColId(
