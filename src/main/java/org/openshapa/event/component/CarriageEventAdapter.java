@@ -37,4 +37,12 @@ public abstract class CarriageEventAdapter implements CarriageEventListener {
         // Blank implementation.
     }
 
+    /**
+     * @see org.openshapa.event.component.CarriageEventListener
+     * #lockStateChanged(org.openshapa.event.component.CarriageEvent)
+     */
+    public void lockStateChanged(final CarriageEvent e) {
+        // Blank implementation.
+    }
+
 }

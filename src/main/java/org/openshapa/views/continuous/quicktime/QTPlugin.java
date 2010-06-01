@@ -51,7 +51,6 @@ public final class QTPlugin implements Plugin {
      */
     public ImageIcon getActionButtonIcon1() {
         URL typeIconURL = getClass().getResource("/icons/audio-volume.png");
-
         return new ImageIcon(typeIconURL);
     }
 
@@ -60,7 +59,9 @@ public final class QTPlugin implements Plugin {
      * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon2()
      */
     public ImageIcon getActionButtonIcon2() {
-        return null;
+        URL typeIconURL = getClass().getResource("/icons/eye.png");
+
+        return new ImageIcon(typeIconURL);
     }
 
     /*
@@ -68,7 +69,9 @@ public final class QTPlugin implements Plugin {
      * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon3()
      */
     public ImageIcon getActionButtonIcon3() {
-        return null;
+        URL typeIconURL = getClass().getResource("/icons/resize.png");
+
+        return new ImageIcon(typeIconURL);
     }
 
     /**
@@ -85,7 +88,7 @@ public final class QTPlugin implements Plugin {
      * @see org.openshapa.views.continuous.Plugin#isActionSupported2()
      */
     public boolean isActionSupported2() {
-        return false;
+        return true;
     }
 
     /*
@@ -93,7 +96,7 @@ public final class QTPlugin implements Plugin {
      * @see org.openshapa.views.continuous.Plugin#isActionSupported3()
      */
     public boolean isActionSupported3() {
-        return false;
+        return true;
     }
 
 }

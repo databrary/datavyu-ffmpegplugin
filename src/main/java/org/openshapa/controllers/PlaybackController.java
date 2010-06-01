@@ -33,6 +33,7 @@ import org.openshapa.event.PlaybackListener;
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.MarkerEvent;
 import org.openshapa.event.component.NeedleEvent;
+import org.openshapa.event.component.TimescaleEvent;
 import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
@@ -658,13 +659,15 @@ public final class PlaybackController implements PlaybackListener,
         try {
             setCurrentTime(time);
 
-            // We are playing back at a rate which is to fast and probably won't
-            // allow us to stream all the information at the file. We fake play
-            // back by doing a bunch of seekTo's.
+            // We are playing back at a rate which is too fast and probably
+            // won't allow us to stream all the information at the file. We fake
+            // playback by doing a bunch of seekTo's.
             if (playbackModel.isFakePlayback()) {
 
                 for (DataViewer v : viewers) {
-                    v.seekTo(time - v.getOffset());
+                    if (isWithinPlayRange(time, v)) {
+                        v.seekTo(time - v.getOffset());
+                    }
                 }
 
                 // DataViewer is responsible for playing video.
@@ -683,10 +686,18 @@ public final class PlaybackController implements PlaybackListener,
                          * Use offsets to determine if the video file should
                          * start playing.
                          */
-                        if ((time >= v.getOffset()) && !v.isPlaying()) {
+
+                        if (!v.isPlaying() && isWithinPlayRange(time, v)) {
                             v.seekTo(time - v.getOffset());
                             v.play();
                         }
+
+                        // BugzID:1797 - Viewers who are "playing" outside their
+                        // timeframe should be asked to stop.
+                        if (v.isPlaying() && !isWithinPlayRange(time, v)) {
+                            v.stop();
+                        }
+
 
                         /*
                          * Only synchronise the data viewers if we have a
@@ -730,6 +741,17 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     /**
+     * Determines whether a DataViewer has data for the desired time.
+     * @param time The time we wish to play at or seek to.
+     * @param view The DataViewer to check.
+     * @return True if data exists at this time, and false otherwise.
+     */
+    private boolean isWithinPlayRange(final long time, final DataViewer view) {
+        return (time >= view.getOffset())
+            && (time < (view.getOffset() + view.getDuration()));
+    }
+
+    /**
      * @param time
      *            Current clock time in milliseconds.
      */
@@ -741,7 +763,10 @@ public final class PlaybackController implements PlaybackListener,
 
         for (DataViewer viewer : viewers) {
             viewer.stop();
-            viewer.seekTo(time - viewer.getOffset());
+
+            if (isWithinPlayRange(time, viewer)) {
+                viewer.seekTo(time - viewer.getOffset());
+            }
         }
     }
 
@@ -763,6 +788,8 @@ public final class PlaybackController implements PlaybackListener,
 
         SwingUtilities.invokeLater(edtTask);
 
+        long time = getCurrentTime();
+
         // If rate is faster than two times - we need to fake playback to give
         // the illusion of 'smooth'. We do this by stopping the dataviewer and
         // doing many seekTo's to grab individual frames.
@@ -771,13 +798,15 @@ public final class PlaybackController implements PlaybackListener,
             playbackModel.setFakePlayback(true);
 
             for (DataViewer viewer : viewers) {
-                viewer.setPlaybackSpeed(rate);
                 viewer.stop();
+
+                if (isWithinPlayRange(time, viewer)) {
+                    viewer.setPlaybackSpeed(rate);
+                }
             }
 
             // Rate is less than two times - use the data viewer internal code
-            // to
-            // draw every frame.
+            // to draw every frame.
         } else {
             playbackModel.setFakePlayback(false);
 
@@ -802,7 +831,10 @@ public final class PlaybackController implements PlaybackListener,
         setCurrentTime(time);
 
         for (DataViewer viewer : viewers) {
-            viewer.seekTo(time - viewer.getOffset());
+
+            if (isWithinPlayRange(time, viewer)) {
+                viewer.seekTo(time - viewer.getOffset());
+            }
         }
     }
 
@@ -840,7 +872,6 @@ public final class PlaybackController implements PlaybackListener,
         SwingUtilities.invokeLater(edtTask);
 
     }
-
 
     /**
      * Remove the specifed viewer from the controller.
@@ -1062,6 +1093,12 @@ public final class PlaybackController implements PlaybackListener,
 
                     case CARRIAGE_EVENT:
                         handleCarriageEvent((CarriageEvent) e.getEventObject());
+
+                        break;
+
+                    case TIMESCALE_EVENT:
+                        handleTimescaleEvent((TimescaleEvent)
+                            e.getEventObject());
 
                         break;
 
@@ -1300,7 +1337,6 @@ public final class PlaybackController implements PlaybackListener,
         assert !SwingUtilities.isEventDispatchThread();
 
         clock.stop();
-        clock.setRate(PLAY_RATE);
         clock.setTime(time);
     }
 
@@ -1409,8 +1445,22 @@ public final class PlaybackController implements PlaybackListener,
      */
     private void handleNeedleEvent(final NeedleEvent e) {
         assert !SwingUtilities.isEventDispatchThread();
+        gotoTime(e.getTime());
+    }
 
-        long newTime = e.getTime();
+    /**
+     * Handles a TimescaleEvent.
+     * @param e The timescale event that triggered this action.
+     */
+    private void handleTimescaleEvent(final TimescaleEvent e) {
+        assert !SwingUtilities.isEventDispatchThread();
+        gotoTime(e.getTime());
+    }
+
+    private void gotoTime(final long time) {
+        assert !SwingUtilities.isEventDispatchThread();
+
+        long newTime = time;
 
         if (newTime < playbackModel.getWindowPlayStart()) {
             newTime = playbackModel.getWindowPlayStart();
@@ -1539,6 +1589,7 @@ public final class PlaybackController implements PlaybackListener,
 
             break;
 
+        case CARRIAGE_LOCK:
         case BOOKMARK_CHANGED:
         case BOOKMARK_SAVE:
             OpenSHAPA.getProjectController().projectChanged();

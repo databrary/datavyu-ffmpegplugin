@@ -11,7 +11,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SimpleTimeZone;
@@ -41,6 +40,7 @@ import org.openshapa.controllers.SetSelectedCellStopTimeC;
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.MarkerEvent;
 import org.openshapa.event.component.NeedleEvent;
+import org.openshapa.event.component.TimescaleEvent;
 import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
@@ -57,6 +57,8 @@ import org.openshapa.views.continuous.Plugin;
 import org.openshapa.views.continuous.PluginManager;
 
 import com.usermetrix.jclient.UserMetrix;
+
+import java.util.LinkedHashSet;
 
 
 /**
@@ -307,7 +309,7 @@ public final class DataControllerV extends OpenSHAPADialog
         }
 
         setName(this.getClass().getSimpleName());
-        viewers = new HashSet<DataViewer>();
+        viewers = new LinkedHashSet<DataViewer>();
 
         playbackModel = new PlaybackModel();
         playbackModel.setPauseRate(0);
@@ -415,19 +417,22 @@ public final class DataControllerV extends OpenSHAPADialog
         try {
             setCurrentTime(time);
 
-            // We are playing back at a rate which is to fast and probably won't
-            // allow us to stream all the information at the file. We fake play
-            // back by doing a bunch of seekTo's.
+            // We are playing back at a rate which is too fast and probably
+            // won't allow us to stream all the information at the file. We fake
+            // playback by doing a bunch of seekTo's.
             if (playbackModel.isFakePlayback()) {
 
                 for (DataViewer v : viewers) {
-                    v.seekTo(time - v.getOffset());
+
+                    if ((time > v.getOffset()) && isWithinPlayRange(time, v)) {
+                        v.seekTo(time - v.getOffset());
+                    }
                 }
 
                 // DataViewer is responsible for playing video.
             } else {
 
-                // Synchronise viewers only if we have exceded our pulse time.
+                // Synchronise viewers only if we have exceeded our pulse time.
                 if ((time - playbackModel.getLastSync())
                         > (SYNC_PULSE * clock.getRate())) {
                     long thresh = (long) (SYNC_THRESH
@@ -440,10 +445,18 @@ public final class DataControllerV extends OpenSHAPADialog
                          * Use offsets to determine if the video file should
                          * start playing.
                          */
-                        if ((time >= v.getOffset()) && !v.isPlaying()) {
+
+                        if (!v.isPlaying() && isWithinPlayRange(time, v)) {
                             v.seekTo(time - v.getOffset());
                             v.play();
                         }
+
+                        // BugzID:1797 - Viewers who are "playing" outside their
+                        // timeframe should be asked to stop.
+                        if (v.isPlaying() && !isWithinPlayRange(time, v)) {
+                            v.stop();
+                        }
+
 
                         /*
                          * Only synchronise the data viewers if we have a
@@ -487,6 +500,17 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     /**
+     * Determines whether a DataViewer has data for the desired time.
+     * @param time The time we wish to play at or seek to.
+     * @param view The DataViewer to check.
+     * @return True if data exists at this time, and false otherwise.
+     */
+    private boolean isWithinPlayRange(final long time, final DataViewer view) {
+        return (time >= view.getOffset())
+            && (time < (view.getOffset() + view.getDuration()));
+    }
+
+    /**
      * @param time
      *            Current clock time in milliseconds.
      */
@@ -496,7 +520,10 @@ public final class DataControllerV extends OpenSHAPADialog
 
         for (DataViewer viewer : viewers) {
             viewer.stop();
-            viewer.seekTo(time - viewer.getOffset());
+
+            if (isWithinPlayRange(time, viewer)) {
+                viewer.seekTo(time - viewer.getOffset());
+            }
         }
     }
 
@@ -508,6 +535,8 @@ public final class DataControllerV extends OpenSHAPADialog
         resetSync();
         lblSpeed.setText(FloatUtils.doubleToFractionStr(new Double(rate)));
 
+        long time = getCurrentTime();
+
         // If rate is faster than two times - we need to fake playback to give
         // the illusion of 'smooth'. We do this by stopping the dataviewer and
         // doing many seekTo's to grab individual frames.
@@ -515,13 +544,15 @@ public final class DataControllerV extends OpenSHAPADialog
             playbackModel.setFakePlayback(true);
 
             for (DataViewer viewer : viewers) {
-                viewer.setPlaybackSpeed(rate);
                 viewer.stop();
+
+                if (isWithinPlayRange(time, viewer)) {
+                    viewer.setPlaybackSpeed(rate);
+                }
             }
 
             // Rate is less than two times - use the data viewer internal code
-            // to
-            // draw every frame.
+            // to draw every frame.
         } else {
             playbackModel.setFakePlayback(false);
 
@@ -544,7 +575,10 @@ public final class DataControllerV extends OpenSHAPADialog
         setCurrentTime(time);
 
         for (DataViewer viewer : viewers) {
-            viewer.seekTo(time - viewer.getOffset());
+
+            if (isWithinPlayRange(time, viewer)) {
+                viewer.seekTo(time - viewer.getOffset());
+            }
         }
     }
 
@@ -1337,6 +1371,8 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void openVideoButtonActionPerformed(
         final java.awt.event.ActionEvent evt) {
+        logger.usage("Add data");
+
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
         PluginManager pm = PluginManager.getInstance();
 
@@ -1366,10 +1402,12 @@ public final class DataControllerV extends OpenSHAPADialog
                 DataControllerV.class);
 
         if (tracksPanelEnabled) {
+            logger.usage("Show tracks");
 
             // Panel is being displayed, hide it
             button.setIcon(resourceMap.getIcon("showTracksButton.show.icon"));
         } else {
+            logger.usage("Hide tracks");
 
             // Panel is hidden, show it
             button.setIcon(resourceMap.getIcon("showTracksButton.hide.icon"));
@@ -1481,6 +1519,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks the set cell onset button.
      */
     @Action public void setCellOnsetAction() {
+        logger.usage("Set cell onset");
         new SetSelectedCellStartTimeC(getCurrentTime());
     }
 
@@ -1488,6 +1527,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the set cell offest button.
      */
     @Action public void setCellOffsetAction() {
+        logger.usage("Set cell offset");
         new SetSelectedCellStopTimeC(getCurrentTime());
         setFindOffsetField(getCurrentTime());
     }
@@ -1527,6 +1567,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
             break;
 
+        case TIMESCALE_EVENT:
+            handleTimescaleEvent((TimescaleEvent) e.getEventObject());
+
+            break;
+
         default:
             break;
         }
@@ -1540,7 +1585,19 @@ public final class DataControllerV extends OpenSHAPADialog
      *            The Needle event that triggered this action.
      */
     private void handleNeedleEvent(final NeedleEvent e) {
-        long newTime = e.getTime();
+        gotoTime(e.getTime());
+    }
+
+    /**
+     * Handles a TimescaleEvent.
+     * @param e The timescale event that triggered this action.
+     */
+    private void handleTimescaleEvent(final TimescaleEvent e) {
+        gotoTime(e.getTime());
+    }
+
+    private void gotoTime(final long time) {
+        long newTime = time;
 
         if (newTime < playbackModel.getWindowPlayStart()) {
             newTime = playbackModel.getWindowPlayStart();
@@ -1663,6 +1720,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
             break;
 
+        case CARRIAGE_LOCK:
         case BOOKMARK_CHANGED:
         case BOOKMARK_SAVE:
             OpenSHAPA.getProjectController().projectChanged();
@@ -1837,6 +1895,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the play button.
      */
     @Action public void playAction() {
+        logger.usage("Play");
 
         // BugzID:464 - When stopped at the end of the region of interest.
         // pressing play jumps the stream back to the start of the video before
@@ -1853,6 +1912,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the fast foward button.
      */
     @Action public void forwardAction() {
+        logger.usage("Fast forward");
         playAt(FFORWARD_RATE);
     }
 
@@ -1860,6 +1920,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the rewind button.
      */
     @Action public void rewindAction() {
+        logger.usage("Rewind");
         playAt(REWIND_RATE);
     }
 
@@ -1867,6 +1928,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the pause button.
      */
     @Action public void pauseAction() {
+        logger.usage("Pause");
 
         // Resume from pause at playback rate prior to pause.
         if (clock.isStopped()) {
@@ -1886,6 +1948,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the stop button.
      */
     @Action public void stopAction() {
+        logger.usage("Stop event");
         clock.stop();
         clock.setRate(0);
         playbackModel.setShuttleRate(0);
@@ -1899,6 +1962,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * @todo proper behaviour for reversing shuttle direction?
      */
     @Action public void shuttleForwardAction() {
+        logger.usage("Shuttle forward");
 
         if ((clock.getTime() <= 0)
                 && ((playbackModel.getShuttleRate() != 0)
@@ -1927,6 +1991,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the shuttle back button.
      */
     @Action public void shuttleBackAction() {
+        logger.usage("Shuttle back");
 
         if ((clock.getTime() <= 0)
                 && ((playbackModel.getShuttleRate() != 0)
@@ -1999,6 +2064,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the find button.
      */
     @Action public void findAction() {
+        logger.usage("Find");
 
         if (shiftMask) {
             findOffsetAction();
@@ -2047,7 +2113,15 @@ public final class DataControllerV extends OpenSHAPADialog
                 mixerControllerV.setPlayRegionEnd(newWindowPlayStart);
             }
 
-            mixerControllerV.getNeedleController().fixNeedle();
+            final long currentTime = mixerControllerV.getCurrentTime();
+
+            if (currentTime > newWindowPlayEnd) {
+                mixerControllerV.setCurrentTime(newWindowPlayEnd);
+                clock.setTime(newWindowPlayEnd);
+            } else if (currentTime < newWindowPlayStart) {
+                mixerControllerV.setCurrentTime(newWindowPlayStart);
+                clock.setTime(newWindowPlayStart);
+            }
         } catch (ParseException e) {
             logger.error("Unable to set playback region of interest", e);
         }
@@ -2059,6 +2133,8 @@ public final class DataControllerV extends OpenSHAPADialog
     @Action public void goBackAction() {
 
         try {
+            logger.usage("Go back");
+
             long j = -CLOCK_FORMAT.parse(goBackTextField.getText()).getTime();
             jump(j);
 
@@ -2074,6 +2150,8 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the jog backwards button.
      */
     @Action public void jogBackAction() {
+        logger.usage("Jog back");
+
         int mul = 1;
 
         if (shiftMask) {
@@ -2099,6 +2177,8 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the jog forwards button.
      */
     @Action public void jogForwardAction() {
+        logger.usage("Jog forward");
+
         int mul = 1;
 
         if (shiftMask) {
@@ -2196,8 +2276,8 @@ public final class DataControllerV extends OpenSHAPADialog
      *            Absolute time to jump to.
      */
     private void jumpTo(final long time) {
+
         clock.stop();
-        clock.setRate(PLAY_RATE);
         clock.setTime(time);
     }
 
@@ -2208,6 +2288,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the create new cell button.
      */
     @Action public void createCellAction() {
+        logger.usage("New cell");
         new CreateNewCellC();
     }
 
@@ -2215,13 +2296,15 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the new cell button.
      */
     @Action public void createNewCellAction() {
+        logger.usage("New cell set onset");
         new CreateNewCellC(getCurrentTime());
     }
 
     /**
-     * Action to invoke when the user clicks on the new cell onset button.
+     * Action to invoke when the user clicks on the new cell offset button.
      */
     @Action public void setNewCellStopTime() {
+        logger.usage("Set new cell offset");
         new SetNewCellStopTimeC(getCurrentTime());
         setFindOffsetField(getCurrentTime());
     }

@@ -145,4 +145,11 @@ public class VocabEditorDialogFixture extends DialogFixture {
         return new JButtonFixture(robot, "closeButton");
     }
 
+    /**
+     * @return JComboBoxFixture for the argument types.
+     */
+    public final JComboBoxFixture argTypeComboBox() {
+        return new JComboBoxFixture(robot, "argTypeComboBox");
+    }
+
 }

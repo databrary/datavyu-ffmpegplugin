@@ -33,7 +33,6 @@ import org.openshapa.OpenSHAPA.Platform;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.DeleteCellC;
 import org.openshapa.controllers.DeleteColumnC;
-import org.openshapa.controllers.NewDatabaseC;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.controllers.NewVariableC;
 import org.openshapa.controllers.OpenC;
@@ -143,23 +142,23 @@ public final class OpenSHAPAView extends FrameView
 
         manager.addKeyEventDispatcher(new KeyEventDispatcher() {
 
-                /**
-                 * Dispatches the keystroke to the correct action.
-                 *
-                 * @param evt
-                 *            The event that triggered this action.
-                 * @return true if the KeyboardFocusManager should take no further
-                 *         action with regard to the KeyEvent; false otherwise.
-                 */
-                public boolean dispatchKeyEvent(final KeyEvent evt) {
+            /**
+             * Dispatches the keystroke to the correct action.
+             *
+             * @param evt
+             *            The event that triggered this action.
+             * @return true if the KeyboardFocusManager should take no further
+             *         action with regard to the KeyEvent; false otherwise.
+             */
+            public boolean dispatchKeyEvent(final KeyEvent evt) {
 
-                    // Pass the keyevent onto the keyswitchboard so that it can
-                    // route it to the correct action.
-                    spreadsheetMenuMenuSelected(null);
+                // Pass the keyevent onto the keyswitchboard so that it can
+                // route it to the correct action.
+                spreadsheetMenuMenuSelected(null);
 
-                    return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
-                }
-            });
+                return OpenSHAPA.getApplication().dispatchKeyEvent(evt);
+            }
+        });
 
         // generated GUI builder code
         initComponents();
@@ -177,8 +176,6 @@ public final class OpenSHAPAView extends FrameView
         strongTemporalOrderMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_T, InputEvent.SHIFT_MASK | keyMask));
 
-        // This just sets the visual appearance of the accelerator - the actual
-        // short cut is handled in org.openshapa.OpenSHAPA.dispatchKeyEvent.
         // Set zoom in to keyMask + '+'
         zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
                 keyMask));
@@ -212,8 +209,8 @@ public final class OpenSHAPAView extends FrameView
                 KeyEvent.VK_R, keyMask));
 
         // Set the show spreadsheet accelrator to F5.
-        showSpreadsheetMenuItem
-                .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+        showSpreadsheetMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_F5, 0));
 
         if (panel != null) {
             panel.deregisterListeners();
@@ -268,16 +265,6 @@ public final class OpenSHAPAView extends FrameView
     }
 
     /**
-     * Action for creating a new database.
-     */
-    @Action public void showNewDatabaseForm() {
-
-        if (OpenSHAPA.getApplication().safeQuit()) {
-            new NewDatabaseC();
-        }
-    }
-
-    /**
      * Action for creating a new project.
      */
     @Action public void showNewProjectForm() {
@@ -309,8 +296,16 @@ public final class OpenSHAPAView extends FrameView
                 if ((projController.getLastSaveOption() instanceof SHAPAFilter)
                         || (projController.getLastSaveOption()
                             instanceof OPFFilter)) {
+
+                    // BugzID:1804 - Need to store the original absolute path of the
+                    // project file so that we can build relative paths to search when
+                    // loading, if the project file is moved around.
+                    projController.setOriginalProjectDirectory(
+                        projController.getProjectDirectory());
+
                     projController.updateProject();
                     projController.setLastSaveOption(new OPFFilter());
+
 
                     saveController.saveProject(new File(
                             projController.getProjectDirectory(),
@@ -438,6 +433,14 @@ public final class OpenSHAPAView extends FrameView
 
                 // Send it off to the controller
                 projController.setProjectName(archiveName);
+
+                // BugzID:1804 - Need to store the original absolute path of the
+                // project file so that we can build relative paths to search when
+                // loading, if the project file is moved around.
+                projController.setOriginalProjectDirectory(fc.getSelectedFile()
+                    .getParent());
+
+                projController.updateProject();
                 saveC.saveProject(new File(fc.getSelectedFile().getParent(),
                         archiveName), projController.getProject(),
                     projController.getDB());
@@ -675,6 +678,7 @@ public final class OpenSHAPAView extends FrameView
         setComponent(panel);
         getComponent().revalidate();
         getComponent().resetKeyboardActions();
+        getComponent().requestFocus();
     }
 
     /**

@@ -502,10 +502,11 @@
                 <preCp>swing-worker-1.1.jar</preCp>
                 <preCp>QTJava-7.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
-                <preCp>openshapa-lib-0.0.9.jar</preCp>
+                <preCp>openshapa-lib-0.0.10.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.4.jar</preCp>
                 <preCp>miglayout-3.7.2-swing.jar</preCp>
+                <preCp>commons-io-1.4.jar</preCp>
             </classPath>
         </configuration>
       </plugin>
@@ -575,7 +576,7 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.9</version>
+      <version>0.0.10</version>
     </dependency>
 
     <dependency>
@@ -614,6 +615,12 @@
     	<artifactId>miglayout</artifactId>
     	<version>3.7.2</version>
     	<classifier>swing</classifier>
+    </dependency>
+
+    <dependency>
+    	<groupId>commons-io</groupId>
+    	<artifactId>commons-io</artifactId>
+    	<version>1.4</version>
     </dependency>
   </dependencies>
   

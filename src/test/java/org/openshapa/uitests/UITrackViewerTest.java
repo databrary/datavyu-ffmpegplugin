@@ -25,7 +25,9 @@ import org.fest.swing.fixture.JPopupMenuFixture;
 import org.fest.swing.fixture.JSliderFixture;
 import org.fest.swing.fixture.NeedleFixture;
 import org.fest.swing.fixture.RegionFixture;
+import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
+import org.fest.swing.fixture.TimescaleFixture;
 import org.fest.swing.fixture.TrackFixture;
 import org.fest.swing.util.Platform;
 
@@ -207,6 +209,300 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 5. Move needle beyond start time
         needle.drag(-1 * widthOfTrack);
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:000");
+    }
+
+    /**
+     * Test needle movement by doubel clicking on timescale.
+     */
+    @Test public void testNeedleMovementByDoubleClick() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller and get starting time
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+
+        final DataControllerFixture dcf = new DataControllerFixture(
+                mainFrameFixture.robot,
+                (DataControllerV) mainFrameFixture.dialog().component());
+
+        // 3. Open track view
+        dcf.pressShowTracksButton();
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                    public void executeInEDT() {
+                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                        fc.setVisible(false);
+
+                        for (FileFilter f : pm.getPluginFileFilters()) {
+                            fc.addChoosableFileFilter(f);
+                        }
+
+                        fc.setSelectedFile(videoFile);
+                        method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class).in(
+                            (DataControllerV) dcf.component()).invoke(fc);
+                    }
+                });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        // Double click 1/3, 1/2, 3/4 way of timescale
+        NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
+        TimescaleFixture tf = dcf.getTrackMixerController().getTimescale();
+        int third = tf.getWidth() / 3;
+        int half = tf.getWidth() / 2;
+        int threefourths = tf.getWidth() / 4 * 3;
+
+        tf.doubleClickAt(third);
+        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
+                    "00:00:21"))
+            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:20"))
+            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:19")));
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            dcf.getCurrentTime());
+
+        tf.doubleClickAt(half);
+        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
+                    "00:00:31"))
+            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:30"))
+            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:29")));
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            dcf.getCurrentTime());
+
+        tf.doubleClickAt(threefourths);
+        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
+                    "00:00:46"))
+            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:45"))
+            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:44")));
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            dcf.getCurrentTime());
+    }
+
+    /**
+    * Test needle movement by doubel clicking on timescale.
+    */
+    @Test public void testNeedleMovementByDoubleClickWithZoom() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller and get starting time
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+
+        final DataControllerFixture dcf = new DataControllerFixture(
+                mainFrameFixture.robot,
+                (DataControllerV) mainFrameFixture.dialog().component());
+
+        // 3. Open track view
+        dcf.pressShowTracksButton();
+
+        JSliderFixture zoomSlider = dcf.getTrackMixerController()
+            .getZoomSlider();
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                    public void executeInEDT() {
+                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                        fc.setVisible(false);
+
+                        for (FileFilter f : pm.getPluginFileFilters()) {
+                            fc.addChoosableFileFilter(f);
+                        }
+
+                        fc.setSelectedFile(videoFile);
+                        method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class).in(
+                            (DataControllerV) dcf.component()).invoke(fc);
+                    }
+                });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        // Zoom in fully
+        zoomSlider.slideToMaximum();
+
+        // Double click 1/3, 1/2, 3/4 way of timescale
+        NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
+        TimescaleFixture tf = dcf.getTrackMixerController().getTimescale();
+        int third = tf.getWidth() / 3;
+        int half = tf.getWidth() / 2;
+        int threefourths = tf.getWidth() / 4 * 3;
+
+        tf.doubleClickAt(third);
+        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
+                    "00:00:00:6"))
+            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:00:5")));
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            dcf.getCurrentTime());
+
+        tf.doubleClickAt(half);
+        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
+                    "00:00:00:9"))
+            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:00:8")));
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            dcf.getCurrentTime());
+
+        tf.doubleClickAt(threefourths);
+        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
+                    "00:00:01:4"))
+            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:01:3")));
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            dcf.getCurrentTime());
+    }
+
+        /**
+     * Test needle movement by doubel clicking on timescale.
+     */
+    @Test public void testNeedleMovementByDoubleClickOutsideRegion() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller and get starting time
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+
+        final DataControllerFixture dcf = new DataControllerFixture(
+                mainFrameFixture.robot,
+                (DataControllerV) mainFrameFixture.dialog().component());
+
+        // 3. Open track view
+        dcf.pressShowTracksButton();
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                    public void executeInEDT() {
+                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                        fc.setVisible(false);
+
+                        for (FileFilter f : pm.getPluginFileFilters()) {
+                            fc.addChoosableFileFilter(f);
+                        }
+
+                        fc.setSelectedFile(videoFile);
+                        method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class).in(
+                            (DataControllerV) dcf.component()).invoke(fc);
+                    }
+                });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+           // Create new variable and new cell
+        UIUtils.createNewVariable(mainFrameFixture, "v",
+            UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)]);
+        ssPanel.column(0).click();
+        dcf.pressCreateNewCellButton();
+
+        SpreadsheetCellFixture cell = ssPanel.column(0).cell(1);
+
+        // Create an onset and offset region using cell
+        cell.onsetTimestamp().enterText("00:00:25:000");
+        cell.offsetTimestamp().enterText("00:00:35:000");
+
+        // Select cell
+        cell.fillSelectCell(true);
+
+        // Press region snap button
+        dcf.getTrackMixerController().getSnapRegionButton().click();
+
+        // Double click 1/3, 1/2, 3/4 way of timescale
+        NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
+        TimescaleFixture tf = dcf.getTrackMixerController().getTimescale();
+        int third = tf.getWidth() / 3;
+        int half = tf.getWidth() / 2;
+        int threefourths = tf.getWidth() / 4 * 3;
+
+        tf.doubleClickAt(third);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:25:000");
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            dcf.getCurrentTime());
+
+        tf.doubleClickAt(half);
+        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
+                    "00:00:31"))
+            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:30"))
+            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:29")));
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            dcf.getCurrentTime());
+
+        tf.doubleClickAt(threefourths);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:35:000");
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            dcf.getCurrentTime());
     }
 
     /**
@@ -1218,4 +1514,279 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getSnapMarker().isVisible());
         track2.releaseLeftMouse();
     }
+
+    /**
+    * Test closing of video while play.
+    * Should reset datacontroller and remove track.
+    */
+    /*BugzID1796@Test*/ public void testCloseVideoWhilePlaying() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+
+        final DataControllerFixture dcf = new DataControllerFixture(
+                mainFrameFixture.robot,
+                (DataControllerV) mainFrameFixture.dialog().component());
+
+        // 3. Open track view
+        dcf.pressShowTracksButton();
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                    public void executeInEDT() {
+                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                        fc.setVisible(false);
+
+                        for (FileFilter f : pm.getPluginFileFilters()) {
+                            fc.addChoosableFileFilter(f);
+                        }
+
+                        fc.setSelectedFile(videoFile);
+                        method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class).in(
+                            (DataControllerV) dcf.component()).invoke(fc);
+                    }
+                });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        vid.setAlwaysOnTop(true);
+
+        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        vid.toFront();
+
+        // 4. Play video for 3 seconds
+        dcf.pressPlayButton();
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                Level.SEVERE, null, ex);
+        }
+
+        // Assert that time is not 0.
+        Assert.assertFalse(dcf.getCurrentTime().equals("00:00:00:000"));
+
+        // Assert that track is present
+        Assert.assertEquals(dcf.getTrackMixerController().getTracksEditor()
+            .getTracks().size(), 1);
+
+        // Close window
+        vidWindow.close();
+
+        // Check that everything is reset
+        Assert.assertTrue(dcf.getCurrentTime().equals("00:00:00:000"));
+        Assert.assertEquals(dcf.getTrackMixerController().getTracksEditor()
+            .getTracks().size(), 0);
+    }
+
+    /**
+    * Test closing of video.
+    * Should reset datacontroller and remove track.
+    */
+    @Test public void testCloseVideo() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+
+        final DataControllerFixture dcf = new DataControllerFixture(
+                mainFrameFixture.robot,
+                (DataControllerV) mainFrameFixture.dialog().component());
+
+        // 3. Open track view
+        dcf.pressShowTracksButton();
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                    public void executeInEDT() {
+                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                        fc.setVisible(false);
+
+                        for (FileFilter f : pm.getPluginFileFilters()) {
+                            fc.addChoosableFileFilter(f);
+                        }
+
+                        fc.setSelectedFile(videoFile);
+                        method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class).in(
+                            (DataControllerV) dcf.component()).invoke(fc);
+                    }
+                });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        vid.setAlwaysOnTop(true);
+
+        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        vid.toFront();
+
+        // 4. Play video for 3 seconds
+        dcf.pressPlayButton();
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                Level.SEVERE, null, ex);
+        }
+
+        dcf.pressStopButton();
+
+        // Assert that time is not 0.
+        Assert.assertFalse(dcf.getCurrentTime().equals("00:00:00:000"));
+
+        // Assert that track is present
+        Assert.assertEquals(dcf.getTrackMixerController().getTracksEditor()
+            .getTracks().size(), 1);
+
+        // Close window
+        vidWindow.close();
+
+        // Check that everything is reset
+        Assert.assertTrue(dcf.getCurrentTime().equals("00:00:00:000"));
+        Assert.assertEquals(dcf.getTrackMixerController().getTracksEditor()
+            .getTracks().size(), 0);
+    }
+
+    /**
+    * Test needle movement to ensure needle time is the same as the clock time.
+    */
+    @Test public void testRegionSnapping() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // 1. Get Spreadsheet
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        // 2. Open Data Viewer Controller and get starting time
+        mainFrameFixture.clickMenuItemWithPath("Controller",
+            "Data Viewer Controller");
+        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+
+        final DataControllerFixture dcf = new DataControllerFixture(
+                mainFrameFixture.robot,
+                (DataControllerV) mainFrameFixture.dialog().component());
+
+        // 3. Open track view
+        dcf.pressShowTracksButton();
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+
+            GuiActionRunner.execute(new GuiTask() {
+                    public void executeInEDT() {
+                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                        fc.setVisible(false);
+
+                        for (FileFilter f : pm.getPluginFileFilters()) {
+                            fc.addChoosableFileFilter(f);
+                        }
+
+                        fc.setSelectedFile(videoFile);
+                        method("openVideo").withParameterTypes(
+                            OpenSHAPAFileChooser.class).in(
+                            (DataControllerV) dcf.component()).invoke(fc);
+                    }
+                });
+        } else {
+            dcf.button("addDataButton").click();
+
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        Frame vid = ((Frame) it.next());
+        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        // Create new variable and new cell
+        UIUtils.createNewVariable(mainFrameFixture, "v",
+            UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)]);
+        ssPanel.column(0).click();
+        dcf.pressCreateNewCellButton();
+
+        SpreadsheetCellFixture cell = ssPanel.column(0).cell(1);
+
+        // Create an onset and offset region using cell
+        cell.onsetTimestamp().enterText("00:00:20:000");
+        cell.offsetTimestamp().enterText("00:00:40:000");
+
+        // Select cell
+        cell.fillSelectCell(true);
+
+        // Press region snap button
+        dcf.getTrackMixerController().getSnapRegionButton().click();
+
+        // Check that region was snapped
+        Assert.assertEquals(dcf.getTrackMixerController().getRegion()
+            .getStartTimeAsTimeStamp(), "00:00:20:000");
+        Assert.assertEquals(dcf.getTrackMixerController().getRegion()
+            .getEndTimeAsTimeStamp(), "00:00:40:000");
+    }
+
 }

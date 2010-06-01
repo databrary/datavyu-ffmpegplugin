@@ -1124,4 +1124,83 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
                 0);
         Assert.assertEquals(cell.cellValue().text(), "<" + argName + ">");
     }
+
+    /**
+     * Open VocEd and create a new matrix. Click OK.
+     * Delete matrix column from spreadsheet.
+     * Reopen VocEd and create a new matrix. Click Apply.
+     * Expect: New martix created
+     * Actual: "ve name in use" warning
+     */
+    @Test public void testBug695() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // 1. Create new variables using script
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data.rb");
+        Assert.assertTrue(demoFile.exists());
+
+        if (Platform.isOSX()) {
+            UIUtils.runScript(demoFile);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
+
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
+            Thread.yield();
+        }
+
+        scriptConsole.button("closeButton").click();
+
+        // 2. Get number of elements
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
+
+        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
+                mainFrameFixture.robot,
+                (VocabEditorV) mainFrameFixture.dialog().component());
+        int origNumVEs = veDialog.numOfVocabElements();
+        Assert.assertTrue(origNumVEs > 0);
+
+        veDialog.addMatrixButton().click();
+
+        // Check that VE exists
+        Assert.assertTrue(veDialog.numOfVocabElements() == (origNumVEs + 1));
+
+        String matrixName = veDialog.allVocabElements().lastElement()
+            .getVEName();
+
+        // Click Apply
+        veDialog.applyButton().click();
+
+        // Check that new matrix has been created
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        SpreadsheetColumnFixture matrixCol = ssPanel.column(matrixName);
+        Assert.assertNotNull(matrixCol);
+
+        // Matrix column
+        matrixCol.click();
+        mainFrameFixture.menuItemWithPath("Spreadsheet").click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
+            "Delete Variable");
+
+        //Confirm deleted
+        Assert.assertNull(ssPanel.column(matrixName));
+
+        //Create again VocabEditor BUGZID:1771
+
+    }
 }

@@ -29,7 +29,10 @@ public final class CarriageEvent extends EventObject {
         CARRIAGE_SELECTION,
 
         /** Track changed offset position. */
-        OFFSET_CHANGE
+        OFFSET_CHANGE,
+
+        /** Track is (un)locked. */
+        CARRIAGE_LOCK
     }
 
     /** Track identifier. */

@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JDialog;
 
 import junitx.util.PrivateAccessor;
+import org.fest.swing.annotation.GUITest;
 
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
@@ -41,6 +42,7 @@ import org.testng.annotations.BeforeSuite;
  * GUI Test class for OpenSHAPA. All OpenSHAPA Fest tests must extend this
  * class.
  */
+@GUITest
 public class OpenSHAPATestClass {
 
     static {

@@ -37,4 +37,11 @@ public interface CarriageEventListener extends EventListener {
      */
     void selectionChanged(CarriageEvent e);
 
+    /**
+     * Event handler for a track's lock state change.
+     *
+     * @param e
+     */
+    void lockStateChanged(CarriageEvent e);
+
 }

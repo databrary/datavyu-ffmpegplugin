@@ -8,12 +8,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
-import java.text.DecimalFormat;
-
 import java.util.EventObject;
 import java.util.Timer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -47,6 +43,8 @@ import org.openshapa.event.component.MarkerEvent;
 import org.openshapa.event.component.MarkerEventListener;
 import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.NeedleEventListener;
+import org.openshapa.event.component.TimescaleEvent;
+import org.openshapa.event.component.TimescaleListener;
 import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerEvent.TracksEvent;
 import org.openshapa.event.component.TracksControllerListener;
@@ -62,7 +60,8 @@ import org.openshapa.views.continuous.CustomActionListener;
  * This class manages the tracks information interface.
  */
 public final class MixerControllerV implements NeedleEventListener,
-    MarkerEventListener, CarriageEventListener, AdjustmentListener {
+    MarkerEventListener, CarriageEventListener, AdjustmentListener,
+    TimescaleListener {
 
     /** Root interface panel. */
     private JPanel tracksPanel;
@@ -192,6 +191,7 @@ public final class MixerControllerV implements NeedleEventListener,
 
         // Add the timescale
         timescaleController = new TimescaleController();
+        timescaleController.addTimescaleEventListener(this);
 
         JComponent timescaleView = timescaleController.getView();
 
@@ -782,6 +782,7 @@ public final class MixerControllerV implements NeedleEventListener,
      */
     public void needleMoved(final NeedleEvent e) {
         fireTracksControllerEvent(TracksEvent.NEEDLE_EVENT, e);
+        needleController.setCurrentTime(e.getTime());
     }
 
     /**
@@ -833,12 +834,25 @@ public final class MixerControllerV implements NeedleEventListener,
     }
 
     /**
+     * Track lock state changed.
+     *
+     * @param e the event to handle
+     */
+    public void lockStateChanged(final CarriageEvent e) {
+        fireTracksControllerEvent(TracksEvent.CARRIAGE_EVENT, e);
+    }
+
+    /**
      * A track's selection state was changed.
      *
      * @param e the event to handle
      */
     public void selectionChanged(final CarriageEvent e) {
         bookmarkButton.setEnabled(tracksEditorController.hasSelectedTracks());
+    }
+
+    public void jumpToTime(final TimescaleEvent e) {
+        fireTracksControllerEvent(TracksEvent.TIMESCALE_EVENT, e);
     }
 
     /**

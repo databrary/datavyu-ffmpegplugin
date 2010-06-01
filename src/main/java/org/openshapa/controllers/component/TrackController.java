@@ -515,12 +515,6 @@ public final class TrackController {
      */
     private void setBookmarkAction() {
         fireCarriageBookmarkRequestEvent();
-
-        /*
-         * invert the selected state because the menu event generates a click
-         * event.
-         */
-        changeSelected(false);
     }
 
     /**
@@ -529,12 +523,6 @@ public final class TrackController {
     private void clearBookmarkAction() {
         trackModel.setBookmark(-1);
         trackPainter.setTrackModel(trackModel);
-
-        /*
-         * invert the selected state because the menu event generates a click
-         * event.
-         */
-        changeSelected(false);
     }
 
     /**
@@ -569,6 +557,8 @@ public final class TrackController {
         } else {
             lockUnlockButton.setIcon(unlockIcon);
         }
+
+        fireLockStateChangedEvent();
     }
 
     /**
@@ -777,6 +767,33 @@ public final class TrackController {
 
                 if (listeners[i] == CarriageEventListener.class) {
                     ((CarriageEventListener) listeners[i + 1]).selectionChanged(
+                        e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Used to inform listeners about lock state change event.
+     */
+    private void fireLockStateChangedEvent() {
+
+        synchronized (this) {
+            final CarriageEvent e = new CarriageEvent(this,
+                    trackModel.getTrackId(), trackModel.getOffset(),
+                    trackModel.getBookmark(), trackModel.getDuration(), 0,
+                    EventType.CARRIAGE_LOCK, false);
+
+            final Object[] listeners = listenerList.getListenerList();
+
+            /*
+             * The listener list contains the listening class and then the
+             * listener instance.
+             */
+            for (int i = 0; i < listeners.length; i += 2) {
+
+                if (listeners[i] == CarriageEventListener.class) {
+                    ((CarriageEventListener) listeners[i + 1]).lockStateChanged(
                         e);
                 }
             }
