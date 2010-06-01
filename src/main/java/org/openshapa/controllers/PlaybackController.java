@@ -1337,7 +1337,6 @@ public final class PlaybackController implements PlaybackListener,
         assert !SwingUtilities.isEventDispatchThread();
 
         clock.stop();
-        clock.setRate(PLAY_RATE);
         clock.setTime(time);
     }
 

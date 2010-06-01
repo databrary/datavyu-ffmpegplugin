@@ -2276,8 +2276,8 @@ public final class DataControllerV extends OpenSHAPADialog
      *            Absolute time to jump to.
      */
     private void jumpTo(final long time) {
+
         clock.stop();
-        clock.setRate(PLAY_RATE);
         clock.setTime(time);
     }
 
