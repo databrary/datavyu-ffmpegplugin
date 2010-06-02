@@ -194,6 +194,10 @@ public final class OpenSHAPAView extends FrameView
         saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
                 keyMask));
 
+        // Set the save as accelerator to keyMask + 'A'
+        saveAsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+                keyMask | InputEvent.SHIFT_MASK));
+
         // Set the open accelerator to keyMask + 'o';
         openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
                 keyMask));
@@ -258,11 +262,11 @@ public final class OpenSHAPAView extends FrameView
         String projectName = projectController.getProjectName();
 
         if (projectName != null) {
-            mainFrame.setTitle(rMap.getString("Application.title") + " - "
-                + projectName + extension + postFix);
+            mainFrame.setTitle(rMap.getString("Application.title") + " - " +
+                projectName + extension + postFix);
         } else {
-            mainFrame.setTitle(rMap.getString("Application.title") + " - "
-                + "Project1" + extension + postFix);
+            mainFrame.setTitle(rMap.getString("Application.title") + " - " +
+                "Project1" + extension + postFix);
         }
     }
 
@@ -288,16 +292,17 @@ public final class OpenSHAPAView extends FrameView
             // controller to force the user to nominate a destination file.
             ProjectController projController = OpenSHAPA.getProjectController();
 
-            if (projController.isNewProject()
-                    || (projController.getProjectName() == null)) {
+            if (projController.isNewProject() ||
+                    (projController.getProjectName() == null)) {
                 saveAs();
             } else {
                 SaveC saveController = new SaveC();
 
                 // Force people to use new
-                if ((projController.getLastSaveOption() instanceof SHAPAFilter)
-                        || (projController.getLastSaveOption()
-                            instanceof OPFFilter)) {
+                if ((projController.getLastSaveOption() instanceof
+                            SHAPAFilter) ||
+                        (projController.getLastSaveOption() instanceof
+                            OPFFilter)) {
 
                     // BugzID:1804 - Need to store the original absolute path of the
                     // project file so that we can build relative paths to search when
@@ -356,9 +361,9 @@ public final class OpenSHAPAView extends FrameView
     private boolean canSave(final String directory, final String file) {
         File newFile = new File(directory, file);
 
-        return ((newFile.exists()
-                    && OpenSHAPA.getApplication().overwriteExisting())
-                || !newFile.exists());
+        return ((newFile.exists() &&
+                    OpenSHAPA.getApplication().overwriteExisting()) ||
+                !newFile.exists());
     }
 
     private void save(final OpenSHAPAFileChooser fc) {
@@ -1106,7 +1111,7 @@ public final class OpenSHAPAView extends FrameView
     } // </editor-fold>//GEN-END:initComponents
 
     private void openRecentFileMenuMenuSelected(
-        final javax.swing.event.MenuEvent evt) { //GEN-FIRST:event_openRecentFileMenuMenuSelected
+        final javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_openRecentFileMenuMenuSelected
 
         // Flush the menu - excluding the top menu item.
         int size = openRecentFileMenu.getMenuComponentCount();
@@ -1119,7 +1124,7 @@ public final class OpenSHAPAView extends FrameView
             openRecentFileMenu.add(createRecentFileMenuItem(file));
         }
 
-    } //GEN-LAST:event_openRecentFileMenuMenuSelected
+    }//GEN-LAST:event_openRecentFileMenuMenuSelected
 
     /**
      * The action to invoke when the user selects 'strong temporal ordering'.
