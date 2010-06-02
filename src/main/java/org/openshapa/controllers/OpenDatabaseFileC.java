@@ -107,11 +107,11 @@ public final class OpenDatabaseFileC {
 
             return modbr.readDB();
         } catch (FileNotFoundException e) {
-            logger.error("Unable to load macshapa database:'" + sFile + "'", e);
+            logger.error("Unable to load macshapa database.", e);
         } catch (SystemErrorException e) {
-            logger.error("Unable to load macshapa database:'" + sFile + "'", e);
+            logger.error("Unable to load macshapa database.", e);
         } catch (IOException e) {
-            logger.error("Unable to load macshapa database:'" + sFile + "'", e);
+            logger.error("Unable to load macshapa database.'", e);
         } catch (LogicErrorException e) {
             logger.error("Corrupted macshapa database", e);
         }
