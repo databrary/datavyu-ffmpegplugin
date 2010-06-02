@@ -1,9 +1,6 @@
 package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -21,7 +18,7 @@ import com.usermetrix.jclient.UserMetrix;
 public final class SaveProjectFileC {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getInstance(SaveProjectFileC.class);
+    private Logger logger = UserMetrix.getLogger(SaveProjectFileC.class);
 
     /**
      * Serialize the OpenSHAPA project to a stream. The caller is responsible
