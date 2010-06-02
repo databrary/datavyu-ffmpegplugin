@@ -48,6 +48,7 @@ import quicktime.std.movies.media.Media;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.awt.event.ActionListener;
+import java.awt.event.MouseMotionListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -268,6 +269,15 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
         return -1;
     }
+
+    @Override public void validate() {
+        // BugzID:753 - Locks the window to the videos aspect ratio.
+        int newHeight = getHeight();
+        int newWidth = (int) (getVideoHeight() * aspectRatio);
+        setSize(newWidth, newHeight);
+
+        super.validate();
+     }
 
     /**
      * Scales the video to the desired percentage.
