@@ -193,7 +193,7 @@ public final class OpenSHAPAView extends FrameView
         saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
                 keyMask));
 
-        // Set the save as accelerator to keyMask + 'A'
+        // Set the save as accelerator to keyMask + shift + 'S'
         saveAsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
                 keyMask | InputEvent.SHIFT_MASK));
 
