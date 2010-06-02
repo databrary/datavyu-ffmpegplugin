@@ -21,38 +21,7 @@ import com.usermetrix.jclient.UserMetrix;
 public final class SaveProjectFileC {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SaveProjectFileC.class);
-
-    /**
-     * Saves the OpenSHAPA project to disk.
-     *
-     * @param outFile The output file to use for the project.
-     * @param project The project you wish to save to disk.
-     */
-    public void save(final String outFile, final Project project) {
-        logger.usage("save to file");
-        Dumper dumper = new Dumper(new OpenSHAPAProjectRepresenter(),
-                                   new DumperOptions());
-        Yaml yaml = new Yaml(dumper);
-
-        String fileName = outFile;
-        if (!fileName.endsWith(".shapa")) {
-            fileName = fileName.concat(".shapa");
-        }
-
-        try {
-            File outputProjectFile = new File(fileName);
-            FileWriter fileWriter = new FileWriter(outputProjectFile);
-            BufferedWriter out = new BufferedWriter(fileWriter);
-
-            yaml.dump(project, out);
-
-            out.close();
-            fileWriter.close();
-        } catch (IOException ex) {
-            logger.error("Unable to save project file", ex);
-        }
-    }
+    private Logger logger = UserMetrix.getInstance(SaveProjectFileC.class);
 
     /**
      * Serialize the OpenSHAPA project to a stream. The caller is responsible

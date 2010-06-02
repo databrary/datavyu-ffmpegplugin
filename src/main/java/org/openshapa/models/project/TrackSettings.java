@@ -3,15 +3,20 @@ package org.openshapa.models.project;
 /**
  * This class is used to store user interface settings relating to a given
  * track.
- * 
+ *
  * @author Douglas Teoh
  */
 public class TrackSettings implements Cloneable {
 
+    /** TrackSettings specification version. */
+    public static final int VERSION = 1;
+
     /** Absolute file path to the data source */
     private String filePath;
+
     /** Is the track's movement locked on the interface */
     private boolean isLocked;
+
     /** The track's bookmark position */
     private long bookmarkPosition;
 
@@ -21,7 +26,7 @@ public class TrackSettings implements Cloneable {
 
     /**
      * Private copy constructor.
-     * 
+     *
      * @param other
      */
     private TrackSettings(final TrackSettings other) {
@@ -75,8 +80,7 @@ public class TrackSettings implements Cloneable {
         this.filePath = filePath;
     }
 
-    @Override
-    public TrackSettings clone() {
+    @Override public TrackSettings clone() {
         return new TrackSettings(this);
     }
 }

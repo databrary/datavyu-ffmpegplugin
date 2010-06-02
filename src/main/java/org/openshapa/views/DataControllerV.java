@@ -300,6 +300,7 @@ public final class DataControllerV extends OpenSHAPADialog
     public DataControllerV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
 
+
         clock.registerListener(this);
 
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
@@ -424,8 +425,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
                 for (DataViewer v : viewers) {
 
-                    if ((time > v.getOffset())
-                            && (time < (v.getOffset() + v.getDuration()))) {
+                    if ((time > v.getOffset()) && isWithinPlayRange(time, v)) {
                         v.seekTo(time - v.getOffset());
                     }
                 }
@@ -2277,8 +2277,8 @@ public final class DataControllerV extends OpenSHAPADialog
      *            Absolute time to jump to.
      */
     private void jumpTo(final long time) {
+
         clock.stop();
-        clock.setRate(PLAY_RATE);
         clock.setTime(time);
     }
 
@@ -2302,7 +2302,7 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     /**
-     * Action to invoke when the user clicks on the new cell onset button.
+     * Action to invoke when the user clicks on the new cell offset button.
      */
     @Action public void setNewCellStopTime() {
         logger.usage("Set new cell offset");

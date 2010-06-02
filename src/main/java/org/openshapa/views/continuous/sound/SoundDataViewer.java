@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -513,6 +515,14 @@ public final class SoundDataViewer extends JFrame implements DataViewer {
      */
     public void handleActionButtonEvent3(final ActionEvent event) {
         // Do nothing; not supported.
+    }
+
+    public void loadSettings(final InputStream is) {
+        // Do nothing.
+    }
+
+    public void storeSettings(final OutputStream os) {
+        // Do nothing.
     }
 
     /** This method is called from within the constructor to

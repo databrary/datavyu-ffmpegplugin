@@ -63,6 +63,7 @@ public final class DeleteCellC {
             OpenSHAPAView v = (OpenSHAPAView) OpenSHAPA.getApplication()
                 .getMainView();
             v.showSpreadsheet();
+
         } catch (SystemErrorException e) {
             logger.error("Unable to delete cells", e);
         }

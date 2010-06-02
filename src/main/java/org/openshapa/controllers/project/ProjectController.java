@@ -20,6 +20,8 @@ import org.openshapa.models.project.Project;
 import org.openshapa.models.project.TrackSettings;
 import org.openshapa.models.project.ViewerSetting;
 
+import org.openshapa.util.FileUtils;
+
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.MixerControllerV;
 import org.openshapa.views.continuous.DataViewer;
@@ -232,6 +234,14 @@ public final class ProjectController {
         return project.getProjectDirectory();
     }
 
+    public void setOriginalProjectDirectory(final String directory) {
+        project.setOriginalProjectDirectory(directory);
+    }
+
+    public String getOriginalProjectDirectory() {
+        return project.getOriginalProjectDirectory();
+    }
+
     /**
      * Load the settings from the current project.
      */
@@ -257,8 +267,15 @@ public final class ProjectController {
             File file = new File(setting.getFilePath());
 
             if (!file.exists()) {
+
+                // BugzID:1804 - If absolute path does not find the file, look
+                // in the relative path
+                file = FileUtils.getRelativeFile(project, file);
+            }
+
+            if (!file.exists()) {
                 missingFiles = true;
-                missingFilesList.add(file.getAbsolutePath());
+                missingFilesList.add(setting.getFilePath());
 
                 continue;
             }
@@ -271,12 +288,22 @@ public final class ProjectController {
 
             DataViewer viewer = plugin.getNewDataViewer();
             viewer.setDataFeed(file);
-            viewer.setOffset(setting.getOffset());
 
-            dataController.addViewer(viewer, setting.getOffset());
+            if (setting.getSettingsId() != null) {
+
+                // new project file
+                viewer.loadSettings(setting.getSettingsInputStream());
+            } else {
+
+                // old project file
+                viewer.setOffset(setting.getOffset());
+            }
+
+            dataController.addViewer(viewer, viewer.getOffset());
+
             dataController.addTrack(plugin.getTypeIcon(),
                 file.getAbsolutePath(), file.getName(), viewer.getDuration(),
-                setting.getOffset(), viewer.getTrackPainter());
+                viewer.getOffset(), viewer.getTrackPainter());
 
             mixerController.bindTrackActions(file.getAbsolutePath(), viewer,
                 plugin.isActionSupported1(), plugin.getActionButtonIcon1(),
@@ -286,6 +313,13 @@ public final class ProjectController {
 
         for (TrackSettings setting : project.getTrackSettings()) {
             File file = new File(setting.getFilePath());
+
+            if (!file.exists()) {
+
+                // BugzID:1804 - If absolute path does not find the file, look
+                // in the relative path
+                file = FileUtils.getRelativeFile(project, file);
+            }
 
             if (!file.exists()) {
                 continue;
@@ -327,20 +361,22 @@ public final class ProjectController {
      */
     public void updateProject() {
 
-        if (!changed && !newProject) {
-            return;
-        }
-
         DataControllerV dataController = OpenSHAPA.getDataController();
 
         // Gather the data viewer settings
         List<ViewerSetting> viewerSettings = new LinkedList<ViewerSetting>();
 
+        int settingsId = 1;
+
         for (DataViewer viewer : dataController.getDataViewers()) {
             ViewerSetting vs = new ViewerSetting();
             vs.setFilePath(viewer.getDataFeed().getAbsolutePath());
-            vs.setOffset(viewer.getOffset());
             vs.setPluginName(viewer.getClass().getName());
+
+            // BugzID:1806
+            vs.setSettingsId(Integer.toString(settingsId));
+            settingsId++;
+            viewer.storeSettings(vs.getSettingsOutputStream());
 
             viewerSettings.add(vs);
         }
@@ -380,7 +416,7 @@ public final class ProjectController {
     }
 
     /**
-     * @return a deep-copy clone of the current project.
+     * @return the current project model.
      */
     public Project getProject() {
         return project;

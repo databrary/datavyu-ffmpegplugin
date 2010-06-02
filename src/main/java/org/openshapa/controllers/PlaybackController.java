@@ -660,13 +660,15 @@ public final class PlaybackController implements PlaybackListener,
         try {
             setCurrentTime(time);
 
-            // We are playing back at a rate which is to fast and probably won't
-            // allow us to stream all the information at the file. We fake play
-            // back by doing a bunch of seekTo's.
+            // We are playing back at a rate which is too fast and probably
+            // won't allow us to stream all the information at the file. We fake
+            // playback by doing a bunch of seekTo's.
             if (playbackModel.isFakePlayback()) {
 
                 for (DataViewer v : viewers) {
-                    v.seekTo(time - v.getOffset());
+                    if (isWithinPlayRange(time, v)) {
+                        v.seekTo(time - v.getOffset());
+                    }
                 }
 
                 // DataViewer is responsible for playing video.
@@ -685,10 +687,18 @@ public final class PlaybackController implements PlaybackListener,
                          * Use offsets to determine if the video file should
                          * start playing.
                          */
-                        if ((time >= v.getOffset()) && !v.isPlaying()) {
+
+                        if (!v.isPlaying() && isWithinPlayRange(time, v)) {
                             v.seekTo(time - v.getOffset());
                             v.play();
                         }
+
+                        // BugzID:1797 - Viewers who are "playing" outside their
+                        // timeframe should be asked to stop.
+                        if (v.isPlaying() && !isWithinPlayRange(time, v)) {
+                            v.stop();
+                        }
+
 
                         /*
                          * Only synchronise the data viewers if we have a
@@ -732,6 +742,17 @@ public final class PlaybackController implements PlaybackListener,
     }
 
     /**
+     * Determines whether a DataViewer has data for the desired time.
+     * @param time The time we wish to play at or seek to.
+     * @param view The DataViewer to check.
+     * @return True if data exists at this time, and false otherwise.
+     */
+    private boolean isWithinPlayRange(final long time, final DataViewer view) {
+        return (time >= view.getOffset())
+            && (time < (view.getOffset() + view.getDuration()));
+    }
+
+    /**
      * @param time
      *            Current clock time in milliseconds.
      */
@@ -743,7 +764,10 @@ public final class PlaybackController implements PlaybackListener,
 
         for (DataViewer viewer : viewers) {
             viewer.stop();
-            viewer.seekTo(time - viewer.getOffset());
+
+            if (isWithinPlayRange(time, viewer)) {
+                viewer.seekTo(time - viewer.getOffset());
+            }
         }
     }
 
@@ -765,6 +789,8 @@ public final class PlaybackController implements PlaybackListener,
 
         SwingUtilities.invokeLater(edtTask);
 
+        long time = getCurrentTime();
+
         // If rate is faster than two times - we need to fake playback to give
         // the illusion of 'smooth'. We do this by stopping the dataviewer and
         // doing many seekTo's to grab individual frames.
@@ -773,13 +799,15 @@ public final class PlaybackController implements PlaybackListener,
             playbackModel.setFakePlayback(true);
 
             for (DataViewer viewer : viewers) {
-                viewer.setPlaybackSpeed(rate);
                 viewer.stop();
+
+                if (isWithinPlayRange(time, viewer)) {
+                    viewer.setPlaybackSpeed(rate);
+                }
             }
 
             // Rate is less than two times - use the data viewer internal code
-            // to
-            // draw every frame.
+            // to draw every frame.
         } else {
             playbackModel.setFakePlayback(false);
 
@@ -804,7 +832,10 @@ public final class PlaybackController implements PlaybackListener,
         setCurrentTime(time);
 
         for (DataViewer viewer : viewers) {
-            viewer.seekTo(time - viewer.getOffset());
+
+            if (isWithinPlayRange(time, viewer)) {
+                viewer.seekTo(time - viewer.getOffset());
+            }
         }
     }
 
@@ -1307,7 +1338,6 @@ public final class PlaybackController implements PlaybackListener,
         assert !SwingUtilities.isEventDispatchThread();
 
         clock.stop();
-        clock.setRate(PLAY_RATE);
         clock.setTime(time);
     }
 
