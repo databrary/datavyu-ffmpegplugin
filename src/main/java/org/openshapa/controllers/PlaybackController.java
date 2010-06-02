@@ -1,6 +1,5 @@
 package org.openshapa.controllers;
 
-import com.usermetrix.jclient.Logger;
 import java.awt.event.InputEvent;
 
 import java.io.File;
@@ -46,7 +45,6 @@ import org.openshapa.util.ClockTimer;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer.ClockListener;
 
-import org.openshapa.views.DataControllerV;
 import org.openshapa.views.MixerControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.PlaybackV;
@@ -56,6 +54,7 @@ import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 import org.openshapa.views.continuous.PluginManager;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 
@@ -161,7 +160,7 @@ public final class PlaybackController implements PlaybackListener,
     // [static]
     //
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(DataControllerV.class);
+    private Logger logger = UserMetrix.getLogger(PlaybackController.class);
 
     // -------------------------------------------------------------------------
     //
@@ -247,7 +246,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void findEvent(final PlaybackEvent evt) {
@@ -256,23 +259,35 @@ public final class PlaybackController implements PlaybackListener,
                 public void run() {
                     final int modifiers = evt.getModifiers();
 
+                    // BugzID:1312
+                    if (!clock.isStopped()) {
+                        clock.stop();
+                        clock.setRate(0);
+                    }
+
                     if ((modifiers & InputEvent.SHIFT_MASK)
                             == InputEvent.SHIFT_MASK) {
-                        System.out.println("shift mask");
+                        clock.stop();
+                        clock.setTime(evt.getOffsetTime());
                         jumpTo(evt.getOffsetTime());
                     } else if ((modifiers & InputEvent.CTRL_MASK)
                             == InputEvent.CTRL_MASK) {
-                        System.out.println("ctrl mask");
-                        jumpTo(evt.getOnsetTime());
+                        clock.stop();
+                        clock.setTime(evt.getOnsetTime());
                         setRegionOfInterestAction();
                     } else {
-                        System.out.println("no mask");
+                        clock.stop();
+                        clock.setTime(evt.getOnsetTime());
                         jumpTo(evt.getOnsetTime());
                     }
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void forwardEvent(final PlaybackEvent evt) {
@@ -283,7 +298,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void goBackEvent(final PlaybackEvent evt) {
@@ -296,7 +315,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void jogBackEvent(final PlaybackEvent evt) {
@@ -306,7 +329,11 @@ public final class PlaybackController implements PlaybackListener,
                 public void run() {
                     int mul = 1;
 
-                    if ((evt.getModifiers() & InputEvent.SHIFT_MASK)
+                    // BugzID:1720
+                    final int modifiers = evt.getModifiers()
+                        & ~InputEvent.BUTTON1_MASK;
+
+                    if ((modifiers & InputEvent.SHIFT_MASK)
                             == InputEvent.SHIFT_MASK) {
                         mul = SHIFTJOG;
                     }
@@ -314,8 +341,7 @@ public final class PlaybackController implements PlaybackListener,
                     final int ctrlShiftJogMask = (InputEvent.SHIFT_MASK
                             | InputEvent.CTRL_MASK);
 
-                    if ((evt.getModifiers() & ctrlShiftJogMask)
-                            == ctrlShiftJogMask) {
+                    if ((modifiers & ctrlShiftJogMask) == ctrlShiftJogMask) {
                         mul = CTRLSHIFTJOG;
                     }
 
@@ -332,7 +358,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void jogForwardEvent(final PlaybackEvent evt) {
@@ -341,7 +371,11 @@ public final class PlaybackController implements PlaybackListener,
                 public void run() {
                     int mul = 1;
 
-                    if ((evt.getModifiers() & InputEvent.SHIFT_MASK)
+                    // BugzID:1720
+                    final int modifiers = evt.getModifiers()
+                        & ~InputEvent.BUTTON1_MASK;
+
+                    if ((modifiers & InputEvent.SHIFT_MASK)
                             == InputEvent.SHIFT_MASK) {
                         mul = SHIFTJOG;
                     }
@@ -349,8 +383,7 @@ public final class PlaybackController implements PlaybackListener,
                     final int ctrlShiftJogMask = (InputEvent.SHIFT_MASK
                             | InputEvent.CTRL_MASK);
 
-                    if ((evt.getModifiers() & ctrlShiftJogMask)
-                            == ctrlShiftJogMask) {
+                    if ((modifiers & ctrlShiftJogMask) == ctrlShiftJogMask) {
                         mul = CTRLSHIFTJOG;
                     }
 
@@ -367,23 +400,19 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void newCellEvent(final PlaybackEvent evt) {
-
-        Runnable task = new Runnable() {
-
-                public void run() {
-                    new CreateNewCellC();
-                }
-            };
-
-        executor.submit(task);
+        // TODO: Uncomment in the EDT branch.
+//        executor.submit(new CreateNewCellC());
     }
 
     public void setNewCellOffsetEvent(final PlaybackEvent evt) {
-
         Runnable task = new Runnable() {
                 public void run() {
                     new SetNewCellStopTimeC(getCurrentTime());
@@ -391,18 +420,21 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void newCellSetOnsetEvent(final PlaybackEvent evt) {
 
-        Runnable task = new Runnable() {
-                public void run() {
-                    new CreateNewCellC(getCurrentTime());
-                }
-            };
-
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            new CreateNewCellC(getCurrentTime());
+        } else {
+            // TODO: Uncomment in the EDT branch.
+//            executor.submit(new CreateNewCellC(getCurrentTimeEDT()));
+        }
     }
 
     public void pauseEvent(final PlaybackEvent evt) {
@@ -439,7 +471,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
 
     }
 
@@ -462,7 +498,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void rewindEvent(final PlaybackEvent evt) {
@@ -472,7 +512,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void setCellOffsetEvent(final PlaybackEvent evt) {
@@ -484,7 +528,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void setCellOnsetEvent(final PlaybackEvent evt) {
@@ -495,7 +543,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void showTracksEvent(final PlaybackEvent evt) {
@@ -507,7 +559,7 @@ public final class PlaybackController implements PlaybackListener,
 
                     ResourceMap resourceMap = Application.getInstance(
                             org.openshapa.OpenSHAPA.class).getContext()
-                        .getResourceMap(DataControllerV.class);
+                        .getResourceMap(PlaybackV.class);
 
                     if (tracksPanelEnabled) {
 
@@ -535,7 +587,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void shuttleBackEvent(final PlaybackEvent evt) {
@@ -568,7 +624,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void shuttleForwardEvent(final PlaybackEvent evt) {
@@ -601,7 +661,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     public void stopEvent(final PlaybackEvent evt) {
@@ -617,7 +681,52 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
+    }
+
+    /**
+     * Sets the playback region of interest to lie from the find time to offset
+     * time.
+     */
+    public void setRegionOfInterestAction() {
+        Runnable task = new Runnable() {
+                public void run() {
+                    final long newWindowPlayStart = playbackView.getFindTime();
+                    final long newWindowPlayEnd =
+                        playbackView.getFindOffsetTime();
+
+                    playbackModel.setWindowPlayStart(newWindowPlayStart);
+                    mixerControllerV.setPlayRegionStart(newWindowPlayStart);
+
+                    if (newWindowPlayStart < newWindowPlayEnd) {
+                        playbackModel.setWindowPlayEnd(newWindowPlayEnd);
+                        mixerControllerV.setPlayRegionEnd(newWindowPlayEnd);
+                    } else {
+                        playbackModel.setWindowPlayEnd(newWindowPlayStart);
+                        mixerControllerV.setPlayRegionEnd(newWindowPlayStart);
+                    }
+
+                    final long currentTime = mixerControllerV.getCurrentTime();
+
+                    if (currentTime > newWindowPlayEnd) {
+                        mixerControllerV.setCurrentTime(newWindowPlayEnd);
+                        clock.setTime(newWindowPlayEnd);
+                    } else if (currentTime < newWindowPlayStart) {
+                        mixerControllerV.setCurrentTime(newWindowPlayStart);
+                        clock.setTime(newWindowPlayStart);
+                    }
+                }
+            };
+
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -666,6 +775,7 @@ public final class PlaybackController implements PlaybackListener,
             if (playbackModel.isFakePlayback()) {
 
                 for (DataViewer v : viewers) {
+
                     if (isWithinPlayRange(time, v)) {
                         v.seekTo(time - v.getOffset());
                     }
@@ -951,7 +1061,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
 
         return removed;
     }
@@ -1021,7 +1135,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     /**
@@ -1066,7 +1184,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     /**
@@ -1097,19 +1219,17 @@ public final class PlaybackController implements PlaybackListener,
 
                         break;
 
-                    case TIMESCALE_EVENT:
-                        handleTimescaleEvent((TimescaleEvent)
-                            e.getEventObject());
-
-                        break;
-
                     default:
                         break;
                     }
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
     }
 
     /** Simulates play button clicked. */
@@ -1246,7 +1366,11 @@ public final class PlaybackController implements PlaybackListener,
                 }
             };
 
-        executor.submit(task);
+        if (!SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            executor.submit(task);
+        }
 
     }
 
@@ -1338,6 +1462,7 @@ public final class PlaybackController implements PlaybackListener,
         assert !SwingUtilities.isEventDispatchThread();
 
         clock.stop();
+        clock.setRate(PLAY_RATE);
         clock.setTime(time);
     }
 
@@ -1383,6 +1508,23 @@ public final class PlaybackController implements PlaybackListener,
      */
     private long getCurrentTime() {
         assert !SwingUtilities.isEventDispatchThread();
+
+        return clock.getTime();
+    }
+
+    private long getCurrentTimeEDT() {
+
+        try {
+            return executor.submit(new Callable<Long>() {
+                        public Long call() throws Exception {
+                            return clock.getTime();
+                        }
+                    }).get();
+        } catch (InterruptedException e) {
+            logger.error("Executor thread interrupted", e);
+        } catch (ExecutionException e) {
+            logger.error("Failed to retrieve result", e);
+        }
 
         return clock.getTime();
     }
@@ -1668,28 +1810,6 @@ public final class PlaybackController implements PlaybackListener,
 
         clock.setTime(tracksTime);
         clockStep(tracksTime);
-    }
-
-    /**
-     * Sets the playback region of interest to lie from the find time to offset
-     * time.
-     */
-    private void setRegionOfInterestAction() {
-        assert !SwingUtilities.isEventDispatchThread();
-
-        final long newWindowPlayStart = playbackView.getFindTime();
-        final long newWindowPlayEnd = playbackView.getFindOffsetTime();
-
-        playbackModel.setWindowPlayStart(newWindowPlayStart);
-        mixerControllerV.setPlayRegionStart(newWindowPlayStart);
-
-        if (newWindowPlayStart < newWindowPlayEnd) {
-            playbackModel.setWindowPlayEnd(newWindowPlayEnd);
-            mixerControllerV.setPlayRegionEnd(newWindowPlayEnd);
-        } else {
-            playbackModel.setWindowPlayEnd(newWindowPlayStart);
-            mixerControllerV.setPlayRegionEnd(newWindowPlayStart);
-        }
     }
 
 }
