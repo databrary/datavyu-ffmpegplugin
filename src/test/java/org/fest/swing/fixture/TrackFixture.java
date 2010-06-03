@@ -1,23 +1,30 @@
 package org.fest.swing.fixture;
 
 import java.awt.MouseInfo;
+
 import static org.fest.reflect.core.Reflection.field;
 
 import java.awt.Point;
+
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
+
 import org.openshapa.controllers.component.TrackController;
+
 import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.component.TrackPainter;
+
 
 /**
  * Fixture for OpenSHAPA TrackController.
  */
 public class TrackFixture extends ComponentFixture {
+
     /** The underlying mixercontroller. */
     private TrackController trackC;
 
@@ -27,8 +34,9 @@ public class TrackFixture extends ComponentFixture {
      * @param target TracksEditorController
      */
     public TrackFixture(final Robot robot, final TrackController target) {
-        super(robot, (JComponent) field("trackPainter")
-                .ofType(TrackPainter.class).in(target).get());
+        super(robot,
+            (JComponent) field("trackPainter").ofType(TrackPainter.class).in(
+                target).get());
         trackC = target;
     }
 
@@ -96,10 +104,35 @@ public class TrackFixture extends ComponentFixture {
     }
 
     /**
+     * Press action button 1.
+     * For example, on a video, this is the volume control.
+     */
+    public void pressActionButton1() {
+        new JButtonFixture(robot, "actionButton1").click();
+    }
+
+    /**
+    * Press action button 2.
+    * For example, on a video, this shows/hides the window and mutes the
+    * volume.
+    */
+    public void pressActionButton2() {
+        new JButtonFixture(robot, "actionButton2").click();
+    }
+
+    /**
+    * Press action button 3.
+    * For example, on a video, this gives you a shortcut to.
+    */
+    public void pressActionButton3() {
+        new JButtonFixture(robot, "actionButton3").click();
+    }
+
+    /**
      * @return track label
      */
     public String getTrackName() {
-        return new JLabelFixture(robot, "trackLabel").text();
+        return trackC.getTrackName();
     }
 
     public JPanelFixture getTrackPanel() {
@@ -123,35 +156,42 @@ public class TrackFixture extends ComponentFixture {
      * @param pixels
      */
     public void dragWithoutReleasing(final int pixels) {
+
         // Hold down left mouse button
         // Start position should leave enough room to move pixels
         Point to = null;
+
         if (!robot.isDragging()) {
-            //Point topLeft = ((TrackPainter) target).getLocationOnScreen();
+
+            // Point topLeft = ((TrackPainter) target).getLocationOnScreen();
             Point carriagePoint = ((TrackPainter) target).getCarriagePolygon()
-                    .getBounds().getLocation();
+                .getBounds().getLocation();
             Point topLeft = new Point(
                     ((TrackPainter) target).getLocationOnScreen().x
                     + carriagePoint.x,
                     ((TrackPainter) target).getLocationOnScreen().y
                     + carriagePoint.y);
             Point startClick;
+
             if (pixels >= 0) {
                 startClick = new Point(topLeft.x + 5,
-                        (topLeft.y + ((TrackPainter) target).getHeight() / 2)
+                        (topLeft.y
+                            + (((TrackPainter) target).getHeight() / 2))
                         + 5);
             } else {
-                startClick =
-                        new Point(topLeft.x + ((TrackPainter) target).getWidth()
+                startClick = new Point(topLeft.x
+                        + ((TrackPainter) target).getWidth()
                         - carriagePoint.x - 5,
                         (topLeft.y
-                        + ((TrackPainter) target).getHeight() / 2) - 5);
+                            + (((TrackPainter) target).getHeight() / 2)) - 5);
             }
+
             robot.pressMouse(startClick, MouseButton.LEFT_BUTTON);
 
             // Move mouse to new position
             to = new Point(startClick.x + pixels, startClick.y);
         }
+
         to = new Point(MouseInfo.getPointerInfo().getLocation().x + pixels,
                 MouseInfo.getPointerInfo().getLocation().y);
         robot.moveMouse(to);
@@ -185,8 +225,8 @@ public class TrackFixture extends ComponentFixture {
     public JPopupMenuFixture showPopUpMenu() {
         robot.click(target, MouseButton.RIGHT_BUTTON);
 
-        return new JPopupMenuFixture(robot, field("menu")
-                .ofType(JPopupMenu.class).in(trackC).get());
+        return new JPopupMenuFixture(robot,
+                field("menu").ofType(JPopupMenu.class).in(trackC).get());
     }
 
 }

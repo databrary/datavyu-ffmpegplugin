@@ -156,7 +156,15 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
                 OpenSHAPA.getView()).invoke(fc);
         } else {
-            mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+
+            // mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+            // Use shortcut instead. Menu item is tested elsewhere
+            JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+            SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
+                    mainFrameFixture.robot,
+                    (SpreadsheetPanel) jPanel.component());
+            spreadsheet.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_S)
+                .modifiers(Platform.controlOrCommandMask(), KeyEvent.VK_SHIFT));
 
             if (extension.equals("opf")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(

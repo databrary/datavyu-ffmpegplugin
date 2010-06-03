@@ -170,6 +170,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         volumeSlider = new JSlider(JSlider.VERTICAL, 0, 100, 70);
         volumeSlider.setMajorTickSpacing(10);
         volumeSlider.setPaintTicks(true);
+        volumeSlider.setName("volumeSlider");
         volumeSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(final ChangeEvent e) {
                     handleVolumeSliderEvent(e);
@@ -181,6 +182,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         volumeDialog.setVisible(false);
         volumeDialog.setLayout(new MigLayout("", "[center]", ""));
         volumeDialog.setSize(50, 125);
+        volumeDialog.setName("volumeDialog");
         volumeDialog.getContentPane().add(volumeSlider, "pushx, pushy");
         volumeDialog.addMouseListener(new MouseAdapter() {
                 @Override public void mouseClicked(final MouseEvent e) {
@@ -221,6 +223,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         menuContext.add(menuItemHalf);
         menuContext.add(menuItemThreeQuarters);
         menuContext.add(menuItemFull);
+        menuContext.setName("menuContext");
 
 
         initComponents();
