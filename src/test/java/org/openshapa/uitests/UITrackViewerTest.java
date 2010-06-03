@@ -77,8 +77,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * has resulted in consistent behaviour.
      */
     @AfterMethod @BeforeMethod protected void deleteFiles() {
-
-
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
         // Delete temporary CSV and SHAPA files
@@ -510,8 +508,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         // Create new variable and new cell
         UIUtils.createNewVariable(mainFrameFixture, "v",
-            UIUtils.VAR_TYPES[
-            (int) (Math.random() * UIUtils.VAR_TYPES.length)]);
+            UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)]);
         ssPanel.column(0).click();
         dcf.pressCreateNewCellButton();
 
