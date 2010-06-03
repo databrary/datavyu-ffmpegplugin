@@ -413,6 +413,9 @@
             </goals>
             <configuration>
               <tasks>
+                <!-- BugzID:1827 - Added template file that gets copied when
+                     we do a build so we don't get accidental properties file
+                     commits. -->
                 <copy file="src/main/resources/org/openshapa/resources/Build_Template.properties"
                       tofile="src/main/resources/org/openshapa/resources/Build.properties" />
 
