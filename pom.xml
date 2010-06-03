@@ -412,12 +412,16 @@
                 <goal>run</goal>
             </goals>
             <configuration>
-              <tasks>                
+              <tasks>
+                <copy file="src/main/resources/org/openshapa/resources/Build_Template.properties"
+                      tofile="src/main/resources/org/openshapa/resources/Build.properties" />
+
                 <taskdef
                  name="replaceregexp"
                  classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
+
                 <replaceregexp
-                 file="src/main/resources/org/openshapa/resources/OpenSHAPA.properties"
+                 file="src/main/resources/org/openshapa/resources/Build.properties"
                  match="Application.build =(.*)"
                  replace="Application.build = b:${buildNumber}"/>
 
