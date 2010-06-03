@@ -60,9 +60,9 @@ import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.views.NewProjectV;
 
 import org.testng.Assert;
+
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-
 import org.testng.annotations.Test;
 
 
@@ -71,13 +71,14 @@ import org.testng.annotations.Test;
  */
 public final class UITrackViewerTest extends OpenSHAPATestClass {
 
+    /**
+     * Deleting these temp files before and after tests because Java does
+     * not always delete them during the test case. Doing the deletes here
+     * has resulted in consistent behaviour.
+     */
     @AfterMethod @BeforeMethod protected void deleteFiles() {
 
-        /*
-         * Deleting these temp files before and after tests because Java does
-         * not always delete them during the test case. Doing the deletes here
-         * has resulted in consistent behaviour.
-         */
+
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
         // Delete temporary CSV and SHAPA files
@@ -101,7 +102,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement to ensure needle time is the same as the clock time.
     */
-    /*//@Test*/ public void testNeedleMovement() {
+    @Test public void testNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -183,7 +184,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test needle movement to ensure needle can't go beyond start or end.
      */
-    /*//@Test*/ public void testRangeOfNeedleMovement() {
+    @Test public void testRangeOfNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -260,7 +261,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test needle movement by doubel clicking on timescale.
      */
-    /*//@Test*/ public void testNeedleMovementByDoubleClick() {
+    @Test public void testNeedleMovementByDoubleClick() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -353,7 +354,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement by doubel clicking on timescale.
     */
-    /*//@Test*/ public void testNeedleMovementByDoubleClickWithZoom() {
+    @Test public void testNeedleMovementByDoubleClickWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -449,7 +450,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement by doubel clicking on timescale.
     */
-    /*//@Test*/ public void testNeedleMovementByDoubleClickOutsideRegion() {
+    @Test public void testNeedleMovementByDoubleClickOutsideRegion() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -509,7 +510,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         // Create new variable and new cell
         UIUtils.createNewVariable(mainFrameFixture, "v",
-            UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)]);
+            UIUtils.VAR_TYPES[
+            (int) (Math.random() * UIUtils.VAR_TYPES.length)]);
         ssPanel.column(0).click();
         dcf.pressCreateNewCellButton();
 
@@ -562,7 +564,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * 6. Left region can't cross (go beyond) right
      * 7. Right region can't cross left
      */
-    /*//@Test*/ public void testRegionMovement() {
+    @Test public void testRegionMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -708,7 +710,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test moving track while locked and unlocked.
      */
-    /*//@Test*/ public void testLockUnlockTrack() {
+    @Test public void testLockUnlockTrack() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -791,7 +793,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /*//@Test*/ public void testTrackSnapping() {
+    @Test public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1074,7 +1076,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test for Unlock Lock with zooming.
      */
-    /*//@Test*/ public void testLockUnlockTrackWithZoom() {
+    @Test public void testLockUnlockTrackWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1175,7 +1177,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * Test needle movement to ensure needle can't go beyond start or end,
      * with zoom applied.
      */
-    /*//@Test*/ public void testRangeOfNeedleMovementWithZoom() {
+    @Test public void testRangeOfNeedleMovementWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1281,7 +1283,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /*//@Test*/ public void testTrackSnappingWithZoom() {
+    @Test public void testTrackSnappingWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1658,7 +1660,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     * Test closing of video.
     * Should reset datacontroller and remove track.
     */
-    /*//@Test*/ public void testCloseVideo() {
+    @Test public void testCloseVideo() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1752,7 +1754,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test hiding and showing the video.
     */
-    /*//@Test*/ public void testShowHideVideo() {
+    @Test public void testShowHideVideo() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1862,7 +1864,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test hiding and showing the video.
     */
-    /*//@Test*/ public void testShowHideVideoWhilePlaying() throws Exception {
+    @Test public void testShowHideVideoWhilePlaying() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1972,7 +1974,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement to ensure needle time is the same as the clock time.
     */
-    /*//@Test*/ public void testRegionSnapping() {
+    @Test public void testRegionSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
