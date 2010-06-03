@@ -6,6 +6,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import java.io.File;
 
@@ -185,6 +187,11 @@ public final class QTDataViewer extends JFrame implements DataViewer {
                     volumeDialog.setVisible(false);
                 }
             });
+        volumeDialog.addWindowFocusListener(new WindowAdapter() {
+                @Override public void windowLostFocus(final WindowEvent e) {
+                    volumeDialog.setVisible(false);
+                }
+            });
 
         menuItemQuarter = new JMenuItem("25% size");
         menuItemQuarter.addActionListener(new ActionListener() {
@@ -271,13 +278,14 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     }
 
     @Override public void validate() {
+
         // BugzID:753 - Locks the window to the videos aspect ratio.
         int newHeight = getHeight();
         int newWidth = (int) (getVideoHeight() * aspectRatio);
         setSize(newWidth, newHeight);
 
         super.validate();
-     }
+    }
 
     /**
      * Scales the video to the desired percentage.
