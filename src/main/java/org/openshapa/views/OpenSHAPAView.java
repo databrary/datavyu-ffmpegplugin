@@ -241,7 +241,7 @@ public final class OpenSHAPAView extends FrameView
         String postFix = "";
         ProjectController projectController = OpenSHAPA.getProjectController();
 
-        if (projectController.isChanged() || projectController.isNewProject()) {
+        if (projectController.isChanged()) {
             postFix = "*";
         }
 

@@ -183,7 +183,11 @@ public final class ProjectController {
      * @return the changed
      */
     public boolean isChanged() {
-        return (changed || ((db != null) && db.isChanged()));
+        if (OpenSHAPA.getApplication().getCanSetUnsaved()) {
+            return (changed || ((db != null) && db.isChanged()));
+        } else {
+            return false;
+        }
     }
 
     /**
