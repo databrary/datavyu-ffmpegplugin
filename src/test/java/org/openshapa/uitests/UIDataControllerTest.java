@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import static org.fest.reflect.core.Reflection.method;
 
 import java.awt.Point;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
@@ -140,17 +141,19 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:120");
 
         // Test Jogging back and forth with Ctrl.
+        mainFrameFixture.robot.pressKey(KeyEvent.VK_CONTROL);
+
         for (int i = 0; i < 5; i++) {
-            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD3,
-                Platform.controlOrCommandMask());
+            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD3);
         }
 
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:02:120");
 
         for (int i = 0; i < 5; i++) {
-            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD1,
-                Platform.controlOrCommandMask());
+            mainFrameFixture.robot.pressAndReleaseKey(KeyEvent.VK_NUMPAD1);
         }
+
+        mainFrameFixture.robot.releaseKey(KeyEvent.VK_CONTROL);
 
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:120");
 
