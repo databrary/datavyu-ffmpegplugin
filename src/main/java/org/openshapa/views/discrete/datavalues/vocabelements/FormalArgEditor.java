@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues.vocabelements;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
@@ -27,7 +28,7 @@ public final class FormalArgEditor extends EditorComponent {
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(FormalArgEditor.class);
+    private Logger logger = UserMetrix.getLogger(FormalArgEditor.class);
 
     /** The parent editor window that this argument belongs too. */
     private VocabElementV parentView;

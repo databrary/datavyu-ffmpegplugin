@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -46,7 +47,7 @@ public abstract class EditorComponent implements ClipboardOwner {
     private char replaceChar;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(EditorComponent.class);
+    private Logger logger = UserMetrix.getLogger(EditorComponent.class);
 
     /**
      * Action to invoke when a key is pressed.

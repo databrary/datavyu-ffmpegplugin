@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Vector;
@@ -43,7 +44,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     private int numPredArgs;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(MatrixRootView.class);
+    private Logger logger = UserMetrix.getLogger(MatrixRootView.class);
 
     /**
      * Creates a new instance of MatrixV.

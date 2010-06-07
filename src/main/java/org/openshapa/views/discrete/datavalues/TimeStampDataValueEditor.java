@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -23,8 +24,7 @@ import com.usermetrix.jclient.UserMetrix;
 public final class TimeStampDataValueEditor extends EditorComponent {
 
     /** The logger for this class. */
-    private UserMetrix logger =
-            UserMetrix.getInstance(TimeStampDataValueEditor.class);
+    private Logger logger = UserMetrix.getLogger(TimeStampDataValueEditor.class);
 
     /** The TimeStampDataValue that this view represents. **/
     private TimeStampDataValue model;

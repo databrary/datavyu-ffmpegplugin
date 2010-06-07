@@ -156,7 +156,15 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
                 OpenSHAPA.getView()).invoke(fc);
         } else {
-            mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+
+            // mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+            // Use shortcut instead. Menu item is tested elsewhere
+            JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+            SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
+                    mainFrameFixture.robot,
+                    (SpreadsheetPanel) jPanel.component());
+            spreadsheet.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_S)
+                .modifiers(Platform.controlOrCommandMask(), KeyEvent.VK_SHIFT));
 
             if (extension.equals("opf")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
@@ -536,7 +544,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             mainFrameFixture.fileChooser().selectFile(newSHAPA).approve();
         }
 
-        // Check that the title bar file name does not have an asterix
+        // Check that the title bar file name does not have an asterisk
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
         // Check that something has been loaded
@@ -939,8 +947,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertFalse(noWrite.canWrite());
 
         // Try to save to directory and confirm that warning dialog pops up
-        // Check that asterisk is present
-        Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
         if (Platform.isOSX()) {
             return;

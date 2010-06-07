@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -163,7 +164,7 @@ public final class DataControllerV extends OpenSHAPADialog
     // [static]
     //
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(DataControllerV.class);
+    private Logger logger = UserMetrix.getLogger(DataControllerV.class);
 
     /** Determines whether or not Shift is being held. */
     private boolean shiftMask = false;

@@ -1,5 +1,6 @@
 package org.openshapa.views.continuous.sound;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 
@@ -100,7 +101,7 @@ public final class SoundDataViewer extends JFrame implements DataViewer {
     private static final float PREPROCESSRATE = 1F;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SoundDataViewer.class);
+    private Logger logger = UserMetrix.getLogger(SoundDataViewer.class);
 
     /** The quicktime movie this viewer is displaying. */
     private Movie audio;
@@ -547,7 +548,7 @@ public final class SoundDataViewer extends JFrame implements DataViewer {
             500, 500);
     } // </editor-fold>//GEN-END:initComponents
 
-    private void formWindowClosing(final java.awt.event.WindowEvent evt) { //GEN-FIRST:event_formWindowClosing
+    private void formWindowClosing(final java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 
         try {
             preThread.die();
@@ -562,7 +563,7 @@ public final class SoundDataViewer extends JFrame implements DataViewer {
         movieFrame.dispose();
         preFrame.dispose();
         this.parent.shutdown(this);
-    } //GEN-LAST:event_formWindowClosing
+    }//GEN-LAST:event_formWindowClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.datavalues;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -48,7 +49,7 @@ public abstract class DataValueEditor extends EditorComponent {
     private String textOnFocus;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(DataValueEditor.class);
+    private Logger logger = UserMetrix.getLogger(DataValueEditor.class);
 
     /**
      * Constructor.

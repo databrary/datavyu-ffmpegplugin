@@ -1,5 +1,6 @@
 package org.openshapa.util;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +29,7 @@ import org.openshapa.OpenSHAPA;
 public class MacHandler {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(MacHandler.class);
+    private Logger logger = UserMetrix.getLogger(MacHandler.class);
 
     /**
      * Default constructor.

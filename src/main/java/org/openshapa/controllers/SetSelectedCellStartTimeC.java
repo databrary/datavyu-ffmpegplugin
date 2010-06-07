@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.SystemErrorException;
@@ -16,8 +17,7 @@ import com.usermetrix.jclient.UserMetrix;
 public class SetSelectedCellStartTimeC {
 
     /** The logger for this class. */
-    private UserMetrix logger =
-            UserMetrix.getInstance(SetSelectedCellStartTimeC.class);
+    private Logger logger = UserMetrix.getLogger(SetSelectedCellStartTimeC.class);
 
     /**
      * Sets all selected cells to have the specified start time / onset.

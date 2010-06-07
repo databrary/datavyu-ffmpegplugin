@@ -1,5 +1,6 @@
 package org.openshapa.views.continuous;
 
+import com.usermetrix.jclient.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -40,7 +41,7 @@ public final class PluginManager {
             "org.openshapa.views.continuous.quicktime.QTDataViewer";
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(PluginManager.class);
+    private Logger logger = UserMetrix.getLogger(PluginManager.class);
 
     /** A reference to the interface that plugins must override. */
     private static final Class<?> PLUGIN_CLASS;
@@ -49,7 +50,7 @@ public final class PluginManager {
             PLUGIN_CLASS =
                     Class.forName("org.openshapa.views.continuous.Plugin");
         } catch (ClassNotFoundException ex) {
-            UserMetrix.getInstance(PluginManager.class).error(
+            UserMetrix.getLogger(PluginManager.class).error(
                     "Unable to init plugin class");
             throw new RuntimeException(ex);
         }

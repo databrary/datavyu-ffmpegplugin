@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -13,7 +14,7 @@ public class BackgroundPanel extends JPanel {
     Image image;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(BackgroundPanel.class);
+    private Logger logger = UserMetrix.getLogger(BackgroundPanel.class);
 
     public BackgroundPanel(String resource) {
         try {

@@ -183,7 +183,11 @@ public final class ProjectController {
      * @return the changed
      */
     public boolean isChanged() {
-        return (changed || ((db != null) && db.isChanged()));
+        if (OpenSHAPA.getApplication().getCanSetUnsaved()) {
+            return (changed || ((db != null) && db.isChanged()));
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -269,8 +273,11 @@ public final class ProjectController {
             if (!file.exists()) {
 
                 // BugzID:1804 - If absolute path does not find the file, look
-                // in the relative path
-                file = FileUtils.getRelativeFile(project, file);
+                // in the relative path (as long as we are dealing with a newer
+                // project file type).
+                if (project.getOriginalProjectDirectory() != null) {
+                    file = FileUtils.getRelativeFile(project, file);
+                }
             }
 
             if (!file.exists()) {
@@ -317,8 +324,11 @@ public final class ProjectController {
             if (!file.exists()) {
 
                 // BugzID:1804 - If absolute path does not find the file, look
-                // in the relative path
-                file = FileUtils.getRelativeFile(project, file);
+                // in the relative path (as long as we are dealing with a newer
+                // project file type).
+                if (project.getOriginalProjectDirectory() != null) {
+                    file = FileUtils.getRelativeFile(project, file);
+                }
             }
 
             if (!file.exists()) {

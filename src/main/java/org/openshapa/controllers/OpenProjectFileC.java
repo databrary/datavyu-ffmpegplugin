@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,7 +20,7 @@ import com.usermetrix.jclient.UserMetrix;
 public final class OpenProjectFileC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(OpenProjectFileC.class);
+    private Logger logger = UserMetrix.getLogger(OpenProjectFileC.class);
 
     /**
      * Opens and loads a project file from disk.

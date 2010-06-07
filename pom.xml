@@ -412,12 +412,19 @@
                 <goal>run</goal>
             </goals>
             <configuration>
-              <tasks>                
+              <tasks>
+                <!-- BugzID:1827 - Added template file that gets copied when
+                     we do a build so we don't get accidental properties file
+                     commits. -->
+                <copy file="src/main/resources/org/openshapa/resources/Build_Template.properties"
+                      tofile="src/main/resources/org/openshapa/resources/Build.properties" />
+
                 <taskdef
                  name="replaceregexp"
                  classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
+
                 <replaceregexp
-                 file="src/main/resources/org/openshapa/resources/OpenSHAPA.properties"
+                 file="src/main/resources/org/openshapa/resources/Build.properties"
                  match="Application.build =(.*)"
                  replace="Application.build = b:${buildNumber}"/>
 
@@ -504,7 +511,7 @@
                 <preCp>openhashtable-0.1.jar</preCp>
                 <preCp>openshapa-lib-0.0.10.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
-                <preCp>UserMetrix-jclient-0.0.4.jar</preCp>
+                <preCp>UserMetrix-jclient-0.0.5.jar</preCp>
                 <preCp>miglayout-3.7.2-swing.jar</preCp>
                 <preCp>commons-io-1.4.jar</preCp>
             </classPath>
@@ -607,7 +614,7 @@
     <dependency>
         <groupId>com.usermetrix</groupId>
         <artifactId>UserMetrix-jclient</artifactId>
-        <version>0.0.4</version>
+        <version>0.0.5</version>
     </dependency>
 
     <dependency>

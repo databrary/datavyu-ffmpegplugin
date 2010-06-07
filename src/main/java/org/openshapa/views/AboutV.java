@@ -1,11 +1,17 @@
 package org.openshapa.views;
 
 import java.awt.Color;
+
 import javax.swing.JLabel;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+
 import org.jdesktop.layout.GroupLayout;
+
+import org.openshapa.Build;
 import org.openshapa.OpenSHAPA;
+
 
 public class AboutV extends OpenSHAPADialog {
 
@@ -14,33 +20,31 @@ public class AboutV extends OpenSHAPADialog {
         super(parent, modal);
         initComponents();
         setName(this.getClass().getSimpleName());
+
         BackgroundPanel p = new BackgroundPanel("/icons/splash.png");
 
         JLabel version = new JLabel();
         version.setForeground(new Color(119, 187, 33));
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                      .getContext()
-                                      .getResourceMap(OpenSHAPA.class);
+
+        ResourceMap bMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(Build.class);
+
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
 
         version.setText("<html>" + rMap.getString("Application.version")
-                        + "<br>" + rMap.getString("Application.build")
-                        + "</html>");
+            + "<br>" + bMap.getString("Application.build") + "</html>");
+
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.LEADING)
-            .add(GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(380, Short.MAX_VALUE)
-                .add(version)
-                .add(136, 136, 136))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.LEADING)
-            .add(GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(250, Short.MAX_VALUE)
-                .add(version)
-                .add(38, 38, 38))
-        );
+        layout.setHorizontalGroup(layout.createParallelGroup(
+                GroupLayout.LEADING).add(GroupLayout.TRAILING,
+                layout.createSequentialGroup().addContainerGap(380,
+                    Short.MAX_VALUE).add(version).add(136, 136, 136)));
+        layout.setVerticalGroup(layout.createParallelGroup(
+                GroupLayout.LEADING).add(GroupLayout.TRAILING,
+                layout.createSequentialGroup().addContainerGap(250,
+                    Short.MAX_VALUE).add(version).add(38, 38, 38)));
 
         this.add(p);
     }

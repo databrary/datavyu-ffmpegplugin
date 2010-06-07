@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -40,7 +41,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
     private ColumnDataPanel datapanel;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(SpreadsheetColumn.class);
+    private Logger logger = UserMetrix.getLogger(SpreadsheetColumn.class);
 
     /** Records changes to column during a cascade. */
     private ColumnChanges colChanges;

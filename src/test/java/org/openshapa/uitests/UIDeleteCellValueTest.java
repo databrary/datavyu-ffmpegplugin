@@ -1,16 +1,25 @@
 package org.openshapa.uitests;
 
+import java.awt.event.InputEvent;
+
+import static org.fest.reflect.core.Reflection.method;
+
 import java.awt.event.KeyEvent;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
+import javax.swing.JDialog;
 import javax.swing.text.BadLocationException;
 
+import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
+import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
@@ -18,12 +27,19 @@ import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
+import org.openshapa.OpenSHAPA;
+
+import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.util.UIUtils;
 
+import org.openshapa.views.NewProjectV;
+import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 
@@ -31,6 +47,32 @@ import org.testng.annotations.Test;
  * Test for the New Cells.
  */
 public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
+
+    /**
+    * Deleting these temp files before and after tests because Java does
+    * not always delete them during the test case. Doing the deletes here
+    * has resulted in consistent behaviour.
+    */
+    @AfterMethod @BeforeMethod protected void deleteFiles() {
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+
+        // Delete temporary CSV and SHAPA files
+        FilenameFilter ff = new FilenameFilter() {
+                public boolean accept(final File dir, final String name) {
+                    return (name.endsWith(".csv") || name.endsWith(".shapa")
+                            || name.endsWith(".opf"));
+                }
+            };
+
+        File tempDirectory = new File(tempFolder);
+        String[] files = tempDirectory.list(ff);
+
+        for (int i = 0; i < files.length; i++) {
+            File file = new File(tempFolder + "/" + files[i]);
+            file.deleteOnExit();
+            file.delete();
+        }
+    }
 
     /**
      * Tests for deleting the cell value.
@@ -269,4 +311,130 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         Assert.assertEquals(cell.cellValue().text(), "<val>");
     }
 
+    /**
+     * Test for bug 1914.
+     * For a text variable create a cell, add a value and save the project.
+     * (Not sure if app reload required at this stage.) Remove some but not all
+     * of the text in the cell value, without adding new text (though the
+     * text-is-added-as-well permeation has not been investigated).  The app
+     * will/may not detect that a change has occurred (i.e. not * added to the
+     * file name in the title bar), but force a Save anyway. Quit and restart
+     * the app and reload the project.  If the error persists, then the deleted
+     * text will have returned...
+     */
+    /*BugzID1914:@Test*/ public void partialDeletionTest() throws BadLocationException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+        final String originalText = "Hello world";
+        final String afterDeleteText = "Hello wo";
+
+        // Create new text cell and input data
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        UIUtils.createNewVariable(mainFrameFixture, "t", "text");
+        ssPanel.column(0).click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
+        SpreadsheetCellFixture cell = ssPanel.column("t").cell(1);
+        cell.cellValue().enterText(originalText);
+
+        // Save project
+        File tempFile = new File(tempFolder + "/partialDeletionTest.opf");
+
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+            fc.setFileFilter(new OPFFilter());
+
+            fc.setSelectedFile(tempFile);
+
+            method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                OpenSHAPA.getView()).invoke(fc);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                new OPFFilter());
+            mainFrameFixture.fileChooser().selectFile(tempFile).approve();
+        }
+
+        // Delete last few characters and confirm deleted
+        cell.select(SpreadsheetCellFixture.VALUE, 8, originalText.length());
+        cell.cellValue().pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_BACK_SPACE));
+        cell.cellValue().requireText(afterDeleteText);
+
+        // Save project
+        mainFrameFixture.clickMenuItemWithPath("File", "Save");
+
+        // Reopen project
+        // 3. Create a new database (and discard unsaved changes)
+        if (Platform.isOSX()) {
+            mainFrameFixture.pressAndReleaseKey(KeyPressInfo.keyCode(
+                    KeyEvent.VK_N).modifiers(InputEvent.META_MASK));
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "New");
+        }
+
+        DialogFixture newDatabaseDialog;
+
+        try {
+            newDatabaseDialog = mainFrameFixture.dialog();
+        } catch (Exception e) {
+
+            // Get New Database dialog
+            newDatabaseDialog = mainFrameFixture.dialog(
+                    new GenericTypeMatcher<JDialog>(JDialog.class) {
+                        @Override protected boolean isMatching(
+                            final JDialog dialog) {
+                            return dialog.getClass().equals(NewProjectV.class);
+                        }
+                    }, Timeout.timeout(5, TimeUnit.SECONDS));
+        }
+
+        newDatabaseDialog.textBox("nameField").enterText("n");
+
+        newDatabaseDialog.button("okButton").click();
+
+        // Check that no cells exist
+        Assert.assertEquals(ssPanel.allColumns().size(), 0);
+
+        // Reopen project
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+
+            fc.setFileFilter(new OPFFilter());
+            fc.setSelectedFile(tempFile);
+
+            method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                OpenSHAPA.getView()).invoke(fc);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
+
+            try {
+                JOptionPaneFixture warning = mainFrameFixture.optionPane();
+                warning.requireTitle("Unsaved changes");
+                warning.buttonWithText("OK").click();
+            } catch (Exception e) {
+                // Do nothing
+            }
+
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                new OPFFilter());
+
+            mainFrameFixture.fileChooser().selectFile(tempFile).approve();
+        }
+
+        // Check that characters are still deleted.
+        JPanelFixture jPanel2 = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel2 = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel2.component());
+
+        SpreadsheetCellFixture cell2 = ssPanel2.column(0).cell(1);
+        cell2.cellValue().requireText(afterDeleteText);
+    }
 }

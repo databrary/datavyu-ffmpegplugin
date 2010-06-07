@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataColumn;
@@ -19,7 +20,7 @@ public final class ListVariables extends OpenSHAPADialog
 implements ExternalColumnListListener {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(ListVariables.class);
+    private Logger logger = UserMetrix.getLogger(ListVariables.class);
 
     /** The column for if a variable is visible or not. */
     private static final int VCOLUMN = 0;

@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.io.File;
@@ -26,7 +27,7 @@ public final class OpenC {
     private Project project = null;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(OpenC.class);
+    private Logger logger = UserMetrix.getLogger(OpenC.class);
 
     /**
      * Opens a file as a OpenSHAPA database.

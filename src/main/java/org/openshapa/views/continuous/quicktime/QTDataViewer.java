@@ -1,9 +1,13 @@
 package org.openshapa.views.continuous.quicktime;
 
+import com.usermetrix.jclient.Logger;
+
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import java.io.File;
 
@@ -44,11 +48,16 @@ import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 
 import com.usermetrix.jclient.UserMetrix;
+
 import java.awt.event.ActionListener;
+import java.awt.event.MouseMotionListener;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import java.util.Properties;
+
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -70,7 +79,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     //
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(QTDataViewer.class);
+    private Logger logger = UserMetrix.getLogger(QTDataViewer.class);
 
     // ------------------------------------------------------------------------
     //
@@ -126,10 +135,13 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
     /** Menu item for quarter size. */
     private JMenuItem menuItemQuarter;
+
     /** Menu item for half size. */
     private JMenuItem menuItemHalf;
+
     /** Menu item for three quarters size. */
     private JMenuItem menuItemThreeQuarters;
+
     /** Menu item for full size. */
     private JMenuItem menuItemFull;
 
@@ -158,6 +170,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         volumeSlider = new JSlider(JSlider.VERTICAL, 0, 100, 70);
         volumeSlider.setMajorTickSpacing(10);
         volumeSlider.setPaintTicks(true);
+        volumeSlider.setName("volumeSlider");
         volumeSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(final ChangeEvent e) {
                     handleVolumeSliderEvent(e);
@@ -169,42 +182,48 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         volumeDialog.setVisible(false);
         volumeDialog.setLayout(new MigLayout("", "[center]", ""));
         volumeDialog.setSize(50, 125);
+        volumeDialog.setName("volumeDialog");
         volumeDialog.getContentPane().add(volumeSlider, "pushx, pushy");
         volumeDialog.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(final MouseEvent e) {
-                volumeDialog.setVisible(false);
-            }
-        });
+                @Override public void mouseClicked(final MouseEvent e) {
+                    volumeDialog.setVisible(false);
+                }
+            });
+        volumeDialog.addWindowFocusListener(new WindowAdapter() {
+                @Override public void windowLostFocus(final WindowEvent e) {
+                    volumeDialog.setVisible(false);
+                }
+            });
 
         menuItemQuarter = new JMenuItem("25% size");
         menuItemQuarter.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                scaleVideo(0.25f);
-            }
-        });
+                public void actionPerformed(final ActionEvent e) {
+                    scaleVideo(0.25f);
+                }
+            });
         menuItemHalf = new JMenuItem("50% size");
         menuItemHalf.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                scaleVideo(0.5f);
-            }
-        });
+                public void actionPerformed(final ActionEvent e) {
+                    scaleVideo(0.5f);
+                }
+            });
         menuItemThreeQuarters = new JMenuItem("75% size");
         menuItemThreeQuarters.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                scaleVideo(0.75f);
-            }
-        });
+                public void actionPerformed(final ActionEvent e) {
+                    scaleVideo(0.75f);
+                }
+            });
         menuItemFull = new JMenuItem("100% size");
         menuItemFull.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                scaleVideo(1);
-            }
-        });
+                public void actionPerformed(final ActionEvent e) {
+                    scaleVideo(1);
+                }
+            });
         menuContext.add(menuItemQuarter);
         menuContext.add(menuItemHalf);
         menuContext.add(menuItemThreeQuarters);
         menuContext.add(menuItemFull);
-
+        menuContext.setName("menuContext");
 
         initComponents();
     }
@@ -224,7 +243,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      * the volume).
      */
     private void setVolume() {
+
         try {
+
             if (isVisible) {
                 movie.setVolume(volume);
             } else {
@@ -258,6 +279,16 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         return -1;
     }
 
+    @Override public void validate() {
+
+        // BugzID:753 - Locks the window to the videos aspect ratio.
+        int newHeight = getHeight();
+        int newWidth = (int) (getVideoHeight() * aspectRatio);
+        setSize(newWidth, newHeight);
+
+        super.validate();
+    }
+
     /**
      * Scales the video to the desired percentage.
      * @param scale The new % to scale to, as a float.
@@ -268,8 +299,8 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
         // BugzID:753 - Locks the window to the videos aspect ratio.
         if ((aspectRatio > 0.0)) {
-            int newWidth = (int) (scaleHeight * aspectRatio)
-                + getInsets().left + getInsets().right;
+            int newWidth = (int) (scaleHeight * aspectRatio) + getInsets().left
+                + getInsets().right;
 
             int newHeight = scaleHeight + getInsets().bottom + getInsets().top;
 
@@ -317,8 +348,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public void setDataFeed(final File videoFile) {
         this.videoFile = videoFile;
 
-        setResizable(false);
-
         try {
             setTitle(videoFile.getName());
 
@@ -333,6 +362,11 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             visualTrack = movie.getIndTrackType(1,
                     StdQTConstants.visualMediaCharacteristic,
                     StdQTConstants.movieTrackCharacteristic);
+
+            // BugzID:1910 - % size calculations should be based on the original
+            // movie's size, rather than the quarter-screen restricted size.
+            fullHeight = Math.max(movie.getBox().getHeight(),
+                                    movie.getBounds().getHeight());
 
             // Initialise the video to be no bigger than a quarter of the screen
             int hScrnWidth = Toolkit.getDefaultToolkit().getScreenSize().width
@@ -354,7 +388,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             // Prevent initial white frame for video on OSX.
             setVisible(true);
 
-            fullHeight = movie.getBox().getHeight();
 
             // Set the size of the window to be the same as the incoming video.
             this.setBounds(getX(), getY(), movie.getBox().getWidth(),
@@ -527,6 +560,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         // BugzID:1400 - We don't allow volume changes while the track is
         // hidden from view.
         if (isVisible) {
+
             // Show the volume frame.
             volumeDialog.setVisible(true);
             volumeDialog.setLocation(button.getLocationOnScreen());
@@ -542,13 +576,15 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         isVisible = !isVisible;
         this.setVisible(isVisible);
         setVolume();
+
         JButton button = (JButton) event.getSource();
+
         if (isVisible) {
-            button.setIcon(
-                    new ImageIcon(getClass().getResource("/icons/eye.png")));
+            button.setIcon(new ImageIcon(
+                    getClass().getResource("/icons/eye.png")));
         } else {
-            button.setIcon(
-                  new ImageIcon(getClass().getResource("/icons/eye-shut.png")));
+            button.setIcon(new ImageIcon(
+                    getClass().getResource("/icons/eye-shut.png")));
         }
     }
 
@@ -559,6 +595,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
      */
     public void handleActionButtonEvent3(final ActionEvent event) {
         JButton button = (JButton) event.getSource();
+
         if (isVisible) {
             menuContext.show(button.getParent(), button.getX(), button.getY());
         }
@@ -621,6 +658,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     private void formWindowClosing(final java.awt.event.WindowEvent evt) { // GEN-FIRST:event_formWindowClosing
 
         scaleVideo(1);
+
         try {
             movie.stop();
         } catch (QTException e) {

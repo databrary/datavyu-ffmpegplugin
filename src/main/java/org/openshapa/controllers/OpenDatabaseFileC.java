@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,7 +50,7 @@ import java.io.FileInputStream;
 public final class OpenDatabaseFileC {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(OpenDatabaseFileC.class);
+    private Logger logger = UserMetrix.getLogger(OpenDatabaseFileC.class);
 
     /** The index of the ONSET timestamp in the CSV line. */
     private static final int DATA_ONSET = 0;
@@ -106,11 +107,11 @@ public final class OpenDatabaseFileC {
 
             return modbr.readDB();
         } catch (FileNotFoundException e) {
-            logger.error("Unable to load macshapa database:'" + sFile + "'", e);
+            logger.error("Unable to load macshapa database.", e);
         } catch (SystemErrorException e) {
-            logger.error("Unable to load macshapa database:'" + sFile + "'", e);
+            logger.error("Unable to load macshapa database.", e);
         } catch (IOException e) {
-            logger.error("Unable to load macshapa database:'" + sFile + "'", e);
+            logger.error("Unable to load macshapa database.'", e);
         } catch (LogicErrorException e) {
             logger.error("Corrupted macshapa database", e);
         }

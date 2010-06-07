@@ -1,5 +1,6 @@
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.Logger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
@@ -308,7 +309,7 @@ public final class CreateNewCellC {
     }
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(CreateNewCellC.class);
+    private Logger logger = UserMetrix.getLogger(CreateNewCellC.class);
 
     /** The view (the spreadsheet) for this controller. */
     private SpreadsheetPanel view;

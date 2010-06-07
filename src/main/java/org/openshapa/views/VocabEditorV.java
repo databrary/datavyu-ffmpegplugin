@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
@@ -43,7 +44,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     /** The database that this vocab editor is manipulating. */
     private Database db;
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(VocabEditorV.class);
+    private Logger logger = UserMetrix.getLogger(VocabEditorV.class);
     /** The currently selected vocab element. */
     private VocabElementV selectedVocabElement;
     /** The currently selected formal argument. */

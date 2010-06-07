@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -48,7 +49,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     private Vector<SpreadsheetCell> cells;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(ColumnDataPanel.class);
+    private Logger logger = UserMetrix.getLogger(ColumnDataPanel.class);
 
     /**
      * Creates a new ColumnDataPanel.

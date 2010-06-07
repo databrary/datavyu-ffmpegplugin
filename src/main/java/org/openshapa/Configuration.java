@@ -1,5 +1,6 @@
 package org.openshapa;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.Color;
 import java.awt.Font;
 
@@ -75,7 +76,7 @@ public final class Configuration {
     private ConfigProperties properties;
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(Configuration.class);
+    private Logger logger = UserMetrix.getLogger(Configuration.class);
 
     /** Default font type. */
     private Font newFont = null;

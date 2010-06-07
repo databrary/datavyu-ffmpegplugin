@@ -1,5 +1,6 @@
 package org.openshapa.views;
 
+import com.usermetrix.jclient.Logger;
 import java.awt.Frame;
 
 import org.jdesktop.application.Application;
@@ -23,7 +24,7 @@ import org.openshapa.controllers.NewProjectC;
 public final class NewProjectV extends OpenSHAPADialog {
 
     /** The logger for this class. */
-    private UserMetrix logger = UserMetrix.getInstance(NewProjectV.class);
+    private Logger logger = UserMetrix.getLogger(NewProjectV.class);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
