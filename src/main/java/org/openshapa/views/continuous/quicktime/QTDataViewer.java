@@ -225,7 +225,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         menuContext.add(menuItemFull);
         menuContext.setName("menuContext");
 
-
         initComponents();
     }
 
@@ -364,6 +363,11 @@ public final class QTDataViewer extends JFrame implements DataViewer {
                     StdQTConstants.visualMediaCharacteristic,
                     StdQTConstants.movieTrackCharacteristic);
 
+            // BugzID:1910 - % size calculations should be based on the original
+            // movie's size, rather than the quarter-screen restricted size.
+            fullHeight = Math.max(movie.getBox().getHeight(),
+                                    movie.getBounds().getHeight());
+
             // Initialise the video to be no bigger than a quarter of the screen
             int hScrnWidth = Toolkit.getDefaultToolkit().getScreenSize().width
                 / 2;
@@ -384,7 +388,6 @@ public final class QTDataViewer extends JFrame implements DataViewer {
             // Prevent initial white frame for video on OSX.
             setVisible(true);
 
-            fullHeight = movie.getBox().getHeight();
 
             // Set the size of the window to be the same as the incoming video.
             this.setBounds(getX(), getY(), movie.getBox().getWidth(),
