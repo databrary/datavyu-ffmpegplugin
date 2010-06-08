@@ -284,7 +284,7 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         // BugzID:753 - Locks the window to the videos aspect ratio.
         int newHeight = getHeight();
         int newWidth = (int) (getVideoHeight() * aspectRatio)
-                + getInsets().left + getInsets().right;;
+                + getInsets().left + getInsets().right;
         setSize(newWidth, newHeight);
 
         super.validate();
