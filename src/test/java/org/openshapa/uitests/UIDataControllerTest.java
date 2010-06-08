@@ -1118,13 +1118,13 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             jfcf.selectFile(videoFile).approve();
         }
 
-        // Confirm we're at the beginning and try to jog back
+        // Confirm we're at the beginning and try to go back
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000",
             dcf.getCurrentTime());
         dcf.pressGoBackButton();
 
         TimeStamp currTS = new TimeStamp(dcf.getCurrentTime());
-        Assert.assertTrue((currTS.gt(new TimeStamp("00:00:00:000")))
+        Assert.assertTrue((currTS.ge(new TimeStamp("00:00:00:000")))
             && (currTS.lt(new TimeStamp("00:00:05:000"))),
             currTS.toHMSFString());
 
