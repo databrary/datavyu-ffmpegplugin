@@ -1492,7 +1492,11 @@ public final class DataControllerV extends OpenSHAPADialog
         viewers.add(viewer);
         viewer.setParentController(this);
         viewer.setOffset(offset);
+        boolean visible = viewer.getParentJFrame().isVisible();
         OpenSHAPA.getApplication().show(viewer.getParentJFrame());
+        if (!visible) {
+            viewer.getParentJFrame().setVisible(false);
+        }
 
         // adjust the overall frame rate.
         float fps = viewer.getFrameRate();

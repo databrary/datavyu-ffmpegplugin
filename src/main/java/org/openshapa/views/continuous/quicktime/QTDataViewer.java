@@ -317,6 +317,17 @@ public final class QTDataViewer extends JFrame implements DataViewer {
         return getWidth() - getInsets().left - getInsets().right;
     }
 
+    private void setVideoHeight(int height) {
+        if ((aspectRatio > 0.0)) {
+            int newWidth = (int) (height * aspectRatio) + getInsets().left
+                + getInsets().right;
+
+            int newHeight = height + getInsets().bottom + getInsets().top;
+
+            setSize(newWidth, newHeight);
+        }
+    }
+
     /**
      * @return The playback offset of the movie in milliseconds.
      */
@@ -607,7 +618,27 @@ public final class QTDataViewer extends JFrame implements DataViewer {
 
         try {
             settings.load(is);
-            setOffset(Long.parseLong(settings.getProperty("offset")));
+            String property = settings.getProperty("offset");
+            if (property != null & !property.equals("")) {
+                setOffset(Long.parseLong(property));
+            }
+            property = settings.getProperty("volume");
+            if (property != null & !property.equals("")) {
+                volume = Float.parseFloat(property);
+                volumeSlider.setValue((int) (volume * 100));
+            }
+            property = settings.getProperty("visible");
+            if (property != null & !property.equals("")) {
+                isVisible = Boolean.parseBoolean(property);
+                this.setVisible(isVisible);
+                setVolume();
+            }
+            property = settings.getProperty("height");
+            if (property != null & !property.equals("")) {
+                setVideoHeight(Integer.parseInt(property));
+            }
+
+
         } catch (IOException e) {
             logger.error("Error loading settings", e);
         }
@@ -616,6 +647,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     public void storeSettings(final OutputStream os) {
         Properties settings = new Properties();
         settings.setProperty("offset", Long.toString(getOffset()));
+        settings.setProperty("volume", Float.toString(volume));
+        settings.setProperty("visible", Boolean.toString(isVisible));
+        settings.setProperty("height", Integer.toString(getVideoHeight()));
 
         try {
             settings.store(os, null);
