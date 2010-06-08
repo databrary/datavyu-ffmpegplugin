@@ -47,5 +47,6 @@ public final class UIAboutDialogTest extends OpenSHAPATestClass {
             about.close();
             about.requireNotVisible();
         }
+        System.err.println("OSX");
     }
 }
