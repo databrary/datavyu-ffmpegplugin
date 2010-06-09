@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 
 import java.util.EventObject;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
@@ -49,6 +48,7 @@ import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.Logger;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.util.LinkedList;
 
 
 /**
@@ -632,11 +632,14 @@ public final class OpenSHAPA extends SingleFrameApplication
      */
     public void addScriptFile(final File file) {
 
-        if (lastScriptsExecuted.size() == MAX_RECENT_SCRIPT_SIZE) {
-            lastScriptsExecuted.remove(MAX_RECENT_SCRIPT_SIZE - 1);
-        }
+        if (!lastScriptsExecuted.contains(file)) {
 
-        lastScriptsExecuted.add(0, file);
+            if (lastScriptsExecuted.size() == MAX_RECENT_SCRIPT_SIZE) {
+                lastScriptsExecuted.remove(MAX_RECENT_SCRIPT_SIZE - 1);
+            }
+
+            lastScriptsExecuted.add(0, file);
+        }
     }
 
     /**
@@ -645,11 +648,13 @@ public final class OpenSHAPA extends SingleFrameApplication
      */
     public void addProjectFile(final File file) {
 
-        if (lastFilesOpened.size() == MAX_RECENT_FILE_SIZE) {
-            lastFilesOpened.remove(MAX_RECENT_FILE_SIZE - 1);
-        }
+        if (!lastFilesOpened.contains(file)) {
+            if (lastFilesOpened.size() == MAX_RECENT_FILE_SIZE) {
+                lastFilesOpened.remove(MAX_RECENT_FILE_SIZE - 1);
+            }
 
-        lastFilesOpened.add(0, file);
+            lastFilesOpened.add(0, file);
+        }
     }
 
     /**
