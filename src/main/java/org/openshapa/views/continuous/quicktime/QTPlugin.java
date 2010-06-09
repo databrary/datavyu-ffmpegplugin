@@ -3,6 +3,7 @@ package org.openshapa.views.continuous.quicktime;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 
 import org.openshapa.views.continuous.DataViewer;
@@ -21,11 +22,8 @@ public final class QTPlugin implements Plugin {
         filter = new QTFilter();
     }
 
-    /**
-     * @return A New instance of the Quick time data viewer.
-     */
-    public DataViewer getNewDataViewer() {
-        return new QTDataViewer();
+    public DataViewer getNewDataViewer(java.awt.Frame parent, boolean modal) {
+        return new QTDataViewer(parent, modal);
     }
 
     /**

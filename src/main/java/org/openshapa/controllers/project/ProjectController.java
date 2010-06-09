@@ -293,7 +293,8 @@ public final class ProjectController {
                 continue;
             }
 
-            DataViewer viewer = plugin.getNewDataViewer();
+            DataViewer viewer = plugin.getNewDataViewer(
+                    OpenSHAPA.getApplication().getMainFrame(), false);
             viewer.setDataFeed(file);
 
             if (setting.getSettingsId() != null) {

@@ -1158,7 +1158,11 @@ public final class PlaybackController implements PlaybackListener,
                     viewers.add(viewer);
                     viewer.setParentController(PlaybackController.this);
                     viewer.setOffset(offset);
-                    OpenSHAPA.getApplication().show(viewer.getParentJFrame());
+                    boolean visible = viewer.getParentJDialog().isVisible();
+                    OpenSHAPA.getApplication().show(viewer.getParentJDialog());
+                    if (!visible) {
+                        viewer.getParentJDialog().setVisible(false);
+                    }
 
                     // adjust the overall frame rate.
                     float fps = viewer.getFrameRate();
@@ -1481,7 +1485,8 @@ public final class PlaybackController implements PlaybackListener,
         Plugin plugin = pm.getAssociatedPlugin(ff);
 
         if (plugin != null) {
-            DataViewer dataViewer = plugin.getNewDataViewer();
+            DataViewer dataViewer = plugin.getNewDataViewer(
+                    OpenSHAPA.getApplication().getMainFrame(), false);
             dataViewer.setDataFeed(f);
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                 dataViewer.getTrackPainter());

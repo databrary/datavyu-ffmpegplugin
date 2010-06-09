@@ -171,7 +171,7 @@ public final class PluginManager {
                 }
             }
 
-            // We have scaned the OpenSHAPA classpath - but we should also look
+            // We have scanned the OpenSHAPA classpath - but we should also look
             // in the "plugins" directory for jar files that correctly conform
             // to the OpenSHAPA plugin interface.
             LocalStorage ls =
@@ -186,7 +186,7 @@ public final class PluginManager {
             }
 
             // For each of the files in the plugin directory - check to see if
-            // they confirm to the plugin interface.
+            // they conform to the plugin interface.
             for (String file : pluginDir.list()) {
                 File f = new File(pluginDir.getAbsolutePath() + "/" + file);
                 if (file == null) {
@@ -267,8 +267,11 @@ public final class PluginManager {
                 if (PLUGIN_CLASS.isAssignableFrom(testClass)) {
                     Plugin p = (Plugin) testClass.newInstance();
                     plugins.put(p.getFileFilter(), p);
-                    pluginLookup.put(p.getNewDataViewer().getClass().getName(),
-                            p);
+                    // We call this with no parent frame because asking
+                    // OpenSHAPA for its mainframe before it is created ruins
+                    // all the dialogs (and menus).
+                    pluginLookup.put(p.getNewDataViewer(null, false)
+                            .getClass().getName(), p);
                 }
             }
         } catch (InstantiationException e) {

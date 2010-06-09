@@ -43,12 +43,13 @@ import quicktime.std.movies.media.Media;
 import quicktime.std.movies.media.MediaEQSpectrumBands;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.JDialog;
 
 
 /**
  * The viewer for an audio file.
  */
-public final class SoundDataViewer extends JFrame implements DataViewer {
+public final class SoundDataViewer extends JDialog implements DataViewer {
 
     /** The scaling factor for audio preprocessing; # of samples is divided by
      *  this factor. */
@@ -189,7 +190,9 @@ public final class SoundDataViewer extends JFrame implements DataViewer {
     /**
      * Constructor - creates new audio viewer.
      */
-    public SoundDataViewer() {
+    public SoundDataViewer(java.awt.Frame parent, boolean modal) {
+
+        super(parent, modal);
 
         try {
             audio = null;
@@ -267,8 +270,8 @@ public final class SoundDataViewer extends JFrame implements DataViewer {
         offset = newOffset;
     }
 
-    /** @return This frame. */
-    public JFrame getParentJFrame() {
+    /** @return This dialog. */
+    public JDialog getParentJDialog() {
         return this;
     }
 

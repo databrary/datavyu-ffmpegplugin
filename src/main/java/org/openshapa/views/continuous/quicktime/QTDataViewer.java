@@ -50,7 +50,6 @@ import quicktime.std.movies.media.Media;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.awt.event.ActionListener;
-import java.awt.event.MouseMotionListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,12 +60,13 @@ import java.util.Properties;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import org.openshapa.views.OpenSHAPADialog;
 
 
 /**
  * The viewer for a quicktime video file.
  */
-public final class QTDataViewer extends JFrame implements DataViewer {
+public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
 
     /** How many milliseconds in a second? */
     private static final int MILLI = 1000;
@@ -152,7 +152,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     /**
      * Constructor - creates new video viewer.
      */
-    public QTDataViewer() {
+    public QTDataViewer(java.awt.Frame parent, boolean modal) {
+
+        super(parent, modal);
 
         try {
             movie = null;
@@ -344,9 +346,9 @@ public final class QTDataViewer extends JFrame implements DataViewer {
     }
 
     /**
-     * @return The parent JFrame that this data viewer resides within.
+     * @return The parent JDialog that this data viewer resides within.
      */
-    public JFrame getParentJFrame() {
+    public JDialog getParentJDialog() {
         return this;
     }
 

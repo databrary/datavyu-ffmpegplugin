@@ -509,7 +509,7 @@
                 <preCp>swing-worker-1.1.jar</preCp>
                 <preCp>QTJava-7.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
-                <preCp>openshapa-lib-0.0.10.jar</preCp>
+                <preCp>openshapa-lib-0.0.11.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.5.jar</preCp>
                 <preCp>miglayout-3.7.2-swing.jar</preCp>
@@ -583,7 +583,7 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.10</version>
+      <version>0.0.11</version>
     </dependency>
 
     <dependency>

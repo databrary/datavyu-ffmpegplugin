@@ -60,6 +60,8 @@ import org.openshapa.views.continuous.PluginManager;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.util.LinkedHashSet;
+import org.openshapa.views.continuous.quicktime.QTDataViewer;
+import org.openshapa.views.continuous.quicktime.QTPlugin;
 
 
 /**
@@ -343,7 +345,8 @@ public final class DataControllerV extends OpenSHAPADialog
         Plugin plugin = pm.getAssociatedPlugin(ff);
 
         if (plugin != null) {
-            DataViewer dataViewer = plugin.getNewDataViewer();
+            DataViewer dataViewer = plugin.getNewDataViewer(
+                        OpenSHAPA.getApplication().getMainFrame(), false);
             dataViewer.setDataFeed(f);
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                 dataViewer.getTrackPainter());
@@ -1492,10 +1495,10 @@ public final class DataControllerV extends OpenSHAPADialog
         viewers.add(viewer);
         viewer.setParentController(this);
         viewer.setOffset(offset);
-        boolean visible = viewer.getParentJFrame().isVisible();
-        OpenSHAPA.getApplication().show(viewer.getParentJFrame());
+        boolean visible = viewer.getParentJDialog().isVisible();
+        OpenSHAPA.getApplication().show(viewer.getParentJDialog());
         if (!visible) {
-            viewer.getParentJFrame().setVisible(false);
+            viewer.getParentJDialog().setVisible(false);
         }
 
         // adjust the overall frame rate.

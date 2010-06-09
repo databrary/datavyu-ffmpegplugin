@@ -20,10 +20,10 @@ public class SoundPlugin implements Plugin {
     }
 
     /**
-     * @return A New instance of the Quick time data viewer.
+     * @return A New instance of the Sound data viewer.
      */
-    public DataViewer getNewDataViewer() {
-        return new SoundDataViewer();
+    public DataViewer getNewDataViewer(java.awt.Frame parent, boolean modal) {
+        return new SoundDataViewer(parent, modal);
     }
 
     /**
