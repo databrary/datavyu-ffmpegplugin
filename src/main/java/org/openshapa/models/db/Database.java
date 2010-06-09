@@ -4758,6 +4758,7 @@ public abstract class Database
 
             if ( ch == '\b' )
             {
+                System.out.println("Backspace.");
                 // it is a back space -- return false
                 return false;
             }

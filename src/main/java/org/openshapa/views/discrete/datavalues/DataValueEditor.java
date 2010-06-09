@@ -20,6 +20,13 @@ import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.EditorComponent;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.FloatDataValue;
+import org.openshapa.models.db.IntDataValue;
+import org.openshapa.models.db.NominalDataValue;
+import org.openshapa.models.db.QuoteStringDataValue;
+import org.openshapa.models.db.TextStringDataValue;
+import org.openshapa.models.db.TimeStamp;
+import org.openshapa.models.db.TimeStampDataValue;
 
 /**
  * DataValueEditor - abstract class extending EditorComponent. Adds
@@ -242,12 +249,14 @@ public abstract class DataValueEditor extends EditorComponent {
         case KeyEvent.VK_BACK_SPACE:
             if (!getModel().isEmpty()) {
                 removeBehindCaret();
+                updateModelText();
             }
             e.consume();
             break;
         case KeyEvent.VK_DELETE:
             if (!getModel().isEmpty()) {
                 removeAheadOfCaret();
+                updateModelText();
             }
             e.consume();
             break;
@@ -449,5 +458,69 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     public final int getmIndex() {
         return mIndex;
+    }
+
+    private void updateModelText() {
+        switch (model.getItsFargType()) {
+            case COL_PREDICATE:
+                // This should never execute
+                System.out.println("I have no idea what to do here.");
+                break;
+            case FLOAT:
+                FloatDataValue fdv = (FloatDataValue) model;
+                fdv.setItsValue(getText());
+                break;
+            case INTEGER:
+                IntDataValue idv = (IntDataValue) model;
+                idv.setItsValue(getText());
+                break;
+            case NOMINAL:
+                NominalDataValue ndv = (NominalDataValue) model;
+                try {
+                    ndv.setItsValue(getText());
+                } catch (SystemErrorException sysErr) {
+                    logger.error("Couldn't set nominal value", sysErr);
+                    return;
+                }
+                break;
+            case PREDICATE:
+                // This should never execute
+                System.out.println("I have no idea what to do here.");
+                break;
+            case QUOTE_STRING:
+                QuoteStringDataValue qsdv = (QuoteStringDataValue) model;
+                try {
+                    qsdv.setItsValue(getText());
+                } catch (SystemErrorException sysErr) {
+                    logger.error("Couldn't set quote string value", sysErr);
+                    return;
+                }
+                break;
+            case TEXT:
+                TextStringDataValue tsdv = (TextStringDataValue) model;
+                try {
+                    tsdv.setItsValue(getText());
+                } catch (SystemErrorException sysErr) {
+                    logger.error("Couldn't set text string value", sysErr);
+                    return;
+                }
+                break;
+            case TIME_STAMP:
+                // This should never execute
+                logger.error("Timestamp field went through DataValueEditor!");
+                break;
+            case UNDEFINED:
+                // This should never execute
+                logger.error("Undefined DataValue!");
+                break;
+            case UNTYPED:
+                // This should never execute
+                logger.error("Untyped DataValue!");
+                break;
+            default:
+                // This should never execute
+                logger.error("Untyped DataValue!");
+        }
+        updateDatabase();
     }
 }
