@@ -318,7 +318,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             // Key stoke is number - insert stroke at current caret position
             // but only if their is room in the editor for the new digit.
             if (Character.isDigit(e.getKeyChar())
-                    && getCaretPosition() < getText().length()) {
+                    && getCaretPosition() <= getText().length()) {
                 removeAheadOfCaret();
                 StringBuffer currentValue = new StringBuffer(getText());
                 currentValue.deleteCharAt(getCaretPosition());
