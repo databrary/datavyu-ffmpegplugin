@@ -468,16 +468,32 @@ public abstract class DataValueEditor extends EditorComponent {
                 break;
             case FLOAT:
                 FloatDataValue fdv = (FloatDataValue) model;
-                fdv.setItsValue(getText());
+                try {
+                    Float.parseFloat(getText());
+                    fdv.setItsValue(getText());
+                } catch (NumberFormatException nfe) {
+                    // We have an empty or unusable string
+                    fdv.clearValue();
+                }
                 break;
             case INTEGER:
                 IntDataValue idv = (IntDataValue) model;
-                idv.setItsValue(getText());
+                try {
+                    Integer.parseInt(getText());
+                    idv.setItsValue(getText());
+                } catch (NumberFormatException nfe) {
+                    // We have an empty or unusable string
+                    idv.clearValue();
+                }
                 break;
             case NOMINAL:
                 NominalDataValue ndv = (NominalDataValue) model;
                 try {
-                    ndv.setItsValue(getText());
+                    if (getText() == null || getText().equals("")) {
+                        ndv.clearValue();
+                    } else {
+                        ndv.setItsValue(getText());
+                    }
                 } catch (SystemErrorException sysErr) {
                     logger.error("Couldn't set nominal value", sysErr);
                     return;
@@ -490,7 +506,11 @@ public abstract class DataValueEditor extends EditorComponent {
             case QUOTE_STRING:
                 QuoteStringDataValue qsdv = (QuoteStringDataValue) model;
                 try {
-                    qsdv.setItsValue(getText());
+                    if (getText() == null || getText().equals("")) {
+                        qsdv.clearValue();
+                    } else {
+                        qsdv.setItsValue(getText());
+                    }
                 } catch (SystemErrorException sysErr) {
                     logger.error("Couldn't set quote string value", sysErr);
                     return;
@@ -499,7 +519,11 @@ public abstract class DataValueEditor extends EditorComponent {
             case TEXT:
                 TextStringDataValue tsdv = (TextStringDataValue) model;
                 try {
-                    tsdv.setItsValue(getText());
+                    if (getText() == null || getText().equals("")) {
+                        tsdv.clearValue();
+                    } else {
+                        tsdv.setItsValue(getText());
+                    }
                 } catch (SystemErrorException sysErr) {
                     logger.error("Couldn't set text string value", sysErr);
                     return;
