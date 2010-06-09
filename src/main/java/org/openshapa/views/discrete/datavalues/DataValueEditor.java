@@ -464,7 +464,7 @@ public abstract class DataValueEditor extends EditorComponent {
         switch (model.getItsFargType()) {
             case COL_PREDICATE:
                 // This should never execute
-                System.out.println("I have no idea what to do here.");
+                logger.error("Predicate name went through DataValueEditor!");
                 break;
             case FLOAT:
                 FloatDataValue fdv = (FloatDataValue) model;
@@ -485,7 +485,7 @@ public abstract class DataValueEditor extends EditorComponent {
                 break;
             case PREDICATE:
                 // This should never execute
-                System.out.println("I have no idea what to do here.");
+                logger.error("Predicate field went through DataValueEditor!");
                 break;
             case QUOTE_STRING:
                 QuoteStringDataValue qsdv = (QuoteStringDataValue) model;
