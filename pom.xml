@@ -208,7 +208,13 @@
       <id>maven</id>
       <url>http://repo1.maven.org/maven2</url>
       <layout>default</layout>
-    </repository>    
+    </repository>
+
+    <repository>
+      <id>usermetrix</id>
+      <url>http://maven2.usermetrix.com</url>
+      <layout>default</layout>
+    </repository>
   </repositories>
 
   <!-- External plugin repositories - where to find third-part dependencies. -->
