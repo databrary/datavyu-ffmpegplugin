@@ -4,11 +4,10 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.io.File;
-import java.io.FileInputStream;
 
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.project.Project;
@@ -85,11 +84,27 @@ public final class OpenC {
         try {
             ZipFile zf = new ZipFile(archiveFile);
 
+            String arch = archiveFile.getName().substring(0,
+                    archiveFile.getName().lastIndexOf('.'));
             ZipEntry zProj = zf.getEntry("project");
+
+            // BugzID:1941 - Older project files are nested within a directory.
+            // Try in the nested location if unable to find a project.
+            if (zProj == null) {
+                zProj = zf.getEntry(arch + File.separator + "project");
+            }
+
             OpenProjectFileC opc = new OpenProjectFileC();
             project = opc.open(zf.getInputStream(zProj));
 
             ZipEntry zDb = zf.getEntry("db");
+
+            // BugzID:1941 - Older database files are nested within a directory
+            // Try in the nested location if unable to find a project.
+            if (zDb == null) {
+                zDb = zf.getEntry(arch + File.separator + "db");
+            }
+
             OpenDatabaseFileC odc = new OpenDatabaseFileC();
             database = odc.openAsCSV(zf.getInputStream(zDb));
 
