@@ -467,6 +467,7 @@ public final class OpenSHAPA extends SingleFrameApplication
      *            The event that triggered this action.
      */
     @Override protected void end() {
+        OpenSHAPA.getApplication().getMainFrame().setVisible(false);
         UserMetrix.shutdown();
         super.end();
     }

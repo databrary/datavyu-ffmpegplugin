@@ -2,11 +2,14 @@ package org.openshapa.util;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+
 import org.openshapa.OpenSHAPA;
+
 
 /**
  * Ok this curly piece of work is a bit body of reflection to basically achieve
@@ -35,15 +38,15 @@ public class MacHandler {
      * Default constructor.
      */
     public MacHandler() {
+
         try {
             Class appc = Class.forName("com.apple.eawt.Application");
             Object app = appc.newInstance();
 
             Class applc = Class.forName("com.apple.eawt.ApplicationListener");
-            Object listener = Proxy.newProxyInstance(
-                Thread.currentThread().getContextClassLoader(),
-                new Class[]{applc},
-                new HandlerForApplicationAdapter());
+            Object listener = Proxy.newProxyInstance(Thread.currentThread()
+                    .getContextClassLoader(), new Class[] { applc },
+                    new HandlerForApplicationAdapter());
 
             // Add the listener to the application.
             Method m = appc.getMethod("addApplicationListener", applc);
@@ -78,7 +81,7 @@ public class MacHandler {
          * @return Value for the method being invoked.
          */
         public Object invoke(final Object proxy, final Method method,
-                final Object[] args) {
+            final Object[] args) {
 
             try {
                 Class ae = Class.forName("com.apple.eawt.ApplicationEvent");
@@ -87,20 +90,21 @@ public class MacHandler {
                     OpenSHAPA.getApplication().showAboutWindow();
 
                     Method setHandled = ae.getMethod("setHandled",
-                                                     boolean.class);
+                            boolean.class);
                     setHandled.invoke(args[0], true);
                 } else if (method.getName().equals("handleQuit")) {
                     // Accept the quit request.
 
-                    boolean shouldQuit =
-                    OpenSHAPA.getApplication().safeQuit();
+                    boolean shouldQuit = OpenSHAPA.getApplication().safeQuit();
 
                     if (shouldQuit) {
+                        OpenSHAPA.getApplication()
+                                 .getMainFrame().setVisible(false);
                         UserMetrix.shutdown();
                     }
 
                     Method setHandled = ae.getMethod("setHandled",
-                                                     boolean.class);
+                            boolean.class);
 
                     setHandled.invoke(args[0], shouldQuit);
                 }
@@ -108,10 +112,10 @@ public class MacHandler {
                 logger.error("Unable to access method in application", e);
             } catch (IllegalAccessException e) {
                 logger.error("Unable to access application excapeion", e);
-            }  catch (InvocationTargetException e) {
+            } catch (InvocationTargetException e) {
                 logger.error("Unable to invocate target", e);
             } catch (ClassNotFoundException e) {
-              logger.error("Unable to find apple classes", e);
+                logger.error("Unable to find apple classes", e);
             }
 
             return null;

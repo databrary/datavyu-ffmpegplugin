@@ -5,7 +5,6 @@ import com.usermetrix.jclient.UserMetrix;
 
 import java.io.File;
 
-import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
