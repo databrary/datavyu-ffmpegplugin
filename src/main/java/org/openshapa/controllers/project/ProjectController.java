@@ -183,6 +183,7 @@ public final class ProjectController {
      * @return the changed
      */
     public boolean isChanged() {
+
         if (OpenSHAPA.getApplication().getCanSetUnsaved()) {
             return (changed || ((db != null) && db.isChanged()));
         } else {
@@ -268,10 +269,12 @@ public final class ProjectController {
         for (ViewerSetting setting : project.getViewerSettings()) {
             showController = true;
 
+            // Try searching the absolute path stored in the file.
             File file = new File(setting.getFilePath());
+            String projDir = project.getProjectDirectory();
 
+            // If that doesn't work - try generating & using a relative path.
             if (!file.exists()) {
-
                 // BugzID:1804 - If absolute path does not find the file, look
                 // in the relative path (as long as we are dealing with a newer
                 // project file type).
@@ -280,6 +283,20 @@ public final class ProjectController {
                 }
             }
 
+            // If that doesn't work look in the project directory, plus the
+            // last folder in the file's absolute path.
+            if (!file.exists()) {
+                file = new File(projDir + File.separator
+                                + file.getParentFile().getName(),
+                                file.getName());
+            }
+
+            // 2. The project directory.
+            if (!file.exists()) {
+                file = new File(projDir, file.getName());
+            }
+
+            // Give up - couldn't find it.
             if (!file.exists()) {
                 missingFiles = true;
                 missingFilesList.add(setting.getFilePath());
@@ -293,8 +310,8 @@ public final class ProjectController {
                 continue;
             }
 
-            DataViewer viewer = plugin.getNewDataViewer(
-                    OpenSHAPA.getApplication().getMainFrame(), false);
+            DataViewer viewer = plugin.getNewDataViewer(OpenSHAPA
+                    .getApplication().getMainFrame(), false);
             viewer.setDataFeed(file);
 
             if (setting.getSettingsId() != null) {
