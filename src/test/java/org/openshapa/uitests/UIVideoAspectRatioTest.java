@@ -1,6 +1,5 @@
 package org.openshapa.uitests;
 
-import java.awt.Frame;
 
 import java.io.IOException;
 
@@ -12,13 +11,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import java.util.Iterator;
+import javax.swing.JDialog;
 
 import javax.swing.filechooser.FileFilter;
 
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
 import org.fest.swing.fixture.DataControllerFixture;
-import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
@@ -98,8 +98,8 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot, vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
