@@ -13,7 +13,6 @@ import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -308,6 +307,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
             int newHeight = scaleHeight + getInsets().bottom + getInsets().top;
 
             setSize(newWidth, newHeight);
+            this.validate();
         }
     }
 
@@ -327,6 +327,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
             int newHeight = height + getInsets().bottom + getInsets().top;
 
             setSize(newWidth, newHeight);
+            this.validate();
         }
     }
 
