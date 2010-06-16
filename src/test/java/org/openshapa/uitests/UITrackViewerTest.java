@@ -1,6 +1,5 @@
 package org.openshapa.uitests;
 
-import java.awt.Frame;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,9 +23,9 @@ import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
+import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JPanelFixture;
@@ -153,8 +152,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -235,8 +235,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -312,8 +313,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -408,8 +410,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -501,8 +504,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -614,8 +618,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -760,8 +765,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -790,7 +796,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    @Test public void testTrackSnapping() {
+    /** //BugzID:1944 @Test */ public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -853,8 +859,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get first window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid1 = ((Frame) it.next());
-        FrameFixture vidWindow1 = new FrameFixture(mainFrameFixture.robot,
+        JDialog vid1 = ((JDialog) it.next());
+        DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
                 vid1);
 
         vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
@@ -901,8 +907,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get second window
         it = dcf.getDataViewers().iterator();
 
-        Frame vid2 = ((Frame) it.next());
-        FrameFixture vidWindow2 = new FrameFixture(mainFrameFixture.robot,
+        JDialog vid2 = ((JDialog) it.next());
+        DialogFixture vidWindow2 = new DialogFixture(mainFrameFixture.robot,
                 vid2);
 
         vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
@@ -1129,8 +1135,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -1230,8 +1237,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -1280,7 +1288,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    @Test public void testTrackSnappingWithZoom() {
+    /* //BugzID:1944 @Test */ public void testTrackSnappingWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1346,8 +1354,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get first window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid1 = ((Frame) it.next());
-        FrameFixture vidWindow1 = new FrameFixture(mainFrameFixture.robot,
+        JDialog vid1 = ((JDialog) it.next());
+        DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
                 vid1);
 
         vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
@@ -1394,8 +1402,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get second window
         it = dcf.getDataViewers().iterator();
 
-        Frame vid2 = ((Frame) it.next());
-        FrameFixture vidWindow2 = new FrameFixture(mainFrameFixture.robot,
+        JDialog vid2 = ((JDialog) it.next());
+        DialogFixture vidWindow2 = new DialogFixture(mainFrameFixture.robot,
                 vid2);
 
         vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
@@ -1617,8 +1625,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -1710,8 +1719,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -1804,8 +1814,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -1914,8 +1925,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -2024,8 +2036,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -2286,11 +2299,13 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // Check track order
         mainFrameFixture.clickMenuItemWithPath("Controller",
             "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
+
+        DialogFixture dvc = WindowFinder.findDialog(DataControllerV.class)
+            .withTimeout(1000).using(mainFrameFixture.robot);
+        dvc.moveTo(new Point(0, 100));
 
         final DataControllerFixture dcf2 = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                mainFrameFixture.robot, (DataControllerV) dvc.component());
 
         dcf2.pressShowTracksButton();
 

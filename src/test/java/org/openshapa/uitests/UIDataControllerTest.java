@@ -1,6 +1,5 @@
 package org.openshapa.uitests;
 
-import java.awt.Frame;
 
 import java.io.IOException;
 
@@ -10,7 +9,6 @@ import java.util.logging.Logger;
 import static org.fest.reflect.core.Reflection.method;
 
 import java.awt.Point;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
@@ -19,12 +17,14 @@ import java.io.File;
 import java.util.Date;
 import java.util.Iterator;
 
+import javax.swing.JDialog;
 import javax.swing.filechooser.FileFilter;
 
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
+import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.DataControllerFixture;
-import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
@@ -59,7 +59,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     /**
      * Nominal test input.
      */
-    private String[] nominalTestInput = {"Subject stands )up ", "$10,432"};
+    private String[] nominalTestInput = { "Subject stands )up ", "$10,432" };
 
     /**
      * Nominal test output.
@@ -71,27 +71,27 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     /**
      * Text test input.
      */
-    private String[] textTestInput = {"Subject stands up ", "$10,432"};
+    private String[] textTestInput = { "Subject stands up ", "$10,432" };
 
     /**
      * Integer test input.
      */
-    private String[] integerTestInput = {"1a9", "10-432"};
+    private String[] integerTestInput = { "1a9", "10-432" };
 
     /**
      * Integer test output.
      */
-    private String[] expectedIntegerTestOutput = {"19", "-43210"};
+    private String[] expectedIntegerTestOutput = { "19", "-43210" };
 
     /**
      * Float test input.
      */
-    private String[] floatTestInput = {"1a.9", "10-43.2"};
+    private String[] floatTestInput = { "1a.9", "10-43.2" };
 
     /**
      * Float test output.
      */
-    private String[] expectedFloatTestOutput = {"1.90", "-43.2100"};
+    private String[] expectedFloatTestOutput = { "1.90", "-43.2100" };
 
     /**
      * Standard test sequence focussing on jogging.
@@ -118,9 +118,11 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         mainFrameFixture.clickMenuItemWithPath("Controller",
             "Data Viewer Controller");
 
+        DialogFixture dcv = WindowFinder.findDialog(DataControllerV.class)
+            .withTimeout(1000).using(mainFrameFixture.robot);
+
         DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+                mainFrameFixture.robot, (DataControllerV) dcv.component());
 
         // 3. Create new cell - so we have something to send key to because
         SpreadsheetColumnFixture column = ssPanel.column(varName);
@@ -391,8 +393,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -403,8 +406,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
         // 3. Play movie for 5 seconds
         dcf.pressPlayButton();
@@ -436,8 +438,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 4. Check that speed has returned to 0 and time is 0
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
         Assert.assertEquals(dcf.getSpeed(), "0");
 
@@ -503,8 +504,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -604,8 +606,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
         vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
@@ -615,8 +618,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
         // 2. Shuttle forward to 4x
         dcf.pressPlayButton();
@@ -662,16 +664,14 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         Assert.assertEquals(dcf.getSpeed(), "0");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
         // 5. Press pause and ensure it does nothing
         dcf.pressPauseButton();
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         Assert.assertEquals(dcf.getSpeed(), "0");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
     }
 
     /**
@@ -728,10 +728,11 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
-        Frame vid = ((Frame) it.next());
+        JDialog vid = ((JDialog) it.next());
 
 
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
@@ -745,8 +746,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
 
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.14, 0.08));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile,
+                0.14, 0.08));
 
         // 2. Fast forward video to end and confirm you've reached end (1min)
         dcf.pressFastForwardButton();
@@ -766,8 +767,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         vid.toFront();
         refImageFile = new File(root + "/ui/head_turns600h1mt.png");
         vidImage = UIImageUtils.captureAsScreenshot(vid);
-        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage,
-                refImageFile, 0.14, 0.08));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile,
+                0.14, 0.08));
 
         // 3. Press play, should start playing again
         dcf.pressPlayButton();
@@ -852,8 +853,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // Get video window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 310, 300));
 
@@ -954,8 +956,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // Get video window
         Iterator it = dcf.getDataViewers().iterator();
 
-        Frame vid = ((Frame) it.next());
-        FrameFixture vidWindow = new FrameFixture(mainFrameFixture.robot, vid);
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 310, 300));
 
