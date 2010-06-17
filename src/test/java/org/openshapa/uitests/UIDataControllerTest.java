@@ -1002,10 +1002,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         Assert.assertTrue(firstCell.isSelected());
         dcf.pressSetNewCellOffsetButton();
-        Assert.assertEquals(firstCell.offsetTimestamp().text(), "00:00:00:000");
-        Assert.assertEquals(secondCell.offsetTimestamp().text(),
-            offsetTime);
-
+        SpreadsheetCellFixture thirdCell = ssPanel.column("p").cell(2);
+        Assert.assertEquals(thirdCell.offsetTimestamp().text(), offsetTime);
+        Assert.assertEquals(thirdCell.offsetTimestamp().text(), offsetTime);
     }
 
     @Test public void joggingAtBeginningAndEnd() {

@@ -2325,6 +2325,7 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action public void setNewCellStopTime() {
         logger.usage("Set new cell offset");
+        new CreateNewCellC(getCurrentTime());
         new SetNewCellStopTimeC(getCurrentTime());
         setFindOffsetField(getCurrentTime());
     }
