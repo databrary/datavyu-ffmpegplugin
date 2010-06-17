@@ -2172,10 +2172,13 @@ public final class DataControllerV extends OpenSHAPADialog
             mul = CTRLSHIFTJOG;
         }
 
-        /* Bug1361: Do not allow jog to skip past the region boundaries. */
-        long nextTime = (long) (mul * (-ONE_SECOND)
-                / playbackModel.getCurrentFPS());
+        long stepSize = ((-ONE_SECOND) / (long) playbackModel.getCurrentFPS());
+        long nextTime = (long) (mul * stepSize);
 
+        /* BugzID:1544 - Preserve precision - force jog to frame markers. */
+        nextTime = nextTime - (clock.getTime() % stepSize);
+
+        /* BugzID:1361 - Disallow jog to skip past the region boundaries. */
         if ((clock.getTime() + nextTime) > playbackModel.getWindowPlayStart()) {
             jump(nextTime);
         } else {
@@ -2199,10 +2202,17 @@ public final class DataControllerV extends OpenSHAPADialog
             mul = CTRLSHIFTJOG;
         }
 
-        /* Bug1361: Do not allow jog to skip past the region boundaries. */
-        long nextTime = (long) (mul * (ONE_SECOND)
-                / playbackModel.getCurrentFPS());
+        long stepSize = ((ONE_SECOND) / (long) playbackModel.getCurrentFPS());
+        long nextTime = (long) (mul * stepSize);
 
+        /* BugzID:1544 - Preserve precision - force jog to frame markers. */
+        long mod = (clock.getTime() % stepSize);
+
+        if (mod != 0) {
+            nextTime = nextTime + stepSize - mod;
+        }
+
+        /* BugzID:1361 - Disallow jog to skip past the region boundaries. */
         if ((clock.getTime() + nextTime) < playbackModel.getWindowPlayEnd()) {
             jump(nextTime);
         } else {
@@ -2278,6 +2288,7 @@ public final class DataControllerV extends OpenSHAPADialog
         playbackModel.setShuttleRate(0);
         playbackModel.setPauseRate(0);
         shuttleDirection = ShuttleDirection.UNDEFINED;
+
         clock.stepTime(step);
     }
 
@@ -2286,7 +2297,6 @@ public final class DataControllerV extends OpenSHAPADialog
      *            Absolute time to jump to.
      */
     private void jumpTo(final long time) {
-
         clock.stop();
         clock.setTime(time);
     }
