@@ -60,8 +60,6 @@ import org.openshapa.views.continuous.PluginManager;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.util.LinkedHashSet;
-import org.openshapa.views.continuous.quicktime.QTDataViewer;
-import org.openshapa.views.continuous.quicktime.QTPlugin;
 
 
 /**
@@ -2096,6 +2094,10 @@ public final class DataControllerV extends OpenSHAPADialog
         } catch (ParseException e) {
             logger.error("unable to find within video", e);
         }
+    }
+
+    public void clearRegionOfInterestAction() {
+        mixerControllerV.clearRegionOfInterest();
     }
 
     /**

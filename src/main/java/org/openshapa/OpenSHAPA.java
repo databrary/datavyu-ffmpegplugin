@@ -161,7 +161,6 @@ public final class OpenSHAPA extends SingleFrameApplication
             case 'l':
             case 'r':
                 evt.consume();
-
                 return true;
 
             default:
@@ -320,7 +319,11 @@ public final class OpenSHAPA extends SingleFrameApplication
             break;
 
         case KeyEvent.VK_SUBTRACT:
-            dataController.pressGoBack();
+            if (modifiers == InputEvent.CTRL_MASK) {
+                dataController.clearRegionOfInterestAction();
+            } else {
+                dataController.pressGoBack();
+            }
 
             break;
 

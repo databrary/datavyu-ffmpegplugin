@@ -33,7 +33,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
 
     /**
      * Constructor.
-     * 
+     *
      * @param ta
      *            The parent JTextComponent the editor is in.
      * @param cell
@@ -51,7 +51,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
 
     /**
      * Constructor.
-     * 
+     *
      * @param ta
      *            The parent JTextComponent the editor is in.
      * @param cell
@@ -75,7 +75,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
 
     /**
      * The action to invoke when a key is typed.
-     * 
+     *
      * @param e
      *            The KeyEvent that triggered this action.
      */

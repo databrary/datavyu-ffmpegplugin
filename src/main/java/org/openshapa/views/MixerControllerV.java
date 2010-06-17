@@ -130,7 +130,7 @@ public final class MixerControllerV implements NeedleEventListener,
         // Set up the root panel
         tracksPanel = new JPanel();
         tracksPanel.setLayout(new MigLayout("ins 0",
-                "[left|left|left]unrel push[right|right]", ""));
+                "[left|left|left|left]rel push[right|right]", ""));
         tracksPanel.setBackground(Color.WHITE);
 
         // Menu buttons
@@ -159,6 +159,14 @@ public final class MixerControllerV implements NeedleEventListener,
             });
         snapRegion.setName("snapRegionButton");
 
+        JButton clearRegion = new JButton("Clear Region");
+        clearRegion.addActionListener(new ActionListener() {
+           public void actionPerformed(final ActionEvent e) {
+               clearRegionHandler(e);
+           }
+        });
+        clearRegion.setName("clearRegionButton");
+
         zoomSlide = new JSlider(JSlider.HORIZONTAL, 100, 3200, 100);
         zoomSlide.setToolTipText("1.00x");
         zoomSlide.addChangeListener(new ChangeListener() {
@@ -186,6 +194,7 @@ public final class MixerControllerV implements NeedleEventListener,
         tracksPanel.add(lockToggle);
         tracksPanel.add(bookmarkButton);
         tracksPanel.add(snapRegion);
+        tracksPanel.add(clearRegion);
         tracksPanel.add(zoomRegionButton);
         tracksPanel.add(zoomSlide, "wrap");
 
@@ -304,7 +313,7 @@ public final class MixerControllerV implements NeedleEventListener,
 
         layeredPane.add(tracksScrollBar, Integer.valueOf(100));
 
-        tracksPanel.add(layeredPane, "span 5, w 785!, h 250!, wrap");
+        tracksPanel.add(layeredPane, "span 6, w 785!, h 250!, wrap");
         tracksPanel.validate();
     }
 
@@ -729,6 +738,23 @@ public final class MixerControllerV implements NeedleEventListener,
     private void snapRegionHandler(final ActionEvent e) {
         OpenSHAPA.getDataController().setRegionOfInterestAction();
 
+    }
+
+    /**
+     * Handles the event for clearing the snap region.
+     *
+     * @param e The event that trigged this action.
+     */
+    private void clearRegionHandler(final ActionEvent e) {
+        clearRegionOfInterest();
+    }
+
+    /**
+     * Clears the region of interest.
+     */
+    public void clearRegionOfInterest() {
+        this.setPlayRegionStart(minStart);
+        this.setPlayRegionEnd(maxEnd);
     }
 
     /**
