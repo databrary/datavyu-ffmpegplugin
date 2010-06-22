@@ -59,6 +59,7 @@ import java.util.Properties;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.views.OpenSHAPADialog;
 
 
@@ -178,7 +179,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
                 }
             });
 
-        volumeDialog = new JDialog();
+        volumeDialog = new JDialog(parent, false);
         volumeDialog.setUndecorated(true);
         volumeDialog.setVisible(false);
         volumeDialog.setLayout(new MigLayout("", "[center]", ""));
