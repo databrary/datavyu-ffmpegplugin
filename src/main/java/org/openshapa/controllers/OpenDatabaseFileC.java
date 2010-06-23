@@ -36,8 +36,6 @@ import org.openshapa.models.db.QuoteStringFormalArg;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.db.TextStringDataValue;
 import org.openshapa.models.db.TimeStamp;
-import org.openshapa.models.db.UnTypedFormalArg;
-import org.openshapa.models.db.UndefinedDataValue;
 import org.openshapa.models.db.VocabElement;
 import org.openshapa.util.Constants;
 
@@ -340,7 +338,10 @@ public final class OpenDatabaseFileC {
             FormalArgument fa = patternVE.getFormalArgCopy(i);
             boolean emptyArg = false;
 
-            if (tokens[startI + i].length() == 0) {
+            // If the field doesn't contain anything or matches the FargName
+            // we consider the argument to be 'empty'.
+            if (tokens[startI + i].length() == 0
+                || tokens[startI + i].equals(fa.getFargName())) {
                 emptyArg = true;
             }
             tokens[startI + i] = tokens[startI + i].trim();
@@ -356,13 +357,6 @@ public final class OpenDatabaseFileC {
                 }
                 arguments.add(qsdv);
                 break;
-            case NOMINAL:
-                NominalDataValue ndv = new NominalDataValue(db);
-                if (!emptyArg) {
-                    ndv.setItsValue(tokens[startI + i]);
-                }
-                arguments.add(ndv);
-                break;
             case INTEGER:
                 IntDataValue idv = new IntDataValue(db);
                 if (!emptyArg) {
@@ -377,12 +371,16 @@ public final class OpenDatabaseFileC {
                 }
                 arguments.add(fdv);
                 break;
+
+            // BugzID:1703 - Default everything to a nominal. We don't "do"
+            // untyped in OpenSHAPA.
+            case NOMINAL:
             default:
-                UndefinedDataValue udv = new UndefinedDataValue(db);
+                NominalDataValue ndv = new NominalDataValue(db);
                 if (!emptyArg) {
-                    udv.setItsValue(tokens[startI + i]);
+                    ndv.setItsValue(tokens[startI + i]);
                 }
-                arguments.add(udv);
+                arguments.add(ndv);
                 break;
             }
         }
@@ -578,10 +576,6 @@ public final class OpenDatabaseFileC {
         if (formalArgument[1].equalsIgnoreCase("quote_string")) {
             fa = new QuoteStringFormalArg(db, "<" + formalArgument[0] + ">");
 
-        } else if (formalArgument[1].equalsIgnoreCase("nominal")) {
-            // Add nominal formal argument.
-            fa = new NominalFormalArg(db, "<" + formalArgument[0] + ">");
-
         } else if (formalArgument[1].equalsIgnoreCase("integer")) {
             // Add integer formal argument.
             fa = new IntFormalArg(db, "<" + formalArgument[0] + ">");
@@ -591,8 +585,9 @@ public final class OpenDatabaseFileC {
             fa = new FloatFormalArg(db, "<" + formalArgument[0] + ">");
 
         } else {
-            // Not sure what it is - add undefined formal argument.
-            fa = new UnTypedFormalArg(db, "<" + formalArgument[0] + ">");
+            // BugzID:1703 - Not sure what it is - add default nominal arg,
+            // OpenSHAPA doesn't "do" untyped arguments.
+            fa = new NominalFormalArg(db, "<" + formalArgument[0] + ">");
         }
 
         return fa;

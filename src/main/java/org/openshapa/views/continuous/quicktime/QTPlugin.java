@@ -3,7 +3,6 @@ package org.openshapa.views.continuous.quicktime;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 
 import org.openshapa.views.continuous.DataViewer;
