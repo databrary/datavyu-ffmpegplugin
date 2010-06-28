@@ -90,8 +90,8 @@ public final class TrackController {
      */
     private final EventListenerList listenerList;
 
-    /** Listeners interested in custom action button events. */
-    private final List<CustomActionListener> buttonListeners;
+    /** Listener interested in custom action button events. */
+    private CustomActionListener buttonListener;
 
     /** States. */
     // can the carriage be moved using the mouse when snap is switched on
@@ -121,8 +121,6 @@ public final class TrackController {
         trackPainter.setTrackModel(trackModel);
 
         listenerList = new EventListenerList();
-
-        buttonListeners = new LinkedList<CustomActionListener>();
 
         final TrackPainterListener painterListener = new TrackPainterListener();
         trackPainter.addMouseListener(painterListener);
@@ -181,10 +179,8 @@ public final class TrackController {
         actionButton1.setName("actionButton1");
         actionButton1.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-
-                    for (CustomActionListener listener : buttonListeners) {
-                        listener.handleActionButtonEvent1(e);
-                    }
+                    buttonListener.handleActionButtonEvent1(e);
+                    updateButtonIcons();
                 }
             });
         header.add(actionButton1, "w 20!, h 20!");
@@ -193,10 +189,8 @@ public final class TrackController {
         actionButton2.setName("actionButton2");
         actionButton2.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-
-                    for (CustomActionListener listener : buttonListeners) {
-                        listener.handleActionButtonEvent2(e);
-                    }
+                    buttonListener.handleActionButtonEvent2(e);
+                    updateButtonIcons();
                 }
             });
         header.add(actionButton2, "w 20!, h 20!");
@@ -206,10 +200,8 @@ public final class TrackController {
         actionButton3.addActionListener(new ActionListener() {
 
                 public void actionPerformed(final ActionEvent e) {
-
-                    for (CustomActionListener listener : buttonListeners) {
-                        listener.handleActionButtonEvent3(e);
-                    }
+                    buttonListener.handleActionButtonEvent3(e);
+                    updateButtonIcons();
                 }
             });
         header.add(actionButton3, "w 20!, h 20!");
@@ -218,6 +210,12 @@ public final class TrackController {
 
         // Create the Carriage panel
         view.add(trackPainter, "w 662!, h 75!");
+    }
+
+    private void updateButtonIcons() {
+        actionButton1.setIcon(buttonListener.getActionButtonIcon1());
+        actionButton2.setIcon(buttonListener.getActionButtonIcon2());
+        actionButton3.setIcon(buttonListener.getActionButtonIcon3());
     }
 
     /**
@@ -569,7 +567,7 @@ public final class TrackController {
     public void addCustomActionListener(final CustomActionListener listener) {
 
         synchronized (this) {
-            buttonListeners.add(listener);
+            buttonListener = listener;
         }
     }
 
@@ -582,7 +580,7 @@ public final class TrackController {
         final CustomActionListener listener) {
 
         synchronized (this) {
-            buttonListeners.remove(listener);
+            buttonListener = null;
         }
     }
 
