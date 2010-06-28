@@ -429,6 +429,12 @@ public final class TrackController implements ViewerStateListener {
         trackPainter.setTrackModel(trackModel);
     }
 
+    /**
+     * When the viewer tells us that the state of the project should change,
+     * tell OpenSHAPA to update the projectChanged state (along with the title),
+     * and update the button icons too.
+     *
+     */
     public void notifyStateChanged() {
         updateButtonIcons();
         OpenSHAPA.getProjectController().projectChanged();

@@ -638,6 +638,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
         }
     }
 
+    /** Notifies listeners that a change to the project has occurred. */
     private void notifyChange() {
         for (ViewerStateListener listener : viewerListeners) {
             listener.notifyStateChanged();
