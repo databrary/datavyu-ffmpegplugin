@@ -796,7 +796,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /** //BugzID:1944 @Test */ public void testTrackSnapping() {
+    @Test public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -856,15 +856,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             } while (worked == false);
         }
 
-        // 2. Get first window
-        Iterator it = dcf.getDataViewers().iterator();
-
-        JDialog vid1 = ((JDialog) it.next());
-        DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
-                vid1);
-
-        vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
-
         // c. Open second video
         final File videoFile2 = new File(root + "/ui/head_turns_copy.mov");
         Assert.assertTrue(videoFile2.exists());
@@ -904,12 +895,23 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             } while (worked == false);
         }
 
-        // 2. Get second window
-        it = dcf.getDataViewers().iterator();
+        // Get first window
+        Iterator it = dcf.getDataViewers().iterator();
 
+        JDialog vid1 = ((JDialog) it.next());
+        DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
+                vid1);
+        vidWindow1.focus();
+        vidWindow1.resizeHeightTo(300);
+
+        vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));        
+
+        // Get second window
         JDialog vid2 = ((JDialog) it.next());
         DialogFixture vidWindow2 = new DialogFixture(mainFrameFixture.robot,
                 vid2);
+        vidWindow2.focus();
+        vidWindow2.resizeHeightTo(300);
 
         vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
 
@@ -1288,7 +1290,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /* //BugzID:1944 @Test */ public void testTrackSnappingWithZoom() {
+    @Test public void testTrackSnappingWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1351,15 +1353,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             } while (worked == false);
         }
 
-        // 2. Get first window
-        Iterator it = dcf.getDataViewers().iterator();
-
-        JDialog vid1 = ((JDialog) it.next());
-        DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
-                vid1);
-
-        vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
-
         // c. Open second video
         final File videoFile2 = new File(root + "/ui/head_turns_copy.mov");
         Assert.assertTrue(videoFile2.exists());
@@ -1399,12 +1392,23 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             } while (worked == false);
         }
 
-        // 2. Get second window
-        it = dcf.getDataViewers().iterator();
+        // Get first window
+        Iterator it = dcf.getDataViewers().iterator();
 
+        JDialog vid1 = ((JDialog) it.next());
+        DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
+                vid1);
+        vidWindow1.focus();
+        vidWindow1.resizeHeightTo(300);
+
+        vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        // Get second window
         JDialog vid2 = ((JDialog) it.next());
         DialogFixture vidWindow2 = new DialogFixture(mainFrameFixture.robot,
                 vid2);
+        vidWindow2.focus();
+        vidWindow2.resizeHeightTo(300);
 
         vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
 
