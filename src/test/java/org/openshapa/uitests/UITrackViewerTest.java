@@ -904,7 +904,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindow1.focus();
         vidWindow1.resizeHeightTo(300);
 
-        vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));        
+        vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
         // Get second window
         JDialog vid2 = ((JDialog) it.next());
@@ -2069,6 +2069,15 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getStartTimeAsTimeStamp(), "00:00:20:000");
         Assert.assertEquals(dcf.getTrackMixerController().getRegion()
             .getEndTimeAsTimeStamp(), "00:00:40:000");
+
+        // Press clear region button
+        dcf.getTrackMixerController().getClearSnapRegionButton().click();
+
+        // Check that region is cleared
+        Assert.assertEquals(dcf.getTrackMixerController().getRegion()
+            .getStartTimeAsTimeStamp(), "00:00:00:000");
+        Assert.assertEquals(dcf.getTrackMixerController().getRegion()
+            .getEndTimeAsTimeStamp(), "00:01:00:000");
     }
 
     /**
