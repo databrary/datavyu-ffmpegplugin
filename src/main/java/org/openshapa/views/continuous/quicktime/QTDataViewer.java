@@ -145,19 +145,24 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     /** Menu item for full size. */
     private JMenuItem menuItemFull;
 
-    private ImageIcon volumeIcon =
+    /** Icon for displaying volume slider. */
+    private final ImageIcon volumeIcon =
             new ImageIcon(getClass().getResource("/icons/audio-volume.png"));
 
-    private ImageIcon mutedIcon =
+    /** Volume slider icon for when the video is hidden (volume is muted). */
+    private final ImageIcon mutedIcon =
             new ImageIcon(getClass().getResource("/icons/volume-muted.png"));
 
-    private ImageIcon eyeIcon =
+    /** Icon for hiding the video. */
+    private final ImageIcon eyeIcon =
             new ImageIcon(getClass().getResource("/icons/eye.png"));
 
-    private ImageIcon hiddenIcon =
+    /** Icon for showing the video. */
+    private final ImageIcon hiddenIcon =
             new ImageIcon(getClass().getResource("/icons/eye-shut.png"));
 
-    private ImageIcon resizeIcon =
+    /** Icon for resizing the video. */
+    private final ImageIcon resizeIcon =
             new ImageIcon(getClass().getResource("/icons/resize.png"));
 
 
