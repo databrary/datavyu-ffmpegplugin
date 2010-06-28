@@ -104,6 +104,13 @@ public class TrackFixture extends ComponentFixture {
     }
 
     /**
+     * Get the lock/unlock button.
+     */
+    public JButtonFixture getLockButton() {
+        return new JButtonFixture(robot, "lockUnlockButton");
+    }
+
+    /**
      * Press action button 1.
      * For example, on a video, this is the volume control.
      */
@@ -126,6 +133,31 @@ public class TrackFixture extends ComponentFixture {
     */
     public void pressActionButton3() {
         new JButtonFixture(robot, "actionButton3").click();
+    }
+
+    /**
+     * Get the action button 1.
+     * For example, on a video, this is the volume control.
+     */
+    public JButtonFixture getActionButton1() {
+        return new JButtonFixture(robot, "actionButton1");
+    }
+
+    /**
+    * Get the action button 2.
+    * For example, on a video, this shows/hides the window and mutes the
+    * volume.
+    */
+    public JButtonFixture getActionButton2() {
+        return new JButtonFixture(robot, "actionButton2");
+    }
+
+    /**
+    * Get the action button 3.
+    * For example, on a video, this gives you a shortcut to.
+    */
+    public JButtonFixture getActionButton3() {
+        return new JButtonFixture(robot, "actionButton3");
     }
 
     /**
