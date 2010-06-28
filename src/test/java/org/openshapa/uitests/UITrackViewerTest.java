@@ -796,7 +796,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /** //BugzID:1944 @Test */ public void testTrackSnapping() {
+    @Test public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -862,6 +862,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         JDialog vid1 = ((JDialog) it.next());
         DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
                 vid1);
+        vidWindow1.resizeHeightTo(300);
 
         vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -910,6 +911,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         JDialog vid2 = ((JDialog) it.next());
         DialogFixture vidWindow2 = new DialogFixture(mainFrameFixture.robot,
                 vid2);
+        vidWindow2.resizeHeightTo(300);
 
         vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
 
@@ -1288,7 +1290,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /* //BugzID:1944 @Test */ public void testTrackSnappingWithZoom() {
+    @Test public void testTrackSnappingWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -1357,6 +1359,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         JDialog vid1 = ((JDialog) it.next());
         DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
                 vid1);
+        vidWindow1.resizeHeightTo(300);
 
         vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
@@ -1405,6 +1408,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         JDialog vid2 = ((JDialog) it.next());
         DialogFixture vidWindow2 = new DialogFixture(mainFrameFixture.robot,
                 vid2);
+        vidWindow2.resizeHeightTo(300);
 
         vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
 
