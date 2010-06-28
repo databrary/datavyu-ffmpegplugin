@@ -12,7 +12,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import org.openshapa.util.Constants;
@@ -43,6 +42,7 @@ import quicktime.std.movies.media.Media;
 import quicktime.std.movies.media.MediaEQSpectrumBands;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 
 
@@ -781,6 +781,30 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
             }
 
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon1()
+     */
+    public ImageIcon getActionButtonIcon1() {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon2()
+     */
+    public ImageIcon getActionButtonIcon2() {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon3()
+     */
+    public ImageIcon getActionButtonIcon3() {
+        return null;
     }
 
 }

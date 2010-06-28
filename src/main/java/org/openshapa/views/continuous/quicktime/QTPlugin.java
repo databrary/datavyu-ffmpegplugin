@@ -42,35 +42,6 @@ public final class QTPlugin implements Plugin {
         return new ImageIcon(typeIconURL);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon1()
-     */
-    public ImageIcon getActionButtonIcon1() {
-        URL typeIconURL = getClass().getResource("/icons/audio-volume.png");
-        return new ImageIcon(typeIconURL);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon2()
-     */
-    public ImageIcon getActionButtonIcon2() {
-        URL typeIconURL = getClass().getResource("/icons/eye.png");
-
-        return new ImageIcon(typeIconURL);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon3()
-     */
-    public ImageIcon getActionButtonIcon3() {
-        URL typeIconURL = getClass().getResource("/icons/resize.png");
-
-        return new ImageIcon(typeIconURL);
-    }
-
     /**
      * This action is associated with the volume control option.
      *

@@ -349,9 +349,9 @@ public final class DataControllerV extends OpenSHAPADialog
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                 dataViewer.getTrackPainter());
             mixerControllerV.bindTrackActions(f.getAbsolutePath(), dataViewer,
-                plugin.isActionSupported1(), plugin.getActionButtonIcon1(),
-                plugin.isActionSupported2(), plugin.getActionButtonIcon2(),
-                plugin.isActionSupported3(), plugin.getActionButtonIcon3());
+                plugin.isActionSupported1(), dataViewer.getActionButtonIcon1(),
+                plugin.isActionSupported2(), dataViewer.getActionButtonIcon2(),
+                plugin.isActionSupported3(), dataViewer.getActionButtonIcon3());
         }
     }
 

@@ -53,13 +53,13 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 
 import java.util.Properties;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import org.openshapa.OpenSHAPA;
 import org.openshapa.views.OpenSHAPADialog;
 
 
@@ -660,6 +660,36 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
         } catch (IOException e) {
             logger.error("Error saving settings", e);
         }
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon1()
+     */
+    public ImageIcon getActionButtonIcon1() {
+        URL typeIconURL = getClass().getResource("/icons/audio-volume.png");
+        return new ImageIcon(typeIconURL);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon2()
+     */
+    public ImageIcon getActionButtonIcon2() {
+        URL typeIconURL = getClass().getResource("/icons/eye.png");
+
+        return new ImageIcon(typeIconURL);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon3()
+     */
+    public ImageIcon getActionButtonIcon3() {
+        URL typeIconURL = getClass().getResource("/icons/resize.png");
+
+        return new ImageIcon(typeIconURL);
     }
 
     // ------------------------------------------------------------------------
