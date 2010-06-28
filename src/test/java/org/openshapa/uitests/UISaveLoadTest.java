@@ -688,6 +688,105 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * loadTest("test-v3-in.csv", "test-v3-out.csv");}*/
 
     /**
+     * Test ODB to OPF conversion.
+     * @throws Exception on any error.
+     */
+    /*BugzID:1703@Test*/ public void testODBtoOPF() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+        String root = System.getProperty("testPath");
+
+        String inputFile = "macshapa-file.odb";
+        String odbOutputCSV = "odfCSV.csv";
+        String opfOutputCSV = "opfCSV.csv";
+
+        File iFile = new File(root + "/ui/" + inputFile);
+        File odbCSV = new File(root + "/ui/" + odbOutputCSV);
+        Assert.assertTrue(iFile.exists());
+
+        // 1. Load ODB File
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+
+            if (inputFile.endsWith("odb")) {
+                fc.setFileFilter(new MODBFilter());
+            } else if (inputFile.endsWith("shapa")) {
+                fc.setFileFilter(new SHAPAFilter());
+            }
+
+            fc.setSelectedFile(iFile);
+
+            method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                OpenSHAPA.getView()).invoke(fc);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
+
+            try {
+                JOptionPaneFixture warning = mainFrameFixture.optionPane();
+                warning.requireTitle("Unsaved changes");
+                warning.buttonWithText("OK").click();
+            } catch (Exception e) {
+                // Do nothing
+            }
+
+            if (inputFile.endsWith("odb")) {
+                mainFrameFixture.fileChooser().component().setFileFilter(
+                    new MODBFilter());
+            } else if (inputFile.endsWith("shapa")) {
+                mainFrameFixture.fileChooser().component().setFileFilter(
+                    new SHAPAFilter());
+            }
+
+            mainFrameFixture.fileChooser().selectFile(iFile).approve();
+        }
+
+        // Check that the title bar file name does not have an asterix
+        Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
+
+        // Check that something has been loaded
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        Assert.assertNotNull(ssPanel.allColumns());
+
+        // Save file as a OPF
+        File toSave = new File(tempFolder + "/odfOPF.opf");
+
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+
+            fc.setSelectedFile(toSave);
+
+            method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                OpenSHAPA.getView()).invoke(fc);
+        } else {
+
+            mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
+
+            mainFrameFixture.fileChooser().selectFile(toSave).approve();
+        }
+
+        // Close and reopen OPF
+        loadFile(toSave);
+
+        // Save as CSV file
+        File opfCSV = saveAsCSV("opf");
+
+        // Compare CSV files
+        Assert.assertTrue(odbCSV.exists(),
+            "Expecting odb CSV to exist.");
+        Assert.assertTrue(opfCSV.exists(),
+            "Expecting reference output to exist.");
+
+        Assert.assertTrue(UIUtils.areFilesSameLineComp(odbCSV, opfCSV),
+            "Expecting files to be the same.");
+    }
+
+    /**
      * Test loading an ODB file.
      * @throws Exception on any error.
      */
