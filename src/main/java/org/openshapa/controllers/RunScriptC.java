@@ -119,6 +119,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
             // Place a reference to the database within the scripting engine.
             rubyEngine.put("db", OpenSHAPA.getProjectController().getDB());
+            rubyEngine.put("pj", OpenSHAPA.getProjectController()
+                                          .getProject());
 
             FileReader reader = new FileReader(scriptFile);
             rubyEngine.eval(reader);
@@ -126,6 +128,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
             // Remove the reference to db
             rubyEngine.put("db", null);
+            rubyEngine.put("pj", null);
 
         } catch (ScriptException e) {
             consoleWriter.println("***** SCRIPT ERRROR *****");
