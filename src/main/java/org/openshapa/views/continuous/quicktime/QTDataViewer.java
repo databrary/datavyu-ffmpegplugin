@@ -53,7 +53,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 
 import java.util.Properties;
 
@@ -61,6 +62,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.openshapa.views.OpenSHAPADialog;
+import org.openshapa.views.continuous.ViewerStateListener;
 
 
 /**
@@ -165,6 +167,10 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     private final ImageIcon resizeIcon =
             new ImageIcon(getClass().getResource("/icons/resize.png"));
 
+    /** The list of listeners interested in changes made to the project. */
+    private final List<ViewerStateListener> viewerListeners =
+            new LinkedList<ViewerStateListener>();
+
 
     // ------------------------------------------------------------------------
     // [initialization]
@@ -256,6 +262,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
         if (movie != null) {
             volume = volumeSlider.getValue() / 100F;
             setVolume();
+            notifyChange();
         }
 
     }
@@ -331,6 +338,8 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
             setSize(newWidth, newHeight);
             this.validate();
         }
+
+        notifyChange();
     }
 
     public int getVideoHeight() {
@@ -613,6 +622,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
         isVisible = !isVisible;
         this.setVisible(isVisible);
         setVolume();
+        notifyChange();
     }
 
     /*
@@ -625,6 +635,12 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
 
         if (isVisible) {
             menuContext.show(button.getParent(), button.getX(), button.getY());
+        }
+    }
+
+    private void notifyChange() {
+        for (ViewerStateListener listener : viewerListeners) {
+            listener.notifyStateChanged();
         }
     }
 
@@ -673,13 +689,16 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
         }
     }
 
+    public void addViewerStateListener(ViewerStateListener vsl) {
+        viewerListeners.add(vsl);
+    }
 
     /*
      * (non-Javadoc)
      * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon1()
      */
     public ImageIcon getActionButtonIcon1() {
-        if (isVisible) {
+        if (isVisible && volume > 0) {
             return volumeIcon;
         } else {
             return mutedIcon;

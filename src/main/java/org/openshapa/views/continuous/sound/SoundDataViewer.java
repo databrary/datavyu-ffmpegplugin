@@ -42,8 +42,11 @@ import quicktime.std.movies.media.Media;
 import quicktime.std.movies.media.MediaEQSpectrumBands;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.util.LinkedList;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
+import org.openshapa.views.continuous.ViewerStateListener;
 
 
 /**
@@ -186,6 +189,10 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
     private boolean playing;
 
     private File audioFile;
+
+    /** The list of listeners interested in changes made to the project. */
+    private final List<ViewerStateListener> viewerListeners =
+            new LinkedList<ViewerStateListener>();
 
     /**
      * Constructor - creates new audio viewer.
@@ -781,6 +788,10 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
             }
 
         }
+    }
+
+    public void addViewerStateListener(ViewerStateListener vsl) {
+        viewerListeners.add(vsl);
     }
 
     /*

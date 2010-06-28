@@ -8,8 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -24,6 +22,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
 import net.miginfocom.swing.MigLayout;
+import org.openshapa.OpenSHAPA;
 
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.CarriageEventListener;
@@ -36,12 +35,13 @@ import org.openshapa.models.component.TrackModel.TrackState;
 
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.CustomActionListener;
+import org.openshapa.views.continuous.ViewerStateListener;
 
 
 /**
  * TrackPainterController is responsible for managing a TrackPainter.
  */
-public final class TrackController {
+public final class TrackController implements ViewerStateListener {
 
     /** Track panel border color. */
     private static final Color BORDER_COLOR = new Color(73, 73, 73);
@@ -167,10 +167,10 @@ public final class TrackController {
         lockUnlockButton.setContentAreaFilled(false);
         lockUnlockButton.setBorderPainted(false);
         lockUnlockButton.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    handleLockUnlockButtonEvent(e);
-                }
-            });
+            public void actionPerformed(final ActionEvent e) {
+                handleLockUnlockButtonEvent(e);
+            }
+        });
         header.add(lockUnlockButton, "w 20!, h 20!");
         lockUnlockButton.setName("lockUnlockButton");
 
@@ -178,32 +178,31 @@ public final class TrackController {
         actionButton1 = new JButton();
         actionButton1.setName("actionButton1");
         actionButton1.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    buttonListener.handleActionButtonEvent1(e);
-                    updateButtonIcons();
-                }
-            });
+            public void actionPerformed(final ActionEvent e) {
+                buttonListener.handleActionButtonEvent1(e);
+                updateButtonIcons();
+            }
+        });
         header.add(actionButton1, "w 20!, h 20!");
 
         actionButton2 = new JButton();
         actionButton2.setName("actionButton2");
         actionButton2.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    buttonListener.handleActionButtonEvent2(e);
-                    updateButtonIcons();
-                }
-            });
+            public void actionPerformed(final ActionEvent e) {
+                buttonListener.handleActionButtonEvent2(e);
+                updateButtonIcons();
+            }
+        });
         header.add(actionButton2, "w 20!, h 20!");
 
         actionButton3 = new JButton();
         actionButton3.setName("actionButton3");
         actionButton3.addActionListener(new ActionListener() {
-
-                public void actionPerformed(final ActionEvent e) {
-                    buttonListener.handleActionButtonEvent3(e);
-                    updateButtonIcons();
-                }
-            });
+            public void actionPerformed(final ActionEvent e) {
+                buttonListener.handleActionButtonEvent3(e);
+                updateButtonIcons();
+            }
+        });
         header.add(actionButton3, "w 20!, h 20!");
 
         view.add(header, "w 100!, h 75!");
@@ -430,6 +429,12 @@ public final class TrackController {
         trackPainter.setTrackModel(trackModel);
     }
 
+    public void notifyStateChanged() {
+        updateButtonIcons();
+        OpenSHAPA.getProjectController().projectChanged();
+        OpenSHAPA.getApplication().updateTitle();
+    }
+
     /**
      * Set up the UI for the first custom action button.
      *
@@ -568,6 +573,7 @@ public final class TrackController {
 
         synchronized (this) {
             buttonListener = listener;
+            buttonListener.addViewerStateListener(this);
         }
     }
 
