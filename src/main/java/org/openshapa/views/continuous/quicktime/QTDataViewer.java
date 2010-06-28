@@ -145,6 +145,16 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     /** Menu item for full size. */
     private JMenuItem menuItemFull;
 
+    private ImageIcon icon1 =
+            new ImageIcon(getClass().getResource("/icons/audio-volume.png"));
+
+    private ImageIcon icon2 =
+            new ImageIcon(getClass().getResource("/icons/eye.png"));
+
+    private ImageIcon icon3 =
+            new ImageIcon(getClass().getResource("/icons/resize.png"));
+
+
     // ------------------------------------------------------------------------
     // [initialization]
     //
@@ -593,14 +603,19 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
         this.setVisible(isVisible);
         setVolume();
 
-        JButton button = (JButton) event.getSource();
+        updateVolumeIcon();
+    }
 
+    private void updateVolumeIcon() {
         if (isVisible) {
-            button.setIcon(new ImageIcon(
-                    getClass().getResource("/icons/eye.png")));
+            icon1 =
+               new ImageIcon(getClass().getResource("/icons/audio-volume.png"));
+            icon2 = new ImageIcon(getClass().getResource("/icons/eye.png"));
         } else {
-            button.setIcon(new ImageIcon(
-                    getClass().getResource("/icons/eye-shut.png")));
+            icon1 =
+               new ImageIcon(getClass().getResource("/icons/volume-muted.png"));
+            icon2 =
+                   new ImageIcon(getClass().getResource("/icons/eye-shut.png"));
         }
     }
 
@@ -636,6 +651,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
                 isVisible = Boolean.parseBoolean(property);
                 this.setVisible(isVisible);
                 setVolume();
+                updateVolumeIcon();
             }
             property = settings.getProperty("height");
             if (property != null & !property.equals("")) {
@@ -668,8 +684,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
      * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon1()
      */
     public ImageIcon getActionButtonIcon1() {
-        URL typeIconURL = getClass().getResource("/icons/audio-volume.png");
-        return new ImageIcon(typeIconURL);
+        return icon1;
     }
 
     /*
@@ -677,9 +692,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
      * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon2()
      */
     public ImageIcon getActionButtonIcon2() {
-        URL typeIconURL = getClass().getResource("/icons/eye.png");
-
-        return new ImageIcon(typeIconURL);
+        return icon2;
     }
 
     /*
@@ -687,9 +700,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
      * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon3()
      */
     public ImageIcon getActionButtonIcon3() {
-        URL typeIconURL = getClass().getResource("/icons/resize.png");
-
-        return new ImageIcon(typeIconURL);
+        return icon3;
     }
 
     // ------------------------------------------------------------------------
