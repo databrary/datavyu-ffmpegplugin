@@ -603,6 +603,10 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
         this.setVisible(isVisible);
         setVolume();
 
+        updateVolumeIcon();
+    }
+
+    private void updateVolumeIcon() {
         if (isVisible) {
             icon1 =
                new ImageIcon(getClass().getResource("/icons/audio-volume.png"));
@@ -647,6 +651,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
                 isVisible = Boolean.parseBoolean(property);
                 this.setVisible(isVisible);
                 setVolume();
+                updateVolumeIcon();
             }
             property = settings.getProperty("height");
             if (property != null & !property.equals("")) {
