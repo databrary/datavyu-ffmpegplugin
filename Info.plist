@@ -42,7 +42,7 @@
         <string>$JAVAROOT/repo/org/jdesktop/swing-worker/1.1/swing-worker-1.1.jar</string>
         <string>$JAVAROOT/repo/quicktime/QTJava/7/QTJava-7.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openhashtable/0.1/openhashtable-0.1.jar</string>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.12/openshapa-lib-0.0.12.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.13/openshapa-lib-0.0.13.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.5/snakeyaml-1.5.jar</string>
         <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.5/UserMetrix-jclient-0.0.5.jar</string>
         <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.2/miglayout-3.7.2-swing.jar</string>
