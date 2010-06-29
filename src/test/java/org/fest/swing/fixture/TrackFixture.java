@@ -6,6 +6,7 @@ import static org.fest.reflect.core.Reflection.field;
 
 import java.awt.Point;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -100,14 +101,18 @@ public class TrackFixture extends ComponentFixture {
      * Press the lock/unlock button.
      */
     public void pressLockButton() {
-        new JButtonFixture(robot, "lockUnlockButton").click();
+        new JButtonFixture(robot,
+            (JButton) field("lockUnlockButton").ofType(JButton.class).in(
+                trackC).get()).click();
     }
 
     /**
      * Get the lock/unlock button.
      */
     public JButtonFixture getLockButton() {
-        return new JButtonFixture(robot, "lockUnlockButton");
+        return new JButtonFixture(robot,
+                (JButton) field("lockUnlockButton").ofType(JButton.class).in(
+                    trackC).get());
     }
 
     /**
@@ -115,7 +120,9 @@ public class TrackFixture extends ComponentFixture {
      * For example, on a video, this is the volume control.
      */
     public void pressActionButton1() {
-        new JButtonFixture(robot, "actionButton1").click();
+        new JButtonFixture(robot,
+            (JButton) field("actionButton1").ofType(JButton.class).in(
+                trackC).get()).click().click();
     }
 
     /**
@@ -124,7 +131,9 @@ public class TrackFixture extends ComponentFixture {
     * volume.
     */
     public void pressActionButton2() {
-        new JButtonFixture(robot, "actionButton2").click();
+        new JButtonFixture(robot,
+            (JButton) field("actionButton2").ofType(JButton.class).in(
+                trackC).get()).click();
     }
 
     /**
@@ -132,7 +141,9 @@ public class TrackFixture extends ComponentFixture {
     * For example, on a video, this gives you a shortcut to.
     */
     public void pressActionButton3() {
-        new JButtonFixture(robot, "actionButton3").click();
+        new JButtonFixture(robot,
+            (JButton) field("actionButton3").ofType(JButton.class).in(
+                trackC).get()).click();
     }
 
     /**
@@ -140,7 +151,9 @@ public class TrackFixture extends ComponentFixture {
      * For example, on a video, this is the volume control.
      */
     public JButtonFixture getActionButton1() {
-        return new JButtonFixture(robot, "actionButton1");
+        return new JButtonFixture(robot,
+            (JButton) field("actionButton1").ofType(JButton.class).in(
+                trackC).get());
     }
 
     /**
@@ -149,7 +162,9 @@ public class TrackFixture extends ComponentFixture {
     * volume.
     */
     public JButtonFixture getActionButton2() {
-        return new JButtonFixture(robot, "actionButton2");
+        return new JButtonFixture(robot,
+            (JButton) field("actionButton2").ofType(JButton.class).in(
+                trackC).get());
     }
 
     /**
@@ -157,7 +172,9 @@ public class TrackFixture extends ComponentFixture {
     * For example, on a video, this gives you a shortcut to.
     */
     public JButtonFixture getActionButton3() {
-        return new JButtonFixture(robot, "actionButton3");
+        return new JButtonFixture(robot,
+            (JButton) field("actionButton3").ofType(JButton.class).in(
+                trackC).get());
     }
 
     /**
