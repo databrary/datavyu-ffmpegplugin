@@ -1197,10 +1197,10 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
             "Delete Variable");
 
-        //Confirm deleted
+        // Confirm deleted
         Assert.assertNull(ssPanel.column(matrixName));
 
-        //Create again VocabEditor BUGZID:1771
+        // Create again VocabEditor BUGZID:1771
 
     }
 }

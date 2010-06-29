@@ -1,12 +1,11 @@
 package org.openshapa.uitests;
 
+import static org.fest.reflect.core.Reflection.method;
 
 import java.io.IOException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.fest.reflect.core.Reflection.method;
 
 import java.awt.Point;
 import java.awt.event.InputEvent;
@@ -128,30 +127,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -211,30 +187,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -289,30 +242,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -386,30 +316,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -480,30 +387,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -594,30 +478,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -741,30 +602,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1132,30 +970,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1253,30 +1068,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1642,31 +1434,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
-
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1737,30 +1505,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1832,30 +1577,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -2014,30 +1736,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -2196,30 +1895,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -2674,30 +2350,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -2794,30 +2447,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();

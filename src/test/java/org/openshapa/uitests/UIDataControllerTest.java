@@ -59,7 +59,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     /**
      * Nominal test input.
      */
-    private String[] nominalTestInput = { "Subject stands )up ", "$10,432" };
+    private String[] nominalTestInput = {"Subject stands )up ", "$10,432"};
 
     /**
      * Nominal test output.
@@ -71,27 +71,27 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     /**
      * Text test input.
      */
-    private String[] textTestInput = { "Subject stands up ", "$10,432" };
+    private String[] textTestInput = {"Subject stands up ", "$10,432"};
 
     /**
      * Integer test input.
      */
-    private String[] integerTestInput = { "1a9", "10-432" };
+    private String[] integerTestInput = {"1a9", "10-432"};
 
     /**
      * Integer test output.
      */
-    private String[] expectedIntegerTestOutput = { "19", "-43210" };
+    private String[] expectedIntegerTestOutput = {"19", "-43210"};
 
     /**
      * Float test input.
      */
-    private String[] floatTestInput = { "1a.9", "10-43.2" };
+    private String[] floatTestInput = {"1a.9", "10-43.2"};
 
     /**
      * Float test output.
      */
-    private String[] expectedFloatTestOutput = { "1.90", "-43.2100" };
+    private String[] expectedFloatTestOutput = {"1.90", "-43.2100"};
 
     /**
      * Standard test sequence focussing on jogging.
@@ -1002,6 +1002,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         Assert.assertTrue(firstCell.isSelected());
         dcf.pressSetNewCellOffsetButton();
+
         SpreadsheetCellFixture thirdCell = ssPanel.column("p").cell(2);
         Assert.assertEquals(thirdCell.offsetTimestamp().text(), offsetTime);
         Assert.assertEquals(thirdCell.offsetTimestamp().text(), offsetTime);

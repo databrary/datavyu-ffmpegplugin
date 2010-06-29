@@ -34,6 +34,7 @@ public final class UIVisualCellTest extends OpenSHAPATestClass {
      */
     @Test public void testMultilineTextWrapping() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // Create new text cell
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
         SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(

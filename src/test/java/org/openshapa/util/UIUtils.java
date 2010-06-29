@@ -1,5 +1,7 @@
 package org.openshapa.util;
 
+import static org.fest.reflect.core.Reflection.method;
+
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -16,17 +18,24 @@ import java.text.SimpleDateFormat;
 import java.util.SimpleTimeZone;
 
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileFilter;
 
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
 import org.fest.swing.finder.WindowFinder;
+import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
+import org.fest.swing.util.Platform;
 import org.openshapa.controllers.RunScriptC;
+import org.openshapa.views.DataControllerV;
 import org.openshapa.views.NewVariableV;
+import org.openshapa.views.OpenSHAPAFileChooser;
+import org.openshapa.views.continuous.PluginManager;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 /**
@@ -259,5 +268,32 @@ public final class UIUtils {
                 }
             }
         });
+    }
+
+    /**
+     * Open data using data controller.
+     * @param videoFile file to open
+     * @param dcf DataControllerFixture
+     */
+    public static void openData(final File videoFile, final DataControllerFixture dcf) {
+        if (Platform.isOSX()) {
+            final PluginManager pm = PluginManager.getInstance();
+            GuiActionRunner.execute(new GuiTask() {
+
+                public void executeInEDT() {
+                    OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+                    fc.setVisible(false);
+                    for (FileFilter f : pm.getPluginFileFilters()) {
+                        fc.addChoosableFileFilter(f);
+                    }
+                    fc.setSelectedFile(videoFile);
+                    method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class).in((DataControllerV) dcf.component()).invoke(fc);
+                }
+            });
+        } else {
+            dcf.button("addDataButton").click();
+            JFileChooserFixture jfcf = dcf.fileChooser();
+            jfcf.selectFile(videoFile).approve();
+        }
     }
 }
