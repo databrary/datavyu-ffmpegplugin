@@ -14,16 +14,14 @@ public class StringItem extends TextItem {
 
     /**
      * TextVector constructor.
-     * 
-     * @param s
-     *            String
+     * @param s String
      */
     public StringItem(final String s) {
         str = s;
     }
 
     @Override
-    public void enterItem(final ComponentFixture cf) {
+    public final void enterItem(final ComponentFixture cf) {
         cf.robot.enterText(str);
     }
 }

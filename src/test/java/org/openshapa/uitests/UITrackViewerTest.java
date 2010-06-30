@@ -73,6 +73,12 @@ import org.testng.annotations.Test;
  */
 public final class UITrackViewerTest extends OpenSHAPATestClass {
 
+    /** Default video full height. */
+    private static final int VIDEO_HEIGHT = 576;
+
+    /** Default video full width. */
+    private static final int VIDEO_WIDTH = 720;
+
     /**
      * Deleting these temp files before and after tests because Java does
      * not always delete them during the test case. Doing the deletes here
@@ -2470,9 +2476,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
             .getTracks().firstElement();
 
-        int fullVideoHeight = 576;
-        int fullVideoWidth = 720;
-
         // Change video size and check
         // 25%
         dcf.getTrackMixerController().getTracksEditor().getTrack(0)
@@ -2485,9 +2488,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         sizeMenu.menuItemWithPath("25% size").click();
 
-        Assert.assertTrue(((fullVideoHeight * 0.25)
+        Assert.assertTrue(((VIDEO_HEIGHT * 0.25)
                 - (UIImageUtils.getInternalRectangle(vid).getHeight())) < 3);
-        Assert.assertTrue(((fullVideoWidth * 0.25)
+        Assert.assertTrue(((VIDEO_WIDTH * 0.25)
                 - (UIImageUtils.getInternalRectangle(vid).getWidth())) < 3);
 
         // 50%
@@ -2500,9 +2503,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         sizeMenu.menuItemWithPath("50% size").click();
 
-        Assert.assertTrue(((fullVideoHeight * 0.5)
+        Assert.assertTrue(((VIDEO_HEIGHT * 0.5)
                 - (UIImageUtils.getInternalRectangle(vid).getHeight())) < 3);
-        Assert.assertTrue(((fullVideoWidth * 0.5)
+        Assert.assertTrue(((VIDEO_WIDTH * 0.5)
                 - (UIImageUtils.getInternalRectangle(vid).getWidth())) < 3);
 
         // 75%
@@ -2515,9 +2518,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         sizeMenu.menuItemWithPath("75% size").click();
 
-        Assert.assertTrue(((fullVideoHeight * 0.75)
+        Assert.assertTrue(((VIDEO_HEIGHT * 0.75)
                 - (UIImageUtils.getInternalRectangle(vid).getHeight())) < 3);
-        Assert.assertTrue(((fullVideoWidth * 0.75)
+        Assert.assertTrue(((VIDEO_WIDTH * 0.75)
                 - (UIImageUtils.getInternalRectangle(vid).getWidth())) < 3);
 
         // 100%
@@ -2530,9 +2533,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         sizeMenu.menuItemWithPath("100% size").click();
 
-        Assert.assertTrue((fullVideoHeight
+        Assert.assertTrue((VIDEO_HEIGHT
                 - UIImageUtils.getInternalRectangle(vid).getHeight()) < 3);
-        Assert.assertTrue((fullVideoWidth
+        Assert.assertTrue((VIDEO_WIDTH
                 - UIImageUtils.getInternalRectangle(vid).getWidth()) < 3);
     }
 }

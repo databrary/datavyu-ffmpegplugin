@@ -439,18 +439,18 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test for bug 690.
-     * Pressing backspace in cell value starts to delete characters once it 
-     * reaches the end.
-     * Example value = 12345
-     * IP at: 123|45
-     * press backspace 3 times
-     * IP and value = |45
-     * press backspace again
-     * EXPECT: nothing to happen
-     * ACTUAL: deletes 4, i.e. IP & Value = |5
-     * @throws BadLocationException on clicking on char position
-     */
+    * Test for bug 690.
+    * Pressing backspace in cell value starts to delete characters once it
+    * reaches the end.
+    * Example value = 12345
+    * IP at: 123|45
+    * press backspace 3 times
+    * IP and value = |45
+    * press backspace again
+    * EXPECT: nothing to happen
+    * ACTUAL: deletes 4, i.e. IP & Value = |5
+    * @throws BadLocationException on clicking on char position
+    */
     @Test public void testBug690() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 

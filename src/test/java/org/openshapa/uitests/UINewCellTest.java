@@ -264,20 +264,20 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test pasting with FLOAT cell.
      */
-// @Test public void testFloatPasting() {
-// System.err.println(new Exception().getStackTrace()[0].getMethodName());
-//
-// String varName = "f";
-// String varRadio = "float";
-//
-// String[] expectedTestOutput = {
-// "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-// "389.5", "-0.1", "0.2", /*BugzID:1634:"0", "0", "0",*/
-// /*BugzID:1640"-0.34", "-23.34",*/ "0.34", "12.34", "-123"
-// };
-//
-// cutAndPasteTest(varName, varRadio, floatTestInput, expectedTestOutput);
-// }
+/*@Test*/ public void testFloatPasting() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        String varName = "f";
+        String varRadio = "float";
+
+        String[] expectedTestOutput = {
+                "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+                "389.5", "-0.1", "0.2", /*BugzID:1634:"0", "0", "0",*/
+                /*BugzID:1640"-0.34", "-23.34",*/ "0.34", "12.34", "-123"
+            };
+
+        cutAndPasteTest(varName, varRadio, floatTestInput, expectedTestOutput);
+    }
 
     /**
      * Test creating a new FLOAT cell with advanced input. BugzID:1201
@@ -536,7 +536,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test creating a new MATRIX cell. BugzID:1199
+     * Test creating a new MATRIX cell.
      */
     @Test public void testNewMatrixCellDoubleArgInteger() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());

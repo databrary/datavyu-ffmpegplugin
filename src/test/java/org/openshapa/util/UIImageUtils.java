@@ -26,19 +26,18 @@ import javax.imageio.ImageIO;
 import org.testng.Assert;
 
 
-
 /**
  * Image utilities.
  * Example: capturing screenshot of component, comparing images.
  */
 public final class UIImageUtils {
 
-    /** Maximum distance one pixel can be away from another */
+    /** Maximum distance one pixel can be away from another. */
     public static final double MAX_PIXEL_DISTANCE = Math.sqrt((255 * 255)
             + (255 * 255) + (255 * 255));
 
     /**
-     * Checks if two images are equal within 15%
+     * Checks if two images are equal within 15%.
      * @param uiImage image1
      * @param refFile referenceImageFile
      * @return true if similar enough
@@ -140,7 +139,13 @@ public final class UIImageUtils {
         return withinThreshold;
     }
 
-    private static double pixelDistance(Color col1, Color col2) {
+    /**
+     * Calculates the distance between two colors.
+     * @param col1 first color
+     * @param col2 second color
+     * @return distance between col1 and col2
+     */
+    private static double pixelDistance(final Color col1, final Color col2) {
         int r1 = col1.getRed();
         int g1 = col1.getGreen();
         int b1 = col1.getBlue();
@@ -223,6 +228,7 @@ public final class UIImageUtils {
     /**
     * Captures screenshot of component and returns bufferedImage.
     * @param dialog JComponent to capture screenshot
+    * @return BufferedImage of screenshot
     */
     public static BufferedImage captureAsScreenshot(final Dialog dialog) {
         BufferedImage bi = null;
@@ -238,7 +244,12 @@ public final class UIImageUtils {
         return bi;
     }
 
-    public static Rectangle getInternalRectangle(Frame frame) {
+    /**
+     * Returns a rectangle of the inside of the frame i.e. excluding borders.
+     * @param frame frame to get rectangle from
+     * @return frame Rectangle without borders
+     */
+    public static Rectangle getInternalRectangle(final Frame frame) {
 
         // Create Rectangle around component
         Point locOnScreen = frame.getLocationOnScreen();
@@ -258,7 +269,12 @@ public final class UIImageUtils {
         return bounds;
     }
 
-    public static Rectangle getInternalRectangle(Dialog dialog) {
+    /**
+    * Returns a rectangle of the inside of the dialog i.e. excluding borders.
+    * @param dialog dialog to get rectangle from
+    * @return dialog Rectangle without borders
+    */
+    public static Rectangle getInternalRectangle(final Dialog dialog) {
 
         // Create Rectangle around component
         Point locOnScreen = dialog.getLocationOnScreen();
@@ -279,12 +295,11 @@ public final class UIImageUtils {
     }
 
     /**
-    * Captures screenshot of component nd returns as BufferedImage
+    * Captures screenshot of component nd returns as BufferedImage.
     * @param component JComponent to capture screenshot
-    * @param saveAs file name
+    * @return BufferedImage screenshot of component
     */
-    public static BufferedImage captureAsScreenshot(
-        final Component component) {
+    public static BufferedImage captureAsScreenshot(final Component component) {
         BufferedImage bi = null;
 
         try {
@@ -304,12 +319,11 @@ public final class UIImageUtils {
     }
 
     /**
-    * Captures screenshot of component nd returns as BufferedImage
+    * Captures screenshot of component nd returns as BufferedImage.
     * @param frame JComponent to capture screenshot
-    * @param saveAs file name
+    * @return BufferedImage screenshot of component
     */
-    public static BufferedImage captureAsScreenshot(
-        final Frame frame) {
+    public static BufferedImage captureAsScreenshot(final Frame frame) {
         BufferedImage bi = null;
 
         try {
@@ -329,14 +343,15 @@ public final class UIImageUtils {
 
     /**
      * Masks second image over the first.
-     * From: http://stackoverflow.com/questions/221830/set-bufferedimage-alpha-mask-in-java
+     * From: http://stackoverflow.com/questions/221830/...
+     * ...set-bufferedimage-alpha-mask-in-java
      * If images are not the same size, asserts false.
      * @param img1 an image to mask
      * @param img2 a mask image to lay over first
      * @return masked image
      */
-    public static BufferedImage maskImage(BufferedImage img1,
-        BufferedImage img2) {
+    public static BufferedImage maskImage(final BufferedImage img1,
+        final BufferedImage img2) {
 
         // Assert false if images are not an equal size.
         Assert.assertEquals(img1.getHeight(), img2.getHeight());
@@ -378,8 +393,8 @@ public final class UIImageUtils {
      * @param img2 an image to subtract.
      * @return difference image
      */
-    public static BufferedImage subtractImage(BufferedImage img1,
-        BufferedImage img2) {
+    public static BufferedImage subtractImage(final BufferedImage img1,
+        final BufferedImage img2) {
 
         // Assert false if images are not an equal size.
         Assert.assertEquals(img1.getHeight(), img2.getHeight());
@@ -409,13 +424,19 @@ public final class UIImageUtils {
      * @param img2 an image to subtract.
      * @return difference image
      */
-    public static BufferedImage subtractImage(RenderedImage img1,
-        RenderedImage img2) {
+    public static BufferedImage subtractImage(final RenderedImage img1,
+        final RenderedImage img2) {
         return subtractImage(convertRenderedImage(img1),
                 convertRenderedImage(img2));
     }
 
-    private static int subtractColors(int rgb1, int rgb2) {
+    /**
+     * Finds the integer difference between two colors, as int.
+     * @param rgb1 color1
+     * @param rgb2 color2
+     * @return int difference between rgb1 and rgb2
+     */
+    private static int subtractColors(final int rgb1, final int rgb2) {
         Color color1 = new Color(rgb1);
         Color color2 = new Color(rgb2);
         int red = subtractColor(color1.getRed(), color2.getRed());
@@ -425,7 +446,13 @@ public final class UIImageUtils {
         return (new Color(red, green, blue).getRGB());
     }
 
-    private static int subtractColor(int color1, int color2) {
+    /**
+     * Finds the integer difference between two colors, as int.
+     * @param color1 color1
+     * @param color2 color2
+     * @return int difference between rgb1 and rgb2
+     */
+    private static int subtractColor(final int color1, final int color2) {
 
         if (color1 >= color2) {
             return (color1 - color2);
@@ -434,7 +461,12 @@ public final class UIImageUtils {
         }
     }
 
-    private static BufferedImage convertRenderedImage(RenderedImage img) {
+    /**
+     * Converts RenderedImage to BufferedImage.
+     * @param img RenderedImage
+     * @return BufferedImage conversion of RenderedImage img
+     */
+    private static BufferedImage convertRenderedImage(final RenderedImage img) {
 
         if (img instanceof BufferedImage) {
             return (BufferedImage) img;
@@ -462,6 +494,4 @@ public final class UIImageUtils {
 
         return result;
     }
-
-
 }

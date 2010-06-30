@@ -2,21 +2,16 @@ package org.openshapa.uitests;
 
 import java.awt.event.KeyEvent;
 
-import java.io.File;
 
 import java.util.Vector;
 
 import javax.swing.text.BadLocationException;
 
 import org.fest.swing.core.KeyPressInfo;
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
-import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.util.UIUtils;
