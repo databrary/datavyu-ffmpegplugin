@@ -187,7 +187,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -242,7 +242,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -316,7 +316,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -387,7 +387,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -478,7 +478,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -602,7 +602,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -970,7 +970,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1068,7 +1068,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1505,7 +1505,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1577,7 +1577,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1736,7 +1736,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1895,7 +1895,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -2350,7 +2350,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -2447,7 +2447,7 @@ UIUtils.openData(videoFile, dcf);
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-UIUtils.openData(videoFile, dcf);
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
