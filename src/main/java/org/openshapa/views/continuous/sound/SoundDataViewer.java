@@ -22,24 +22,24 @@ import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.quicktime.QTFilter;
 
-import quicktime.QTException;
-import quicktime.QTSession;
+//import quicktime.QTException;
+//import quicktime.QTSession;
 
-import quicktime.app.view.QTFactory;
+//import quicktime.app.view.QTFactory;
 
-import quicktime.io.OpenMovieFile;
-import quicktime.io.QTFile;
+//import quicktime.io.OpenMovieFile;
+//import quicktime.io.QTFile;
 
-import quicktime.std.StdQTConstants;
-import quicktime.std.StdQTException;
+//import quicktime.std.StdQTConstants;
+//import quicktime.std.StdQTException;
 
-import quicktime.std.clocks.TimeRecord;
+//import quicktime.std.clocks.TimeRecord;
 
-import quicktime.std.movies.Movie;
-import quicktime.std.movies.Track;
-import quicktime.std.movies.media.AudioMediaHandler;
-import quicktime.std.movies.media.Media;
-import quicktime.std.movies.media.MediaEQSpectrumBands;
+//import quicktime.std.movies.Movie;
+//import quicktime.std.movies.Track;
+//import quicktime.std.movies.media.AudioMediaHandler;
+//import quicktime.std.movies.media.Media;
+//import quicktime.std.movies.media.MediaEQSpectrumBands;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.util.LinkedList;
@@ -108,25 +108,25 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
     private Logger logger = UserMetrix.getLogger(SoundDataViewer.class);
 
     /** The quicktime movie this viewer is displaying. */
-    private Movie audio;
+ //   private Movie audio;
 
     /** The audio track for the above quicktime movie. */
-    private Track audioTrack;
+//    private Track audioTrack;
 
     /** The audio media for the above audio track. */
-    private Media audioMedia;
+//    private Media audioMedia;
 
     /** Preprocessing audio file. */
-    private Movie paudio;
+//    private Movie paudio;
 
     /** Preprocessing audio track. */
-    private Track paudioTrack;
+//    private Track paudioTrack;
 
     /** Preprocessing audio media. */
-    private Media paudioMedia;
+//    private Media paudioMedia;
 
     /** Preprocessing media handler. */
-    private AudioMediaHandler paudioMH;
+//    private AudioMediaHandler paudioMH;
 
     /** An instance of the class LevelMeter, which draws the meter bars for the
      * sound levels. */
@@ -201,17 +201,17 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
 
         super(parent, modal);
 
-        try {
-            audio = null;
+//        try {
+//            audio = null;
             offset = 0;
             playing = false;
 
             // Initalise QTJava.
-            QTSession.open();
+//            QTSession.open();
 
-        } catch (QTException e) {
-            logger.error("Unable to create SoundViewer", e);
-        }
+//        } catch (QTException e) {
+//            logger.error("Unable to create SoundViewer", e);
+//        }
 
         initComponents();
     }
@@ -230,15 +230,15 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
      */
     public long getDuration() {
 
-        try {
+//        try {
 
-            if (audio != null) {
-                return (long) Constants.TICKS_PER_SECOND
-                    * (long) audio.getDuration() / audio.getTimeScale();
-            }
-        } catch (StdQTException ex) {
-            logger.error("Unable to determine QT audio duration", ex);
-        }
+//            if (audio != null) {
+//                return (long) Constants.TICKS_PER_SECOND
+//                    * (long) audio.getDuration() / audio.getTimeScale();
+//            }
+//        } catch (StdQTException ex) {
+//            logger.error("Unable to determine QT audio duration", ex);
+//        }
 
         return -1;
     }
@@ -249,15 +249,15 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
      */
     public long getPreDuration() {
 
-        try {
+//        try {
 
-            if (paudio != null) {
-                return Constants.TICKS_PER_SECOND * paudio.getDuration()
-                    / paudio.getTimeScale();
-            }
-        } catch (StdQTException ex) {
-            logger.error("Unable to determine QT paudio duration", ex);
-        }
+//            if (paudio != null) {
+//                return Constants.TICKS_PER_SECOND * paudio.getDuration()
+//                    / paudio.getTimeScale();
+//            }
+//        } catch (StdQTException ex) {
+//            logger.error("Unable to determine QT paudio duration", ex);
+//        }
 
         return -1;
     }
@@ -291,7 +291,7 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
     public void setDataFeed(final File newAudioFile) {
         audioFile = newAudioFile;
 
-        try {
+//        try {
             setSize(WIN_X, WIN_Y);
 
             /* Set resizable false here to avoid nasty QuickTime movie frames
@@ -303,39 +303,39 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
             QTFilter movieTest = new QTFilter();
             isMovie = movieTest.accept(audioFile);
 
-            OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(audioFile));
-            audio = Movie.fromFile(omf);
+//            OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(audioFile));
+//            audio = Movie.fromFile(omf);
 
 
             /* Set the time scale for the movie to milliseconds (i.e. 1000 ticks
             per second. */
-            audio.setTimeScale(Constants.TICKS_PER_SECOND);
+//            audio.setTimeScale(Constants.TICKS_PER_SECOND);
 
 
-            audioTrack = audio.getIndTrackType(1,
-                    StdQTConstants.audioMediaCharacteristic,
-                    StdQTConstants.movieTrackCharacteristic);
-            audioMedia = audioTrack.getMedia();
+//            audioTrack = audio.getIndTrackType(1,
+//                    StdQTConstants.audioMediaCharacteristic,
+//                    StdQTConstants.movieTrackCharacteristic);
+//            audioMedia = audioTrack.getMedia();
 
 
             // Calculate frames per second for the audio data.
-            fps = (float) audioMedia.getSampleCount() / audioMedia
-                .getDuration() * audioMedia.getTimeScale();
+//            fps = (float) audioMedia.getSampleCount() / audioMedia
+//                .getDuration() * audioMedia.getTimeScale();
 
             /* Additional movie, used for preprocessing independently of the
             playback movie. */
-            OpenMovieFile omf2 = OpenMovieFile.asRead(new QTFile(audioFile));
-            paudio = Movie.fromFile(omf2);
+//            OpenMovieFile omf2 = OpenMovieFile.asRead(new QTFile(audioFile));
+//            paudio = Movie.fromFile(omf2);
 
-            paudio.setTimeScale(Constants.TICKS_PER_SECOND);
+//            paudio.setTimeScale(Constants.TICKS_PER_SECOND);
 
 
-            paudioTrack = paudio.getIndTrackType(1,
-                    StdQTConstants.audioMediaCharacteristic,
-                    StdQTConstants.movieTrackCharacteristic);
-            paudioMedia = paudioTrack.getMedia();
+//            paudioTrack = paudio.getIndTrackType(1,
+//                    StdQTConstants.audioMediaCharacteristic,
+//                    StdQTConstants.movieTrackCharacteristic);
+//            paudioMedia = paudioTrack.getMedia();
 
-            paudioMH = (AudioMediaHandler) paudioMedia.getHandler();
+//            paudioMH = (AudioMediaHandler) paudioMedia.getHandler();
 
 
             // Add the component that "renders" the audio.
@@ -365,17 +365,17 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
             superDesk.add(movieFrame);
             superDesk.add(equalFrame);
 
-            comp = QTFactory.makeQTComponent(audio).asComponent();
+//            comp = QTFactory.makeQTComponent(audio).asComponent();
             movieFrame.add(comp);
 
 
-            preComp = QTFactory.makeQTComponent(paudio).asComponent();
+//            preComp = QTFactory.makeQTComponent(paudio).asComponent();
             preFrame.add(preComp);
 
             // set up repainting timer
             t = new Timer();
 
-            t.schedule(new PaintTask(), 0, REPAINTDELAY);
+//            t.schedule(new PaintTask(), 0, REPAINTDELAY);
 
             preThread = new PreProcess(meter.getNumBands());
 
@@ -388,9 +388,9 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
 
             setVisible(true);
 
-        } catch (QTException e) {
-            logger.error("Unable to set audioFile", e);
-        }
+//        } catch (QTException e) {
+//            logger.error("Unable to set audioFile", e);
+//        }
     }
 
     /**
@@ -427,15 +427,15 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
      */
     public void play() {
 
-        try {
+//        try {
 
-            if ((audio != null) && finishedPreprocess) {
-                audio.setRate(playRate);
-                playing = true;
-            }
-        } catch (QTException e) {
-            logger.error("Unable to play", e);
-        }
+//            if ((audio != null) && finishedPreprocess) {
+//                audio.setRate(playRate);
+//                playing = true;
+//            }
+//        } catch (QTException e) {
+//            logger.error("Unable to play", e);
+//        }
     }
 
     /**
@@ -443,15 +443,15 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
      */
     public void stop() {
 
-        try {
-
-            if ((audio != null) && finishedPreprocess) {
-                audio.stop();
-                playing = false;
-            }
-        } catch (QTException e) {
-            logger.error("Unable to stop", e);
-        }
+//        try {
+//
+//            if ((audio != null) && finishedPreprocess) {
+//                audio.stop();
+//                playing = false;
+//            }
+//        } catch (QTException e) {
+//            logger.error("Unable to stop", e);
+//        }
     }
 
     /**
@@ -466,34 +466,32 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
      */
     public void seekTo(final long position) {
 
-        try {
-
-            if ((audio != null) && finishedPreprocess) {
-                TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
-                        position);
-                audio.setTime(time);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to find", e);
-        }
+//        try {
+//
+//            if ((audio != null) && finishedPreprocess) {
+//                TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
+//                        position);
+//                audio.setTime(time);
+//            }
+//        } catch (QTException e) {
+//            logger.error("Unable to find", e);
+//        }
     }
 
     /**
      * @return Current time in milliseconds.
-     *
-     * @throws QTException If error occurs accessing underlying implementation.
      */
-    public long getCurrentTime() throws QTException {
-        return audio.getTime();
+    public long getCurrentTime() {
+//        return audio.getTime();
+        return 0;
     }
 
     /**
      * @return Current preprocess time in milliseconds.
-     *
-     * @throws QTException If error occurs accessing underlying implementation.
      */
-    public long getCurrentPreprocessTime() throws QTException {
-        return paudio.getTime() / SCALING;
+    public long getCurrentPreprocessTime() {
+//        return paudio.getTime() / SCALING;
+        return 0;
     }
 
     /**
@@ -560,15 +558,15 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
 
     private void formWindowClosing(final java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 
-        try {
+//        try {
             preThread.die();
-            audio.stop();
-            paudio.stop();
+//            audio.stop();
+//            paudio.stop();
             removeAll();
             t.cancel();
-        } catch (QTException e) {
-            logger.error("Couldn't kill file", e);
-        }
+//        } catch (QTException e) {
+//            logger.error("Couldn't kill file", e);
+//        }
 
         movieFrame.dispose();
         preFrame.dispose();
@@ -625,21 +623,21 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
         public void run() {
             int check = 0;
 
-            try {
+//            try {
                 wTitle = getTitle();
                 audioData = new int[work];
 
-                MediaEQSpectrumBands bands = new MediaEQSpectrumBands(numBands);
+//                MediaEQSpectrumBands bands = new MediaEQSpectrumBands(numBands);
 
-                for (int i = 0; i < numBands; i++) {
-                    bands.setFrequency(i, 0); // Not actually zero!
-                    paudioMH.setSoundEqualizerBands(bands);
-                    paudioMH.setSoundLevelMeteringEnabled(true);
-                }
+//                for (int i = 0; i < numBands; i++) {
+//                    bands.setFrequency(i, 0); // Not actually zero!
+//                    paudioMH.setSoundEqualizerBands(bands);
+//                    paudioMH.setSoundLevelMeteringEnabled(true);
+//                }
 
-                volume = paudio.getVolume();
-                paudio.setVolume(0F);
-                paudio.setRate(PREPROCESSRATE);
+//                volume = paudio.getVolume();
+//                paudio.setVolume(0F);
+//                paudio.setRate(PREPROCESSRATE);
 
                 int i = 0;
                 int delayTicks = DELAYTICKS;
@@ -661,9 +659,9 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
                             if (((atime - 1) * numBands) > i) {
 
                                 // Rewind if we went too far,
-                                TimeRecord fixtime = new TimeRecord(
-                                        Constants.TICKS_PER_SECOND, fixedJ);
-                                paudio.setTime(fixtime);
+//                                TimeRecord fixtime = new TimeRecord(
+//                                        Constants.TICKS_PER_SECOND, fixedJ);
+//                                paudio.setTime(fixtime);
                             }
 
                             atime = getCurrentPreprocessTime();
@@ -678,8 +676,8 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
                             // Else keep waiting until the movie catches up.
                         }
 
-                        tempLevels = paudioMH.getSoundEqualizerBandLevels(
-                                numBands);
+//                        tempLevels = paudioMH.getSoundEqualizerBandLevels(
+//                                numBands);
                     }
 
                     if (tempLevels != null) {
@@ -703,66 +701,66 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
                     setTitle(pfix + "Preprocessing... " + (i * CENT / work)
                         + "% " + wTitle);
                 }
-            } catch (Exception f) {
-                logger.error(f.toString(), f);
-                movieFrame.dispose();
-                preFrame.dispose();
-                superDesk.removeAll();
-                pfix = "PREPROCESS FAILED! ";
-                sfix = " ";
-                setTitle(pfix + wTitle);
+//            } catch (Exception f) {
+//                logger.error(f.toString(), f);
+//                movieFrame.dispose();
+//                preFrame.dispose();
+//                superDesk.removeAll();
+//                pfix = "PREPROCESS FAILED! ";
+//                sfix = " ";
+//                setTitle(pfix + wTitle);
 
-                JLabel failMsg = new JLabel(
-                        " Couldn't get sound intensity data."
-                        + " Try converting to .mov first.");
-                setSize(WIN_X, ERROR_HEIGHT);
+//                JLabel failMsg = new JLabel(
+//                        " Couldn't get sound intensity data."
+//                        + " Try converting to .mov first.");
+//                setSize(WIN_X, ERROR_HEIGHT);
 
-                MyInternalFrame error = new MyInternalFrame(1);
-                error.setVisible(true);
-                error.add(failMsg);
-                superDesk.add(error);
+//                MyInternalFrame error = new MyInternalFrame(1);
+//                error.setVisible(true);
+//                error.add(failMsg);
+//                superDesk.add(error);
 
-                return;
-            } finally {
-                finishedPreprocess = true;
-            }
+//                return;
+//            } finally {
+//                finishedPreprocess = true;
+//            }
 
-            if (terminate) {
-                return;
-            }
+//            if (terminate) {
+//                return;
+//            }
 
             // Sound level could be checked here.
-            meter.setAudioData(audioData);
-            setTitle(pfix + sfix + wTitle);
-
-            try {
-                paudio.stop();
-                paudio.setRate(0F);
-                paudio.setVolume(volume);
-                paudio.setTime(new TimeRecord(Constants.TICKS_PER_SECOND, 0));
-            } catch (QTException e) {
-                logger.error("Couldn't reset audio", e);
-            }
-
-            int oldWidth = getWidth();
-            int oldHeight = getHeight();
-            superDesk.setSize(oldWidth + EXTRA_SIZE, oldHeight + EXTRA_SIZE);
-            preFrame.shove(oldWidth + HIDDEN_OFFSET, oldHeight + HIDDEN_OFFSET);
-            movieFrame.shove(oldWidth + HIDDEN_OFFSET,
-                oldHeight + HIDDEN_OFFSET);
-            setSize(oldWidth + EXTRA_SIZE, oldHeight + EXTRA_SIZE);
-
-            try {
-                Thread.sleep(VIDEO_DRAW_DELAY);
-            } catch (InterruptedException ex) {
-                logger.error("Couldn't sleep", ex);
-            } finally {
-                finishedPreprocess = true;
-            }
-
-            superDesk.setSize(oldWidth, oldHeight);
-            setSize(oldWidth, oldHeight);
-
+//            meter.setAudioData(audioData);
+//            setTitle(pfix + sfix + wTitle);
+//
+//            try {
+//                paudio.stop();
+//                paudio.setRate(0F);
+//                paudio.setVolume(volume);
+//                paudio.setTime(new TimeRecord(Constants.TICKS_PER_SECOND, 0));
+//            } catch (QTException e) {
+//                logger.error("Couldn't reset audio", e);
+//            }
+//
+//            int oldWidth = getWidth();
+//            int oldHeight = getHeight();
+//            superDesk.setSize(oldWidth + EXTRA_SIZE, oldHeight + EXTRA_SIZE);
+//            preFrame.shove(oldWidth + HIDDEN_OFFSET, oldHeight + HIDDEN_OFFSET);
+//            movieFrame.shove(oldWidth + HIDDEN_OFFSET,
+//                oldHeight + HIDDEN_OFFSET);
+//            setSize(oldWidth + EXTRA_SIZE, oldHeight + EXTRA_SIZE);
+//
+//            try {
+//                Thread.sleep(VIDEO_DRAW_DELAY);
+//            } catch (InterruptedException ex) {
+//                logger.error("Couldn't sleep", ex);
+//            } finally {
+//                finishedPreprocess = true;
+//            }
+//
+//            superDesk.setSize(oldWidth, oldHeight);
+//            setSize(oldWidth, oldHeight);
+//
         }
 
     }
@@ -776,17 +774,17 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
          * Paints the level meter if it has data to draw.
          */
         @Override public synchronized void run() {
-
-            if (meter.isReady()) {
-
-                try {
-                    meter.setAudioTime(getCurrentTime() / SCALING);
-                    meter.repaint();
-                } catch (QTException e) {
-                    logger.error("Couldn't get time", e);
-                }
-            }
-
+//
+//            if (meter.isReady()) {
+//
+//                try {
+//                    meter.setAudioTime(getCurrentTime() / SCALING);
+//                    meter.repaint();
+//                } catch (QTException e) {
+//                    logger.error("Couldn't get time", e);
+//                }
+//            }
+//
         }
     }
 
@@ -817,5 +815,4 @@ public final class SoundDataViewer extends JDialog implements DataViewer {
     public ImageIcon getActionButtonIcon3() {
         return null;
     }
-
 }

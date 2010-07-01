@@ -88,6 +88,18 @@
     </developer>
 
     <developer>
+      <id>dave</id>
+      <name>Dave Liu</name>
+      <email>dave.liu@_no_spam_nicta.com.au</email>
+      <organization>NICTA</organization>
+      <organizationUrl>www.nicta.com.au</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+
+    <developer>
       <id>Jesse</id>
       <name>Jesse Lingeman</name>
       <email>jml654@_no_spam_nyu.edu</email>
@@ -104,7 +116,7 @@
       <organization>NICTA</organization>
       <organizationUrl>www.nicta.com.au</organizationUrl>
       <roles>
-        <role>Developer</role>
+        <role>Former Developer</role>
       </roles>
       <timezone>+10</timezone>
     </developer>
@@ -260,8 +272,8 @@
             <configuration>
               <debug>false</debug>
               <optimize>true</optimize>
-              <source>1.5</source>
-              <target>1.5</target>
+              <source>1.6</source>
+              <target>1.6</target>
             </configuration>
           </plugin>
         </plugins>
@@ -324,7 +336,7 @@
         <configuration>
           <bundleName>OpenSHAPA</bundleName>
           <mainClass>org.openshapa.OpenSHAPA</mainClass>
-          <jvmVersion>1.5+</jvmVersion>
+          <jvmVersion>1.6+</jvmVersion>
           <iconFile>${basedir}/src/main/resources/icons/OpenSHAPA.icns</iconFile>
 
           <!-- BugzID:750 - Force dmg build to run in a 32-bit JVM -->
@@ -351,8 +363,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.0.2</version>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
 
@@ -503,7 +515,7 @@
               <timeoutErr>true</timeoutErr>
             </splash>
             <jre>
-              <minVersion>1.5.0</minVersion>
+              <minVersion>1.6.0</minVersion>
             </jre>
             <classPath>
               <mainClass>org.openshapa.OpenSHAPA</mainClass>
@@ -539,12 +551,6 @@
   -->
   <dependencies>
     <dependency>
-        <groupId>javax.script</groupId>
-        <artifactId>script-api</artifactId>
-        <version>1.1</version>
-    </dependency>
-
-    <dependency>
         <groupId>org.jruby</groupId>
         <artifactId>jruby-engine</artifactId>
         <version>1.1.6</version>
@@ -556,11 +562,13 @@
         <version>1.4.0</version>
     </dependency>
 
+<!--
     <dependency>
       <groupId>org.swinglabs</groupId>
       <artifactId>swing-layout</artifactId>
       <version>1.0.3</version>
     </dependency>
+-->
 
     <dependency>
       <groupId>org.jdesktop</groupId>
@@ -572,12 +580,6 @@
       <groupId>org.jdesktop</groupId>
       <artifactId>swing-worker</artifactId>
       <version>1.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>quicktime</groupId>
-      <artifactId>QTJava</artifactId>
-      <version>7</version>
     </dependency>
 
     <dependency>
@@ -635,8 +637,13 @@
     	<artifactId>commons-io</artifactId>
     	<version>1.4</version>
     </dependency>
-  </dependencies>
-  
+
+    <dependency>
+      <groupId>org.swinglabs</groupId>
+      <artifactId>swing-layout</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+  </dependencies>  
 </project>
 
 
