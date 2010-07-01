@@ -357,10 +357,20 @@ public final class UIUtils {
                     }
                 });
         } else {
-            dcf.button("addDataButton").click();
+            boolean worked = false;
+            JFileChooserFixture jfcf = null;
 
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
+            do {
+                dcf.button("addDataButton").click();
+
+                try {
+                    jfcf = dcf.fileChooser();
+                    jfcf.selectFile(videoFile).approve();
+                    worked = true;
+                } catch (Exception e) {
+                    // keep trying
+                }
+            } while (worked == false);
         }
     }
 }
