@@ -79,6 +79,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /** Default video full width. */
     private static final int VIDEO_WIDTH = 720;
 
+    private SpreadsheetPanelFixture ssPanel;
+    private DataControllerFixture dcf;
+
     /**
      * Deleting these temp files before and after tests because Java does
      * not always delete them during the test case. Doing the deletes here
@@ -105,15 +108,11 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         }
     }
 
-    /**
-    * Test needle movement to ensure needle time is the same as the clock time.
-    */
-    @Test public void testNeedleMovement() {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+    @BeforeMethod protected void setUp() {
 
         // 1. Get Spreadsheet
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+        ssPanel = new SpreadsheetPanelFixture(
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
         // 2. Open Data Viewer Controller and get starting time
@@ -121,12 +120,20 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        dcf = new DataControllerFixture(
                 mainFrameFixture.robot,
                 (DataControllerV) mainFrameFixture.dialog().component());
 
         // 3. Open track view
         dcf.pressShowTracksButton();
+
+    }
+
+    /**
+    * Test needle movement to ensure needle time is the same as the clock time.
+    */
+    @Test public void testNeedleMovement() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -171,23 +178,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testRangeOfNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
@@ -225,23 +215,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      */
     @Test public void testNeedleMovementByDoubleClick() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -297,32 +270,15 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testNeedleMovementByDoubleClickWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
-        JSliderFixture zoomSlider = dcf.getTrackMixerController()
-            .getZoomSlider();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
+
+        JSliderFixture zoomSlider = dcf.getTrackMixerController()
+            .getZoomSlider();
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -370,23 +326,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     */
     @Test public void testNeedleMovementByDoubleClickOutsideRegion() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -461,23 +400,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      */
     @Test public void testRegionMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -586,23 +508,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testLockUnlockTrack() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
@@ -665,23 +570,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      */
     @Test public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open first video
         String root = System.getProperty("testPath");
@@ -951,23 +839,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testLockUnlockTrackWithZoom() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         JSliderFixture zoomSlider = dcf.getTrackMixerController()
             .getZoomSlider();
 
@@ -1049,23 +920,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testRangeOfNeedleMovementWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         JSliderFixture zoomSlider = dcf.getTrackMixerController()
             .getZoomSlider();
 
@@ -1132,23 +986,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      */
     @Test public void testTrackSnappingWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         JSliderFixture zoomSlider = dcf.getTrackMixerController()
             .getZoomSlider();
@@ -1419,23 +1256,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /*BugzID1796:@Test*/ public void testCloseVideoWhilePlaying() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
@@ -1488,23 +1308,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     */
     @Test public void testCloseVideo() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -1560,23 +1363,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     */
     @Test public void testShowHideVideo() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -1720,23 +1506,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testShowHideVideoWhilePlaying() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
@@ -1879,23 +1648,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testRegionSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
@@ -1955,23 +1707,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         final String tempFolder = System.getProperty("java.io.tmpdir");
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open videos
         String root = System.getProperty("testPath");
@@ -2334,23 +2069,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testMuteIcon() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
@@ -2430,23 +2148,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     */
     @Test public void testChangeVideoSize() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
