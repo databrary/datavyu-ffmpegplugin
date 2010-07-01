@@ -6,6 +6,9 @@ import java.io.File;
 
 import java.util.Vector;
 
+import javax.swing.text.BadLocationException;
+
+import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
@@ -208,6 +211,170 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
             int expectedCell = Math.max(1, currSelCell - 1);
             Assert.assertTrue(col.cell(expectedCell).isSelected());
             currSelCell--;
+        }
+    }
+
+    /**
+     * Test that caret remains in the same position for up down movement in cells.
+     */
+    @Test public void testUpDownCellsCaretPosition()
+        throws BadLocationException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        String root = System.getProperty("testPath");
+        File demoFile = new File(root + "/ui/demo_data_caret_movement.rb");
+        Assert.assertTrue(demoFile.exists());
+
+        // 1. Run script to populate
+        if (Platform.isOSX()) {
+            UIUtils.runScript(demoFile);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
+
+            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
+            jfcf.selectFile(demoFile).approve();
+        }
+
+        // Close script console
+        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
+                    1000));
+
+        long currentTime = System.currentTimeMillis();
+        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
+
+        while ((System.currentTimeMillis() < maxTime)
+                && (!scriptConsole.textBox().text().contains("Finished"))) {
+            Thread.yield();
+        }
+
+        scriptConsole.button("closeButton").click();
+
+        // 2. Get the spreadsheet, check that cells do exist
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0,
+            "Expecting columns to exist.");
+
+        for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
+            Assert.assertTrue(column.numOfCells() > 0,
+                "Expecting cells to exist.");
+        }
+
+        // For each column (except matrix and predicates) we set the caret to
+        // the beginning and ensure it remains there.
+        // For all columns, we start in the 6th cell
+        for (SpreadsheetColumnFixture col : spreadsheet.allColumns()) {
+
+            // Skip predicates and matrices
+            if (col.getColumnType().equalsIgnoreCase("MATRIX")
+                    || col.getColumnType().equalsIgnoreCase("PREDICATE")) {
+                continue;
+            }
+
+            col.cell(6).cellValue().click();
+
+            Assert.assertEquals(col.cell(6).cellValue().component()
+                .getCaretPosition(), 0);
+
+            // Move up cell by cell and confirm that the caret remains in
+            // the same position
+            for (int i = 5; i >= 1; i--) {
+                spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_UP);
+                Assert.assertEquals(col.cell(i).cellValue().component()
+                    .getCaretPosition(), 0);
+            }
+
+            // Move down cell by cell and confirm that caret remains in the
+            // same position
+            for (int i = 2; i <= col.numOfCells(); i++) {
+                spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_DOWN);
+                Assert.assertEquals(col.cell(i).cellValue().component()
+                    .getCaretPosition(), 0);
+            }
+
+            // Move back up cell by cell and confirm that the caret remains in
+            // the same position
+            for (int i = col.numOfCells() - 1; i >= 1; i--) {
+                spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_UP);
+                Assert.assertEquals(col.cell(i).cellValue().component()
+                    .getCaretPosition(), 0);
+            }
+        }
+
+        // For each column (except matrix and predicates) we set the caret to
+        // the 3rd position and ensure that it remains there or its moves
+        // appropriately if the value has less than 3 characters
+        // For all columns, we start in the 6th cell
+        for (SpreadsheetColumnFixture col : spreadsheet.allColumns()) {
+
+            // Skip predicates and matrices
+            if (col.getColumnType().equalsIgnoreCase("MATRIX")
+                    || col.getColumnType().equalsIgnoreCase("PREDICATE")) {
+                continue;
+            }
+
+            int defaultPos = 3;
+            col.cell(6).clickToCharPos(SpreadsheetCellFixture.VALUE, defaultPos,
+                1);
+
+            // Forced to do this because of BugzID:1350
+            for (int i = 0; i < 3; i++) {
+                col.cell(6).cellValue().pressAndReleaseKey(KeyPressInfo.keyCode(
+                        KeyEvent.VK_RIGHT));
+
+                // Compensate for decimal in floats
+                if (col.getColumnType().equalsIgnoreCase("FLOAT")) {
+                    defaultPos = 4;
+                }
+            }
+
+            if (col.cell(6).cellValue().text().length() < defaultPos) {
+                defaultPos = col.cell(1).cellValue().text().length();
+            }
+
+            Assert.assertEquals(col.cell(6).cellValue().component()
+                .getCaretPosition(), defaultPos);
+
+            // Move up cell by cell and confirm that caret remains in
+            // the same position
+            for (int i = 5; i >= 1; i--) {
+                spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_UP);
+
+                if (col.cell(i).cellValue().text().length() < defaultPos) {
+                    defaultPos = col.cell(i).cellValue().text().length();
+                }
+
+                Assert.assertEquals(col.cell(i).cellValue().component()
+                    .getCaretPosition(), defaultPos);
+            }
+
+            // Move down cell by cell and confirm that caret remains in the
+            // same position
+            for (int i = 2; i <= col.numOfCells(); i++) {
+                spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_DOWN);
+
+                if (col.cell(i).cellValue().text().length() < defaultPos) {
+                    defaultPos = col.cell(i).cellValue().text().length();
+                }
+
+                Assert.assertEquals(col.cell(i).cellValue().component()
+                    .getCaretPosition(), defaultPos);
+            }
+
+            // Move back up cell by cell and confirm that caret remains in
+            // the same position
+            for (int i = col.numOfCells() - 1; i >= 1; i--) {
+                spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_UP);
+
+                if (col.cell(i).cellValue().text().length() < defaultPos) {
+                    defaultPos = col.cell(i).cellValue().text().length();
+                }
+
+                Assert.assertEquals(col.cell(i).cellValue().component()
+                    .getCaretPosition(), defaultPos);
+            }
         }
     }
 }
