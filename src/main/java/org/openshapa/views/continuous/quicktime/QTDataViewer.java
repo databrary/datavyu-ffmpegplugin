@@ -53,6 +53,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.List;
 
 import java.util.Properties;
 
@@ -60,6 +62,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.openshapa.views.OpenSHAPADialog;
+import org.openshapa.views.continuous.ViewerStateListener;
 
 
 /**
@@ -144,6 +147,31 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     /** Menu item for full size. */
     private JMenuItem menuItemFull;
 
+    /** Icon for displaying volume slider. */
+    private final ImageIcon volumeIcon =
+            new ImageIcon(getClass().getResource("/icons/audio-volume.png"));
+
+    /** Volume slider icon for when the video is hidden (volume is muted). */
+    private final ImageIcon mutedIcon =
+            new ImageIcon(getClass().getResource("/icons/volume-muted.png"));
+
+    /** Icon for hiding the video. */
+    private final ImageIcon eyeIcon =
+            new ImageIcon(getClass().getResource("/icons/eye.png"));
+
+    /** Icon for showing the video. */
+    private final ImageIcon hiddenIcon =
+            new ImageIcon(getClass().getResource("/icons/eye-shut.png"));
+
+    /** Icon for resizing the video. */
+    private final ImageIcon resizeIcon =
+            new ImageIcon(getClass().getResource("/icons/resize.png"));
+
+    /** The list of listeners interested in changes made to the project. */
+    private final List<ViewerStateListener> viewerListeners =
+            new LinkedList<ViewerStateListener>();
+
+
     // ------------------------------------------------------------------------
     // [initialization]
     //
@@ -178,7 +206,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
                 }
             });
 
-        volumeDialog = new JDialog();
+        volumeDialog = new JDialog(parent, false);
         volumeDialog.setUndecorated(true);
         volumeDialog.setVisible(false);
         volumeDialog.setLayout(new MigLayout("", "[center]", ""));
@@ -234,6 +262,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
         if (movie != null) {
             volume = volumeSlider.getValue() / 100F;
             setVolume();
+            notifyChange();
         }
 
     }
@@ -309,6 +338,8 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
             setSize(newWidth, newHeight);
             this.validate();
         }
+
+        notifyChange();
     }
 
     public int getVideoHeight() {
@@ -591,16 +622,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
         isVisible = !isVisible;
         this.setVisible(isVisible);
         setVolume();
-
-        JButton button = (JButton) event.getSource();
-
-        if (isVisible) {
-            button.setIcon(new ImageIcon(
-                    getClass().getResource("/icons/eye.png")));
-        } else {
-            button.setIcon(new ImageIcon(
-                    getClass().getResource("/icons/eye-shut.png")));
-        }
+        notifyChange();
     }
 
     /*
@@ -613,6 +635,13 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
 
         if (isVisible) {
             menuContext.show(button.getParent(), button.getX(), button.getY());
+        }
+    }
+
+    /** Notifies listeners that a change to the project has occurred. */
+    private void notifyChange() {
+        for (ViewerStateListener listener : viewerListeners) {
+            listener.notifyStateChanged();
         }
     }
 
@@ -659,6 +688,42 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
         } catch (IOException e) {
             logger.error("Error saving settings", e);
         }
+    }
+
+    public void addViewerStateListener(ViewerStateListener vsl) {
+        viewerListeners.add(vsl);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon1()
+     */
+    public ImageIcon getActionButtonIcon1() {
+        if (isVisible && volume > 0) {
+            return volumeIcon;
+        } else {
+            return mutedIcon;
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon2()
+     */
+    public ImageIcon getActionButtonIcon2() {
+        if (isVisible) {
+            return eyeIcon;
+        } else {
+            return hiddenIcon;
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon3()
+     */
+    public ImageIcon getActionButtonIcon3() {
+        return resizeIcon;
     }
 
     // ------------------------------------------------------------------------

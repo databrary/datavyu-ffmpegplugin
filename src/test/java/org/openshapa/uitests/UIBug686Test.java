@@ -63,25 +63,7 @@ public final class UIBug686Test extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-            fc.setVisible(false);
-
-            for (FileFilter f : pm.getPluginFileFilters()) {
-                fc.addChoosableFileFilter(f);
-            }
-
-            fc.setSelectedFile(videoFile);
-            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
-                .in((DataControllerV) dcf.component()).invoke(fc);
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();

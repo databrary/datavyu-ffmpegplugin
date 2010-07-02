@@ -25,8 +25,9 @@ public final class UIAboutDialogTest extends OpenSHAPATestClass {
      */
     @Test public void testAboutDialog() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        //Not testing on OSX because the About dialog is not in the help menu
-        //and not sure how to click the other menu item.
+
+        // Not testing on OSX because the About dialog is not in the help menu
+        // and not sure how to click the other menu item.
         if (!Platform.isOSX()) {
 
 
@@ -47,6 +48,7 @@ public final class UIAboutDialogTest extends OpenSHAPATestClass {
             about.close();
             about.requireNotVisible();
         }
+
         Assert.assertTrue(true);
     }
 }

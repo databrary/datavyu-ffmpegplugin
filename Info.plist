@@ -33,7 +33,7 @@
       <string>1.5</string>
       <key>ClassPath</key>
       <array>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa/1.06/openshapa-1.06.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa/1.07/openshapa-1.07.jar</string>
         <string>$JAVAROOT/repo/javax/script/script-api/1.1/script-api-1.1.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.4.0/jruby-complete-1.4.0.jar</string>
@@ -42,7 +42,7 @@
         <string>$JAVAROOT/repo/org/jdesktop/swing-worker/1.1/swing-worker-1.1.jar</string>
         <string>$JAVAROOT/repo/quicktime/QTJava/7/QTJava-7.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openhashtable/0.1/openhashtable-0.1.jar</string>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.11/openshapa-lib-0.0.11.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.14/openshapa-lib-0.0.14.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.5/snakeyaml-1.5.jar</string>
         <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.5/UserMetrix-jclient-0.0.5.jar</string>
         <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.2/miglayout-3.7.2-swing.jar</string>

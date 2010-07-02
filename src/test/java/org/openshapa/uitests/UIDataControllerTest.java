@@ -59,7 +59,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     /**
      * Nominal test input.
      */
-    private String[] nominalTestInput = { "Subject stands )up ", "$10,432" };
+    private String[] nominalTestInput = {"Subject stands )up ", "$10,432"};
 
     /**
      * Nominal test output.
@@ -71,27 +71,27 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     /**
      * Text test input.
      */
-    private String[] textTestInput = { "Subject stands up ", "$10,432" };
+    private String[] textTestInput = {"Subject stands up ", "$10,432"};
 
     /**
      * Integer test input.
      */
-    private String[] integerTestInput = { "1a9", "10-432" };
+    private String[] integerTestInput = {"1a9", "10-432"};
 
     /**
      * Integer test output.
      */
-    private String[] expectedIntegerTestOutput = { "19", "-43210" };
+    private String[] expectedIntegerTestOutput = {"19", "-43210"};
 
     /**
      * Float test input.
      */
-    private String[] floatTestInput = { "1a.9", "10-43.2" };
+    private String[] floatTestInput = {"1a.9", "10-43.2"};
 
     /**
      * Float test output.
      */
-    private String[] expectedFloatTestOutput = { "1.90", "-43.2100" };
+    private String[] expectedFloatTestOutput = {"1.90", "-43.2100"};
 
     /**
      * Standard test sequence focussing on jogging.
@@ -266,30 +266,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         dcf.close();
 
@@ -365,30 +342,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -476,30 +430,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -578,30 +509,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -701,30 +609,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -825,30 +710,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // Get video window
         Iterator it = dcf.getDataViewers().iterator();
@@ -928,30 +790,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // Get video window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1002,10 +841,10 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         Assert.assertTrue(firstCell.isSelected());
         dcf.pressSetNewCellOffsetButton();
-        Assert.assertEquals(firstCell.offsetTimestamp().text(), "00:00:00:000");
-        Assert.assertEquals(secondCell.offsetTimestamp().text(),
-            offsetTime);
 
+        SpreadsheetCellFixture thirdCell = ssPanel.column("p").cell(2);
+        Assert.assertEquals(thirdCell.offsetTimestamp().text(), offsetTime);
+        Assert.assertEquals(thirdCell.offsetTimestamp().text(), offsetTime);
     }
 
     @Test public void joggingAtBeginningAndEnd() {
@@ -1023,30 +862,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // Confirm we're at the beginning and try to jog back
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
@@ -1096,30 +912,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // Confirm we're at the beginning and try to go back
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000",

@@ -437,4 +437,47 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         SpreadsheetCellFixture cell2 = ssPanel2.column(0).cell(1);
         cell2.cellValue().requireText(afterDeleteText);
     }
+
+    /**
+    * Test for bug 690.
+    * Pressing backspace in cell value starts to delete characters once it
+    * reaches the end.
+    * Example value = 12345
+    * IP at: 123|45
+    * press backspace 3 times
+    * IP and value = |45
+    * press backspace again
+    * EXPECT: nothing to happen
+    * ACTUAL: deletes 4, i.e. IP & Value = |5
+    * @throws BadLocationException on clicking on char position
+    */
+    @Test public void testBug690() throws BadLocationException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+        final String originalText = "Hello world";
+        final String afterDeleteText = "o world";
+
+        // Create new text cell and input data
+        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+
+        UIUtils.createNewVariable(mainFrameFixture, "t", "text");
+        ssPanel.column(0).click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
+        SpreadsheetCellFixture cell = ssPanel.column("t").cell(1);
+        cell.cellValue().enterText(originalText);
+
+        // Backspace "Hell"
+        cell.clickToCharPos(SpreadsheetCellFixture.VALUE, 4, 1);
+
+        for (int i = 0; i < 10; i++) {
+            cell.cellValue().pressAndReleaseKey(KeyPressInfo.keyCode(
+                    KeyEvent.VK_BACK_SPACE));
+        }
+
+        cell.cellValue().requireText(afterDeleteText);
+    }
 }

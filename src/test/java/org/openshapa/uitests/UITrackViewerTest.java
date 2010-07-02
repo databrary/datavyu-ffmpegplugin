@@ -1,10 +1,11 @@
 package org.openshapa.uitests;
 
+import static org.fest.reflect.core.Reflection.method;
+
+import java.io.IOException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.fest.reflect.core.Reflection.method;
 
 import java.awt.Point;
 import java.awt.event.InputEvent;
@@ -17,6 +18,7 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JDialog;
+import javax.swing.JPopupMenu;
 import javax.swing.filechooser.FileFilter;
 
 import org.fest.swing.core.GenericTypeMatcher;
@@ -55,6 +57,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.models.db.TimeStamp;
 
 import org.openshapa.util.FileFilters.OPFFilter;
+import org.openshapa.util.UIImageUtils;
 
 import org.openshapa.views.NewProjectV;
 
@@ -69,6 +72,15 @@ import org.testng.annotations.Test;
  * Test for the Track View in the Data Controller.
  */
 public final class UITrackViewerTest extends OpenSHAPATestClass {
+
+    /** Default video full height. */
+    private static final int VIDEO_HEIGHT = 576;
+
+    /** Default video full width. */
+    private static final int VIDEO_WIDTH = 720;
+
+    private SpreadsheetPanelFixture ssPanel;
+    private DataControllerFixture dcf;
 
     /**
      * Deleting these temp files before and after tests because Java does
@@ -96,15 +108,11 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         }
     }
 
-    /**
-    * Test needle movement to ensure needle time is the same as the clock time.
-    */
-    @Test public void testNeedleMovement() {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+    @BeforeMethod protected void setUp() {
 
         // 1. Get Spreadsheet
         JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
+        ssPanel = new SpreadsheetPanelFixture(
                 mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
         // 2. Open Data Viewer Controller and get starting time
@@ -112,42 +120,27 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             "Data Viewer Controller");
         mainFrameFixture.dialog().moveTo(new Point(0, 100));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
+        dcf = new DataControllerFixture(
                 mainFrameFixture.robot,
                 (DataControllerV) mainFrameFixture.dialog().component());
 
         // 3. Open track view
         dcf.pressShowTracksButton();
 
+    }
+
+    /**
+    * Test needle movement to ensure needle time is the same as the clock time.
+    */
+    @Test public void testNeedleMovement() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -206,52 +199,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testRangeOfNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -284,52 +237,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testNeedleMovementBySingleClicking() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -368,55 +281,15 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testNeedleMovementBySingleClickWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
-        JSliderFixture zoomSlider = dcf.getTrackMixerController()
-            .getZoomSlider();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
+        UIUtils.openData(videoFile, dcf);
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        JSliderFixture zoomSlider = dcf.getTrackMixerController()
+            .getZoomSlider();
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -458,52 +331,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testNeedleMovementBySingleClickOutsideRegion() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -570,52 +403,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testRegionMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -714,55 +507,15 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test moving track while locked and unlocked.
      */
-    @Test public void testLockUnlockTrack() {
+    @Test public void testLockUnlockTrack() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -785,8 +538,27 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         long offset = track.getOffsetTimeAsLong();
         Assert.assertTrue(offset > 0, "offset=" + offset);
 
+        File unLockedImage = new File(root + "/ui/lockButtonUnlocked.png");
+        File lockedImage = new File(root + "/ui/lockButtonLocked.png");
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getLockButton().component()), unLockedImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getLockButton().component()), lockedImage, 0.01,
+                0.01));
+
         // 5. Lock track
         track.pressLockButton();
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getLockButton().component()), unLockedImage, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getLockButton().component()), lockedImage, 0.01,
+                0.01));
 
         // 6. Try to drag track, shouldn't be able to.
         track.drag(150);
@@ -798,120 +570,39 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /** //BugzID:1944 @Test*/ public void testTrackSnapping() {
+    @Test public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open first video
         String root = System.getProperty("testPath");
         final File videoFile1 = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile1.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile1);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            boolean worked = false;
-            JFileChooserFixture jfcf = null;
-
-            do {
-                dcf.button("addDataButton").click();
-
-                try {
-                    jfcf = dcf.fileChooser();
-                    jfcf.selectFile(videoFile1).approve();
-                    worked = true;
-                } catch (Exception e) {
-                    // keep trying
-                }
-            } while (worked == false);
-        }
-
-        // 2. Get first window
-        Iterator it = dcf.getDataViewers().iterator();
-
-        JDialog vid1 = ((JDialog) it.next());
-        DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
-                vid1);
-
-        vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        UIUtils.openData(videoFile1, dcf);
 
         // c. Open second video
         final File videoFile2 = new File(root + "/ui/head_turns_copy.mov");
         Assert.assertTrue(videoFile2.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
+        UIUtils.openData(videoFile2, dcf);
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+        // Get first window
+        Iterator it = dcf.getDataViewers().iterator();
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+        JDialog vid1 = ((JDialog) it.next());
+        DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
+                vid1);
+        vidWindow1.focus();
+        vidWindow1.resizeHeightTo(300);
 
-                        fc.setSelectedFile(videoFile2);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            boolean worked = false;
-            JFileChooserFixture jfcf = null;
+        vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
-            do {
-                dcf.button("addDataButton").click();
-
-                try {
-                    jfcf = dcf.fileChooser();
-                    jfcf.selectFile(videoFile2).approve();
-                    worked = true;
-                } catch (Exception e) {
-                    // keep trying
-                }
-            } while (worked == false);
-        }
-
-        // 2. Get second window
-        it = dcf.getDataViewers().iterator();
-
+        // Get second window
         JDialog vid2 = ((JDialog) it.next());
         DialogFixture vidWindow2 = new DialogFixture(mainFrameFixture.robot,
                 vid2);
+        vidWindow2.focus();
+        vidWindow2.resizeHeightTo(300);
 
         vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
 
@@ -1081,25 +772,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test for Unlock Lock with zooming.
      */
-    @Test public void testLockUnlockTrackWithZoom() {
+    @Test public void testLockUnlockTrackWithZoom() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         JSliderFixture zoomSlider = dcf.getTrackMixerController()
             .getZoomSlider();
@@ -1109,30 +783,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1158,8 +809,27 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         long offset = track.getOffsetTimeAsLong();
         Assert.assertTrue(offset > 0, "offset=" + offset);
 
+        File unLockedImage = new File(root + "/ui/lockButtonUnlocked.png");
+        File lockedImage = new File(root + "/ui/lockButtonLocked.png");
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getLockButton().component()), unLockedImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getLockButton().component()), lockedImage, 0.01,
+                0.01));
+
         // 5. Lock track
         track.pressLockButton();
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getLockButton().component()), unLockedImage, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getLockButton().component()), lockedImage, 0.01,
+                0.01));
 
         // 6. Try to drag track, shouldn't be able to.
         track.drag(150);
@@ -1186,23 +856,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testRangeOfNeedleMovementWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         JSliderFixture zoomSlider = dcf.getTrackMixerController()
             .getZoomSlider();
 
@@ -1211,30 +864,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1294,25 +924,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /* //BugzID:1944@Test*/ public void testTrackSnappingWithZoom() {
+    @Test public void testTrackSnappingWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         JSliderFixture zoomSlider = dcf.getTrackMixerController()
             .getZoomSlider();
@@ -1322,95 +935,31 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final File videoFile1 = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile1.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile1);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            boolean worked = false;
-            JFileChooserFixture jfcf = null;
-
-            do {
-                dcf.button("addDataButton").click();
-
-                try {
-                    jfcf = dcf.fileChooser();
-                    jfcf.selectFile(videoFile1).approve();
-                    worked = true;
-                } catch (Exception e) {
-                    // keep trying
-                }
-            } while (worked == false);
-        }
-
-        // 2. Get first window
-        Iterator it = dcf.getDataViewers().iterator();
-
-        JDialog vid1 = ((JDialog) it.next());
-        DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
-                vid1);
-
-        vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        UIUtils.openData(videoFile1, dcf);
 
         // c. Open second video
         final File videoFile2 = new File(root + "/ui/head_turns_copy.mov");
         Assert.assertTrue(videoFile2.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
+        UIUtils.openData(videoFile2, dcf);
 
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
+        // Get first window
+        Iterator it = dcf.getDataViewers().iterator();
 
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
+        JDialog vid1 = ((JDialog) it.next());
+        DialogFixture vidWindow1 = new DialogFixture(mainFrameFixture.robot,
+                vid1);
+        vidWindow1.focus();
+        vidWindow1.resizeHeightTo(300);
 
-                        fc.setSelectedFile(videoFile2);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            boolean worked = false;
-            JFileChooserFixture jfcf = null;
+        vidWindow1.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
-            do {
-                dcf.button("addDataButton").click();
-
-                try {
-                    jfcf = dcf.fileChooser();
-                    jfcf.selectFile(videoFile2).approve();
-                    worked = true;
-                } catch (Exception e) {
-                    // keep trying
-                }
-            } while (worked == false);
-        }
-
-        // 2. Get second window
-        it = dcf.getDataViewers().iterator();
-
+        // Get second window
         JDialog vid2 = ((JDialog) it.next());
         DialogFixture vidWindow2 = new DialogFixture(mainFrameFixture.robot,
                 vid2);
+        vidWindow2.focus();
+        vidWindow2.resizeHeightTo(300);
 
         vidWindow2.moveTo(new Point(0, dcf.component().getHeight() + 130));
 
@@ -1578,55 +1127,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     * Test closing of video while play.
     * Should reset datacontroller and remove track.
     */
-    /*BugzID1796@Test*/ public void testCloseVideoWhilePlaying() {
+    /*BugzID1796:@Test*/ public void testCloseVideoWhilePlaying() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
-
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1675,52 +1183,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testCloseVideo() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1767,55 +1235,15 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test hiding and showing the video.
     */
-    @Test public void testShowHideVideo() {
+    @Test public void testShowHideVideo() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1852,9 +1280,48 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         Assert.assertEquals(dcf.getTrackMixerController().getTracksEditor()
             .getTracks().size(), 1);
 
+        TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
+            .getTracks().firstElement();
+
         // Hide window
+        File eyeOpenImage = new File(root + "/ui/eyeOpen.png");
+        File eyeClosedImage = new File(root + "/ui/eyeClosed.png");
+        File volumeMute = new File(root + "/ui/volumeMute.png");
+        File volumeUnmute = new File(root + "/ui/volumeUnmute.png");
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeOpenImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeClosedImage, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
         dcf.getTrackMixerController().getTracksEditor().getTrack(0)
             .pressActionButton2();
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeClosedImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeOpenImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
 
         // Check that video is not visible, but track is present and time is
         // the same
@@ -1863,9 +1330,41 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getTracks().size(), 1);
         vidWindow.requireNotVisible();
 
-        // Close window
+        // Show window
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeClosedImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeOpenImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
         dcf.getTrackMixerController().getTracksEditor().getTrack(0)
             .pressActionButton2();
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeOpenImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeClosedImage, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
 
         // Check that video is  visible and track is present and time is the
         // same
@@ -1881,52 +1380,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testShowHideVideoWhilePlaying() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -1961,9 +1420,48 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         Assert.assertEquals(dcf.getTrackMixerController().getTracksEditor()
             .getTracks().size(), 1);
 
+        TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
+            .getTrack(0);
+
         // Hide window
+        File eyeOpenImage = new File(root + "/ui/eyeOpen.png");
+        File eyeClosedImage = new File(root + "/ui/eyeClosed.png");
+        File volumeMute = new File(root + "/ui/volumeMute.png");
+        File volumeUnmute = new File(root + "/ui/volumeUnmute.png");
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeOpenImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeClosedImage, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
         dcf.getTrackMixerController().getTracksEditor().getTrack(0)
             .pressActionButton2();
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeClosedImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeOpenImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
 
         // Check that video is not visible, but track is present playing
         Assert.assertTrue(new TimeStamp(dcf.getCurrentTime()).gt(
@@ -1973,9 +1471,41 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getTracks().size(), 1);
         vidWindow.requireNotVisible();
 
-        // Close window
+        // Show window
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeClosedImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeOpenImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
         dcf.getTrackMixerController().getTracksEditor().getTrack(0)
             .pressActionButton2();
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeOpenImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton2().component()), eyeClosedImage, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
 
         // Check that video is  visible and track is present and time is the
         // same
@@ -1989,52 +1519,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     @Test public void testRegionSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
-
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser();
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
@@ -2068,110 +1558,38 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getStartTimeAsTimeStamp(), "00:00:20:000");
         Assert.assertEquals(dcf.getTrackMixerController().getRegion()
             .getEndTimeAsTimeStamp(), "00:00:40:000");
+
+        // Press clear region button
+        dcf.getTrackMixerController().getClearSnapRegionButton().click();
+
+        // Check that region is cleared
+        Assert.assertEquals(dcf.getTrackMixerController().getRegion()
+            .getStartTimeAsTimeStamp(), "00:00:00:000");
+        Assert.assertEquals(dcf.getTrackMixerController().getRegion()
+            .getEndTimeAsTimeStamp(), "00:01:00:000");
     }
 
     /**
-     * Test preservation of track order after save.
+     * Test preservation of track order and parameters (such as visibility)
+     * after save.
      */
-    @Test public void testTrackOrderAfterSave() {
+    @Test public void testTrackOrderAndParametersAfterSave()
+        throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         final String tempFolder = System.getProperty("java.io.tmpdir");
-
-        // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open track view
-        dcf.pressShowTracksButton();
 
         // c. Open videos
         String root = System.getProperty("testPath");
         final File videoFile1 = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile1.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile1);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            boolean worked = false;
-            JFileChooserFixture jfcf = null;
-
-            do {
-                dcf.button("addDataButton").click();
-
-                try {
-                    jfcf = dcf.fileChooser();
-                    jfcf.selectFile(videoFile1).approve();
-                    worked = true;
-                } catch (Exception e) {
-                    // keep trying
-                }
-            } while (worked == false);
-        }
+        UIUtils.openData(videoFile1, dcf);
 
         final File videoFile2 = new File(root + "/ui/head_turns_copy.mov");
         Assert.assertTrue(videoFile2.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile2);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            boolean worked = false;
-            JFileChooserFixture jfcf = null;
-
-            do {
-                dcf.button("addDataButton").click();
-
-                try {
-                    jfcf = dcf.fileChooser();
-                    jfcf.selectFile(videoFile2).approve();
-                    worked = true;
-                } catch (Exception e) {
-                    // keep trying
-                }
-            } while (worked == false);
-        }
+        UIUtils.openData(videoFile2, dcf);
 
         final File videoFile3 = new File(root + "/ui/head_turns2.mov");
         Assert.assertTrue(videoFile3.exists());
@@ -2219,6 +1637,86 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         for (int i = 0; i < tracks.getTracks().size(); i++) {
             tracksArray[i] = tracks.getTrack(i).getTrackName();
         }
+
+        // Get windows - assume track order corresponds to window order
+        Iterator it = dcf.getDataViewers().iterator();
+        JDialog[] vids = new JDialog[3];
+        DialogFixture[] vidWindows = new DialogFixture[3];
+
+        int i = 0;
+
+        while (it.hasNext()) {
+            vids[i] = (JDialog) it.next();
+            vidWindows[i] = new DialogFixture(mainFrameFixture.robot,
+                    vids[i]);
+            i++;
+        }
+
+        // Lock 1st track
+        File unLockedImage = new File(root + "/ui/lockButtonUnlocked.png");
+        File lockedImage = new File(root + "/ui/lockButtonLocked.png");
+        TrackFixture track1 = dcf.getTrackMixerController().getTracksEditor()
+            .getTrack(0);
+        track1.pressLockButton();
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track1.getLockButton().component()), unLockedImage, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track1.getLockButton().component()), lockedImage, 0.01,
+                0.01));
+
+        // Hide 2nd track
+        File eyeOpenImage = new File(root + "/ui/eyeOpen.png");
+        File eyeClosedImage = new File(root + "/ui/eyeClosed.png");
+        File volumeMute = new File(root + "/ui/volumeMute.png");
+        File volumeUnmute = new File(root + "/ui/volumeUnmute.png");
+        TrackFixture track2 = dcf.getTrackMixerController().getTracksEditor()
+            .getTrack(1);
+        track2.pressActionButton2();
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track2.getActionButton2().component()), eyeClosedImage,
+                0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track2.getActionButton2().component()), eyeOpenImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track2.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track2.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
+
+        // Mute 3rd track
+        dcf.getTrackMixerController().getScrollPane().verticalScrollBar()
+            .scrollToMaximum();
+
+        TrackFixture track3 = dcf.getTrackMixerController().getTracksEditor()
+            .getTrack(2);
+        track3.pressActionButton1();
+
+        JSliderFixture volumeSlider = vidWindows[2].dialog("volumeDialog")
+            .slider(
+                "volumeSlider");
+        volumeSlider.slideToMinimum();
+
+        track3.click();
+
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track3.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track3.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
+
 
         // Save project
         File tempFile = new File(tempFolder + "/testTrackOrderAfterSave.opf");
@@ -2315,9 +1813,235 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         TracksEditorFixture tracks2 = dcf2.getTrackMixerController()
             .getTracksEditor();
 
-        for (int i = 0; i < 3; i++) {
-            Assert.assertEquals(tracksArray[i],
-                tracks2.getTrack(i).getTrackName());
+        for (int j = 0; j < 3; j++) {
+            Assert.assertEquals(tracksArray[j],
+                tracks2.getTrack(j).getTrackName());
         }
+
+        // Check track parameters
+        // Lock 1st track
+        TrackFixture track21 = dcf2.getTrackMixerController().getTracksEditor()
+            .getTrack(0);
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track21.getLockButton().component()), unLockedImage, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track21.getLockButton().component()), lockedImage, 0.01,
+                0.01));
+
+        // Hide 2nd track
+        TrackFixture track22 = dcf2.getTrackMixerController().getTracksEditor()
+            .getTrack(1);
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track22.getActionButton2().component()), eyeClosedImage,
+                0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track22.getActionButton2().component()), eyeOpenImage, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track22.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track22.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
+
+        // Mute 3rd track
+        dcf2.getTrackMixerController().getScrollPane().verticalScrollBar()
+            .scrollToMaximum();
+
+        TrackFixture track23 = dcf2.getTrackMixerController().getTracksEditor()
+            .getTrack(2);
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track23.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track23.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
+    }
+
+    /**
+    * Test mute icon.
+    */
+    @Test public void testMuteIcon() throws IOException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        UIUtils.openData(videoFile, dcf);
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        vid.setAlwaysOnTop(true);
+
+        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        vid.toFront();
+
+        // Assert that track is present
+        Assert.assertEquals(dcf.getTrackMixerController().getTracksEditor()
+            .getTracks().size(), 1);
+
+        TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
+            .getTracks().firstElement();
+
+        // Mute volume by reducing volume to 0
+        File volumeMute = new File(root + "/ui/volumeMute.png");
+        File volumeUnmute = new File(root + "/ui/volumeUnmute.png");
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
+        dcf.getTrackMixerController().getTracksEditor().getTrack(0)
+            .pressActionButton1();
+
+        JSliderFixture volumeSlider = vidWindow.dialog("volumeDialog").slider(
+                "volumeSlider");
+        volumeSlider.slideToMinimum();
+
+        track.click();
+
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
+
+        dcf.getTrackMixerController().getTracksEditor().getTrack(0)
+            .pressActionButton1();
+
+        volumeSlider = vidWindow.dialog("volumeDialog").slider("volumeSlider");
+        volumeSlider.slideToMaximum();
+
+        track.click();
+        Assert.assertTrue(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeUnmute, 0.01,
+                0.01));
+        Assert.assertFalse(UIImageUtils.areImagesEqual(
+                UIImageUtils.captureAsScreenshot(
+                    track.getActionButton1().component()), volumeMute, 0.01,
+                0.01));
+    }
+
+    /**
+    * Test change video size 25%, 50%, 75%, 100%.
+    */
+    @Test public void testChangeVideoSize() throws IOException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        // c. Open video
+        String root = System.getProperty("testPath");
+        final File videoFile = new File(root + "/ui/head_turns.mov");
+        Assert.assertTrue(videoFile.exists());
+
+        UIUtils.openData(videoFile, dcf);
+
+        // 2. Get window
+        Iterator it = dcf.getDataViewers().iterator();
+
+        JDialog vid = ((JDialog) it.next());
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
+
+        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+
+        vid.setAlwaysOnTop(true);
+
+        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        vid.toFront();
+
+        // Assert that track is present
+        Assert.assertEquals(dcf.getTrackMixerController().getTracksEditor()
+            .getTracks().size(), 1);
+
+        TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
+            .getTracks().firstElement();
+
+        // Change video size and check
+        // 25%
+        dcf.getTrackMixerController().getTracksEditor().getTrack(0)
+            .pressActionButton3();
+
+        JPopupMenuFixture sizeMenu = new JPopupMenuFixture(
+                mainFrameFixture.robot,
+                (JPopupMenu) mainFrameFixture.robot.finder().findByName(
+                    "menuContext"));
+
+        sizeMenu.menuItemWithPath("25% size").click();
+
+        Assert.assertTrue(((VIDEO_HEIGHT * 0.25)
+                - (UIImageUtils.getInternalRectangle(vid).getHeight())) < 3);
+        Assert.assertTrue(((VIDEO_WIDTH * 0.25)
+                - (UIImageUtils.getInternalRectangle(vid).getWidth())) < 3);
+
+        // 50%
+        dcf.getTrackMixerController().getTracksEditor().getTrack(0)
+            .pressActionButton3();
+
+        sizeMenu = new JPopupMenuFixture(mainFrameFixture.robot,
+                (JPopupMenu) mainFrameFixture.robot.finder().findByName(
+                    "menuContext"));
+
+        sizeMenu.menuItemWithPath("50% size").click();
+
+        Assert.assertTrue(((VIDEO_HEIGHT * 0.5)
+                - (UIImageUtils.getInternalRectangle(vid).getHeight())) < 3);
+        Assert.assertTrue(((VIDEO_WIDTH * 0.5)
+                - (UIImageUtils.getInternalRectangle(vid).getWidth())) < 3);
+
+        // 75%
+        dcf.getTrackMixerController().getTracksEditor().getTrack(0)
+            .pressActionButton3();
+
+        sizeMenu = new JPopupMenuFixture(mainFrameFixture.robot,
+                (JPopupMenu) mainFrameFixture.robot.finder().findByName(
+                    "menuContext"));
+
+        sizeMenu.menuItemWithPath("75% size").click();
+
+        Assert.assertTrue(((VIDEO_HEIGHT * 0.75)
+                - (UIImageUtils.getInternalRectangle(vid).getHeight())) < 3);
+        Assert.assertTrue(((VIDEO_WIDTH * 0.75)
+                - (UIImageUtils.getInternalRectangle(vid).getWidth())) < 3);
+
+        // 100%
+        dcf.getTrackMixerController().getTracksEditor().getTrack(0)
+            .pressActionButton3();
+
+        sizeMenu = new JPopupMenuFixture(mainFrameFixture.robot,
+                (JPopupMenu) mainFrameFixture.robot.finder().findByName(
+                    "menuContext"));
+
+        sizeMenu.menuItemWithPath("100% size").click();
+
+        Assert.assertTrue((VIDEO_HEIGHT
+                - UIImageUtils.getInternalRectangle(vid).getHeight()) < 3);
+        Assert.assertTrue((VIDEO_WIDTH
+                - UIImageUtils.getInternalRectangle(vid).getWidth()) < 3);
     }
 }

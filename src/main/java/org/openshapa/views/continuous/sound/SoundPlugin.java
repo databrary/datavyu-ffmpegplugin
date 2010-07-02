@@ -44,30 +44,6 @@ public class SoundPlugin implements Plugin {
 
     /*
      * (non-Javadoc)
-     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon1()
-     */
-    public ImageIcon getActionButtonIcon1() {
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon2()
-     */
-    public ImageIcon getActionButtonIcon2() {
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon3()
-     */
-    public ImageIcon getActionButtonIcon3() {
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
      * @see org.openshapa.views.continuous.Plugin#isActionSupported1()
      */
     public boolean isActionSupported1() {

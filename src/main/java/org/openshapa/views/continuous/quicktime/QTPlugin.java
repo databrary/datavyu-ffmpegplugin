@@ -3,7 +3,6 @@ package org.openshapa.views.continuous.quicktime;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
 
 import org.openshapa.views.continuous.DataViewer;
@@ -39,35 +38,6 @@ public final class QTPlugin implements Plugin {
      */
     public ImageIcon getTypeIcon() {
         URL typeIconURL = getClass().getResource("/icons/qtplugin-icon.png");
-
-        return new ImageIcon(typeIconURL);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon1()
-     */
-    public ImageIcon getActionButtonIcon1() {
-        URL typeIconURL = getClass().getResource("/icons/audio-volume.png");
-        return new ImageIcon(typeIconURL);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon2()
-     */
-    public ImageIcon getActionButtonIcon2() {
-        URL typeIconURL = getClass().getResource("/icons/eye.png");
-
-        return new ImageIcon(typeIconURL);
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.openshapa.views.continuous.Plugin#getActionButtonIcon3()
-     */
-    public ImageIcon getActionButtonIcon3() {
-        URL typeIconURL = getClass().getResource("/icons/resize.png");
 
         return new ImageIcon(typeIconURL);
     }

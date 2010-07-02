@@ -331,9 +331,9 @@ public final class ProjectController {
                 viewer.getOffset(), viewer.getTrackPainter());
 
             mixerController.bindTrackActions(file.getAbsolutePath(), viewer,
-                plugin.isActionSupported1(), plugin.getActionButtonIcon1(),
-                plugin.isActionSupported2(), plugin.getActionButtonIcon2(),
-                plugin.isActionSupported3(), plugin.getActionButtonIcon3());
+                plugin.isActionSupported1(), viewer.getActionButtonIcon1(),
+                plugin.isActionSupported2(), viewer.getActionButtonIcon2(),
+                plugin.isActionSupported3(), viewer.getActionButtonIcon3());
         }
 
         for (TrackSettings setting : project.getTrackSettings()) {

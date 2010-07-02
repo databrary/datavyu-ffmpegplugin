@@ -11,8 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import java.util.Iterator;
-import javax.swing.JDialog;
 
+import javax.swing.JDialog;
 import javax.swing.filechooser.FileFilter;
 
 import org.fest.swing.edt.GuiActionRunner;
@@ -70,36 +70,14 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            GuiActionRunner.execute(new GuiTask() {
-                    public void executeInEDT() {
-                        OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-                        fc.setVisible(false);
-
-                        for (FileFilter f : pm.getPluginFileFilters()) {
-                            fc.addChoosableFileFilter(f);
-                        }
-
-                        fc.setSelectedFile(videoFile);
-                        method("openVideo").withParameterTypes(
-                            OpenSHAPAFileChooser.class).in(
-                            (DataControllerV) dcf.component()).invoke(fc);
-                    }
-                });
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
         Iterator it = dcf.getDataViewers().iterator();
 
         JDialog vid = ((JDialog) it.next());
-        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot, vid);
+        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
+                vid);
 
         vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
 
