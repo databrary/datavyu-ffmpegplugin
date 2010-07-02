@@ -40,10 +40,10 @@ public final class UIBug493Test extends OpenSHAPATestClass {
         String[] expectedTestOutput = testInput;
 
         // 1. Create new TEXT variable
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         // 2. Check that a column has been created
-        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        JPanelFixture ssPanel = mainFrameFixture.getSpreadsheet();
 
         // Find our new column header
         JLabelFixture column = ssPanel.panel("headerView").label();

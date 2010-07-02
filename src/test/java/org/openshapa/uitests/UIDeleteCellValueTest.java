@@ -18,9 +18,7 @@ import javax.swing.text.BadLocationException;
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
@@ -30,11 +28,9 @@ import org.fest.swing.util.Platform;
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.util.FileFilters.OPFFilter;
-import org.openshapa.util.UIUtils;
 
 import org.openshapa.views.NewProjectV;
 import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -89,39 +85,20 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Open spreadsheet and check that script has data
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        Vector<SpreadsheetColumnFixture> cols = spreadsheet.allColumns();
         Assert.assertTrue(cols.size() > 0);
-        highlightAndBackspaceTest(ssPanel, 1, type);
-        highlightAndDeleteTest(ssPanel, 2, type);
-        backSpaceAllTest(ssPanel, 3, type);
-        deleteAllTest(ssPanel, 4, type);
+        highlightAndBackspaceTest(spreadsheet, 1, type);
+        highlightAndDeleteTest(spreadsheet, 2, type);
+        backSpaceAllTest(spreadsheet, 3, type);
+        deleteAllTest(spreadsheet, 4, type);
     }
 
     /**
@@ -325,20 +302,21 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
     /*BugzID1914:@Test*/ public void partialDeletionTest() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
+        String varName = "t";
+        String varType = "text";
+
         final String tempFolder = System.getProperty("java.io.tmpdir");
         final String originalText = "Hello world";
         final String afterDeleteText = "Hello wo";
 
         // Create new text cell and input data
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        UIUtils.createNewVariable(mainFrameFixture, "t", "text");
-        ssPanel.column(0).click();
+        mainFrameFixture.createNewVariable(varName, varType);
+        spreadsheet.column(0).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        SpreadsheetCellFixture cell = ssPanel.column("t").cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column(varName).cell(1);
         cell.cellValue().enterText(originalText);
 
         // Save project
@@ -400,7 +378,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         newDatabaseDialog.button("okButton").click();
 
         // Check that no cells exist
-        Assert.assertEquals(ssPanel.allColumns().size(), 0);
+        Assert.assertEquals(spreadsheet.allColumns().size(), 0);
 
         // Reopen project
         if (Platform.isOSX()) {
@@ -430,9 +408,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         }
 
         // Check that characters are still deleted.
-        JPanelFixture jPanel2 = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel2 = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel2.component());
+        SpreadsheetPanelFixture ssPanel2 = mainFrameFixture.getSpreadsheet();
 
         SpreadsheetCellFixture cell2 = ssPanel2.column(0).cell(1);
         cell2.cellValue().requireText(afterDeleteText);
@@ -454,20 +430,21 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
     @Test public void testBug690() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
+        String varName = "t";
+        String varType = "text";
+
         final String tempFolder = System.getProperty("java.io.tmpdir");
         final String originalText = "Hello world";
         final String afterDeleteText = "o world";
 
         // Create new text cell and input data
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        UIUtils.createNewVariable(mainFrameFixture, "t", "text");
-        ssPanel.column(0).click();
+        mainFrameFixture.createNewVariable(varName, varType);
+        spreadsheet.column(0).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        SpreadsheetCellFixture cell = ssPanel.column("t").cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column(varName).cell(1);
         cell.cellValue().enterText(originalText);
 
         // Backspace "Hell"

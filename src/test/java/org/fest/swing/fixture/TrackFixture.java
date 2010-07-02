@@ -152,8 +152,8 @@ public class TrackFixture extends ComponentFixture {
      */
     public JButtonFixture getActionButton1() {
         return new JButtonFixture(robot,
-            (JButton) field("actionButton1").ofType(JButton.class).in(
-                trackC).get());
+                (JButton) field("actionButton1").ofType(JButton.class).in(
+                    trackC).get());
     }
 
     /**
@@ -163,8 +163,8 @@ public class TrackFixture extends ComponentFixture {
     */
     public JButtonFixture getActionButton2() {
         return new JButtonFixture(robot,
-            (JButton) field("actionButton2").ofType(JButton.class).in(
-                trackC).get());
+                (JButton) field("actionButton2").ofType(JButton.class).in(
+                    trackC).get());
     }
 
     /**
@@ -173,8 +173,8 @@ public class TrackFixture extends ComponentFixture {
     */
     public JButtonFixture getActionButton3() {
         return new JButtonFixture(robot,
-            (JButton) field("actionButton3").ofType(JButton.class).in(
-                trackC).get());
+                (JButton) field("actionButton3").ofType(JButton.class).in(
+                    trackC).get());
     }
 
     /**

@@ -1,21 +1,11 @@
 package org.openshapa.uitests;
 
-import java.awt.Point;
-import java.awt.RenderingHints.Key;
 import java.awt.event.KeyEvent;
 
-import javax.swing.JTextField;
-
 import org.fest.swing.fixture.DataControllerFixture;
-import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
 
 import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.DataControllerV;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -39,33 +29,24 @@ public final class UIBug784Test extends OpenSHAPATestClass {
         String varType =
             UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         // 2. Check that a column has been created
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-
-        // Find our new column header
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        Assert.assertNotNull(ssPanel.column(varName));
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        Assert.assertNotNull(spreadsheet.column(varName));
 
         // 3. Create cell
-        ssPanel.column("v").click();
+        spreadsheet.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
         // 4. Set onset and offset
-        SpreadsheetCellFixture cell = ssPanel.column("v").cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column(varName).cell(1);
         cell.onsetTimestamp().enterText("111111111");
         cell.offsetTimestamp().enterText("222222222");
 
         // 5. Open Dataviewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
-
-        DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        DataControllerFixture dcf = mainFrameFixture.openDataController(300,
+                300);
 
         // *. Highlight select cell because of BugzID:1430
         cell.fillSelectCell(true);

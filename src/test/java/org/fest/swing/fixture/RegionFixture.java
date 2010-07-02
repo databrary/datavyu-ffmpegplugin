@@ -6,14 +6,19 @@ import java.awt.geom.GeneralPath;
 
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
+
 import org.openshapa.controllers.component.RegionController;
+
 import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.component.RegionPainter;
+
 
 /**
  * Fixture for OpenSHAPA RegionPainter.
  */
 public class RegionFixture extends ComponentFixture {
+
     /** The underlying mixercontroller. */
     private RegionController regionC;
 
@@ -59,7 +64,7 @@ public class RegionFixture extends ComponentFixture {
      * @return true if mouse is on the region head.
      */
     public boolean isMouseOnRegionHead() {
-        return ((RegionPainter)target).contains(
+        return ((RegionPainter) target).contains(
                 MouseInfo.getPointerInfo().getLocation());
     }
 
@@ -69,20 +74,21 @@ public class RegionFixture extends ComponentFixture {
      * @param pixels number of pixels to drag
      */
     public void dragStartMarker(int pixels) {
-        //Hold down left mouse button
+
+        // Hold down left mouse button
         robot.pressMouse(getPointInStartMarker(), MouseButton.LEFT_BUTTON);
 
-        //Move mouse to new position
+        // Move mouse to new position
         Point to = new Point(getPointInStartMarker().x + pixels,
                 getPointInStartMarker().y);
         robot.moveMouse(to);
 
-        //Release mouse
+        // Release mouse
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
     /**
-     * @return Point in the start marker head that can be clicked on for moving around
+     * @return Point in the centre of the start marker head
      */
     private Point getPointInStartMarker() {
         GeneralPath startMarker = ((RegionPainter) target).getStartMarkerPolygon();
@@ -92,26 +98,27 @@ public class RegionFixture extends ComponentFixture {
                 );
     }
 
-     /**
-     * Drags the end marker the specified number of pixels left (-ve) or
-     * right (+ve).
-     * @param pixels number of pixels to drag
-     */
+    /**
+    * Drags the end marker the specified number of pixels left (-ve) or
+    * right (+ve).
+    * @param pixels number of pixels to drag
+    */
     public void dragEndMarker(int pixels) {
-        //Hold down left mouse button
+
+        // Hold down left mouse button
         robot.pressMouse(getPointInEndMarker(), MouseButton.LEFT_BUTTON);
 
-        //Move mouse to new position
+        // Move mouse to new position
         Point to = new Point(getPointInEndMarker().x + pixels,
                 getPointInEndMarker().y);
         robot.moveMouse(to);
 
-        //Release mouse
+        // Release mouse
         robot.releaseMouse(MouseButton.LEFT_BUTTON);
     }
 
     /**
-     * @return a Point in the end marker head that can be clicked on for moving around
+     * @return a Point in the EndMarker.
      */
     public Point getPointInEndMarker() {
         GeneralPath endMarker = ((RegionPainter) target).getEndMarkerPolygon();

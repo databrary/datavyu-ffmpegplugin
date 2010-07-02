@@ -8,14 +8,19 @@ import java.awt.geom.GeneralPath;
 
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
+
 import org.openshapa.controllers.component.NeedleController;
+
 import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.component.NeedlePainter;
+
 
 /**
  * Fixture for OpenSHAPA NeedlePainter.
  */
 public class NeedleFixture extends ComponentFixture {
+
     /** The underlying mixercontroller. */
     private NeedleController needleC;
 
@@ -55,6 +60,7 @@ public class NeedleFixture extends ComponentFixture {
      * @param pixels
      */
     public void drag(final int pixels) {
+
         // Hold down left mouse button
         robot.pressMouse(getCenterOfMarker(), MouseButton.LEFT_BUTTON);
 
@@ -71,6 +77,7 @@ public class NeedleFixture extends ComponentFixture {
      * @return a point at the centre of the needle head.
      */
     private Point getCenterOfMarker() {
+
         /*
          * There are actually 4 points that define the needle polygon triangle,
          * because it has a slightly flat base (1pixel). We ignore the 4th

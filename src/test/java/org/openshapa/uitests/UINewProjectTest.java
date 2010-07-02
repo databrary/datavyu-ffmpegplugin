@@ -13,21 +13,15 @@ import javax.swing.JDialog;
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.fixture.VocabEditorDialogFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
-import org.openshapa.util.UIUtils;
-
 import org.openshapa.views.ListVariables;
 import org.openshapa.views.NewProjectV;
 import org.openshapa.views.VocabEditorV;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -51,36 +45,15 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Check that the database is populated
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
+        Vector<SpreadsheetColumnFixture> cols = spreadsheet.allColumns();
         Assert.assertTrue(cols.size() != 0);
 
         for (SpreadsheetColumnFixture col : cols) {
@@ -120,7 +93,7 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
         newDatabaseDialog.button("okButton").click();
 
         // 4a. Check that all data is cleared
-        Assert.assertTrue(ssPanel.numOfColumns() == 0);
+        Assert.assertTrue(spreadsheet.numOfColumns() == 0);
 
         // 4b. Check that variable list is empty
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
@@ -160,36 +133,15 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Sequentially select each column and delete
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
+        Vector<SpreadsheetColumnFixture> cols = spreadsheet.allColumns();
         Assert.assertTrue(cols.size() != 0);
 
         for (SpreadsheetColumnFixture col : cols) {
@@ -234,12 +186,9 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
         newDatabaseDialog.button("cancelButton").click();
 
         // 4a. Check that all data remains the same
-        JPanelFixture jPanel2 = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        SpreadsheetPanelFixture ssPanel2 = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        Vector<SpreadsheetColumnFixture> cols2 = ssPanel.allColumns();
+        Vector<SpreadsheetColumnFixture> cols2 = spreadsheet.allColumns();
 
         Assert.assertTrue(cols2.size() == numOfCols);
 

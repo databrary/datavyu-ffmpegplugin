@@ -7,8 +7,6 @@ import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 
-import org.openshapa.util.UIUtils;
-
 import org.testng.annotations.Test;
 
 
@@ -39,7 +37,7 @@ public final class UIBug309Test extends OpenSHAPATestClass {
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";
 
-        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        JPanelFixture ssPanel = mainFrameFixture.getSpreadsheet();
 
         // Create new variable.
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");

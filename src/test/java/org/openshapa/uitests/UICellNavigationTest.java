@@ -9,18 +9,9 @@ import java.util.Vector;
 import javax.swing.text.BadLocationException;
 
 import org.fest.swing.core.KeyPressInfo;
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
-
-import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -43,33 +34,13 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get the spreadsheet, check that cells do exist
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         Assert.assertTrue(spreadsheet.allColumns().size() > 0,
             "Expecting columns to exist.");
@@ -133,33 +104,13 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get the spreadsheet, check that cells do exist
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         Assert.assertTrue(spreadsheet.allColumns().size() > 0,
             "Expecting columns to exist.");
@@ -172,13 +123,15 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
         // 3. Get column
         SpreadsheetColumnFixture col = spreadsheet.column(0);
 
+        int numOfCells = col.numOfCells();
+
         // 4. Select the 6th cell (10 cells in total)
-        col.cell(6).borderSelectCell(true);
+        col.cell(numOfCells - 4).borderSelectCell(true);
 
         // 5. Move all the way DOWN, then try to go further
-        int currSelCell = 6;
+        int currSelCell = numOfCells - 4;
 
-        while (!col.cell(10).isSelected()) {
+        while (!col.cell(numOfCells).isSelected()) {
 
             if ((currSelCell % 2) == 0) {
                 spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_DOWN);
@@ -189,13 +142,13 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
                 }
             }
 
-            int expectedCell = Math.min(10, currSelCell + 1);
+            int expectedCell = Math.min(numOfCells, currSelCell + 1);
             Assert.assertTrue(col.cell(expectedCell).isSelected());
             currSelCell++;
         }
 
         // 6. Move all the way UP, then try to go further
-        currSelCell = 10;
+        currSelCell = numOfCells;
 
         while (!col.cell(1).isSelected()) {
 
@@ -215,7 +168,8 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test that caret remains in the same position for up down movement in cells.
+     * Test that caret remains in the same position for up down movement in
+     * cells.
      */
     @Test public void testUpDownCellsCaretPosition()
         throws BadLocationException {
@@ -226,33 +180,13 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get the spreadsheet, check that cells do exist
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         Assert.assertTrue(spreadsheet.allColumns().size() > 0,
             "Expecting columns to exist.");
@@ -273,14 +207,16 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
                 continue;
             }
 
-            col.cell(6).cellValue().click();
+            int numOfCells = col.numOfCells();
 
-            Assert.assertEquals(col.cell(6).cellValue().component()
+            col.cell(numOfCells - 4).cellValue().click();
+
+            Assert.assertEquals(col.cell(numOfCells - 4).cellValue().component()
                 .getCaretPosition(), 0);
 
             // Move up cell by cell and confirm that the caret remains in
             // the same position
-            for (int i = 5; i >= 1; i--) {
+            for (int i = numOfCells - 5; i >= 1; i--) {
                 spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_UP);
                 Assert.assertEquals(col.cell(i).cellValue().component()
                     .getCaretPosition(), 0);
@@ -288,7 +224,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
 
             // Move down cell by cell and confirm that caret remains in the
             // same position
-            for (int i = 2; i <= col.numOfCells(); i++) {
+            for (int i = 2; i <= numOfCells; i++) {
                 spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_DOWN);
                 Assert.assertEquals(col.cell(i).cellValue().component()
                     .getCaretPosition(), 0);
@@ -296,7 +232,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
 
             // Move back up cell by cell and confirm that the caret remains in
             // the same position
-            for (int i = col.numOfCells() - 1; i >= 1; i--) {
+            for (int i = numOfCells - 1; i >= 1; i--) {
                 spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_UP);
                 Assert.assertEquals(col.cell(i).cellValue().component()
                     .getCaretPosition(), 0);
@@ -315,13 +251,19 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
                 continue;
             }
 
+            // Calculations assume number of cells is 10. If script is changed
+            // they need to change.
+            int numOfCells = col.numOfCells();
+
             int defaultPos = 3;
-            col.cell(6).clickToCharPos(SpreadsheetCellFixture.VALUE, defaultPos,
+            col.cell(numOfCells - 4).clickToCharPos(
+                SpreadsheetCellFixture.VALUE, defaultPos,
                 1);
 
             // Forced to do this because of BugzID:1350
             for (int i = 0; i < 3; i++) {
-                col.cell(6).cellValue().pressAndReleaseKey(KeyPressInfo.keyCode(
+                col.cell(numOfCells - 4).cellValue().pressAndReleaseKey(
+                    KeyPressInfo.keyCode(
                         KeyEvent.VK_RIGHT));
 
                 // Compensate for decimal in floats
@@ -330,16 +272,17 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
                 }
             }
 
-            if (col.cell(6).cellValue().text().length() < defaultPos) {
+            if (col.cell(numOfCells - 4).cellValue().text().length()
+                    < defaultPos) {
                 defaultPos = col.cell(1).cellValue().text().length();
             }
 
-            Assert.assertEquals(col.cell(6).cellValue().component()
+            Assert.assertEquals(col.cell(numOfCells - 4).cellValue().component()
                 .getCaretPosition(), defaultPos);
 
             // Move up cell by cell and confirm that caret remains in
             // the same position
-            for (int i = 5; i >= 1; i--) {
+            for (int i = numOfCells - 5; i >= 1; i--) {
                 spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_UP);
 
                 if (col.cell(i).cellValue().text().length() < defaultPos) {
@@ -352,7 +295,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
 
             // Move down cell by cell and confirm that caret remains in the
             // same position
-            for (int i = 2; i <= col.numOfCells(); i++) {
+            for (int i = 2; i <= numOfCells; i++) {
                 spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_DOWN);
 
                 if (col.cell(i).cellValue().text().length() < defaultPos) {
@@ -365,7 +308,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
 
             // Move back up cell by cell and confirm that caret remains in
             // the same position
-            for (int i = col.numOfCells() - 1; i >= 1; i--) {
+            for (int i = numOfCells - 1; i >= 1; i--) {
                 spreadsheet.robot.pressAndReleaseKey(KeyEvent.VK_UP);
 
                 if (col.cell(i).cellValue().text().length() < defaultPos) {

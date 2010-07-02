@@ -8,14 +8,18 @@ import java.util.Vector;
 import javax.swing.JPanel;
 
 import org.fest.swing.core.Robot;
+
 import org.openshapa.controllers.component.TrackController;
 import org.openshapa.controllers.component.TracksEditorController;
+
 import org.openshapa.views.component.SnapMarkerPainter;
+
 
 /**
  * Fixture for Tracks Editor, which contains all tracks.
  */
 public class TracksEditorFixture extends JPanelFixture {
+
     /** The underlying mixercontroller. */
     private TracksEditorController tracksEditorC;
 
@@ -28,7 +32,7 @@ public class TracksEditorFixture extends JPanelFixture {
      *            TracksEditorController
      */
     public TracksEditorFixture(final Robot robot,
-            final TracksEditorController target) {
+        final TracksEditorController target) {
         super(robot, (JPanel) target.getView());
         tracksEditorC = target;
     }
@@ -40,11 +44,11 @@ public class TracksEditorFixture extends JPanelFixture {
         Vector<TrackFixture> tracks = new Vector<TrackFixture>();
 
         method("getAllTrackControllers").withReturnType(List.class).in(
-                tracksEditorC).invoke();
+            tracksEditorC).invoke();
 
-        List<TrackController> trackControllers =
-                method("getAllTrackControllers").withReturnType(List.class).in(
-                        tracksEditorC).invoke();
+        List<TrackController> trackControllers = method(
+                "getAllTrackControllers").withReturnType(List.class).in(
+                tracksEditorC).invoke();
 
         for (TrackController tc : trackControllers) {
             tracks.add(new TrackFixture(robot, tc));
@@ -59,9 +63,9 @@ public class TracksEditorFixture extends JPanelFixture {
      */
     public TrackFixture getTrack(final int n) {
         TrackFixture track;
-        List<TrackController> trackControllers =
-                method("getAllTrackControllers").withReturnType(List.class).in(
-                        tracksEditorC).invoke();
+        List<TrackController> trackControllers = method(
+                "getAllTrackControllers").withReturnType(List.class).in(
+                tracksEditorC).invoke();
 
         track = new TrackFixture(robot, trackControllers.get(n));
 
@@ -75,16 +79,19 @@ public class TracksEditorFixture extends JPanelFixture {
      */
     public TrackFixture getTrack(final String trackName) {
         TrackFixture track;
-        List<TrackController> trackControllers =
-                method("getAllTrackControllers").withReturnType(List.class).in(
-                        tracksEditorC).invoke();
+        List<TrackController> trackControllers = method(
+                "getAllTrackControllers").withReturnType(List.class).in(
+                tracksEditorC).invoke();
 
         for (TrackController tc : trackControllers) {
+
             if (tc.getTrackName().equalsIgnoreCase(trackName)) {
                 track = new TrackFixture(robot, tc);
+
                 return track;
             }
         }
+
         return null;
     }
 
