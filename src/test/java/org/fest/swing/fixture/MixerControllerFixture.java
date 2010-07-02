@@ -1,24 +1,28 @@
 package org.fest.swing.fixture;
 
 import org.fest.swing.core.Robot;
+
 import org.openshapa.views.MixerControllerV;
+
 
 /**
  * Fixture for OpenSHAPA MixerController.
  */
 public class MixerControllerFixture {
+
     /** The underlying mixercontroller. */
     private MixerControllerV mixControl;
 
     /** Robot for FEST. */
     private Robot r;
+
     /**
      * Constructor.
      * @param robot main frame fixture robot
      * @param target mixercontroller class
      */
     public MixerControllerFixture(final Robot robot,
-            final MixerControllerV target) {
+        final MixerControllerV target) {
         r = robot;
         mixControl = target;
     }
@@ -46,10 +50,10 @@ public class MixerControllerFixture {
         return new JButtonFixture(r, "snapRegionButton");
     }
 
-     /**
-     * Get clear snap region  button.
-     * @return JButtonFixture for Snap Region button
-     */
+    /**
+    * Get clear snap region  button.
+    * @return JButtonFixture for Snap Region button
+    */
     public final JButtonFixture getClearSnapRegionButton() {
         return new JButtonFixture(r, "clearRegionButton");
     }

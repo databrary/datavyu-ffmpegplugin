@@ -1,31 +1,15 @@
 package org.openshapa.uitests;
 
-
-import static org.fest.reflect.core.Reflection.method;
-
 import java.awt.Point;
 
 import java.io.File;
 
-import java.util.Iterator;
-import javax.swing.JDialog;
-
-import javax.swing.filechooser.FileFilter;
+import java.util.ArrayList;
 
 import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
-import org.fest.swing.timing.Timeout;
-import org.fest.swing.util.Platform;
 
 import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.DataControllerV;
-import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.continuous.PluginManager;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -45,18 +29,10 @@ public final class UIBug686Test extends OpenSHAPATestClass {
 
         // 1. Open video
         // a. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // b. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        final DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -66,12 +42,11 @@ public final class UIBug686Test extends OpenSHAPATestClass {
         UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
+        Assert.assertEquals(vidWindows.size(), 1);
 
-        JDialog vid = ((JDialog) it.next());
-        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot, vid);
-
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+                100));
 
         // 2. Jog forward and check
         dcf.pressJogForwardButton();

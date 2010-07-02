@@ -11,21 +11,12 @@ import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 
 import org.fest.swing.core.KeyPressInfo;
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.fixture.VocabEditorDialogFixture;
 import org.fest.swing.fixture.VocabElementFixture;
-import org.fest.swing.timing.Timeout;
-import org.fest.swing.util.Platform;
-
-import org.openshapa.util.UIUtils;
 
 import org.openshapa.views.VocabEditorV;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -75,28 +66,10 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 3. Check that vocab editor is populated
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
@@ -125,18 +98,15 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         veDialog.okButton().click();
 
         // 2. Create new predicate variable and cell
-        String varName = "predicate";
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot,
-                (SpreadsheetPanel) UIUtils.getSpreadsheet(mainFrameFixture)
-                    .component());
-        UIUtils.createNewVariable(mainFrameFixture, varName,
-            varName + "TypeButton");
+        String varName = "p";
+        String varType = "predicate";
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        mainFrameFixture.createNewVariable(varName, varType);
 
-        ssPanel.column(varName).click();
+        spreadsheet.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        SpreadsheetCellFixture cell = ssPanel.column(varName).cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column(varName).cell(1);
         cell.cellValue().enterText(veName);
         Assert.assertEquals(cell.cellValue().text(), veName + "(<arg0>)");
     }
@@ -174,18 +144,15 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         veDialog.okButton().click();
 
         // 2. Create new predicate variable and cell
-        String varName = "predicate";
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot,
-                (SpreadsheetPanel) UIUtils.getSpreadsheet(mainFrameFixture)
-                    .component());
-        UIUtils.createNewVariable(mainFrameFixture, varName,
-            varName + "TypeButton");
+        String varName = "p";
+        String varType = "predicate";
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        mainFrameFixture.createNewVariable(varName, varType);
 
-        ssPanel.column(varName).click();
+        spreadsheet.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        SpreadsheetCellFixture cell = ssPanel.column(varName).cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column(varName).cell(1);
         cell.cellValue().enterText(newVEName);
         Assert.assertEquals(cell.cellValue().text(), newVEName + "(<arg0>)");
     }
@@ -217,18 +184,15 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         veDialog.okButton().click();
 
         // 2. Create new predicate variable and cell
-        String varName = "predicate";
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot,
-                (SpreadsheetPanel) UIUtils.getSpreadsheet(mainFrameFixture)
-                    .component());
-        UIUtils.createNewVariable(mainFrameFixture, varName,
-            varName + "TypeButton");
+        String varName = "p";
+        String varType = "predicate";
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        mainFrameFixture.createNewVariable(varName, varType);
 
-        ssPanel.column(varName).click();
+        spreadsheet.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        SpreadsheetCellFixture cell = ssPanel.column(varName).cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column(varName).cell(1);
         cell.cellValue().enterText(newVEName);
         Assert.assertEquals(cell.cellValue().text(), newVEName + "(<arg0>)");
     }
@@ -275,18 +239,15 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         veDialog.okButton().click();
 
         // 2. Create new predicate variable and cell
-        String varName = "predicate";
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot,
-                (SpreadsheetPanel) UIUtils.getSpreadsheet(mainFrameFixture)
-                    .component());
-        UIUtils.createNewVariable(mainFrameFixture, varName,
-            varName + "TypeButton");
+        String varName = "p";
+        String varType = "predicate";
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        mainFrameFixture.createNewVariable(varName, varType);
 
-        ssPanel.column(varName).click();
+        spreadsheet.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        SpreadsheetCellFixture cell = ssPanel.column(varName).cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column(varName).cell(1);
         cell.cellValue().enterText(veName);
         Assert.assertEquals(cell.cellValue().text(),
             veName + "(<" + newVEArgName + ">)");
@@ -334,18 +295,15 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         veDialog.okButton().click();
 
         // 2. Create new predicate variable and cell
-        String varName = "predicate";
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot,
-                (SpreadsheetPanel) UIUtils.getSpreadsheet(mainFrameFixture)
-                    .component());
-        UIUtils.createNewVariable(mainFrameFixture, varName,
-            varName + "TypeButton");
+        String varName = "p";
+        String varType = "predicate";
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        mainFrameFixture.createNewVariable(varName, varType);
 
-        ssPanel.column(varName).click();
+        spreadsheet.column(varName).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        SpreadsheetCellFixture cell = ssPanel.column(varName).cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column(varName).cell(1);
         cell.cellValue().enterText(veName);
         Assert.assertEquals(cell.cellValue().text(),
             veName + "(<" + newVEArgName + ">)");
@@ -371,28 +329,10 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get current data
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
@@ -453,28 +393,10 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get current data
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
@@ -607,28 +529,10 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get current data
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
@@ -930,28 +834,10 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get number of elements
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
@@ -1011,28 +897,10 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get number of elements
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
@@ -1066,28 +934,10 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get number of elements
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
@@ -1110,11 +960,9 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         veDialog.applyButton().click();
 
         // Check that new matrix has been created
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        SpreadsheetColumnFixture matrixCol = ssPanel.column(matrixName);
+        SpreadsheetColumnFixture matrixCol = spreadsheet.column(matrixName);
         Assert.assertNotNull(matrixCol);
         matrixCol.click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
@@ -1140,28 +988,10 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         File demoFile = new File(root + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get number of elements
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
@@ -1184,11 +1014,9 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         veDialog.applyButton().click();
 
         // Check that new matrix has been created
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        SpreadsheetColumnFixture matrixCol = ssPanel.column(matrixName);
+        SpreadsheetColumnFixture matrixCol = spreadsheet.column(matrixName);
         Assert.assertNotNull(matrixCol);
 
         // Matrix column
@@ -1198,7 +1026,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
             "Delete Variable");
 
         // Confirm deleted
-        Assert.assertNull(ssPanel.column(matrixName));
+        Assert.assertNull(spreadsheet.column(matrixName));
 
         // Create again VocabEditor BUGZID:1771
 

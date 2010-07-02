@@ -7,20 +7,14 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.OpenSHAPA;
-
-import org.openshapa.controllers.RunScriptC;
 
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
 
 import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -86,14 +80,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
         Assert.assertTrue(modifyFile.exists(),
             "Expecting find_and_replace.rb to exist.");
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -108,9 +95,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
         scriptConsole.button("closeButton").click();
 
         // 1a. Check that database is populated
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
         Assert.assertTrue(spreadsheet.numOfColumns() > 0,
             "Expecting spreadsheet to be populated.");
 
@@ -118,14 +103,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
          * 2. Perform a find and replace; replace all instances of "moo" with
          * "frog"
          */
-        if (Platform.isOSX()) {
-            UIUtils.runScript(modifyFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(modifyFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
         scriptConsole = mainFrameFixture.dialog();

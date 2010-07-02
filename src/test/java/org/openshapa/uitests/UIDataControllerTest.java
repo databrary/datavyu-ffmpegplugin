@@ -6,41 +6,24 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.fest.reflect.core.Reflection.method;
-
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 
-import javax.swing.JDialog;
-import javax.swing.filechooser.FileFilter;
-
-import org.fest.swing.edt.GuiActionRunner;
-import org.fest.swing.edt.GuiTask;
-import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.models.db.SystemErrorException;
 
 import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.DataControllerV;
-import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.continuous.PluginManager;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.openshapa.models.db.TimeStamp;
 
@@ -108,24 +91,16 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final String[] testInputArray, final String[] testExpectedArray) {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        ssPanel.deselectAll();
-        UIUtils.createNewVariable(mainFrameFixture, varName, varType);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        spreadsheet.deselectAll();
+        mainFrameFixture.createNewVariable(varName, varType);
 
         // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-
-        DialogFixture dcv = WindowFinder.findDialog(DataControllerV.class)
-            .withTimeout(1000).using(mainFrameFixture.robot);
-
-        DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot, (DataControllerV) dcv.component());
+        DataControllerFixture dcf = mainFrameFixture.openDataController(300,
+                300);
 
         // 3. Create new cell - so we have something to send key to because
-        SpreadsheetColumnFixture column = ssPanel.column(varName);
+        SpreadsheetColumnFixture column = spreadsheet.column(varName);
         column.click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
@@ -227,7 +202,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         for (int cellId = 1; cellId <= column.numOfCells(); cellId++) {
             cell1 = column.cell(cellId);
 
-            // ssPanel.deselectAll();
+            // spreadsheet.deselectAll();
             column.click();
             cell1.fillSelectCell(true);
             Assert.assertEquals(dcf.getFindOnset(),
@@ -253,13 +228,9 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      */
     @Test public void testStandardSequence1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        final DataControllerFixture dcf = mainFrameFixture.openDataController(
+                300, 300);
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -294,18 +265,10 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // 3. Confirm that Go Back text field is 00:00:05:000
         Assert.assertEquals("00:00:05:000",
@@ -319,23 +282,16 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * the file. The stored shuttle speed does not get reset to zero though,
      * resulting in multiple forward shuttle presses being necessary to get
      * a positive playback speed again.
+     * @throws IOException on file errors
      */
     @Test public void testBug778() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -345,21 +301,21 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
+        Assert.assertEquals(vidWindows.size(), 1);
 
-        JDialog vid = ((JDialog) it.next());
-        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
-                vid);
+        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+                100));
 
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
-
-        vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
-            + vid.getInsets().top);
-        vid.setAlwaysOnTop(true);
+        vidWindows.get(0).resizeHeightTo(600
+            + vidWindows.get(0).component().getInsets().bottom
+            + vidWindows.get(0).component().getInsets().top);
+        vidWindows.get(0).component().setAlwaysOnTop(true);
 
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 
-        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
+        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(
+                vidWindows.get(0).component());
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
         // 3. Play movie for 5 seconds
@@ -391,7 +347,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         // 4. Check that speed has returned to 0 and time is 0
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
-        vidImage = UIImageUtils.captureAsScreenshot(vid);
+        vidImage = UIImageUtils.captureAsScreenshot(vidWindows.get(0)
+                .component());
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
         Assert.assertEquals(dcf.getSpeed(), "0");
@@ -412,18 +369,10 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        final DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -433,13 +382,11 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
+        Assert.assertEquals(vidWindows.size(), 1);
 
-        JDialog vid = ((JDialog) it.next());
-        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
-                vid);
-
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+                100));
 
         // 3. Shuttle forward to 4x
         dcf.pressPlayButton();
@@ -486,23 +433,16 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Pause the movie. Rewind past zero (forcing a stop).
      * Unpause/play the movie, voila, cannot play the movie
      * using that button anymore.
+     * @throws IOException on file errors
      */
     @Test public void testBug798() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        final DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -512,20 +452,20 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
+        Assert.assertEquals(vidWindows.size(), 1);
 
-        JDialog vid = ((JDialog) it.next());
-        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
-                vid);
-
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
-        vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
-            + vid.getInsets().top);
-        vid.setAlwaysOnTop(true);
+        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+                100));
+        vidWindows.get(0).resizeHeightTo(600
+            + vidWindows.get(0).component().getInsets().bottom
+            + vidWindows.get(0).component().getInsets().top);
+        vidWindows.get(0).component().setAlwaysOnTop(true);
 
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 
-        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
+        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(
+                vidWindows.get(0).component());
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
         // 2. Shuttle forward to 4x
@@ -571,14 +511,16 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // Check that its 0 time and speed
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         Assert.assertEquals(dcf.getSpeed(), "0");
-        vidImage = UIImageUtils.captureAsScreenshot(vid);
+        vidImage = UIImageUtils.captureAsScreenshot(vidWindows.get(0)
+                .component());
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
 
         // 5. Press pause and ensure it does nothing
         dcf.pressPauseButton();
         Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
         Assert.assertEquals(dcf.getSpeed(), "0");
-        vidImage = UIImageUtils.captureAsScreenshot(vid);
+        vidImage = UIImageUtils.captureAsScreenshot(vidWindows.get(0)
+                .component());
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile));
     }
 
@@ -586,23 +528,16 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Bug464.
      * When a video finishes playing, hitting play does nothing.
      * I expected it to play again.
+     * @throws Exception on any error
      */
     @Test public void testBug464() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 2. Open Data Viewer Controller and get starting time
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        final DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -611,25 +546,23 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         UIUtils.openData(videoFile, dcf);
 
-        // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
-        JDialog vid = ((JDialog) it.next());
+        // 3. Get window
+        ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
+        Assert.assertEquals(vidWindows.size(), 1);
 
+        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+                100));
 
-        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
-                vid);
-
-
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
-
-        vidWindow.resizeHeightTo(600 + vid.getInsets().bottom
-            + vid.getInsets().top);
-        vid.setAlwaysOnTop(true);
+        vidWindows.get(0).resizeHeightTo(600
+            + vidWindows.get(0).component().getInsets().bottom
+            + vidWindows.get(0).component().getInsets().top);
+        vidWindows.get(0).component().setAlwaysOnTop(true);
 
 
         File refImageFile = new File(root + "/ui/head_turns600h0t.png");
 
-        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(vid);
+        BufferedImage vidImage = UIImageUtils.captureAsScreenshot(
+                vidWindows.get(0).component());
 
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile,
                 0.14, 0.08));
@@ -648,10 +581,11 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // Check time
         Assert.assertEquals(dcf.getCurrentTime(), "00:01:00:000");
 
-        vid.setVisible(true);
-        vid.toFront();
+        vidWindows.get(0).component().setVisible(true);
+        vidWindows.get(0).component().toFront();
         refImageFile = new File(root + "/ui/head_turns600h1mt.png");
-        vidImage = UIImageUtils.captureAsScreenshot(vid);
+        vidImage = UIImageUtils.captureAsScreenshot(vidWindows.get(0)
+                .component());
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile,
                 0.14, 0.08));
 
@@ -664,7 +598,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             TimeStamp currTS = new TimeStamp(currTime);
             TimeStamp oneMin = new TimeStamp("00:01:00:000");
             Assert.assertTrue(currTS.le(oneMin));
-            vidImage = UIImageUtils.captureAsScreenshot(vid);
+            vidImage = UIImageUtils.captureAsScreenshot(vidWindows.get(0)
+                    .component());
             dcf.pressPauseButton();
             Assert.assertFalse(UIImageUtils.areImagesEqual(vidImage,
                     refImageFile, 0.14, 0.08));
@@ -687,39 +622,32 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     @Test public void testBug1204() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
+        String varName = "v";
+
         // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        // 2. Open Data Viewer Controller and get starting time
+        final DataControllerFixture dcf = mainFrameFixture.openDataController(
+                300, 300);
 
         // 3. Create a new variable
-        UIUtils.createNewVariable(mainFrameFixture, "t",
+        mainFrameFixture.createNewVariable(varName,
             UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)]);
 
-        // 3. Open video
+        // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
 
-        // Get video window
-        Iterator it = dcf.getDataViewers().iterator();
+        // 4. Get window
+        ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
+        Assert.assertEquals(vidWindows.size(), 1);
 
-        JDialog vid = ((JDialog) it.next());
-        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
-                vid);
-
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 310, 300));
+        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 310,
+                300));
 
         // 5. Play video then create a new cell using Num0
         // Play video
@@ -727,12 +655,12 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         // 4. Create a new cell using Num0
         // The first line is really just to delay things.
-        ssPanel.column("t").click();
-        ssPanel.column("t").pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
+        spreadsheet.column(varName).click();
+        spreadsheet.column(varName).pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
 
         Date start = new Date();
 
-        while (ssPanel.column("t").allCells().size() == 0) {
+        while (spreadsheet.column(varName).allCells().size() == 0) {
             Date now = new Date();
 
             if ((now.getTime() - start.getTime()) > 3000) {
@@ -741,25 +669,23 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         }
 
         // Check that cell exists
-        Assert.assertEquals(ssPanel.column("t").allCells().size(), 1);
+        Assert.assertEquals(spreadsheet.column(varName).allCells().size(), 1);
 
         // 5. Delete cell
-        ssPanel.column(0).cell(1).borderSelectCell(true);
+        spreadsheet.column(0).cell(1).borderSelectCell(true);
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Delete Cell");
 
-        jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        ssPanel = new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // Check deleted
-        Assert.assertEquals(ssPanel.column("t").allCells().size(), 0);
+        Assert.assertEquals(spreadsheet.column(varName).allCells().size(), 0);
 
         // 6. Create cell with NUM0
-        ssPanel.column("t").click();
-        ssPanel.column("t").pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
+        spreadsheet.column(varName).click();
+        spreadsheet.column(varName).pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
 
         // Check that cell exists
-        Assert.assertEquals(ssPanel.column("t").allCells().size(), 1);
+        Assert.assertEquals(spreadsheet.column(varName).allCells().size(), 1);
     }
 
     /**
@@ -767,42 +693,32 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Set New Cell Offset changes offset of selected cell rather than
      * last created cell
      */
-    // Passing on local machine, failing on server. Possibly EDT related.
     @Test public void testBug891() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        // 2. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
+        // 2. Open Data Viewer Controller and get starting time
+        final DataControllerFixture dcf = mainFrameFixture.openDataController(
+                300, 300);
 
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
-
-        // 3. Open video
+        // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
 
-        // Get video window
-        Iterator it = dcf.getDataViewers().iterator();
+        // 3. Get window
+        ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
+        Assert.assertEquals(vidWindows.size(), 1);
 
-        JDialog vid = ((JDialog) it.next());
-        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot,
-                vid);
-
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 310, 300));
+        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 310,
+                300));
 
         // 4. Create a new variable
-        UIUtils.createNewVariable(mainFrameFixture, "p",
+        mainFrameFixture.createNewVariable("p",
             UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)]);
 
         // 5. Play video then create a new cell using Num0
@@ -810,20 +726,20 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         dcf.pressPlayButton();
 
         // Create new cell
-        ssPanel.column("p").click();
-        ssPanel.column("p").pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
+        spreadsheet.column("p").click();
+        spreadsheet.column("p").pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
 
         // Check that cell exists
-        Assert.assertEquals(ssPanel.column("p").allCells().size(), 1);
+        Assert.assertEquals(spreadsheet.column("p").allCells().size(), 1);
 
         // 6. Create another cell in another column
-        UIUtils.createNewVariable(mainFrameFixture, "q",
+        mainFrameFixture.createNewVariable("q",
             UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)]);
-        ssPanel.column("q").click();
-        ssPanel.column("q").pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
+        spreadsheet.column("q").click();
+        spreadsheet.column("q").pressAndReleaseKeys(KeyEvent.VK_NUMPAD0);
 
         // Check that cell exists
-        Assert.assertEquals(ssPanel.column("q").allCells().size(), 1);
+        Assert.assertEquals(spreadsheet.column("q").allCells().size(), 1);
 
         // 7. Pause video
         dcf.pressPauseButton();
@@ -831,31 +747,30 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         // 8. Select first cell and press Set New Cell Offset
         String offsetTime = dcf.getCurrentTime();
 
-        SpreadsheetCellFixture firstCell = ssPanel.column("p").cell(1);
+        SpreadsheetCellFixture firstCell = spreadsheet.column("p").cell(1);
         firstCell.borderSelectCell(true);
         Assert.assertEquals(firstCell.offsetTimestamp().text(), "00:00:00:000");
 
-        SpreadsheetCellFixture secondCell = ssPanel.column("q").cell(1);
+        SpreadsheetCellFixture secondCell = spreadsheet.column("q").cell(1);
         Assert.assertEquals(secondCell.offsetTimestamp().text(),
             "00:00:00:000");
 
         Assert.assertTrue(firstCell.isSelected());
         dcf.pressSetNewCellOffsetButton();
 
-        SpreadsheetCellFixture thirdCell = ssPanel.column("p").cell(2);
+        SpreadsheetCellFixture thirdCell = spreadsheet.column("p").cell(2);
         Assert.assertEquals(thirdCell.offsetTimestamp().text(), offsetTime);
         Assert.assertEquals(thirdCell.offsetTimestamp().text(), offsetTime);
     }
 
+    /**
+     * Try jogging at the start and the at the end.
+     */
     @Test public void joggingAtBeginningAndEnd() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        final DataControllerFixture dcf = mainFrameFixture.openDataController(
+                300, 300);
 
         // c. Open video
         String root = System.getProperty("testPath");
@@ -895,17 +810,13 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
     /**
      * Tests go back.
-     * @throws SystemErrorException
+     * @throws SystemErrorException for Timestamp comparisons
      */
     @Test public void goBackTests() throws SystemErrorException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(300, 300));
 
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        final DataControllerFixture dcf = mainFrameFixture.openDataController(
+                300, 300);
 
         // c. Open video
         String root = System.getProperty("testPath");

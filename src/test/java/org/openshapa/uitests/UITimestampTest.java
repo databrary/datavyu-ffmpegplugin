@@ -2,21 +2,16 @@ package org.openshapa.uitests;
 
 import java.awt.event.KeyEvent;
 
-
 import java.util.Vector;
 
 import javax.swing.text.BadLocationException;
 
 import org.fest.swing.core.KeyPressInfo;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -255,18 +250,16 @@ public final class UITimestampTest extends OpenSHAPATestClass {
         final String afterDeleteText = "00:00:00:000";
 
         // Create new text cell and input data
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         String varType =
             UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
 
-        UIUtils.createNewVariable(mainFrameFixture, "v", varType);
-        ssPanel.column(0).click();
+        mainFrameFixture.createNewVariable("v", varType);
+        spreadsheet.column(0).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        SpreadsheetCellFixture cell = ssPanel.column("v").cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column("v").cell(1);
         cell.onsetTimestamp().enterText(originalText);
         cell.offsetTimestamp().enterText(originalText);
 
@@ -288,7 +281,8 @@ public final class UITimestampTest extends OpenSHAPATestClass {
         cell.offsetTimestamp().requireText(afterDeleteText);
     }
 
-    @Test public void partialHighlightAndDeleteTest() throws BadLocationException {
+    @Test public void partialHighlightAndDeleteTest()
+        throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         final String tempFolder = System.getProperty("java.io.tmpdir");
@@ -296,18 +290,16 @@ public final class UITimestampTest extends OpenSHAPATestClass {
         final String afterDeleteText = "12:00:00:789";
 
         // Create new text cell and input data
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         String varType =
             UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
 
-        UIUtils.createNewVariable(mainFrameFixture, "v", varType);
-        ssPanel.column(0).click();
+        mainFrameFixture.createNewVariable("v", varType);
+        spreadsheet.column(0).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        SpreadsheetCellFixture cell = ssPanel.column("v").cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column("v").cell(1);
         cell.onsetTimestamp().enterText(originalText);
         cell.offsetTimestamp().enterText(originalText);
 
@@ -339,18 +331,16 @@ public final class UITimestampTest extends OpenSHAPATestClass {
         final String afterDeleteText2 = "13:38:27:123";
 
         // Create new text cell and input data
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         String varType =
             UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
 
-        UIUtils.createNewVariable(mainFrameFixture, "v", varType);
-        ssPanel.column(0).click();
+        mainFrameFixture.createNewVariable("v", varType);
+        spreadsheet.column(0).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        SpreadsheetCellFixture cell = ssPanel.column("v").cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column("v").cell(1);
         cell.onsetTimestamp().enterText(originalText);
         cell.offsetTimestamp().enterText(originalText);
 
@@ -378,20 +368,17 @@ public final class UITimestampTest extends OpenSHAPATestClass {
         String varRadio = varType.toLowerCase();
 
         // 1. Create new variable
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        Assert.assertNotNull(ssPanel.column(varName));
-        ssPanel.column(varName).click();
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        Assert.assertNotNull(spreadsheet.column(varName));
+        spreadsheet.column(varName).click();
 
         // 2. Create new cells
         for (int i = 0; i < amount; i++) {
             mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
         }
 
-        return ssPanel.column(varName).allCells();
+        return spreadsheet.column(varName).allCells();
     }
 }

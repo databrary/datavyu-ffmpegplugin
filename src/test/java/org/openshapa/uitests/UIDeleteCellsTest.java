@@ -2,18 +2,8 @@ package org.openshapa.uitests;
 
 import java.io.File;
 
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
-import org.fest.swing.timing.Timeout;
-import org.fest.swing.util.Platform;
-
-import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -40,33 +30,13 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get the spreadsheet, check that cells do exist
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         Assert.assertTrue(spreadsheet.allColumns().size() > 0,
             "Expecting columns to exist.");
@@ -92,9 +62,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
                 "Delete Cells");
 
             // Verify all cells in the column are deleted
-            jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-            spreadsheet = new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                    (SpreadsheetPanel) jPanel.component());
+            spreadsheet = mainFrameFixture.getSpreadsheet();
 
             Assert.assertFalse(spreadsheet.column(numColumns - 1).numOfCells()
                 > 0, "Expecting no cells in the column.");
@@ -102,9 +70,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         }
 
         // 4. Verify that all cells have been deleted
-        jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        spreadsheet = new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
             Assert.assertFalse(column.numOfCells() > 0,
@@ -123,33 +89,13 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get the spreadsheet, check that cells do exist
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         Assert.assertTrue(spreadsheet.allColumns().size() > 0,
             "Expecting columns to exist.");
@@ -163,17 +109,12 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         int numColumns = spreadsheet.numOfColumns();
 
         while (numColumns > 0) {
-            jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-            spreadsheet = new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                    (SpreadsheetPanel) jPanel.component());
+            spreadsheet = mainFrameFixture.getSpreadsheet();
 
             int numCells = spreadsheet.column(numColumns - 1).allCells().size();
 
             while (numCells > 0) {
-                jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-                spreadsheet = new SpreadsheetPanelFixture(
-                        mainFrameFixture.robot,
-                        (SpreadsheetPanel) jPanel.component());
+                spreadsheet = mainFrameFixture.getSpreadsheet();
 
                 SpreadsheetCellFixture cell = spreadsheet.column(numColumns - 1)
                     .cell(1);
@@ -188,9 +129,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         }
 
         // 4. Verify that all cells have been deleted
-        jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        spreadsheet = new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
             Assert.assertFalse(column.numOfCells() > 0,
@@ -209,33 +148,13 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Get the spreadsheet, check that cells do exist
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         Assert.assertTrue(spreadsheet.allColumns().size() > 0,
             "Expecting columns to exist.");
@@ -257,9 +176,7 @@ public final class UIDeleteCellsTest extends OpenSHAPATestClass {
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Delete Cells");
 
         // 5. Verify that all cells have been deleted
-        jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        spreadsheet = new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         for (SpreadsheetColumnFixture column : spreadsheet.allColumns()) {
             Assert.assertFalse(column.numOfCells() > 0,

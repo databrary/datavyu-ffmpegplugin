@@ -4,17 +4,8 @@ import java.io.File;
 
 import java.util.Vector;
 
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
-
-import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -37,36 +28,15 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Sequentially select each column and delete
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
+        Vector<SpreadsheetColumnFixture> cols = spreadsheet.allColumns();
 
         for (SpreadsheetColumnFixture col : cols) {
             col.click();
@@ -75,10 +45,10 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
                 "Delete Variable");
 
             // Confirm column no longer exists
-            Assert.assertNull(ssPanel.column(col.getColumnName()));
+            Assert.assertNull(spreadsheet.column(col.getColumnName()));
         }
 
-        Assert.assertTrue(ssPanel.numOfColumns() == 0);
+        Assert.assertTrue(spreadsheet.numOfColumns() == 0);
     }
 
     /**
@@ -92,36 +62,15 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Select all columns and delete
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
-        Vector<SpreadsheetColumnFixture> cols = ssPanel.allColumns();
+        Vector<SpreadsheetColumnFixture> cols = spreadsheet.allColumns();
 
         for (SpreadsheetColumnFixture col : cols) {
 // mainFrameFixture.pressKey(KeyEvent.VK_CONTROL);
@@ -133,6 +82,6 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
         mainFrameFixture.releaseKey(Platform.controlOrCommandKey());
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
             "Delete Variables");
-        Assert.assertTrue(ssPanel.numOfColumns() == 0);
+        Assert.assertTrue(spreadsheet.numOfColumns() == 0);
     }
 }

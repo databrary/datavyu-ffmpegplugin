@@ -109,29 +109,13 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
      */
     private void validateVariableType(final String varName,
         final String varType) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 1. Create new variable
-        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");
-
-        DialogFixture newVariableDialog = mainFrameFixture.dialog();
-        newVariableDialog.requireVisible();
-
-        JTextComponentFixture variableValueTextBox =
-            newVariableDialog.textBox();
-        variableValueTextBox.requireEmpty();
-        variableValueTextBox.requireEditable();
-        variableValueTextBox.enterText(varName);
-        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
-            .click();
-        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
-            .requireSelected();
-        newVariableDialog.button("okButton").click();
+        mainFrameFixture.createNewVariable(varName, varName);
 
         // 2. Check that column has been created
-        SpreadsheetColumnFixture col = ssPanel.column(varName);
+        SpreadsheetColumnFixture col = spreadsheet.column(varName);
         Assert.assertNotNull(col);
         Assert.assertEquals(col.getColumnType(), varType);
 
@@ -150,29 +134,13 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
             UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
 
         // create cell with + button
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 1. Create new variable and check it
-        mainFrameFixture.button("newVarPlusButton").click();
-
-        DialogFixture newVariableDialog = mainFrameFixture.dialog();
-        newVariableDialog.requireVisible();
-
-        JTextComponentFixture variableValueTextBox =
-            newVariableDialog.textBox();
-        variableValueTextBox.requireEmpty();
-        variableValueTextBox.requireEditable();
-        variableValueTextBox.enterText(varName);
-        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
-            .click();
-        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
-            .requireSelected();
-        newVariableDialog.button("okButton").click();
+        mainFrameFixture.createNewVariable(varName, varName);
 
         // 2. Check that column has been created
-        SpreadsheetColumnFixture col = ssPanel.column(varName);
+        SpreadsheetColumnFixture col = spreadsheet.column(varName);
         Assert.assertNotNull(col);
         Assert.assertEquals(col.getColumnType(), varType);
 
@@ -195,15 +163,11 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
         String varType =
             UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
-
-        // 2. Check that a column has been created
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         // Find our new column header
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        Assert.assertNotNull(ssPanel.column(varName));
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        Assert.assertNotNull(spreadsheet.column(varName));
 
         // 3. Create variable with same name
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");

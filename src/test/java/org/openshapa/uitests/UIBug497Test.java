@@ -37,17 +37,14 @@ public final class UIBug497Test extends OpenSHAPATestClass {
         String expectedTestOutput = "2999999999999999999";
 
         // 1. Get spreadsheet
-        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 2. Create new TEXT variable
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
-
-        // Find column header
-        JLabelFixture column = ssPanel.panel("headerView").label();
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         // 3. Create cell, paste text
         // a. Create cell
-        column.click();
+        spreadsheet.column(0).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
         // b. Paste text
@@ -77,17 +74,14 @@ public final class UIBug497Test extends OpenSHAPATestClass {
         String expectedTestOutput = "999999999999999.0";
 
         // 1. Get spreadsheet
-        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 2. Create new TEXT variable
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
-
-        // Find column header
-        JLabelFixture column = ssPanel.panel("headerView").label();
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         // 3. Create cell, paste text
         // a. Create cell
-        column.click();
+        spreadsheet.column(0).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
         // b. Paste text

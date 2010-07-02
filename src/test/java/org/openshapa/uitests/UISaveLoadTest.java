@@ -21,9 +21,7 @@ import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
@@ -46,7 +44,6 @@ import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.NewProjectV;
 import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -114,14 +111,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
             "Expecting demo_data_to_csv.rb to exist");
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -159,10 +149,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
             // mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
             // Use shortcut instead. Menu item is tested elsewhere
-            JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-            SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                    mainFrameFixture.robot,
-                    (SpreadsheetPanel) jPanel.component());
+            spreadsheet = mainFrameFixture.getSpreadsheet();
             spreadsheet.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_S)
                 .modifiers(Platform.controlOrCommandMask(), KeyEvent.VK_SHIFT));
 
@@ -222,7 +209,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @param fileName csv file name
      * @return CSV file that was just saved.
      */
-    private File saveAsCSV(String fileName) {
+    private File saveAsCSV(final String fileName) {
         final String tempFolder = System.getProperty("java.io.tmpdir");
         File toSave;
         String csvFileName = fileName + ".csv";
@@ -255,7 +242,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * Loads file after creating a new project.
      * @param file opf file to load
      */
-    private void loadFile(File file) {
+    private void loadFile(final File file) {
 
         // Create a new project, this is for the discard changes dialog.
         if (Platform.isOSX()) {
@@ -414,14 +401,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(justSaved.exists(), "Expecting saved file to exist.");
 
         // 2. Run script to populate database
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
         DialogFixture scriptConsole = mainFrameFixture.dialog();
@@ -440,9 +420,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
 
         // 3. Save project file. Not expecting anything except a save
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
         spreadsheet.pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_S)
             .modifiers(Platform.controlOrCommandMask()));
 
@@ -488,7 +466,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      *            The expected output of saving the above file.
      * @throws IOException
      *             If unable to save file.
-     * @throws SystemErrorException
+     * @throws LogicalErrorException on SaveC exception
      */
     private void loadTest(final String inputFile,
         final String expectedOutputFile) throws IOException,
@@ -548,11 +526,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
         // Check that something has been loaded
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        Assert.assertNotNull(ssPanel.allColumns());
+        Assert.assertNotNull(spreadsheet.allColumns());
 
         // 4. Save the contents as a separate project file
         File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
@@ -643,11 +619,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
         // Check that something has been loaded
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        Assert.assertNotNull(ssPanel.allColumns());
+        Assert.assertNotNull(spreadsheet.allColumns());
 
         // Save file as a CSV and compare to reference file
         File outputFile = saveAsCSV(expectedOutputFile + "new.csv");
@@ -746,11 +720,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
         // Check that something has been loaded
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        Assert.assertNotNull(ssPanel.allColumns());
+        Assert.assertNotNull(spreadsheet.allColumns());
 
         // Save file as a OPF
         File toSave = new File(tempFolder + "/odfOPF.opf");
@@ -1083,12 +1055,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         File toSave = null;
 
         // Create new text variable
-        UIUtils.createNewVariable(mainFrameFixture, "t", "text");
+        mainFrameFixture.createNewVariable("t", "text");
 
         // Create new cells
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         spreadsheet.column("t").click();
 
@@ -1146,19 +1116,20 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         loadFile(toSave);
 
         // Check loaded project
-        jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        SpreadsheetPanelFixture ss = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        Vector<SpreadsheetCellFixture> cs = ss.column(0).allCells();
+        Vector<SpreadsheetCellFixture> cs = spreadsheet.column(0).allCells();
 
-        ss.column(0).cell(1).cellValue().requireText("this ends in \\");
+        spreadsheet.column(0).cell(1).cellValue().requireText(
+            "this ends in \\");
 
-        ss.column(0).cell(2).cellValue().requireText("this also ends in \\");
+        spreadsheet.column(0).cell(2).cellValue().requireText(
+            "this also ends in \\");
     }
 
     /**
-     *  Bug 1694 - Test handling of missing video file.
+     * Bug 1694 - Test handling of missing video file.
+     * @throws IOException on file reading error
      */
     @Test public void testMissingVideoFiles() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());

@@ -1,15 +1,18 @@
 package org.fest.swing.fixture;
 
 
-
 import org.fest.swing.core.Robot;
+
 import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.component.SnapMarkerPainter;
+
 
 /**
  * Fixture for OpenSHAPA NeedlePainter.
  */
 public class SnapMarkerFixture extends ComponentFixture {
+
     /**
      * Constructor.
      * @param robot
@@ -17,7 +20,8 @@ public class SnapMarkerFixture extends ComponentFixture {
      * @param target
      *            NeedleController
      */
-    public SnapMarkerFixture(final Robot robot, final SnapMarkerPainter target) {
+    public SnapMarkerFixture(final Robot robot,
+        final SnapMarkerPainter target) {
         super(robot, target);
     }
 
@@ -25,7 +29,8 @@ public class SnapMarkerFixture extends ComponentFixture {
      * @return SnapMarker time as long
      */
     public long getMarkerTimeAsLong() {
-        return ((SnapMarkerPainter) target).getSnapMarkerModel().getMarkerTime();
+        return ((SnapMarkerPainter) target).getSnapMarkerModel()
+            .getMarkerTime();
     }
 
     /**

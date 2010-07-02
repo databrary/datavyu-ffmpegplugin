@@ -7,12 +7,15 @@ import java.awt.Point;
 
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
+
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.controllers.component.TimescaleController;
+
 import org.openshapa.models.component.TimescaleModel;
 
 import org.openshapa.util.UIUtils;
+
 import org.openshapa.views.OpenSHAPAFileChooser;
 
 
@@ -87,7 +90,7 @@ public class TimescaleFixture extends ComponentFixture {
         Point click = null;
 
         TimescaleModel tm = field("timescaleModel").ofType(TimescaleModel.class)
-               .in(timescaleC).get();
+            .in(timescaleC).get();
 
         if (pixel > width) {
             click = new Point(topLeft.x + width + tm.getPaddingLeft(),
@@ -102,7 +105,7 @@ public class TimescaleFixture extends ComponentFixture {
 
     public int getWidth() {
         TimescaleModel tm = field("timescaleModel").ofType(TimescaleModel.class)
-               .in(timescaleC).get();
+            .in(timescaleC).get();
 
         return target.getWidth() - tm.getPaddingLeft() - tm.getPaddingRight();
     }

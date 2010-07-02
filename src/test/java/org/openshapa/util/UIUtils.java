@@ -19,35 +19,29 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 
 import java.util.SimpleTimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 
-import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
-import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.DataControllerFixture;
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.controllers.RunScriptC;
 
 import org.openshapa.views.DataControllerV;
-import org.openshapa.views.NewVariableV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.continuous.PluginManager;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 
 /**
  * Utilities for UI tests.
  */
 public final class UIUtils {
+
     /**
      * Different cell variable types.
      */
@@ -60,6 +54,12 @@ public final class UIUtils {
 
     /** Maximum time allowed for a script to load. */
     public static final int SCRIPT_LOAD_TIMEOUT = 5000;
+
+    /**
+     * Empty constructor for utility class.
+     */
+    private UIUtils() {
+    }
 
     /**
      * Checks if two text files are equal.
@@ -135,69 +135,6 @@ public final class UIUtils {
         fr2.close();
 
         return true;
-    }
-
-    /**
-     * Returns the spreadsheet from the mainframefixture.
-     * @param ff mainframefixture
-     * @return JPanelFixture of the spreadsheet
-     */
-    public static JPanelFixture getSpreadsheet(final FrameFixture ff) {
-        return ff.panel(new GenericTypeMatcher<JPanel>(JPanel.class) {
-
-                    @Override protected boolean isMatching(final JPanel panel) {
-                        return panel.getClass().equals(SpreadsheetPanel.class);
-                    }
-                });
-    }
-
-    /**
-     * Creates a new variable (column).
-     * @param ff mainframefixture
-     * @param varName name of variable
-     * @param varRadio type of variable (radio button to click)
-     */
-    public static void createNewVariable(final FrameFixture ff,
-        final String varName, final String varRadio) {
-        String varRadioCompName;
-
-        if (varRadio.endsWith("TypeButton")) {
-            varRadioCompName = varRadio;
-        } else {
-            varRadioCompName = varRadio.toLowerCase() + "TypeButton";
-        }
-
-        // 1. Create new variable
-        ff.menuItemWithPath("Spreadsheet", "New Variable").click();
-
-        // DialogFixture newVariableDialog = ff.dialog();
-        DialogFixture newVariableDialog = WindowFinder.findDialog(
-                NewVariableV.class).withTimeout(10000).using(ff.robot);
-
-        // Check if the new variable dialog is actually visible
-        newVariableDialog.requireVisible();
-
-        // Get the variable value text box
-        JTextComponentFixture variableValueTextBox =
-            newVariableDialog.textBox();
-
-        // The variable value box should have no text in it
-        variableValueTextBox.requireEmpty();
-
-        // It should be editable
-        variableValueTextBox.requireEditable();
-
-        // Type in some text.
-        variableValueTextBox.enterText(varName);
-
-        // Get the radio button for text variables
-        newVariableDialog.radioButton(varRadioCompName).click();
-
-        // Check that it is selected
-        newVariableDialog.radioButton(varRadioCompName).requireSelected();
-
-        // Click "OK"
-        newVariableDialog.button("okButton").click();
     }
 
     /**
@@ -312,11 +249,13 @@ public final class UIUtils {
     }
 
     /**
-     * Runs script in File script.
-     * @param script Script File to run
+     * Due to a bug in FEST we need to invoke OpenSHAPA code directly to run
+     * scripts in OSX.
+     * @param script script to run
      */
-    public static void runScript(final File script) {
+    public static void runScriptOnOSX(final File script) {
         GuiActionRunner.execute(new GuiTask() {
+
                 public void executeInEDT() {
 
                     try {
@@ -368,9 +307,12 @@ public final class UIUtils {
                     jfcf.selectFile(videoFile).approve();
                     worked = true;
                 } catch (Exception e) {
-                    // keep trying
+                    Logger.getLogger(UIUtils.class.getName()).log(
+                        Level.WARNING,
+                        "failed to open video:" + videoFile.getAbsolutePath()
+                        + "\nTrying again.", e);
                 }
-            } while (worked == false);
+            } while (!worked);
         }
     }
 }

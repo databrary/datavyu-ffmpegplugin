@@ -30,7 +30,6 @@ public final class UIAboutDialogTest extends OpenSHAPATestClass {
         // and not sure how to click the other menu item.
         if (!Platform.isOSX()) {
 
-
             String root = System.getProperty("testPath");
 
             mainFrameFixture.clickMenuItemWithPath("Help", "About");

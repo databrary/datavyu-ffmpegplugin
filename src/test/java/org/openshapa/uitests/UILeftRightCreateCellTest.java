@@ -1,15 +1,7 @@
 package org.openshapa.uitests;
 
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
-
-import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -21,24 +13,25 @@ import org.testng.annotations.Test;
  */
 public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
 
+    /**
+     * Test creating cells to the left and right.
+     */
     @Test public void testCreateCellLeftRight() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // Left column
-        createVariable("L", "TEXT");
+        mainFrameFixture.createNewVariable("L", "TEXT");
         validateVariable("L", "TEXT");
 
         // Center column
-        createVariable("C", "TEXT");
+        mainFrameFixture.createNewVariable("C", "TEXT");
         validateVariable("C", "TEXT");
 
         // Right column
-        createVariable("R", "TEXT");
+        mainFrameFixture.createNewVariable("R", "TEXT");
         validateVariable("R", "TEXT");
 
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         /*
          * Create a cell in the center column
@@ -101,24 +94,25 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
             "Expecting right cell to inherit centre cell offset value.");
     }
 
+    /**
+     * Test for bug 698.
+     */
     @Test public void testBug698() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // Left column
-        createVariable("L", "TEXT");
+        mainFrameFixture.createNewVariable("L", "TEXT");
         validateVariable("L", "TEXT");
 
         // Center column
-        createVariable("C", "TEXT");
+        mainFrameFixture.createNewVariable("C", "TEXT");
         validateVariable("C", "TEXT");
 
         // Right column
-        createVariable("R", "TEXT");
+        mainFrameFixture.createNewVariable("R", "TEXT");
         validateVariable("R", "TEXT");
 
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         /*
          * Create a cell in the each column column
@@ -184,9 +178,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      */
     private boolean cellHasOnset(final String varName, final int id,
         final String onset) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         return spreadsheet.column(varName).cell(id).onsetTimestamp().text()
             .equals(onset);
@@ -204,9 +196,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      */
     private boolean cellHasOffset(final String varName, final int id,
         final String offset) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         return spreadsheet.column(varName).cell(id).offsetTimestamp().text()
             .equals(offset);
@@ -223,9 +213,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      */
     private void changeOnset(final String varName, final int id,
         final String onset) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         spreadsheet.column(varName).cell(id).onsetTimestamp().enterText(onset);
     }
@@ -241,9 +229,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      */
     private void changeOffset(final String varName, final int id,
         final String offset) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         spreadsheet.column(varName).cell(id).offsetTimestamp().enterText(
             offset);
@@ -257,9 +243,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      *            cell ordinal value, assumes that the cell already exists
      */
     private void clickCell(final String varName, final int id) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         spreadsheet.column(varName).cell(id).fillSelectCell(true);
     }
@@ -272,9 +256,7 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      * @return true if the cell with ordinal 'id' exists, false otherwise
      */
     private boolean cellExists(final String varName, final int id) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         return id <= spreadsheet.column(varName).numOfCells();
     }
@@ -288,48 +270,14 @@ public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
      *            variable type
      */
     private void validateVariable(final String varName, final String varType) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 1. Check that the column exists.
-        SpreadsheetColumnFixture col = ssPanel.column(varName);
+        SpreadsheetColumnFixture col = spreadsheet.column(varName);
         Assert.assertNotNull(col, "Expecting column to exist.");
         Assert.assertEquals(col.getColumnType(), varType);
 
         // 2. Check that column has no cells
         Assert.assertTrue(col.numOfCells() == 0, "Expecting no cells.");
     }
-
-    /**
-     * Creates a variable.
-     *
-     * @param varName
-     *            variable name
-     * @param varType
-     *            variable type
-     */
-    private void createVariable(final String varName, final String varType) {
-
-        // 1. Create new variable
-        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");
-
-        // 2. Enter variable name
-        DialogFixture newVariableDialog = mainFrameFixture.dialog();
-        newVariableDialog.requireVisible();
-
-        JTextComponentFixture variableValueTextBox =
-            newVariableDialog.textBox();
-        variableValueTextBox.requireEmpty();
-        variableValueTextBox.requireEditable();
-        variableValueTextBox.enterText(varName);
-
-        // 3. Choose variable type
-        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
-            .click();
-        newVariableDialog.radioButton(varType.toLowerCase() + "TypeButton")
-            .requireSelected();
-        newVariableDialog.button("okButton").click();
-    }
-
 }

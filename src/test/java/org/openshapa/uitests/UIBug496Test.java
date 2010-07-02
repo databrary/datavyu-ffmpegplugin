@@ -38,14 +38,11 @@ public final class UIBug496Test extends OpenSHAPATestClass {
         String varRadio = varType.toLowerCase() + "TypeButton";
         String testInput = "2398392310820831";
 
-        // Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 1. Create new INTEGER variable, open spreadsheet and check that it's
         // there.
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
         Assert.assertNotNull(spreadsheet.column(varName));
 
         // Create new cell.
