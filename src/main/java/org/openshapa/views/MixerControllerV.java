@@ -181,7 +181,7 @@ public final class MixerControllerV implements NeedleEventListener,
 //        zoomSlide.setToolTipText("1.00x");
         zoomSlide.addChangeListener(new ChangeListener() {
                 public void stateChanged(final ChangeEvent e) {
-                    if (!isUpdatingZoomSlide) {
+                	if (!isUpdatingZoomSlide) {
                     	zoomScale(e);
                     }
 
@@ -637,6 +637,9 @@ public final class MixerControllerV implements NeedleEventListener,
     }
     
     private double getZoomSettingFor(double millisecondsPerPixel) {
+    	if (millisecondsPerPixel >= (double) maxEnd / (timescaleController.getTimescaleModel().getEffectiveWidth() + 1)) {
+    		return 0;
+    	}
     	final double value = 1 - Math.log(millisecondsPerPixel / lowerMillisecondsPerPixelBounds()) / Math.log(upperMillisecondsPerPixelBounds() / lowerMillisecondsPerPixelBounds());
         return Math.min(Math.max(value, 0), 1.0);
     }
@@ -682,7 +685,7 @@ public final class MixerControllerV implements NeedleEventListener,
     		zoomCenterTime = (timescaleController.getViewableModel().getZoomWindowStart() + timescaleController.getViewableModel().getZoomWindowEnd()) / 2;
     	}
     	dxZoomCenterRatio = Math.min(Math.max(dxZoomCenterRatio, 0.0), 1.0);
-    	
+
     	long newZoomWindowTimeRange = Math.round(millisecondsPerPixel * timescaleController.getTimescaleModel().getEffectiveWidth());
     	if (newZoomWindowTimeRange <= 0) {
     		newZoomWindowTimeRange = 1;

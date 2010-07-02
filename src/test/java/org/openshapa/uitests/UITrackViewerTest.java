@@ -570,7 +570,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    @Test public void testTrackSnapping() {
+    /*BugzID1992:@Test*/ public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open first video
@@ -924,7 +924,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    @Test public void testTrackSnappingWithZoom() {
+    /*BugzID1992:@Test*/ public void testTrackSnappingWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         JSliderFixture zoomSlider = dcf.getTrackMixerController()
