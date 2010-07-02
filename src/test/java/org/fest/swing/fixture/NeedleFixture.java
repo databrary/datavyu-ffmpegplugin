@@ -4,7 +4,7 @@ import static org.fest.reflect.core.Reflection.field;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.Polygon;
+import java.awt.geom.GeneralPath;
 
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
@@ -76,21 +76,9 @@ public class NeedleFixture extends ComponentFixture {
          * because it has a slightly flat base (1pixel). We ignore the 4th
          * point.
          */
-        Polygon needleMarker =
-                field("needleMarker").ofType(Polygon.class).in(target).get();
+        GeneralPath needleMarker =
+                field("needleMarker").ofType(GeneralPath.class).in(target).get();
 
-        // Find middle x position
-        int xPos =
-                needleMarker.xpoints[2]
-                        + ((NeedlePainter) target).getLocationOnScreen().x;
-        // Find middle y position
-        int yPos =
-                (Math.max(Math.max(needleMarker.ypoints[0],
-                        needleMarker.ypoints[1]), needleMarker.ypoints[2]) / 2)
-                        + ((NeedlePainter) target).getLocationOnScreen().y;
-
-        Point centrePoint = new Point(xPos, yPos);
-
-        return centrePoint;
+        return new Point((int) needleMarker.getBounds().getCenterX() + ((NeedlePainter) target).getLocationOnScreen().x, (int) needleMarker.getBounds().getCenterY() + ((NeedlePainter) target).getLocationOnScreen().y);
     }
 }

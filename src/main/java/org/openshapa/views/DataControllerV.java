@@ -120,11 +120,31 @@ public final class DataControllerV extends OpenSHAPADialog
 
     /** Format for representing time. */
     private static final DateFormat CLOCK_FORMAT;
+    private static final DateFormat CLOCK_FORMAT_HTML;
 
     // initialize standard date format for clock display.
     static {
         CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
+
+        //TODO these should match up with the colors in TimescaleController.TimescaleController()
+        Color hoursColor = Color.red.darker();
+        Color minutesColor = Color.green.darker().darker().darker();
+        Color secondsColor = Color.blue.darker().darker();
+        Color millisecondsColor = Color.gray.darker();
+                
+        CLOCK_FORMAT_HTML = new SimpleDateFormat(
+        		"'<html>" + 
+        		 "<font color=\"" + toRGBString(hoursColor) + "\">'HH'</font>':" +
+        		"'<font color=\"" + toRGBString(minutesColor) + "\">'mm'</font>':" + 
+        		"'<font color=\"" + toRGBString(secondsColor) + "\">'ss'</font>':" +
+        		"'<font color=\"" + toRGBString(millisecondsColor) + "\">'SSS'</font>" + 
+        		"</html>'");
+        CLOCK_FORMAT_HTML.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
+    }
+    
+    private static String toRGBString(Color color) {
+    	return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
     }
 
     /**
@@ -604,7 +624,7 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void setCurrentTime(final long milliseconds) {
         resetSync();
-        timestampLabel.setText(CLOCK_FORMAT.format(milliseconds));
+        timestampLabel.setText(CLOCK_FORMAT_HTML.format(milliseconds));
         mixerControllerV.setCurrentTime(milliseconds);
     }
 

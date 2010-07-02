@@ -2,7 +2,8 @@ package org.fest.swing.fixture;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.Polygon;
+import java.awt.geom.GeneralPath;
+
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
 import org.openshapa.controllers.component.RegionController;
@@ -81,31 +82,14 @@ public class RegionFixture extends ComponentFixture {
     }
 
     /**
-     * @return Point in the centre of the start marker head
+     * @return Point in the start marker head that can be clicked on for moving around
      */
     private Point getPointInStartMarker() {
-        /*
-         * The start marker is a trapezoid, where the first point is the top
-         * left, and all other points go around clockwise.
-         */
-        Polygon startMarker = ((RegionPainter) target).getStartMarkerPolygon();
-
-        Point locationOfPolygon = startMarker.getBounds().getLocation();
-
-        // Find middle x position
-        int xPos =
-                (startMarker.xpoints[1] - startMarker.xpoints[0]) / 2
-                        + locationOfPolygon.x
-                        + ((RegionPainter) target).getLocationOnScreen().x;
-        // Find middle y position
-        int yPos =
-                (startMarker.ypoints[3] - startMarker.ypoints[0]) / 2
-                        + locationOfPolygon.y
-                        + ((RegionPainter) target).getLocationOnScreen().y;
-
-        Point centrePoint = new Point(xPos, yPos);
-
-        return centrePoint;
+        GeneralPath startMarker = ((RegionPainter) target).getStartMarkerPolygon();
+        return new Point(
+                (int) startMarker.getBounds().getCenterX() + ((RegionPainter) target).getLocationOnScreen().x,
+                (int) startMarker.getBounds().getCenterY() + ((RegionPainter) target).getLocationOnScreen().y
+                );
     }
 
      /**
@@ -127,30 +111,13 @@ public class RegionFixture extends ComponentFixture {
     }
 
     /**
-     * @return a Point in the EndMarker.
+     * @return a Point in the end marker head that can be clicked on for moving around
      */
     public Point getPointInEndMarker() {
-        /*
-         * The start marker is a trapezoid, where the first point is the top
-         * left, and all other points go around clockwise.
-         */
-        Polygon endMarker = ((RegionPainter) target).getEndMarkerPolygon();
-
-        Point locationOfPolygon = endMarker.getBounds().getLocation();
-
-         // Find middle x position
-        int xPos =
-                (endMarker.xpoints[1] - endMarker.xpoints[0]) / 2
-                        + locationOfPolygon.x
-                         + ((RegionPainter) target).getLocationOnScreen().x;
-        // Find middle y position
-        int yPos =
-                (endMarker.ypoints[2] - endMarker.ypoints[1]) / 2
-                        + locationOfPolygon.y
-                        + ((RegionPainter) target).getLocationOnScreen().y;
-
-        Point centrePoint = new Point(xPos, yPos);
-
-        return centrePoint;
+        GeneralPath endMarker = ((RegionPainter) target).getEndMarkerPolygon();
+        return new Point(
+                (int) endMarker.getBounds().getCenterX() + ((RegionPainter) target).getLocationOnScreen().x,
+                (int) endMarker.getBounds().getCenterY() + ((RegionPainter) target).getLocationOnScreen().y
+                );
     }
 }

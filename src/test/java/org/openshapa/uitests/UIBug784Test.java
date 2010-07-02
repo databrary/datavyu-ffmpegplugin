@@ -32,7 +32,7 @@ public final class UIBug784Test extends OpenSHAPATestClass {
     /**
      * Test for Bug784.
      */
-    @Test public void testBug784() {
+    /**@Test*/ public void testBug784() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "v";
@@ -71,18 +71,18 @@ public final class UIBug784Test extends OpenSHAPATestClass {
         cell.fillSelectCell(true);
 
         // 6. Test Find by clicking button
-        Assert.assertEquals(dcf.getCurrentTime(), "00:00:00:000");
+        Assert.assertEquals("00:00:00:000", dcf.getCurrentTime());
         dcf.pressFindButton();
-        Assert.assertEquals(dcf.getCurrentTime(), "11:11:11:111");
+        Assert.assertEquals("11:11:11:111", dcf.getCurrentTime());
 
         // 7. Test Shift-Find by clicking button
         mainFrameFixture.pressKey(KeyEvent.VK_SHIFT);
         dcf.pressFindButton();
         mainFrameFixture.releaseKey(KeyEvent.VK_SHIFT);
-        Assert.assertEquals(dcf.getCurrentTime(), "22:22:22:222");
+        Assert.assertEquals("22:22:22:222", dcf.getCurrentTime());
 
         // 8. Test Find again by clicking button
         dcf.pressFindButton();
-        Assert.assertEquals(dcf.getCurrentTime(), "11:11:11:111");
+        Assert.assertEquals("11:11:11:111", dcf.getCurrentTime());
     }
 }

@@ -10,6 +10,12 @@ public class NeedleModel implements Cloneable {
     private int paddingTop;
     /** Amount of padding for this component from the left */
     private int paddingLeft;
+    /** Width of the needle line in pixels */
+    private double needleWidth;
+    /** Width of the needle head triangle in pixels */
+    private double needleHeadWidth;
+    /** Height of the needle head triangle in pixels */
+    private double needleHeadHeight;
     /** Current time represented by the needle */
     private long currentTime;
 
@@ -19,6 +25,9 @@ public class NeedleModel implements Cloneable {
     protected NeedleModel(final NeedleModel other) {
         paddingTop = other.paddingTop;
         paddingLeft = other.paddingLeft;
+        needleWidth = other.needleWidth;
+        needleHeadWidth = other.needleHeadWidth;
+        needleHeadHeight = other.needleHeadHeight;
         currentTime = other.currentTime;
     }
 
@@ -61,6 +70,48 @@ public class NeedleModel implements Cloneable {
         return paddingTop;
     }
 
+    /** 
+     * @return Width of the needle line
+     */
+    public double getNeedleWidth() {
+    	return needleWidth;
+    }
+    
+    /** 
+     * Sets the width of the needle line.
+     */
+    public void setNeedleWidth(final double needleWidth) {
+    	this.needleWidth = needleWidth;
+    }
+
+    /**
+     * @return Width of the needle head triangle in pixels 
+     */
+    public double getNeedleHeadWidth() {
+    	return needleHeadWidth;
+    }
+    
+    /**
+     * Sets the width of the needle head triangle in pixels.
+     */
+    public void setNeedleHeadWidth(final double needleHeadWidth) {
+    	this.needleHeadWidth = needleHeadWidth;
+    }
+    
+    /**
+     * @return Height of the needle head triangle in pixels.
+     */
+    public double getNeedleHeadHeight() {
+    	return needleHeadHeight;
+    }
+
+    /**
+     * Sets the height of the needle head triangle in pixels.
+     */
+    public void setNeedleHeadHeight(final double needleHeadHeight) {
+    	this.needleHeadHeight = needleHeadHeight;
+    }
+    
     /**
      * Set the amount of padding for this component from the top
      * 
@@ -88,6 +139,15 @@ public class NeedleModel implements Cloneable {
         if (currentTime != other.currentTime) {
             return false;
         }
+        if (needleWidth != other.needleWidth) {
+        	return false;
+        }
+        if (needleHeadWidth != other.needleHeadWidth) {
+        	return false;
+        }
+        if (needleHeadHeight != other.needleHeadHeight) {
+        	return false;
+        }
         return true;
     }
 
@@ -96,6 +156,9 @@ public class NeedleModel implements Cloneable {
         int hash = 7;
         hash = 83 * hash + paddingTop;
         hash = 83 * hash + paddingLeft;
+        hash = 83 * hash + (int) Double.doubleToLongBits(needleWidth);
+        hash = 83 * hash + (int) Double.doubleToLongBits(needleHeadWidth);
+        hash = 83 * hash + (int) Double.doubleToLongBits(needleHeadHeight);
         hash = 83 * hash + (int) (currentTime ^ (currentTime >>> 32));
         return hash;
     }

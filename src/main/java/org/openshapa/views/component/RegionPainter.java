@@ -3,8 +3,10 @@ package org.openshapa.views.component;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Polygon;
+import java.awt.RenderingHints;
+import java.awt.geom.GeneralPath;
 
 import javax.swing.JComponent;
 
@@ -21,10 +23,10 @@ public class RegionPainter extends JComponent {
     private static final long serialVersionUID = 3570489696805853386L;
 
     /** Polygon region for the start marker. */
-    private Polygon startMarkerPolygon;
+    private GeneralPath startMarkerPolygon;
 
     /** Polygon region for the end marker. */
-    private Polygon endMarkerPolygon;
+    private GeneralPath endMarkerPolygon;
 
     /** Region model. */
     private RegionModel regionModel;
@@ -58,14 +60,14 @@ public class RegionPainter extends JComponent {
     /**
      * @return The polygon used to represent the end marker.
      */
-    public final Polygon getEndMarkerPolygon() {
+    public final GeneralPath getEndMarkerPolygon() {
         return endMarkerPolygon;
     }
 
     /**
      * @return The polygon used to represent the start marker.
      */
-    public final Polygon getStartMarkerPolygon() {
+    public final GeneralPath getStartMarkerPolygon() {
         return startMarkerPolygon;
     }
 
@@ -74,16 +76,18 @@ public class RegionPainter extends JComponent {
     }
 
     @Override public final boolean contains(final int x, final int y) {
-        return startMarkerPolygon.contains(x, y)
-            || endMarkerPolygon.contains(x, y);
+        return startMarkerPolygon != null && startMarkerPolygon.contains(x, y)
+            || endMarkerPolygon != null && endMarkerPolygon.contains(x, y);
     }
 
     @Override public final void paint(final Graphics g) {
-
         if ((regionModel == null) || (viewableModel == null)) {
             return;
         }
 
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
         Dimension size = this.getSize();
 
         final float ratio = viewableModel.getIntervalWidth()
@@ -94,11 +98,12 @@ public class RegionPainter extends JComponent {
         final long regionEnd = regionModel.getRegionEnd();
         final int paddingTop = regionModel.getPaddingTop();
 
+        final float paddingHorizontal = 1;
         final int markerHeight = 38;
 
         // If the left region marker is visible, paint the marker
         if (regionStart >= viewableModel.getZoomWindowStart()) {
-            g.setColor(new Color(15, 135, 0, 100)); // Semi-transparent green
+            g2d.setColor(new Color(15, 135, 0, 100)); // Semi-transparent green
 
             // The polygon tip
             int pos = Math.round((regionModel.getRegionStart() * ratio)
@@ -106,19 +111,25 @@ public class RegionPainter extends JComponent {
                 + regionModel.getPaddingLeft();
 
             // Make an arrow
-            startMarkerPolygon = new Polygon();
-            startMarkerPolygon.addPoint(pos - 10, paddingTop);
-            startMarkerPolygon.addPoint(pos, 19 + paddingTop);
-            startMarkerPolygon.addPoint(pos, markerHeight + paddingTop);
-            startMarkerPolygon.addPoint(pos - 10, markerHeight + paddingTop);
-            g.fillPolygon(startMarkerPolygon);
+            startMarkerPolygon = new GeneralPath();
+            startMarkerPolygon.moveTo(pos - 10 - paddingHorizontal, paddingTop);
+            startMarkerPolygon.lineTo(pos - paddingHorizontal, 19 + paddingTop - paddingHorizontal);
+            startMarkerPolygon.lineTo(pos - paddingHorizontal, getSize().height);
+            startMarkerPolygon.lineTo(pos - 10 - paddingHorizontal, getSize().height);
+            startMarkerPolygon.closePath();
+            g2d.fill(startMarkerPolygon);
 
             // Draw outline
-            g.setColor(new Color(15, 135, 0));
-            g.drawPolygon(startMarkerPolygon);
+            g2d.setColor(new Color(15, 135, 0));
+            g2d.draw(startMarkerPolygon);
 
             // Draw drop down line
-            g.drawLine(pos, markerHeight, pos, size.height);
+            GeneralPath line = new GeneralPath();
+            line.moveTo(pos - paddingHorizontal, markerHeight);
+            line.lineTo(pos - paddingHorizontal, markerHeight + size.height - 1);
+            g2d.draw(line);
+        } else {
+        	startMarkerPolygon = new GeneralPath();
         }
 
         // If the right region marker is visible, paint the marker
@@ -130,20 +141,25 @@ public class RegionPainter extends JComponent {
             int pos = Math.round((regionModel.getRegionEnd() * ratio)
                     - (viewableModel.getZoomWindowStart() * ratio))
                 + regionModel.getPaddingLeft();
-            endMarkerPolygon = new Polygon();
-            endMarkerPolygon.addPoint(pos + 1, 19 + paddingTop);
-            endMarkerPolygon.addPoint(pos + 11, paddingTop);
-            endMarkerPolygon.addPoint(pos + 11, markerHeight + paddingTop);
-            endMarkerPolygon.addPoint(pos + 1, markerHeight + paddingTop);
-
-            g.fillPolygon(endMarkerPolygon);
+            endMarkerPolygon = new GeneralPath();
+            endMarkerPolygon.moveTo(pos + paddingHorizontal, 19 + paddingTop);
+            endMarkerPolygon.lineTo(pos + 10 + paddingHorizontal, paddingTop - paddingHorizontal);
+            endMarkerPolygon.lineTo(pos + 10 + paddingHorizontal, getSize().height);
+            endMarkerPolygon.lineTo(pos + paddingHorizontal, getSize().height);
+            endMarkerPolygon.closePath();
+            g2d.fill(endMarkerPolygon);
 
             // Draw outline
-            g.setColor(new Color(15, 135, 0));
-            g.drawPolygon(endMarkerPolygon);
+            g2d.setColor(new Color(15, 135, 0));
+            g2d.draw(endMarkerPolygon);
 
             // Draw drop down line
-            g.drawLine(pos + 1, markerHeight, pos + 1, size.height);
+            GeneralPath line = new GeneralPath();
+            line.moveTo(pos + paddingHorizontal, markerHeight);
+            line.lineTo(pos + paddingHorizontal, markerHeight + size.height - 1);
+            g2d.draw(line);
+        } else {
+        	endMarkerPolygon = new GeneralPath();
         }
 
         /*
@@ -165,7 +181,7 @@ public class RegionPainter extends JComponent {
 
             // Gray
             g.setColor(new Color(63, 63, 63, 100));
-            g.fillRect(startPos, markerHeight + 1, (int) (endXPos - startPos),
+            g.fillRect(startPos, markerHeight + 1, (int) (endXPos - startPos - paddingHorizontal),
                 size.height);
         }
 
@@ -188,7 +204,7 @@ public class RegionPainter extends JComponent {
             int endXPos = getSize().width - 21;
 
             g.setColor(new Color(63, 63, 63, 100));
-            g.fillRect(startXPos, markerHeight + 1, endXPos - startXPos,
+            g.fillRect((int) (startXPos + paddingHorizontal + paddingHorizontal), markerHeight + 1, (int) (endXPos - startXPos - paddingHorizontal - paddingHorizontal),
                 size.height);
         }
 
