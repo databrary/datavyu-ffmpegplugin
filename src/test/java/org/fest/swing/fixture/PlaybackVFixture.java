@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import org.fest.swing.core.Robot;
+import org.openshapa.util.UIUtils;
 
 import org.openshapa.views.PlaybackV;
 
@@ -30,11 +31,8 @@ public class PlaybackVFixture extends DialogFixture {
      * @return String of currentTime.
      */
     public final String getCurrentTime() {
-        System.out.println("PlaybackVFixture.getCurrentTime()");
-        System.out.println(Thread.currentThread().getName());
-
-        return new JLabelFixture(robot,
-                findByName("timestampLabel", JLabel.class)).text();
+        return UIUtils.getInnerTextFromHTML(new JLabelFixture(robot,
+            findByName("timestampLabel", JLabel.class)).text());
     }
 
     /**

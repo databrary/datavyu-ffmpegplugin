@@ -210,6 +210,9 @@ public class TrackFixture extends ComponentFixture {
         // Start position should leave enough room to move pixels
         Point to = null;
 
+        final int regionMarkerXOffset = 20;
+        final int trackYOffset = 5;
+
         if (!robot.isDragging()) {
 
             // Point topLeft = ((TrackPainter) target).getLocationOnScreen();
@@ -223,16 +226,16 @@ public class TrackFixture extends ComponentFixture {
             Point startClick;
 
             if (pixels >= 0) {
-                startClick = new Point(topLeft.x + 5,
+                startClick = new Point(topLeft.x + regionMarkerXOffset,
                         (topLeft.y
                             + (((TrackPainter) target).getHeight() / 2))
-                        + 5);
+                        + trackYOffset);
             } else {
                 startClick = new Point(topLeft.x
                         + ((TrackPainter) target).getWidth()
-                        - carriagePoint.x - 5,
+                        - carriagePoint.x - regionMarkerXOffset,
                         (topLeft.y
-                            + (((TrackPainter) target).getHeight() / 2)) - 5);
+                            + (((TrackPainter) target).getHeight() / 2)) - trackYOffset);
             }
 
             robot.pressMouse(startClick, MouseButton.LEFT_BUTTON);

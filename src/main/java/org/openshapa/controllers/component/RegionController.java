@@ -2,8 +2,8 @@ package org.openshapa.controllers.component;
 
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Polygon;
 import java.awt.event.MouseEvent;
+import java.awt.geom.GeneralPath;
 
 import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
@@ -200,8 +200,8 @@ public final class RegionController {
 
         @Override public void mouseEntered(final MouseEvent e) {
             final JComponent source = (JComponent) e.getSource();
-            final Polygon startMarker = view.getStartMarkerPolygon();
-            final Polygon endMarker = view.getEndMarkerPolygon();
+            final GeneralPath startMarker = view.getStartMarkerPolygon();
+            final GeneralPath endMarker = view.getEndMarkerPolygon();
 
             if (startMarker.contains(e.getPoint())) {
                 source.setCursor(eastResizeCursor);
@@ -218,8 +218,8 @@ public final class RegionController {
 
         @Override public void mousePressed(final MouseEvent e) {
             final Component source = (Component) e.getSource();
-            final Polygon startMarker = view.getStartMarkerPolygon();
-            final Polygon endMarker = view.getEndMarkerPolygon();
+            final GeneralPath startMarker = view.getStartMarkerPolygon();
+            final GeneralPath endMarker = view.getEndMarkerPolygon();
 
             if (startMarker.contains(e.getPoint())) {
 
@@ -274,10 +274,8 @@ public final class RegionController {
                 }
 
                 // Calculate the time represented by the new location
-                final float ratio = viewableModel.getIntervalWidth()
-                    / viewableModel.getIntervalTime();
-                final float newTime = (x - regionModel.getPaddingLeft()
-                        + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
+                final double ratio = viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();
+                final double newTime = (x - regionModel.getPaddingLeft() + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
                 fireMarkerEvent(Marker.END_MARKER, Math.round(newTime));
             }
         }

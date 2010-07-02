@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import org.fest.swing.core.Robot;
-
+import org.openshapa.util.UIUtils;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.continuous.DataViewer;
 
@@ -37,8 +37,8 @@ public class DataControllerFixture extends DialogFixture {
      * @return String of currentTime.
      */
     public final String getCurrentTime() {
-        return new JLabelFixture(robot,
-                findByName("timestampLabel", JLabel.class)).text();
+        return UIUtils.getInnerTextFromHTML(new JLabelFixture(robot,
+            findByName("timestampLabel", JLabel.class)).text());
     }
 
     /**

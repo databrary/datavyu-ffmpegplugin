@@ -50,14 +50,14 @@ public final class UIBug686Test extends OpenSHAPATestClass {
 
         // 2. Jog forward and check
         dcf.pressJogForwardButton();
-        dcf.label("timestampLabel").requireText("00:00:00:040");
+        Assert.assertEquals("00:00:00:040", dcf.getCurrentTime());
         dcf.pressJogForwardButton();
-        dcf.label("timestampLabel").requireText("00:00:00:080");
+        Assert.assertEquals("00:00:00:080", dcf.getCurrentTime());
 
         // 3. Jog back and check
         dcf.pressJogBackButton();
-        dcf.label("timestampLabel").requireText("00:00:00:040");
+        Assert.assertEquals("00:00:00:040", dcf.getCurrentTime());
         dcf.pressJogBackButton();
-        dcf.label("timestampLabel").requireText("00:00:00:000");
+        Assert.assertEquals("00:00:00:000", dcf.getCurrentTime());
     }
 }

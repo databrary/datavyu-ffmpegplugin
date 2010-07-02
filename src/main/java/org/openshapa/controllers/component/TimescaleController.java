@@ -1,5 +1,6 @@
 package org.openshapa.controllers.component;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JComponent;
@@ -34,14 +35,25 @@ public final class TimescaleController {
         view = new TimescalePainter();
 
         timescaleModel = new TimescaleModel();
-        timescaleModel.setMajorIntervals(6);
+        timescaleModel.setNanosecondsPerPixel(50 * 1000000L);
         timescaleModel.setPaddingLeft(101);
-        timescaleModel.setPaddingRight(20);
+        timescaleModel.setPaddingRight(30);
+        timescaleModel.setZoomWindowIndicatorHeight(8);
+        timescaleModel.setZoomWindowToTrackTransitionHeight(20);
+        timescaleModel.setHeight(50 + timescaleModel.getZoomWindowIndicatorHeight() + timescaleModel.getZoomWindowToTrackTransitionHeight());
+        timescaleModel.setZoomWindowIndicatorColor(new Color(192, 192, 192));
+        timescaleModel.setTimescaleBackgroundColor(new Color(237, 237, 237));
+        //TODO these should match up with the colors in DataControllerV.static{}
+        timescaleModel.setHoursMarkerColor(Color.red.darker());
+        timescaleModel.setMinutesMarkerColor(Color.green.darker().darker());
+        timescaleModel.setSecondsMarkerColor(Color.blue.darker().darker());
+        timescaleModel.setMillisecondsMarkerColor(Color.gray.darker());
 
         viewableModel = new ViewableModel();
 
         final TimescaleEventListener listener = new TimescaleEventListener();
         view.addMouseListener(listener);
+        view.addMouseMotionListener(listener);
 
         listenerList = new EventListenerList();
     }
@@ -51,14 +63,8 @@ public final class TimescaleController {
      *            The start time, in milliseconds, of the scale to display
      * @param end
      *            The end time, in milliseconds, of the scale to display
-     * @param intervals
-     *            The total number of intervals between two major intervals,
-     *            this value is inclusive of the major intervals. i.e. if
-     *            intervals is 10, then 2 (start and end interval marking) of
-     *            them are major intervals and 8 are minor intervals.
      */
-    public void setConstraints(final long start, final long end,
-        final int intervals) {
+    public void setConstraints(final long start, final long end) {
         viewableModel.setZoomWindowStart(start);
         viewableModel.setZoomWindowEnd(end);
 
@@ -66,15 +72,11 @@ public final class TimescaleController {
             - timescaleModel.getPaddingLeft()
             - timescaleModel.getPaddingRight();
         timescaleModel.setEffectiveWidth(effectiveWidth);
+        timescaleModel.setNanosecondsPerPixel((end - start) * 1000000L / effectiveWidth);
 
-        final int majorWidth = effectiveWidth
-            / timescaleModel.getMajorIntervals();
-        timescaleModel.setMajorWidth(majorWidth);
-
-        viewableModel.setIntervalWidth((float) majorWidth / (float) intervals);
-        viewableModel.setIntervalTime((float) (end - start)
-            / (float) (timescaleModel.getMajorIntervals() * intervals));
-
+        viewableModel.setIntervalTime(end - start + 1);
+        viewableModel.setIntervalWidth(effectiveWidth);
+        
         view.setViewableModel(viewableModel);
         view.setTimescaleModel(timescaleModel);
     }
@@ -103,6 +105,10 @@ public final class TimescaleController {
         return viewableModel.clone();
     }
 
+    public TimescaleModel getTimescaleModel() {
+    	return timescaleModel;
+    }
+    
     /**
      * @return View used by the controller
      */
@@ -152,38 +158,52 @@ public final class TimescaleController {
      * Inner class used to handle intercepted events.
      */
     private class TimescaleEventListener extends MouseInputAdapter {
-        @Override public void mouseClicked(final MouseEvent e) {
+    	private boolean isMousePressed = false;
+    	private boolean hasMouseEntered = false;
+    	
+        @Override public void mousePressed(final MouseEvent e) {
+        	isMousePressed = true;
+        	updateNeedlePosition(e);
+        }
+        
+        @Override public void mouseReleased(final MouseEvent e) {
+        	isMousePressed = false;
+        }
+        
+        @Override public void mouseEntered(final MouseEvent e) {
+        	if (e.getX() < timescaleModel.getPaddingLeft() || (e.getX() + timescaleModel.getPaddingRight() >= view.getSize().width)) {
+        		// outside the timescale area
+            	hasMouseEntered = false;
+        	} else {
+        		hasMouseEntered = true;
+        	}
+        }
+        
+        @Override public void mouseExited(final MouseEvent e) {
+        	hasMouseEntered = false;
+        }
+        
+        @Override public void mouseMoved(final MouseEvent e) {
+        	if (isMousePressed && hasMouseEntered) {
+        		updateNeedlePosition(e);
+        	}
+        }
 
-            if (e.getClickCount() == 2) {
-                int x = e.getX();
+        @Override public void mouseDragged(final MouseEvent e) {
+        	if (isMousePressed && hasMouseEntered) {
+            	updateNeedlePosition(e);
+        	}
+        }
+        
+        private void updateNeedlePosition(final MouseEvent e) {
+            final int dx = Math.min(Math.max(e.getX() - timescaleModel.getPaddingLeft(), 0), view.getSize().width - 1);
 
-                // Bound the x values
-                if (x < 0) {
-                    x = 0;
-                }
+            // Calculate the time represented by the new location
+            double ratio = viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();
+            double newTime = (dx + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
+            newTime = Math.min(Math.max(newTime, 0), viewableModel.getZoomWindowEnd());
 
-                if (x > view.getSize().width) {
-                    x = view.getSize().width;
-                }
-
-                // Calculate the time represented by the new location
-                float ratio = viewableModel.getIntervalWidth()
-                    / viewableModel.getIntervalTime();
-                float newTime = (x - timescaleModel.getPaddingLeft()
-                        + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
-
-                if (newTime < 0) {
-                    newTime = 0;
-                }
-
-                if (newTime > viewableModel.getZoomWindowEnd()) {
-                    newTime = viewableModel.getZoomWindowEnd();
-                }
-
-                fireJumpEvent(Math.round(newTime));
-
-            }
+            fireJumpEvent(Math.round(newTime));
         }
     }
-
 }

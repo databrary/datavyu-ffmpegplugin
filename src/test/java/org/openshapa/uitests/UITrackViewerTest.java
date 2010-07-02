@@ -130,14 +130,26 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
                 100));
 
+        // 3. Check that the needle is initially 0.
+        TimeStamp currTS;
+
+        try {
+            currTS = new TimeStamp(dcf.getCurrentTime());
+            Assert.assertTrue(currTS.eq(new TimeStamp("00:00:00:000")));
+        } catch (SystemErrorException ex) {
+            Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                Level.SEVERE, null, ex);
+        }
+
         // 4. Move needle to 6 seconds on data controller time.
         boolean lessThan6seconds = true;
 
-        while (lessThan6seconds) {
-            TimeStamp currTS;
+        final long startTime = System.currentTimeMillis();
+        final long maxTestRunTime = 10 * 1000;
 
+        while (lessThan6seconds && System.currentTimeMillis() < startTime + maxTestRunTime) {
             try {
-                dcf.getTrackMixerController().getNeedle().drag(1);
+                dcf.getTrackMixerController().getNeedle().drag(20);
                 currTS = new TimeStamp(dcf.getCurrentTime());
                 lessThan6seconds = currTS.lt(new TimeStamp("00:00:06:000"));
             } catch (SystemErrorException ex) {
@@ -146,6 +158,15 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             }
         }
 
+        try {
+            currTS = new TimeStamp(dcf.getCurrentTime());
+            Assert.assertTrue(currTS.ge(new TimeStamp("00:00:06:000")));
+        } catch (SystemErrorException ex) {
+            Logger.getLogger(UITrackViewerTest.class.getName()).log(
+                Level.SEVERE, null, ex);
+        }
+
+        Assert.assertTrue(System.currentTimeMillis() < startTime + maxTestRunTime, "test timed out");
         Assert.assertEquals(dcf.getCurrentTime(),
             dcf.getTrackMixerController().getNeedle()
                 .getCurrentTimeAsTimeStamp());
@@ -187,9 +208,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test needle movement by doubel clicking on timescale.
+     * Test needle movement by clicking on timescale.
      */
-    @Test public void testNeedleMovementByDoubleClick() {
+    @Test public void testNeedleMovementBySingleClicking() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -208,39 +229,29 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // Double click 1/3, 1/2, 3/4 way of timescale
         NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
         TimescaleFixture tf = dcf.getTrackMixerController().getTimescale();
-        int third = tf.getWidth() / 3;
-        int half = tf.getWidth() / 2;
-        int threefourths = tf.getWidth() / 4 * 3;
+        int third = tf.getEffectiveWidth() / 3;
+        int half = tf.getEffectiveWidth() / 2;
+        int threefourths = tf.getEffectiveWidth() / 4 * 3;
 
-        tf.doubleClickAt(third);
-        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
-                    "00:00:21"))
-            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:20"))
-            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:19")));
+        tf.singleClickAt(third);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:20:000");
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), dcf.getCurrentTime());
+
+        tf.singleClickAt(half);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:30:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
             dcf.getCurrentTime());
 
-        tf.doubleClickAt(half);
-        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
-                    "00:00:31"))
-            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:30"))
-            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:29")));
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
-            dcf.getCurrentTime());
-
-        tf.doubleClickAt(threefourths);
-        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
-                    "00:00:46"))
-            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:45"))
-            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:44")));
+        tf.singleClickAt(threefourths);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:44:863");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
             dcf.getCurrentTime());
     }
 
     /**
-    * Test needle movement by doubel clicking on timescale.
+    * Test needle movement by single clicking on timescale.
     */
-    @Test public void testNeedleMovementByDoubleClickWithZoom() {
+    @Test public void testNeedleMovementBySingleClickWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -265,36 +276,29 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // Double click 1/3, 1/2, 3/4 way of timescale
         NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
         TimescaleFixture tf = dcf.getTrackMixerController().getTimescale();
-        int third = tf.getWidth() / 3;
-        int half = tf.getWidth() / 2;
-        int threefourths = tf.getWidth() / 4 * 3;
+        int third = tf.getEffectiveWidth() / 3;
+        int half = tf.getEffectiveWidth() / 2;
+        int threefourths = tf.getEffectiveWidth() / 4 * 3;
 
-        tf.doubleClickAt(third);
-        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
-                    "00:00:00:6"))
-            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:00:5")));
+        tf.singleClickAt(third);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:219");
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), dcf.getCurrentTime());
+
+        tf.singleClickAt(half);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:328");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
             dcf.getCurrentTime());
 
-        tf.doubleClickAt(half);
-        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
-                    "00:00:00:9"))
-            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:00:8")));
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
-            dcf.getCurrentTime());
-
-        tf.doubleClickAt(threefourths);
-        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
-                    "00:00:01:4"))
-            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:01:3")));
+        tf.singleClickAt(threefourths);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:491");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
             dcf.getCurrentTime());
     }
 
     /**
-    * Test needle movement by doubel clicking on timescale.
+    * Test needle movement by single clicking on timescale.
     */
-    @Test public void testNeedleMovementByDoubleClickOutsideRegion() {
+    @Test public void testNeedleMovementBySingleClickOutsideRegion() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -331,24 +335,22 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // Double click 1/3, 1/2, 3/4 way of timescale
         NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
         TimescaleFixture tf = dcf.getTrackMixerController().getTimescale();
-        int third = tf.getWidth() / 3;
-        int half = tf.getWidth() / 2;
-        int threefourths = tf.getWidth() / 4 * 3;
+        int third = tf.getEffectiveWidth() / 3;
+        int half = tf.getEffectiveWidth() / 2;
+        int threefourths = tf.getEffectiveWidth() / 4 * 3;
 
-        tf.doubleClickAt(third);
+        tf.singleClickAt(third);
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:25:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
             dcf.getCurrentTime());
 
-        tf.doubleClickAt(half);
-        Assert.assertTrue((needle.getCurrentTimeAsTimeStamp().startsWith(
-                    "00:00:31"))
-            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:30"))
-            || (needle.getCurrentTimeAsTimeStamp().startsWith("00:00:29")));
+        tf.singleClickAt(half);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:30:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
             dcf.getCurrentTime());
 
-        tf.doubleClickAt(threefourths);
+        tf.singleClickAt(threefourths);
+
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:35:000");
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
             dcf.getCurrentTime());
@@ -747,7 +749,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                 100));
 
         // 3. Zoom track
-        zoomSlider.slideTo(500);
+        zoomSlider.slideTo((zoomSlider.component().getMinimum() + zoomSlider.component().getMaximum()) / 2);
 
         // 4. Drag track
         TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
@@ -824,9 +826,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
                 100));
 
-        zoomSlider.slideTo(200);
+        // 3. Zoom to halfway. This is an abitrary zoom value.
+        zoomSlider.slideTo((zoomSlider.component().getMinimum() + zoomSlider.component().getMaximum()) / 2);
 
-        // 4. Move needle beyond end time
+        // At halfway zoom point, these are the expected timestamps
+        final String timeAtLeftEndOfTrack = "00:00:00:000";
+        final String timeAtRightEndOfTrack = "00:00:06:300"; // this value will need to be updated when the zoom levels/scales change
+
+        // 4. Try to move the needle beyond the right edge
         NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
         int widthOfTrack = dcf.getTrackMixerController().getTracksEditor()
             .getTrack(0).getWidthInPixels();
@@ -835,18 +842,17 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             needle.drag(widthOfTrack);
         }
 
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:30:000");
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), timeAtRightEndOfTrack);
 
-        // 5. Move needle beyond start time
+        // 5. Try to move the needle beyond the left edge
         needle.drag(-1 * widthOfTrack);
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:000");
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), timeAtLeftEndOfTrack);
 
-        // Drag back to half way
+        // 6. Try to move the needle beyond the right edge
         while (needle.getCurrentTimeAsLong() <= 0) {
             needle.drag(widthOfTrack);
         }
-
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:30:000");
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), timeAtRightEndOfTrack);
 
         /*BugzID:1734
          * dcf.getTrackMixerController().getHorizontalScrollBar().scrollToMaximum();
@@ -1445,9 +1451,6 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).requireVisible();
     }
 
-    /**
-    * Test needle movement to ensure needle time is the same as the clock time.
-    */
     @Test public void testRegionSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 

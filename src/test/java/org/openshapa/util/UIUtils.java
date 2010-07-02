@@ -15,14 +15,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
-
 import java.util.SimpleTimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.filechooser.FileFilter;
+import javax.swing.JPanel;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.parser.ParserDelegator;
 
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
@@ -269,6 +270,21 @@ public final class UIUtils {
             });
     }
 
+    public static String getInnerTextFromHTML(final String html) {
+        final StringBuilder s = new StringBuilder();
+        try {
+            HTMLEditorKit.ParserCallback callback = new HTMLEditorKit.ParserCallback() {
+                public void handleText(char[] data, int pos) {
+                    s.append(data);
+                }
+            };
+            new ParserDelegator().parse(new StringReader(html), callback, false);
+        } catch (IOException ex) {
+            Logger.getLogger(UIUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return s.toString();
+    }
+
     /**
      * Open data using data controller.
      * @param videoFile file to open
@@ -307,12 +323,9 @@ public final class UIUtils {
                     jfcf.selectFile(videoFile).approve();
                     worked = true;
                 } catch (Exception e) {
-                    Logger.getLogger(UIUtils.class.getName()).log(
-                        Level.WARNING,
-                        "failed to open video:" + videoFile.getAbsolutePath()
-                        + "\nTrying again.", e);
+                    // keep trying
                 }
-            } while (!worked);
+            } while (worked == false);
         }
     }
 }
