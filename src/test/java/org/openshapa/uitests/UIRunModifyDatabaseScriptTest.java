@@ -103,7 +103,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
          * 2. Perform a find and replace; replace all instances of "moo" with
          * "frog"
          */
-        mainFrameFixture.runScript(demoFile);
+        mainFrameFixture.runScript(modifyFile);
 
         // Close script console
         scriptConsole = mainFrameFixture.dialog();

@@ -112,7 +112,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
         spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 1. Create new variable
-        mainFrameFixture.createNewVariable(varName, varName);
+        mainFrameFixture.createNewVariable(varName, varType);
 
         // 2. Check that column has been created
         SpreadsheetColumnFixture col = spreadsheet.column(varName);
@@ -137,7 +137,7 @@ public final class UINewVariableTest extends OpenSHAPATestClass {
         spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 1. Create new variable and check it
-        mainFrameFixture.createNewVariable(varName, varName);
+        mainFrameFixture.createNewVariable(varName, varType);
 
         // 2. Check that column has been created
         SpreadsheetColumnFixture col = spreadsheet.column(varName);
