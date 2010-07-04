@@ -3,8 +3,10 @@ package org.fest.swing.fixture;
 import java.util.Vector;
 
 import org.fest.swing.core.Robot;
+
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import org.openshapa.views.discrete.SpreadsheetPanel;
+
 
 /**
  * Fixture for the Spreadsheet panel.
@@ -20,7 +22,7 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
      * @param target underlying spreadsheet panel
      */
     public SpreadsheetPanelFixture(final Robot robot,
-            final SpreadsheetPanel target) {
+        final SpreadsheetPanel target) {
         super(robot, target);
         ssPanel = (SpreadsheetPanel) this.target;
     }
@@ -35,12 +37,16 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
         Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();
 
         int count = 0;
+
         for (SpreadsheetColumn c : ssCols) {
+
             if (count == column) {
                 return new SpreadsheetColumnFixture(robot, c);
             }
+
             count++;
         }
+
         return null;
     }
 
@@ -54,12 +60,14 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
 
         for (SpreadsheetColumn c : ssCols) {
             String headerText = c.getText();
-            String headerName =
-                    headerText.substring(0, headerText.lastIndexOf("  ("));
+            String headerName = headerText.substring(0,
+                    headerText.lastIndexOf("  ("));
+
             if (headerName.equalsIgnoreCase(columnName)) {
                 return new SpreadsheetColumnFixture(robot, c);
             }
         }
+
         return null;
     }
 
@@ -70,11 +78,12 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
     public final Vector<SpreadsheetColumnFixture> allColumns() {
         Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();
         Vector<SpreadsheetColumnFixture> result =
-                new Vector<SpreadsheetColumnFixture>();
+            new Vector<SpreadsheetColumnFixture>();
 
         for (SpreadsheetColumn c : ssCols) {
             result.add(new SpreadsheetColumnFixture(robot, c));
         }
+
         return result;
     }
 

@@ -10,5 +10,5 @@ import java.util.EventListener;
 public interface TimescaleListener extends EventListener {
 
     void jumpToTime(TimescaleEvent e);
-
+    
 }

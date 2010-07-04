@@ -1,25 +1,34 @@
 package org.fest.swing.fixture;
 
 import java.awt.event.KeyEvent;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Set;
+
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
 import org.fest.swing.core.Robot;
+import org.openshapa.util.UIUtils;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.continuous.DataViewer;
+
 
 /**
  * Fixture for OpenSHAPA DataController.
  */
 public class DataControllerFixture extends DialogFixture {
+
     /**
      * Constructor.
      * @param robot main frame fixture robot
      * @param target data controller class
      */
     public DataControllerFixture(final Robot robot,
-            final DataControllerV target) {
+        final DataControllerV target) {
         super(robot, target);
     }
 
@@ -28,25 +37,26 @@ public class DataControllerFixture extends DialogFixture {
      * @return String of currentTime.
      */
     public final String getCurrentTime() {
-        return new JLabelFixture(robot,
-            findByName("timestampLabel", JLabel.class)).text();
+        return UIUtils.getInnerTextFromHTML(new JLabelFixture(robot,
+            findByName("timestampLabel", JLabel.class)).text());
     }
 
-     /**
-     * Go back time.
-     * @return String of goBackTime.
-     */
+    /**
+    * Go back time.
+    * @return String of goBackTime.
+    */
     public final String getGoBackTime() {
         return new JTextComponentFixture(robot,
-            findByName("goBackTextField", JTextField.class)).text();
+                findByName("goBackTextField", JTextField.class)).text();
     }
 
-     /**
-     * Set go back time.
-     */
+    /**
+    * Set go back time.
+    */
     public final void setGoBackTime(String value) {
         new JTextComponentFixture(robot,
-            findByName("goBackTextField", JTextField.class)).selectAll().enterText(value);
+            findByName("goBackTextField", JTextField.class)).selectAll()
+            .enterText(value);
     }
 
     /**
@@ -65,9 +75,9 @@ public class DataControllerFixture extends DialogFixture {
             findByName("findButton", JButton.class)).click();
     }
 
-     /**
-     * Press Snap Region button.
-     */
+    /**
+    * Press Snap Region button.
+    */
     public final void pressSnapRegionButton() {
         new JButtonFixture(robot,
             findByName("findButton", JButton.class)).click();
@@ -97,9 +107,9 @@ public class DataControllerFixture extends DialogFixture {
             findByName("rewindButton", JButton.class)).click();
     }
 
-     /**
-     * Press go back button.
-     */
+    /**
+    * Press go back button.
+    */
     public final void pressGoBackButton() {
         new JButtonFixture(robot,
             findByName("goBackButton", JButton.class)).click();
@@ -216,16 +226,16 @@ public class DataControllerFixture extends DialogFixture {
      */
     public final String getFindOnset() {
         return new JTextComponentFixture(robot,
-            findByName("findOnsetLabel", JTextField.class)).text();
+                findByName("findOnsetLabel", JTextField.class)).text();
     }
 
-     /**
-     * Returns findOnset time.
-     * @return String of find onset time.
-     */
+    /**
+    * Returns findOnset time.
+    * @return String of find onset time.
+    */
     public final void setFindOnset(String value) {
         JTextComponentFixture findOnset = new JTextComponentFixture(robot,
-            findByName("findOnsetLabel", JTextField.class));
+                findByName("findOnsetLabel", JTextField.class));
         findOnset.selectAll().enterText(value);
     }
 
@@ -235,7 +245,7 @@ public class DataControllerFixture extends DialogFixture {
      */
     public final String getFindOffset() {
         return new JTextComponentFixture(robot,
-            findByName("findOffsetLabel", JTextField.class)).text();
+                findByName("findOffsetLabel", JTextField.class)).text();
     }
 
     /**
@@ -262,5 +272,21 @@ public class DataControllerFixture extends DialogFixture {
     public final MixerControllerFixture getTrackMixerController() {
         return new MixerControllerFixture(robot,
                 ((DataControllerV) target).getMixerController());
+    }
+
+
+    /**
+     * @return all videos in the data controller.
+     */
+    public final ArrayList<DialogFixture> getVideoWindows() {
+        ArrayList<DialogFixture> vidWindows = new ArrayList<DialogFixture>();
+        Iterator it = getDataViewers().iterator();
+
+        while (it.hasNext()) {
+            JDialog vid = ((JDialog) it.next());
+            vidWindows.add(new DialogFixture(robot, vid));
+        }
+
+        return vidWindows;
     }
 }

@@ -1,7 +1,5 @@
 package org.openshapa.util;
 
-import java.awt.event.KeyEvent;
-
 import org.fest.swing.fixture.ComponentFixture;
 
 /**
@@ -15,9 +13,7 @@ public class KeysItem extends TextItem {
 
     /**
      * TextVector constructor.
-     * 
-     * @param k
-     *            Keys array
+     * @param k Keys array
      * @see KeyEvent
      */
     public KeysItem(final int[] k) {
@@ -25,7 +21,7 @@ public class KeysItem extends TextItem {
     }
 
     @Override
-    public void enterItem(final ComponentFixture cf) {
+    public final void enterItem(final ComponentFixture cf) {
         for (int key = 0; key < keys.length; key++) {
             cf.robot.pressAndReleaseKey(keys[key]);
         }

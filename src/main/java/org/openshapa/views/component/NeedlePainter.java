@@ -1,10 +1,13 @@
 package org.openshapa.views.component;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Polygon;
+import java.awt.RenderingHints;
+import java.awt.geom.GeneralPath;
 
 import javax.swing.JComponent;
 
@@ -22,7 +25,7 @@ public class NeedlePainter extends JComponent {
     private static final long serialVersionUID = -6157748998316240030L;
 
     /** Polygon region for the needle marker */
-    private Polygon needleMarker;
+    private GeneralPath needleMarker;
 
     private NeedleModel needleModel;
     private ViewableModel viewableModel;
@@ -46,21 +49,31 @@ public class NeedlePainter extends JComponent {
     }
 
     @Override
-    public boolean contains(final Point p) {
-        return needleMarker.contains(p);
+    public synchronized boolean contains(final Point p) {
+        return needleMarker != null && needleMarker.contains(p);
     }
 
     @Override
-    public boolean contains(final int x, final int y) {
-        return needleMarker.contains(x, y);
+    public synchronized boolean contains(final int x, final int y) {
+        return needleMarker != null && needleMarker.contains(x, y);
     }
 
+
+    private final Color needleColor = new Color(250, 0, 0, 100); 
+
     @Override
-    public void paint(final Graphics g) {
+    public synchronized void paint(final Graphics g) {
         if (needleModel == null || viewableModel == null) {
             return;
         }
 
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        assert needleModel.getNeedleHeadWidth() > 0 && needleModel.getNeedleHeadHeight() > 0;
+        final double needleHeadWidth = needleModel.getNeedleHeadWidth();
+        final double needleHeadHeight = needleModel.getNeedleHeadHeight();
+        
         final long currentTime = needleModel.getCurrentTime();
         // Don't paint if the needle if it is out of the current window
         if ((currentTime < viewableModel.getZoomWindowStart())
@@ -70,38 +83,35 @@ public class NeedlePainter extends JComponent {
 
         Dimension size = this.getSize();
 
-        g.setColor(new Color(250, 0, 0, 100));
-
         // Calculate the needle position based on the selected time
-        float ratio =
-                viewableModel.getIntervalWidth()
-                        / viewableModel.getIntervalTime();
-        int pos =
-                Math.round(currentTime * ratio
-                        - viewableModel.getZoomWindowStart() * ratio)
-                        + needleModel.getPaddingLeft();
+        double ratio = (double) viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();
+        double pos = (currentTime * ratio - viewableModel.getZoomWindowStart() * ratio) + needleModel.getPaddingLeft();
 
         final int paddingTop = needleModel.getPaddingTop();
-        needleMarker = new Polygon();
-        needleMarker.addPoint(pos - 10, paddingTop);
-        needleMarker.addPoint(pos + 11, paddingTop);
-        needleMarker.addPoint(pos + 1, 19);
-        needleMarker.addPoint(pos, 19);
+        needleMarker = new GeneralPath();
+        needleMarker.moveTo((float) (pos - needleHeadWidth), (float) (paddingTop)); // top-left corner
+        needleMarker.lineTo((float) (pos + needleHeadWidth), (float) (paddingTop)); // top-right corner
+        needleMarker.lineTo((float) (pos),                   (float) (needleHeadHeight + paddingTop)); // bottom corner
+        needleMarker.closePath();
 
-        g.fillPolygon(needleMarker);
+        g2d.setColor(needleColor);
+        g2d.fill(needleMarker);
 
-        g.setColor(Color.red);
-        g.drawPolygon(needleMarker);
+        g2d.setColor(needleColor.darker());
+        g2d.draw(needleMarker);
 
         // Draw the timing needle
-        int x1 = pos;
-        int y1 = paddingTop + 19;
-        int x2 = pos + 1;
-        int y2 = size.height;
+        float x1 = (float) pos;
+        float y1 = (float) (paddingTop + needleHeadHeight);
+        float x2 = (float) pos;
+        float y2 = (float) size.height;
 
-        g.drawLine(x1, y1, x1, y2);
-        g.drawLine(x2, y1, x2, y2);
+        GeneralPath line = new GeneralPath();
+        line.moveTo(x1, y1);
+        line.lineTo(x2, y2);
 
+        assert needleModel.getNeedleWidth() > 0;
+        g2d.setStroke(new BasicStroke((float) needleModel.getNeedleWidth()));
+        g2d.draw(line);
     }
-
 }

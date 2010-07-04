@@ -7,15 +7,11 @@ import java.util.Vector;
 import javax.swing.text.BadLocationException;
 
 import org.fest.swing.core.KeyPressInfo;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -246,6 +242,122 @@ public final class UITimestampTest extends OpenSHAPATestClass {
         Assert.assertEquals(c.offsetTimestamp().text(), "00:00:00:000");
     }
 
+    @Test public void highlightAndDeleteTest() throws BadLocationException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+        final String originalText = "123456789";
+        final String afterDeleteText = "00:00:00:000";
+
+        // Create new text cell and input data
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        String varType =
+            UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
+
+        mainFrameFixture.createNewVariable("v", varType);
+        spreadsheet.column(0).click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
+        SpreadsheetCellFixture cell = spreadsheet.column("v").cell(1);
+        cell.onsetTimestamp().enterText(originalText);
+        cell.offsetTimestamp().enterText(originalText);
+
+        Assert.assertEquals(cell.onsetTimestamp().text(), "12:34:56:789");
+        Assert.assertEquals(cell.offsetTimestamp().text(), "12:34:56:789");
+
+        // Select all and backspace
+        cell.select(SpreadsheetCellFixture.ONSET, 0,
+            cell.onsetTimestamp().text().length());
+        cell.onsetTimestamp().pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_BACK_SPACE));
+        cell.onsetTimestamp().requireText(afterDeleteText);
+
+        // Select all and delete
+        cell.select(SpreadsheetCellFixture.OFFSET, 0,
+            cell.offsetTimestamp().text().length());
+        cell.offsetTimestamp().pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_DELETE));
+        cell.offsetTimestamp().requireText(afterDeleteText);
+    }
+
+    @Test public void partialHighlightAndDeleteTest()
+        throws BadLocationException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+        final String originalText = "123456789";
+        final String afterDeleteText = "12:00:00:789";
+
+        // Create new text cell and input data
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        String varType =
+            UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
+
+        mainFrameFixture.createNewVariable("v", varType);
+        spreadsheet.column(0).click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
+        SpreadsheetCellFixture cell = spreadsheet.column("v").cell(1);
+        cell.onsetTimestamp().enterText(originalText);
+        cell.offsetTimestamp().enterText(originalText);
+
+        Assert.assertEquals(cell.onsetTimestamp().text(), "12:34:56:789");
+        Assert.assertEquals(cell.offsetTimestamp().text(), "12:34:56:789");
+
+        // Select all and backspace
+        cell.select(SpreadsheetCellFixture.ONSET, 3, 8);
+        cell.onsetTimestamp().pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_BACK_SPACE));
+        cell.onsetTimestamp().requireText(afterDeleteText);
+
+        // Select all and delete
+        cell.select(SpreadsheetCellFixture.OFFSET, 3, 8);
+        cell.offsetTimestamp().pressAndReleaseKey(KeyPressInfo.keyCode(
+                KeyEvent.VK_DELETE));
+        cell.offsetTimestamp().requireText(afterDeleteText);
+    }
+
+    @Test public void partialHighlightAndChangeTest()
+        throws BadLocationException {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        final String tempFolder = System.getProperty("java.io.tmpdir");
+        final String originalText = "123456789";
+        final String changeText1 = "98a27";
+        final String changeText2 = "98a27123";
+        final String afterDeleteText1 = "13:38:27:789";
+        final String afterDeleteText2 = "13:38:27:123";
+
+        // Create new text cell and input data
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        String varType =
+            UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)];
+
+        mainFrameFixture.createNewVariable("v", varType);
+        spreadsheet.column(0).click();
+        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
+
+        SpreadsheetCellFixture cell = spreadsheet.column("v").cell(1);
+        cell.onsetTimestamp().enterText(originalText);
+        cell.offsetTimestamp().enterText(originalText);
+
+        Assert.assertEquals(cell.onsetTimestamp().text(), "12:34:56:789");
+        Assert.assertEquals(cell.offsetTimestamp().text(), "12:34:56:789");
+
+        // Select all and edit
+        cell.select(SpreadsheetCellFixture.ONSET, 3, 8);
+        cell.onsetTimestamp().enterText(changeText1);
+        cell.onsetTimestamp().requireText(afterDeleteText1);
+
+        // Select all and delete
+        cell.select(SpreadsheetCellFixture.OFFSET, 3, 8);
+        cell.offsetTimestamp().enterText(changeText2);
+        cell.offsetTimestamp().requireText(afterDeleteText2);
+    }
+
     /**
      * Create new cells.
      */
@@ -256,20 +368,17 @@ public final class UITimestampTest extends OpenSHAPATestClass {
         String varRadio = varType.toLowerCase();
 
         // 1. Create new variable
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        Assert.assertNotNull(ssPanel.column(varName));
-        ssPanel.column(varName).click();
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        Assert.assertNotNull(spreadsheet.column(varName));
+        spreadsheet.column(varName).click();
 
         // 2. Create new cells
         for (int i = 0; i < amount; i++) {
             mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
         }
 
-        return ssPanel.column(varName).allCells();
+        return spreadsheet.column(varName).allCells();
     }
 }

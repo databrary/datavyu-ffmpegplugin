@@ -12,21 +12,14 @@ import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 
 import org.fest.swing.core.KeyPressInfo;
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.util.KeysItem;
 import org.openshapa.util.StringItem;
 import org.openshapa.util.TextItem;
 import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -75,7 +68,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new NOMINAL cell.
      */
-    /*@Test*/ public void testNewNominalCell() {
+    @Test public void testNewNominalCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "n";
@@ -87,7 +80,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
             };
 
         // 1. Create new variable
-        UIUtils.createNewVariable(mainFrameFixture, varName, varType);
+        mainFrameFixture.createNewVariable(varName, varType);
 
         runStandardTest(varName, nominalTestInput, expectedNominalTestOutput);
     }
@@ -95,7 +88,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test pasting in Nominal cell.
      */
-    /*@Test*/ public void testNominalPasting() {
+    @Test public void testNominalPasting() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "n";
@@ -113,7 +106,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new NOMINAL cell with more advanced input. BugzID:1203
      */
-    /*@Test*/ public void testNewAdvancedNominalCell() {
+    @Test public void testNewAdvancedNominalCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "n";
@@ -151,7 +144,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 "Tote_that_aJeune fille celebrel", "If x7 then x2"
             };
 
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         runAdvancedTest(varName, nominalTestInput, advancedInput,
             expectedTestOutput);
@@ -160,7 +153,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new TEXT cell.
      */
-    /*@Test*/ public void testNewTextCell() {
+    @Test public void testNewTextCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "t";
@@ -169,7 +162,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String[] expectedTestOutput = textTestInput;
 
         // 1. Create new TEXT variable,
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         runStandardTest(varName, textTestInput, expectedTestOutput);
     }
@@ -177,7 +170,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test pasting in TEXT cell.
      */
-    /*@Test*/ public void testTextPasting() {
+    @Test public void testTextPasting() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "t";
@@ -190,7 +183,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test pasting in INTEGER cell.
      */
-    /*@Test*/ public void testIntegerPasting() {
+    @Test public void testIntegerPasting() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";
@@ -207,7 +200,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new TEXT cell with more advanced input.
      */
-    /*@Test*/ public void testNewAdvancedTextCell() {
+    @Test public void testNewAdvancedTextCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "t";
@@ -232,7 +225,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 "Jeune fille celebreIf x?7 then x? 2"
             };
 
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         runAdvancedTest(varName, textTestInput, advancedInput,
             advancedExpectedOutput);
@@ -244,7 +237,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*@Test*/ public void testNewFloatCell() throws Exception {
+    @Test public void testNewFloatCell() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "f";
@@ -256,7 +249,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 /*BugzID1640:"-0.34", "-23.34",*/ "0.34", "12.34", "-123"
             };
 
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         runStandardTest(varName, floatTestInput, expectedTestOutput);
     }
@@ -264,25 +257,25 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test pasting with FLOAT cell.
      */
-// /*@Test*/ public void testFloatPasting() {
-// System.err.println(new Exception().getStackTrace()[0].getMethodName());
-//
-// String varName = "f";
-// String varRadio = "float";
-//
-// String[] expectedTestOutput = {
-// "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-// "389.5", "-0.1", "0.2", /*BugzID:1634:"0", "0", "0",*/
-// /*BugzID:1640"-0.34", "-23.34",*/ "0.34", "12.34", "-123"
-// };
-//
-// cutAndPasteTest(varName, varRadio, floatTestInput, expectedTestOutput);
-// }
+/*@Test*/ public void testFloatPasting() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        String varName = "f";
+        String varRadio = "float";
+
+        String[] expectedTestOutput = {
+                "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
+                "389.5", "-0.1", "0.2", /*BugzID:1634:"0", "0", "0",*/
+                /*BugzID:1640"-0.34", "-23.34",*/ "0.34", "12.34", "-123"
+            };
+
+        cutAndPasteTest(varName, varRadio, floatTestInput, expectedTestOutput);
+    }
 
     /**
      * Test creating a new FLOAT cell with advanced input. BugzID:1201
      */
-    /*@Test*/ public void testNewAdvancedFloatCell() {
+    @Test public void testNewAdvancedFloatCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "f";
@@ -322,7 +315,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 "-589.138085"
             };
 
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         runAdvancedTest(varName, testInput, advancedInput, expectedTestOutput);
     }
@@ -330,7 +323,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new INTEGER cell.
      */
-    /*@Test*/ public void testNewIntegerCell() {
+    @Test public void testNewIntegerCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";
@@ -341,7 +334,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 "999999999999999999", "3895", "<val>", "0", "-123"
             };
 
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         runStandardTest(varName, integerTestInput, expectedTestOutput);
     }
@@ -384,7 +377,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 "-4321019", "-43289210", "21788", "772", "-817", "-817"
             };
 
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         runAdvancedTest(varName, testInput, advancedInput, expectedTestOutput);
     }
@@ -392,7 +385,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*@Test*/ public void testNewMatrixCellSingleArgNominal() {
+    @Test public void testNewMatrixCellSingleArgNominal() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
@@ -401,28 +394,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Test single cell types
         // Test nominal
@@ -440,7 +415,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell. BugzID:1198
      */
-    /*@Test*/ public void testNewMatrixCellSingleArgFloat() {
+    @Test public void testNewMatrixCellSingleArgFloat() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
@@ -449,28 +424,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Test single cell types
         // Test integer
@@ -490,7 +447,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell. BugzID:1199
      */
-    /*@Test*/ public void testNewMatrixCellSingleArgInteger() {
+    @Test public void testNewMatrixCellSingleArgInteger() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
@@ -499,28 +456,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Test single cell types
         // Test integer
@@ -536,9 +475,9 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test creating a new MATRIX cell. BugzID:1199
+     * Test creating a new MATRIX cell.
      */
-    /*@Test*/ public void testNewMatrixCellDoubleArgInteger() {
+    @Test public void testNewMatrixCellDoubleArgInteger() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         /**
@@ -552,28 +491,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Test double cell type
         String varName = "mI2";
@@ -632,7 +553,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*@Test*/ public void testNewMatrixCellDoubleArgNominal() {
+    @Test public void testNewMatrixCellDoubleArgNominal() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         /**
@@ -646,28 +567,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Test double cell type
         // 2a. Test nominal
@@ -725,7 +628,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*@Test*/ public void testNewMatrixCellDoubleArgFloat() {
+    @Test public void testNewMatrixCellDoubleArgFloat() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         /**
@@ -739,28 +642,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Test double cell type
         String varName = "mF2";
@@ -881,10 +766,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
             // 4. Test different inputs as per specifications
             changeCellMatrixValue(varName, ordinal, testInput[ordinal - 1]);
 
-            JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-            SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                    mainFrameFixture.robot,
-                    (SpreadsheetPanel) jPanel.component());
+            spreadsheet = mainFrameFixture.getSpreadsheet();
 
             String[] actualValues = UIUtils.getArgsFromMatrix(
                     spreadsheet.column(varName).cell(ordinal).cellValue()
@@ -994,12 +876,10 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         final String[] testInput, final String[] expectedTestOutput) {
         int numOfTests = testInput.length;
 
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 1. Create new variable
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
 
         // 2. Create new cells, check that they have been created
         for (int ordinal = 1; ordinal <= numOfTests; ordinal++) {
@@ -1107,9 +987,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      *            already exists.
      */
     private void createCell(final String varName) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         final int numCells = spreadsheet.column(varName).numOfCells();
 
@@ -1131,9 +1009,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      *            cell ordinal value, assumes that the cell already exists
      */
     private void clickCell(final String varName, final int id) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         spreadsheet.column(varName).cell(id).fillSelectCell(true);
     }
@@ -1146,9 +1022,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      * @return true if the cell with ordinal 'id' exists, false otherwise
      */
     private boolean cellExists(final String varName, final int id) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         return id <= spreadsheet.column(varName).numOfCells();
     }
@@ -1165,9 +1039,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     private boolean cellHasOnset(final String varName, final int id,
         final String onset) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         return spreadsheet.column(varName).cell(id).onsetTimestamp().text()
             .equals(onset);
@@ -1185,9 +1057,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     private boolean cellHasOffset(final String varName, final int id,
         final String offset) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         return spreadsheet.column(varName).cell(id).offsetTimestamp().text()
             .equals(offset);
@@ -1206,9 +1076,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     private boolean cellHasValue(final String varName, final int id,
         final String value) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         return UIUtils.equalValues(spreadsheet.column(varName).cell(id)
                 .cellValue().text(), value);
@@ -1228,9 +1096,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     private void changeCellValue(final String varName, final int id,
         final String value) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         spreadsheet.column(varName).cell(id).cellValue().selectAll().enterText(
             value);
@@ -1249,9 +1115,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     private void changeCellValue(final String varName, final int id,
         final List<TextItem> inputs) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         JTextComponentFixture text = spreadsheet.column(varName).cell(id)
             .cellValue();
@@ -1278,9 +1142,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     private void changeCellMatrixValue(final String varName, final int id,
         final String[] values) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         SpreadsheetCellFixture cell = spreadsheet.column(varName).cell(id);
         JTextComponentFixture textField = cell.cellValue();
@@ -1314,10 +1176,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      */
     private void pasteCellValue(final String varName, final int id,
         final String value) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-
+        spreadsheet = mainFrameFixture.getSpreadsheet();
         spreadsheet.column(varName).cell(id).cellValue().selectAll()
             .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V).modifiers(
                     Platform.controlOrCommandMask()));
@@ -1330,9 +1189,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
      *            variable name.
      */
     private void deleteAllCells(final String varName) {
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture spreadsheet = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         int numOfCells = spreadsheet.column(varName).numOfCells();
 

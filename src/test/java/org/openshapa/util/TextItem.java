@@ -14,9 +14,7 @@ public abstract class TextItem {
 
     /**
      * Enters item into a component.
-     * 
-     * @param c
-     *            component to enter text into
+     * @param cf component to enter text into
      */
     public abstract void enterItem(ComponentFixture cf);
 }

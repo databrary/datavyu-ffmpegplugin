@@ -13,8 +13,7 @@ public class KeyItem extends TextItem {
 
     /**
      * TextVector constructor.
-     * 
-     * @param k
+     * @param k key
      * @seealso KeyEvent
      */
     public KeyItem(final int k) {
@@ -22,7 +21,7 @@ public class KeyItem extends TextItem {
     }
 
     @Override
-    public void enterItem(final ComponentFixture cf) {
+    public final void enterItem(final ComponentFixture cf) {
         cf.robot.pressAndReleaseKey(key);
     }
 }

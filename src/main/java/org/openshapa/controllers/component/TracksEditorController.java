@@ -12,8 +12,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import net.miginfocom.swing.MigLayout;
-
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.CarriageEventAdapter;
 import org.openshapa.event.component.CarriageEventListener;
@@ -23,8 +21,8 @@ import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
 
 import org.openshapa.views.component.TrackPainter;
+import org.openshapa.views.component.TracksEditorPainter;
 import org.openshapa.views.continuous.CustomActionListener;
-
 
 /**
  * Tracks editor controller is responsible for managing multiple TrackController
@@ -64,8 +62,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
      * Initialise UI elements.
      */
     private void initView() {
-        editingPanel = new JPanel();
-        editingPanel.setLayout(new MigLayout("wrap, ins 0", "[685]", "[70]"));
+        editingPanel = new TracksEditorPainter();
     }
 
     /**
@@ -597,5 +594,4 @@ public final class TracksEditorController implements TrackMouseEventListener {
         /** The snap marker position to paint. */
         public long snapMarkerPosition;
     }
-
 }

@@ -75,21 +75,27 @@ public class SpreadsheetColumnFixture extends JLabelFixture {
             int j = id;
 
             while (count < numOfCells()) {
+
                 if (i > -1) {
                     result = new SpreadsheetCellFixture(r,
                             colCells.elementAt(i));
+
                     if (result.getID() == id) {
                         return result;
                     }
+
                     count++;
                     i--;
                 }
+
                 if (j < numOfCells()) {
                     result = new SpreadsheetCellFixture(r,
                             colCells.elementAt(j));
+
                     if (result.getID() == id) {
                         return result;
                     }
+
                     count++;
                     j++;
                 }

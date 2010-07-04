@@ -4,11 +4,8 @@ import java.io.File;
 
 import java.util.Vector;
 
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.timing.Timeout;
-import org.fest.swing.util.Platform;
+import org.fest.swing.fixture.SpreadsheetColumnFixture;
 
 import org.openshapa.util.UIUtils;
 
@@ -37,43 +34,32 @@ public final class UIBug65Test extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Save column vector
-        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanel sp = (SpreadsheetPanel) ssPanel.component();
-        Vector<SpreadsheetColumn> vecSCBefore = sp.getColumns();
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        Vector<SpreadsheetColumnFixture> vecSCBefore = spreadsheet.allColumns();
 
         // 3. Press "Show spreadsheet"
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
             "Show Spreadsheet");
 
         // 4. Get columns again and confirm unchanged
-        JPanelFixture ssPanel2 = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanel sp2 = (SpreadsheetPanel) ssPanel.component();
-        Vector<SpreadsheetColumn> vecSCAfter = sp.getColumns();
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        Assert.assertEquals(vecSCBefore, vecSCAfter);
+        Vector<SpreadsheetColumnFixture> vecSCAfter = spreadsheet.allColumns();
+
+        Assert.assertEquals(vecSCBefore.size(), vecSCAfter.size());
+
+        for (int i = 0; i < vecSCBefore.size(); i++) {
+            Assert.assertEquals(vecSCBefore.elementAt(i).getColumnName(),
+                vecSCAfter.elementAt(i).getColumnName());
+            Assert.assertEquals(vecSCBefore.elementAt(i).getColumnType(),
+                vecSCAfter.elementAt(i).getColumnType());
+        }
     }
 }

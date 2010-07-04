@@ -78,29 +78,22 @@ public class TimescaleFixture extends ComponentFixture {
     }
 
     /**
-     * Double click at pixel in component.
+     * Single click at pixel in component.
      * @param pixel to click relative to component ie. 0 to width
      */
-    public final void doubleClickAt(final int pixel) {
-        Point topLeft = target.getBounds().getLocation();
-        int width = getWidth();
+    public final void singleClickAt(final int pixel) {
+        final int timescaleYOffset = 20;
         Point click = null;
-
         TimescaleModel tm = field("timescaleModel").ofType(TimescaleModel.class)
                .in(timescaleC).get();
+        int effectiveWidth = getEffectiveWidth();
+        int x = tm.getPaddingLeft() + (pixel > effectiveWidth ? effectiveWidth : pixel);
+        click = new Point(x, timescaleYOffset);
 
-        if (pixel > width) {
-            click = new Point(topLeft.x + width + tm.getPaddingLeft(),
-                    topLeft.y + (target.getHeight() / 2));
-        } else {
-            click = new Point(topLeft.x + pixel + tm.getPaddingLeft(),
-                    topLeft.y + (target.getHeight() / 2));
-        }
-
-        robot.click(target, click, MouseButton.LEFT_BUTTON, 2);
+        robot.click(target, click, MouseButton.LEFT_BUTTON, 1);
     }
 
-    public int getWidth() {
+    public int getEffectiveWidth() {
         TimescaleModel tm = field("timescaleModel").ofType(TimescaleModel.class)
                .in(timescaleC).get();
 

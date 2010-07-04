@@ -4,12 +4,6 @@ import javax.swing.text.JTextComponent;
 
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
-
-import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -51,13 +45,11 @@ public final class UIBug695Test extends OpenSHAPATestClass {
 
         vocabEditor.button("okButton").click();
 
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
-        Assert.assertNotNull(ssPanel.column(MATELNAME));
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        Assert.assertNotNull(spreadsheet.column(MATELNAME));
 
         // 3. Delete matrix column in spreadsheet
-        ssPanel.column(MATELNAME).click();
+        spreadsheet.column(MATELNAME).click();
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet",
             "Delete Variable");
 
@@ -65,7 +57,7 @@ public final class UIBug695Test extends OpenSHAPATestClass {
         boolean doesNotExist = false;
 
         try {
-            Assert.assertFalse(ssPanel.panel("headerView").label().text()
+            Assert.assertFalse(spreadsheet.panel("headerView").label().text()
                 .startsWith(MATELNAME));
         } catch (Exception e) {
             doesNotExist = true;
@@ -106,9 +98,7 @@ public final class UIBug695Test extends OpenSHAPATestClass {
             });
         vocabEditor.button("okButton").click();
 
-        jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        ssPanel = new SpreadsheetPanelFixture(mainFrameFixture.robot,
-                (SpreadsheetPanel) jPanel.component());
-        Assert.assertNotNull(ssPanel.column(MATELNAME));
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        Assert.assertNotNull(spreadsheet.column(MATELNAME));
     }
 }

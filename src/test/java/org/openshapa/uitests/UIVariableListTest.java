@@ -13,11 +13,8 @@ import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.data.TableCell;
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTableFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
@@ -26,10 +23,7 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.util.UIUtils;
-
 import org.openshapa.views.NewProjectV;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -58,48 +52,27 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Check that variable list is populated with correct data
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
 
         DialogFixture vlDialog = mainFrameFixture.dialog();
 
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         Assert.assertEquals(vlDialog.table().rowCount(),
-            ssPanel.allColumns().size());
+            spreadsheet.allColumns().size());
 
-        for (int i = 0; i < ssPanel.allColumns().size(); i++) {
+        for (int i = 0; i < spreadsheet.allColumns().size(); i++) {
             Assert.assertTrue(inTable(
-                    ssPanel.allColumns().elementAt(i).getColumnName(),
+                    spreadsheet.allColumns().elementAt(i).getColumnName(),
                     vlDialog.table(), 1));
             Assert.assertTrue(inTable(
-                    ssPanel.allColumns().elementAt(i).getColumnType(),
+                    spreadsheet.allColumns().elementAt(i).getColumnType(),
                     vlDialog.table(), 2));
         }
     }
@@ -121,29 +94,25 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
 
         DialogFixture vlDialog = mainFrameFixture.dialog();
 
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         int numCols = 0;
 
         for (int i = 0; i < varNames.length; i++) {
-            UIUtils.createNewVariable(mainFrameFixture, varNames[i],
-                varTypes[i]);
+            mainFrameFixture.createNewVariable(varNames[i], varTypes[i]);
             numCols++;
 
             // Check that variable list is populated with correct data
-            Assert.assertEquals(ssPanel.allColumns().size(), numCols);
+            Assert.assertEquals(spreadsheet.allColumns().size(), numCols);
             Assert.assertEquals(vlDialog.table().rowCount(),
-                ssPanel.allColumns().size());
+                spreadsheet.allColumns().size());
 
-            for (int j = 0; j < ssPanel.allColumns().size(); j++) {
+            for (int j = 0; j < spreadsheet.allColumns().size(); j++) {
                 Assert.assertTrue(inTable(
-                        ssPanel.allColumns().elementAt(j).getColumnName(),
+                        spreadsheet.allColumns().elementAt(j).getColumnName(),
                         vlDialog.table(), 1));
                 Assert.assertTrue(inTable(
-                        ssPanel.allColumns().elementAt(j).getColumnType(),
+                        spreadsheet.allColumns().elementAt(j).getColumnType(),
                         vlDialog.table(), 2));
             }
         }
@@ -160,41 +129,20 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
-        if (Platform.isOSX()) {
-            UIUtils.runScript(demoFile);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("Script", "Run script");
-
-            JFileChooserFixture jfcf = mainFrameFixture.fileChooser();
-            jfcf.selectFile(demoFile).approve();
-        }
+        mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog(Timeout.timeout(
-                    1000));
-
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 2. Check that variable list is populated
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
 
         DialogFixture vlDialog = mainFrameFixture.dialog();
 
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         Assert.assertEquals(vlDialog.table().rowCount(),
-            ssPanel.allColumns().size());
+            spreadsheet.allColumns().size());
 
         // 3. Create new database (and discard unsaved changes)
         if (Platform.isOSX()) {

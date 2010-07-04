@@ -3,8 +3,10 @@ package org.fest.swing.fixture;
 import java.util.Vector;
 
 import org.fest.swing.core.Robot;
+
 import org.openshapa.views.VocabEditorV;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
+
 
 /**
  * Fixture for the Vocab Editor dialog.
@@ -20,7 +22,7 @@ public class VocabEditorDialogFixture extends DialogFixture {
      * @param target underlying vocab editor class
      */
     public VocabEditorDialogFixture(final Robot robot,
-            final VocabEditorV target) {
+        final VocabEditorV target) {
         super(robot, target);
         veDialog = (VocabEditorV) this.target;
     }
@@ -35,11 +37,13 @@ public class VocabEditorDialogFixture extends DialogFixture {
 
         for (VocabElementV v : vocEls) {
             String vocName = v.getDataView().getEditors().elementAt(0)
-                    .getText();
+                .getText();
+
             if (vocName.equalsIgnoreCase(elementName)) {
                 return new VocabElementFixture(robot, v);
             }
         }
+
         return null;
     }
 
@@ -54,6 +58,7 @@ public class VocabEditorDialogFixture extends DialogFixture {
         for (VocabElementV v : vocEls) {
             result.add(new VocabElementFixture(robot, v));
         }
+
         return result;
     }
 
@@ -73,18 +78,18 @@ public class VocabEditorDialogFixture extends DialogFixture {
         return new JButtonFixture(robot, "addPredicateButton");
     }
 
-     /**
-     * JButtonFixture for addMatrix button.
-     * @return JButtonFixture for addMatrix button.
-     */
+    /**
+    * JButtonFixture for addMatrix button.
+    * @return JButtonFixture for addMatrix button.
+    */
     public final JButtonFixture addMatrixButton() {
         return new JButtonFixture(robot, "addMatrixButton");
     }
 
-     /**
-     * JButtonFixture for moveArgLeft button.
-     * @return JButtonFixture for moveArgLeft button.
-     */
+    /**
+    * JButtonFixture for moveArgLeft button.
+    * @return JButtonFixture for moveArgLeft button.
+    */
     public final JButtonFixture moveArgLeftButton() {
         return new JButtonFixture(robot, "moveArgLeftButton");
     }

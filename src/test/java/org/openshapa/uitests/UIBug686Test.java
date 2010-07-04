@@ -1,31 +1,15 @@
 package org.openshapa.uitests;
 
-
-import static org.fest.reflect.core.Reflection.method;
-
 import java.awt.Point;
 
 import java.io.File;
 
-import java.util.Iterator;
-import javax.swing.JDialog;
-
-import javax.swing.filechooser.FileFilter;
+import java.util.ArrayList;
 
 import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.fixture.JPanelFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
-import org.fest.swing.timing.Timeout;
-import org.fest.swing.util.Platform;
 
 import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.DataControllerV;
-import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.continuous.PluginManager;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -45,62 +29,35 @@ public final class UIBug686Test extends OpenSHAPATestClass {
 
         // 1. Open video
         // a. Get Spreadsheet
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // b. Open Data Viewer Controller
-        mainFrameFixture.clickMenuItemWithPath("Controller",
-            "Data Viewer Controller");
-        mainFrameFixture.dialog().moveTo(new Point(0, 100));
-
-        final DataControllerFixture dcf = new DataControllerFixture(
-                mainFrameFixture.robot,
-                (DataControllerV) mainFrameFixture.dialog().component());
+        final DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
         String root = System.getProperty("testPath");
         final File videoFile = new File(root + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
-        if (Platform.isOSX()) {
-            final PluginManager pm = PluginManager.getInstance();
-
-            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-            fc.setVisible(false);
-
-            for (FileFilter f : pm.getPluginFileFilters()) {
-                fc.addChoosableFileFilter(f);
-            }
-
-            fc.setSelectedFile(videoFile);
-            method("openVideo").withParameterTypes(OpenSHAPAFileChooser.class)
-                .in((DataControllerV) dcf.component()).invoke(fc);
-        } else {
-            dcf.button("addDataButton").click();
-
-            JFileChooserFixture jfcf = dcf.fileChooser(Timeout.timeout(30000));
-            jfcf.selectFile(videoFile).approve();
-        }
+        UIUtils.openData(videoFile, dcf);
 
         // 2. Get window
-        Iterator it = dcf.getDataViewers().iterator();
+        ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
+        Assert.assertEquals(vidWindows.size(), 1);
 
-        JDialog vid = ((JDialog) it.next());
-        DialogFixture vidWindow = new DialogFixture(mainFrameFixture.robot, vid);
-
-        vidWindow.moveTo(new Point(dcf.component().getWidth() + 10, 100));
+        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+                100));
 
         // 2. Jog forward and check
         dcf.pressJogForwardButton();
-        dcf.label("timestampLabel").requireText("00:00:00:040");
+        Assert.assertEquals("00:00:00:040", dcf.getCurrentTime());
         dcf.pressJogForwardButton();
-        dcf.label("timestampLabel").requireText("00:00:00:080");
+        Assert.assertEquals("00:00:00:080", dcf.getCurrentTime());
 
         // 3. Jog back and check
         dcf.pressJogBackButton();
-        dcf.label("timestampLabel").requireText("00:00:00:040");
+        Assert.assertEquals("00:00:00:040", dcf.getCurrentTime());
         dcf.pressJogBackButton();
-        dcf.label("timestampLabel").requireText("00:00:00:000");
+        Assert.assertEquals("00:00:00:000", dcf.getCurrentTime());
     }
 }

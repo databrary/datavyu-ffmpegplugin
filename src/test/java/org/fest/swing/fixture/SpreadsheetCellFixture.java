@@ -75,7 +75,7 @@ public class SpreadsheetCellFixture extends JPanelFixture {
      * Clicks to the position after a particular character position in
      * either value, onset or offset.
      * @param component VALUE, ONSET, or OFFSET
-     * @param charPos character position to click after.
+     * @param cPos character position to click after.
      * @param times number of times to click
      * @throws BadLocationException on bad character location
      */
@@ -83,33 +83,38 @@ public class SpreadsheetCellFixture extends JPanelFixture {
         final int times) throws BadLocationException {
         Point charPoint;
         Component c;
+        int cPos = charPos;
 
         switch (component) {
 
         case VALUE:
+            cPos = Math.min(cellValue().text().length(), charPos);
             charPoint = UIUtils.centerOf(((SpreadsheetCell) target)
-                    .getDataView().modelToView(charPos));
+                    .getDataView().modelToView(cPos));
             c = ((SpreadsheetCell) target).getDataView();
 
             break;
 
         case ONSET:
+            cPos = Math.min(onsetTimestamp().text().length(), charPos);
             charPoint = UIUtils.centerOf(((SpreadsheetCell) target).getOnset()
-                    .modelToView(charPos));
+                    .modelToView(cPos));
             c = ((SpreadsheetCell) target).getOnset();
 
             break;
 
         case OFFSET:
+            cPos = Math.min(offsetTimestamp().text().length(), charPos);
             charPoint = UIUtils.centerOf(((SpreadsheetCell) target).getOffset()
-                    .modelToView(charPos));
+                    .modelToView(cPos));
             c = ((SpreadsheetCell) target).getOffset();
 
             break;
 
         default:
+            cPos = Math.min(cellValue().text().length(), charPos);
             charPoint = UIUtils.centerOf(((SpreadsheetCell) target)
-                    .getDataView().modelToView(charPos));
+                    .getDataView().modelToView(cPos));
             c = ((SpreadsheetCell) target).getDataView();
 
             break;

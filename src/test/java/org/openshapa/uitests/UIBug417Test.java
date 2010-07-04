@@ -2,7 +2,6 @@ package org.openshapa.uitests;
 
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 
 import org.jdesktop.application.Application;
@@ -11,8 +10,6 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.models.db.Column;
-
-import org.openshapa.util.UIUtils;
 
 import org.testng.Assert;
 
@@ -49,13 +46,13 @@ public final class UIBug417Test extends OpenSHAPATestClass {
         String varName = "v";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
         String varRadio = varType.toLowerCase() + "TypeButton";
-        UIUtils.createNewVariable(mainFrameFixture, varName, varRadio);
+        mainFrameFixture.createNewVariable(varName, varRadio);
+
+        spreadsheet = mainFrameFixture.getSpreadsheet();
 
         // 2. Check that a column has been created
-        JPanelFixture ssPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-
-        // Find our new column header
-        ssPanel.panel("headerView").label().text().startsWith(varName);
+        Assert.assertEquals(spreadsheet.allColumns().size(), 1);
+        Assert.assertEquals(spreadsheet.column(0).getColumnName(), varName);
 
         // 3. Create variable with same name
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Variable");

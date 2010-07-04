@@ -9,18 +9,22 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JDialog;
 
 import junitx.util.PrivateAccessor;
-import org.fest.swing.annotation.GUITest;
 
+import org.fest.swing.annotation.GUITest;
 import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
+import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.OpenSHAPAFrameFixture;
+import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.launcher.ApplicationLauncher;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
@@ -31,6 +35,7 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.util.ConfigProperties;
 
 import org.openshapa.views.NewProjectV;
+import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
@@ -42,8 +47,7 @@ import org.testng.annotations.BeforeSuite;
  * GUI Test class for OpenSHAPA. All OpenSHAPA Fest tests must extend this
  * class.
  */
-@GUITest
-public class OpenSHAPATestClass {
+@GUITest public class OpenSHAPATestClass {
 
     static {
 
@@ -59,6 +63,9 @@ public class OpenSHAPATestClass {
 
     /** Main Frame fixture for use by all tests. */
     protected OpenSHAPAFrameFixture mainFrameFixture;
+
+    /** Spreadsheet for use by all tests. */
+    protected SpreadsheetPanelFixture spreadsheet;
 
     /** Constructor nulls the mainFrame Fixture. */
     public OpenSHAPATestClass() {
@@ -91,7 +98,6 @@ public class OpenSHAPATestClass {
     @AfterMethod protected final void restartApplication() {
         System.err.println("restarting Application.");
 
-        // OpenSHAPA.getApplication().resetApp();
         OpenSHAPA.getApplication().closeOpenedWindows();
 
         mainFrameFixture = OpenSHAPAInstance.getFixture();
@@ -138,6 +144,10 @@ public class OpenSHAPATestClass {
         newDatabaseDialog.textBox("nameField").enterText("n");
 
         newDatabaseDialog.button("okButton").click();
+
+        // Set common variables
+        // Get Spreadsheet
+        spreadsheet = mainFrameFixture.getSpreadsheet();
     }
 
     /** Releases application after all tests in suite are finished. */

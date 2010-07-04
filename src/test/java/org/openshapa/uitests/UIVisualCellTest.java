@@ -8,15 +8,11 @@ import java.io.File;
 import java.io.IOException;
 
 import org.fest.swing.core.KeyPressInfo;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
-import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.util.UIImageUtils;
 import org.openshapa.util.UIUtils;
-
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.Assert;
 
@@ -34,17 +30,19 @@ public final class UIVisualCellTest extends OpenSHAPATestClass {
      */
     @Test public void testMultilineTextWrapping() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        // Create new text cell
-        JPanelFixture jPanel = UIUtils.getSpreadsheet(mainFrameFixture);
-        SpreadsheetPanelFixture ssPanel = new SpreadsheetPanelFixture(
-                mainFrameFixture.robot, (SpreadsheetPanel) jPanel.component());
 
-        UIUtils.createNewVariable(mainFrameFixture, "t", "text");
-        ssPanel.column("t").click();
+        String varName = "t";
+        String varType = "text";
+
+        // Create new text cell
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        mainFrameFixture.createNewVariable(varName, varType);
+        spreadsheet.column(varName).click();
 
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
-        SpreadsheetCellFixture cell = ssPanel.column(0).cell(1);
+        SpreadsheetCellFixture cell = spreadsheet.column(0).cell(1);
 
         // Reset text zoom
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Zoom",
