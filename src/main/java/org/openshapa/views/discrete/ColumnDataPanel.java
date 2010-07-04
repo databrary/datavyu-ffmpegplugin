@@ -12,14 +12,19 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.Box.Filler;
 import javax.swing.text.BadLocationException;
 
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.models.db.DataCell;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
@@ -51,6 +56,10 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(ColumnDataPanel.class);
 
+    private JButton newCellButton = new JButton();
+
+    private final DataColumn model;
+    
     /**
      * Creates a new ColumnDataPanel.
      * 
@@ -69,6 +78,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         columnWidth = width;
         cells = new Vector<SpreadsheetCell>();
         cellSelectionL = cellSelL;
+        this.model = model;
 
         // Create visual container for spreadsheet cells.
         Dimension d = new Dimension(0, Constants.BOTTOM_MARGIN);
@@ -77,6 +87,26 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         setLayout(boxLayout);
         setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(175, 175, 175)));
         this.add(bottomStrut, -1);
+        
+    //    ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext().getResourceMap(SpreadsheetPanel.class);
+        
+        newCellButton.setBorder(BorderFactory
+                .createMatteBorder(1, 1, 1, 1, Color.black));
+		newCellButton.setName("newCellPlusButton");
+/*		
+		newCellButton.setToolTipText(rMap.getString("add.tooltip"));
+		
+//		newCellButton.setAction(aMap.get("addNewCellToVar"));
+*/
+		ActionMap aMap = Application.getInstance(OpenSHAPA.class)
+        .getContext()
+        .getActionMap(ColumnDataPanel.class, this);
+		newCellButton.setAction(aMap.get("addNewCellToColumn"));
+		newCellButton.setText(" + ");
+		newCellButton.setSize(newCellButton.getWidth(),
+		              SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
+		newCellButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        this.add(newCellButton, -1);
 
         // Populate the data column with spreadsheet cells.
         buildDataPanelCells(model, cellSelL);
@@ -128,6 +158,8 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                 // and add it to our reference list
                 cells.add(sc);
             }
+            
+            this.add(newCellButton);
         } catch (SystemErrorException e) {
             logger.error("Failed to populate Spreadsheet.", e);
         }
@@ -187,6 +219,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
             db.registerDataCellListener(dc.getID(), nCell);
 
             Long newOrd = new Long(dc.getOrd());
+            nCell.setAlignmentX(Component.RIGHT_ALIGNMENT);
             if (cells.size() > newOrd.intValue()) {
                 cells.insertElementAt(nCell, newOrd.intValue() - 1);
                 this.add(nCell, newOrd.intValue() - 1);
@@ -217,7 +250,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
     /**
      * Adds the specified component to this container at the given position.
-     * Overridden to keep the bottomStrut as the last component in the column.
+     * Overridden to keep bottomStrut and addNewCellButton as the last components in the column.
      * 
      * @param comp
      *            Component to add.
@@ -225,7 +258,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      */
     @Override
     public Component add(final Component comp) {
-        super.add(comp, getComponentCount() - 1);
+        super.add(comp, getComponentCount() - 2);
         return comp;
     }
 
@@ -406,5 +439,14 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         }
 
         return false;
+    }
+
+    /**
+     * Method to invoke when the user clicks on the "+" icon in the spreadsheet
+     * header.
+     */
+    @Action
+    public void addNewCellToColumn() {
+        new CreateNewCellC(model);
     }
 }

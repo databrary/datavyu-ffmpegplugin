@@ -40,6 +40,32 @@ public final class CreateNewCellC {
         }
     }
 
+    public CreateNewCellC(final DataColumn dataColumn) {
+        view =
+            (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
+                    .getComponent();
+        model = dataColumn.getDB();
+
+        long cellID = 0;
+        
+        try {
+            MatrixVocabElement mve = model.getMatrixVE(dataColumn.getItsMveID());
+            DataCell cell = new DataCell(dataColumn.getDB(), dataColumn.getID(), mve.getID());
+
+            cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, 0));
+            cell.setOffset(new TimeStamp(Constants.TICKS_PER_SECOND, 0));
+            cellID = model.appendCell(cell);
+            OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
+        } catch (SystemErrorException se) {
+            logger.error("Unable to create cell in adjacent column", se);
+            OpenSHAPA.getApplication().showErrorDialog();
+        }
+
+        view.deselectAll();
+        view.relayoutCells();
+        view.highlightCell(cellID);
+    }
+    
     /**
      * Create New Cell Controller - creates new cells in columns adjacent to the
      * supplied cells. If no column is adjacent in the specified direction, no

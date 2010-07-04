@@ -4,6 +4,9 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.Color;
 import java.awt.Cursor;
+
+import org.jdesktop.application.Action;
+import org.openshapa.controllers.NewVariableC;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
 import org.openshapa.models.db.ExternalCascadeListener;
@@ -532,5 +535,10 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
             draggable = false;
             moveable = false;
         }
+    }
+    
+    @Action
+    public void addNewCellToVar() {
+//        new NewVariableC();
     }
 }
