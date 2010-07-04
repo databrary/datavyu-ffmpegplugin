@@ -33,7 +33,6 @@ import org.openshapa.event.PlaybackListener;
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.MarkerEvent;
 import org.openshapa.event.component.NeedleEvent;
-import org.openshapa.event.component.TimescaleEvent;
 import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
@@ -1592,15 +1591,6 @@ public final class PlaybackController implements PlaybackListener,
      *            The Needle event that triggered this action.
      */
     private void handleNeedleEvent(final NeedleEvent e) {
-        assert !SwingUtilities.isEventDispatchThread();
-        gotoTime(e.getTime());
-    }
-
-    /**
-     * Handles a TimescaleEvent.
-     * @param e The timescale event that triggered this action.
-     */
-    private void handleTimescaleEvent(final TimescaleEvent e) {
         assert !SwingUtilities.isEventDispatchThread();
         gotoTime(e.getTime());
     }

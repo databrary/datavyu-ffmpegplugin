@@ -411,15 +411,16 @@ public final class DataControllerV extends OpenSHAPADialog
         if (playTime < windowPlayStart) {
             playTime = windowPlayStart;
             clockStep(playTime);
-
-            float currentRate = clock.getRate();
-            clock.stop();
-            clock.setTime(playTime);
-            clock.setRate(currentRate);
-            clock.start();
         }
 
+        float currentRate = clock.getRate();
+        clock.stop();
+
         setCurrentTime(playTime);
+        clock.setTime(playTime);
+        clock.setRate(currentRate);
+        
+        clock.start();
     }
 
     /**
@@ -537,6 +538,7 @@ public final class DataControllerV extends OpenSHAPADialog
      *            Current clock time in milliseconds.
      */
     public void clockStop(final long time) {
+    	clock.stop();
         resetSync();
         setCurrentTime(time);
 
@@ -624,10 +626,14 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void setCurrentTime(final long milliseconds) {
         resetSync();
-        timestampLabel.setText(CLOCK_FORMAT_HTML.format(milliseconds));
+        timestampLabel.setText(tracksPanelEnabled ? CLOCK_FORMAT_HTML.format(milliseconds) : CLOCK_FORMAT.format(milliseconds));
         mixerControllerV.setCurrentTime(milliseconds);
     }
 
+    private void updateCurrentTimeLabel() {
+        timestampLabel.setText(tracksPanelEnabled ? CLOCK_FORMAT_HTML.format(getCurrentTime()) : CLOCK_FORMAT.format(getCurrentTime()));
+    }
+    
     /**
      * Get the current master clock time for the controller.
      *
@@ -1437,6 +1443,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         tracksPanelEnabled = !tracksPanelEnabled;
         showTracksPanel(tracksPanelEnabled);
+        updateCurrentTimeLabel();
     }
 
     /**
@@ -1619,7 +1626,14 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param e The timescale event that triggered this action.
      */
     private void handleTimescaleEvent(final TimescaleEvent e) {
-        gotoTime(e.getTime());
+    	final boolean wasClockRunning = !clock.isStopped();
+    	final boolean togglePlaybackMode = e.getTogglePlaybackMode();
+        if (!wasClockRunning && togglePlaybackMode) {
+        	playAt(PLAY_RATE);
+        	clockStart(e.getTime());
+        } else {
+            gotoTime(e.getTime());
+        }
     }
 
     private void gotoTime(final long time) {
@@ -1634,7 +1648,6 @@ public final class DataControllerV extends OpenSHAPADialog
         }
 
         clockStop(newTime);
-        clockStep(newTime);
         setCurrentTime(newTime);
         clock.setTime(newTime);
     }
@@ -1781,6 +1794,7 @@ public final class DataControllerV extends OpenSHAPADialog
         OpenSHAPA.getApplication().updateTitle();
 
         // Recalculate the maximum playback duration.
+        boolean updateEndRegionMarker = playbackModel.getMaxDuration() == mixerControllerV.getRegionController().getRegionModel().getRegionEnd();
         long maxDuration = 0;
 
         for (DataViewer viewer : viewers) {
@@ -1795,7 +1809,7 @@ public final class DataControllerV extends OpenSHAPADialog
         mixerControllerV.setMaxEnd(maxDuration);
 
         // Reset our playback windows
-        if (playbackModel.getWindowPlayEnd() > maxDuration) {
+        if (playbackModel.getWindowPlayEnd() > maxDuration || updateEndRegionMarker) {
             playbackModel.setWindowPlayEnd(maxDuration);
             mixerControllerV.setPlayRegionEnd(maxDuration);
         }
@@ -1935,7 +1949,7 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     /**
-     * Action to invoke when the user clicks on the fast foward button.
+     * Action to invoke when the user clicks on the fast forward button.
      */
     @Action public void forwardAction() {
         logger.usage("Fast forward");

@@ -45,6 +45,7 @@ import org.openshapa.event.component.NeedleEventListener;
 import org.openshapa.event.component.TimescaleEvent;
 import org.openshapa.event.component.TimescaleListener;
 import org.openshapa.event.component.TracksControllerEvent;
+import org.openshapa.event.component.MarkerEvent.Marker;
 import org.openshapa.event.component.TracksControllerEvent.TracksEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
@@ -91,6 +92,8 @@ public final class MixerControllerV implements NeedleEventListener,
      */
     private final long DEFAULT_DURATION = 60 * 1000;
     
+    private final int TRACKS_SCROLL_BAR_RANGE = 1000000;
+    
     /**
      * The value of the earliest video's start time in milliseconds.
      */
@@ -114,7 +117,8 @@ public final class MixerControllerV implements NeedleEventListener,
     private JButton bookmarkButton;
 
     private JScrollBar tracksScrollBar;
-
+    private boolean isUpdatingTracksScrollBar = false;
+    
     private JSlider zoomSlide;
 
     private boolean isUpdatingZoomSlide = false;
@@ -323,15 +327,15 @@ public final class MixerControllerV implements NeedleEventListener,
 
         {
             Dimension size = new Dimension();
-            size.setSize(700, tracksScrollBarHeight);
+            size.setSize(timescaleController.getTimescaleModel().getEffectiveWidth(), tracksScrollBarHeight);
             tracksScrollBar.setSize(size);
             tracksScrollBar.setPreferredSize(size);
-            tracksScrollBar.setLocation(85, tracksScrollBarY);
+            tracksScrollBar.setLocation(timescaleController.getTimescaleModel().getPaddingLeft(), tracksScrollBarY);
         }
 
-        tracksScrollBar.setValues(0, Integer.MAX_VALUE, 0, Integer.MAX_VALUE);
-        tracksScrollBar.setUnitIncrement(Integer.MAX_VALUE / 1000);
-        tracksScrollBar.setBlockIncrement(Integer.MAX_VALUE / 10);
+        tracksScrollBar.setValues(0, TRACKS_SCROLL_BAR_RANGE, 0, TRACKS_SCROLL_BAR_RANGE);
+        tracksScrollBar.setUnitIncrement(TRACKS_SCROLL_BAR_RANGE / 20);
+        tracksScrollBar.setBlockIncrement(TRACKS_SCROLL_BAR_RANGE / 2);
         tracksScrollBar.addAdjustmentListener(this);
         tracksScrollBar.setValueIsAdjusting(false);
         tracksScrollBar.setVisible(false);
@@ -358,7 +362,6 @@ public final class MixerControllerV implements NeedleEventListener,
      */
     public void setMaxEnd(final long newMaxEnd) {
         maxEnd = newMaxEnd;
-
         ViewableModel model = timescaleController.getViewableModel();
         model.setEnd(newMaxEnd);
         timescaleController.setViewableModel(model);
@@ -486,14 +489,17 @@ public final class MixerControllerV implements NeedleEventListener,
             return;
         }
 
+        final int percentOfRegionToPadOutsideMarkers = 5; 
+        assert percentOfRegionToPadOutsideMarkers >= 0 && percentOfRegionToPadOutsideMarkers <= 100;
+        
         long displayedAreaStart = regionController.getRegionModel().getRegionStart();
-        displayedAreaStart -= regionWidth * 5 / 100;
+        displayedAreaStart -= regionWidth * percentOfRegionToPadOutsideMarkers / 100;
         if (displayedAreaStart < 0) {
         	displayedAreaStart = 0;
         }
         
         long displayedAreaEnd = regionController.getRegionModel().getRegionEnd();
-        displayedAreaEnd += regionWidth * 5 / 100;
+        displayedAreaEnd += regionWidth * percentOfRegionToPadOutsideMarkers / 100;
         if (displayedAreaEnd > maxEnd) {
         	displayedAreaEnd = maxEnd;
         }
@@ -721,21 +727,27 @@ public final class MixerControllerV implements NeedleEventListener,
      * Update scroll bar values.
      */
     private void updateTracksScrollBar() {
-        ViewableModel model = timescaleController.getViewableModel();
-
-        /*
-         * Doing these calculations because setValues uses integers but our
-         * video lengths are longs.
-         */
-        final int startValue = (int) (((float) model.getZoomWindowStart() / (float) model.getEnd()) * Integer.MAX_VALUE);
-        final int extentValue = (int) (((float) (model.getZoomWindowEnd() - model.getZoomWindowStart()) / (float) model.getEnd()) * Integer.MAX_VALUE);
-
-       	tracksScrollBar.setValues(startValue, extentValue, 0, Integer.MAX_VALUE);
-       	tracksScrollBar.setUnitIncrement(extentValue / 10);
-        tracksScrollBar.setBlockIncrement(extentValue);
-        tracksScrollBar.setVisible(model.getZoomWindowEnd() - model.getZoomWindowStart() + 1 < model.getEnd());
-
-        updateZoomSlide(model.getZoomWindowStart(), model.getZoomWindowEnd());
+    	if (isUpdatingTracksScrollBar) {
+    		return;
+    	}
+    	
+    	try {
+    		isUpdatingTracksScrollBar = true;
+    		
+	        ViewableModel model = timescaleController.getViewableModel();
+	
+	        final int startValue = (int) Math.round((double) model.getZoomWindowStart() * TRACKS_SCROLL_BAR_RANGE / model.getEnd());
+	        final int extentValue = (int) Math.round((double) (model.getZoomWindowEnd() - model.getZoomWindowStart() + 1) * TRACKS_SCROLL_BAR_RANGE / model.getEnd());
+	
+	       	tracksScrollBar.setValues(startValue, extentValue, 0, TRACKS_SCROLL_BAR_RANGE);
+	       	tracksScrollBar.setUnitIncrement(extentValue / 20);
+	        tracksScrollBar.setBlockIncrement(extentValue / 2);
+	        tracksScrollBar.setVisible(model.getZoomWindowEnd() - model.getZoomWindowStart() + 1 < model.getEnd());
+	
+	        updateZoomSlide(model.getZoomWindowStart(), model.getZoomWindowEnd());
+    	} finally {
+    		isUpdatingTracksScrollBar = false;
+    	}
     }
 
     /**
@@ -760,7 +772,7 @@ public final class MixerControllerV implements NeedleEventListener,
     /**
      * Handles the event for clearing the snap region.
      *
-     * @param e The event that trigged this action.
+     * @param e The event that triggered this action.
      */
     private void clearRegionHandler(final ActionEvent e) {
         clearRegionOfInterest();
@@ -772,6 +784,8 @@ public final class MixerControllerV implements NeedleEventListener,
     public void clearRegionOfInterest() {
         this.setPlayRegionStart(minStart);
         this.setPlayRegionEnd(maxEnd);
+        fireTracksControllerEvent(TracksEvent.MARKER_EVENT, new MarkerEvent(this, Marker.START_MARKER, minStart));
+        fireTracksControllerEvent(TracksEvent.MARKER_EVENT, new MarkerEvent(this, Marker.END_MARKER, maxEnd));
     }
 
     /**
@@ -790,23 +804,21 @@ public final class MixerControllerV implements NeedleEventListener,
      * @param e the event to handle
      */
     public void adjustmentValueChanged(final AdjustmentEvent e) {
-        int startValue = tracksScrollBar.getValue();
-        int endValue = startValue + tracksScrollBar.getVisibleAmount();
-
-        ViewableModel model = timescaleController.getViewableModel();
-
-        /*
-         *  Calculate the new window start and end only if the bar is being
-         * scrolled.
-         */
-        if (e.getValueIsAdjusting()) {
-            long newWindowStart = (long) ((startValue
-                        / (float) Integer.MAX_VALUE) * model.getEnd());
-            long newWindowEnd = (long) ((endValue / (float) Integer.MAX_VALUE)
-                    * model.getEnd());
-            model.setZoomWindowStart(newWindowStart);
-            model.setZoomWindowEnd(newWindowEnd);
+        if (isUpdatingTracksScrollBar) {
+        	return;
         }
+
+    	final ViewableModel model = timescaleController.getViewableModel();
+
+        final int startValue = tracksScrollBar.getValue();
+        final int endValue = startValue + tracksScrollBar.getVisibleAmount();
+        
+    	assert tracksScrollBar.getMinimum() == 0;
+    	final long newWindowStart = (long) Math.floor((double) startValue / tracksScrollBar.getMaximum() * model.getEnd());
+        final long newWindowEnd = (long) Math.ceil((double) endValue / tracksScrollBar.getMaximum() * model.getEnd());
+
+        model.setZoomWindowStart(newWindowStart);
+        model.setZoomWindowEnd(newWindowEnd);
 
         timescaleController.setViewableModel(model);
         regionController.setViewableModel(model);

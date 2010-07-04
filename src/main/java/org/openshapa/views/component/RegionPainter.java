@@ -1,5 +1,6 @@
 package org.openshapa.views.component;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -12,6 +13,7 @@ import javax.swing.JComponent;
 
 import org.openshapa.models.component.RegionModel;
 import org.openshapa.models.component.ViewableModel;
+import org.openshapa.util.G2DUtils;
 
 
 /**
@@ -80,6 +82,13 @@ public class RegionPainter extends JComponent {
             || endMarkerPolygon != null && endMarkerPolygon.contains(x, y);
     }
 
+    private double getXForTime(final long timeInMilliseconds) {
+    	final long time = Math.min(Math.max(timeInMilliseconds, viewableModel.getZoomWindowStart()), viewableModel.getZoomWindowEnd());
+        final double pixelsPerMillisecond = viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();
+        final double dx = (time - viewableModel.getZoomWindowStart()) * pixelsPerMillisecond;
+        return regionModel.getPaddingLeft() + dx;
+    }
+    
     @Override public final void paint(final Graphics g) {
         if ((regionModel == null) || (viewableModel == null)) {
             return;
@@ -89,75 +98,57 @@ public class RegionPainter extends JComponent {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
         Dimension size = this.getSize();
-
-        final float ratio = viewableModel.getIntervalWidth()
-            / viewableModel.getIntervalTime();
-
+        
         // If the left region marker is visible, paint the marker
         final long regionStart = regionModel.getRegionStart();
         final long regionEnd = regionModel.getRegionEnd();
         final int paddingTop = regionModel.getPaddingTop();
 
-        final float paddingHorizontal = 1;
-        final int markerHeight = 38;
+        final float needleWidth = 1;
+        final float regionMarkerWidth = 10;
+        final float regionMarkerHeight = 19;
+        final float penWidth = 1;
+        
+        final Color markerFillColor = new Color(15, 135, 0, 100);
+        final Color markerOutlineColor = new Color(15, 135, 0);
+        final Color outsideRegionFillColor = new Color(63, 63, 63, 100);
 
+        g2d.setStroke(new BasicStroke(penWidth));
+        
         // If the left region marker is visible, paint the marker
         if (regionStart >= viewableModel.getZoomWindowStart()) {
-            g2d.setColor(new Color(15, 135, 0, 100)); // Semi-transparent green
-
-            // The polygon tip
-            int pos = Math.round((regionModel.getRegionStart() * ratio)
-                    - (viewableModel.getZoomWindowStart() * ratio))
-                + regionModel.getPaddingLeft();
-
-            // Make an arrow
+            final double xPos = getXForTime(regionModel.getRegionStart());
             startMarkerPolygon = new GeneralPath();
-            startMarkerPolygon.moveTo(pos - 10 - paddingHorizontal, paddingTop);
-            startMarkerPolygon.lineTo(pos - paddingHorizontal, 19 + paddingTop - paddingHorizontal);
-            startMarkerPolygon.lineTo(pos - paddingHorizontal, getSize().height);
-            startMarkerPolygon.lineTo(pos - 10 - paddingHorizontal, getSize().height);
+            startMarkerPolygon.moveTo((float) (xPos - regionMarkerWidth - needleWidth), paddingTop);
+            startMarkerPolygon.lineTo((float) (xPos - needleWidth), regionMarkerHeight + paddingTop);
+            startMarkerPolygon.lineTo((float) (xPos - needleWidth), getSize().height - penWidth);
+            startMarkerPolygon.lineTo((float) (xPos - regionMarkerWidth - needleWidth), getSize().height - penWidth);
             startMarkerPolygon.closePath();
+            
+            g2d.setColor(markerFillColor);
             g2d.fill(startMarkerPolygon);
 
-            // Draw outline
-            g2d.setColor(new Color(15, 135, 0));
+            g2d.setColor(markerOutlineColor);
             g2d.draw(startMarkerPolygon);
-
-            // Draw drop down line
-            GeneralPath line = new GeneralPath();
-            line.moveTo(pos - paddingHorizontal, markerHeight);
-            line.lineTo(pos - paddingHorizontal, markerHeight + size.height - 1);
-            g2d.draw(line);
         } else {
         	startMarkerPolygon = new GeneralPath();
         }
 
         // If the right region marker is visible, paint the marker
-        if ((viewableModel.getZoomWindowStart() <= regionEnd)
-                && (regionEnd <= viewableModel.getZoomWindowEnd())) {
-            g.setColor(new Color(15, 135, 0, 100)); // Semi-transparent green
-
-            // The polygon tip
-            int pos = Math.round((regionModel.getRegionEnd() * ratio)
-                    - (viewableModel.getZoomWindowStart() * ratio))
-                + regionModel.getPaddingLeft();
+        if ((viewableModel.getZoomWindowStart() <= regionEnd) && (regionEnd <= viewableModel.getZoomWindowEnd())) {
+            final double xPos = Math.floor(getXForTime(regionModel.getRegionEnd()));
             endMarkerPolygon = new GeneralPath();
-            endMarkerPolygon.moveTo(pos + paddingHorizontal, 19 + paddingTop);
-            endMarkerPolygon.lineTo(pos + 10 + paddingHorizontal, paddingTop - paddingHorizontal);
-            endMarkerPolygon.lineTo(pos + 10 + paddingHorizontal, getSize().height);
-            endMarkerPolygon.lineTo(pos + paddingHorizontal, getSize().height);
+            endMarkerPolygon.moveTo((float) (xPos + needleWidth), regionMarkerHeight + paddingTop);
+            endMarkerPolygon.lineTo((float) (xPos + regionMarkerWidth + needleWidth), paddingTop);
+            endMarkerPolygon.lineTo((float) (xPos + regionMarkerWidth + needleWidth), getSize().height - penWidth);
+            endMarkerPolygon.lineTo((float) (xPos + needleWidth), getSize().height - penWidth);
             endMarkerPolygon.closePath();
+            
+            g2d.setColor(markerFillColor);
             g2d.fill(endMarkerPolygon);
 
-            // Draw outline
-            g2d.setColor(new Color(15, 135, 0));
+            g2d.setColor(markerOutlineColor);
             g2d.draw(endMarkerPolygon);
-
-            // Draw drop down line
-            GeneralPath line = new GeneralPath();
-            line.moveTo(pos + paddingHorizontal, markerHeight);
-            line.lineTo(pos + paddingHorizontal, markerHeight + size.height - 1);
-            g2d.draw(line);
         } else {
         	endMarkerPolygon = new GeneralPath();
         }
@@ -167,46 +158,35 @@ public class RegionPainter extends JComponent {
          * is not the maximum, dim the unplayed regions.
          */
         if (regionStart > 0) {
-            long endTimePos = viewableModel.getZoomWindowEnd();
+            final long endTimePos = Math.min(Math.max(regionStart, viewableModel.getZoomWindowStart()), viewableModel.getZoomWindowEnd());
 
-            if (regionStart <= viewableModel.getZoomWindowEnd()) {
-                endTimePos = regionStart;
+            final double endXPos = getXForTime(endTimePos);
+            final double startXPos = regionModel.getPaddingLeft();
+            final double x = startXPos;
+            final double y = regionMarkerHeight;
+            final double width = endXPos - startXPos - needleWidth;
+            final double height = size.height;
+            
+            if (width > 0) {
+	            g2d.setColor(outsideRegionFillColor);
+	            g2d.fill(G2DUtils.rect(x, y, width, height));
             }
-
-            long endXPos = Math.round((endTimePos * ratio)
-                    - (viewableModel.getZoomWindowStart() * ratio))
-                + regionModel.getPaddingLeft();
-
-            int startPos = regionModel.getPaddingLeft();
-
-            // Gray
-            g.setColor(new Color(63, 63, 63, 100));
-            g.fillRect(startPos, markerHeight + 1, (int) (endXPos - startPos - paddingHorizontal),
-                size.height);
         }
 
         if (regionEnd < viewableModel.getZoomWindowEnd()) {
-            long startTimePos = regionEnd;
+            final long startTimePos = Math.min(Math.max(regionEnd, viewableModel.getZoomWindowStart()), viewableModel.getZoomWindowEnd());
 
-            if (regionEnd > viewableModel.getZoomWindowEnd()) {
-                startTimePos = viewableModel.getZoomWindowEnd();
+            final double startXPos = getXForTime(startTimePos);
+            final double endXPos = getXForTime(viewableModel.getZoomWindowEnd());
+            final double x = startXPos + needleWidth;
+            final double y = regionMarkerHeight;
+            final double width = endXPos - startXPos - needleWidth;
+            final double height = size.height;
+
+            if (width > 0) {
+	            g2d.setColor(outsideRegionFillColor);
+	            g2d.fill(G2DUtils.rect(x, y, width, height));
             }
-
-            if (startTimePos < viewableModel.getZoomWindowStart()) {
-                startTimePos = viewableModel.getZoomWindowStart();
-            }
-
-
-            int startXPos = Math.round((startTimePos * ratio)
-                    - (viewableModel.getZoomWindowStart() * ratio))
-                + regionModel.getPaddingLeft();
-
-            int endXPos = getSize().width - 21;
-
-            g.setColor(new Color(63, 63, 63, 100));
-            g.fillRect((int) (startXPos + paddingHorizontal + paddingHorizontal), markerHeight + 1, (int) (endXPos - startXPos - paddingHorizontal - paddingHorizontal),
-                size.height);
         }
-
     }
 }

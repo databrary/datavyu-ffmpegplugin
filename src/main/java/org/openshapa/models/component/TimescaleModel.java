@@ -8,8 +8,6 @@ import java.awt.Color;
  */
 public class TimescaleModel implements Cloneable {
 
-	/** The number of nanoseconds represented by one pixel on the time scale */
-	private long nanosecondsPerPixel;
     /** Pad the scale from the left by this many pixels */
     private int paddingLeft;
     /** Pad the scale from the right by this many pixels */
@@ -39,7 +37,6 @@ public class TimescaleModel implements Cloneable {
     }
 
     protected TimescaleModel(final TimescaleModel other) {
-    	nanosecondsPerPixel = other.nanosecondsPerPixel;
         paddingLeft = other.paddingLeft;
         paddingRight = other.paddingRight;
         zoomWindowIndicatorHeight = other.zoomWindowIndicatorHeight;
@@ -68,23 +65,6 @@ public class TimescaleModel implements Cloneable {
      */
     public void setEffectiveWidth(final int effectiveWidth) {
         this.effectiveWidth = effectiveWidth;
-    }
-
-    /**
-     * @return The number of nanoseconds represented by one pixel on the time scale
-     */
-    public long getNanosecondsPerPixel() {
-        return nanosecondsPerPixel;
-    }
-
-    /**
-     * Sets the number of nanoseconds represented by one pixel on the time scale
-     * 
-     * @param nanosecondsPerPixel
-     */
-    public void setNanosecondsPerPixel(final long nanosecondsPerPixel) {
-    	assert nanosecondsPerPixel > 0;
-        this.nanosecondsPerPixel = nanosecondsPerPixel;
     }
 
     /**
@@ -222,7 +202,6 @@ public class TimescaleModel implements Cloneable {
         }
         final TimescaleModel other = (TimescaleModel) obj;
         return 
-        	(nanosecondsPerPixel == other.nanosecondsPerPixel) &&
         	(paddingLeft == other.paddingLeft) &&
         	(paddingRight == other.paddingRight) &&
         	(zoomWindowIndicatorHeight == other.zoomWindowIndicatorHeight) &&
@@ -240,7 +219,6 @@ public class TimescaleModel implements Cloneable {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 71 * hash + (int) nanosecondsPerPixel;
         hash = 71 * hash + paddingLeft;
         hash = 71 * hash + paddingRight;
         hash = 71 * hash + zoomWindowIndicatorHeight;
