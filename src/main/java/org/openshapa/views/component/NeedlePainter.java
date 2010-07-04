@@ -50,12 +50,12 @@ public class NeedlePainter extends JComponent {
 
     @Override
     public synchronized boolean contains(final Point p) {
-        return needleMarker.contains(p);
+        return needleMarker != null && needleMarker.contains(p);
     }
 
     @Override
     public synchronized boolean contains(final int x, final int y) {
-        return needleMarker.contains(x, y);
+        return needleMarker != null && needleMarker.contains(x, y);
     }
 
 
