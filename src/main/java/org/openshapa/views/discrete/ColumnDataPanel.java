@@ -25,7 +25,9 @@ import javax.swing.text.BadLocationException;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
+import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.controllers.CreateNewCellC;
@@ -98,14 +100,22 @@ public final class ColumnDataPanel extends JPanel
                 new Color(175, 175, 175)));
         this.add(bottomStrut, -1);
 
-        ActionMap aMap = Application.getInstance(OpenSHAPA.class).getContext()
+        final ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+        .getContext()
+        .getResourceMap(ColumnDataPanel.class);
+        final ActionMap aMap = Application.getInstance(OpenSHAPA.class).getContext()
             .getActionMap(ColumnDataPanel.class, this);
 
-        newCellButton.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1,
-                Color.black));
+        newCellButton.setBorder(BorderFactory.createMatteBorder(0, 1, 1, 0,
+                new Color(175, 175, 175)));
+        newCellButton.setToolTipText(rMap.getString("add.tooltip"));
         newCellButton.setName("newCellPlusButton");
         newCellButton.setAction(aMap.get("addNewCellToColumn"));
         newCellButton.setText(" + ");
+        newCellButton.setBackground(Configuration.getInstance().getSSBackgroundColour());
+        newCellButton.setOpaque(true);
+        newCellButton.setForeground(Configuration.getInstance()
+            .getSSForegroundColour());
         newCellButton.setSize(newCellButton.getWidth(),
             SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
         newCellButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
