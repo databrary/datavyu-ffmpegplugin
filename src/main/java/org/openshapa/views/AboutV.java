@@ -1,13 +1,13 @@
 package org.openshapa.views;
 
 import java.awt.Color;
+import javax.swing.GroupLayout;
 
 import javax.swing.JLabel;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import org.jdesktop.layout.GroupLayout;
 
 import org.openshapa.Build;
 import org.openshapa.OpenSHAPA;
@@ -38,13 +38,13 @@ public class AboutV extends OpenSHAPADialog {
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup(
-                GroupLayout.LEADING).add(GroupLayout.TRAILING,
+                GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING,
                 layout.createSequentialGroup().addContainerGap(380,
-                    Short.MAX_VALUE).add(version).add(136, 136, 136)));
+                    Short.MAX_VALUE).addComponent(version).addGap(136, 136, 136)));
         layout.setVerticalGroup(layout.createParallelGroup(
-                GroupLayout.LEADING).add(GroupLayout.TRAILING,
+                GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING,
                 layout.createSequentialGroup().addContainerGap(250,
-                    Short.MAX_VALUE).add(version).add(38, 38, 38)));
+                    Short.MAX_VALUE).addComponent(version).addGap(38, 38, 38)));
 
         this.add(p);
     }
@@ -64,15 +64,15 @@ public class AboutV extends OpenSHAPADialog {
         setName("Form"); // NOI18N
         setResizable(false);
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
+        GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 640, Short.MAX_VALUE)
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGap(0, 640, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 320, Short.MAX_VALUE)
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGap(0, 320, Short.MAX_VALUE)
         );
 
         pack();

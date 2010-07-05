@@ -12,6 +12,8 @@ import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.GroupLayout;
+import javax.swing.LayoutStyle;
 
 /**
  * The dialog for users to add new variables to the spreadsheet.
@@ -115,78 +117,77 @@ public final class NewVariableV extends OpenSHAPADialog {
         floatTypeButton.setLabel(bundle.getString("floatTypeButton.text")); // NOI18N
         floatTypeButton.setName("floatTypeButton"); // NOI18N
 
-        org.jdesktop.layout.GroupLayout jPanel1Layout =
-                new org.jdesktop.layout.GroupLayout(jPanel1);
+        GroupLayout jPanel1Layout =
+                new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout
                 .setHorizontalGroup(jPanel1Layout
                         .createParallelGroup(
-                                org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(
+                                GroupLayout.Alignment.LEADING)
+                        .addGroup(
                                 jPanel1Layout
                                         .createSequentialGroup()
                                         .addContainerGap()
-                                        .add(
+                                        .addGroup(
                                                 jPanel1Layout
                                                         .createParallelGroup(
-                                                                org.jdesktop.layout.GroupLayout.LEADING)
-                                                        .add(textTypeButton)
-                                                        .add(nominalTypeButton))
-                                        .add(16, 16, 16)
-                                        .add(
+                                                                GroupLayout.Alignment.LEADING)
+                                                        .addComponent(textTypeButton)
+                                                        .addComponent(nominalTypeButton))
+                                        .addGap(16, 16, 16)
+                                        .addGroup(
                                                 jPanel1Layout
                                                         .createParallelGroup(
-                                                                org.jdesktop.layout.GroupLayout.LEADING)
-                                                        .add(matrixTypeButton)
-                                                        .add(
-                                                                predicateTypeButton))
+                                                                GroupLayout.Alignment.LEADING)
+                                                        .addComponent(matrixTypeButton)
+                                                        .addComponent(predicateTypeButton))
                                         .addPreferredGap(
-                                                org.jdesktop.layout.LayoutStyle.RELATED,
-                                                org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+											    LayoutStyle.ComponentPlacement.RELATED,
+                                                GroupLayout.DEFAULT_SIZE,
                                                 Short.MAX_VALUE)
-                                        .add(
+                                        .addGroup(
                                                 jPanel1Layout
                                                         .createParallelGroup(
-                                                                org.jdesktop.layout.GroupLayout.LEADING)
-                                                        .add(integerTypeButton)
-                                                        .add(floatTypeButton))
+                                                                GroupLayout.Alignment.LEADING)
+                                                        .addComponent(integerTypeButton)
+                                                        .addComponent(floatTypeButton))
                                         .addContainerGap()));
         jPanel1Layout
                 .setVerticalGroup(jPanel1Layout
                         .createParallelGroup(
-                                org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(
+                                GroupLayout.Alignment.LEADING)
+                        .addGroup(
                                 jPanel1Layout
                                         .createSequentialGroup()
-                                        .add(
+                                        .addGroup(
                                                 jPanel1Layout
                                                         .createParallelGroup(
-                                                                org.jdesktop.layout.GroupLayout.LEADING)
-                                                        .add(textTypeButton)
-                                                        .add(
+                                                                GroupLayout.Alignment.LEADING)
+                                                        .addComponent(textTypeButton)
+                                                        .addGroup(
                                                                 jPanel1Layout
                                                                         .createSequentialGroup()
-                                                                        .add(
+                                                                        .addGroup(
                                                                                 jPanel1Layout
                                                                                         .createParallelGroup(
-                                                                                                org.jdesktop.layout.GroupLayout.BASELINE)
-                                                                                        .add(
+                                                                                                GroupLayout.Alignment.BASELINE)
+                                                                                        .addComponent(
                                                                                                 integerTypeButton)
-                                                                                        .add(
+                                                                                        .addComponent(
                                                                                                 predicateTypeButton))
                                                                         .addPreferredGap(
-                                                                                org.jdesktop.layout.LayoutStyle.RELATED,
-                                                                                org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+                                                                                LayoutStyle.ComponentPlacement.RELATED,
+                                                                                GroupLayout.DEFAULT_SIZE,
                                                                                 Short.MAX_VALUE)
-                                                                        .add(
+                                                                        .addGroup(
                                                                                 jPanel1Layout
                                                                                         .createParallelGroup(
-                                                                                                org.jdesktop.layout.GroupLayout.BASELINE)
-                                                                                        .add(
+                                                                                                GroupLayout.Alignment.BASELINE)
+                                                                                        .addComponent(
                                                                                                 floatTypeButton)
-                                                                                        .add(
+                                                                                        .addComponent(
                                                                                                 matrixTypeButton)
-                                                                                        .add(
+                                                                                        .addComponent(
                                                                                                 nominalTypeButton))))
                                         .addContainerGap()));
 
@@ -211,103 +212,103 @@ public final class NewVariableV extends OpenSHAPADialog {
             }
         });
 
-        org.jdesktop.layout.GroupLayout layout =
-                new org.jdesktop.layout.GroupLayout(getContentPane());
+        GroupLayout layout =
+                new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout
                 .setHorizontalGroup(layout
                         .createParallelGroup(
-                                org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(
+                                GroupLayout.Alignment.LEADING)
+                        .addGroup(
                                 layout
                                         .createSequentialGroup()
                                         .addContainerGap(
-                                                org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
                                                 Short.MAX_VALUE)
-                                        .add(jLabel2)
+                                        .addComponent(jLabel2)
                                         .addPreferredGap(
-                                                org.jdesktop.layout.LayoutStyle.RELATED)
-                                        .add(
+                                                LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(
                                                 layout
                                                         .createParallelGroup(
-                                                                org.jdesktop.layout.GroupLayout.TRAILING,
+                                                                GroupLayout.Alignment.TRAILING,
                                                                 false)
-                                                        .add(
+                                                        .addGroup(
                                                                 layout
                                                                         .createSequentialGroup()
-                                                                        .add(
+                                                                        .addComponent(
                                                                                 okButton,
-                                                                                org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-                                                                                org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-                                                                                org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE)
                                                                         .addPreferredGap(
-                                                                                org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                        .add(
+                                                                                LayoutStyle.ComponentPlacement.RELATED)
+                                                                        .addComponent(
                                                                                 cancelButton))
-                                                        .add(
-                                                                org.jdesktop.layout.GroupLayout.LEADING,
+                                                        .addGroup(
+                                                                GroupLayout.Alignment.LEADING,
                                                                 layout
                                                                         .createSequentialGroup()
-                                                                        .add(
+                                                                        .addComponent(
                                                                                 jLabel1)
                                                                         .addPreferredGap(
-                                                                                org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                        .add(
+                                                                                LayoutStyle.ComponentPlacement.RELATED)
+                                                                        .addComponent(
                                                                                 nameField))
-                                                        .add(
-                                                                org.jdesktop.layout.GroupLayout.LEADING,
-                                                                jPanel1,
-                                                                org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-                                                                org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-                                                                org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                                        .addComponent(
+																jPanel1,
+                                                                GroupLayout.Alignment.LEADING,
+                                                                GroupLayout.PREFERRED_SIZE,
+                                                                GroupLayout.DEFAULT_SIZE,
+                                                                GroupLayout.PREFERRED_SIZE))
                                         .addContainerGap()));
         layout
                 .setVerticalGroup(layout
                         .createParallelGroup(
-                                org.jdesktop.layout.GroupLayout.LEADING)
-                        .add(
+                                GroupLayout.Alignment.LEADING)
+                        .addGroup(
                                 layout
                                         .createSequentialGroup()
                                         .addContainerGap()
-                                        .add(
+                                        .addGroup(
                                                 layout
                                                         .createParallelGroup(
-                                                                org.jdesktop.layout.GroupLayout.LEADING)
-                                                        .add(jLabel2)
-                                                        .add(
+                                                                GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel2)
+                                                        .addGroup(
                                                                 layout
                                                                         .createSequentialGroup()
-                                                                        .add(
+                                                                        .addGroup(
                                                                                 layout
                                                                                         .createParallelGroup(
-                                                                                                org.jdesktop.layout.GroupLayout.BASELINE)
-                                                                                        .add(
+                                                                                                GroupLayout.Alignment.BASELINE)
+                                                                                        .addComponent(
                                                                                                 nameField,
-                                                                                                org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-                                                                                                org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-                                                                                                org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                                                                        .add(
+                                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                                GroupLayout.PREFERRED_SIZE)
+                                                                                        .addComponent(
                                                                                                 jLabel1))
                                                                         .addPreferredGap(
-                                                                                org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                        .add(
+                                                                                LayoutStyle.ComponentPlacement.RELATED)
+                                                                        .addComponent(
                                                                                 jPanel1,
-                                                                                org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-                                                                                org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
                                                                                 Short.MAX_VALUE)
                                                                         .addPreferredGap(
-                                                                                org.jdesktop.layout.LayoutStyle.RELATED)
-                                                                        .add(
+                                                                                LayoutStyle.ComponentPlacement.RELATED)
+                                                                        .addGroup(
                                                                                 layout
                                                                                         .createParallelGroup(
-                                                                                                org.jdesktop.layout.GroupLayout.BASELINE)
-                                                                                        .add(
+                                                                                                GroupLayout.Alignment.BASELINE)
+                                                                                        .addComponent(
                                                                                                 cancelButton)
-                                                                                        .add(
+                                                                                        .addComponent(
                                                                                                 okButton,
-                                                                                                org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-                                                                                                org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-                                                                                                org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                                GroupLayout.PREFERRED_SIZE))))
                                         .addContainerGap()));
 
         pack();

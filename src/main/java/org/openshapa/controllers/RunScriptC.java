@@ -17,8 +17,6 @@ import javax.script.ScriptException;
 import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
 
-import org.jdesktop.swingworker.SwingWorker;
-
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.util.FileFilters.RBFilter;
@@ -28,6 +26,7 @@ import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.OpenSHAPAView;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.SwingWorker;
 
 
 /**

@@ -30,17 +30,15 @@
       <key>MainClass</key>
       <string>org.openshapa.OpenSHAPA</string>
       <key>JVMVersion</key>
-      <string>1.5</string>
+      <string>1.6+</string>
+      <key>SplashFile</key>
+      <string>$JAVAROOT/images/splash.png</string>
       <key>ClassPath</key>
       <array>
         <string>$JAVAROOT/repo/org/openshapa/openshapa/1.07/openshapa-1.07.jar</string>
-        <string>$JAVAROOT/repo/javax/script/script-api/1.1/script-api-1.1.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.4.0/jruby-complete-1.4.0.jar</string>
-        <string>$JAVAROOT/repo/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar</string>
         <string>$JAVAROOT/repo/org/jdesktop/appframework/1.0.3/appframework-1.0.3.jar</string>
-        <string>$JAVAROOT/repo/org/jdesktop/swing-worker/1.1/swing-worker-1.1.jar</string>
-        <string>$JAVAROOT/repo/quicktime/QTJava/7/QTJava-7.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openhashtable/0.1/openhashtable-0.1.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.14/openshapa-lib-0.0.14.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.5/snakeyaml-1.5.jar</string>

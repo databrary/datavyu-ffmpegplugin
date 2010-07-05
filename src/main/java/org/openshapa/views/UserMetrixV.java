@@ -1,6 +1,8 @@
 package org.openshapa.views;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.GroupLayout;
+import javax.swing.LayoutStyle;
 import org.openshapa.Configuration;
 
 public class UserMetrixV extends OpenSHAPADialog {
@@ -61,26 +63,26 @@ public class UserMetrixV extends OpenSHAPADialog {
         Blurb.setName("Blurb"); // NOI18N
         jScrollPane1.setViewportView(Blurb);
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
+        GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(77, 77, 77)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(radioCanSend)
-                    .add(radioDoNotSend))
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(77, 77, 77)
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(radioCanSend)
+                    .addComponent(radioDoNotSend))
                 .addContainerGap(115, Short.MAX_VALUE))
-            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 59, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(radioCanSend)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(radioDoNotSend)
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 59, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(radioCanSend)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(radioDoNotSend)
                 .addContainerGap(25, Short.MAX_VALUE))
         );
 

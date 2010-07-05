@@ -59,6 +59,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.GroupLayout;
 
 
 /**
@@ -807,16 +808,16 @@ public final class OpenSHAPAView extends FrameView
 
         jLabel1.setName("jLabel1"); // NOI18N
 
-        org.jdesktop.layout.GroupLayout mainPanelLayout =
-            new org.jdesktop.layout.GroupLayout(mainPanel);
+        GroupLayout mainPanelLayout =
+            new GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(mainPanelLayout.createParallelGroup(
-                org.jdesktop.layout.GroupLayout.LEADING).add(
-                mainPanelLayout.createSequentialGroup().add(119, 119, 119).add(
+                GroupLayout.Alignment.LEADING).addGroup(
+                mainPanelLayout.createSequentialGroup().addGap(119, 119, 119).addComponent(
                     jLabel1).addContainerGap(149, Short.MAX_VALUE)));
         mainPanelLayout.setVerticalGroup(mainPanelLayout.createParallelGroup(
-                org.jdesktop.layout.GroupLayout.LEADING).add(
-                mainPanelLayout.createSequentialGroup().add(55, 55, 55).add(
+                GroupLayout.Alignment.LEADING).addGroup(
+                mainPanelLayout.createSequentialGroup().addGap(55, 55, 55).addComponent(
                     jLabel1).addContainerGap(184, Short.MAX_VALUE)));
 
         org.jdesktop.application.ResourceMap resourceMap =

@@ -451,7 +451,7 @@
               </tasks>
             </configuration>
           </execution>
-          
+
           <!-- Set the build number to some thing generic so we don't get
                conflicts all the time. -->
           <execution>
@@ -519,13 +519,9 @@
             </jre>
             <classPath>
               <mainClass>org.openshapa.OpenSHAPA</mainClass>
-                <preCp>script-api-1.1.jar</preCp>
                 <preCp>jruby-engine-1.1.6.jar</preCp>
                 <preCp>jruby-complete-1.4.0.jar</preCp>
-                <preCp>swing-layout-1.0.3.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
-                <preCp>swing-worker-1.1.jar</preCp>
-                <preCp>QTJava-7.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
                 <preCp>openshapa-lib-0.0.14.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
@@ -562,24 +558,10 @@
         <version>1.4.0</version>
     </dependency>
 
-<!--
-    <dependency>
-      <groupId>org.swinglabs</groupId>
-      <artifactId>swing-layout</artifactId>
-      <version>1.0.3</version>
-    </dependency>
--->
-
     <dependency>
       <groupId>org.jdesktop</groupId>
       <artifactId>appframework</artifactId>
       <version>1.0.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jdesktop</groupId>
-      <artifactId>swing-worker</artifactId>
-      <version>1.1</version>
     </dependency>
 
     <dependency>
@@ -637,13 +619,7 @@
     	<artifactId>commons-io</artifactId>
     	<version>1.4</version>
     </dependency>
-
-    <dependency>
-      <groupId>org.swinglabs</groupId>
-      <artifactId>swing-layout</artifactId>
-      <version>1.0.3</version>
-    </dependency>
-  </dependencies>  
+  </dependencies>
 </project>
 
 
