@@ -621,6 +621,20 @@ public final class OpenDatabaseFileC {
         String varName = this.stripEscChars(tokens[0].trim());
         String varType = tokens[1].substring(0, tokens[1].indexOf(")"));
 
+        // BugzID:1703 - Ignore old macshapa query variables, we don't have a
+        // reliable mechanisim for loading their predicates. Given problems
+        // between the untyped nature of macshapa and the typed nature of
+        // OpenSHAPA.
+        if (varName.equals("###QueryVar###")) {
+            String lineEater = csvFile.readLine();
+            while (lineEater != null
+                   && Character.isDigit(lineEater.charAt(0))) {
+                lineEater = csvFile.readLine();
+            }
+
+            return lineEater;
+        }
+
         // Create variable to put cells within.
         Column.isValidColumnName(db, varName);
         DataColumn dc = new DataColumn(db, varName, getVarType(varType));
