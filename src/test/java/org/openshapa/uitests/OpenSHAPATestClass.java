@@ -123,13 +123,13 @@ import org.testng.annotations.BeforeSuite;
         }
 
         // Get New Database dialog
-        DialogFixture newVariableDialog;
+        DialogFixture newProjectDialog;
 
-        newVariableDialog = mainFrameFixture.dialog("NewProjectV");
+        newProjectDialog = mainFrameFixture.dialog("NewProjectV");
 
-        newVariableDialog.textBox("nameField").enterText("n");
+        newProjectDialog.textBox("nameField").enterText("n");
 
-        newVariableDialog.button("okButton").click();
+        newProjectDialog.button("okButton").click();
 
         // Set common variables
         // Get Spreadsheet

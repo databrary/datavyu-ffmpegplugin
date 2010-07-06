@@ -261,23 +261,11 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         }
 
         // Get New Database dialog
-        DialogFixture newDatabaseDialog;
+        DialogFixture newProjectDialog = mainFrameFixture.dialog("NewProjectV");
 
-        try {
-            newDatabaseDialog = mainFrameFixture.dialog();
-        } catch (Exception e) {
-            newDatabaseDialog = mainFrameFixture.dialog(
-                    new GenericTypeMatcher<JDialog>(JDialog.class) {
-                        @Override protected boolean isMatching(
-                            final JDialog dialog) {
-                            return dialog.getClass().equals(NewProjectV.class);
-                        }
-                    }, Timeout.timeout(5, TimeUnit.SECONDS));
-        }
+        newProjectDialog.textBox("nameField").enterText("n");
 
-        newDatabaseDialog.textBox("nameField").enterText("n");
-
-        newDatabaseDialog.button("okButton").click();
+        newProjectDialog.button("okButton").click();
 
         // Open file
         Assert.assertTrue(file.exists());
@@ -766,7 +754,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     @Test public void testLoadingODB1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        legacyFileLoadTest("macshapa-file.odb", "odfCSV.csv");
+        legacyFileLoadTest("macshapa-file.odb", "odfload.csv");
     }
 
     /**

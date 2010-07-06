@@ -15,12 +15,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
-import javax.swing.JDialog;
 import javax.swing.JPopupMenu;
 
-import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.DataControllerFixture;
@@ -34,7 +31,6 @@ import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.TimescaleFixture;
 import org.fest.swing.fixture.TrackFixture;
 import org.fest.swing.fixture.TracksEditorFixture;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.OpenSHAPA;
@@ -51,7 +47,6 @@ import org.openshapa.models.db.TimeStamp;
 import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.util.UIImageUtils;
 
-import org.openshapa.views.NewProjectV;
 
 import org.testng.Assert;
 
@@ -1635,25 +1630,11 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             mainFrameFixture.clickMenuItemWithPath("File", "New");
         }
 
-        DialogFixture newDatabaseDialog;
+        DialogFixture newProjectDialog = mainFrameFixture.dialog("NewProjectV");
 
-        try {
-            newDatabaseDialog = mainFrameFixture.dialog();
-        } catch (Exception e) {
+        newProjectDialog.textBox("nameField").enterText("n");
 
-            // Get New Database dialog
-            newDatabaseDialog = mainFrameFixture.dialog(
-                    new GenericTypeMatcher<JDialog>(JDialog.class) {
-                        @Override protected boolean isMatching(
-                            final JDialog dialog) {
-                            return dialog.getClass().equals(NewProjectV.class);
-                        }
-                    }, Timeout.timeout(5, TimeUnit.SECONDS));
-        }
-
-        newDatabaseDialog.textBox("nameField").enterText("n");
-
-        newDatabaseDialog.button("okButton").click();
+        newProjectDialog.button("okButton").click();
 
         // 4a. Check that all videos are cleared
         Assert.assertEquals(tracks.getTracks().size(), 0);

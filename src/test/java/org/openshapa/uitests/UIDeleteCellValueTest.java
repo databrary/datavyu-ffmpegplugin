@@ -357,25 +357,11 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
             mainFrameFixture.clickMenuItemWithPath("File", "New");
         }
 
-        DialogFixture newDatabaseDialog;
+        DialogFixture newProjectDialog = mainFrameFixture.dialog("NewProjectV");
 
-        try {
-            newDatabaseDialog = mainFrameFixture.dialog();
-        } catch (Exception e) {
+        newProjectDialog.textBox("nameField").enterText("n");
 
-            // Get New Database dialog
-            newDatabaseDialog = mainFrameFixture.dialog(
-                    new GenericTypeMatcher<JDialog>(JDialog.class) {
-                        @Override protected boolean isMatching(
-                            final JDialog dialog) {
-                            return dialog.getClass().equals(NewProjectV.class);
-                        }
-                    }, Timeout.timeout(5, TimeUnit.SECONDS));
-        }
-
-        newDatabaseDialog.textBox("nameField").enterText("n");
-
-        newDatabaseDialog.button("okButton").click();
+        newProjectDialog.button("okButton").click();
 
         // Check that no cells exist
         Assert.assertEquals(spreadsheet.allColumns().size(), 0);

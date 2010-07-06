@@ -156,11 +156,11 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
             // Do nothing
         }
 
-        DialogFixture newVariableDialog = mainFrameFixture.dialog("NewProjectV");
+        DialogFixture newProjectDialog = mainFrameFixture.dialog("NewProjectV");
         
-        newVariableDialog.textBox("nameField").enterText("n");       
+        newProjectDialog.textBox("nameField").enterText("n");
 
-        newVariableDialog.button("okButton").click();
+        newProjectDialog.button("okButton").click();
 
         // 4. Check that variable list is empty
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
