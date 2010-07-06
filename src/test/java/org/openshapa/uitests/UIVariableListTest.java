@@ -5,17 +5,13 @@ import java.awt.event.KeyEvent;
 
 import java.io.File;
 
-import java.util.concurrent.TimeUnit;
 
-import javax.swing.JDialog;
 
-import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.data.TableCell;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JTableFixture;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.jdesktop.application.Application;
@@ -160,23 +156,11 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
             // Do nothing
         }
 
-        DialogFixture newDatabaseDialog;
+        DialogFixture newVariableDialog = mainFrameFixture.dialog("NewProjectV");
+        
+        newVariableDialog.textBox("nameField").enterText("n");       
 
-        try {
-            newDatabaseDialog = mainFrameFixture.dialog();
-        } catch (Exception e) {
-            newDatabaseDialog = mainFrameFixture.dialog(
-                    new GenericTypeMatcher<JDialog>(JDialog.class) {
-                        @Override protected boolean isMatching(
-                            final JDialog dialog) {
-                            return dialog.getClass().equals(NewProjectV.class);
-                        }
-                    }, Timeout.timeout(5, TimeUnit.SECONDS));
-        }
-
-        newDatabaseDialog.textBox("nameField").enterText("n");
-
-        newDatabaseDialog.button("okButton").click();
+        newVariableDialog.button("okButton").click();
 
         // 4. Check that variable list is empty
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");

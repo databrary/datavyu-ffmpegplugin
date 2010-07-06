@@ -31,7 +31,7 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
      * Test Bug 733.
      * @throws IOException on file open error
      */
-    @Test public void testBug733() throws IOException {
+    /*JDK1.6@Test*/ public void testBug733() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Open video

@@ -9,8 +9,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JDialog;
 
@@ -22,7 +20,6 @@ import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.OpenSHAPAFrameFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.launcher.ApplicationLauncher;
@@ -35,7 +32,6 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.util.ConfigProperties;
 
 import org.openshapa.views.NewProjectV;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
@@ -127,23 +123,13 @@ import org.testng.annotations.BeforeSuite;
         }
 
         // Get New Database dialog
-        DialogFixture newDatabaseDialog;
+        DialogFixture newVariableDialog;
 
-        try {
-            newDatabaseDialog = mainFrameFixture.dialog();
-        } catch (Exception e) {
-            newDatabaseDialog = mainFrameFixture.dialog(
-                    new GenericTypeMatcher<JDialog>(JDialog.class) {
-                        @Override protected boolean isMatching(
-                            final JDialog dialog) {
-                            return dialog.getClass().equals(NewProjectV.class);
-                        }
-                    }, Timeout.timeout(5, TimeUnit.SECONDS));
-        }
+        newVariableDialog = mainFrameFixture.dialog("NewProjectV");
 
-        newDatabaseDialog.textBox("nameField").enterText("n");
+        newVariableDialog.textBox("nameField").enterText("n");
 
-        newDatabaseDialog.button("okButton").click();
+        newVariableDialog.button("okButton").click();
 
         // Set common variables
         // Get Spreadsheet
