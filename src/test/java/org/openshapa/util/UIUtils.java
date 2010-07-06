@@ -315,6 +315,9 @@ public final class UIUtils {
             boolean worked = false;
             JFileChooserFixture jfcf = null;
 
+            final long startTime = System.currentTimeMillis();
+            final long maxTestRunTime = 5 * 1000;
+
             do {
                 dcf.button("addDataButton").click();
 
@@ -325,7 +328,8 @@ public final class UIUtils {
                 } catch (Exception e) {
                     // keep trying
                 }
-            } while (worked == false);
+            } while (worked == false
+                    && System.currentTimeMillis() < startTime + maxTestRunTime);
         }
     }
 }

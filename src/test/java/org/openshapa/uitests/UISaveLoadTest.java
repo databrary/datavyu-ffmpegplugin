@@ -663,9 +663,11 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
     /**
      * Test ODB to OPF conversion.
+     * Note: Uses an oracle ODB CSV, rather than actual CSV save, which differs
+     * slightly (does not affect function)
      * @throws Exception on any error.
      */
-    /*BugzID:1703@Test*/ public void testODBtoOPF() throws Exception {
+    @Test public void testODBtoOPF() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         final String tempFolder = System.getProperty("java.io.tmpdir");

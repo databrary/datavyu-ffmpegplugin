@@ -226,7 +226,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * @throws Exception
      *             any exception
      */
-    /*JDK1.6@Test*/ public void testStandardSequence1() throws Exception {
+    @Test public void testStandardSequence1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         final DataControllerFixture dcf = mainFrameFixture.openDataController(
@@ -284,7 +284,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * a positive playback speed again.
      * @throws IOException on file errors
      */
-    /*JDK1.6@Test*/ public void testBug778() throws IOException {
+    @Test public void testBug778() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -365,7 +365,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * do), press shuttle forward again. I often see this going to 1/16x for
      * some reason.
      */
-    /*JDK1.6@Test*/ public void testBug794() {
+    @Test public void testBug794() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -435,7 +435,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * using that button anymore.
      * @throws IOException on file errors
      */
-    /*JDK1.6@Test*/ public void testBug798() throws IOException {
+    @Test public void testBug798() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -530,7 +530,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * I expected it to play again.
      * @throws Exception on any error
      */
-    /*JDK1.6@Test*/ public void testBug464() throws Exception {
+    @Test public void testBug464() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -619,7 +619,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Expect: New cell created.
      * Actual: Dang nabbit error
      */
-    /*JDK1.6@Test*/ public void testBug1204() {
+    @Test public void testBug1204() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "v";
@@ -693,7 +693,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Set New Cell Offset changes offset of selected cell rather than
      * last created cell
      */
-    /*JDK1.6@Test*/ public void testBug891() {
+    @Test public void testBug891() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Get Spreadsheet
@@ -766,7 +766,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
     /**
      * Try jogging at the start and the at the end.
      */
-    /*JDK1.6@Test*/ public void joggingAtBeginningAndEnd() {
+    @Test public void joggingAtBeginningAndEnd() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         final DataControllerFixture dcf = mainFrameFixture.openDataController(
@@ -812,7 +812,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
      * Tests go back.
      * @throws SystemErrorException for Timestamp comparisons
      */
-    /*JDK1.6@Test*/ public void goBackTests() throws SystemErrorException {
+    @Test public void goBackTests() throws SystemErrorException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         final DataControllerFixture dcf = mainFrameFixture.openDataController(

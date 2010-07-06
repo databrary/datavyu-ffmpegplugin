@@ -24,7 +24,7 @@ public final class UIBug686Test extends OpenSHAPATestClass {
     /**
      * Test Bug 686.
      */
-    /*JDK1.6@Test*/ public void testBug686() {
+    @Test public void testBug686() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Open video
