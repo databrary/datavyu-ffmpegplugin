@@ -1028,9 +1028,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         warning.requireTitle("Warning:");
         warning.requireWarningMessage();
         warning.buttonWithText("OK").click();
-
-        // Check that asterisk is not present
-        Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
     }
 
     /**
