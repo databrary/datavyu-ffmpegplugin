@@ -1,8 +1,12 @@
 package org.fest.swing.fixture;
 
+import static org.fest.reflect.core.Reflection.field;
+
 import java.util.Vector;
+import javax.swing.JButton;
 
 import org.fest.swing.core.Robot;
+import org.openshapa.views.discrete.ColumnDataPanel;
 
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
@@ -126,5 +130,11 @@ public class SpreadsheetColumnFixture extends JLabelFixture {
      */
     public final int numOfCells() {
         return ssColumn.getCells().size();
+    }
+
+    public final void pressNewCellButton() {
+        new JButtonFixture(robot,
+                (JButton) field("newCellButton").ofType(JButton.class).in(
+                    (ColumnDataPanel)ssColumn.getDataPanel()).get()).click();
     }
 }

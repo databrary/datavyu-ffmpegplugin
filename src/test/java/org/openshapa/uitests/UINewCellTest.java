@@ -514,7 +514,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
-            new String[expectedInt2TestOutput.length][expectedInt2TestOutput.length][2];
+            new String[expectedInt2TestOutput.length]
+            [expectedInt2TestOutput.length][2];
 
         // String[] expectedInt2bTempOutput =
         // {"19", "-43210", "289", "178", "<int1>", "72",
@@ -523,7 +524,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String[] expectedInt2bTempOutput = {"19", "-43210"};
 
         String[][] expectedInt2bTestOutput =
-            new String[expectedInt2TestOutput.length][expectedInt2TestOutput.length];
+            new String[expectedInt2TestOutput.length]
+            [expectedInt2TestOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
 
@@ -595,7 +597,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String[] expectedNominal2bTempOutput = {"Subject stands up", "$10432"};
 
         String[][] expectedNominal2bTestOutput =
-            new String[expectedNominal2bTempOutput.length][expectedNominal2bTempOutput.length];
+            new String[expectedNominal2bTempOutput.length]
+            [expectedNominal2bTempOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
 
@@ -662,12 +665,14 @@ public final class UINewCellTest extends OpenSHAPATestClass {
 
         // 2b. Recursively test all permutations of test input
         String[][][] testInput =
-            new String[expectedFloat2TestOutput.length][expectedFloat2TestOutput.length][2];
+            new String[expectedFloat2TestOutput.length]
+            [expectedFloat2TestOutput.length][2];
 
         String[] expectedInt2bTempOutput = {"1.9", "-43.21"};
 
         String[][] expectedInt2bTestOutput =
-            new String[expectedFloat2TestOutput.length][expectedFloat2TestOutput.length];
+            new String[expectedFloat2TestOutput.length]
+            [expectedFloat2TestOutput.length];
 
         for (int i = 0; i < numOfTests; i++) {
 
