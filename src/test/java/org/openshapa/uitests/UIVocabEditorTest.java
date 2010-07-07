@@ -16,8 +16,6 @@ import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.VocabEditorDialogFixture;
 import org.fest.swing.fixture.VocabElementFixture;
 
-import org.openshapa.views.VocabEditorV;
-
 import org.testng.Assert;
 
 import org.testng.annotations.Test;
@@ -58,8 +56,8 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         veDialog.close();
 
         // 2. Run script to populate
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         mainFrameFixture.runScript(demoFile);
@@ -299,8 +297,8 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
             };
 
         // 1. Run script to populate
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         mainFrameFixture.runScript(demoFile);
@@ -359,8 +357,8 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
             };
 
         // 1. Run script to populate
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         mainFrameFixture.runScript(demoFile);
@@ -491,8 +489,8 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
             };
 
         // 1. Run script to populate
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         mainFrameFixture.runScript(demoFile);
@@ -662,8 +660,8 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
     // rightKey.add(new KeyItem(Key.RIGHT));
     //
     // // 1. Run script to populate
-    // String root = System.getProperty("testPath");
-    // File demoFile = new File(root + "/ui/demo_data.rb");
+    // 
+    // File demoFile = new File(testFolder + "/ui/demo_data.rb");
     // assertTrue(demoFile.exists());
     //
     // WindowInterceptor
@@ -788,8 +786,8 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         mainFrameFixture.runScript(demoFile);
@@ -843,8 +841,8 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         mainFrameFixture.runScript(demoFile);
@@ -876,8 +874,8 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         mainFrameFixture.runScript(demoFile);
@@ -926,8 +924,8 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         mainFrameFixture.runScript(demoFile);

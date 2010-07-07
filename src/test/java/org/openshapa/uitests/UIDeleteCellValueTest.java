@@ -50,7 +50,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
     * has resulted in consistent behaviour.
     */
     @AfterMethod @BeforeMethod protected void deleteFiles() {
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
@@ -80,8 +80,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
      */
     private void testDeleteCellValue(final String type)
         throws BadLocationException {
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/all_column_types.rb");
+        File demoFile = new File(testFolder + "/ui/all_column_types.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -305,7 +304,6 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         String varName = "t";
         String varType = "text";
 
-        final String tempFolder = System.getProperty("java.io.tmpdir");
         final String originalText = "Hello world";
         final String afterDeleteText = "Hello wo";
 
@@ -419,7 +417,6 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         String varName = "t";
         String varType = "text";
 
-        final String tempFolder = System.getProperty("java.io.tmpdir");
         final String originalText = "Hello world";
         final String afterDeleteText = "o world";
 

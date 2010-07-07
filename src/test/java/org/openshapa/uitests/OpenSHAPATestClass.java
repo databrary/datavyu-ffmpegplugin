@@ -54,6 +54,12 @@ import org.testng.annotations.BeforeSuite;
     /** Spreadsheet for use by all tests. */
     protected SpreadsheetPanelFixture spreadsheet;
 
+    /** Test folder location. */
+    protected String testFolder = System.getProperty("testPath");
+
+    /** Temp folder location. */
+    protected String tempFolder = System.getProperty("java.io.tmpdir");
+
     /** Constructor nulls the mainFrame Fixture. */
     public OpenSHAPATestClass() {
         mainFrameFixture = null;

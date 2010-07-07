@@ -39,8 +39,7 @@ public final class UIBug583Test extends OpenSHAPATestClass {
                 "0.740400", "0.863800", "0.987200", "1.110600"
             };
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate

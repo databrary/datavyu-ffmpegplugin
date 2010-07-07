@@ -75,7 +75,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * has resulted in consistent behaviour.
      */
     @AfterMethod @BeforeMethod protected void deleteFiles() {
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
@@ -113,8 +113,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -174,8 +174,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -209,8 +209,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -250,8 +250,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -297,8 +297,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -366,8 +366,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -470,8 +470,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -494,8 +494,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         long offset = track.getOffsetTimeAsLong();
         Assert.assertTrue(offset > 0, "offset=" + offset);
 
-        File unLockedImage = new File(root + "/ui/lockButtonUnlocked.png");
-        File lockedImage = new File(root + "/ui/lockButtonLocked.png");
+        File unLockedImage = new File(testFolder + "/ui/lockButtonUnlocked.png");
+        File lockedImage = new File(testFolder + "/ui/lockButtonLocked.png");
         Assert.assertTrue(UIImageUtils.areImagesEqual(
                 UIImageUtils.captureAsScreenshot(
                     track.getLockButton().component()), unLockedImage, 0.01,
@@ -530,14 +530,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open first video
-        String root = System.getProperty("testPath");
-        final File videoFile1 = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile1 = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile1.exists());
 
         UIUtils.openData(videoFile1, dcf);
 
         // c. Open second video
-        final File videoFile2 = new File(root + "/ui/head_turns_copy.mov");
+        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
         Assert.assertTrue(videoFile2.exists());
 
         UIUtils.openData(videoFile2, dcf);
@@ -731,8 +731,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getZoomSlider();
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -758,8 +758,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         long offset = track.getOffsetTimeAsLong();
         Assert.assertTrue(offset > 0, "offset=" + offset);
 
-        File unLockedImage = new File(root + "/ui/lockButtonUnlocked.png");
-        File lockedImage = new File(root + "/ui/lockButtonLocked.png");
+        File unLockedImage = new File(testFolder + "/ui/lockButtonUnlocked.png");
+        File lockedImage = new File(testFolder + "/ui/lockButtonLocked.png");
         Assert.assertTrue(UIImageUtils.areImagesEqual(
                 UIImageUtils.captureAsScreenshot(
                     track.getLockButton().component()), unLockedImage, 0.01,
@@ -809,8 +809,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getZoomSlider();
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -877,14 +877,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getZoomSlider();
 
         // c. Open first video
-        String root = System.getProperty("testPath");
-        final File videoFile1 = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile1 = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile1.exists());
 
         UIUtils.openData(videoFile1, dcf);
 
         // c. Open second video
-        final File videoFile2 = new File(root + "/ui/head_turns_copy.mov");
+        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
         Assert.assertTrue(videoFile2.exists());
 
         UIUtils.openData(videoFile2, dcf);
@@ -1073,8 +1073,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
         UIUtils.openData(videoFile, dcf);
 
@@ -1086,7 +1086,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
-        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        File refImageFile = new File(testFolder + "/ui/head_turns600h0t.png");
         vidWindows.get(0).component().toFront();
 
         // 4. Play video for 3 seconds
@@ -1123,8 +1123,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -1137,7 +1137,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
-        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        File refImageFile = new File(testFolder + "/ui/head_turns600h0t.png");
         vidWindows.get(0).component().toFront();
 
         // 4. Play video for 3 seconds
@@ -1175,8 +1175,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -1189,7 +1189,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
-        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        File refImageFile = new File(testFolder + "/ui/head_turns600h0t.png");
         vidWindows.get(0).component().toFront();
 
         // 4. Play video for 3 seconds
@@ -1217,10 +1217,10 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getTracks().firstElement();
 
         // Hide window
-        File eyeOpenImage = new File(root + "/ui/eyeOpen.png");
-        File eyeClosedImage = new File(root + "/ui/eyeClosed.png");
-        File volumeMute = new File(root + "/ui/volumeMute.png");
-        File volumeUnmute = new File(root + "/ui/volumeUnmute.png");
+        File eyeOpenImage = new File(testFolder + "/ui/eyeOpen.png");
+        File eyeClosedImage = new File(testFolder + "/ui/eyeClosed.png");
+        File volumeMute = new File(testFolder + "/ui/volumeMute.png");
+        File volumeUnmute = new File(testFolder + "/ui/volumeUnmute.png");
         Assert.assertTrue(UIImageUtils.areImagesEqual(
                 UIImageUtils.captureAsScreenshot(
                     track.getActionButton2().component()), eyeOpenImage, 0.01,
@@ -1314,8 +1314,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -1328,7 +1328,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
-        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        File refImageFile = new File(testFolder + "/ui/head_turns600h0t.png");
         vidWindows.get(0).component().toFront();
 
         // 4. Play video
@@ -1354,10 +1354,10 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getTrack(0);
 
         // Hide window
-        File eyeOpenImage = new File(root + "/ui/eyeOpen.png");
-        File eyeClosedImage = new File(root + "/ui/eyeClosed.png");
-        File volumeMute = new File(root + "/ui/volumeMute.png");
-        File volumeUnmute = new File(root + "/ui/volumeUnmute.png");
+        File eyeOpenImage = new File(testFolder + "/ui/eyeOpen.png");
+        File eyeClosedImage = new File(testFolder + "/ui/eyeClosed.png");
+        File volumeMute = new File(testFolder + "/ui/volumeMute.png");
+        File volumeUnmute = new File(testFolder + "/ui/volumeUnmute.png");
         Assert.assertTrue(UIImageUtils.areImagesEqual(
                 UIImageUtils.captureAsScreenshot(
                     track.getActionButton2().component()), eyeOpenImage, 0.01,
@@ -1450,8 +1450,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -1504,21 +1504,21 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
 
         // c. Open videos
-        String root = System.getProperty("testPath");
-        final File videoFile1 = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile1 = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile1.exists());
 
         UIUtils.openData(videoFile1, dcf);
 
-        final File videoFile2 = new File(root + "/ui/head_turns_copy.mov");
+        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
         Assert.assertTrue(videoFile2.exists());
 
         UIUtils.openData(videoFile2, dcf);
 
-        final File videoFile3 = new File(root + "/ui/head_turns2.mov");
+        final File videoFile3 = new File(testFolder + "/ui/head_turns2.mov");
         Assert.assertTrue(videoFile3.exists());
 
         UIUtils.openData(videoFile3, dcf);
@@ -1536,8 +1536,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
         // Lock 1st track
-        File unLockedImage = new File(root + "/ui/lockButtonUnlocked.png");
-        File lockedImage = new File(root + "/ui/lockButtonLocked.png");
+        File unLockedImage = new File(testFolder + "/ui/lockButtonUnlocked.png");
+        File lockedImage = new File(testFolder + "/ui/lockButtonLocked.png");
         TrackFixture track1 = dcf.getTrackMixerController().getTracksEditor()
             .getTrack(0);
         track1.pressLockButton();
@@ -1551,10 +1551,10 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                 0.01));
 
         // Hide 2nd track
-        File eyeOpenImage = new File(root + "/ui/eyeOpen.png");
-        File eyeClosedImage = new File(root + "/ui/eyeClosed.png");
-        File volumeMute = new File(root + "/ui/volumeMute.png");
-        File volumeUnmute = new File(root + "/ui/volumeUnmute.png");
+        File eyeOpenImage = new File(testFolder + "/ui/eyeOpen.png");
+        File eyeClosedImage = new File(testFolder + "/ui/eyeClosed.png");
+        File volumeMute = new File(testFolder + "/ui/volumeMute.png");
+        File volumeUnmute = new File(testFolder + "/ui/volumeUnmute.png");
         TrackFixture track2 = dcf.getTrackMixerController().getTracksEditor()
             .getTrack(1);
         track2.pressActionButton2();
@@ -1744,8 +1744,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -1758,7 +1758,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
-        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        File refImageFile = new File(testFolder + "/ui/head_turns600h0t.png");
         vidWindows.get(0).component().toFront();
 
         // Assert that track is present
@@ -1769,8 +1769,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getTracks().firstElement();
 
         // Mute volume by reducing volume to 0
-        File volumeMute = new File(root + "/ui/volumeMute.png");
-        File volumeUnmute = new File(root + "/ui/volumeUnmute.png");
+        File volumeMute = new File(testFolder + "/ui/volumeMute.png");
+        File volumeUnmute = new File(testFolder + "/ui/volumeUnmute.png");
         Assert.assertTrue(UIImageUtils.areImagesEqual(
                 UIImageUtils.captureAsScreenshot(
                     track.getActionButton1().component()), volumeUnmute, 0.01,
@@ -1823,8 +1823,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -1837,7 +1837,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
-        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        File refImageFile = new File(testFolder + "/ui/head_turns600h0t.png");
         vidWindows.get(0).component().toFront();
 
         // Assert that track is present

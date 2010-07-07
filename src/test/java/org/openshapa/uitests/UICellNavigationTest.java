@@ -29,8 +29,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
     @Test public void testLeftRightCellNavigation() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data_small.rb");
+        File demoFile = new File(testFolder + "/ui/demo_data_small.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -99,8 +98,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
     @Test public void testUpDownMultilineCells() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/multiline-text.rb");
+        File demoFile = new File(testFolder + "/ui/multiline-text.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -175,8 +173,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
         throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data_caret_movement.rb");
+        File demoFile = new File(testFolder + "/ui/demo_data_caret_movement.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate

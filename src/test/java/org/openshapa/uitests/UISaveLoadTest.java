@@ -72,7 +72,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
          * not always delete them during the test case. Doing the deletes here
          * has resulted in consistent behaviour.
          */
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
@@ -103,10 +103,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     private void saveAsTest(final String fileName, final String extension)
         throws IOException {
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data_to_csv2.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data_to_csv2.rb");
         File toSave = null;
         Assert.assertTrue(demoFile.exists(),
             "Expecting demo_data_to_csv.rb to exist");
@@ -180,7 +180,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         File expectedOutputFile = null;
 
         if (extension.equals("csv")) {
-            expectedOutputFile = new File(root + "/ui/demo_data_to_csv2.csv");
+            expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
             loadFile(new File(pc.getProjectDirectory(),
                     pc.getDatabaseFileName()));
             outputFile = saveAsCSV(fileName + "new");
@@ -192,7 +192,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             loadFile(justSaved);
             outputFile = saveAsCSV(fileName);
 
-            expectedOutputFile = new File(root + "/ui/demo_data_to_csv2.csv");
+            expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
         }
 
         Assert.assertTrue(outputFile.exists(),
@@ -210,7 +210,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @return CSV file that was just saved.
      */
     private File saveAsCSV(final String fileName) {
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
         File toSave;
         String csvFileName = fileName + ".csv";
 
@@ -334,7 +334,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     private void saveTest(final String fileName, final String extension)
         throws IOException {
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
 
         // 1. Click save on empty project. Expecting it to act like Save As
         // Check that asterisk is present
@@ -374,8 +374,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // Check that no asterisk is present
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data_to_csv2.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data_to_csv2.rb");
         Assert.assertTrue(demoFile.exists(),
             "Expecting demo_data_to_csv2.rb to exist");
 
@@ -421,7 +421,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         File expectedOutputFile = null;
 
         if (extension.equals("csv")) {
-            expectedOutputFile = new File(root + "/ui/demo_data_to_csv2.csv");
+            expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
             loadFile(new File(pc.getProjectDirectory(),
                     pc.getDatabaseFileName()));
             outputFile = saveAsCSV(fileName + "new");
@@ -434,7 +434,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             loadFile(justSaved);
             outputFile = saveAsCSV(fileName);
 
-            expectedOutputFile = new File(root + "/ui/demo_data_to_csv2.csv");
+            expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
         }
 
         Assert.assertTrue(outputFile.exists(),
@@ -459,13 +459,13 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     private void loadTest(final String inputFile,
         final String expectedOutputFile) throws IOException,
         LogicErrorException {
-        final String root = System.getProperty("testPath") + "/ui/";
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        final String root = testFolder + "/ui/";
+        
 
         File testCSV = new File(tempFolder + inputFile);
 
         // Copy file to new project location
-        UIUtils.copy(new File(root + inputFile), testCSV);
+        UIUtils.copy(new File(testFolder + inputFile), testCSV);
 
         Assert.assertTrue(testCSV.exists(), "Expecting input file to exist.");
 
@@ -535,7 +535,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         }
 
         // 5. Check that CSV file is correct
-        File testOutputCSV = new File(root + expectedOutputFile);
+        File testOutputCSV = new File(testFolder + expectedOutputFile);
         Assert.assertTrue(testOutputCSV.exists(),
             "Expected output reference file missing.");
 
@@ -560,10 +560,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     private void legacyFileLoadTest(final String inputFile,
         final String expectedOutputFile) throws IOException {
-        String root = System.getProperty("testPath");
+        
 
-        File iFile = new File(root + "/ui/" + inputFile);
-        File eoFile = new File(root + "/ui/" + expectedOutputFile);
+        File iFile = new File(testFolder + "/ui/" + inputFile);
+        File eoFile = new File(testFolder + "/ui/" + expectedOutputFile);
         Assert.assertTrue(iFile.exists());
 
         // 1. Load ODB File
@@ -658,15 +658,15 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     @Test public void testODBtoOPF() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        final String tempFolder = System.getProperty("java.io.tmpdir");
-        String root = System.getProperty("testPath");
+        
+        
 
         String inputFile = "macshapa-file.odb";
         String odbOutputCSV = "odfCSV.csv";
         String opfOutputCSV = "opfCSV.csv";
 
-        File iFile = new File(root + "/ui/" + inputFile);
-        File odbCSV = new File(root + "/ui/" + odbOutputCSV);
+        File iFile = new File(testFolder + "/ui/" + inputFile);
+        File odbCSV = new File(testFolder + "/ui/" + odbOutputCSV);
         Assert.assertTrue(iFile.exists());
 
         // 1. Load ODB File
@@ -910,7 +910,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     private void fileLocationTest(final String openFile,
         final String currDirectory) {
-        String root = System.getProperty("testPath") + "ui/";
+        String root = testFolder + "ui/";
         File openCSV = new File(root + openFile);
         Assert.assertTrue(openCSV.exists());
 
@@ -971,9 +971,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // Delete confounding files from previous test
-        String root = System.getProperty("testPath");
-        File location1 = new File(root + "ui/location1/location2.opf");
-        File location2 = new File(root + "ui/location2/location1.opf");
+        
+        File location1 = new File(testFolder + "ui/location1/location2.opf");
+        File location2 = new File(testFolder + "ui/location2/location1.opf");
         location1.delete();
         location2.delete();
         Assert.assertFalse(location1.exists());
@@ -997,8 +997,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     @Test public void saveWithoutPermissions() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        final String root = System.getProperty("testPath") + "/ui/";
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        final String root = testFolder + "/ui/";
+        
 
         // Check if file exists and you do not have permission
         File noWrite = new File(root + "/noWrite/test.opf");
@@ -1036,9 +1036,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     @Test public void testBug1568() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
 
-        String root = System.getProperty("testPath");
+        
         File toSave = null;
 
         // Create new text variable
@@ -1121,7 +1121,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     @Test public void testMissingVideoFiles() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath") + "/ui/";
+        String root = testFolder + "/ui/";
         File missingVidFile = new File(root + "/missingVideo.opf");
         Assert.assertTrue(missingVidFile.exists(),
             "Expecting demo_data_to_csv.rb to exist");

@@ -35,8 +35,7 @@ public final class UIBug686Test extends OpenSHAPATestClass {
         final DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);

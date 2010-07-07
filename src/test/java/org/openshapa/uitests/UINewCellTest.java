@@ -389,8 +389,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
-        String root = System.getProperty("testPath");
-        final File demoFile = new File(root + "/ui/matrix_tests.rb");
+        
+        final File demoFile = new File(testFolder + "/ui/matrix_tests.rb");
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
@@ -419,8 +419,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
-        String root = System.getProperty("testPath");
-        final File demoFile = new File(root + "/ui/matrix_tests.rb");
+        
+        final File demoFile = new File(testFolder + "/ui/matrix_tests.rb");
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
@@ -451,8 +451,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
-        String root = System.getProperty("testPath");
-        final File demoFile = new File(root + "/ui/matrix_tests.rb");
+        
+        final File demoFile = new File(testFolder + "/ui/matrix_tests.rb");
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
@@ -486,8 +486,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String[] iTestInput = {"1a9", "10-432"};
 
         // 1. Create new variables using script
-        String root = System.getProperty("testPath");
-        final File demoFile = new File(root + "/ui/matrix_tests.rb");
+        
+        final File demoFile = new File(testFolder + "/ui/matrix_tests.rb");
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
@@ -564,8 +564,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String[] nomTestInput = {"Subject stands )up ", "$10,432"};
 
         // 1. Create new variables using script
-        String root = System.getProperty("testPath");
-        final File demoFile = new File(root + "/ui/matrix_tests.rb");
+        
+        final File demoFile = new File(testFolder + "/ui/matrix_tests.rb");
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
@@ -640,8 +640,8 @@ public final class UINewCellTest extends OpenSHAPATestClass {
         String[] fTestInput = {"1a.9", "10-43.2"};
 
         // 1. Create new variables using script
-        String root = System.getProperty("testPath");
-        final File demoFile = new File(root + "/ui/matrix_tests.rb");
+        
+        final File demoFile = new File(testFolder + "/ui/matrix_tests.rb");
         Assert.assertTrue(demoFile.exists(),
             "Expecting matrix_tests.rb to exist.");
 
