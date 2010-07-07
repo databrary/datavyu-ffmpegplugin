@@ -108,7 +108,7 @@ import org.testng.annotations.BeforeSuite;
             mainFrameFixture.pressAndReleaseKey(KeyPressInfo.keyCode(
                     KeyEvent.VK_N).modifiers(InputEvent.META_MASK));
         } else {
-            mainFrameFixture.menuItemWithPath("File", "New").click();
+            mainFrameFixture.clickMenuItemWithPath("File", "New");
         }
 
         try {
