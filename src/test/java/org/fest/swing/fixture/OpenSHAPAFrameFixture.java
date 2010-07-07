@@ -17,6 +17,7 @@ import org.openshapa.util.UIUtils;
 import org.openshapa.views.ConsoleV;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.NewVariableV;
+import org.openshapa.views.VocabEditorV;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 
@@ -222,5 +223,20 @@ public class OpenSHAPAFrameFixture extends FrameFixture {
 
         return new DataControllerFixture(robot,
                 (DataControllerV) dcf.component());
+    }
+
+     /**
+     * Open and return the data controller.
+     * @return DataControllerFixture for data controller
+     */
+    public final VocabEditorDialogFixture openVocabEditor() {
+        clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
+
+        DialogFixture ve = WindowFinder.findDialog(
+                VocabEditorV.class).withTimeout(DIALOG_TIMEOUT).using(robot);
+        ve.moveTo(new Point(0, 100));
+
+        return new VocabEditorDialogFixture(robot,
+                (VocabEditorV) ve.component());
     }
 }

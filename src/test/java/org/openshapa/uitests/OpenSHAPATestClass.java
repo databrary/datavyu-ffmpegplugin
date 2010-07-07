@@ -8,14 +8,9 @@ package org.openshapa.uitests;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.JDialog;
-
 import junitx.util.PrivateAccessor;
 
 import org.fest.swing.annotation.GUITest;
-import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
@@ -23,15 +18,12 @@ import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.OpenSHAPAFrameFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.launcher.ApplicationLauncher;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.util.ConfigProperties;
-
-import org.openshapa.views.NewProjectV;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
@@ -44,7 +36,6 @@ import org.testng.annotations.BeforeSuite;
  * class.
  */
 @GUITest public class OpenSHAPATestClass {
-
     static {
 
         try {

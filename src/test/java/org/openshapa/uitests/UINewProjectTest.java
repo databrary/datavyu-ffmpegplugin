@@ -97,11 +97,8 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
         varListDialog.close();
 
         // 4c. Check that vocab editor is empty
-        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
+        VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
 
-        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
-                mainFrameFixture.robot,
-                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         veDialog.close();
