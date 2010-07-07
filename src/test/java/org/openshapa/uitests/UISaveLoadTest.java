@@ -516,7 +516,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // Check that something has been loaded
         spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        Assert.assertNotNull(spreadsheet.allColumns());
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0);
 
         // 4. Save the contents as a separate project file
         File savedSHAPA = new File(tempFolder + "/savedSHAPA.shapa");
@@ -609,7 +609,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // Check that something has been loaded
         spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        Assert.assertNotNull(spreadsheet.allColumns());
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0);
 
         // Save file as a CSV and compare to reference file
         File outputFile = saveAsCSV(expectedOutputFile + "new.csv");
@@ -657,10 +657,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     @Test public void testODBtoOPF() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-
-        
-        
-
         String inputFile = "macshapa-file.odb";
         String odbOutputCSV = "odfCSV.csv";
         String opfOutputCSV = "opfCSV.csv";
@@ -712,7 +708,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // Check that something has been loaded
         spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        Assert.assertNotNull(spreadsheet.allColumns());
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0);
 
         // Save file as a OPF
         File toSave = new File(tempFolder + "/odfOPF.opf");
@@ -746,6 +742,53 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         Assert.assertTrue(UIUtils.areFilesSameLineComp(odbCSV, opfCSV),
             "Expecting files to be the same.");
+    }
+
+    /**
+     * Test loading the old OPF format
+     * @throws Exception on any error.
+     */
+    /*BugzID:1941@Test*/ public void testLoadOldOPF() throws Exception {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        String inputFilename = "oldProjectFormat.opf";
+        File inputFile = new File(testFolder + "/ui/" + inputFilename);
+        Assert.assertTrue(inputFile.exists());
+
+        //Load file
+        if (Platform.isOSX()) {
+            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
+            fc.setVisible(false);
+
+            fc.setFileFilter(new OPFFilter());
+
+            fc.setSelectedFile(inputFile);
+
+            method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
+                    OpenSHAPA.getView()).invoke(fc);
+        } else {
+            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
+
+            try {
+                JOptionPaneFixture warning = mainFrameFixture.optionPane();
+                warning.requireTitle("Unsaved changes");
+                warning.buttonWithText("OK").click();
+            } catch (Exception e) {
+                // Do nothing
+            }
+
+            mainFrameFixture.fileChooser().component().setFileFilter(
+                    new OPFFilter());
+
+            mainFrameFixture.fileChooser().selectFile(inputFile).approve();
+        }
+
+        // Check that the title bar file name does not have an asterix
+        Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
+
+        // Check that something has been loaded
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        Assert.assertTrue(spreadsheet.allColumns().size() > 0);
     }
 
     /**
