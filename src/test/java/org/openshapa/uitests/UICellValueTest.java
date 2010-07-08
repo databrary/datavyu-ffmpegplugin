@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 /**
  * Test for the New Cells.
  */
-public final class UINewCellTest extends OpenSHAPATestClass {
+public final class UICellValueTest extends OpenSHAPATestClass {
 
     /**
      * Nominal test input.
@@ -912,7 +912,7 @@ public final class UINewCellTest extends OpenSHAPATestClass {
                 spreadsheet.column(varName).cell(inputIndex + 1).select(
                     SpreadsheetCellFixture.VALUE, 0, strlen);
             } catch (BadLocationException ex) {
-                Logger.getLogger(UINewCellTest.class.getName()).log(
+                Logger.getLogger(UICellValueTest.class.getName()).log(
                     Level.SEVERE, null, ex);
             }
 
