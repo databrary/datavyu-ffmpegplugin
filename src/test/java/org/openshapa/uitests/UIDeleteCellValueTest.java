@@ -238,12 +238,6 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
 
         cell.clickToCharPos(SpreadsheetCellFixture.VALUE, strLen, 1);
 
-        // Forced to do this because of BugzID:1350
-        for (int i = 0; i < strLen; i++) {
-            cell.cellValue().pressAndReleaseKey(KeyPressInfo.keyCode(
-                    KeyEvent.VK_RIGHT));
-        }
-
         for (int i = 0; i < strLen; i++) {
             cell.cellValue().pressAndReleaseKey(KeyPressInfo.keyCode(
                     KeyEvent.VK_BACK_SPACE));

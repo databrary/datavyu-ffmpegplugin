@@ -206,7 +206,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
 
             int numOfCells = col.numOfCells();
 
-            col.cell(numOfCells - 4).cellValue().click();
+            col.cell(numOfCells - 4).clickToCharPos(SpreadsheetCellFixture.VALUE, 0, 1);
 
             Assert.assertEquals(col.cell(numOfCells - 4).cellValue().component()
                 .getCaretPosition(), 0);
@@ -256,18 +256,6 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
             col.cell(numOfCells - 4).clickToCharPos(
                 SpreadsheetCellFixture.VALUE, defaultPos,
                 1);
-
-            // Forced to do this because of BugzID:1350
-            for (int i = 0; i < 3; i++) {
-                col.cell(numOfCells - 4).cellValue().pressAndReleaseKey(
-                    KeyPressInfo.keyCode(
-                        KeyEvent.VK_RIGHT));
-
-                // Compensate for decimal in floats
-                if (col.getColumnType().equalsIgnoreCase("FLOAT")) {
-                    defaultPos = 4;
-                }
-            }
 
             if (col.cell(numOfCells - 4).cellValue().text().length()
                     < defaultPos) {
