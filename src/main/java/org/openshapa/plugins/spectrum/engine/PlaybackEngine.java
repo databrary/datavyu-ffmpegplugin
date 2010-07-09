@@ -28,7 +28,7 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     private static final long MILLISECOND = 1000;
 
     /** Frame seeking tolerance. */
-    private static final long TOLERANCE = 25 * MILLISECOND;
+    private static final long TOLERANCE = 5 * MILLISECOND;
 
     /** Handles reading the audio file. */
     private IMediaReader mediaReader;
@@ -174,9 +174,61 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
             long maxTime = Math.min(seekTime + TOLERANCE,
                     container.getDuration());
 
-            mediaReader.getContainer().seekKeyFrame(-1, minTime, seekTime,
-                maxTime, IContainer.SEEK_FLAG_ANY);
+            playbackTool.clearWaitBuffer();
+
+            if (MILLISECONDS.convert(seekTime, TimeUnit.MICROSECONDS)
+                    >= currentTime) {
+
+                /*
+                 * Don't bother with the seek API when moving forwards, it
+                 * either overshoots or undershoots the target time frame.
+                 */
+
+                // System.out.println("FORWARDS "
+                // + MILLISECONDS.convert(seekTime, TimeUnit.MICROSECONDS)
+                // + " FROM " + currentTime);
+
+
+                playbackTool.clearWaitBuffer();
+
+                while ((getCurrentTime()
+                            < MILLISECONDS.convert(minTime,
+                                TimeUnit.MICROSECONDS))
+                        && commandQueue.isEmpty()) {
+
+                    if (mediaReader.readPacket() != null) {
+                        return;
+                    }
+
+                    /*
+                     * Update these calculations because a new seek command
+                     * might have been given even before we are done.
+                     */
+                    seekTime = Math.max(0, newTime * 1000);
+                    seekTime = Math.min(seekTime, container.getDuration());
+                    minTime = Math.max(seekTime - TOLERANCE, 0);
+                }
+
+                playbackTool.clearWaitBuffer();
+            } else {
+
+                /*
+                 * For seeking backwards, it is easier to let it overshoot then
+                 * seek forwards.
+                 */
+                // System.out.println("BACKWARDS "
+                // + MILLISECONDS.convert(seekTime, TimeUnit.MICROSECONDS)
+                // + " FROM " + currentTime);
+                mediaReader.getContainer().seekKeyFrame(-1, minTime, seekTime,
+                    maxTime, IContainer.SEEK_FLAG_BACKWARDS);
+
+                playbackTool.clearWaitBuffer();
+            }
+
+            mediaReader.readPacket();
         }
+
+        engineState = EngineState.TASK_COMPLETE;
     }
 
     private void enginePlaying() {
@@ -208,12 +260,16 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     }
 
     public boolean isPlaying() {
-        return engineState == EngineState.PLAYING;
+        return (engineState == EngineState.PLAYING)
+            || (engineState == EngineState.SEEKING);
     }
 
     public void seek(final long time) {
         newTime = time;
-        commandQueue.offer(EngineState.SEEKING);
+
+        if (engineState != EngineState.SEEKING) {
+            commandQueue.offer(EngineState.SEEKING);
+        }
     }
 
     public long getCurrentTime() {

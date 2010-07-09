@@ -15,7 +15,10 @@ public enum EngineState {
     PLAYING("Playing"),
 
     /** Engine is stopping media playback. */
-    STOP("Stopping");
+    STOP("Stopping"),
+
+    /** This state overwrites the engine state once a task has been handled. */
+    TASK_COMPLETE("Task complete");
 
     private String stateName;
 

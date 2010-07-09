@@ -24,14 +24,11 @@ import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.ViewerStateListener;
 
-import com.xuggle.mediatool.IMediaReader;
-import com.xuggle.mediatool.ToolFactory;
 
-
+/**
+ * Data viewer for audio spectrum.
+ */
 public class SpectrumDataViewer implements DataViewer {
-
-    /** Number of microseconds in one millisecond. */
-    private static final long MILLISECONDS = 1000;
 
     /** Dialog. */
     private SpectrumDialog dialog;
@@ -51,7 +48,10 @@ public class SpectrumDataViewer implements DataViewer {
     /** Duration of media file in milliseconds. */
     private long duration;
 
+    /** Playback engine. */
     private PlaybackEngine engine;
+
+    private float fps;
 
     public SpectrumDataViewer(final Frame parent, final boolean modal) {
 
@@ -91,7 +91,7 @@ public class SpectrumDataViewer implements DataViewer {
     }
 
     @Override public float getFrameRate() {
-        return 0;
+        return fps;
     }
 
     @Override public long getOffset() {
@@ -150,14 +150,10 @@ public class SpectrumDataViewer implements DataViewer {
         engine = new PlaybackEngine(mediaFile, dialog);
         engine.start();
 
-        IMediaReader mediaReader = ToolFactory.makeReader(
-                file.getAbsolutePath());
-        mediaReader.open();
-
         // Record media duration
-        duration = mediaReader.getContainer().getDuration() / MILLISECONDS;
+        duration = SpectrumUtils.getDuration(file);
 
-        mediaReader.close();
+        fps = SpectrumUtils.calculateAudioFPS(file);
 
         Runnable edtTask = new Runnable() {
                 @Override public void run() {

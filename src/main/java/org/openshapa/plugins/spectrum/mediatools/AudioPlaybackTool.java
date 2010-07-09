@@ -123,19 +123,15 @@ public final class AudioPlaybackTool extends MediaListenerAdapter {
         }
     }
 
-    /**
-     * @param seekTime
-     *            Time in microseconds.
-     */
-    public void seeking(final long seekTime) {
+    public void clearWaitBuffer() {
 
-        // synchronized (this) {
-        //
-        // for (AudioThread at : audioThreads.values()) {
-        // at.clearInputBuffer(seekTime);
-        // at.clearAudioBuffer();
-        // }
-        // }
+        synchronized (this) {
+
+            for (AudioThread at : audioThreads.values()) {
+                at.clearInputBuffer();
+                // at.clearAudioBuffer();
+            }
+        }
     }
 
     @Override public void onAudioSamples(final IAudioSamplesEvent event) {

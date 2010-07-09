@@ -236,6 +236,7 @@ public final class AudioThread extends Thread {
     public void clearAudioBuffer() {
         lock.lock();
 
+        // output.drain();
         output.flush();
 
         condition.signalAll();
@@ -282,8 +283,10 @@ public final class AudioThread extends Thread {
             int size = xuggSample.getSize();
             output.write(xuggSample.getData().getByteArray(0, size), 0, size);
 
-            long lineTime = MILLISECONDS.convert(output
-                    .getMicrosecondPosition(), MICROSECONDS);
+            // long lineTime = MILLISECONDS.convert(output
+            // .getMicrosecondPosition(), MICROSECONDS);
+            long lineTime = MILLISECONDS.convert(sample.getTimestamp(),
+                    sample.getTimeUnit());
 
             for (TimestampListener listener : listeners) {
                 listener.notifyTime(lineTime);
