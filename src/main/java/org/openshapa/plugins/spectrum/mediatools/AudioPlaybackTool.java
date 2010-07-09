@@ -14,8 +14,10 @@ import javax.sound.sampled.SourceDataLine;
 import org.openshapa.plugins.spectrum.engine.AudioSample;
 import org.openshapa.plugins.spectrum.engine.AudioThread;
 import org.openshapa.plugins.spectrum.events.TimestampListener;
-import org.openshapa.plugins.spectrum.swing.Spectrum;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
+
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
 
 import com.xuggle.mediatool.IMediaCoder;
 import com.xuggle.mediatool.MediaListenerAdapter;
@@ -32,6 +34,9 @@ import com.xuggle.xuggler.IStreamCoder;
  * Tool for playing back audio through the Java sound system.
  */
 public final class AudioPlaybackTool extends MediaListenerAdapter {
+
+    private static final Logger LOGGER = UserMetrix.getLogger(
+            AudioPlaybackTool.class);
 
     /** The container which is to be viewed */
     private IContainer mContainer;
@@ -193,7 +198,7 @@ public final class AudioPlaybackTool extends MediaListenerAdapter {
                 thread.begin();
 
             } catch (LineUnavailableException e) {
-                System.err.println("WARNING: No audio line out available" + e);
+                LOGGER.error("WARNING: No audio line out available.", e);
             }
         }
 

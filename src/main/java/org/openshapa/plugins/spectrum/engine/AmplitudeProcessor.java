@@ -2,24 +2,43 @@ package org.openshapa.plugins.spectrum.engine;
 
 import java.io.File;
 
-import java.util.concurrent.ExecutionException;
-
 import javax.swing.SwingWorker;
 
 import org.openshapa.plugins.spectrum.mediatools.AmplitudeTool;
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 import org.openshapa.plugins.spectrum.swing.AmplitudeTrack;
 
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
+
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
 
 
+/**
+ * Worker thread for processing audio amplitude data. Only processes audio
+ * channels one and two.
+ */
 public final class AmplitudeProcessor
     extends SwingWorker<StereoAmplitudeData, Void> {
 
+    private static final Logger LOGGER = UserMetrix.getLogger(
+            AmplitudeProcessor.class);
+
+    /** Media file to process. */
     private File mediaFile;
+
+    /** Track to send processed data to. */
     private AmplitudeTrack track;
 
+    /**
+     * Creates a new worker thread.
+     *
+     * @param mediaFile
+     *            Media file to process.
+     * @param track
+     *            Track to send processed data to.
+     */
     public AmplitudeProcessor(final File mediaFile,
         final AmplitudeTrack track) {
         this.mediaFile = mediaFile;
@@ -38,10 +57,6 @@ public final class AmplitudeProcessor
         while (reader.readPacket() == null)
             ;
 
-        // System.out.println("Interval: " + at.getData().getTimeInterval());
-        // System.out.println("LSize: " + at.getData().sizeL());
-        // System.out.println("RSize: " + at.getData().sizeR());
-
         at.getData().normalizeL();
         at.getData().normalizeR();
 
@@ -54,7 +69,7 @@ public final class AmplitudeProcessor
             track.setData(get());
             track.repaint();
         } catch (Exception e) {
-            System.err.println(e);
+            LOGGER.error(e);
         }
 
     }

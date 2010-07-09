@@ -27,9 +27,6 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     /** Number of microseconds in one millisecond. */
     private static final long MILLISECOND = 1000;
 
-    /** Number of milliseconds in a second. */
-    private static final long SECOND = 1000;
-
     /** Frame seeking tolerance. */
     private static final long TOLERANCE = 25 * MILLISECOND;
 
@@ -54,6 +51,7 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     /** Handles audio playback. */
     private AudioPlaybackTool playbackTool;
 
+    /** Dialog for showing the spectral data. */
     private SpectrumDialog dialog;
 
     public PlaybackEngine(final File audioFile, final SpectrumDialog dialog) {
