@@ -44,20 +44,31 @@ public final class AudioPlaybackTool extends MediaListenerAdapter {
     /** Listeners interested in current timestamp. */
     private Set<TimestampListener> listeners;
 
+    /** Mapping from stream indices to audio threads. */
     private Map<Integer, AudioThread> audioThreads;
 
+    /** Authoritative audio thread. */
     private AudioThread authThread;
 
-    private SourceDataLine authLine;
-
+    /** Dialog for showing the spectrum data. */
     private SpectrumDialog dialog;
 
+    /**
+     * @param dialog
+     *            Dialog for showing the spectrum data.
+     */
     public AudioPlaybackTool(final SpectrumDialog dialog) {
         listeners = new HashSet<TimestampListener>();
         audioThreads = new HashMap<Integer, AudioThread>();
         this.dialog = dialog;
     }
 
+    /**
+     * Add a listener interested in timestamp events.
+     *
+     * @param listener
+     *            Listener to add.
+     */
     public void addTimestampListener(final TimestampListener listener) {
 
         synchronized (this) {
@@ -69,6 +80,12 @@ public final class AudioPlaybackTool extends MediaListenerAdapter {
         }
     }
 
+    /**
+     * Remove listener from being notified of timestamp events.
+     *
+     * @param listener
+     *            Listener to remove.
+     */
     public void removeTimestampListener(final TimestampListener listener) {
 
         synchronized (this) {
@@ -80,6 +97,9 @@ public final class AudioPlaybackTool extends MediaListenerAdapter {
         }
     }
 
+    /**
+     * Start audio output.
+     */
     public void startOutput() {
 
         synchronized (this) {
@@ -90,6 +110,9 @@ public final class AudioPlaybackTool extends MediaListenerAdapter {
         }
     }
 
+    /**
+     * Stop audio output.
+     */
     public void stopOutput() {
 
         synchronized (this) {
@@ -150,8 +173,9 @@ public final class AudioPlaybackTool extends MediaListenerAdapter {
     @Override public void onClose(final ICloseEvent event) {
 
         for (AudioThread at : audioThreads.values()) {
-            at.interrupt();
-            at.close();
+            at.stopAudioOutput();
+            at.clearInputBuffer();
+            at.clearAudioBuffer();
         }
 
         super.onClose(event);
@@ -179,10 +203,6 @@ public final class AudioPlaybackTool extends MediaListenerAdapter {
                         info);
                 line.open(audioFormat);
                 line.start();
-
-                if (authLine == null) {
-                    authLine = line;
-                }
 
                 thread = new AudioThread(line, dialog);
 

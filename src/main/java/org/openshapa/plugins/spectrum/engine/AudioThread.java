@@ -221,6 +221,18 @@ public final class AudioThread extends Thread {
         lock.unlock();
     }
 
+    /**
+     * Remove all samples from the input buffer.
+     */
+    public void clearInputBuffer() {
+        lock.lock();
+
+        incoming.clear();
+
+        condition.signalAll();
+        lock.unlock();
+    }
+
     public void clearAudioBuffer() {
         lock.lock();
 

@@ -160,7 +160,7 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     private void engineSeeking() {
 
         if (!mediaReader.isOpen()) {
-            setupMediaReader();
+            mediaReader.open();
         }
 
         IContainer container = mediaReader.getContainer();
