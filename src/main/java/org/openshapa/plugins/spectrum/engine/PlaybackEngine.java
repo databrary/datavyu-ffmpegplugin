@@ -54,6 +54,14 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     /** Dialog for showing the spectral data. */
     private SpectrumDialog dialog;
 
+    /**
+     * Creates a new engine thread.
+     *
+     * @param audioFile
+     *            The audio file to handle.
+     * @param dialog
+     *            The dialog used to display the spectrum.
+     */
     public PlaybackEngine(final File audioFile, final SpectrumDialog dialog) {
         this.audioFile = audioFile;
         commandQueue = new LinkedBlockingQueue<EngineState>();
@@ -65,6 +73,11 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
         this.dialog = dialog;
     }
 
+    /**
+     * Main engine thread.
+     *
+     * @see java.lang.Thread#run()
+     */
     @Override public void run() {
 
         while (true) {
@@ -119,6 +132,9 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
         }
     }
 
+    /**
+     * Initialize the playback engine.
+     */
     private void engineInitializing() {
 
         // Set up media reader.
@@ -134,8 +150,13 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
                 < MILLISECONDS.convert(1000, TimeUnit.MICROSECONDS)) {
             mediaReader.readPacket();
         }
+
+        engineState = EngineState.TASK_COMPLETE;
     }
 
+    /**
+     * Set up the media reader.
+     */
     private void setupMediaReader() {
 
         Runnable edtTask = new Runnable() {
@@ -157,6 +178,9 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
         mediaReader.addListener(volumeTool);
     }
 
+    /**
+     * Handles seeking through the current audio file.
+     */
     private void engineSeeking() {
 
         if (!mediaReader.isOpen()) {
@@ -181,15 +205,13 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
 
                 /*
                  * Don't bother with the seek API when moving forwards, it
-                 * either overshoots or undershoots the target time frame.
+                 * either overshoots or undershoots the target time frame,
+                 * resulting in many incoming seek requests.
                  */
 
                 // System.out.println("FORWARDS "
                 // + MILLISECONDS.convert(seekTime, TimeUnit.MICROSECONDS)
                 // + " FROM " + currentTime);
-
-
-                playbackTool.clearWaitBuffer();
 
                 while ((getCurrentTime()
                             < MILLISECONDS.convert(minTime,
@@ -209,28 +231,45 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
                     minTime = Math.max(seekTime - TOLERANCE, 0);
                 }
 
+                /*
+                 * Clear the buffer because we probably have packets that we do
+                 * not want after seeking manually.
+                 */
                 playbackTool.clearWaitBuffer();
             } else {
-
                 /*
                  * For seeking backwards, it is easier to let it overshoot then
-                 * seek forwards.
+                 * seek forward when the next seek command arrives.
                  */
+
                 // System.out.println("BACKWARDS "
                 // + MILLISECONDS.convert(seekTime, TimeUnit.MICROSECONDS)
                 // + " FROM " + currentTime);
+
                 mediaReader.getContainer().seekKeyFrame(-1, minTime, seekTime,
                     maxTime, IContainer.SEEK_FLAG_BACKWARDS);
 
                 playbackTool.clearWaitBuffer();
             }
 
+            /*
+             * Just read one packet ahead of the possibly incoming play command.
+             * This also ensures that we can jog and see an update on the
+             * spectrum.
+             */
             mediaReader.readPacket();
         }
 
+        /*
+         * Mark engine state with task complete so that isPlaying returns false
+         * while we are jogging.
+         */
         engineState = EngineState.TASK_COMPLETE;
     }
 
+    /**
+     * Start playing back the audio file.
+     */
     private void enginePlaying() {
 
         playbackTool.startOutput();
@@ -243,27 +282,48 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
         }
     }
 
+    /**
+     * Stop audio output.
+     */
     private void engineStop() {
         playbackTool.stopOutput();
     }
 
+    /**
+     * Queue up a command to start audio playback.
+     */
     public void startPlayback() {
         commandQueue.offer(EngineState.PLAYING);
     }
 
+    /**
+     * Queue up a command to stop audio playback.
+     */
     public void stopPlayback() {
         commandQueue.offer(EngineState.STOP);
     }
 
+    /**
+     * @return True if the engine is initializing.
+     */
     public boolean isInitializing() {
         return engineState == EngineState.INITIALIZING;
     }
 
+    /**
+     * @return True if the engine is playing back the audio file.
+     */
     public boolean isPlaying() {
         return (engineState == EngineState.PLAYING)
             || (engineState == EngineState.SEEKING);
     }
 
+    /**
+     * Queue up a command to seek to the given time in milliseconds.
+     *
+     * @param time
+     *            time to seek to in milliseconds.
+     */
     public void seek(final long time) {
         newTime = time;
 
@@ -272,10 +332,19 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
         }
     }
 
+    /**
+     * @return Current time in the audio file.
+     */
     public long getCurrentTime() {
         return currentTime;
     }
 
+    /**
+     * Notify the engine about the temporal position in the audio file being
+     * played back.
+     *
+     * @see org.openshapa.plugins.spectrum.events.TimestampListener#notifyTime(long)
+     */
     @Override public void notifyTime(final long time) {
         currentTime = time;
     }

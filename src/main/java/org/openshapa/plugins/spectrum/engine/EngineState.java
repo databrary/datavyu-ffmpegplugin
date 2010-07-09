@@ -17,11 +17,20 @@ public enum EngineState {
     /** Engine is stopping media playback. */
     STOP("Stopping"),
 
-    /** This state overwrites the engine state once a task has been handled. */
+    /**
+     * This state overwrites the engine state once a task has been handled. Not
+     * to be queued.
+     */
     TASK_COMPLETE("Task complete");
 
+    /** Name/description of the state. */
     private String stateName;
 
+    /**
+     * Create a new state with the given name/description.
+     *
+     * @param stateName
+     */
     EngineState(final String stateName) {
         this.stateName = stateName;
     }

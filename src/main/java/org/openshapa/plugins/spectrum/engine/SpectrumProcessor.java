@@ -18,14 +18,13 @@ import com.xuggle.xuggler.IAudioSamples;
 
 /**
  * Used to calculate power spectrum from audio file.
- *
- * @author Douglas Teoh
  */
 public final class SpectrumProcessor extends Thread {
 
-    /** */
+    /** Number of frequency bands to display. */
     private static final int NUM_BANDS = 30;
 
+    /** Incoming samples for processing. */
     private BlockingQueue<AudioSample> incoming;
 
     /** Table of window function values. */
@@ -34,17 +33,25 @@ public final class SpectrumProcessor extends Thread {
     /** Table of indices to use for selected frequencies. */
     private int[] indices;
 
+    /** Buffer for storing the results. */
     private double[] resultBuffer;
+
+    /** Buffer for temporary calculations. */
     private double[] tempCalcBuffer;
+
+    /** Input buffer for audio samples. */
     private double[] inputSamples;
+
+    /** Array of chosen frequency values. */
     private double[] freqs;
 
+    /** FFT engine. */
     private FastFourierTransformer fft;
 
+    /** The Swing output view. */
     private Spectrum spectrumView;
 
-    private double scaler = 17.127D;
-
+    /** Peak spectral magnitude. */
     private double peakPower = Double.MIN_VALUE;
 
     public SpectrumProcessor(final SpectrumDialog dialog) {
@@ -63,6 +70,11 @@ public final class SpectrumProcessor extends Thread {
         SwingUtilities.invokeLater(edtTask);
     }
 
+    /**
+     * FFT processing loop.
+     *
+     * @see java.lang.Thread#run()
+     */
     @Override public void run() {
 
         while (true) {
@@ -94,8 +106,6 @@ public final class SpectrumProcessor extends Thread {
                     inputSamples = new double[len];
                     tempCalcBuffer = new double[len];
                     resultBuffer = new double[len];
-
-                    scaler = scaler / (double) len;
                 }
 
                 if (indices == null) {
@@ -126,19 +136,19 @@ public final class SpectrumProcessor extends Thread {
                 firstChannel(src, samples.getSize() / 4, inputSamples,
                     samples.getChannels());
 
-                // 2. Perform FFT on random segments of the buffer.
-
+                // 2. Apply window function to input samples.
                 for (int i = 0; i < inputSamples.length; i++) {
-                    tempCalcBuffer[i] = (scaler * inputSamples[i]) * window[i];
+                    tempCalcBuffer[i] = inputSamples[i] * window[i];
                 }
 
+                // 3. Perform FFT on the buffer.
                 Complex[] freqMags = fft.transform(tempCalcBuffer);
 
                 for (int i = 0; i < resultBuffer.length; i++) {
                     resultBuffer[i] = freqMags[i].abs() * freqMags[i].abs();
                 }
 
-                // 3. Convert results into spectral power.
+                // 4. Convert results into spectral power.
                 for (int i = 0; i < ((resultBuffer.length / 2) + 1); i++) {
                     resultBuffer[i] = 10 * Math.log10(resultBuffer[i]);
 
@@ -146,12 +156,12 @@ public final class SpectrumProcessor extends Thread {
                     peakPower = Math.max(peakPower, resultBuffer[i]);
                 }
 
-                // 4. Normalize with respect to maximum spectral power.
+                // 5. Normalize with respect to maximum spectral power.
                 for (int i = 0; i < ((resultBuffer.length / 2) + 1); i++) {
                     resultBuffer[i] -= peakPower;
                 }
 
-                // 5. Display spectrum.
+                // 6. Display spectrum.
                 final double[] paintSamples = new double[NUM_BANDS];
 
                 for (int bin = 0; bin < NUM_BANDS; bin++) {
@@ -166,6 +176,7 @@ public final class SpectrumProcessor extends Thread {
                     };
                 SwingUtilities.invokeLater(edtTask);
 
+                // 7. Release native resources.
                 current.delete();
 
             } catch (InterruptedException e) {
@@ -175,10 +186,31 @@ public final class SpectrumProcessor extends Thread {
         }
     }
 
+    /**
+     * Queue up audio sample for processing.
+     *
+     * @param sample
+     *            Audio sample to process.
+     */
     public void giveSample(final AudioSample sample) {
         incoming.offer(sample);
     }
 
+    /**
+     * Calculates frequencies to display and returns their indices. The
+     * frequencies to display are chosen logarithmically. Exponential regression
+     * is performed to calculate the frequency values to display.
+     *
+     * @param minFreq
+     *            Minimum frequency value.
+     * @param maxFreq
+     *            Maximum frequency value.
+     * @param numSamples
+     *            Total number of samples in the FFT buffer.
+     * @param numIndices
+     *            Number of frequency values to pick.
+     * @return Indices associated with the picked frequency values.
+     */
     private int[] findIndices(final int minFreq, final int maxFreq,
         final int numSamples, final int numIndices) {
 
@@ -241,6 +273,18 @@ public final class SpectrumProcessor extends Thread {
         return result;
     }
 
+    /**
+     * Extract the first audio channel into a buffer.
+     *
+     * @param src
+     *            Source buffer.
+     * @param srcLength
+     *            Length of source buffer.
+     * @param dest
+     *            Destination buffer.
+     * @param numChannels
+     *            Number of audio channels.
+     */
     private void firstChannel(final ShortBuffer src, final int srcLength,
         final double[] dest, final int numChannels) {
 

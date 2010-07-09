@@ -16,6 +16,9 @@ import javax.sound.sampled.SourceDataLine;
 import org.openshapa.plugins.spectrum.events.TimestampListener;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
 
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
+
 import com.xuggle.xuggler.IAudioSamples;
 
 
@@ -23,6 +26,9 @@ import com.xuggle.xuggler.IAudioSamples;
  * Handles playing back audio samples.
  */
 public final class AudioThread extends Thread {
+
+    private static final Logger LOGGER = UserMetrix.getLogger(
+            AudioThread.class);
 
     /** Standard time unit used by the audio samples. */
     private static final TimeUnit TIME_UNIT = MICROSECONDS;
@@ -79,6 +85,11 @@ public final class AudioThread extends Thread {
         listeners.remove(listener);
     }
 
+    /**
+     * Audio thread loop.
+     *
+     * @see java.lang.Thread#run()
+     */
     @Override public void run() {
 
         synchronized (this) {
@@ -124,6 +135,9 @@ public final class AudioThread extends Thread {
 
     }
 
+    /**
+     * Start this thread and any other resources needed to be started.
+     */
     public void begin() {
 
         synchronized (this) {
@@ -136,19 +150,29 @@ public final class AudioThread extends Thread {
                     this.wait();
                 }
             } catch (InterruptedException e) {
-
-                e.printStackTrace();
+                LOGGER.error(e);
                 Thread.currentThread().interrupt();
             }
         }
     }
 
+    /**
+     * Queue up the given audio sample. This method blocks until the sample is
+     * queued up.
+     *
+     * @param sample
+     *            The sample to queue up.
+     */
     public void giveSample(final AudioSample sample) {
 
         lock.lock();
 
         try {
 
+            /*
+             * Block until the queue is empty or if the given sample is within
+             * the buffered capacity.
+             */
             while (keepGoing && !incoming.isEmpty()
                     && ((sample.getTimestamp()
                             - incoming.peek().getTimestamp())
@@ -233,10 +257,12 @@ public final class AudioThread extends Thread {
         lock.unlock();
     }
 
+    /**
+     * Flush the audio output line buffer.
+     */
     public void clearAudioBuffer() {
         lock.lock();
 
-        // output.drain();
         output.flush();
 
         condition.signalAll();
@@ -252,6 +278,9 @@ public final class AudioThread extends Thread {
         lock.unlock();
     }
 
+    /**
+     * Clean up and close resources used by the thread.
+     */
     public void close() {
         lock.lock();
 
@@ -275,6 +304,12 @@ public final class AudioThread extends Thread {
         }
     }
 
+    /**
+     * Push the given sample to the Java sound system for playback.
+     *
+     * @param sample
+     *            The system to play.
+     */
     private void playAudio(final AudioSample sample) {
 
         IAudioSamples xuggSample = sample.getSamples();
@@ -283,8 +318,6 @@ public final class AudioThread extends Thread {
             int size = xuggSample.getSize();
             output.write(xuggSample.getData().getByteArray(0, size), 0, size);
 
-            // long lineTime = MILLISECONDS.convert(output
-            // .getMicrosecondPosition(), MICROSECONDS);
             long lineTime = MILLISECONDS.convert(sample.getTimestamp(),
                     sample.getTimeUnit());
 
