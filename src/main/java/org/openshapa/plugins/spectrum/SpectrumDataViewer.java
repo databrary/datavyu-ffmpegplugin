@@ -12,9 +12,9 @@ import java.io.OutputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 
+import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor;
 import org.openshapa.plugins.spectrum.engine.PlaybackEngine;
 import org.openshapa.plugins.spectrum.swing.AmplitudeTrack;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
@@ -37,7 +37,7 @@ public class SpectrumDataViewer implements DataViewer {
     private SpectrumDialog dialog;
 
     /** Track. */
-    private TrackPainter track;
+    private AmplitudeTrack track;
 
     /** Data controller. */
     private DataController dataC;
@@ -142,6 +142,9 @@ public class SpectrumDataViewer implements DataViewer {
 
     @Override public void setDataFeed(final File file) {
         mediaFile = file;
+
+        AmplitudeProcessor ap = new AmplitudeProcessor(file, track);
+        ap.execute();
 
 
         engine = new PlaybackEngine(mediaFile, dialog);
