@@ -29,7 +29,7 @@ public class SpectrumFileFilter extends FileFilter {
     }
 
     @Override public String getDescription() {
-        return "Spectrum display";
+        return "Spectrum display (.mov, .wav, .mp3)";
     }
 
 }
