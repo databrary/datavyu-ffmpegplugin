@@ -129,9 +129,19 @@ public final class AudioPlaybackTool extends MediaListenerAdapter {
 
             for (AudioThread at : audioThreads.values()) {
                 at.clearInputBuffer();
-                // at.clearAudioBuffer();
             }
         }
+    }
+
+    public void shutdown() {
+
+        synchronized (this) {
+
+            for (AudioThread at : audioThreads.values()) {
+                at.close();
+            }
+        }
+
     }
 
     @Override public void onAudioSamples(final IAudioSamplesEvent event) {

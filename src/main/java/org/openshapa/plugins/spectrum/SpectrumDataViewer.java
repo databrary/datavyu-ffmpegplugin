@@ -51,6 +51,7 @@ public class SpectrumDataViewer implements DataViewer {
     /** Playback engine. */
     private PlaybackEngine engine;
 
+    /** Audio FPS. */
     private float fps;
 
     public SpectrumDataViewer(final Frame parent, final boolean modal) {
@@ -143,23 +144,25 @@ public class SpectrumDataViewer implements DataViewer {
     @Override public void setDataFeed(final File file) {
         mediaFile = file;
 
+        // Start processing data for the track display.
         AmplitudeProcessor ap = new AmplitudeProcessor(file, track);
         ap.execute();
 
-
+        // Get the engine up and running.
         engine = new PlaybackEngine(mediaFile, dialog);
         engine.start();
 
-        // Record media duration
+        // Record media duration and audio FPS
         duration = SpectrumUtils.getDuration(file);
-
         fps = SpectrumUtils.calculateAudioFPS(file);
 
+        // Show the dialog.
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
 
                     if (dialog != null) {
                         dialog.setVisible(true);
+                        dialog.setTitle("Spectrum - " + file.getName());
                     }
                 }
             };
@@ -194,6 +197,10 @@ public class SpectrumDataViewer implements DataViewer {
      */
     private void dialogClosing(final WindowEvent evt) {
 
+        // Shutdown the engine
+        engine.shutdown();
+
+        // Stop the engine thread.
         engine.interrupt();
 
         if (dataC != null) {

@@ -70,9 +70,9 @@ public final class AmplitudeTrack extends TrackPainter {
         int yLineStart = midYLeftPos;
 
         for (Double amp : data.getDataL()) {
+            long interval = data.getTimeInterval() * offsetCounter;
             int offset = computePixelXCoord(TimeUnit.MILLISECONDS.convert(
-                        data.getTimeInterval() * offsetCounter,
-                        data.getTimeUnit()));
+                        interval, data.getTimeUnit()));
             offsetCounter++;
 
             g.drawLine(xLineStart, yLineStart, startXPos + offset,
@@ -89,9 +89,9 @@ public final class AmplitudeTrack extends TrackPainter {
         yLineStart = midYRightPos;
 
         for (Double amp : data.getDataR()) {
+            long interval = data.getTimeInterval() * offsetCounter;
             int offset = computePixelXCoord(TimeUnit.MILLISECONDS.convert(
-                        data.getTimeInterval() * offsetCounter,
-                        data.getTimeUnit()));
+                        interval, data.getTimeUnit()));
             offsetCounter++;
 
             g.drawLine(xLineStart, yLineStart, startXPos + offset,

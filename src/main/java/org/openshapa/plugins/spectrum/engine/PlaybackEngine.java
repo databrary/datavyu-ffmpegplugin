@@ -22,6 +22,9 @@ import com.xuggle.xuggler.IContainer;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
+/**
+ * Audio playback engine.
+ */
 public final class PlaybackEngine extends Thread implements TimestampListener {
 
     /** Number of microseconds in one millisecond. */
@@ -150,6 +153,13 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
                 < MILLISECONDS.convert(1000, TimeUnit.MICROSECONDS)) {
             mediaReader.readPacket();
         }
+
+        /*
+         * Cannot start the Java sound system output lines in stopped state;
+         * audio won't play. Stop the output here after buffering so that the
+         * user doesn't hear any output from the sound system.
+         */
+        engineStop();
 
         engineState = EngineState.TASK_COMPLETE;
     }
@@ -347,6 +357,15 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
      */
     @Override public void notifyTime(final long time) {
         currentTime = time;
+    }
+
+    /**
+     * Shutdown the engine.
+     */
+    public void shutdown() {
+        playbackTool.stopOutput();
+        playbackTool.shutdown();
+        mediaReader.close();
     }
 
 }

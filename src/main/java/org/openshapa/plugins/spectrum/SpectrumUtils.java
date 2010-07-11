@@ -138,12 +138,21 @@ public final class SpectrumUtils {
                      * samples from the decoder.
                      */
                     if (samples.isComplete()) {
-                        audioCoder.close();
-                        container.close();
 
-                        return (float) ((1000D
-                                    / MILLISECONDS.convert(
-                                        samples.getTimeStamp(), MICROSECONDS)));
+                        /*
+                         * For audio formats such as WAV and MP3, the time stamp
+                         * given is the starting time stamp, not the end. MOV
+                         * gives the end time stamp.
+                         */
+                        if (samples.getTimeStamp() != 0) {
+                            audioCoder.close();
+                            container.close();
+
+                            return (float) ((1000D
+                                        / MILLISECONDS.convert(
+                                            samples.getTimeStamp(),
+                                            MICROSECONDS)));
+                        }
                     }
                 }
             }

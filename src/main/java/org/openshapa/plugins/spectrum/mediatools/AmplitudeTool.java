@@ -9,6 +9,8 @@ import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 import com.xuggle.mediatool.MediaToolAdapter;
 import com.xuggle.mediatool.event.IAudioSamplesEvent;
 
+import com.xuggle.xuggler.IAudioSamples;
+
 
 /**
  * Tool for getting time-domain amplitude data.
@@ -25,6 +27,7 @@ public final class AmplitudeTool extends MediaToolAdapter {
         return ampData;
     }
 
+
     @Override public void onAudioSamples(final IAudioSamplesEvent event) {
 
         // Get the raw audio bytes.
@@ -33,8 +36,18 @@ public final class AmplitudeTool extends MediaToolAdapter {
 
         final int numChannels = event.getAudioSamples().getChannels();
 
+
         if (!ampData.isTimeIntervalSet()) {
-            ampData.setTimeInterval(event.getTimeStamp(), event.getTimeUnit());
+
+            /*
+             * For audio formats such as WAV and MP3, the timestamp given
+             * is the starting time stamp, not the end. MOV gives the end time
+             * stamp.
+             */
+            if (event.getTimeStamp() != 0) {
+                ampData.setTimeInterval(event.getTimeStamp(),
+                    event.getTimeUnit());
+            }
         }
 
         if (numChannels >= 1) {
