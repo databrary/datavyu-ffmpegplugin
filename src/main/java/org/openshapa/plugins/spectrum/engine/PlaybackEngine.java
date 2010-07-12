@@ -20,6 +20,7 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.IContainer;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
 
 
 /**
@@ -84,7 +85,7 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     @Override public void run() {
 
         while (true) {
-            // System.out.println("Command queue: " + commandQueue);
+            System.out.println("Command queue: " + commandQueue);
 
             try {
 
@@ -210,8 +211,7 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
 
             playbackTool.clearWaitBuffer();
 
-            if (MILLISECONDS.convert(seekTime, TimeUnit.MICROSECONDS)
-                    >= currentTime) {
+            if (MILLISECONDS.convert(seekTime, MICROSECONDS) >= currentTime) {
 
                 /*
                  * Don't bother with the seek API when moving forwards, it
@@ -219,13 +219,12 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
                  * resulting in many incoming seek requests.
                  */
 
-                // System.out.println("FORWARDS "
-                // + MILLISECONDS.convert(seekTime, TimeUnit.MICROSECONDS)
-                // + " FROM " + currentTime);
+                System.out.println("FORWARDS "
+                    + MILLISECONDS.convert(seekTime, MICROSECONDS) + " FROM "
+                    + currentTime);
 
                 while ((getCurrentTime()
-                            < MILLISECONDS.convert(minTime,
-                                TimeUnit.MICROSECONDS))
+                            < MILLISECONDS.convert(seekTime, MICROSECONDS))
                         && commandQueue.isEmpty()) {
 
                     if (mediaReader.readPacket() != null) {
@@ -238,7 +237,6 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
                      */
                     seekTime = Math.max(0, newTime * 1000);
                     seekTime = Math.min(seekTime, container.getDuration());
-                    minTime = Math.max(seekTime - TOLERANCE, 0);
                 }
 
                 /*
@@ -252,22 +250,23 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
                  * seek forward when the next seek command arrives.
                  */
 
-                // System.out.println("BACKWARDS "
-                // + MILLISECONDS.convert(seekTime, TimeUnit.MICROSECONDS)
-                // + " FROM " + currentTime);
+                System.out.println("BACKWARDS "
+                    + MILLISECONDS.convert(seekTime, MICROSECONDS) + " FROM "
+                    + currentTime);
 
                 mediaReader.getContainer().seekKeyFrame(-1, minTime, seekTime,
                     maxTime, IContainer.SEEK_FLAG_BACKWARDS);
 
                 playbackTool.clearWaitBuffer();
+
+                /*
+                 * Just read one packet ahead of the possibly incoming play
+                 * command. This ensures that when we jog backwards we can see
+                 * an update on the spectrum.
+                 */
+                mediaReader.readPacket();
             }
 
-            /*
-             * Just read one packet ahead of the possibly incoming play command.
-             * This also ensures that we can jog and see an update on the
-             * spectrum.
-             */
-            mediaReader.readPacket();
         }
 
         /*
@@ -346,7 +345,10 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
      * @return Current time in the audio file.
      */
     public long getCurrentTime() {
-        return currentTime;
+
+        synchronized (this) {
+            return currentTime;
+        }
     }
 
     /**
@@ -356,7 +358,12 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
      * @see org.openshapa.plugins.spectrum.events.TimestampListener#notifyTime(long)
      */
     @Override public void notifyTime(final long time) {
-        currentTime = time;
+
+        synchronized (this) {
+            currentTime = time;
+        }
+
+        // System.out.println("Tick: " + time);
     }
 
     /**
