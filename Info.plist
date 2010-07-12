@@ -45,6 +45,7 @@
         <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.5/UserMetrix-jclient-0.0.5.jar</string>
         <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.2/miglayout-3.7.2-swing.jar</string>
         <string>$JAVAROOT/repo/commons-io/commons-io/1.4/commons-io-1.4.jar</string>
+        <string>$JAVAROOT/repo/org/apache/commons/2.1/commons-math-2.1.jar</string>
       </array>
     </dict>
   </dict>
