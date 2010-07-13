@@ -6,13 +6,7 @@ import java.io.File;
 
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.core.matcher.JTextComponentMatcher;
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
-import org.fest.swing.timing.Timeout;
-import org.fest.swing.util.Platform;
-
-import org.openshapa.util.UIUtils;
 
 import org.testng.Assert;
 

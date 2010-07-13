@@ -25,8 +25,6 @@ import org.openshapa.models.db.IntDataValue;
 import org.openshapa.models.db.NominalDataValue;
 import org.openshapa.models.db.QuoteStringDataValue;
 import org.openshapa.models.db.TextStringDataValue;
-import org.openshapa.models.db.TimeStamp;
-import org.openshapa.models.db.TimeStampDataValue;
 
 /**
  * DataValueEditor - abstract class extending EditorComponent. Adds

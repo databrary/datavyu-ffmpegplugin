@@ -482,7 +482,6 @@ public abstract class EditorComponent implements ClipboardOwner {
             this.setText(currentValue.toString());
             setCaretPosition(cPosition);
         }
-
     }
 
     /**

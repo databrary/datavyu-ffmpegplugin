@@ -1,7 +1,12 @@
 package org.openshapa.views.discrete.datavalues;
 
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
 
 import javax.swing.text.JTextComponent;
 
@@ -10,6 +15,7 @@ import org.openshapa.models.db.FloatDataValue;
 import org.openshapa.models.db.Matrix;
 import org.openshapa.models.db.PredDataValue;
 import org.openshapa.util.Constants;
+import org.openshapa.util.FloatUtils;
 
 /**
  * This class is the character editor of a FloatDataValue.
@@ -30,6 +36,9 @@ public final class FloatDataValueEditor extends DataValueEditor {
 
     /** 'Negative' zero - used for checking specials. */
     private static final String NEGATIVE_ZERO = "-0.00000";
+
+    /** Standard version of zero. */
+    private static final String STANDARD_ZERO = "0.0";
 
     /**
      * Constructor.
@@ -74,6 +83,101 @@ public final class FloatDataValueEditor extends DataValueEditor {
     }
 
     /**
+     * Action to take when focus is lost for this editor.
+     *
+     * @param fe
+     *            Focus Event
+     */
+    @Override
+    public void focusLost(final FocusEvent fe) {
+        //Make strings valid on focus lost
+        String fixedString = fixString(getText());
+        if (fixedString != null) {
+            setText(fixedString);
+        }
+        super.focusLost(fe);
+    }
+
+    @Override
+    public void keyPressed(final KeyEvent e) {
+        FloatDataValue fdv = (FloatDataValue) getModel();
+
+        StringBuilder newValue = new StringBuilder(getText());
+        Double valueAsDouble = fdv.getItsValue();
+        int caretPos = getCaretPosition();
+
+        // The backspace key removes digits from behind the caret.
+        if (e.getKeyChar() == '\u0008') {
+            // Can't delete empty float data value.
+            if (!fdv.isEmpty()) {
+                //Record previous state
+                String prevValue = getText();
+                int prevCaretPos = getCaretPosition();
+                double prevDouble = fdv.getItsValue();
+
+                //Perform change. Ideally we should simulate this change.
+                removeBehindCaret();
+                Double newD = buildValue(getText());
+                if (newD != null && !newD.equals(fdv.getItsValue())) {
+                    fdv.setItsValue(newD);
+                } else if (newD == null) {
+                    fdv.clearValue();
+                }
+
+                //Check if new state is valid
+                newValue = new StringBuilder(getText());
+                String validString = validState(newValue.toString());
+                if (validString == null) {
+                    //Revert state
+                    setText(prevValue);
+                    fdv.setItsValue(prevDouble);
+                    setCaretPosition(prevCaretPos);
+                    e.consume();
+                    return;
+                } else {
+                    setText(validString);
+                }
+                e.consume();
+                updateDatabase();
+            }
+            // The delete key removes digits ahead of the caret.
+        } else if (e.getKeyChar() == '\u007F') {
+            // Can't delete empty float data value.
+            if (!fdv.isEmpty()) {
+                //Record previous state
+                String prevValue = getText();
+                int prevCaretPos = getCaretPosition();
+                double prevDouble = fdv.getItsValue();
+
+                //Perform change. Ideally we should simulate this change.
+                removeAheadOfCaret();
+                Double newD = buildValue(getText());
+                if (newD != null && !newD.equals(fdv.getItsValue())) {
+                    fdv.setItsValue(newD);
+                } else if (newD == null) {
+                    fdv.clearValue();
+                }
+
+                //Check if new state is valid
+                newValue = new StringBuilder("" + fdv.getItsValue());
+                String validString = validState(newValue.toString());
+                if (validString == null) {
+                    //Revert state
+                    setText(prevValue);
+                    fdv.setItsValue(prevDouble);
+                    setCaretPosition(prevCaretPos);
+                    e.consume();
+                    return;
+                } else {
+                    setText(validString);
+                }
+                e.consume();
+                updateDatabase();
+            }
+        }
+    }
+
+    /**
      * The action to invoke when a key is typed.
      *
      * @param e
@@ -83,29 +187,41 @@ public final class FloatDataValueEditor extends DataValueEditor {
     public void keyTyped(final KeyEvent e) {
         FloatDataValue fdv = (FloatDataValue) getModel();
 
-        // BugzID:422 - Disallow key presses if user is in front of -ve sign
-        if (getText().startsWith("-") && getCaretPosition() == 0
-                && e.getKeyChar() != '-') {
+        JTextArea newValue = new JTextArea(getText());
+
+        Double valueAsDouble = fdv.getItsValue();
+        newValue.setCaretPosition(getCaretPosition());
+        newValue.select(getSelectionStart(), getSelectionEnd());
+
+        //Ignore everything in front of the -ve
+        if (getText().startsWith("-") && getCaretPosition() == 0) {
             e.consume();
             return;
         }
-
+        
         // '-' key toggles the state of a negative / positive number.
         if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD || e
                 .getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
                 && e.getKeyChar() == '-') {
-
+            
+            valueAsDouble = -valueAsDouble;
+            newValue.setText("" + valueAsDouble);
             // Move the caret to behind the - sign, or front of the number.
-            if (fdv.getItsValue() < 0.0) {
-                setCaretPosition(0);
+            if (newValue.getText().startsWith("-")) {
+                newValue.setCaretPosition(1);
             } else {
-                setCaretPosition(1);
+                newValue.setCaretPosition(0);
             }
-
-            // Toggle state of a negative / positive number.
-            fdv.setItsValue(-fdv.getItsValue());
-            e.consume();
-
+            if (validState(newValue.getText()) == null) {
+                e.consume();
+                return;
+            } else {
+                //Toggle state of a negative / positive number.
+                fdv.setItsValue(valueAsDouble);
+                setText(validState(newValue.getText()));
+                setCaretPosition(newValue.getCaretPosition());
+                e.consume();
+            }
             // '.' key shifts the location of the decimal point.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                 && e.getKeyChar() == '.') {
@@ -124,68 +240,43 @@ public final class FloatDataValueEditor extends DataValueEditor {
                                 - getText().indexOf('.') - factor - 1);
             }
 
-            fdv.setItsValue(fdv.getItsValue() * Math.pow(BASE, factor));
+            valueAsDouble = valueAsDouble * Math.pow(BASE, factor);
 
             // Determine the precision to use - prevent the user from exceding
             // six decimal places.
             DecimalFormat formatter = new DecimalFormat(Constants.FLOAT_FORMAT);
             formatter.setMaximumFractionDigits(maxFrac);
-            setText(formatter.format(fdv.getItsValue()));
-
-            // Work out the position of the caret (just after the '.' point).
-            setCaretPosition(getText().indexOf('.') + 1);
-            e.consume();
-
-            // The backspace key removes digits from behind the caret.
-        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                && e.getKeyChar() == '\u0008') {
-
-            // Can't delete empty float data value.
-            if (!fdv.isEmpty()) {
-                removeBehindCaret();
-
-                // Allow the provision of a 'null' value - that will permit
-                // users to transition the cell contents to a '<val>' state.
-                Double newD = buildValue(getText());
-                if (newD != null && !newD.equals(fdv.getItsValue())) {
-                    fdv.setItsValue(newD);
-                } else if (newD == null) {
-                    fdv.clearValue();
-                }
+            newValue.setText(formatter.format(valueAsDouble));
+            newValue.setCaretPosition(newValue.getText().indexOf('.') + 1);
+            if (validState(newValue.getText()) == null) {
+                e.consume();
+                return;
+            } else {
+                // Work out the position of the caret (just after the '.' point).
+                fdv.setItsValue(fdv.getItsValue() * Math.pow(BASE, factor));
+                setText(validState(newValue.getText()));
+                setCaretPosition(newValue.getCaretPosition());
                 e.consume();
             }
-
-            // The delete key removes digits ahead of the caret.
-        } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                && e.getKeyChar() == '\u007F') {
-
-            // Can't delete empty float data value.
-            if (!fdv.isEmpty()) {
-                removeAheadOfCaret();
-
-                // Allow the provision of a 'null' value - that will permit
-                // users to transition the cell contents to a '<val>' state.
-                Double newD = buildValue(getText());
-                if (newD != null && !newD.equals(fdv.getItsValue())) {
-                    fdv.setItsValue(newD);
-                    setCaretPosition(getCaretPosition());
-                } else if (newD == null) {
-                    fdv.clearValue();
-                }
-                e.consume();
-            }
-
+            
             // Key stoke is number - insert number at current caret position.
         } else if (Character.isDigit(e.getKeyChar())
-                && (!excedesPrecision() || isAllSelected())) {
-            removeSelectedText();
+                && (!exceedsPrecision() || isAllSelected())) {
+            //Record previous state because we need to use removeSelectedText.
+            //Might need to move this function later.
+            String prevValue = getText();
+            int prevCaretPos = getCaretPosition();
+            double prevDouble = fdv.getItsValue();
+
+            //Perform change
+            newValue = removeSelectedText(newValue);
 
             // BugzID: 565 - Reject keystroke if a leading zero.
-            if (e.getKeyChar() == '0' && getText().length() > 0
-                    && !getText().equals(".")) {
+            if (e.getKeyChar() == '0' && newValue.getText().length() > 0
+                    && !newValue.getText().equals(".")) {
                 if ((fdv.getItsValue() > 0 && getCaretPosition() == 0)
                         || (fdv.getItsValue() < 0 && getCaretPosition() <= 1)
-                        || fdv.getItsValue() == 0.0) {
+                        || FloatUtils.closeEnough(fdv.getItsValue(), 0)) {
                     e.consume();
                     return;
                 }
@@ -197,39 +288,58 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 e.consume();
                 return;
             }
-
-            StringBuffer currentValue = new StringBuffer(getText());
-            currentValue.insert(getCaretPosition(), e.getKeyChar());
+            
+            //Cases where we need to overwrite a zero
+            try {
+                if (((newValue.getText().matches("-?[0-9]+.0{1,6}")) && (newValue.getText(getCaretPosition(), 1).equals("0")) && (getCaretPosition() > newValue.getText().indexOf(".")))
+                || ((newValue.getText().matches("-?0.0{1,6}")) && (newValue.getText(getCaretPosition(), 1).equals("0")))) {
+                    newValue.replaceRange(Character.toString(e.getKeyChar()), getCaretPosition(), getCaretPosition() + 1);
+                } else if ((newValue.getText().matches("-?0.[0-9]{1,6}")) && (newValue.getText(getCaretPosition(), 1).equals("."))) {
+                    newValue.replaceRange(Character.toString(e.getKeyChar()), getCaretPosition() - 1, getCaretPosition());
+                }
+                else {
+                    newValue.insert(Character.toString(e.getKeyChar()), newValue.getCaretPosition());
+                }
+            } catch (BadLocationException ex) {
+                Logger.getLogger(FloatDataValueEditor.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             // BugzID:612 - Truncate last value if too long so we don't round
             // precision.
-            if ((currentValue.toString().length()
-                    - currentValue.toString().indexOf('.') > MAX_DECIMAL_PLACES + 1)) {
-                currentValue.deleteCharAt(currentValue.toString().length() - 1);
+            if ((newValue.getText().length()
+                    - newValue.getText().indexOf('.') > MAX_DECIMAL_PLACES + 1)) {
+                newValue.replaceRange(null, newValue.getText().length() - 1, newValue.getText().length());
             }
 
             // Dealing with someone who has just entered in - remove trailing 0
             // between the caret and decimal place.
             if (getText().equals(NEGATIVE_ZERO) && getCaretPosition() == 1) {
-                currentValue.deleteCharAt(getCaretPosition() + 1);
+                newValue.replaceRange(null, newValue.getCaretPosition() + 1, newValue.getCaretPosition() + 2);
             }
 
-            String nText = currentValue.toString();
-            if (nText.length() - 1 - nText.indexOf('.') > MAX_DECIMAL_PLACES) {
-                nText = nText.substring(0, nText.length() - 1);
+            if (newValue.getText().length() - 1 - newValue.getText().indexOf('.') > MAX_DECIMAL_PLACES) {
+                try {
+                    newValue.setText(newValue.getText(0, newValue.getText().length() - 1));
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(FloatDataValueEditor.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
 
-            // Advance caret over the top of the new char.
-            int pos = getCaretPosition();
-            if (fdv.getItsValue() != 0.0 || getText().equals(NEGATIVE_ZERO)
-                    || getCaretPosition() != 1) {
-                pos = pos + 1;
+            String validString = validState(newValue.getText());
+            if (validString == null) {
+                //Don't make any changes
+                setText(prevValue);
+                setCaretPosition(prevCaretPos);
+                fdv.setItsValue(prevDouble);
+                e.consume();
+                return;
+            } else {
+                setText(newValue.getText());
+                setCaretPosition(newValue.getCaretPosition());
+                fdv.setItsValue(buildValue(newValue.getText()));
+                e.consume();
             }
-            setText(nText);
 
-            setCaretPosition(pos);
-            fdv.setItsValue(buildValue(currentValue.toString()));
-            e.consume();
 
             // Every other key stroke is ignored by the float editor.
         } else {
@@ -239,12 +349,14 @@ public final class FloatDataValueEditor extends DataValueEditor {
         updateDatabase();
     }
 
+
+
     /**
      * @return True if adding another character at the current caret position
-     *         will execde the allowed precision for a floating value, false
+     *         will exceed the allowed precision for a floating value, false
      *         otherwise.
      */
-    public boolean excedesPrecision() {
+    public boolean exceedsPrecision() {
         String text = getText();
         if ((text.length() - text.indexOf('.') > MAX_DECIMAL_PLACES)
                 && (getCaretPosition() - text.indexOf('.') > MAX_DECIMAL_PLACES)) {
@@ -296,5 +408,87 @@ public final class FloatDataValueEditor extends DataValueEditor {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    public String validState(final String text) {
+        String state0 = "<val>"; //null state
+        String state1 = "-?0.0{1,6}"; //transition state when "-", ".", or "0" are pressed
+        String state2 = "-?[0-9]+\\.[0-9]{1,6}"; //valid number
+        String invalidState1 = "0+[0-9]+\\.[0-9]{1,6}";
+
+        if (text.matches(invalidState1)) {
+            return null;
+        } else if ((text.equals(state0)) || (text.matches(state1)) || (text.matches(state2))) {
+            return text;
+        } else {
+            return fixString(text);
+        }
+    }
+
+    public String fixString(final String text) {
+        if (text.startsWith(".")) {
+            return "0" + text;
+        }
+
+        if (text.startsWith("-.")) {
+            return "-0." + text.substring(2);
+        }
+
+        if (text.endsWith(".")) {
+            return text + "0";
+        }
+
+        if (text.matches("[0-9]+")) {
+            return text + ".0";
+        }
+
+        if (FloatUtils.closeEnough(Double.parseDouble(text), 0) && (!text.matches("0.0+"))) {
+            return STANDARD_ZERO;
+        }
+
+        return text;
+    }
+
+    public final JTextArea removeSelectedText(JTextArea text) {
+        // Get the current value of the visual representation of this DataValue.
+        StringBuffer cValue = new StringBuffer(text.getText());
+        JTextArea result = text;
+
+        // Obtain the start and finish of the selected text.
+        int start = text.getSelectionStart();
+        int end = text.getSelectionEnd();
+        int pos = start;
+
+        for (int i = start; i < end; i++) {
+
+            // Current character is not reserved - either delete or replace it.
+            if (!isPreserved(cValue.charAt(pos))) {
+                cValue.deleteCharAt(pos);
+
+            // Current character is reserved, skip over current position.
+            } else {
+                pos++;
+            }
+        }
+
+        // BugzID:747 - If all we have is preserved chars clear everything.
+        String newValue = cValue.toString();
+        boolean foundNonPreserved = false;
+        for (int i = 0; i < newValue.length(); i++) {
+            if (!isPreserved(newValue.charAt(i))) {
+                foundNonPreserved = true;
+                break;
+            }
+        }
+
+        // Set the text for this data value to the new string.
+        if (foundNonPreserved) {
+            result.setText(newValue);
+            result.setCaretPosition(start);
+        } else {
+            result.setText("");
+            result.setCaretPosition(0);
+        }
+        return result;
     }
 }
