@@ -28,7 +28,7 @@
     <key>Java</key>
     <dict>
       <key>MainClass</key>
-      <string>org.openshapa.OpenSHAPA</string>
+      <string>org.openshapa.Launcher</string>
       <key>JVMVersion</key>
       <string>1.6+</string>
       <key>SplashFile</key>
@@ -45,6 +45,13 @@
         <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.5/UserMetrix-jclient-0.0.5.jar</string>
         <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.2/miglayout-3.7.2-swing.jar</string>
         <string>$JAVAROOT/repo/commons-io/commons-io/1.4/commons-io-1.4.jar</string>
+        <string>$JAVAROOT/repo/com/google/collections/google-collections/1.0-rc5/google-collections-1.0-rc5.jar</string>
+        <string>$JAVAROOT/repo/commons-cli/commons-cli/1.2/commons-cli-1.2.jar</string>
+        <string>$JAVAROOT/repo/ch/qos/logback/logback-classic/0.9.24/logback-classic-0.9.24.jar</string>
+        <string>$JAVAROOT/repo/ch/qos/logback/logback-core/0.9.24/logback-core-0.9.24.jar</string>
+        <string>$JAVAROOT/repo/org/slf4j/slf4j-api/1.6.0/slf4j-api-1.6.0.jar</string>
+        <string>$JAVAROOT/repo/com/xuggle/xuggle-xuggler/3.4/xuggle-xuggler-3.4.jar</string>
+        <string>$JAVAROOT/repo/com/xuggle/xuggler-osx64/3.4/xuggler-osx64-3.4.jar</string>
       </array>
     </dict>
   </dict>

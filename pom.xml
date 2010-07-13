@@ -335,7 +335,7 @@
         <version>1.0-alpha-3</version>
         <configuration>
           <bundleName>OpenSHAPA</bundleName>
-          <mainClass>org.openshapa.OpenSHAPA</mainClass>
+          <mainClass>org.openshapa.Launcher</mainClass>
           <jvmVersion>1.6+</jvmVersion>
           <iconFile>${basedir}/src/main/resources/icons/OpenSHAPA.icns</iconFile>
 
@@ -518,7 +518,7 @@
               <minVersion>1.6.0</minVersion>
             </jre>
             <classPath>
-              <mainClass>org.openshapa.OpenSHAPA</mainClass>
+              <mainClass>org.openshapa.Launcher</mainClass>
                 <preCp>jruby-engine-1.1.6.jar</preCp>
                 <preCp>jruby-complete-1.4.0.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
@@ -620,6 +620,12 @@
     	<version>1.4</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
+      <version>1.0-rc5</version>
+    </dependency>
+
     <!-- xuggle dependencies -->
     <dependency>
         <groupId>commons-cli</groupId>
@@ -648,6 +654,12 @@
     <dependency>
         <groupId>com.xuggle</groupId>
         <artifactId>xuggle-xuggler</artifactId>
+        <version>3.4</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.xuggle</groupId>
+        <artifactId>xuggler-osx64</artifactId>
         <version>3.4</version>
     </dependency>
   </dependencies>

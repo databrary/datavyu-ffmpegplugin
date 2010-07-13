@@ -48,6 +48,8 @@ import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.Logger;
 
 import com.usermetrix.jclient.UserMetrix;
+import com.xuggle.mediatool.IMediaReader;
+import com.xuggle.mediatool.ToolFactory;
 import java.util.LinkedList;
 
 
@@ -780,6 +782,11 @@ public final class OpenSHAPA extends SingleFrameApplication
      *            The command line arguments passed to OpenSHAPA.
      */
     public static void main(final String[] args) {
+        IMediaReader mediaReader =
+            ToolFactory.makeReader("/Users/cfreeman/Data/head_turns.mov");
+        mediaReader.open();
+        mediaReader.readPacket();
+
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
 
