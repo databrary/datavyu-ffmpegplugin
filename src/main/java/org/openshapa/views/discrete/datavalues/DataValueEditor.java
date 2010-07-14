@@ -117,7 +117,8 @@ public abstract class DataValueEditor extends EditorComponent {
      *            view is to represent.
      */
     private void init(final DataCell cell, final PredDataValue predicate,
-            final int predicateIndex, final Matrix matrix, final int matrixIndex) {
+            final int predicateIndex, final Matrix matrix,
+            final int matrixIndex) {
         // so far all DataValueEditors are editable
         setEditable(true);
         try {
@@ -223,7 +224,6 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * Action to take when focus is lost for this editor.
-     * 
      * @param fe
      *            Focus Event
      */
@@ -237,7 +237,6 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * Action to take by this editor when a key is pressed.
-     * 
      * @param e
      *            The KeyEvent that triggered this action.
      */

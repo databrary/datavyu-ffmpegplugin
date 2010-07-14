@@ -61,13 +61,13 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     private String[] floatTestInput = {
             "1a.9", "10-43.2", "!289(", "178.&", "0~~~)", "If x?7 then. x? 2 ",
             "589.138085638", "000389.5", "-0.1", "0.2", "-0.0", "-", "-0",
-            /*BugzID1640:"-.34", "-23.34",*/ ".34", "12.34", "-123"
+            "-.34", "-23.34", ".34", "12.34", "-123"
         };
 
     /**
      * Test creating a new NOMINAL cell.
      */
-    /*//@Test*/ public void testNewNominalCell() {
+    @Test public void testNewNominalCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "n";
@@ -87,7 +87,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test pasting in Nominal cell.
      */
-    /*//@Test*/ public void testNominalPasting() {
+    @Test public void testNominalPasting() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "n";
@@ -105,7 +105,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new NOMINAL cell with more advanced input.
      */
-    /*//@Test*/ public void testNewAdvancedNominalCell() {
+    @Test public void testNewAdvancedNominalCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "n";
@@ -152,7 +152,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new TEXT cell.
      */
-    /*//@Test*/ public void testNewTextCell() {
+    @Test public void testNewTextCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "t";
@@ -169,7 +169,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test pasting in TEXT cell.
      */
-    /*//@Test*/ public void testTextPasting() {
+    @Test public void testTextPasting() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "t";
@@ -182,7 +182,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test pasting in INTEGER cell.
      */
-    /*//@Test*/ public void testIntegerPasting() {
+    @Test public void testIntegerPasting() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";
@@ -199,7 +199,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new TEXT cell with more advanced input.
      */
-    /*//@Test*/ public void testNewAdvancedTextCell() {
+    @Test public void testNewAdvancedTextCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "t";
@@ -245,7 +245,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
         String[] expectedTestOutput = {
                 "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
                 "389.5", "-0.1", "0.2", "0", "0", "0",
-                /*BugzID1640:"-0.34", "-23.34",*/ "0.34", "12.34", "-123"
+                "-0.34", "-23.34", "0.34", "12.34", "-123"
             };
 
         mainFrameFixture.createNewVariable(varName, varRadio);
@@ -256,7 +256,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test pasting with FLOAT cell.
      */
-/*@Test*/ public void testFloatPasting() {
+    @Test public void testFloatPasting() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "f";
@@ -265,7 +265,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
         String[] expectedTestOutput = {
                 "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
                 "389.5", "-0.1", "0.2", "0", "0", "0",
-                /*BugzID:1640"-0.34", "-23.34",*/ "0.34", "12.34", "-123"
+                "-0.34", "-23.34", "0.34", "12.34", "-123"
             };
 
         cutAndPasteTest(varName, varRadio, floatTestInput, expectedTestOutput);
@@ -274,7 +274,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new FLOAT cell with advanced input.
      */
-    /*//@Test*/ public void testNewAdvancedFloatCell() {
+    @Test public void testNewAdvancedFloatCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "f";
@@ -322,7 +322,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new INTEGER cell.
      */
-    /*//@Test*/ public void testNewIntegerCell() {
+    @Test public void testNewIntegerCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";
@@ -341,7 +341,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new INTEGER cell with advanced input.
      */
-    /*//@Test*/ public void testNewAdvancedIntegerCell() {
+    @Test public void testNewAdvancedIntegerCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";
@@ -384,7 +384,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*//@Test*/ public void testNewMatrixCellSingleArgNominal() {
+    @Test public void testNewMatrixCellSingleArgNominal() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
@@ -414,7 +414,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*//@Test*/ public void testNewMatrixCellSingleArgFloat() {
+    @Test public void testNewMatrixCellSingleArgFloat() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
@@ -434,8 +434,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
 
         String[] expectedFloatTestOutput = {
                 "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-                "389.5", "-0.1", "0.2", /*BugzID1634:"0", "0", "0",*/
-                                        /*BugzID1640: "-0.34", "-23.34",*/
+                "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34", "-23.34",
                 "0.34", "12.34", "-123"
             };
 
@@ -446,7 +445,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*//@Test*/ public void testNewMatrixCellSingleArgInteger() {
+    @Test public void testNewMatrixCellSingleArgInteger() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // 1. Create new variables using script
@@ -476,7 +475,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*//@Test*/ public void testNewMatrixCellDoubleArgInteger() {
+    @Test public void testNewMatrixCellDoubleArgInteger() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         /**
@@ -554,7 +553,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*//@Test*/ public void testNewMatrixCellDoubleArgNominal() {
+    @Test public void testNewMatrixCellDoubleArgNominal() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         /**
@@ -630,7 +629,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test creating a new MATRIX cell.
      */
-    /*//@Test*/ public void testNewMatrixCellDoubleArgFloat() {
+    @Test public void testNewMatrixCellDoubleArgFloat() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         /**
@@ -881,7 +880,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
      *            expected test output values
      */
     private void cutAndPasteTest(final String varName, final String varRadio,
-        final String[] testInput, final String[] expectedTestOutput) {
+        final String[] testInput, final String[] expectedTestOutput) throws BadLocationException {
         int numOfTests = testInput.length;
 
         spreadsheet = mainFrameFixture.getSpreadsheet();
@@ -903,11 +902,11 @@ public final class UICellValueTest extends OpenSHAPATestClass {
             // cell
             int inputIndex = (ordinal + 2) % numOfTests;
 
-            // Type value into another cell
-            changeCellValue(varName, inputIndex + 1, "");
-            changeCellValue(varName, inputIndex + 1, testInput[inputIndex]);
-
             try {
+                // Type value into another cell
+                SpreadsheetCellFixture currCell = spreadsheet.column(varName).cell(inputIndex + 1);
+                currCell.select(SpreadsheetCellFixture.VALUE, 0, currCell.cellValue().text().length());
+                currCell.cellValue().enterText(testInput[inputIndex]);
 
                 // Cut value
                 int strlen = spreadsheet.column(varName).cell(inputIndex + 1)
@@ -935,7 +934,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
             }
 
             // Paste new contents.
-            pasteCellValue(varName, ordinal, testInput[inputIndex]);
+            pasteCellValue(varName, ordinal);
 
             // Check that cell contents are pasted in
             Assert.assertTrue(cellHasValue(varName, ordinal,
@@ -1182,11 +1181,13 @@ public final class UICellValueTest extends OpenSHAPATestClass {
      * @param value
      *            cell value to paste
      */
-    private void pasteCellValue(final String varName, final int id,
-        final String value) {
+    private void pasteCellValue(final String varName, final int id) throws BadLocationException {
         spreadsheet = mainFrameFixture.getSpreadsheet();
-        spreadsheet.column(varName).cell(id).cellValue().selectAll()
-            .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V).modifiers(
+        SpreadsheetCellFixture currCell = spreadsheet.column(varName).cell(id);
+        //Select all if not already selected e.g. <val>
+        currCell.cellValue().click();
+        currCell.cellValue().selectAll();
+        currCell.cellValue().pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V).modifiers(
                     Platform.controlOrCommandMask()));
     }
 

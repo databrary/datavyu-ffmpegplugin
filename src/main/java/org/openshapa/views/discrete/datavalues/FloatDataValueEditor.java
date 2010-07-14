@@ -121,6 +121,8 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 if (newD != null && !newD.equals(fdv.getItsValue())) {
                     fdv.setItsValue(newD);
                 } else if (newD == null) {
+                    //Workaround, because clearvalue only changes a boolean
+                    fdv.setItsValue(0);
                     fdv.clearValue();
                 }
 
@@ -198,12 +200,12 @@ public final class FloatDataValueEditor extends DataValueEditor {
             e.consume();
             return;
         }
-        
+
         // '-' key toggles the state of a negative / positive number.
         if ((e.getKeyLocation() == KeyEvent.KEY_LOCATION_NUMPAD || e
                 .getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
                 && e.getKeyChar() == '-') {
-            
+
             valueAsDouble = -valueAsDouble;
             newValue.setText("" + valueAsDouble);
             // Move the caret to behind the - sign, or front of the number.
@@ -225,7 +227,6 @@ public final class FloatDataValueEditor extends DataValueEditor {
             // '.' key shifts the location of the decimal point.
         } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
                 && e.getKeyChar() == '.') {
-
             // Shift the decimal point to the current caret position.
             int factor = getCaretPosition() - getText().indexOf('.');
             if (factor > 0) {
@@ -252,13 +253,13 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 e.consume();
                 return;
             } else {
-                // Work out the position of the caret (just after the '.' point).
+                //Work out the position of the caret (just after the '.' point).
                 fdv.setItsValue(fdv.getItsValue() * Math.pow(BASE, factor));
                 setText(validState(newValue.getText()));
                 setCaretPosition(newValue.getCaretPosition());
                 e.consume();
             }
-            
+
             // Key stoke is number - insert number at current caret position.
         } else if (Character.isDigit(e.getKeyChar())
                 && (!exceedsPrecision() || isAllSelected())) {
@@ -288,40 +289,56 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 e.consume();
                 return;
             }
-            
+
             //Cases where we need to overwrite a zero
             try {
-                if (((newValue.getText().matches("-?[0-9]+.0{1,6}")) && (newValue.getText(getCaretPosition(), 1).equals("0")) && (getCaretPosition() > newValue.getText().indexOf(".")))
-                || ((newValue.getText().matches("-?0.0{1,6}")) && (newValue.getText(getCaretPosition(), 1).equals("0")))) {
-                    newValue.replaceRange(Character.toString(e.getKeyChar()), getCaretPosition(), getCaretPosition() + 1);
-                } else if ((newValue.getText().matches("-?0.[0-9]{1,6}")) && (newValue.getText(getCaretPosition(), 1).equals("."))) {
-                    newValue.replaceRange(Character.toString(e.getKeyChar()), getCaretPosition() - 1, getCaretPosition());
+                if (((newValue.getText().matches("-?[0-9]+.0{1,6}"))
+                        && (newValue.getText(getCaretPosition(), 1).equals("0"))
+                        && (getCaretPosition() > newValue.getText()
+                        .indexOf(".")))
+                || ((newValue.getText().matches("-?0.0{1,6}")) 
+                        && (newValue.getText(getCaretPosition(), 1)
+                        .equals("0")))) {
+                    newValue.replaceRange(Character.toString(e.getKeyChar()),
+                            getCaretPosition(), getCaretPosition() + 1);
+                } else if ((newValue.getText().matches("-?0.[0-9]{1,6}")) 
+                        && (newValue.getText(getCaretPosition(), 1)
+                        .equals("."))) {
+                    newValue.replaceRange(Character.toString(e.getKeyChar()),
+                            getCaretPosition() - 1, getCaretPosition());
                 }
                 else {
-                    newValue.insert(Character.toString(e.getKeyChar()), newValue.getCaretPosition());
+                    newValue.insert(Character.toString(e.getKeyChar()),
+                            newValue.getCaretPosition());
                 }
             } catch (BadLocationException ex) {
-                Logger.getLogger(FloatDataValueEditor.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FloatDataValueEditor.class.getName())
+                        .log(Level.SEVERE, null, ex);
             }
 
             // BugzID:612 - Truncate last value if too long so we don't round
             // precision.
-            if ((newValue.getText().length()
-                    - newValue.getText().indexOf('.') > MAX_DECIMAL_PLACES + 1)) {
-                newValue.replaceRange(null, newValue.getText().length() - 1, newValue.getText().length());
+            if ((newValue.getText().length() - newValue.getText().indexOf('.')
+                    > MAX_DECIMAL_PLACES + 1)) {
+                newValue.replaceRange(null, newValue.getText().length() - 1,
+                        newValue.getText().length());
             }
 
             // Dealing with someone who has just entered in - remove trailing 0
             // between the caret and decimal place.
             if (getText().equals(NEGATIVE_ZERO) && getCaretPosition() == 1) {
-                newValue.replaceRange(null, newValue.getCaretPosition() + 1, newValue.getCaretPosition() + 2);
+                newValue.replaceRange(null, newValue.getCaretPosition() + 1,
+                        newValue.getCaretPosition() + 2);
             }
 
-            if (newValue.getText().length() - 1 - newValue.getText().indexOf('.') > MAX_DECIMAL_PLACES) {
+            if (newValue.getText().length() - 1 - newValue.getText()
+                    .indexOf('.') > MAX_DECIMAL_PLACES) {
                 try {
-                    newValue.setText(newValue.getText(0, newValue.getText().length() - 1));
+                    newValue.setText(newValue.getText(
+                            0, newValue.getText().length() - 1));
                 } catch (BadLocationException ex) {
-                    Logger.getLogger(FloatDataValueEditor.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FloatDataValueEditor.class.getName())
+                            .log(Level.SEVERE, null, ex);
                 }
             }
 
@@ -359,7 +376,8 @@ public final class FloatDataValueEditor extends DataValueEditor {
     public boolean exceedsPrecision() {
         String text = getText();
         if ((text.length() - text.indexOf('.') > MAX_DECIMAL_PLACES)
-                && (getCaretPosition() - text.indexOf('.') > MAX_DECIMAL_PLACES)) {
+                && (getCaretPosition() - text.indexOf('.')
+                > MAX_DECIMAL_PLACES)) {
             return true;
         }
 
@@ -410,22 +428,46 @@ public final class FloatDataValueEditor extends DataValueEditor {
         }
     }
 
+    /**
+     * Checks if text is a valid float state and returns corrected float state
+     * if possible.
+     * @param text float string
+     * @return Corrected float state if possible, or null if no correction
+     * possible.
+     */
     public String validState(final String text) {
-        String state0 = "<val>"; //null state
-        String state1 = "-?0.0{1,6}"; //transition state when "-", ".", or "0" are pressed
-        String state2 = "-?[0-9]+\\.[0-9]{1,6}"; //valid number
+        //null state
+        String state0 = "<val>";
+
+        //transition state when "-", ".", or "0" are pressed
+        String state1 = "-?0.0{1,6}";
+
+        //valid number
+        String state2 = "-?[0-9]+\\.[0-9]{1,6}";
+
+        //invalid state
         String invalidState1 = "0+[0-9]+\\.[0-9]{1,6}";
 
         if (text.matches(invalidState1)) {
             return null;
-        } else if ((text.equals(state0)) || (text.matches(state1)) || (text.matches(state2))) {
+        } else if ((text.equals(state0)) || (text.matches(state1))
+                || (text.matches(state2))) {
             return text;
         } else {
             return fixString(text);
         }
     }
 
+    /**
+     * Returns a fixed float string.
+     * @param text  float string
+     * @return a fixed float string.
+     */
     public String fixString(final String text) {
+        if (text.length() == 0) {
+            return text;
+        }
+
         if (text.startsWith(".")) {
             return "0" + text;
         }
@@ -442,21 +484,31 @@ public final class FloatDataValueEditor extends DataValueEditor {
             return text + ".0";
         }
 
-        if (FloatUtils.closeEnough(Double.parseDouble(text), 0) && (!text.matches("0.0+"))) {
-            return STANDARD_ZERO;
+        try {
+            if (FloatUtils.closeEnough(Double.parseDouble(text), 0)
+                    && (!text.matches("0.0+"))) {
+                return STANDARD_ZERO;
+            }
+        } catch (Exception e) {
+            //Not a number. Ignore.
         }
 
         return text;
     }
 
-    public final JTextArea removeSelectedText(JTextArea text) {
+    /**
+     * Removes selected text from a JTextArea, maintaining float format.
+     * @param textArea JTextArea
+     * @return JText area with selected text removed
+     */
+    public final JTextArea removeSelectedText(JTextArea textArea) {
         // Get the current value of the visual representation of this DataValue.
-        StringBuffer cValue = new StringBuffer(text.getText());
-        JTextArea result = text;
+        StringBuffer cValue = new StringBuffer(textArea.getText());
+        JTextArea result = textArea;
 
         // Obtain the start and finish of the selected text.
-        int start = text.getSelectionStart();
-        int end = text.getSelectionEnd();
+        int start = textArea.getSelectionStart();
+        int end = textArea.getSelectionEnd();
         int pos = start;
 
         for (int i = start; i < end; i++) {
