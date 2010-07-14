@@ -697,6 +697,52 @@ public final class UICellValueTest extends OpenSHAPATestClass {
         }
     }
 
+        /**
+     * Test creating a new MATRIX cell.
+     */
+    @Test public void testMatrixArgumentMouseNavigation() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        //Matrix name (first element) and arguments (remaining elements)
+        String[] nomMatrix = {"mN2", "<nominal1>", "<nominal2>"};
+        String[] floatMatrix = {"mF2", "<float1>", "<float2>"};
+        String[] intMatrix = {"mI2", "<int1>", "<int2>"};
+        String[] mixedMatrix1 = {"mM1", "<float>", "<int>", "<nominal>", "<text>"};
+        String[] mixedMatrix2 = {"mM2", "<float1>", "<int1>", "<int2>", "<nominal1>", "<float2>", "<nominal2>"};
+
+        String[][] matrixNames = {nomMatrix, floatMatrix, intMatrix, mixedMatrix1, mixedMatrix2};
+
+        //Run Matrix demo file
+        final File demoFile = new File(testFolder + "/ui/matrix_tests.rb");
+        Assert.assertTrue(demoFile.exists(),
+            "Expecting matrix_tests.rb to exist.");
+
+        mainFrameFixture.runScript(demoFile);
+
+        // Close script console
+        mainFrameFixture.closeScriptConsole();
+
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        //Create a cell for each matrix type and navigate to each argument by
+        //clicking on it
+        for (String[] matrixCol : matrixNames) {
+            createCell(matrixCol[0]);
+            SpreadsheetCellFixture cell = spreadsheet.column(matrixCol[0]).cell(1);
+            //Click on each element from last to first
+            for (int i = matrixCol.length - 1; i > 0; i--) {                
+                int charPos = cell.cellValue().text().indexOf(matrixCol[i]) + 2;
+                try {
+                    cell.clickToCharPos(SpreadsheetCellFixture.VALUE, charPos);
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(UICellValueTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                Assert.assertEquals(cell.cellValue().component().getSelectedText(), matrixCol[i]);
+            }
+        }
+    }
+
     /**
      * Runs advanced tests.
      *
@@ -942,51 +988,6 @@ public final class UICellValueTest extends OpenSHAPATestClass {
                 "Expecting different cell contents.");
         }
     }
-
-    //
-    // /**
-    // * Tests for pasting.
-    // * @param varName variable name
-    // * @param varRadio radio for variable
-    // * @param testInput test input values
-    // * @param expectedTestOutput expected test output values
-    // * @throws java.lang.Exception on any exception
-    // */
-    // private void pasteTest(final String varName,
-    // final String varRadio, final String[] testInput,
-    // final String[] expectedTestOutput) throws Exception {
-    // // Retrieve the components and set variables
-    // Window window = getMainWindow();
-    // MenuBar menuBar = window.getMenuBar();
-    //
-    // int numOfTests = testInput.length;
-    // //1. Create new TEXT variable,
-    // //open spreadsheet and check that it's there
-    // createNewVariable(varName, varRadio);
-    // Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-    // (window.getUIComponents(Spreadsheet.class)[0]
-    // .getAwtComponent()));
-    // //3. Create 6 new cell, check that they have been created
-    // for (int i = 0; i < numOfTests; i++) {
-    // menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-    // }
-    // Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-    // //5. Check copy pasting
-    // for (int i = 0; i < numOfTests; i++) {
-    // int j = i % numOfTests;
-    // Clipboard.putText(testInput[j]);
-    // // Delete existing cell contents.
-    // Cell c = cells.elementAt(i);
-    // c.selectAllAndTypeKey(Cell.VALUE, KeyEvent.VK_DELETE);
-    // //Check that it actually was deleted
-    // assertTrue(c.getValueText().equals("<val>")
-    // || c.getValueText().equals(""));
-    // // Paste new contents.
-    // TextBox t = c.getValue();
-    // t.pasteFromClipboard();
-    // assertTrueEqualValues(t.getText(), expectedTestOutput[i]);
-    // }
-    // }
 
     /**
      * @param varName
