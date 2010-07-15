@@ -28,6 +28,7 @@ import org.gstreamer.lowlevel.GValueAPI;
 import org.gstreamer.lowlevel.GValueAPI.GValue;
 
 import org.openshapa.plugins.spectrum.SpectrumConstants;
+import static org.openshapa.plugins.spectrum.SpectrumUtils.findIndices;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -60,6 +61,8 @@ public final class Spectrum extends JComponent implements MESSAGE {
 
     /** String values for the frequency axis. */
     private String[] xAxisVals;
+
+    private int[] indices;
 
     public void setMagnitudelVals(final double[] dbVals) {
         this.magVals = dbVals;
@@ -287,13 +290,22 @@ public final class Spectrum extends JComponent implements MESSAGE {
 
             ValueList mags = msgStruct.getValueList("magnitude");
 
-            final double[] result = new double[SpectrumConstants.BANDS];
-            final double[] frequencies = new double[SpectrumConstants.BANDS];
+            if (indices == null) {
+                indices = findIndices(SpectrumConstants.FFT_BANDS,
+                        SpectrumConstants.SPECTRUM_BANDS);
+            }
 
-            for (int i = 0; i < SpectrumConstants.BANDS; i++) {
-                frequencies[i] = (((SpectrumConstants.SAMPLE_RATE / 2D) * i)
+            final double[] result =
+                new double[SpectrumConstants.SPECTRUM_BANDS];
+            final double[] frequencies =
+                new double[SpectrumConstants.SPECTRUM_BANDS];
+
+            for (int i = 0; i < SpectrumConstants.SPECTRUM_BANDS; i++) {
+                int idx = indices[i];
+
+                frequencies[i] = (((SpectrumConstants.SAMPLE_RATE / 2) * idx)
                         + (SpectrumConstants.SAMPLE_RATE / 4D))
-                    / SpectrumConstants.BANDS;
+                    / SpectrumConstants.FFT_BANDS;
 
                 GValue value = method("getValue").withReturnType(
                         GValueAPI.GValue.class).withParameterTypes(int.class)

@@ -92,7 +92,7 @@ public class SpectrumDataViewer implements DataViewer {
     }
 
     @Override public float getFrameRate() {
-        return fps;
+        return SpectrumConstants.FPS;
     }
 
     @Override public long getOffset() {
@@ -154,9 +154,6 @@ public class SpectrumDataViewer implements DataViewer {
 
         // Record media duration and audio FPS
         duration = SpectrumUtils.getDuration(file);
-        fps = SpectrumUtils.calculateAudioFPS(file);
-
-        engine.setAudioFPS(fps);
 
         // Show the dialog.
         Runnable edtTask = new Runnable() {

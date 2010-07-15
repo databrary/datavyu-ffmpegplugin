@@ -22,10 +22,8 @@ import org.gstreamer.Pipeline;
 import org.gstreamer.Structure;
 
 import org.gstreamer.elements.DecodeBin;
-import org.gstreamer.elements.PlayBin;
 
 import org.openshapa.plugins.spectrum.SpectrumConstants;
-import org.openshapa.plugins.spectrum.events.TimestampListener;
 import org.openshapa.plugins.spectrum.swing.Spectrum;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
 
@@ -38,22 +36,13 @@ import static org.gstreamer.Element.linkMany;
 /**
  * Audio playback engine.
  */
-public final class PlaybackEngine extends Thread implements TimestampListener {
+public final class PlaybackEngine extends Thread {
 
     private static final Logger LOGGER = UserMetrix.getLogger(
             PlaybackEngine.class);
 
-    /** Number of microseconds in one millisecond. */
-    private static final long MILLISECOND = 1000;
-
-    /** Frame seeking tolerance. */
-    private static final long TOLERANCE = 5 * MILLISECOND;
-
     /** Current engine state. */
     private volatile EngineState engineState;
-
-    /** Current time being played. */
-    private long currentTime;
 
     /** Seek time. */
     private long newTime;
@@ -64,15 +53,11 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     /** Audio file being handled. */
     private File audioFile;
 
-
     /** Dialog for showing the spectral data. */
     private SpectrumDialog dialog;
 
     /** Audio playback speed. */
     private double playbackSpeed;
-
-    /** The pre-calculated audio FPS. */
-    private double audioFPS;
 
     /** Output pipeline. */
     private Pipeline pipeline;
@@ -177,7 +162,7 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     }
 
     /**
-     * Set up the media reader.
+     * Set up GStreamer.
      */
     private void setupGst() {
         Gst.init();
@@ -196,21 +181,25 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
         pipeline.addMany(fileSource, decodeQueue, decodeBin);
 
         if (!linkMany(fileSource, decodeQueue, decodeBin)) {
-            System.err.println("Failed to link 1.");
+            LOGGER.error(getName() + " : Failed to link decoding bin.");
         }
 
         // Audio handling bin.
         final Bin audioBin = new Bin("Audio bin");
 
+        // Set up audio converter.
         Element audioConvert = ElementFactory.make("audioconvert", null);
 
+        // Set up audio resampler.
         Element audioResample = ElementFactory.make("audioresample", null);
         // audioResample.set("quality", 6);
 
+        // Auto-select audio sink.
         Element audioOutput = ElementFactory.make("autoaudiosink", "sink");
 
+        // Set up the spectrum analyzer.
         Element spectrum = ElementFactory.make("spectrum", "spectrum");
-        spectrum.set("bands", SpectrumConstants.BANDS);
+        spectrum.set("bands", SpectrumConstants.FFT_BANDS);
         spectrum.set("threshold", SpectrumConstants.MIN_MAGNITUDE);
         spectrum.set("post-messages", true);
 
@@ -252,8 +241,6 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
                     Structure struct = caps.getStructure(0);
 
                     if (struct.getName().startsWith("audio/")) {
-                        System.out.println(
-                            "Linking audio pad: " + struct.getName());
                         pad.link(audioBin.getStaticPad("sink"));
                     }
                 }
@@ -273,8 +260,8 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
                 public void endOfStream(final GstObject source) {
                     pipeline.setState(org.gstreamer.State.NULL);
                 }
-
             });
+
 
         final Spectrum spectrumComp = new Spectrum();
         bus.connect(spectrumComp);
@@ -375,38 +362,20 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
         commandQueue.offer(EngineState.ADJUSTING_SPEED);
     }
 
-    public void setAudioFPS(final double fps) {
-        audioFPS = fps;
-        commandQueue.offer(EngineState.SETTING_FPS);
-    }
-
     /**
      * @return Current time in the audio file.
      */
     public long getCurrentTime() {
-
-        synchronized (this) {
-            return currentTime;
-        }
-    }
-
-    /**
-     * Notify the engine about the temporal position in the audio file being
-     * played back.
-     *
-     * @see org.openshapa.plugins.spectrum.events.TimestampListener#notifyTime(long)
-     */
-    @Override public void notifyTime(final long time) {
-
-        synchronized (this) {
-            currentTime = time;
-        }
+        return pipeline.queryPosition(TimeUnit.MILLISECONDS);
     }
 
     /**
      * Shutdown the engine.
      */
     public void shutdown() {
+        pipeline.stop();
+        pipeline.setState(org.gstreamer.State.NULL);
+        pipeline.dispose();
     }
 
 }
