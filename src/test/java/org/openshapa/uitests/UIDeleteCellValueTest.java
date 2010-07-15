@@ -10,26 +10,21 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
-import javax.swing.JDialog;
 import javax.swing.text.BadLocationException;
 
-import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.util.FileFilters.OPFFilter;
 
-import org.openshapa.views.NewProjectV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 
 import org.testng.Assert;

@@ -60,9 +60,8 @@ public final class UICellValueTest extends OpenSHAPATestClass {
      */
     private String[] floatTestInput = {
             "1a.9", "10-43.2", "!289(", "178.&", "0~~~)", "If x?7 then. x? 2 ",
-            "589.138085638", "000389.5", "-0.1", "0.2", /*BugzID:1634:"-0.0",
-                                                         *"-", "-0",*/
-            /*BugzID1640:"-.34", "-23.34",*/ ".34", "12.34", "-123"
+            "589.138085638", "000389.5", "-0.1", "0.2", "-0.0", "-", "-0",
+            "-.34", "-23.34", ".34", "12.34", "-123"
         };
 
     /**
@@ -88,7 +87,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test pasting in Nominal cell.
      */
-    @Test public void testNominalPasting() {
+    @Test public void testNominalPasting() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "n";
@@ -104,7 +103,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test creating a new NOMINAL cell with more advanced input. BugzID:1203
+     * Test creating a new NOMINAL cell with more advanced input.
      */
     @Test public void testNewAdvancedNominalCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
@@ -170,7 +169,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test pasting in TEXT cell.
      */
-    @Test public void testTextPasting() {
+    @Test public void testTextPasting() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "t";
@@ -183,7 +182,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test pasting in INTEGER cell.
      */
-    @Test public void testIntegerPasting() {
+    @Test public void testIntegerPasting() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "i";
@@ -245,8 +244,8 @@ public final class UICellValueTest extends OpenSHAPATestClass {
 
         String[] expectedTestOutput = {
                 "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-                "389.5", "-0.1", "0.2", /*BugzID:1634:"0", "0", "0",*/
-                /*BugzID1640:"-0.34", "-23.34",*/ "0.34", "12.34", "-123"
+                "389.5", "-0.1", "0.2", "0", "0", "0",
+                "-0.34", "-23.34", "0.34", "12.34", "-123"
             };
 
         mainFrameFixture.createNewVariable(varName, varRadio);
@@ -257,7 +256,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     /**
      * Test pasting with FLOAT cell.
      */
-/*@Test*/ public void testFloatPasting() {
+    @Test public void testFloatPasting() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "f";
@@ -265,15 +264,15 @@ public final class UICellValueTest extends OpenSHAPATestClass {
 
         String[] expectedTestOutput = {
                 "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-                "389.5", "-0.1", "0.2", /*BugzID:1634:"0", "0", "0",*/
-                /*BugzID:1640"-0.34", "-23.34",*/ "0.34", "12.34", "-123"
+                "389.5", "-0.1", "0.2", "0", "0", "0",
+                "-0.34", "-23.34", "0.34", "12.34", "-123"
             };
 
         cutAndPasteTest(varName, varRadio, floatTestInput, expectedTestOutput);
     }
 
     /**
-     * Test creating a new FLOAT cell with advanced input. BugzID:1201
+     * Test creating a new FLOAT cell with advanced input.
      */
     @Test public void testNewAdvancedFloatCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
@@ -311,7 +310,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
             };
 
         String[] expectedTestOutput = {
-                "-43.21019", "-43.289210", "2178.8", "7", "-87", "589.138085",
+                "-43.21109", "-43.289210", "2178.8", "70", "-87", "589.138085",
                 "-589.138085"
             };
 
@@ -340,7 +339,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test creating a new INTEGER cell with advanced input. BugzID:1202
+     * Test creating a new INTEGER cell with advanced input.
      */
     @Test public void testNewAdvancedIntegerCell() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
@@ -413,7 +412,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test creating a new MATRIX cell. BugzID:1198
+     * Test creating a new MATRIX cell.
      */
     @Test public void testNewMatrixCellSingleArgFloat() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
@@ -435,8 +434,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
 
         String[] expectedFloatTestOutput = {
                 "1.9", "-43.21", "289", "178", "0", "7.2", "589.138085",
-                "389.5", "-0.1", "0.2", /*BugzID1634:"0", "0", "0",*/
-                                        /*BugzID1640: "-0.34", "-23.34",*/
+                "389.5", "-0.1", "0.2", "0", "0", "0", "-0.34", "-23.34",
                 "0.34", "12.34", "-123"
             };
 
@@ -445,7 +443,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Test creating a new MATRIX cell. BugzID:1199
+     * Test creating a new MATRIX cell.
      */
     @Test public void testNewMatrixCellSingleArgInteger() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
@@ -699,6 +697,52 @@ public final class UICellValueTest extends OpenSHAPATestClass {
         }
     }
 
+        /**
+     * Test creating a new MATRIX cell.
+     */
+    @Test public void testMatrixArgumentMouseNavigation() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        //Matrix name (first element) and arguments (remaining elements)
+        String[] nomMatrix = {"mN2", "<nominal1>", "<nominal2>"};
+        String[] floatMatrix = {"mF2", "<float1>", "<float2>"};
+        String[] intMatrix = {"mI2", "<int1>", "<int2>"};
+        String[] mixedMatrix1 = {"mM1", "<float>", "<int>", "<nominal>", "<text>"};
+        String[] mixedMatrix2 = {"mM2", "<float1>", "<int1>", "<int2>", "<nominal1>", "<float2>", "<nominal2>"};
+
+        String[][] matrixNames = {nomMatrix, floatMatrix, intMatrix, mixedMatrix1, mixedMatrix2};
+
+        //Run Matrix demo file
+        final File demoFile = new File(testFolder + "/ui/matrix_tests.rb");
+        Assert.assertTrue(demoFile.exists(),
+            "Expecting matrix_tests.rb to exist.");
+
+        mainFrameFixture.runScript(demoFile);
+
+        // Close script console
+        mainFrameFixture.closeScriptConsole();
+
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        //Create a cell for each matrix type and navigate to each argument by
+        //clicking on it
+        for (String[] matrixCol : matrixNames) {
+            createCell(matrixCol[0]);
+            SpreadsheetCellFixture cell = spreadsheet.column(matrixCol[0]).cell(1);
+            //Click on each element from last to first
+            for (int i = matrixCol.length - 1; i > 0; i--) {                
+                int charPos = cell.cellValue().text().indexOf(matrixCol[i]) + 2;
+                try {
+                    cell.clickToCharPos(SpreadsheetCellFixture.VALUE, charPos);
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(UICellValueTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                Assert.assertEquals(cell.cellValue().component().getSelectedText(), matrixCol[i]);
+            }
+        }
+    }
+
     /**
      * Runs advanced tests.
      *
@@ -861,8 +905,12 @@ public final class UICellValueTest extends OpenSHAPATestClass {
             Assert.assertTrue(cellHasValue(varName, ordinal,
                     expectedTestOutput[ordinal - 1]),
                 "Expecting different cell value");
-        }
 
+            //Test for BugzID1634: -0.0
+            spreadsheet = mainFrameFixture.getSpreadsheet();
+            Assert.assertFalse(spreadsheet.column(varName).cell(ordinal)
+                    .cellValue().text().matches("-0.0{1,6}"));
+        }
     }
 
     /**
@@ -878,7 +926,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
      *            expected test output values
      */
     private void cutAndPasteTest(final String varName, final String varRadio,
-        final String[] testInput, final String[] expectedTestOutput) {
+        final String[] testInput, final String[] expectedTestOutput) throws BadLocationException {
         int numOfTests = testInput.length;
 
         spreadsheet = mainFrameFixture.getSpreadsheet();
@@ -900,11 +948,11 @@ public final class UICellValueTest extends OpenSHAPATestClass {
             // cell
             int inputIndex = (ordinal + 2) % numOfTests;
 
-            // Type value into another cell
-            changeCellValue(varName, inputIndex + 1, "");
-            changeCellValue(varName, inputIndex + 1, testInput[inputIndex]);
-
             try {
+                // Type value into another cell
+                SpreadsheetCellFixture currCell = spreadsheet.column(varName).cell(inputIndex + 1);
+                currCell.select(SpreadsheetCellFixture.VALUE, 0, currCell.cellValue().text().length());
+                currCell.cellValue().enterText(testInput[inputIndex]);
 
                 // Cut value
                 int strlen = spreadsheet.column(varName).cell(inputIndex + 1)
@@ -932,7 +980,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
             }
 
             // Paste new contents.
-            pasteCellValue(varName, ordinal, testInput[inputIndex]);
+            pasteCellValue(varName, ordinal);
 
             // Check that cell contents are pasted in
             Assert.assertTrue(cellHasValue(varName, ordinal,
@@ -940,51 +988,6 @@ public final class UICellValueTest extends OpenSHAPATestClass {
                 "Expecting different cell contents.");
         }
     }
-
-    //
-    // /**
-    // * Tests for pasting.
-    // * @param varName variable name
-    // * @param varRadio radio for variable
-    // * @param testInput test input values
-    // * @param expectedTestOutput expected test output values
-    // * @throws java.lang.Exception on any exception
-    // */
-    // private void pasteTest(final String varName,
-    // final String varRadio, final String[] testInput,
-    // final String[] expectedTestOutput) throws Exception {
-    // // Retrieve the components and set variables
-    // Window window = getMainWindow();
-    // MenuBar menuBar = window.getMenuBar();
-    //
-    // int numOfTests = testInput.length;
-    // //1. Create new TEXT variable,
-    // //open spreadsheet and check that it's there
-    // createNewVariable(varName, varRadio);
-    // Spreadsheet ss = new Spreadsheet((SpreadsheetPanel)
-    // (window.getUIComponents(Spreadsheet.class)[0]
-    // .getAwtComponent()));
-    // //3. Create 6 new cell, check that they have been created
-    // for (int i = 0; i < numOfTests; i++) {
-    // menuBar.getMenu("Spreadsheet").getSubMenu("New Cell").click();
-    // }
-    // Vector<Cell> cells = ss.getSpreadsheetColumn(varName).getCells();
-    // //5. Check copy pasting
-    // for (int i = 0; i < numOfTests; i++) {
-    // int j = i % numOfTests;
-    // Clipboard.putText(testInput[j]);
-    // // Delete existing cell contents.
-    // Cell c = cells.elementAt(i);
-    // c.selectAllAndTypeKey(Cell.VALUE, KeyEvent.VK_DELETE);
-    // //Check that it actually was deleted
-    // assertTrue(c.getValueText().equals("<val>")
-    // || c.getValueText().equals(""));
-    // // Paste new contents.
-    // TextBox t = c.getValue();
-    // t.pasteFromClipboard();
-    // assertTrueEqualValues(t.getText(), expectedTestOutput[i]);
-    // }
-    // }
 
     /**
      * @param varName
@@ -1179,11 +1182,13 @@ public final class UICellValueTest extends OpenSHAPATestClass {
      * @param value
      *            cell value to paste
      */
-    private void pasteCellValue(final String varName, final int id,
-        final String value) {
+    private void pasteCellValue(final String varName, final int id) throws BadLocationException {
         spreadsheet = mainFrameFixture.getSpreadsheet();
-        spreadsheet.column(varName).cell(id).cellValue().selectAll()
-            .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V).modifiers(
+        SpreadsheetCellFixture currCell = spreadsheet.column(varName).cell(id);
+        //Select all if not already selected e.g. <val>
+        currCell.cellValue().click();
+        currCell.cellValue().selectAll();
+        currCell.cellValue().pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_V).modifiers(
                     Platform.controlOrCommandMask()));
     }
 
