@@ -2,16 +2,8 @@ package org.openshapa.plugins.spectrum;
 
 import java.awt.Frame;
 
-import java.io.File;
-
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileFilter;
-
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;

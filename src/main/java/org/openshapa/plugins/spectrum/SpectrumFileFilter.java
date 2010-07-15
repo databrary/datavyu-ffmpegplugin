@@ -19,8 +19,8 @@ public class SpectrumFileFilter extends FileFilter {
     public SpectrumFileFilter() {
         ext = new LinkedList<String>();
         ext.add(".wav");
-        ext.add(".mov");
         ext.add(".mp3");
+        ext.add(".mov");
         ext.add(".mpg");
         ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
     }
@@ -30,7 +30,7 @@ public class SpectrumFileFilter extends FileFilter {
     }
 
     @Override public String getDescription() {
-        return "Spectrum display (.mov, .wav, .mp3)";
+        return "Spectrum display (.wav, .mp3, .mov, .mpg)";
     }
 
 }

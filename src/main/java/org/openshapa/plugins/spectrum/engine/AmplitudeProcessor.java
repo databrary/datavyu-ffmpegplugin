@@ -4,15 +4,11 @@ import java.io.File;
 
 import javax.swing.SwingWorker;
 
-import org.openshapa.plugins.spectrum.mediatools.AmplitudeTool;
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 import org.openshapa.plugins.spectrum.swing.AmplitudeTrack;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-
-import com.xuggle.mediatool.IMediaReader;
-import com.xuggle.mediatool.ToolFactory;
 
 
 /**
@@ -46,21 +42,7 @@ public final class AmplitudeProcessor
     }
 
     @Override protected StereoAmplitudeData doInBackground() throws Exception {
-
-        IMediaReader reader = ToolFactory.makeReader(
-                mediaFile.getAbsolutePath());
-
-        AmplitudeTool at = new AmplitudeTool();
-        reader.addListener(at);
-
-        // Start reading packets so that the amplitude tool can get the data out
-        while (reader.readPacket() == null)
-            ;
-
-        at.getData().normalizeL();
-        at.getData().normalizeR();
-
-        return at.getData();
+        return null;
     }
 
 

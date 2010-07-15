@@ -9,18 +9,30 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 
+import org.gstreamer.Bin;
+import org.gstreamer.Bus;
+import org.gstreamer.Caps;
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
+import org.gstreamer.GhostPad;
+import org.gstreamer.Gst;
+import org.gstreamer.GstObject;
+import org.gstreamer.Pad;
+import org.gstreamer.Pipeline;
+import org.gstreamer.Structure;
+
+import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.PlayBin;
+
+import org.openshapa.plugins.spectrum.SpectrumConstants;
 import org.openshapa.plugins.spectrum.events.TimestampListener;
-import org.openshapa.plugins.spectrum.mediatools.AudioPlaybackTool;
-import org.openshapa.plugins.spectrum.mediatools.VolumeTool;
+import org.openshapa.plugins.spectrum.swing.Spectrum;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
 
-import com.xuggle.mediatool.IMediaReader;
-import com.xuggle.mediatool.ToolFactory;
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
 
-import com.xuggle.xuggler.IContainer;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static org.gstreamer.Element.linkMany;
 
 
 /**
@@ -28,14 +40,14 @@ import static java.util.concurrent.TimeUnit.MICROSECONDS;
  */
 public final class PlaybackEngine extends Thread implements TimestampListener {
 
+    private static final Logger LOGGER = UserMetrix.getLogger(
+            PlaybackEngine.class);
+
     /** Number of microseconds in one millisecond. */
     private static final long MILLISECOND = 1000;
 
     /** Frame seeking tolerance. */
     private static final long TOLERANCE = 5 * MILLISECOND;
-
-    /** Handles reading the audio file. */
-    private IMediaReader mediaReader;
 
     /** Current engine state. */
     private volatile EngineState engineState;
@@ -52,8 +64,6 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     /** Audio file being handled. */
     private File audioFile;
 
-    /** Handles audio playback. */
-    private AudioPlaybackTool playbackTool;
 
     /** Dialog for showing the spectral data. */
     private SpectrumDialog dialog;
@@ -63,6 +73,9 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
 
     /** The pre-calculated audio FPS. */
     private double audioFPS;
+
+    /** Output pipeline. */
+    private Pipeline pipeline;
 
     /**
      * Creates a new engine thread.
@@ -157,29 +170,8 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
      */
     private void engineInitializing() {
 
-        // Set up media reader.
-        setupMediaReader();
-
-        /*
-         * Buffer some packets so that threads are started and spectrum
-         * display is showing. One millisecond chosen through trial-and-error.
-         * Anything less and nothing happens visually. Too much and the updating
-         * spectrum display gives the illusion that it has started playing.
-         */
-        while (getCurrentTime()
-                < MILLISECONDS.convert(1000, TimeUnit.MICROSECONDS)) {
-            mediaReader.readPacket();
-        }
-
-        // Reset current time.
-        currentTime = 0;
-
-        /*
-         * Cannot start the Java sound system output lines in stopped state;
-         * audio won't play. Stop the output here after buffering so that the
-         * user doesn't hear any output from the sound system.
-         */
-        engineStop();
+        // Set up Gstreamer.
+        setupGst();
 
         engineState = EngineState.TASK_COMPLETE;
     }
@@ -187,106 +179,120 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     /**
      * Set up the media reader.
      */
-    private void setupMediaReader() {
+    private void setupGst() {
+        Gst.init();
+
+        pipeline = new Pipeline("Pipeline");
+
+        // Decoding bin.
+        DecodeBin decodeBin = new DecodeBin("Decode bin");
+
+        // Source is from a file.
+        Element fileSource = ElementFactory.make("filesrc", "Input File");
+        fileSource.set("location", audioFile.getAbsolutePath());
+
+        // Decode queue for buffering.
+        Element decodeQueue = ElementFactory.make("queue", "Decode Queue");
+        pipeline.addMany(fileSource, decodeQueue, decodeBin);
+
+        if (!linkMany(fileSource, decodeQueue, decodeBin)) {
+            System.err.println("Failed to link 1.");
+        }
+
+        // Audio handling bin.
+        final Bin audioBin = new Bin("Audio bin");
+
+        Element audioConvert = ElementFactory.make("audioconvert", null);
+
+        Element audioResample = ElementFactory.make("audioresample", null);
+        // audioResample.set("quality", 6);
+
+        Element audioOutput = ElementFactory.make("autoaudiosink", "sink");
+
+        Element spectrum = ElementFactory.make("spectrum", "spectrum");
+        spectrum.set("bands", SpectrumConstants.BANDS);
+        spectrum.set("threshold", SpectrumConstants.MIN_MAGNITUDE);
+        spectrum.set("post-messages", true);
+
+        Caps caps = Caps.fromString("audio/x-raw-int, rate="
+                + SpectrumConstants.SAMPLE_RATE);
+
+        audioBin.addMany(audioConvert, audioResample, spectrum, audioOutput);
+
+        if (!linkMany(audioConvert, audioResample)) {
+            LOGGER.error(getName()
+                + " : Failed to link converter to resampler.");
+        }
+
+        if (!Element.linkPadsFiltered(audioResample, null, spectrum, null,
+                    caps)) {
+            LOGGER.error(getName()
+                + " : Failed to apply audio capability filter.");
+        }
+
+        if (!linkMany(spectrum, audioOutput)) {
+            LOGGER.error(getName() + " : Failed to link audio output.");
+        }
+
+        audioBin.addPad(new GhostPad("sink",
+                audioConvert.getStaticPad("sink")));
+
+        pipeline.add(audioBin);
+
+        decodeBin.connect(new DecodeBin.NEW_DECODED_PAD() {
+
+                @Override public void newDecodedPad(final Element element,
+                    final Pad pad, final boolean last) {
+
+                    if (pad.isLinked()) {
+                        return;
+                    }
+
+                    Caps caps = pad.getCaps();
+                    Structure struct = caps.getStructure(0);
+
+                    if (struct.getName().startsWith("audio/")) {
+                        System.out.println(
+                            "Linking audio pad: " + struct.getName());
+                        pad.link(audioBin.getStaticPad("sink"));
+                    }
+                }
+            });
+
+        Bus bus = pipeline.getBus();
+
+        bus.connect(new Bus.ERROR() {
+                public void errorMessage(final GstObject source, final int code,
+                    final String message) {
+                    LOGGER.error(
+                        "PlaybackEngine Gstreamer Error: code=" + code
+                        + " message=" + message);
+                }
+            });
+        bus.connect(new Bus.EOS() {
+                public void endOfStream(final GstObject source) {
+                    pipeline.setState(org.gstreamer.State.NULL);
+                }
+
+            });
+
+        final Spectrum spectrumComp = new Spectrum();
+        bus.connect(spectrumComp);
 
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
                     dialog.getContentPane().removeAll();
+                    dialog.setSpectrum(spectrumComp);
                 }
             };
         SwingUtilities.invokeLater(edtTask);
-
-        // Set up media reader.
-        mediaReader = ToolFactory.makeReader(audioFile.getAbsolutePath());
-        mediaReader.open();
-
-        // Set up tool chain.
-        VolumeTool volumeTool = new VolumeTool(1D);
-        playbackTool = new AudioPlaybackTool(dialog);
-        playbackTool.addTimestampListener(this);
-        volumeTool.addListener(playbackTool);
-        mediaReader.addListener(volumeTool);
     }
 
     /**
      * Handles seeking through the current audio file.
      */
     private void engineSeeking() {
-
-        if (!mediaReader.isOpen()) {
-            mediaReader.open();
-        }
-
-        IContainer container = mediaReader.getContainer();
-
-        if (container.isOpened()) {
-
-            long seekTime = Math.max(0, newTime * 1000);
-            seekTime = Math.min(seekTime, container.getDuration());
-
-            long minTime = Math.max(seekTime - TOLERANCE, 0);
-            long maxTime = Math.min(seekTime + TOLERANCE,
-                    container.getDuration());
-
-            playbackTool.clearWaitBuffer();
-
-            if (MILLISECONDS.convert(seekTime, MICROSECONDS) >= currentTime) {
-
-                /*
-                 * Don't bother with the seek API when moving forwards, it
-                 * either overshoots or undershoots the target time frame,
-                 * resulting in many incoming seek requests.
-                 */
-
-                System.out.println("FORWARDS "
-                    + MILLISECONDS.convert(seekTime, MICROSECONDS) + " FROM "
-                    + currentTime);
-
-                while ((getCurrentTime()
-                            < MILLISECONDS.convert(seekTime, MICROSECONDS))
-                        && commandQueue.isEmpty()) {
-
-                    if (mediaReader.readPacket() != null) {
-                        return;
-                    }
-
-                    /*
-                     * Update these calculations because a new seek command
-                     * might have been given even before we are done.
-                     */
-                    seekTime = Math.max(0, newTime * 1000);
-                    seekTime = Math.min(seekTime, container.getDuration());
-                }
-
-                /*
-                 * Clear the buffer because we probably have packets that we do
-                 * not want after seeking manually.
-                 */
-                playbackTool.clearWaitBuffer();
-            } else {
-                /*
-                 * For seeking backwards, it is easier to let it overshoot then
-                 * seek forward when the next seek command arrives.
-                 */
-
-                System.out.println("BACKWARDS "
-                    + MILLISECONDS.convert(seekTime, MICROSECONDS) + " FROM "
-                    + currentTime);
-
-                mediaReader.getContainer().seekKeyFrame(-1, minTime, seekTime,
-                    maxTime, IContainer.SEEK_FLAG_BACKWARDS);
-
-                playbackTool.clearWaitBuffer();
-
-                /*
-                 * Just read one packet ahead of the possibly incoming play
-                 * command. This ensures that when we jog backwards we can see
-                 * an update on the spectrum.
-                 */
-                mediaReader.readPacket();
-            }
-
-        }
+        pipeline.seek(newTime, TimeUnit.MILLISECONDS);
 
         /*
          * Mark engine state with task complete so that isPlaying returns false
@@ -299,13 +305,10 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
      * Adjust playback speed.
      */
     private void engineAdjusting() {
-        playbackTool.clearWaitBuffer();
-        playbackTool.adjustSpeed(playbackSpeed);
         engineState = EngineState.TASK_COMPLETE;
     }
 
     private void engineSettingFPS() {
-        playbackTool.setAudioFPS(audioFPS);
         engineState = EngineState.TASK_COMPLETE;
     }
 
@@ -313,22 +316,14 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
      * Start playing back the audio file.
      */
     private void enginePlaying() {
-
-        playbackTool.startOutput();
-
-        while (commandQueue.isEmpty()) {
-
-            if (mediaReader.readPacket() != null) {
-                return;
-            }
-        }
+        pipeline.setState(org.gstreamer.State.PLAYING);
     }
 
     /**
      * Stop audio output.
      */
     private void engineStop() {
-        playbackTool.stopOutput();
+        pipeline.stop();
         engineState = EngineState.TASK_COMPLETE;
     }
 
@@ -412,9 +407,6 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
      * Shutdown the engine.
      */
     public void shutdown() {
-        playbackTool.stopOutput();
-        playbackTool.shutdown();
-        mediaReader.close();
     }
 
 }

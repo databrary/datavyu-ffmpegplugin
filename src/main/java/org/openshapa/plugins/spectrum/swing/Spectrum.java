@@ -1,5 +1,7 @@
 package org.openshapa.plugins.spectrum.swing;
 
+import static org.fest.reflect.core.Reflection.method;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -15,6 +17,18 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.gstreamer.Bus;
+import org.gstreamer.Message;
+import org.gstreamer.Structure;
+import org.gstreamer.ValueList;
+
+import org.gstreamer.Bus.MESSAGE;
+
+import org.gstreamer.lowlevel.GValueAPI;
+import org.gstreamer.lowlevel.GValueAPI.GValue;
+
+import org.openshapa.plugins.spectrum.SpectrumConstants;
+
 import net.miginfocom.swing.MigLayout;
 
 
@@ -24,16 +38,13 @@ import net.miginfocom.swing.MigLayout;
  * @author Douglas Teoh
  *
  */
-public final class Spectrum extends JComponent {
+public final class Spectrum extends JComponent implements MESSAGE {
 
     /** Pixel padding between the frame and the histogram axes. */
     private static final int AXIS_PADDING = 75;
 
     /** Pixel gap between each rectangle in the histogram. */
     private static final int RECT_GAP = 5;
-
-    /** Minimum dB value. */
-    private static final int MIN_DB = -70;
 
     /** Color to represent the minumum dB value. */
     private static final Color MIN_COLOR = Color.GREEN;
@@ -47,8 +58,6 @@ public final class Spectrum extends JComponent {
     /** Magnitude values for each frequency value. */
     private double[] magVals;
 
-    private double[] freqVals;
-
     /** String values for the frequency axis. */
     private String[] xAxisVals;
 
@@ -57,7 +66,6 @@ public final class Spectrum extends JComponent {
     }
 
     public void setFreqVals(final double[] freqVals) {
-        this.freqVals = freqVals;
         xAxisVals = createXAxisVals(freqVals);
     }
 
@@ -151,7 +159,7 @@ public final class Spectrum extends JComponent {
 
         // Number of pixels per dB.
         final double pixelsDb = (d.height - (AXIS_PADDING * 2))
-            / (double) Math.abs(MIN_DB);
+            / (double) Math.abs(SpectrumConstants.MIN_MAGNITUDE);
 
         // Width of a rectangle.
         final double rectWidth =
@@ -161,7 +169,7 @@ public final class Spectrum extends JComponent {
         g2.setColor(Color.BLACK);
 
         // Paint gridlines.
-        int dbVal = Math.abs(MIN_DB);
+        int dbVal = Math.abs(SpectrumConstants.MIN_MAGNITUDE);
         g2.setColor(new Color(255, 255, 255, 128));
 
         while (dbVal >= 0) {
@@ -186,12 +194,13 @@ public final class Spectrum extends JComponent {
         // Paint the rectangles.
         for (int i = 0; i < magVals.length; i++) {
             int x = (int) (i * rectWidth) + AXIS_PADDING + RECT_GAP;
-            int y = (int) Math.abs(Math.max(magVals[i], MIN_DB) * pixelsDb)
-                + AXIS_PADDING;
+            int y = (int) Math.abs(magVals[i] * pixelsDb) + AXIS_PADDING;
             int width = (int) Math.ceil(rectWidth - RECT_GAP);
-            int height = (int) (Math.abs(MIN_DB - magVals[i]) * pixelsDb);
+            int height = (int) (Math.abs(
+                        SpectrumConstants.MIN_MAGNITUDE - magVals[i])
+                    * pixelsDb);
 
-            if (magVals[i] > MIN_DB) {
+            if (magVals[i] > SpectrumConstants.MIN_MAGNITUDE) {
                 g2.fillRect(x, y, width, height);
             }
 
@@ -214,7 +223,7 @@ public final class Spectrum extends JComponent {
         g2.setPaint(oldPaint);
 
         // Paint the y axis values.
-        dbVal = Math.abs(MIN_DB);
+        dbVal = Math.abs(SpectrumConstants.MIN_MAGNITUDE);
         g2.setColor(Color.WHITE);
 
         while (dbVal >= 0) {
@@ -268,6 +277,42 @@ public final class Spectrum extends JComponent {
 
         g2.dispose();
 
+    }
+
+    @Override public void busMessage(final Bus bus, final Message message) {
+        Structure msgStruct = message.getStructure();
+        String name = msgStruct.getName();
+
+        if ("spectrum".equals(name)) {
+
+            ValueList mags = msgStruct.getValueList("magnitude");
+
+            final double[] result = new double[SpectrumConstants.BANDS];
+            final double[] frequencies = new double[SpectrumConstants.BANDS];
+
+            for (int i = 0; i < SpectrumConstants.BANDS; i++) {
+                frequencies[i] = (((SpectrumConstants.SAMPLE_RATE / 2D) * i)
+                        + (SpectrumConstants.SAMPLE_RATE / 4D))
+                    / SpectrumConstants.BANDS;
+
+                GValue value = method("getValue").withReturnType(
+                        GValueAPI.GValue.class).withParameterTypes(int.class)
+                    .in(mags).invoke(i);
+
+                float mag = GValueAPI.GVALUE_API.g_value_get_float(value);
+
+                result[i] = mag;
+            }
+
+            Runnable edtTask = new Runnable() {
+                    @Override public void run() {
+                        Spectrum.this.setFreqVals(frequencies);
+                        Spectrum.this.setMagnitudelVals(result);
+                        Spectrum.this.repaint();
+                    }
+                };
+            SwingUtilities.invokeLater(edtTask);
+        }
     }
 
 }
