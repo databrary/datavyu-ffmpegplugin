@@ -211,7 +211,9 @@ implements ExternalColumnListListener, ComponentListener,
             Vector<Long> dbColIds = getDatabase().getColOrderVector();
 
             for (int i = 0; i < dbColIds.size(); i++) {
-                addColumn(getDatabase(), dbColIds.elementAt(i));
+                if (!getDatabase().getColumn(dbColIds.elementAt(i)).getHidden()) {
+                    addColumn(getDatabase(), dbColIds.elementAt(i));
+                }
             }
         } catch (SystemErrorException e) {
             logger.error("Failed to populate Spreadsheet.", e);

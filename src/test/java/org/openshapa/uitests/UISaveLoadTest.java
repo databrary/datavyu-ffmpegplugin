@@ -11,18 +11,14 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
-import javax.swing.JDialog;
 
-import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.OpenSHAPA;
@@ -42,7 +38,6 @@ import org.openshapa.util.FileFilters.SHAPAFilter;
 import org.openshapa.util.FileFilters.OPFFilter;
 
 import org.openshapa.views.DataControllerV;
-import org.openshapa.views.NewProjectV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 
 import org.testng.Assert;

@@ -44,7 +44,7 @@ public final class UIBug686Test extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // 2. Jog forward and check

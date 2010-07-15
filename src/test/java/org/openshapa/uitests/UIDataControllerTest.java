@@ -302,7 +302,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).resizeHeightTo(600
@@ -382,7 +382,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // 3. Shuttle forward to 4x
@@ -451,7 +451,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
         vidWindows.get(0).resizeHeightTo(600
             + vidWindows.get(0).component().getInsets().bottom
@@ -545,7 +545,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).resizeHeightTo(600
@@ -640,7 +640,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 310,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 310,
                 300));
 
         // 5. Play video then create a new cell using Num0
@@ -707,7 +707,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 310,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 310,
                 300));
 
         // 4. Create a new variable
