@@ -8,6 +8,12 @@ public enum EngineState {
     /** Engine is initializing. */
     INITIALIZING("Initializing"),
 
+    /** Engine is adjusting playback speed. */
+    ADJUSTING_SPEED("Adjusting speed"),
+
+    /** Engine is setting audio FPS. */
+    SETTING_FPS("Setting FPS"),
+
     /** Engine is seeking through media. */
     SEEKING("Seeking"),
 
@@ -15,7 +21,7 @@ public enum EngineState {
     PLAYING("Playing"),
 
     /** Engine is stopping media playback. */
-    STOP("Stopping"),
+    STOPPING("Stopping"),
 
     /**
      * This state overwrites the engine state once a task has been handled. Not

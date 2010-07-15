@@ -3,6 +3,9 @@ package org.openshapa.plugins.spectrum.engine;
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
+
+import java.nio.ByteBuffer;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -45,16 +48,28 @@ public final class AudioThread extends Thread {
     /** Are we closing the stream. */
     private boolean closing;
 
+    /** Used to interrupt thread processing loop. */
     private boolean keepGoing;
 
     private Set<TimestampListener> listeners;
 
+    /** Lock access to data. */
     private ReentrantLock lock;
     private Condition condition;
 
+    /** Thread initializing state. */
     private boolean threadInitialized;
 
+    /** Thread for calculating spectral data. */
     private SpectrumProcessor spectrumProcessor;
+
+    /** Audio output speed. 1 = normal rate. */
+    private double playbackSpeed;
+
+    /** Precalculated unit time. */
+    private double unitTime;
+
+    private boolean printed = false;
 
     public AudioThread(final SourceDataLine output,
         final SpectrumDialog dialog) {
@@ -75,6 +90,8 @@ public final class AudioThread extends Thread {
         threadInitialized = false;
 
         spectrumProcessor = new SpectrumProcessor(dialog);
+
+        playbackSpeed = 1;
     }
 
     public void addTimestampListener(final TimestampListener listener) {
@@ -122,7 +139,24 @@ public final class AudioThread extends Thread {
                     lock.lock();
 
                     spectrumProcessor.giveSample(current.copy());
+
+                    int delay = calculateUnitDelay();
+
+                    if (delay >= 1) {
+
+                        // playAudio(stretch(current, delay + 1),
+                        // current.getTimestamp());
+                        // System.out.println("Sleeping for "
+                        // + (delay * unitTime));
+
+                        try {
+                            Thread.sleep((long) (Math.round(delay * unitTime)));
+                        } catch (InterruptedException e) {
+                        }
+                    }
+
                     playAudio(current);
+
 
                     // Give a chance for input thread to give sample.
                     condition.signalAll();
@@ -218,6 +252,23 @@ public final class AudioThread extends Thread {
 
         condition.signalAll();
         lock.unlock();
+    }
+
+    public void setPlaybackSpeed(final double speed) {
+
+        synchronized (this) {
+            playbackSpeed = speed;
+        }
+    }
+
+    public void setAudioFPS(final double fps) {
+
+        if (fps <= 0) {
+            throw new IllegalArgumentException("FPS value must be > 0.");
+        }
+
+        // 1000 because it is the number of milliseconds in a second.
+        unitTime = 1000 / fps;
     }
 
     /**
@@ -325,6 +376,81 @@ public final class AudioThread extends Thread {
                 listener.notifyTime(lineTime);
             }
         }
+    }
+
+    private void playAudio(final byte[] b, final long timeStamp) {
+
+        if (!closing) {
+            output.write(b, 0, b.length);
+
+            for (TimestampListener listener : listeners) {
+                listener.notifyTime(timeStamp);
+            }
+        }
+    }
+
+    /**
+     * Calculate the number of units to delay playback.
+     *
+     * @return Units to delay.
+     */
+    private int calculateUnitDelay() {
+
+        // Don't handle negative delays at this level.
+        if (playbackSpeed <= 0) {
+            return 0;
+        }
+
+        if (playbackSpeed < 1) {
+            int units = (int) Math.floor(1 / playbackSpeed);
+            units = units - 1;
+
+            return units;
+        }
+
+        // Playback speed is greater than or equal to one; no delay.
+        return 0;
+    }
+
+    /**
+     * Calculate the number of units to delay playback.
+     *
+     * @return Units to delay.
+     */
+    private byte[] stretch(final AudioSample sample, final int factor) {
+
+        final int originalSize = sample.getSamples().getSize();
+        ByteBuffer bytes = sample.getSamples().getByteBuffer();
+
+        byte[] result = new byte[originalSize * factor];
+
+        // for (int i = 0; i < result.length; i++) {
+        // result[i] = bytes.get((int) Math.floor(i / (double) factor));
+        // }
+
+
+        for (int j = 0; j < originalSize; j += 4) {
+
+            for (int i = 0; i < factor; i++) {
+
+                result[0 + j + (i * 4)] = bytes.get(j + 0);
+                result[1 + j + (i * 4)] = bytes.get(j + 1);
+                result[2 + j + (i * 4)] = bytes.get(j + 2);
+                result[3 + j + (i * 4)] = bytes.get(j + 3);
+            }
+
+        }
+
+        if (!printed) {
+            printed = true;
+
+            for (int i = 0; i < result.length; i++) {
+                System.out.println(result[i]);
+            }
+        }
+
+
+        return result;
     }
 
 

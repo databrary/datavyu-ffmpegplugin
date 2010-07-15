@@ -58,6 +58,12 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     /** Dialog for showing the spectral data. */
     private SpectrumDialog dialog;
 
+    /** Audio playback speed. */
+    private double playbackSpeed;
+
+    /** The pre-calculated audio FPS. */
+    private double audioFPS;
+
     /**
      * Creates a new engine thread.
      *
@@ -98,6 +104,16 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
 
                     break;
 
+                case ADJUSTING_SPEED:
+                    engineAdjusting();
+
+                    break;
+
+                case SETTING_FPS:
+                    engineSettingFPS();
+
+                    break;
+
                 case SEEKING:
 
                     // Just want to seek to the latest time.
@@ -123,7 +139,7 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
 
                     break;
 
-                case STOP:
+                case STOPPING:
                     engineStop();
 
                     break;
@@ -154,6 +170,9 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
                 < MILLISECONDS.convert(1000, TimeUnit.MICROSECONDS)) {
             mediaReader.readPacket();
         }
+
+        // Reset current time.
+        currentTime = 0;
 
         /*
          * Cannot start the Java sound system output lines in stopped state;
@@ -277,6 +296,20 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
     }
 
     /**
+     * Adjust playback speed.
+     */
+    private void engineAdjusting() {
+        playbackTool.clearWaitBuffer();
+        playbackTool.adjustSpeed(playbackSpeed);
+        engineState = EngineState.TASK_COMPLETE;
+    }
+
+    private void engineSettingFPS() {
+        playbackTool.setAudioFPS(audioFPS);
+        engineState = EngineState.TASK_COMPLETE;
+    }
+
+    /**
      * Start playing back the audio file.
      */
     private void enginePlaying() {
@@ -296,6 +329,7 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
      */
     private void engineStop() {
         playbackTool.stopOutput();
+        engineState = EngineState.TASK_COMPLETE;
     }
 
     /**
@@ -309,7 +343,7 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
      * Queue up a command to stop audio playback.
      */
     public void stopPlayback() {
-        commandQueue.offer(EngineState.STOP);
+        commandQueue.offer(EngineState.STOPPING);
     }
 
     /**
@@ -341,6 +375,16 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
         }
     }
 
+    public void adjustSpeed(final double speed) {
+        playbackSpeed = speed;
+        commandQueue.offer(EngineState.ADJUSTING_SPEED);
+    }
+
+    public void setAudioFPS(final double fps) {
+        audioFPS = fps;
+        commandQueue.offer(EngineState.SETTING_FPS);
+    }
+
     /**
      * @return Current time in the audio file.
      */
@@ -362,8 +406,6 @@ public final class PlaybackEngine extends Thread implements TimestampListener {
         synchronized (this) {
             currentTime = time;
         }
-
-        // System.out.println("Tick: " + time);
     }
 
     /**

@@ -20,7 +20,7 @@ import com.xuggle.mediatool.ToolFactory;
  * channels one and two.
  */
 public final class AmplitudeProcessor
-    extends SwingWorker<StereoAmplitudeData, Void> {
+    extends SwingWorker<StereoAmplitudeData, StereoAmplitudeData> {
 
     private static final Logger LOGGER = UserMetrix.getLogger(
             AmplitudeProcessor.class);
@@ -62,6 +62,7 @@ public final class AmplitudeProcessor
 
         return at.getData();
     }
+
 
     @Override protected void done() {
 

@@ -21,6 +21,7 @@ public class SpectrumFileFilter extends FileFilter {
         ext.add(".wav");
         ext.add(".mov");
         ext.add(".mp3");
+        ext.add(".mpg");
         ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
     }
 

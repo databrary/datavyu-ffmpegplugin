@@ -141,7 +141,26 @@ public final class AudioPlaybackTool extends MediaListenerAdapter {
                 at.close();
             }
         }
+    }
 
+    public void adjustSpeed(final double speed) {
+
+        synchronized (this) {
+
+            for (AudioThread at : audioThreads.values()) {
+                at.setPlaybackSpeed(speed);
+            }
+        }
+    }
+
+    public void setAudioFPS(final double fps) {
+
+        synchronized (this) {
+
+            for (AudioThread at : audioThreads.values()) {
+                at.setAudioFPS(fps);
+            }
+        }
     }
 
     @Override public void onAudioSamples(final IAudioSamplesEvent event) {

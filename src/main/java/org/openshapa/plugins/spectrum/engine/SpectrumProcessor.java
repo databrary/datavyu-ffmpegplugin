@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.math.complex.Complex;
 import org.apache.commons.math.transform.FastFourierTransformer;
+import org.apache.commons.math.util.MathUtils;
 
 import org.openshapa.plugins.spectrum.swing.Spectrum;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
@@ -98,10 +99,9 @@ public final class SpectrumProcessor extends Thread {
 
                     window = hannWindow(samplesSize);
 
-                    int len = (int) Math.ceil(Math.log(
+                    int len = (int) Math.ceil(MathUtils.log(2,
                                 (samplesSize / 2)
-                                / (double) samples.getChannels())
-                            / Math.log(2));
+                                / (double) samples.getChannels()));
                     len = (int) Math.pow(2, len);
                     inputSamples = new double[len];
                     tempCalcBuffer = new double[len];
@@ -288,8 +288,8 @@ public final class SpectrumProcessor extends Thread {
     private void firstChannel(final ShortBuffer src, final int srcLength,
         final double[] dest, final int numChannels) {
 
-        int len = (int) Math.ceil(Math.log(srcLength / (double) numChannels)
-                / Math.log(2));
+        int len = (int) Math.ceil(MathUtils.log(2,
+                    srcLength / (double) numChannels));
         len = (int) Math.pow(2, len);
 
         for (int i = 0; i < srcLength; i += numChannels) {

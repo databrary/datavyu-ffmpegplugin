@@ -156,6 +156,8 @@ public class SpectrumDataViewer implements DataViewer {
         duration = SpectrumUtils.getDuration(file);
         fps = SpectrumUtils.calculateAudioFPS(file);
 
+        engine.setAudioFPS(fps);
+
         // Show the dialog.
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
@@ -178,8 +180,11 @@ public class SpectrumDataViewer implements DataViewer {
         this.dataC = dataC;
     }
 
-    @Override public void setPlaybackSpeed(final float arg0) {
-        // TODO Auto-generated method stub
+    @Override public void setPlaybackSpeed(final float speed) {
+
+        if (engine != null) {
+            engine.adjustSpeed(speed);
+        }
     }
 
     @Override public void stop() {
