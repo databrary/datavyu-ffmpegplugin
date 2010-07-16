@@ -289,4 +289,18 @@ public class DataControllerFixture extends DialogFixture {
 
         return vidWindows;
     }
+
+    /**
+     * @return width of the window.
+     */
+    public int getWidth() {
+        return target.getWidth();
+    }
+
+    /**
+     * @return height of the window.
+     */
+    public int getHeight() {
+        return target.getHeight();
+    }
 }

@@ -4,7 +4,7 @@
   <groupId>org.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>1.07</version>
+  <version>1.08</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
@@ -205,8 +205,8 @@
   <!-- External repositories - where to find third-party dependencies. -->
   <repositories>
     <repository>
-      <id>central</id>
-      <url>http://openshapa.org/maven2</url>
+      <id>java</id>
+      <url>http://download.java.net/maven/2</url>
       <layout>default</layout>
     </repository>
 
@@ -335,7 +335,7 @@
         <version>1.0-alpha-3</version>
         <configuration>
           <bundleName>OpenSHAPA</bundleName>
-          <mainClass>org.openshapa.OpenSHAPA</mainClass>
+          <mainClass>org.openshapa.Launcher</mainClass>
           <jvmVersion>1.6+</jvmVersion>
           <iconFile>${basedir}/src/main/resources/icons/OpenSHAPA.icns</iconFile>
 
@@ -518,7 +518,7 @@
               <minVersion>1.6.0</minVersion>
             </jre>
             <classPath>
-              <mainClass>org.openshapa.OpenSHAPA</mainClass>
+              <mainClass>org.openshapa.Launcher</mainClass>
                 <preCp>jruby-engine-1.1.6.jar</preCp>
                 <preCp>jruby-complete-1.4.0.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
@@ -562,6 +562,12 @@
     <dependency>
       <groupId>org.jdesktop</groupId>
       <artifactId>appframework</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.swinglabs</groupId>
+      <artifactId>swing-layout</artifactId>
       <version>1.0.3</version>
     </dependency>
 
@@ -626,6 +632,32 @@
     	<artifactId>fest-reflect</artifactId>
     	<version>1.2</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
+      <version>1.0-rc5</version>
+    </dependency>
+
+    <!-- g-streamer dependencies -->
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>3.2.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.googlecode.gstreamer-java</groupId>
+      <artifactId>gstreamer-java</artifactId>
+      <version>1.4</version>
+    </dependency>
+
+<!-- 
+    <dependency>
+      <groupId>com.googlecode</groupId>
+      <artifactId>gstreamer-macosx</artifactId>
+      <version>1.4</version>
+    </dependency>-->
   </dependencies>
 </project>
 

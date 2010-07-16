@@ -40,8 +40,8 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
     @Test public void testNewSpreadsheet() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -72,25 +72,11 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
         warning.requireTitle("Unsaved changes");
         warning.buttonWithText("OK").click();
 
-        DialogFixture newDatabaseDialog;
+        DialogFixture newProjectDialog = mainFrameFixture.dialog("NewProjectV");
 
-        try {
-            newDatabaseDialog = mainFrameFixture.dialog();
-        } catch (Exception e) {
+        newProjectDialog.textBox("nameField").enterText("n");
 
-            // Get New Database dialog
-            newDatabaseDialog = mainFrameFixture.dialog(
-                    new GenericTypeMatcher<JDialog>(JDialog.class) {
-                        @Override protected boolean isMatching(
-                            final JDialog dialog) {
-                            return dialog.getClass().equals(NewProjectV.class);
-                        }
-                    }, Timeout.timeout(5, TimeUnit.SECONDS));
-        }
-
-        newDatabaseDialog.textBox("nameField").enterText("n");
-
-        newDatabaseDialog.button("okButton").click();
+        newProjectDialog.button("okButton").click();
 
         // 4a. Check that all data is cleared
         Assert.assertTrue(spreadsheet.numOfColumns() == 0);
@@ -111,11 +97,8 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
         varListDialog.close();
 
         // 4c. Check that vocab editor is empty
-        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
+        VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
 
-        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
-                mainFrameFixture.robot,
-                (VocabEditorV) mainFrameFixture.dialog().component());
         Assert.assertTrue(veDialog.numOfVocabElements() == 0);
 
         veDialog.close();
@@ -128,8 +111,8 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
     @Test public void testBug938() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -164,15 +147,10 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
         warning.buttonWithText("OK").click();
 
 
-        // Get New Database dialog and click "OK" without entering a name
-        DialogFixture newDatabaseDialog = mainFrameFixture.dialog(
-                new GenericTypeMatcher<JDialog>(JDialog.class) {
-                    @Override protected boolean isMatching(JDialog dialog) {
-                        return dialog.getClass().equals(NewProjectV.class);
-                    }
-                }, Timeout.timeout(5, TimeUnit.SECONDS));
+        // Get New Project dialog and click "OK" without entering a name
+        DialogFixture newProjectDialog = mainFrameFixture.dialog("NewProjectV");
 
-        newDatabaseDialog.button("okButton").click();
+        newProjectDialog.button("okButton").click();
 
         JOptionPaneFixture noNameWarning = mainFrameFixture.optionPane();
         noNameWarning.requireTitle("Warning:");
@@ -180,10 +158,10 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
         noNameWarning.buttonWithText("OK").click();
 
         // Check that window remains open
-        newDatabaseDialog.requireVisible();
+        newProjectDialog.requireVisible();
 
         // Close window
-        newDatabaseDialog.button("cancelButton").click();
+        newProjectDialog.button("cancelButton").click();
 
         // 4a. Check that all data remains the same
         spreadsheet = mainFrameFixture.getSpreadsheet();

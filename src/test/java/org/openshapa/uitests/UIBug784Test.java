@@ -22,7 +22,7 @@ public final class UIBug784Test extends OpenSHAPATestClass {
     /**
      * Test for Bug784.
      */
-    /**@Test*/ public void testBug784() {
+    @Test public void testBug784() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String varName = "v";

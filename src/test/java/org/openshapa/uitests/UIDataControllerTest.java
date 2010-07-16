@@ -233,8 +233,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
                 300, 300);
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -294,8 +293,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -304,7 +302,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).resizeHeightTo(600
@@ -312,7 +310,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             + vidWindows.get(0).component().getInsets().top);
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
-        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        File refImageFile = new File(testFolder + "/ui/head_turns600h0t.png");
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(
                 vidWindows.get(0).component());
@@ -375,8 +373,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -385,7 +382,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // 3. Shuttle forward to 4x
@@ -445,8 +442,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -455,14 +451,14 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
         vidWindows.get(0).resizeHeightTo(600
             + vidWindows.get(0).component().getInsets().bottom
             + vidWindows.get(0).component().getInsets().top);
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
-        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        File refImageFile = new File(testFolder + "/ui/head_turns600h0t.png");
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(
                 vidWindows.get(0).component());
@@ -540,8 +536,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         final DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -550,7 +545,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).resizeHeightTo(600
@@ -559,7 +554,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
 
-        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        File refImageFile = new File(testFolder + "/ui/head_turns600h0t.png");
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(
                 vidWindows.get(0).component());
@@ -583,7 +578,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
 
         vidWindows.get(0).component().setVisible(true);
         vidWindows.get(0).component().toFront();
-        refImageFile = new File(root + "/ui/head_turns600h1mt.png");
+        refImageFile = new File(testFolder + "/ui/head_turns600h1mt.png");
         vidImage = UIImageUtils.captureAsScreenshot(vidWindows.get(0)
                 .component());
         Assert.assertTrue(UIImageUtils.areImagesEqual(vidImage, refImageFile,
@@ -636,8 +631,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
             UIUtils.VAR_TYPES[(int) (Math.random() * UIUtils.VAR_TYPES.length)]);
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -646,7 +640,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 310,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 310,
                 300));
 
         // 5. Play video then create a new cell using Num0
@@ -704,8 +698,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
                 300, 300);
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -714,7 +707,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
         Assert.assertEquals(vidWindows.size(), 1);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 310,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 310,
                 300));
 
         // 4. Create a new variable
@@ -773,8 +766,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
                 300, 300);
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -819,8 +811,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
                 300, 300);
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);

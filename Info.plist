@@ -28,7 +28,7 @@
     <key>Java</key>
     <dict>
       <key>MainClass</key>
-      <string>org.openshapa.OpenSHAPA</string>
+      <string>org.openshapa.Launcher</string>
       <key>JVMVersion</key>
       <string>1.6+</string>
       <key>SplashFile</key>
@@ -46,6 +46,7 @@
         <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.2/miglayout-3.7.3.1-swing.jar</string>
         <string>$JAVAROOT/repo/commons-io/commons-io/1.4/commons-io-1.4.jar</string>
         <string>$JAVAROOT/repo/org/easytesting/fest-reflect/1.2/fest-reflect-1.2.jar</string>
+	<string>$JAVAROOT/repo/com/google/collections/google-collections/1.0-rc5/google-collections-1.0-rc5.jar</string>
       </array>
     </dict>
   </dict>

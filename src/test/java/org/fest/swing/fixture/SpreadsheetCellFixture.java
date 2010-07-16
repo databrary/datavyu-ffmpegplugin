@@ -73,6 +73,18 @@ public class SpreadsheetCellFixture extends JPanelFixture {
 
     /**
      * Clicks to the position after a particular character position in
+     * either value, onset or offset. Clicks once.
+     * @param component VALUE, ONSET, or OFFSET
+     * @param cPos character position to click after.
+     * @throws BadLocationException on bad character location
+     */
+    public final void clickToCharPos(final int component, final int charPos)
+            throws BadLocationException {
+        clickToCharPos(component, charPos, 1);
+    }
+
+    /**
+     * Clicks to the position after a particular character position in
      * either value, onset or offset.
      * @param component VALUE, ONSET, or OFFSET
      * @param cPos character position to click after.

@@ -6,13 +6,7 @@ import java.io.File;
 
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.core.matcher.JTextComponentMatcher;
-import org.fest.swing.fixture.DialogFixture;
-import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
-import org.fest.swing.timing.Timeout;
-import org.fest.swing.util.Platform;
-
-import org.openshapa.util.UIUtils;
 
 import org.testng.Assert;
 
@@ -39,8 +33,7 @@ public final class UIBug583Test extends OpenSHAPATestClass {
                 "0.740400", "0.863800", "0.987200", "1.110600"
             };
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate

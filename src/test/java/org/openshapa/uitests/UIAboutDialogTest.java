@@ -29,9 +29,6 @@ public final class UIAboutDialogTest extends OpenSHAPATestClass {
         // Not testing on OSX because the About dialog is not in the help menu
         // and not sure how to click the other menu item.
         if (!Platform.isOSX()) {
-
-            String root = System.getProperty("testPath");
-
             mainFrameFixture.clickMenuItemWithPath("Help", "About");
 
             DialogFixture about = mainFrameFixture.dialog();
@@ -41,7 +38,7 @@ public final class UIAboutDialogTest extends OpenSHAPATestClass {
                     about.component());
 
             Assert.assertTrue(UIImageUtils.areImagesEqual(aboutBI,
-                    new File(root + "/ui/aboutDialog.png")));
+                    new File(testFolder + "/ui/aboutDialog.png")));
 
             // Close and ensure it closes
             about.close();

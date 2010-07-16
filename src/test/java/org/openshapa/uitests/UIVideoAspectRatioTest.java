@@ -42,8 +42,8 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
         final DataControllerFixture dcf = mainFrameFixture.openDataController();
 
         // c. Open video
-        String root = System.getProperty("testPath");
-        final File videoFile = new File(root + "/ui/head_turns.mov");
+        
+        final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
         UIUtils.openData(videoFile, dcf);
@@ -51,7 +51,7 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).resizeHeightTo(600
@@ -59,7 +59,7 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
             + vidWindows.get(0).component().getInsets().top);
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
-        File refImageFile = new File(root + "/ui/head_turns600h0t.png");
+        File refImageFile = new File(testFolder + "/ui/head_turns600h0t.png");
         vidWindows.get(0).component().toFront();
 
         BufferedImage vidImage = UIImageUtils.captureAsScreenshot(
@@ -79,7 +79,7 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
             + vidWindows.get(0).component().getInsets().top);
 
         // a. Check that ratio remains the same
-        refImageFile = new File(root + "/ui/head_turns150h0t.png");
+        refImageFile = new File(testFolder + "/ui/head_turns150h0t.png");
         vidWindows.get(0).component().toFront();
         vidImage = UIImageUtils.captureAsScreenshot(
                 vidWindows.get(0).component());
@@ -106,7 +106,7 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
             + vidWindows.get(0).component().getInsets().top);
 
         // a. Check that ratio remains the same
-        refImageFile = new File(root + "/ui/head_turns450h0t.png");
+        refImageFile = new File(testFolder + "/ui/head_turns450h0t.png");
         vidWindows.get(0).component().toFront();
         vidImage = UIImageUtils.captureAsScreenshot(
                 vidWindows.get(0).component());

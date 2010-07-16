@@ -245,7 +245,7 @@ public final class UITimestampTest extends OpenSHAPATestClass {
     @Test public void highlightAndDeleteTest() throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
         final String originalText = "123456789";
         final String afterDeleteText = "00:00:00:000";
 
@@ -285,7 +285,7 @@ public final class UITimestampTest extends OpenSHAPATestClass {
         throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
         final String originalText = "123456789";
         final String afterDeleteText = "12:00:00:789";
 
@@ -323,7 +323,7 @@ public final class UITimestampTest extends OpenSHAPATestClass {
         throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
         final String originalText = "123456789";
         final String changeText1 = "98a27";
         final String changeText2 = "98a27123";

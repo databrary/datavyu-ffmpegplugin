@@ -376,6 +376,7 @@ implements FocusListener, KeyListener, MouseListener {
      * @param me The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
+        setEditor(findEditor(textArea.getCaretPosition()));
         me.consume();
 
         // BugzID:629 - Prevent users from selecting place holders.

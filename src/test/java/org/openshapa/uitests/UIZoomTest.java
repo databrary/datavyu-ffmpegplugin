@@ -31,8 +31,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
     @Test public void testZoomingIn() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -144,8 +144,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
     @Test public void testZoomingOut() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -230,8 +230,8 @@ public final class UIZoomTest extends OpenSHAPATestClass {
     @Test public void testBug635() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -264,11 +264,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         int previousSize = initialSize;
 
         // 3a. Get initial zoom size of vocab editor window
-        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
-
-        VocabEditorDialogFixture veDialog = new VocabEditorDialogFixture(
-                mainFrameFixture.robot,
-                (VocabEditorV) mainFrameFixture.dialog().component());
+        VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
         int veFontSize = veDialog.allVocabElements().firstElement().value()
             .font().target().getSize();
 

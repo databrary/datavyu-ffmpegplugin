@@ -2,6 +2,7 @@ package org.openshapa.uitests;
 
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.util.Platform;
+import org.openshapa.util.UIUtils;
 
 import org.testng.Assert;
 
@@ -11,7 +12,29 @@ import org.testng.annotations.Test;
 /**
  * Tests creating cells to left and right of a cell.
  */
-public final class UILeftRightCreateCellTest extends OpenSHAPATestClass {
+public final class UICreateCellTest extends OpenSHAPATestClass {
+
+    /**
+     * Test creating new cells with the new cell button.
+     */
+    @Test public void testCreateNewCellWithButton() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        //Create column of each type
+        for (String var : UIUtils.VAR_TYPES) {
+            mainFrameFixture.createNewVariable(var.substring(0, 1), var);
+        }
+
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        Assert.assertEquals(spreadsheet.allColumns().size(),
+                UIUtils.VAR_TYPES.length);
+
+        //Create cell for each column
+        for (SpreadsheetColumnFixture col : spreadsheet.allColumns()) {
+            col.pressNewCellButton();
+            Assert.assertEquals(col.allCells().size(), 1);
+        }
+    }
 
     /**
      * Test creating cells to the left and right.
