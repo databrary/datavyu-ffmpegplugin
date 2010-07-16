@@ -743,7 +743,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * Test loading the old OPF format
      * @throws Exception on any error.
      */
-    /*BugzID:1941@Test*/ public void testLoadOldOPF() throws Exception {
+    /*BugzID:1941@Test*/ public void testLoadOPFv1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String inputFilename = "oldProjectFormat.opf";
         File inputFile = new File(testFolder + "/ui/" + inputFilename);

@@ -1,6 +1,6 @@
-#2
+#3
 0:test0-float|FLOAT,int|INTEGER,nominal|NOMINAL,qstring|QUOTE_STRING
-float (FLOAT)
+float (FLOAT,true)
 00:00:00:000,00:00:02:000,0.000000
 00:00:03:000,00:00:10:000,0.123400
 00:00:10:000,00:00:15:000,0.246800
@@ -11,7 +11,7 @@ float (FLOAT)
 00:00:52:000,00:00:53:000,0.863800
 00:00:54:000,00:00:55:000,0.987200
 00:00:56:000,00:00:57:000,1.110600
-int (INTEGER)
+int (INTEGER,true)
 00:00:00:000,00:00:20:000,0
 00:00:30:000,00:00:31:000,1234
 00:00:32:000,00:00:38:000,2468
@@ -22,7 +22,7 @@ int (INTEGER)
 00:00:57:000,00:00:58:000,8638
 00:00:59:000,00:01:00:000,9872
 00:01:01:000,00:01:02:000,11106
-text (TEXT)
+text (TEXT,true)
 00:00:00:000,00:00:04:000,textdata1
 00:00:05:000,00:00:10:000,textdata1
 00:00:11:000,00:00:15:000,textdata1
@@ -33,7 +33,7 @@ text (TEXT)
 00:00:52:000,00:00:53:000,textdata1
 00:00:54:000,00:00:55:000,textdata1
 00:00:56:000,00:00:57:000,textdata1
-nominal (NOMINAL)
+nominal (NOMINAL,true)
 00:00:00:000,00:00:02:000,nom1
 00:00:04:000,00:00:06:000,nom1
 00:00:08:000,00:00:10:000,nom1
@@ -44,7 +44,7 @@ nominal (NOMINAL)
 00:00:28:000,00:00:30:000,nom1
 00:00:32:000,00:00:34:000,nom1
 00:00:36:000,00:00:38:000,nom1
-predicate (PREDICATE)
+predicate (PREDICATE,true)
 00:00:00:000,00:00:02:000,test0(0.000000,0,,"")
 00:00:03:000,00:00:10:000,test0(1.234000,1234,a_nominal,"quote_string")
 00:00:10:000,00:00:15:000,test0(1.234000,1234,a_nominal,"quote_string")
@@ -55,7 +55,7 @@ predicate (PREDICATE)
 00:00:52:000,00:00:53:000,test0(1.234000,1234,a_nominal,"quote_string")
 00:00:54:000,00:00:55:000,test0(1.234000,1234,a_nominal,"quote_string")
 00:00:56:000,00:00:57:000,test0(1.234000,1234,a_nominal,"quote_string")
-matrix (MATRIX)-float|FLOAT,int|INTEGER,nominal|NOMINAL,qstring|QUOTE_STRING
+matrix (MATRIX,true)-float|FLOAT,int|INTEGER,nominal|NOMINAL,qstring|QUOTE_STRING
 00:00:00:000,00:00:20:000,(,,,)
 00:00:30:000,00:00:31:000,(1.200000,4,nm,"qs")
 00:00:32:000,00:00:38:000,(1.200000,4,nm,"qs")
