@@ -20,7 +20,7 @@ import javax.swing.LayoutStyle;
  */
 public final class NewVariableV extends OpenSHAPADialog {
 
-    /** The database to add the new variable too. */
+    /** The database to add the new variable to. */
     private Database model;
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(NewVariableV.class);

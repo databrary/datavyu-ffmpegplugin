@@ -165,7 +165,16 @@ public final class OpenDatabaseFileC {
 
             // If we have a version identifier parse the file using the schema
             // that matches that identifier.
-            if (line.equalsIgnoreCase("#2")) {
+            if (line.equalsIgnoreCase("#3")) {
+                //Version 3 includes column visible status after the column type
+                // Parse predicate definitions first.
+                line = parseDefinitions(csvFile, db);
+
+                while (line != null) {
+                    line = parseVariable(csvFile, line, db, "#3");
+                }
+            }
+            else if(line.equalsIgnoreCase("#2")) {
 
                 // Parse predicate definitions first.
                 line = parseDefinitions(csvFile, db);
@@ -616,10 +625,44 @@ public final class OpenDatabaseFileC {
     private String parseVariable(final BufferedReader csvFile,
             final String line, final Database db) throws IOException,
             SystemErrorException, LogicErrorException {
+        return parseVariable(csvFile, line, db, "#2");
+
+    }
+
+    /**
+     * Method to invoke when we encounter a block of text that is a variable.
+     *
+     * @param csvFile
+     *            The CSV file we are currently reading.
+     * @param line
+     *            The line of the CSV file we are currently reading.
+     * @param db
+     *            The database we are populating with data from the CSV file.
+     * @return The next String that is not part of the currently variable that
+     *         we are parsing.
+     * @throws IOException
+     *             When we are unable to read from the csvFile.
+     * @throws SystemErrorException
+     *             When we are unable to populate the variable with information
+     *             from the CSV file.
+     * @throws LogicErrorException
+     *             When we are unable to create a new variable from the CSV file
+     *             (i.e the variable already exists in the database).
+     */
+    private String parseVariable(final BufferedReader csvFile,
+            final String line, final Database db, final String version) throws IOException,
+            SystemErrorException, LogicErrorException {
         // Determine the variable name and type.
         String[] tokens = line.split("\\(");
         String varName = this.stripEscChars(tokens[0].trim());
-        String varType = tokens[1].substring(0, tokens[1].indexOf(")"));
+        String varType = null;
+        boolean varVisible = true;
+        if (version.equals("#3")) {
+            varType = tokens[1].substring(0, tokens[1].indexOf(","));
+            varVisible = Boolean.parseBoolean(tokens[1].substring(tokens[1].indexOf(",") + 1, tokens[1].indexOf(")")));
+        } else {
+            varType = tokens[1].substring(0, tokens[1].indexOf(")"));
+        }
 
         // BugzID:1703 - Ignore old macshapa query variables, we don't have a
         // reliable mechanisim for loading their predicates. Given problems
@@ -638,6 +681,7 @@ public final class OpenDatabaseFileC {
         // Create variable to put cells within.
         Column.isValidColumnName(db, varName);
         DataColumn dc = new DataColumn(db, varName, getVarType(varType));
+        dc.setHidden(!varVisible);
         long colId = db.addColumn(dc);
         dc = db.getDataColumn(colId);
 

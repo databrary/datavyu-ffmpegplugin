@@ -51,7 +51,7 @@ public final class UIVideoAspectRatioTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).resizeHeightTo(600

@@ -122,7 +122,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // 3. Check that the needle is initially 0.
@@ -183,7 +183,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // 4. Move needle beyond end time
@@ -218,7 +218,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // Double click 1/3, 1/2, 3/4 way of timescale
@@ -262,7 +262,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // Zoom in fully
@@ -306,7 +306,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // Create new variable and new cell
@@ -375,7 +375,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         RegionFixture region = dcf.getTrackMixerController().getRegion();
@@ -479,7 +479,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // 4. Drag track
@@ -548,7 +548,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).focus();
         vidWindows.get(0).resizeHeightTo(300);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // Get second window
@@ -740,7 +740,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // 3. Zoom track
@@ -818,7 +818,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // 3. Zoom to halfway. This is an abitrary zoom value.
@@ -895,7 +895,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).focus();
         vidWindows.get(0).resizeHeightTo(300);
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // Get second window
@@ -1081,7 +1081,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
@@ -1132,7 +1132,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
@@ -1184,7 +1184,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
@@ -1323,7 +1323,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
@@ -1459,7 +1459,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         // Create new variable and new cell
@@ -1753,7 +1753,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
@@ -1832,7 +1832,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.component().getWidth() + 10,
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
