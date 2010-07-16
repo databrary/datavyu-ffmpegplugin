@@ -2,6 +2,8 @@ package org.openshapa.plugins.spectrum;
 
 import java.awt.Frame;
 
+import java.net.URL;
+
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileFilter;
 
@@ -28,7 +30,10 @@ public class SpectrumPlugin implements Plugin {
     }
 
     @Override public ImageIcon getTypeIcon() {
-        return null;
+        URL typeIconURL = getClass().getResource(
+                "/icons/spectrumplugin-icon.png");
+
+        return new ImageIcon(typeIconURL);
     }
 
     @Override public boolean isActionSupported1() {
