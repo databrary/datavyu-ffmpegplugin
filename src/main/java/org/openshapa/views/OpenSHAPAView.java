@@ -725,6 +725,7 @@ public final class OpenSHAPAView extends FrameView
         for (DataColumn col : cols) {
             try {
                 col.setHidden(true);
+                col.setSelected(false);
                 msdb.replaceColumn(col);
             } catch (SystemErrorException ex) {
                 java.util.logging.Logger.getLogger(OpenSHAPAView.class.getName()).log(Level.SEVERE, null, ex);
