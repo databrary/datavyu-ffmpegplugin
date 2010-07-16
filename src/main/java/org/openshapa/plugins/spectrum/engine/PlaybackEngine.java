@@ -31,6 +31,9 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 import static org.gstreamer.Element.linkMany;
+import static org.gstreamer.Element.linkPadsFiltered;
+
+import static org.apache.commons.io.FilenameUtils.isExtension;
 
 
 /**
@@ -213,8 +216,7 @@ public final class PlaybackEngine extends Thread {
                 + " : Failed to link converter to resampler.");
         }
 
-        if (!Element.linkPadsFiltered(audioResample, null, spectrum, null,
-                    caps)) {
+        if (!linkPadsFiltered(audioResample, null, spectrum, null, caps)) {
             LOGGER.error(getName()
                 + " : Failed to apply audio capability filter.");
         }
@@ -227,6 +229,19 @@ public final class PlaybackEngine extends Thread {
                 audioConvert.getStaticPad("sink")));
 
         pipeline.add(audioBin);
+
+        // Video handling bin
+        final Bin videoBin = new Bin("Video bin");
+        Element videoOutput = ElementFactory.make("fakesink", "videosink");
+        videoBin.add(videoOutput);
+        videoBin.addPad(new GhostPad("sink", videoOutput.getStaticPad("sink")));
+
+        // Only add the video handling bin if we are not dealing with audio
+        // files.
+        if (!(isExtension(audioFile.getAbsolutePath(),
+                        new String[] { "mp3", "wav", "ogg" }))) {
+            pipeline.add(videoBin);
+        }
 
         decodeBin.connect(new DecodeBin.NEW_DECODED_PAD() {
 
@@ -242,6 +257,8 @@ public final class PlaybackEngine extends Thread {
 
                     if (struct.getName().startsWith("audio/")) {
                         pad.link(audioBin.getStaticPad("sink"));
+                    } else if (struct.getName().startsWith("video/")) {
+                        pad.link(videoBin.getStaticPad("sink"));
                     }
                 }
             });
@@ -352,9 +369,9 @@ public final class PlaybackEngine extends Thread {
     public void seek(final long time) {
         newTime = time;
 
-        if (engineState != EngineState.SEEKING) {
-            commandQueue.offer(EngineState.SEEKING);
-        }
+        // if (engineState != EngineState.SEEKING) {
+        // commandQueue.offer(EngineState.SEEKING);
+        // }
     }
 
     public void adjustSpeed(final double speed) {

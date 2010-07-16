@@ -105,45 +105,6 @@ public final class Spectrum extends JComponent implements MESSAGE {
         return sb.toString();
     }
 
-    public static void main(final String[] args) {
-
-        Runnable edtTask = new Runnable() {
-                @Override public void run() {
-                    JFrame frame = new JFrame();
-                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    frame.setLayout(new MigLayout("ins 0", "[grow]", "[grow]"));
-                    frame.setMinimumSize(new Dimension(800, 480));
-
-                    Spectrum s = new Spectrum();
-
-                    Random rng = new Random(System.currentTimeMillis());
-                    double[] dBVals = new double[30];
-
-                    for (int i = 0; i < dBVals.length; i++) {
-                        dBVals[i] = rng.nextDouble() * -70;
-                    }
-
-                    s.setMagnitudelVals(dBVals);
-
-                    double[] freqVals = new double[30];
-
-                    for (int i = 0; i < dBVals.length; i++) {
-                        freqVals[i] = rng.nextDouble() * 20000;
-                    }
-
-                    s.setFreqVals(freqVals);
-
-                    frame.add(s, "grow");
-                    frame.pack();
-
-                    frame.setVisible(true);
-                }
-            };
-
-        SwingUtilities.invokeLater(edtTask);
-
-    }
-
     @Override protected void paintComponent(final Graphics g) {
 
         if (magVals == null) {
@@ -295,21 +256,37 @@ public final class Spectrum extends JComponent implements MESSAGE {
                         SpectrumConstants.SPECTRUM_BANDS);
             }
 
+            if (xAxisVals == null) {
+
+                final double[] frequencies =
+                    new double[SpectrumConstants.SPECTRUM_BANDS];
+
+                for (int i = 0; i < SpectrumConstants.SPECTRUM_BANDS; i++) {
+                    int idx = indices[i];
+
+                    frequencies[i] = (((SpectrumConstants.SAMPLE_RATE / 2)
+                                * idx) + (SpectrumConstants.SAMPLE_RATE / 4D))
+                        / SpectrumConstants.FFT_BANDS;
+                }
+
+                Runnable edtTask = new Runnable() {
+                        @Override public void run() {
+                            Spectrum.this.setFreqVals(frequencies);
+                            Spectrum.this.repaint();
+                        }
+                    };
+                SwingUtilities.invokeLater(edtTask);
+            }
+
             final double[] result =
-                new double[SpectrumConstants.SPECTRUM_BANDS];
-            final double[] frequencies =
                 new double[SpectrumConstants.SPECTRUM_BANDS];
 
             for (int i = 0; i < SpectrumConstants.SPECTRUM_BANDS; i++) {
                 int idx = indices[i];
 
-                frequencies[i] = (((SpectrumConstants.SAMPLE_RATE / 2) * idx)
-                        + (SpectrumConstants.SAMPLE_RATE / 4D))
-                    / SpectrumConstants.FFT_BANDS;
-
                 GValue value = method("getValue").withReturnType(
                         GValueAPI.GValue.class).withParameterTypes(int.class)
-                    .in(mags).invoke(i);
+                    .in(mags).invoke(idx);
 
                 float mag = GValueAPI.GVALUE_API.g_value_get_float(value);
 
@@ -318,7 +295,6 @@ public final class Spectrum extends JComponent implements MESSAGE {
 
             Runnable edtTask = new Runnable() {
                     @Override public void run() {
-                        Spectrum.this.setFreqVals(frequencies);
                         Spectrum.this.setMagnitudelVals(result);
                         Spectrum.this.repaint();
                     }

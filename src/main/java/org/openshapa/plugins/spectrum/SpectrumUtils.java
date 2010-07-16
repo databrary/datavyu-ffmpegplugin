@@ -78,30 +78,14 @@ public final class SpectrumUtils {
         for (int i = 1; i < numIndices; i++) {
             indices[i] = (int) Math.pow(a, i);
 
-            if (indices[i] < indices[i - 1]) {
+            if (indices[i] <= indices[i - 1]) {
                 indices[i] = indices[i - 1] + 1;
             }
+
+            if (indices[i] >= totalBins) {
+                indices[i] = totalBins - 1;
+            }
         }
-
-        // double[] frequencies = new double[numIndices];
-
-        // for (int i = 0; i < numIndices; i++) {
-        // frequencies[i] = minFreq * Math.pow(a, i);
-        // }
-        //
-        // int[] result = new int[numIndices];
-        // final double step = maxFreq / ((numSamples / 2D) + 1);
-        //
-        // // Map frequency values back into index values
-        // result[0] = (int) Math.floor(frequencies[0] / step);
-        //
-        // for (int i = 1; i < numIndices; i++) {
-        // result[i] = (int) Math.floor(frequencies[i] / step);
-        //
-        // if (result[i] <= result[i - 1]) {
-        // result[i] = result[i - 1] + 1;
-        // }
-        // }
 
         return indices;
     }

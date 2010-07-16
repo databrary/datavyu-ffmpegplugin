@@ -18,7 +18,7 @@ public class SpectrumConstants {
     /**
      * Number of spectrum bands to display.
      */
-    public static final int SPECTRUM_BANDS = 30;
+    public static final int SPECTRUM_BANDS = 40;
 
     /**
      * Minimum magnitude value to display.
