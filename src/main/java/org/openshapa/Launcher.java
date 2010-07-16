@@ -1,8 +1,7 @@
 package org.openshapa;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Map;
 import org.openshapa.util.NativeLoader;
 
@@ -21,6 +20,7 @@ public class Launcher {
         int returnStatus = 0;
 
         try {
+            System.err.println("Starting launcher");
             // Build a process for running the actual OpenSHAPA application, rather
             // than this launcher stub which performs configuration necessary for
             // OpenSHAPA to execute correctly.
@@ -31,22 +31,29 @@ public class Launcher {
 
             // Unpack and install applications necessary for OpenSHAPA to
             // function correctly.
-            String xuggle = NativeLoader.unpackNativeApp("xuggler-osx64-3.4");
+            //String xuggle = NativeLoader.unpackNativeApp("xuggler-osx64-3.4");
 
             // Build up environment variables required to execute OpenSHAPA
             // correctly, this includes variables required for our native
             // applications to function correctly (i.e. xuggler).
             Map<String, String> env = builder.environment();
-            String path = env.get("PATH")
-                          + ":" + xuggle + File.separator + "bin"
-                          + ":" + xuggle + File.separator + "lib";
-            env.put("PATH", path);
-            env.put("XUGGLE_HOME", xuggle);
-            env.put("LD_LIBRARY_PATH", xuggle + File.separator + "lib");
-            env.put("DYLD_LIBRARY_PATH", xuggle + File.separator + "lib");
 
+            String path = env.get("PATH")
+                          + ":/var/folders/f9/f98AOhp5Fv4Ib4z8cafuXU+++TI/-Tmp-/gstreamer-macosx-1.4/";
+            env.put("PATH", path);
+            env.put("GST_PLUGIN_SCANNER", "/var/folders/f9/f98AOhp5Fv4Ib4z8cafuXU+++TI/-Tmp-/gstreamer-macosx-1.4/");
+            env.put("GST_PLUGIN_PATH", "/var/folders/f9/f98AOhp5Fv4Ib4z8cafuXU+++TI/-Tmp-/gstreamer-macosx-1.4/gstreamer-0.10");
+            System.err.println("DYLD_LIBRARY_PATH:" + env.get("DYLD_LIBRARY_PATH"));
+            env.put("DYLD_LIBRARY_PATH", "/var/folders/f9/f98AOhp5Fv4Ib4z8cafuXU+++TI/-Tmp-/gstreamer-macosx-1.4");
+
+            System.err.println("Spawning OpenSHAPA:" + builder.command());
             // Start the OpenSHAPA process.
             Process p = builder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.err.println(line);
+            }
             p.waitFor();
 
         } catch (Exception e) {

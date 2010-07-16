@@ -5,7 +5,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
@@ -20,24 +19,32 @@ public class NativeLoader {
     private static final ArrayList<File> loadedLibs = new ArrayList<File>();
 
     /**
-     * unpacks a native application to a temporary location so that it can be
+     * Unpacks a native application to a temporary location so that it can be
      * utilized from within java code.
      *
      * @param appJar The jar containing the native app that you want to unpack.
      * @return The path of the native app as unpacked to a temporary location.
+     *
      * @throws Exception If unable to unpack the native app to a temporary
      * location.
      */
     static public String unpackNativeApp(final String appJar) throws Exception {
-        Enumeration<URL> resources = NativeLoader.class.getClassLoader().getResources(appJar);
         int count;
         byte[] data = new byte[BUFFER];
 
-        while (resources.hasMoreElements()) {
-            URL u = resources.nextElement();
+        // Search the class path for the application jar.
+        JarFile jar = null;
+        for (String s : System.getProperty("java.class.path").split(File.pathSeparator)) {
 
-            JarFile jar = new JarFile(u.getFile().split("!")[0].substring(5));
+            // Success! We found a matching jar.
+            if (s.endsWith(appJar + ".jar")) {
+                jar = new JarFile(s);
+            }
+        }
 
+        // If we found a jar - it should contain the desired application.
+        // decompress as needed.
+        if (jar != null) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 JarEntry inFile = entries.nextElement();
@@ -45,10 +52,11 @@ public class NativeLoader {
                 File outFile = new File(System.getProperty("java.io.tmpdir")
                                   + File.separator + inFile.getName());
 
-                // if its a directory, create it
+                // If the file from the jar is a directory, create it.
                 if (inFile.isDirectory()) {
                     outFile.mkdir();
 
+                // The file from the jar is regular - decompress it.
                 } else {
                     InputStream in = jar.getInputStream(inFile);
 
@@ -67,6 +75,10 @@ public class NativeLoader {
 
                 loadedLibs.add(outFile);
             }
+
+        // Unable to find jar file - abort decompression.
+        } else {
+            throw new Exception();
         }
 
         return System.getProperty("java.io.tmpdir") + appJar;
