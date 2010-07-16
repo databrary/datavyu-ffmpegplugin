@@ -10,10 +10,14 @@ import javax.swing.SwingWorker;
 
 import org.gstreamer.Buffer;
 import org.gstreamer.Bus;
+import org.gstreamer.Clock;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Format;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
+import org.gstreamer.SeekFlags;
+import org.gstreamer.SeekType;
 import org.gstreamer.State;
 
 import org.gstreamer.elements.AppSink;
@@ -45,6 +49,8 @@ public final class AmplitudeProcessor
     /** Track to send processed data to. */
     private AmplitudeTrack track;
 
+    private final int numChannels;
+
     /**
      * Creates a new worker thread.
      *
@@ -52,15 +58,20 @@ public final class AmplitudeProcessor
      *            Media file to process.
      * @param track
      *            Track to send processed data to.
+     * @param numChannels
+     *            number of channels in the audio file.
      */
-    public AmplitudeProcessor(final File mediaFile,
-        final AmplitudeTrack track) {
+    public AmplitudeProcessor(final File mediaFile, final AmplitudeTrack track,
+        final int numChannels) {
         this.mediaFile = mediaFile;
         this.track = track;
+        this.numChannels = numChannels;
     }
 
     @Override protected StereoAmplitudeData doInBackground() throws Exception {
         final StereoAmplitudeData data = new StereoAmplitudeData();
+
+        Gst.init();
 
         final PlayBin pb = new PlayBin("Processor");
 
@@ -71,6 +82,7 @@ public final class AmplitudeProcessor
         Element audioOutput = ElementFactory.make("appsink", "audiosink");
         final AppSink appSink = (AppSink) audioOutput;
         appSink.set("emit-signals", true);
+        appSink.setSync(false);
         appSink.connect(new NEW_BUFFER() {
                 @Override public void newBuffer(final Element elem,
                     final Pointer userData) {
@@ -93,14 +105,15 @@ public final class AmplitudeProcessor
 
                         ShortBuffer sb = buf.getByteBuffer().asShortBuffer();
 
-                        /*
-                         * TODO change this; this is just speculating that input
-                         * data is stereo.
-                         */
-                        data.addDataL(sb.get(0));
-                        data.addDataR(sb.get(1));
-                        data.addDataL(sb.get((size / 2) - 1));
-                        data.addDataR(sb.get(size / 2));
+                        if (numChannels >= 1) {
+                            data.addDataL(sb.get(0));
+                            data.addDataL(sb.get((size / numChannels) - 1));
+                        }
+
+                        if (numChannels >= 2) {
+                            data.addDataR(sb.get(1));
+                            data.addDataR(sb.get(size / numChannels));
+                        }
                     }
                 }
             });
@@ -110,7 +123,6 @@ public final class AmplitudeProcessor
         bus.connect(new Bus.EOS() {
                 public void endOfStream(final GstObject source) {
                     pb.setState(State.NULL);
-                    System.out.println("Notifying...");
 
                     synchronized (AmplitudeProcessor.class) {
                         AmplitudeProcessor.class.notifyAll();
@@ -121,11 +133,10 @@ public final class AmplitudeProcessor
         pb.setState(State.PLAYING);
 
         synchronized (AmplitudeProcessor.class) {
-            System.out.println("Waiting...");
             AmplitudeProcessor.class.wait();
         }
 
-        System.out.println("Awakened.");
+        pb.dispose();
 
         data.normalizeL();
         data.normalizeR();

@@ -144,13 +144,17 @@ public class SpectrumDataViewer implements DataViewer {
     @Override public void setDataFeed(final File file) {
         mediaFile = file;
 
+        // Find number of audio channels first.
+        int channels = SpectrumUtils.getNumChannels(file);
+
         // Start processing data for the track display.
-        AmplitudeProcessor ap = new AmplitudeProcessor(file, track);
+        AmplitudeProcessor ap = new AmplitudeProcessor(file, track, channels);
         ap.execute();
 
         // Get the engine up and running.
         engine = new PlaybackEngine(mediaFile, dialog);
         engine.start();
+
 
         // Record media duration and audio FPS
         duration = SpectrumUtils.getDuration(file);
