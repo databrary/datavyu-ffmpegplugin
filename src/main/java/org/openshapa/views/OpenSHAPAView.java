@@ -61,7 +61,6 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.Vector;
 import java.util.logging.Level;
-import javax.swing.GroupLayout;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.MacshapaDatabase;
 

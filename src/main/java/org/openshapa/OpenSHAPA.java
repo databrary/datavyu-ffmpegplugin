@@ -48,6 +48,8 @@ import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.Logger;
 
 import com.usermetrix.jclient.UserMetrix;
+import com.xuggle.mediatool.IMediaReader;
+import com.xuggle.mediatool.ToolFactory;
 import java.util.LinkedList;
 
 
