@@ -10,14 +10,10 @@ import javax.swing.SwingWorker;
 
 import org.gstreamer.Buffer;
 import org.gstreamer.Bus;
-import org.gstreamer.Clock;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.Format;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
-import org.gstreamer.SeekFlags;
-import org.gstreamer.SeekType;
 import org.gstreamer.State;
 
 import org.gstreamer.elements.AppSink;
@@ -35,7 +31,7 @@ import com.usermetrix.jclient.UserMetrix;
 
 /**
  * Worker thread for processing audio amplitude data. Only processes audio
- * channels one and two.
+ * channels one and two. Assumes 16-bit audio.
  */
 public final class AmplitudeProcessor
     extends SwingWorker<StereoAmplitudeData, StereoAmplitudeData> {
@@ -49,6 +45,7 @@ public final class AmplitudeProcessor
     /** Track to send processed data to. */
     private AmplitudeTrack track;
 
+    /** Number of channels in the audio file. */
     private final int numChannels;
 
     /**
@@ -68,6 +65,11 @@ public final class AmplitudeProcessor
         this.numChannels = numChannels;
     }
 
+    /**
+     * Process amplitude data.
+     *
+     * @see javax.swing.SwingWorker#doInBackground()
+     */
     @Override protected StereoAmplitudeData doInBackground() throws Exception {
         final StereoAmplitudeData data = new StereoAmplitudeData();
 
@@ -145,6 +147,11 @@ public final class AmplitudeProcessor
     }
 
 
+    /**
+     * Update the track data.
+     *
+     * @see javax.swing.SwingWorker#done()
+     */
     @Override protected void done() {
 
         try {

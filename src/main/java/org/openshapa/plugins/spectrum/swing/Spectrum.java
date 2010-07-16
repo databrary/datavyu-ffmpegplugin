@@ -11,10 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.geom.Rectangle2D;
 
-import java.util.Random;
-
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.gstreamer.Bus;
@@ -29,8 +26,6 @@ import org.gstreamer.lowlevel.GValueAPI.GValue;
 
 import org.openshapa.plugins.spectrum.SpectrumConstants;
 import static org.openshapa.plugins.spectrum.SpectrumUtils.findIndices;
-
-import net.miginfocom.swing.MigLayout;
 
 
 /**
@@ -243,6 +238,12 @@ public final class Spectrum extends JComponent implements MESSAGE {
 
     }
 
+    /**
+     * Listens to incoming bus messages and extracts spectum data.
+     *
+     * @see org.gstreamer.Bus.MESSAGE#busMessage(org.gstreamer.Bus,
+     *      org.gstreamer.Message)
+     */
     @Override public void busMessage(final Bus bus, final Message message) {
         Structure msgStruct = message.getStructure();
         String name = msgStruct.getName();

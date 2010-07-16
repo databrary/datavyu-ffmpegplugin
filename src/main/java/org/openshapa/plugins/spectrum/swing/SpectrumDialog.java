@@ -13,6 +13,9 @@ import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
 
 
+/**
+ * Dialog containing the spectrum analyzer.
+ */
 public final class SpectrumDialog extends JDialog {
 
     public SpectrumDialog(final Dialog owner, final boolean modal) {
@@ -109,6 +112,12 @@ public final class SpectrumDialog extends JDialog {
         getContentPane().setLayout(new MigLayout("ins 0", "[grow]", "[grow]"));
     }
 
+    /**
+     * Set the spectrum viewer to display.
+     *
+     * @param spectrum
+     *            Spectrum viewer.
+     */
     public void setSpectrum(final Spectrum spectrum) {
 
         if (!SwingUtilities.isEventDispatchThread()) {
