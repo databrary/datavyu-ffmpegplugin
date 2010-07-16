@@ -76,6 +76,13 @@ public final class SpectrumUtils {
         return duration;
     }
 
+    /**
+     * Calculates the number of audio channels using the gstreamer level plugin.
+     *
+     * @param file
+     *            Media file.
+     * @return number of channels.
+     */
     public static int getNumChannels(final File file) {
 
         Gst.init();
@@ -183,14 +190,15 @@ public final class SpectrumUtils {
     }
 
     /**
-     * Calculates frequencies to display and returns their indices. The
-     * frequencies to display are chosen logarithmically. Exponential regression
-     * is performed to calculate the frequency values to display.
+     * Calculates bin values to display and returns their indices. The
+     * values are chosen logarithmically. Exponential regression
+     * is performed to calculate the chosen index values.
      *
      * @param totalBins
+     *            Total number of bin values.
      * @param numIndices
-     *            Number of frequency values to pick.
-     * @return Indices associated with the picked frequency values.
+     *            Number of bin values to pick.
+     * @return Indices associated with the picked bin values.
      */
     public static int[] findIndices(final int totalBins, final int numIndices) {
 
@@ -221,6 +229,7 @@ public final class SpectrumUtils {
         return indices;
     }
 
+    /** Helper class for storing intermediate integer results. */
     private static final class MutableInteger {
         int number;
     }
