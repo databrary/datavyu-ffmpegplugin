@@ -529,6 +529,10 @@
                 <preCp>miglayout-3.7.3.1-swing.jar</preCp>
                 <preCp>commons-io-1.4.jar</preCp>
                 <preCp>fest-reflect-1.2.jar</preCp>
+                <preCp>google-collections-1.0.jar</preCp>
+                <preCp>jna-3.2.5.jar</preCp>
+                <preCp>gstreamer-java-1.4.jar</preCp>
+                <preCp>x86-3.3.0-v3346.jar</preCp>
             </classPath>
         </configuration>
       </plugin>
