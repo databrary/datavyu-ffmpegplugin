@@ -26,6 +26,7 @@ import org.gstreamer.elements.DecodeBin;
 import org.openshapa.plugins.spectrum.SpectrumConstants;
 import org.openshapa.plugins.spectrum.swing.Spectrum;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
+import org.openshapa.plugins.spectrum.swing.SpectrumView;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
@@ -195,7 +196,6 @@ public final class PlaybackEngine extends Thread {
 
         // Set up audio resampler.
         Element audioResample = ElementFactory.make("audioresample", null);
-        // audioResample.set("quality", 6);
 
         // Auto-select audio sink.
         Element audioOutput = ElementFactory.make("autoaudiosink", "sink");
@@ -206,6 +206,7 @@ public final class PlaybackEngine extends Thread {
         spectrum.set("threshold", SpectrumConstants.MIN_MAGNITUDE);
         spectrum.set("post-messages", true);
 
+        // Capability filter.
         Caps caps = Caps.fromString("audio/x-raw-int, rate="
                 + SpectrumConstants.SAMPLE_RATE);
 
@@ -238,8 +239,9 @@ public final class PlaybackEngine extends Thread {
 
         // Only add the video handling bin if we are not dealing with audio
         // files.
-        if (!(isExtension(audioFile.getAbsolutePath(),
-                        new String[] { "mp3", "wav", "ogg" }))) {
+        if (
+            !isExtension(audioFile.getAbsolutePath(),
+                    new String[] { "mp3", "wav", "ogg" })) {
             pipeline.add(videoBin);
         }
 
@@ -263,7 +265,7 @@ public final class PlaybackEngine extends Thread {
                 }
             });
 
-        Bus bus = pipeline.getBus();
+        final Bus bus = pipeline.getBus();
 
         bus.connect(new Bus.ERROR() {
                 public void errorMessage(final GstObject source, final int code,
@@ -280,13 +282,15 @@ public final class PlaybackEngine extends Thread {
             });
 
 
-        final Spectrum spectrumComp = new Spectrum();
-        bus.connect(spectrumComp);
-
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
+                    final SpectrumView spectrum = new Spectrum();
                     dialog.getContentPane().removeAll();
-                    dialog.setSpectrum(spectrumComp);
+                    dialog.setSpectrum((Spectrum) spectrum);
+
+                    SpectrumMessage spectrumMessage = new SpectrumMessage(
+                            spectrum);
+                    bus.connect(spectrumMessage);
                 }
             };
         SwingUtilities.invokeLater(edtTask);

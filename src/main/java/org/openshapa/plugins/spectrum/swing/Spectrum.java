@@ -1,7 +1,5 @@
 package org.openshapa.plugins.spectrum.swing;
 
-import static org.fest.reflect.core.Reflection.method;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -12,20 +10,11 @@ import java.awt.Paint;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
-
-import org.gstreamer.Bus;
-import org.gstreamer.Message;
-import org.gstreamer.Structure;
-import org.gstreamer.ValueList;
-
-import org.gstreamer.Bus.MESSAGE;
-
-import org.gstreamer.lowlevel.GValueAPI;
-import org.gstreamer.lowlevel.GValueAPI.GValue;
 
 import org.openshapa.plugins.spectrum.SpectrumConstants;
-import static org.openshapa.plugins.spectrum.SpectrumUtils.findIndices;
+
+import static javax.swing.SwingUtilities.isEventDispatchThread;
+import static javax.swing.SwingUtilities.invokeLater;
 
 
 /**
@@ -34,7 +23,7 @@ import static org.openshapa.plugins.spectrum.SpectrumUtils.findIndices;
  * @author Douglas Teoh
  *
  */
-public final class Spectrum extends JComponent implements MESSAGE {
+public final class Spectrum extends JComponent implements SpectrumView {
 
     /** Pixel padding between the frame and the histogram axes. */
     private static final int AXIS_PADDING = 75;
@@ -60,11 +49,35 @@ public final class Spectrum extends JComponent implements MESSAGE {
     private int[] indices;
 
     public void setMagnitudelVals(final double[] dbVals) {
-        this.magVals = dbVals;
+
+        if (isEventDispatchThread()) {
+            this.magVals = dbVals;
+            repaint();
+        } else {
+            Runnable edtTask = new Runnable() {
+                    @Override public void run() {
+                        Spectrum.this.magVals = dbVals;
+                        repaint();
+                    }
+                };
+            invokeLater(edtTask);
+        }
     }
 
     public void setFreqVals(final double[] freqVals) {
-        xAxisVals = createXAxisVals(freqVals);
+
+        if (isEventDispatchThread()) {
+            xAxisVals = createXAxisVals(freqVals);
+            repaint();
+        } else {
+            Runnable edtTask = new Runnable() {
+                    @Override public void run() {
+                        Spectrum.this.xAxisVals = createXAxisVals(freqVals);
+                        repaint();
+                    }
+                };
+            invokeLater(edtTask);
+        }
     }
 
     private String[] createXAxisVals(final double[] freqVals) {
@@ -236,72 +249,6 @@ public final class Spectrum extends JComponent implements MESSAGE {
 
         g2.dispose();
 
-    }
-
-    /**
-     * Listens to incoming bus messages and extracts spectum data.
-     *
-     * @see org.gstreamer.Bus.MESSAGE#busMessage(org.gstreamer.Bus,
-     *      org.gstreamer.Message)
-     */
-    @Override public void busMessage(final Bus bus, final Message message) {
-        Structure msgStruct = message.getStructure();
-        String name = msgStruct.getName();
-
-        if ("spectrum".equals(name)) {
-
-            ValueList mags = msgStruct.getValueList("magnitude");
-
-            if (indices == null) {
-                indices = findIndices(SpectrumConstants.FFT_BANDS,
-                        SpectrumConstants.SPECTRUM_BANDS);
-            }
-
-            if (xAxisVals == null) {
-
-                final double[] frequencies =
-                    new double[SpectrumConstants.SPECTRUM_BANDS];
-
-                for (int i = 0; i < SpectrumConstants.SPECTRUM_BANDS; i++) {
-                    int idx = indices[i];
-
-                    frequencies[i] = (((SpectrumConstants.SAMPLE_RATE / 2)
-                                * idx) + (SpectrumConstants.SAMPLE_RATE / 4D))
-                        / SpectrumConstants.FFT_BANDS;
-                }
-
-                Runnable edtTask = new Runnable() {
-                        @Override public void run() {
-                            Spectrum.this.setFreqVals(frequencies);
-                            Spectrum.this.repaint();
-                        }
-                    };
-                SwingUtilities.invokeLater(edtTask);
-            }
-
-            final double[] result =
-                new double[SpectrumConstants.SPECTRUM_BANDS];
-
-            for (int i = 0; i < SpectrumConstants.SPECTRUM_BANDS; i++) {
-                int idx = indices[i];
-
-                GValue value = method("getValue").withReturnType(
-                        GValueAPI.GValue.class).withParameterTypes(int.class)
-                    .in(mags).invoke(idx);
-
-                float mag = GValueAPI.GVALUE_API.g_value_get_float(value);
-
-                result[i] = mag;
-            }
-
-            Runnable edtTask = new Runnable() {
-                    @Override public void run() {
-                        Spectrum.this.setMagnitudelVals(result);
-                        Spectrum.this.repaint();
-                    }
-                };
-            SwingUtilities.invokeLater(edtTask);
-        }
     }
 
 }
