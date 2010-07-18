@@ -46,6 +46,7 @@ import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
 import org.openshapa.models.PlaybackModel;
+import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.ClockTimer;
 import org.openshapa.util.FloatUtils;
@@ -55,7 +56,6 @@ import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
-import org.openshapa.views.continuous.PluginManager;
 
 import com.usermetrix.jclient.UserMetrix;
 

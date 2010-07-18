@@ -19,6 +19,7 @@ import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.TrackSettings;
 import org.openshapa.models.project.ViewerSetting;
+import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.FileUtils;
 
@@ -26,7 +27,6 @@ import org.openshapa.views.DataControllerV;
 import org.openshapa.views.MixerControllerV;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
-import org.openshapa.views.continuous.PluginManager;
 
 
 /**
