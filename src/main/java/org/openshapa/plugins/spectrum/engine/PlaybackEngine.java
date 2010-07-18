@@ -300,13 +300,21 @@ public final class PlaybackEngine extends Thread {
      * Handles seeking through the current audio file.
      */
     private void engineSeeking() {
-        pipeline.seek(newTime, TimeUnit.MILLISECONDS);
 
-        /*
-         * Mark engine state with task complete so that isPlaying returns false
-         * while we are jogging.
-         */
-        engineState = EngineState.TASK_COMPLETE;
+        if ((getCurrentTime() < newTime) && (playbackSpeed > 0)) {
+            pipeline.seek(newTime, TimeUnit.MILLISECONDS);
+        } else if ((getCurrentTime() > newTime) && (playbackSpeed < 0)) {
+            pipeline.seek(newTime, TimeUnit.MILLISECONDS);
+        } else if (playbackSpeed == 0) {
+            pipeline.seek(newTime, TimeUnit.MILLISECONDS);
+
+            /*
+             * Mark engine state with task complete so that isPlaying returns
+             * false
+             * while we are jogging.
+             */
+            engineState = EngineState.TASK_COMPLETE;
+        }
     }
 
     /**
@@ -373,9 +381,7 @@ public final class PlaybackEngine extends Thread {
     public void seek(final long time) {
         newTime = time;
 
-        // if (engineState != EngineState.SEEKING) {
-        // commandQueue.offer(EngineState.SEEKING);
-        // }
+        commandQueue.offer(EngineState.SEEKING);
     }
 
     public void adjustSpeed(final double speed) {
