@@ -417,7 +417,7 @@ public final class OpenSHAPAView extends FrameView
                     return;
                 }
 
-                File f = new File(fc.getSelectedFile(), dbFileName);
+                File f = new File(fc.getSelectedFile().getParent(), dbFileName);
                 saveC.saveDatabase(f, projController.getDB());
 
                 if (dbFileName.lastIndexOf('.') != -1) {
