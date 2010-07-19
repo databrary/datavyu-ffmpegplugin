@@ -56,8 +56,8 @@ public final class UIVisualCellTest extends OpenSHAPATestClass {
                 KeyEvent.VK_V).modifiers(
                 Platform.controlOrCommandMask()));
 
-        String root = System.getProperty("testPath");
-        File refImageFile = new File(root + "/ui/multiline.png");
+        
+        File refImageFile = new File(testFolder + "/ui/multiline.png");
 
         BufferedImage componentImage = UIImageUtils.captureAsScreenshot(
                 cell.component());

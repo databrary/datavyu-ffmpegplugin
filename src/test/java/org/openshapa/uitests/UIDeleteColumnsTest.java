@@ -23,8 +23,7 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
     @Test public void testDeleteSingleColumns() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -57,8 +56,7 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
     @Test public void testDeleteMultipleColumns() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data.rb");
+        File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate

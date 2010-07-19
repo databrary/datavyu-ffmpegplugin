@@ -21,7 +21,6 @@ import java.util.SimpleTimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
@@ -34,9 +33,9 @@ import org.fest.swing.util.Platform;
 
 import org.openshapa.controllers.RunScriptC;
 
+import org.openshapa.plugins.PluginManager;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.continuous.PluginManager;
 
 
 /**
@@ -316,6 +315,9 @@ public final class UIUtils {
             boolean worked = false;
             JFileChooserFixture jfcf = null;
 
+            final long startTime = System.currentTimeMillis();
+            final long maxTestRunTime = 5 * 1000;
+
             do {
                 dcf.button("addDataButton").click();
 
@@ -326,7 +328,8 @@ public final class UIUtils {
                 } catch (Exception e) {
                     // keep trying
                 }
-            } while (worked == false);
+            } while (worked == false
+                    && System.currentTimeMillis() < startTime + maxTestRunTime);
         }
     }
 }

@@ -148,7 +148,7 @@ public final class SaveDatabaseFileC {
 
             // Dump out an identifier for the version of file.
             PrintStream ps = new PrintStream(outStream);
-            ps.println("#2");
+            ps.println("#3");
 
             // Dump out all the predicates held within the database.
             Vector<PredicateVocabElement> predicates = db.getPredVEs();
@@ -183,8 +183,8 @@ public final class SaveDatabaseFileC {
             for (int i = 0; i < colIds.size(); i++) {
                 DataColumn dc = db.getDataColumn(colIds.get(i));
                 boolean isMatrix = false;
-                ps.printf("%s (%s)", StringUtils.escapeCSV(dc.getName()),
-                    dc.getItsMveType());
+                ps.printf("%s (%s,%s)", StringUtils.escapeCSV(dc.getName()),
+                    dc.getItsMveType(), !dc.getHidden());
 
                 // If we a matrix type - we need to dump the formal args.
                 MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());

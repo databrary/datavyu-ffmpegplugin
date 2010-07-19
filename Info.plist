@@ -20,22 +20,17 @@
     <string>6.0</string>
     <key>CFBundleIconFile</key>
     <string>OpenSHAPA.icns</string>
-    <key>LSArchitecturePriority</key>
-    <array>
-    <string>i386</string>
-    <string>ppc</string>
-    </array>
     <key>Java</key>
     <dict>
       <key>MainClass</key>
-      <string>org.openshapa.OpenSHAPA</string>
+      <string>org.openshapa.Launcher</string>
       <key>JVMVersion</key>
       <string>1.6+</string>
       <key>SplashFile</key>
       <string>$JAVAROOT/images/splash.png</string>
       <key>ClassPath</key>
       <array>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa/1.07/openshapa-1.07.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa/1.08/openshapa-1.08.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.4.0/jruby-complete-1.4.0.jar</string>
         <string>$JAVAROOT/repo/org/jdesktop/appframework/1.0.3/appframework-1.0.3.jar</string>
@@ -43,8 +38,14 @@
         <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.15/openshapa-lib-0.0.15.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.5/snakeyaml-1.5.jar</string>
         <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.5/UserMetrix-jclient-0.0.5.jar</string>
-        <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.2/miglayout-3.7.2-swing.jar</string>
+        <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.3.1/miglayout-3.7.3.1-swing.jar</string>
         <string>$JAVAROOT/repo/commons-io/commons-io/1.4/commons-io-1.4.jar</string>
+        <string>$JAVAROOT/repo/org/easytesting/fest-reflect/1.2/fest-reflect-1.2.jar</string>
+        <string>$JAVAROOT/repo/com/google/collections/google-collections/1.0/google-collections-1.0.jar</string>
+        <string>$JAVAROOT/repo/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar</string>
+        <string>$JAVAROOT/repo/net/java/dev/jna/jna/jna-3.2.5.jar</string>
+        <string>$JAVAROOT/repo/com/googlecode/gstreamer-java/gstreamer-java/1.4/gstreamer-java-1.4.jar</string>
+        <string>$JAVAROOT/repo/com/googlecode/gstreamer-osx64/1.4/gstreamer-osx64-1.4.jar</string>
       </array>
     </dict>
   </dict>

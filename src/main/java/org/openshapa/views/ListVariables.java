@@ -2,6 +2,7 @@ package org.openshapa.views;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.util.logging.Level;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
@@ -9,16 +10,20 @@ import org.openshapa.models.db.ExternalColumnListListener;
 import org.openshapa.models.db.SystemErrorException;
 import java.util.HashMap;
 import java.util.Vector;
-import javax.swing.GroupLayout;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import net.miginfocom.swing.MigLayout;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.openshapa.models.db.MacshapaDatabase;
 
 /**
  * The dialog to list database variables.
  */
 public final class ListVariables extends OpenSHAPADialog
-implements ExternalColumnListListener {
+implements ExternalColumnListListener, TableModelListener {
 
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(ListVariables.class);
@@ -42,10 +47,14 @@ implements ExternalColumnListListener {
     private Database database;
 
     /** The table model of the JTable that lists the actual variables. */
-    private DefaultTableModel tableModel;
+    private VListTableModel tableModel;
 
     /** Mapping between database column id - to the table model. */
     private HashMap<Long, Integer> dbToTableMap;
+
+    private ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(ListVariables.class);
 
     /**
      * Creates new form ListVariablesView.
@@ -58,17 +67,13 @@ implements ExternalColumnListListener {
                          final boolean modal,
                          final Database db) {
         super(parent, modal);
-        tableModel = new DefaultTableModel();
+        tableModel = new VListTableModel();
         dbToTableMap = new HashMap<Long, Integer>();
 
         initComponents();
         setName(this.getClass().getSimpleName());
 
-        database = db;
-
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                      .getContext()
-                                      .getResourceMap(ListVariables.class);
+        database = db;        
 
         // Set the names of the columns.
         tableModel.addColumn(rMap.getString("Table.visibleColumn"));
@@ -89,7 +94,34 @@ implements ExternalColumnListListener {
         } catch (SystemErrorException e) {
             logger.error("Unable to list variables.", e);
         }
+
+        //Listeners
+        tableModel.addTableModelListener(this);
     }
+
+    @Override
+    public void tableChanged(TableModelEvent e) {
+        int row = e.getFirstRow();
+        int column = e.getColumn();
+        TableModel model = (TableModel)e.getSource();
+        String columnName = model.getColumnName(column);
+        Object data = model.getValueAt(row, column);
+
+        if (columnName.equals(rMap.getString("Table.visibleColumn"))) {
+            try {
+                String varName = (String)model.getValueAt(row, 1);
+                DataColumn dc = database.getDataColumn(varName);
+                dc.setHidden(!(Boolean)data);
+                MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
+                msdb.replaceColumn(dc);
+            } catch (SystemErrorException ex) {
+                java.util.logging.Logger.getLogger(ListVariables.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            OpenSHAPA.getView().showSpreadsheet();
+        }
+    }
+
 
     /**
      * Add a new row to the variable list.
@@ -190,6 +222,31 @@ implements ExternalColumnListListener {
         return;
     }
 
+    class VListTableModel extends DefaultTableModel {
+
+        @Override
+        public Class getColumnClass(int column) {
+            try {
+                if (column == 0) {
+                    return Class.forName("java.lang.Boolean");
+                }
+                return Class.forName("java.lang.Object");
+            } catch (ClassNotFoundException ex) {
+                ex.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            if (column == 0) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -209,29 +266,15 @@ implements ExternalColumnListListener {
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
-        variableList.setEnabled(false);
         variableList.setModel(tableModel);
         variableList.setMinimumSize(new java.awt.Dimension(400, 200));
         variableList.setName("variableList");
-        variableList.setRowSelectionAllowed(false);
         jScrollPane1.setViewportView(variableList);
 
-        GroupLayout layout = new GroupLayout(getContentPane());
+        MigLayout layout = new MigLayout("nogrid");
+                //new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 375, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 275, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        getContentPane().add(jScrollPane1);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

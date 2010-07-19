@@ -4,7 +4,7 @@
   <groupId>org.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>1.07</version>
+  <version>1.08</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
@@ -205,8 +205,8 @@
   <!-- External repositories - where to find third-party dependencies. -->
   <repositories>
     <repository>
-      <id>central</id>
-      <url>http://openshapa.org/maven2</url>
+      <id>java</id>
+      <url>http://download.java.net/maven/2</url>
       <layout>default</layout>
     </repository>
 
@@ -248,6 +248,25 @@
 
   <!-- Use an optimized build for releases. -->
   <profiles>
+
+    <!-- Platform specific dependencies, package gstreamer with osx64. -->
+    <profile>
+      <id>mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+
+      <dependencies>
+        <dependency>
+          <groupId>com.googlecode</groupId>
+          <artifactId>gstreamer-osx64</artifactId>
+          <version>1.4</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
     <profile>
         <id>win-package</id>
         <properties>
@@ -335,7 +354,7 @@
         <version>1.0-alpha-3</version>
         <configuration>
           <bundleName>OpenSHAPA</bundleName>
-          <mainClass>org.openshapa.OpenSHAPA</mainClass>
+          <mainClass>org.openshapa.Launcher</mainClass>
           <jvmVersion>1.6+</jvmVersion>
           <iconFile>${basedir}/src/main/resources/icons/OpenSHAPA.icns</iconFile>
 
@@ -526,8 +545,12 @@
                 <preCp>openshapa-lib-0.0.15.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.5.jar</preCp>
-                <preCp>miglayout-3.7.2-swing.jar</preCp>
+                <preCp>miglayout-3.7.3.1-swing.jar</preCp>
                 <preCp>commons-io-1.4.jar</preCp>
+                <preCp>fest-reflect-1.2.jar</preCp>
+                <preCp>google-collections-1.0.jar</preCp>
+                <preCp>jna-3.2.5.jar</preCp>
+                <preCp>gstreamer-java-1.4.jar</preCp>
             </classPath>
         </configuration>
       </plugin>
@@ -561,6 +584,12 @@
     <dependency>
       <groupId>org.jdesktop</groupId>
       <artifactId>appframework</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.swinglabs</groupId>
+      <artifactId>swing-layout</artifactId>
       <version>1.0.3</version>
     </dependency>
 
@@ -610,7 +639,7 @@
     <dependency>
     	<groupId>com.miglayout</groupId>
     	<artifactId>miglayout</artifactId>
-    	<version>3.7.2</version>
+    	<version>3.7.3.1</version>
     	<classifier>swing</classifier>
     </dependency>
 
@@ -618,6 +647,31 @@
     	<groupId>commons-io</groupId>
     	<artifactId>commons-io</artifactId>
     	<version>1.4</version>
+    </dependency>
+
+    <dependency>
+    	<groupId>org.easytesting</groupId>
+    	<artifactId>fest-reflect</artifactId>
+    	<version>1.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <!-- g-streamer dependencies -->
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>3.2.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.googlecode.gstreamer-java</groupId>
+      <artifactId>gstreamer-java</artifactId>
+      <version>1.4</version>
     </dependency>
   </dependencies>
 </project>

@@ -173,6 +173,13 @@ public abstract class EditorComponent implements ClipboardOwner {
     }
 
     /**
+     * @return pos the start location in the JTextComponent for this editor.
+     */
+    public final int getStartPos() {
+        return startPos;
+    }
+
+    /**
      * @return the current text of this editor.
      */
     public final String getText() {
@@ -346,7 +353,8 @@ public abstract class EditorComponent implements ClipboardOwner {
         // Pass in a backspace character to delete the current selection.
         KeyEvent ke = new KeyEvent(this.getParentComponent(), 0, 0,
                                    0, 0, '\u0008');
-        this.keyTyped(ke);
+        this.keyPressed(ke);
+        this.keyTyped(ke); //@todo All delete and backspace code should be in keyPressed, not keyTyped
     }
 
     /**
@@ -482,7 +490,6 @@ public abstract class EditorComponent implements ClipboardOwner {
             this.setText(currentValue.toString());
             setCaretPosition(cPosition);
         }
-
     }
 
     /**

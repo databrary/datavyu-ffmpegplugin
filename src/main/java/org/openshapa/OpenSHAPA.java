@@ -33,6 +33,7 @@ import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
+import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.MacHandler;
@@ -42,13 +43,14 @@ import org.openshapa.views.DataControllerV;
 import org.openshapa.views.ListVariables;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
-import org.openshapa.views.continuous.PluginManager;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.Logger;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.util.LinkedList;
+import org.gstreamer.Gst;
+import org.gstreamer.Pipeline;
 
 
 /**
@@ -772,6 +774,8 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         return Platform.UNKNOWN;
     }
+
+    private static Pipeline pipe;
 
     /**
      * Main method launching the application.

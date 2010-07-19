@@ -41,6 +41,8 @@ import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.io.FileInputStream;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.MatrixVocabElement.MatrixType;
 
 /**
  * Controller for opening a database from disk.
@@ -103,7 +105,24 @@ public final class OpenDatabaseFileC {
                                                             listStream,
                                                             errorStream);
 
-            return modbr.readDB();
+            MacshapaDatabase msdb = modbr.readDB();
+
+            //Convert all untyped to nominal and Bugz1703
+            for (DataColumn dc: msdb.getDataColumns()) {
+                // BugzID:1703 - Ignore old macshapa query variables, we don't have a
+                // reliable mechanisim for loading their predicates. Given problems
+                // between the untyped nature of macshapa and the typed nature of
+                // OpenSHAPA.
+                if (dc.getName().equals("###QueryVar###")) {
+                    msdb = removeDataColumn(msdb, dc);
+                }
+
+                if (dc.getItsMveType() == MatrixType.UNDEFINED) {
+                    dc.setItsMveType(MatrixType.NOMINAL);
+                }
+            }
+
+            return msdb;
         } catch (FileNotFoundException e) {
             logger.error("Unable to load macshapa database.", e);
         } catch (SystemErrorException e) {
@@ -116,6 +135,29 @@ public final class OpenDatabaseFileC {
 
         // Error occured - return null.
         return null;
+    }
+
+    /**
+     * Remove data column from a MacSHAPA database.
+     * @param model MacSHAPA database
+     * @param dc DataColumn
+     * @return MacSHAPA database with dc removed
+     * @throws SystemErrorException see
+     */
+    private MacshapaDatabase removeDataColumn(MacshapaDatabase model,
+            DataColumn dc) throws SystemErrorException {
+        while (dc.getNumCells() > 0) {
+                    Cell c = model.getCell(dc.getID(), 1);
+                    // Check if the cell we are deleting is the last created
+                    // cell... Default this back to 0.
+                    model.removeCell(c.getID());
+                    dc = model.getDataColumn(dc.getID());
+                }
+                // Check if the column we are deleting was the last created
+                // column... Default this back to 0 if it is.
+                model.removeColumn(dc.getID());
+
+                return model;
     }
 
     /**
@@ -165,7 +207,16 @@ public final class OpenDatabaseFileC {
 
             // If we have a version identifier parse the file using the schema
             // that matches that identifier.
-            if (line.equalsIgnoreCase("#2")) {
+            if (line.equalsIgnoreCase("#3")) {
+                //Version 3 includes column visible status after the column type
+                // Parse predicate definitions first.
+                line = parseDefinitions(csvFile, db);
+
+                while (line != null) {
+                    line = parseVariable(csvFile, line, db, "#3");
+                }
+            }
+            else if(line.equalsIgnoreCase("#2")) {
 
                 // Parse predicate definitions first.
                 line = parseDefinitions(csvFile, db);
@@ -616,14 +667,63 @@ public final class OpenDatabaseFileC {
     private String parseVariable(final BufferedReader csvFile,
             final String line, final Database db) throws IOException,
             SystemErrorException, LogicErrorException {
+        return parseVariable(csvFile, line, db, "#2");
+
+    }
+
+    /**
+     * Method to invoke when we encounter a block of text that is a variable.
+     *
+     * @param csvFile
+     *            The CSV file we are currently reading.
+     * @param line
+     *            The line of the CSV file we are currently reading.
+     * @param db
+     *            The database we are populating with data from the CSV file.
+     * @return The next String that is not part of the currently variable that
+     *         we are parsing.
+     * @throws IOException
+     *             When we are unable to read from the csvFile.
+     * @throws SystemErrorException
+     *             When we are unable to populate the variable with information
+     *             from the CSV file.
+     * @throws LogicErrorException
+     *             When we are unable to create a new variable from the CSV file
+     *             (i.e the variable already exists in the database).
+     */
+    private String parseVariable(final BufferedReader csvFile,
+            final String line, final Database db, final String version) throws IOException,
+            SystemErrorException, LogicErrorException {
         // Determine the variable name and type.
         String[] tokens = line.split("\\(");
         String varName = this.stripEscChars(tokens[0].trim());
-        String varType = tokens[1].substring(0, tokens[1].indexOf(")"));
+        String varType = null;
+        boolean varVisible = true;
+        if (version.equals("#3")) {
+            varType = tokens[1].substring(0, tokens[1].indexOf(","));
+            varVisible = Boolean.parseBoolean(tokens[1].substring(tokens[1].indexOf(",") + 1, tokens[1].indexOf(")")));
+        } else {
+            varType = tokens[1].substring(0, tokens[1].indexOf(")"));
+        }
+
+        // BugzID:1703 - Ignore old macshapa query variables, we don't have a
+        // reliable mechanisim for loading their predicates. Given problems
+        // between the untyped nature of macshapa and the typed nature of
+        // OpenSHAPA.
+        if (varName.equals("###QueryVar###")) {
+            String lineEater = csvFile.readLine();
+            while (lineEater != null
+                   && Character.isDigit(lineEater.charAt(0))) {
+                lineEater = csvFile.readLine();
+            }
+
+            return lineEater;
+        }
 
         // Create variable to put cells within.
         Column.isValidColumnName(db, varName);
         DataColumn dc = new DataColumn(db, varName, getVarType(varType));
+        dc.setHidden(!varVisible);
         long colId = db.addColumn(dc);
         dc = db.getDataColumn(colId);
 

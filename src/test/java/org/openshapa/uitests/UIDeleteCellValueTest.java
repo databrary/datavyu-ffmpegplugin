@@ -10,26 +10,21 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
-import javax.swing.JDialog;
 import javax.swing.text.BadLocationException;
 
-import org.fest.swing.core.GenericTypeMatcher;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
-import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.util.FileFilters.OPFFilter;
 
-import org.openshapa.views.NewProjectV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 
 import org.testng.Assert;
@@ -50,7 +45,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
     * has resulted in consistent behaviour.
     */
     @AfterMethod @BeforeMethod protected void deleteFiles() {
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
@@ -80,8 +75,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
      */
     private void testDeleteCellValue(final String type)
         throws BadLocationException {
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/all_column_types.rb");
+        File demoFile = new File(testFolder + "/ui/all_column_types.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -239,12 +233,6 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
 
         cell.clickToCharPos(SpreadsheetCellFixture.VALUE, strLen, 1);
 
-        // Forced to do this because of BugzID:1350
-        for (int i = 0; i < strLen; i++) {
-            cell.cellValue().pressAndReleaseKey(KeyPressInfo.keyCode(
-                    KeyEvent.VK_RIGHT));
-        }
-
         for (int i = 0; i < strLen; i++) {
             cell.cellValue().pressAndReleaseKey(KeyPressInfo.keyCode(
                     KeyEvent.VK_BACK_SPACE));
@@ -305,7 +293,6 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         String varName = "t";
         String varType = "text";
 
-        final String tempFolder = System.getProperty("java.io.tmpdir");
         final String originalText = "Hello world";
         final String afterDeleteText = "Hello wo";
 
@@ -357,25 +344,11 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
             mainFrameFixture.clickMenuItemWithPath("File", "New");
         }
 
-        DialogFixture newDatabaseDialog;
+        DialogFixture newProjectDialog = mainFrameFixture.dialog("NewProjectV");
 
-        try {
-            newDatabaseDialog = mainFrameFixture.dialog();
-        } catch (Exception e) {
+        newProjectDialog.textBox("nameField").enterText("n");
 
-            // Get New Database dialog
-            newDatabaseDialog = mainFrameFixture.dialog(
-                    new GenericTypeMatcher<JDialog>(JDialog.class) {
-                        @Override protected boolean isMatching(
-                            final JDialog dialog) {
-                            return dialog.getClass().equals(NewProjectV.class);
-                        }
-                    }, Timeout.timeout(5, TimeUnit.SECONDS));
-        }
-
-        newDatabaseDialog.textBox("nameField").enterText("n");
-
-        newDatabaseDialog.button("okButton").click();
+        newProjectDialog.button("okButton").click();
 
         // Check that no cells exist
         Assert.assertEquals(spreadsheet.allColumns().size(), 0);
@@ -433,7 +406,6 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         String varName = "t";
         String varType = "text";
 
-        final String tempFolder = System.getProperty("java.io.tmpdir");
         final String originalText = "Hello world";
         final String afterDeleteText = "o world";
 

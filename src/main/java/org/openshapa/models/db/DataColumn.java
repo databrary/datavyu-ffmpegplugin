@@ -447,6 +447,17 @@ public class DataColumn extends Column
 
     } /* DataColumn::getItsMveType() */
 
+    /**
+     * Set untyped to a type. This method needs checks.
+     */
+    public void setItsMveType(MatrixVocabElement.MatrixType mt)
+    {
+        if (itsMveType == MatrixVocabElement.MatrixType.UNDEFINED) {
+            itsMveType = mt;
+        }
+
+    } /* Da
+
 
     /**
      * getVarLen()

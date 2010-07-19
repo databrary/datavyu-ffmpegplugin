@@ -1,0 +1,59 @@
+package org.openshapa;
+
+import java.util.Map;
+import org.openshapa.util.NativeLoader;
+
+/**
+ * This class performs necessary installation and configuration before spawning
+ * the OpenSHAPA application.
+ */
+public class Launcher {
+
+    /**
+     * The main entry point for the OpenSHAPA Launcher on OSX platform - this
+     * essentially unpacks and installs the required native gstreamer libs.
+     *
+     * @params args The arguments passed to the application.
+     */
+    public static void main(final String[] args) {
+        int returnStatus = 0;
+
+        try {
+            // Build a process for running the actual OpenSHAPA application, rather
+            // than this launcher stub which performs configuration necessary for
+            // OpenSHAPA to execute correctly.
+            String classPath = System.getProperty("java.class.path");
+
+            ProcessBuilder builder = new ProcessBuilder("java",
+                                                        "-cp", classPath,
+                                                        "org.openshapa.OpenSHAPA");
+
+            // Unpack and install applications necessary for OpenSHAPA to
+            // function correctly.
+            String gstreamer = NativeLoader.unpackNativeApp("gstreamer-osx64-1.4");
+
+            // Build up environment variables required to execute OpenSHAPA
+            // correctly, this includes variables required for our native
+            // applications to function correctly (i.e. gstreamer).
+            Map<String, String> env = builder.environment();
+
+            String path = env.get("PATH") + ":" + gstreamer;
+            env.put("PATH", path);
+            env.put("GST_PLUGIN_SCANNER", gstreamer);
+            env.put("GST_PLUGIN_PATH", gstreamer + "/gstreamer-0.10");
+            env.put("DYLD_LIBRARY_PATH", gstreamer);
+
+            // Start the OpenSHAPA process.
+            Process p = builder.start();
+            p.waitFor();
+        } catch (Exception e) {
+            System.err.println("Unable to start OpenSHAPA: ");
+            System.err.println(e);
+            returnStatus = 1;
+
+        } finally {
+            NativeLoader.cleanAllTmpFiles();
+            System.exit(returnStatus);
+        }
+    }
+}

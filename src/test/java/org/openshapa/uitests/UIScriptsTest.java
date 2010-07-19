@@ -5,8 +5,10 @@ import static org.fest.reflect.core.Reflection.method;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import javax.swing.JMenuItem;
 
-import org.fest.swing.fixture.DialogFixture;
+import javax.swing.JPopupMenu;
+import org.fest.swing.fixture.JMenuItemFixture;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.OpenSHAPA;
@@ -26,7 +28,7 @@ import org.testng.annotations.Test;
 /**
  * Test the creation of a new database.
  */
-public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
+public final class UIScriptsTest extends OpenSHAPATestClass {
 
     /**
      * Initialiser called before each unit test.
@@ -41,7 +43,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
          * not always delete them during the test case. Doing the deletes here
          * has resulted in consistent behaviour.
          */
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
@@ -62,7 +64,7 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Tests modifiying the spreadsheet with a script.
+     * Tests modifying the spreadsheet with a script.
      *
      * @throws IOException
      *             if file read issues.
@@ -70,29 +72,19 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
     @Test public void testModifySpreadsheet() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        // 1. Open and run script to populate database
-        String root = System.getProperty("testPath");
-        final File demoFile = new File(root + "/ui/demo_data.rb");
+        // 1. Open and run script to populate database        
+        final File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists(),
             "Expecting demo_data.rb to exist.");
 
-        final File modifyFile = new File(root + "/ui/find_and_replace.rb");
+        final File modifyFile = new File(testFolder + "/ui/find_and_replace.rb");
         Assert.assertTrue(modifyFile.exists(),
             "Expecting find_and_replace.rb to exist.");
 
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 1a. Check that database is populated
         spreadsheet = mainFrameFixture.getSpreadsheet();
@@ -106,11 +98,10 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(modifyFile);
 
         // Close script console
-        scriptConsole = mainFrameFixture.dialog();
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsole();
 
         // 3. Save the database
-        final String tempFolder = System.getProperty("java.io.tmpdir");
+        
         File savedCSV = new File(tempFolder + "/" + "savedCSV.csv");
 
         if (Platform.isOSX()) {
@@ -129,8 +120,63 @@ public final class UIRunModifyDatabaseScriptTest extends OpenSHAPATestClass {
         }
 
         // 4. - compare it to the reference .csv
-        File testCSV = new File(root + "/ui/modify-test-out.csv");
+        File testCSV = new File(testFolder + "/ui/modify-test-out.csv");
         Assert.assertTrue(UIUtils.areFilesSameLineComp(testCSV, savedCSV));
+    }
+
+    /**
+     * Test for BugzID:1770: Recent scripts contains duplicates
+     * Run OpenSHAPA, run the demodata script.
+     * Now go to script > Run Recent Script and click the demodata script in
+     * here again. Now if you open the recent scripts list, demodata will appear
+     * twice (and in fact, can appear arbitrarily many times upon reselection,
+     * i.e. duplicates are not being checked).
+     */
+    @Test public void testDuplicateRecentScripts() {
+        final File script1 = new File(testFolder + "/ui/script1.rb");
+        Assert.assertTrue(script1.exists(),
+            "Expecting script1.rb to exist.");
+
+        final File script2 = new File(testFolder + "/ui/script2.rb");
+        Assert.assertTrue(script2.exists(),
+            "Expecting script2.rb to exist.");
+
+        //Run script
+        mainFrameFixture.runScript(script1);
+        mainFrameFixture.closeScriptConsole();
+
+        //Check recent scripts
+        JMenuItemFixture recentScriptMenu = mainFrameFixture.menuItemWithPath("Script", "Run recent script").click();
+        JPopupMenu recentScripts = (JPopupMenu)recentScriptMenu.component().getSubElements()[0];
+
+        Assert.assertEquals(recentScripts.getSubElements().length, 2);
+        Assert.assertTrue(((JMenuItem)recentScripts.getSubElements()[1]).getText().endsWith("script1.rb"));
+        
+        //Run script again
+        mainFrameFixture.runScript(script1);
+        mainFrameFixture.closeScriptConsole();
+
+        //Check recent scripts
+        recentScriptMenu = mainFrameFixture.menuItemWithPath("Script", "Run recent script").click();
+        recentScripts = (JPopupMenu)recentScriptMenu.component().getSubElements()[0];
+
+        Assert.assertEquals(recentScripts.getSubElements().length, 2);
+        Assert.assertTrue(((JMenuItem)recentScripts.getSubElements()[1]).getText().endsWith("script1.rb"));
+        
+        //Run different script
+        mainFrameFixture.runScript(script2);
+        mainFrameFixture.closeScriptConsole();
+
+        //Check recent scripts
+        recentScriptMenu = mainFrameFixture.menuItemWithPath("Script", "Run recent script").click();
+        recentScripts = (JPopupMenu)recentScriptMenu.component().getSubElements()[0];
+
+        Assert.assertEquals(recentScripts.getSubElements().length, 3);
+        Assert.assertTrue(((JMenuItem)recentScripts.getSubElements()[1]).getText().endsWith("script2.rb"));
+        Assert.assertTrue(((JMenuItem)recentScripts.getSubElements()[2]).getText().endsWith("script1.rb"));
+
+        //Click spreadsheet to unfocus from menu
+        mainFrameFixture.getSpreadsheet().click();
     }
 
 }

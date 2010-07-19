@@ -29,8 +29,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
     @Test public void testLeftRightCellNavigation() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data_small.rb");
+        File demoFile = new File(testFolder + "/ui/demo_data_small.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -99,8 +98,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
     @Test public void testUpDownMultilineCells() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/multiline-text.rb");
+        File demoFile = new File(testFolder + "/ui/multiline-text.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -175,8 +173,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
         throws BadLocationException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        String root = System.getProperty("testPath");
-        File demoFile = new File(root + "/ui/demo_data_caret_movement.rb");
+        File demoFile = new File(testFolder + "/ui/demo_data_caret_movement.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -209,7 +206,7 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
 
             int numOfCells = col.numOfCells();
 
-            col.cell(numOfCells - 4).cellValue().click();
+            col.cell(numOfCells - 4).clickToCharPos(SpreadsheetCellFixture.VALUE, 0, 1);
 
             Assert.assertEquals(col.cell(numOfCells - 4).cellValue().component()
                 .getCaretPosition(), 0);
@@ -259,18 +256,6 @@ public final class UICellNavigationTest extends OpenSHAPATestClass {
             col.cell(numOfCells - 4).clickToCharPos(
                 SpreadsheetCellFixture.VALUE, defaultPos,
                 1);
-
-            // Forced to do this because of BugzID:1350
-            for (int i = 0; i < 3; i++) {
-                col.cell(numOfCells - 4).cellValue().pressAndReleaseKey(
-                    KeyPressInfo.keyCode(
-                        KeyEvent.VK_RIGHT));
-
-                // Compensate for decimal in floats
-                if (col.getColumnType().equalsIgnoreCase("FLOAT")) {
-                    defaultPos = 4;
-                }
-            }
 
             if (col.cell(numOfCells - 4).cellValue().text().length()
                     < defaultPos) {

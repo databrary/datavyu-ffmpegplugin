@@ -221,11 +221,7 @@ implements FocusListener, KeyListener, MouseListener {
     public void focusGained(final FocusEvent fe) {
         if (currentEditor.equals(NO_EDITOR)) {
             setEditor(findEditor(0), 0, 0);
-        } else {
-            setEditor(currentEditor,
-                      currentEditor.getCaretPosition(),
-                      currentEditor.getCaretPosition());
-        }
+        } 
     }
 
     /**
@@ -235,7 +231,7 @@ implements FocusListener, KeyListener, MouseListener {
      */
     public void focusLost(final FocusEvent fe) {
         currentEditor.focusLost(fe);
-        currentEditor = NO_EDITOR;
+//        currentEditor = NO_EDITOR;
     }
 
     /**
@@ -376,6 +372,9 @@ implements FocusListener, KeyListener, MouseListener {
      * @param me The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
+        int charPos = textArea.getCaretPosition();
+        EditorComponent tempEC = findEditor(charPos);
+        setEditor(tempEC, charPos, charPos);
         me.consume();
 
         // BugzID:629 - Prevent users from selecting place holders.
