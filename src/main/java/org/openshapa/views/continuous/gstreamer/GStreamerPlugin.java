@@ -8,7 +8,6 @@ import javax.swing.filechooser.FileFilter;
 
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
-import org.openshapa.views.continuous.quicktime.QTFilter;
 
 public class GStreamerPlugin implements Plugin {
 
