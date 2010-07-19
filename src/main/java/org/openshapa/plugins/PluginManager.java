@@ -71,9 +71,6 @@ public final class PluginManager {
     /** The single instance of the PluginManager for OpenSHAPA. */
     private static final PluginManager INSTANCE = new PluginManager();
 
-    /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(PluginManager.class);
-
     // --------------------------------------------------------------------------
     //
     //
