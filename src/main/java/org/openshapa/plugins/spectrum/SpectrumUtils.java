@@ -3,6 +3,7 @@ package org.openshapa.plugins.spectrum;
 import java.io.File;
 
 import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.gstreamer.Bin;
 import org.gstreamer.Bus;
@@ -16,6 +17,7 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
+import org.gstreamer.GstObject;
 import org.gstreamer.Message;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
@@ -50,30 +52,38 @@ public final class SpectrumUtils {
     public static long getDuration(final File file) {
         Gst.init();
 
-        PlayBin playBin = new PlayBin("DurationFinder");
+        final PlayBin playBin = new PlayBin("DurationFinder");
         playBin.setAudioSink(ElementFactory.make("fakesink", "audiosink"));
         playBin.setVideoSink(ElementFactory.make("fakesink", "videosink"));
         playBin.setInputFile(file);
-        playBin.setState(State.PAUSED);
 
-        long duration = -1;
-        long startTime = System.currentTimeMillis();
+        final MutableLong result = new MutableLong();
 
-        do {
-            duration = playBin.queryDuration(TimeUnit.MILLISECONDS);
+        Bus bus = playBin.getBus();
+        bus.connect(new Bus.EOS() {
+                @Override public void endOfStream(final GstObject source) {
+                    result.number = playBin.queryPosition(MILLISECONDS);
 
-            if ((duration > 0)
-                    || ((System.currentTimeMillis() - startTime) > 5000)) {
-                playBin.stop();
-                playBin.setState(State.NULL);
-                playBin.dispose();
+                    synchronized (result) {
+                        result.notifyAll();
+                    }
+                }
+            });
 
-                break;
+        playBin.setState(State.PLAYING);
+
+        synchronized (result) {
+
+            try {
+                result.wait();
+            } catch (InterruptedException e) {
             }
+        }
 
-        } while (true);
+        playBin.setState(State.NULL);
+        playBin.dispose();
 
-        return duration;
+        return result.number;
     }
 
     /**
@@ -165,8 +175,8 @@ public final class SpectrumUtils {
                         ValueList vl = msgStruct.getValueList("rms");
                         result.number = vl.getSize();
 
-                        synchronized (SpectrumUtils.class) {
-                            SpectrumUtils.class.notifyAll();
+                        synchronized (result) {
+                            result.notifyAll();
                         }
                     }
                 }
@@ -174,10 +184,10 @@ public final class SpectrumUtils {
 
         pipeline.setState(State.PLAYING);
 
-        synchronized (SpectrumUtils.class) {
+        synchronized (result) {
 
             try {
-                SpectrumUtils.class.wait();
+                result.wait();
             } catch (InterruptedException e) {
             }
         }
@@ -232,6 +242,11 @@ public final class SpectrumUtils {
     /** Helper class for storing intermediate integer results. */
     private static final class MutableInteger {
         int number;
+    }
+
+    /** Helper class for storing intermediate long integer results. */
+    private static final class MutableLong {
+        long number;
     }
 
 }
