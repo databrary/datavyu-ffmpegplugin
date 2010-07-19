@@ -122,28 +122,6 @@ public final class OpenDatabaseFileC {
                 }
             }
 
-            for (MatrixVocabElement mve : msdb.getMatrixVEs()) {
-                for (int i = 0; i < mve.getNumFormalArgs(); i++) {
-                    FormalArgument fa = mve.getFormalArgCopy(i);
-                    if (fa.getFargType() == FormalArgument.FArgType.UNTYPED || fa.getFargType() == FormalArgument.FArgType.UNTYPED) {
-                        FormalArgument newFA = new NominalFormalArg(msdb, fa.getFargName());
-                        mve.replaceFormalArg(newFA, i);                        
-                    }
-                }
-                msdb.replaceMatrixVE(mve);
-            }
-
-            for (PredicateVocabElement pve : msdb.getPredVEs()) {
-                for (int i = 0; i < pve.getNumFormalArgs(); i++) {
-                    FormalArgument fa = pve.getFormalArgCopy(i);
-                    if (fa.getFargType() == FormalArgument.FArgType.UNTYPED || fa.getFargType() == FormalArgument.FArgType.UNTYPED) {
-                        FormalArgument newFA = new NominalFormalArg(msdb, fa.getFargName());
-                        pve.replaceFormalArg(newFA, i);                        
-                    }
-                }
-                msdb.replacePredVE(pve);
-            }
-
             return msdb;
         } catch (FileNotFoundException e) {
             logger.error("Unable to load macshapa database.", e);
