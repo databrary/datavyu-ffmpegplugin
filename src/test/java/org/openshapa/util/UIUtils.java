@@ -33,9 +33,9 @@ import org.fest.swing.util.Platform;
 
 import org.openshapa.controllers.RunScriptC;
 
+import org.openshapa.plugins.PluginManager;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.continuous.PluginManager;
 
 
 /**

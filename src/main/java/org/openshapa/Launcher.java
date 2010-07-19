@@ -1,7 +1,5 @@
 package org.openshapa;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.Map;
 import org.openshapa.util.NativeLoader;
 
@@ -12,7 +10,8 @@ import org.openshapa.util.NativeLoader;
 public class Launcher {
 
     /**
-     * The main entry point for the OpenSHAPA Launcher.
+     * The main entry point for the OpenSHAPA Launcher on OSX platform - this
+     * essentially unpacks and installs the required native gstreamer libs.
      *
      * @params args The arguments passed to the application.
      */
@@ -20,42 +19,33 @@ public class Launcher {
         int returnStatus = 0;
 
         try {
-            System.err.println("Starting launcher");
             // Build a process for running the actual OpenSHAPA application, rather
             // than this launcher stub which performs configuration necessary for
             // OpenSHAPA to execute correctly.
             String classPath = System.getProperty("java.class.path");
+
             ProcessBuilder builder = new ProcessBuilder("java",
                                                         "-cp", classPath,
                                                         "org.openshapa.OpenSHAPA");
 
             // Unpack and install applications necessary for OpenSHAPA to
             // function correctly.
-            //String xuggle = NativeLoader.unpackNativeApp("xuggler-osx64-3.4");
+            String gstreamer = NativeLoader.unpackNativeApp("gstreamer-osx64-1.4");
 
             // Build up environment variables required to execute OpenSHAPA
             // correctly, this includes variables required for our native
-            // applications to function correctly (i.e. xuggler).
+            // applications to function correctly (i.e. gstreamer).
             Map<String, String> env = builder.environment();
 
-            String path = env.get("PATH")
-                          + ":/var/folders/f9/f98AOhp5Fv4Ib4z8cafuXU+++TI/-Tmp-/gstreamer-macosx-1.4/";
+            String path = env.get("PATH") + ":" + gstreamer;
             env.put("PATH", path);
-            env.put("GST_PLUGIN_SCANNER", "/var/folders/f9/f98AOhp5Fv4Ib4z8cafuXU+++TI/-Tmp-/gstreamer-macosx-1.4/");
-            env.put("GST_PLUGIN_PATH", "/var/folders/f9/f98AOhp5Fv4Ib4z8cafuXU+++TI/-Tmp-/gstreamer-macosx-1.4/gstreamer-0.10");
-            System.err.println("DYLD_LIBRARY_PATH:" + env.get("DYLD_LIBRARY_PATH"));
-            env.put("DYLD_LIBRARY_PATH", "/var/folders/f9/f98AOhp5Fv4Ib4z8cafuXU+++TI/-Tmp-/gstreamer-macosx-1.4");
+            env.put("GST_PLUGIN_SCANNER", gstreamer);
+            env.put("GST_PLUGIN_PATH", gstreamer + "/gstreamer-0.10");
+            env.put("DYLD_LIBRARY_PATH", gstreamer);
 
-            System.err.println("Spawning OpenSHAPA:" + builder.command());
             // Start the OpenSHAPA process.
             Process p = builder.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.err.println(line);
-            }
             p.waitFor();
-
         } catch (Exception e) {
             System.err.println("Unable to start OpenSHAPA: ");
             System.err.println(e);

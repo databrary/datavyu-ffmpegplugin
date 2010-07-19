@@ -33,6 +33,7 @@ import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
+import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.MacHandler;
@@ -42,24 +43,14 @@ import org.openshapa.views.DataControllerV;
 import org.openshapa.views.ListVariables;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
-import org.openshapa.views.continuous.PluginManager;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.Logger;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.util.LinkedList;
-import javax.swing.SwingUtilities;
-import org.gstreamer.Caps;
-import org.gstreamer.Element;
-import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
-import org.gstreamer.swing.VideoComponent;
-import org.openshapa.util.NativeLoader;
 
 
 /**
@@ -793,7 +784,6 @@ public final class OpenSHAPA extends SingleFrameApplication
      *            The command line arguments passed to OpenSHAPA.
      */
     public static void main(final String[] args) {
-
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
 

@@ -1,4 +1,4 @@
-package org.openshapa.views.continuous;
+package org.openshapa.plugins;
 
 import com.usermetrix.jclient.Logger;
 
@@ -26,6 +26,7 @@ import javax.swing.filechooser.FileFilter;
 import org.jdesktop.application.LocalStorage;
 
 import org.openshapa.OpenSHAPA;
+import org.openshapa.views.continuous.Plugin;
 
 import com.usermetrix.jclient.UserMetrix;
 
