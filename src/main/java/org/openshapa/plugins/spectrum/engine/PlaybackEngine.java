@@ -33,6 +33,10 @@ import org.gstreamer.lowlevel.GstClockAPI;
 
 import org.gstreamer.query.PositionQuery;
 
+import org.openshapa.OpenSHAPA;
+
+import org.openshapa.OpenSHAPA.Platform;
+
 import org.openshapa.plugins.spectrum.SpectrumConstants;
 import org.openshapa.plugins.spectrum.swing.Spectrum;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
@@ -198,7 +202,7 @@ public final class PlaybackEngine extends Thread {
         Element decodeQueue = ElementFactory.make("queue", "Decode Queue");
         pipeline.addMany(fileSource, decodeQueue, decodeBin);
 
-        if (!linkMany(fileSource, decodeQueue, decodeBin)) {
+        if (!linkMany(fileSource, decodeBin, decodeQueue)) {
             LOGGER.error(getName() + " : Failed to link decoding bin.");
         }
 
@@ -220,11 +224,16 @@ public final class PlaybackEngine extends Thread {
         spectrum.set("threshold", SpectrumConstants.MIN_MAGNITUDE);
         spectrum.set("post-messages", true);
 
-        // Disabled the capability filter because the OSX audio sink cannot
-        // handle it.
-        // Capability filter.
-        // Caps caps = Caps.fromString("audio/x-raw-int, rate="
-        // + SpectrumConstants.SAMPLE_RATE);
+        Caps caps;
+
+        // OSX audio sink cannot handle x-raw-int
+        if (OpenSHAPA.getPlatform() == Platform.MAC) {
+            caps = Caps.fromString("audio/x-raw-float, rate="
+                    + SpectrumConstants.SAMPLE_RATE);
+        } else {
+            caps = Caps.fromString("audio/x-raw-int, rate="
+                    + SpectrumConstants.SAMPLE_RATE);
+        }
 
         audioBin.addMany(audioConvert, audioResample, spectrum, audioOutput);
 
@@ -233,7 +242,7 @@ public final class PlaybackEngine extends Thread {
                 + " : Failed to link converter to resampler.");
         }
 
-        if (!linkMany(audioResample, spectrum)) {
+        if (!linkPadsFiltered(audioResample, null, spectrum, null, caps)) {
             LOGGER.error(getName()
                 + " : Failed to apply audio capability filter.");
         }
