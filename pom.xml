@@ -661,12 +661,6 @@
       <version>1.0</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.swinglabs</groupId>
-      <artifactId>swing-layout</artifactId>
-      <version>1.0.3</version>
-    </dependency>
-
     <!-- g-streamer dependencies -->
     <dependency>
       <groupId>net.java.dev.jna</groupId>
