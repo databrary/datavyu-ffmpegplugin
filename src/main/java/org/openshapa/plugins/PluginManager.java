@@ -1,7 +1,7 @@
 package org.openshapa.plugins;
 
-import com.usermetrix.jclient.Logger;
 
+import com.usermetrix.jclient.Logger;
 import java.io.File;
 import java.io.IOException;
 
@@ -45,6 +45,9 @@ public final class PluginManager {
 
     /** The default plugin to present to the user when loading data. */
     private static final String DEFAULT_VIEW = org.openshapa.views.continuous.gstreamer.GStreamerDataViewer.class.getName();
+
+    /** The logger for this class. */
+    private Logger logger = UserMetrix.getLogger(PluginManager.class);
 
     /** A reference to the interface that plugins must override. */
     private static final Class<?> PLUGIN_CLASS;
