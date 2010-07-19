@@ -248,6 +248,25 @@
 
   <!-- Use an optimized build for releases. -->
   <profiles>
+
+    <!-- Platform specific dependencies, package gstreamer with osx64. -->
+    <profile>
+      <id>mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+
+      <dependencies>
+        <dependency>
+          <groupId>com.googlecode</groupId>
+          <artifactId>gstreamer-osx64</artifactId>
+          <version>1.4</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
     <profile>
         <id>win-package</id>
         <properties>
@@ -518,7 +537,7 @@
               <minVersion>1.6.0</minVersion>
             </jre>
             <classPath>
-              <mainClass>org.openshapa.Launcher</mainClass>
+              <mainClass>org.openshapa.OpenSHAPA</mainClass>
                 <preCp>jruby-engine-1.1.6.jar</preCp>
                 <preCp>jruby-complete-1.4.0.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
@@ -532,7 +551,6 @@
                 <preCp>google-collections-1.0.jar</preCp>
                 <preCp>jna-3.2.5.jar</preCp>
                 <preCp>gstreamer-java-1.4.jar</preCp>
-                <preCp>x86-3.3.0-v3346.jar</preCp>
             </classPath>
         </configuration>
       </plugin>
@@ -643,6 +661,12 @@
       <version>1.0</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.swinglabs</groupId>
+      <artifactId>swing-layout</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+
     <!-- g-streamer dependencies -->
     <dependency>
       <groupId>net.java.dev.jna</groupId>
@@ -655,13 +679,6 @@
       <artifactId>gstreamer-java</artifactId>
       <version>1.4</version>
     </dependency>
-
-<!-- 
-    <dependency>
-      <groupId>com.googlecode</groupId>
-      <artifactId>gstreamer-macosx</artifactId>
-      <version>1.4</version>
-    </dependency>-->
   </dependencies>
 </project>
 
