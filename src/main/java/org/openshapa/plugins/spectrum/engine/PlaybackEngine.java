@@ -6,22 +6,32 @@ import java.io.File;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import javax.swing.SwingUtilities;
 
 import org.gstreamer.Bin;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
+import org.gstreamer.ClockTime;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Format;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
+import org.gstreamer.SeekFlags;
+import org.gstreamer.SeekType;
 import org.gstreamer.Structure;
 
 import org.gstreamer.elements.DecodeBin;
+
+import org.gstreamer.lowlevel.GstClockAPI;
+
+import org.gstreamer.query.PositionQuery;
 
 import org.openshapa.plugins.spectrum.SpectrumConstants;
 import org.openshapa.plugins.spectrum.swing.Spectrum;
@@ -66,6 +76,8 @@ public final class PlaybackEngine extends Thread {
     /** Output pipeline. */
     private Pipeline pipeline;
 
+    private long relStartTime;
+
     /**
      * Creates a new engine thread.
      *
@@ -83,6 +95,8 @@ public final class PlaybackEngine extends Thread {
         setName("AudioEngine-" + getName());
 
         this.dialog = dialog;
+
+        relStartTime = -1;
     }
 
     /**
@@ -206,9 +220,11 @@ public final class PlaybackEngine extends Thread {
         spectrum.set("threshold", SpectrumConstants.MIN_MAGNITUDE);
         spectrum.set("post-messages", true);
 
+        // Disabled the capability filter because the OSX audio sink cannot
+        // handle it.
         // Capability filter.
-        Caps caps = Caps.fromString("audio/x-raw-int, rate="
-                + SpectrumConstants.SAMPLE_RATE);
+        // Caps caps = Caps.fromString("audio/x-raw-int, rate="
+        // + SpectrumConstants.SAMPLE_RATE);
 
         audioBin.addMany(audioConvert, audioResample, spectrum, audioOutput);
 
@@ -217,7 +233,7 @@ public final class PlaybackEngine extends Thread {
                 + " : Failed to link converter to resampler.");
         }
 
-        if (!linkPadsFiltered(audioResample, null, spectrum, null, caps)) {
+        if (!linkMany(audioResample, spectrum)) {
             LOGGER.error(getName()
                 + " : Failed to apply audio capability filter.");
         }
@@ -281,7 +297,6 @@ public final class PlaybackEngine extends Thread {
                 }
             });
 
-
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
                     final SpectrumView spectrum = new Spectrum();
@@ -300,21 +315,30 @@ public final class PlaybackEngine extends Thread {
      * Handles seeking through the current audio file.
      */
     private void engineSeeking() {
+        pipeline.seek(newTime, MILLISECONDS);
 
-        if ((getCurrentTime() < newTime) && (playbackSpeed > 0)) {
-            pipeline.seek(newTime, TimeUnit.MILLISECONDS);
-        } else if ((getCurrentTime() > newTime) && (playbackSpeed < 0)) {
-            pipeline.seek(newTime, TimeUnit.MILLISECONDS);
-        } else if (playbackSpeed == 0) {
-            pipeline.seek(newTime, TimeUnit.MILLISECONDS);
-
-            /*
-             * Mark engine state with task complete so that isPlaying returns
-             * false
-             * while we are jogging.
-             */
-            engineState = EngineState.TASK_COMPLETE;
-        }
+        // System.out.println("Playback speed: " + playbackSpeed);
+        // System.out.println("C time: " + getCurrentTime());
+        // System.out.println("N time: " + newTime);
+        //
+        // if ((getCurrentTime() < newTime) && (playbackSpeed > 0)) {
+        // pipeline.seek(newTime, MILLISECONDS);
+        // } else if ((getCurrentTime() > newTime) && (playbackSpeed < 0)) {
+        // pipeline.seek(newTime, MILLISECONDS);
+        // } else if (playbackSpeed == 0) {
+        // System.out.println("Jogging seek.");
+        //
+        // pipeline.seek(1D, Format.TIME, SeekFlags.FLUSH, SeekType.SET,
+        // NANOSECONDS.convert(newTime, MILLISECONDS), SeekType.NONE, 0);
+        //
+        // // pipeline.seek(newTime, TimeUnit.MILLISECONDS);
+        //
+        // /*
+        // * Mark engine state with task complete so that isPlaying returns
+        // * false while we are jogging.
+        // */
+        // engineState = EngineState.TASK_COMPLETE;
+        // }
     }
 
     /**
@@ -393,7 +417,7 @@ public final class PlaybackEngine extends Thread {
      * @return Current time in the audio file.
      */
     public long getCurrentTime() {
-        return pipeline.queryPosition(TimeUnit.MILLISECONDS);
+        return pipeline.queryPosition(MILLISECONDS);
     }
 
     /**
