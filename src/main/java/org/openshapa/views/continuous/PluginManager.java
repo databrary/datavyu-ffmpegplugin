@@ -37,8 +37,7 @@ public final class PluginManager {
     //
 
     /** The default plugin to present to the user when loading data. */
-    private static final String DEFAULT_VIEW =
-            "org.openshapa.views.continuous.quicktime.QTDataViewer";
+    private static final String DEFAULT_VIEW = org.openshapa.views.continuous.gstreamer.GStreamerDataViewer.class.getName();
 
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(PluginManager.class);
