@@ -521,7 +521,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     }
 
     /**
-     * Plays the continous data stream at the current playback rate..
+     * Plays the continuous data stream at the current playback rate.
      */
     public void play() {
 
@@ -537,7 +537,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     }
 
     /**
-     * Stops the playback of the continous data stream.
+     * Stops the playback of the continuous data stream.
      */
     public void stop() {
 
