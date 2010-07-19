@@ -40,33 +40,24 @@ public final class DeleteColumnC {
             view.deselectAll();
 
             for (DataColumn dc : colsToDelete) {
+
+                // All cells in the column removed - now delete the column.
                 // Must remove cells from the data column before removing it.
                 while (dc.getNumCells() > 0) {
                     Cell c = model.getCell(dc.getID(), 1);
-
                     // Check if the cell we are deleting is the last created
                     // cell... Default this back to 0.
-                    if (c.getID() == OpenSHAPA.getProjectController()
-                            .getLastCreatedCellId()) {
-                        OpenSHAPA.getProjectController()
-                                .setLastCreatedCellId(0);
+                    if (c.getID() == OpenSHAPA.getProjectController().getLastCreatedCellId()) {
+                        OpenSHAPA.getProjectController().setLastCreatedCellId(0);
                     }
-
-                    OpenSHAPA.getProjectController().getDB().removeCell(
-                            c.getID());
-                    dc =
-                            OpenSHAPA.getProjectController().getDB()
-                                    .getDataColumn(dc.getID());
+                    OpenSHAPA.getProjectController().getDB().removeCell(c.getID());
+                    dc = OpenSHAPA.getProjectController().getDB().getDataColumn(dc.getID());
                 }
-
                 // Check if the column we are deleting was the last created
                 // column... Default this back to 0 if it is.
-                if (dc.getID() == OpenSHAPA.getProjectController()
-                        .getLastCreatedColId()) {
+                if (dc.getID() == OpenSHAPA.getProjectController().getLastCreatedColId()) {
                     OpenSHAPA.getProjectController().setLastCreatedColId(0);
                 }
-
-                // All cells in the column removed - now delete the column.
                 model.removeColumn(dc.getID());
                 view.revalidate();
                 view.repaint();

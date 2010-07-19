@@ -173,6 +173,13 @@ public abstract class EditorComponent implements ClipboardOwner {
     }
 
     /**
+     * @return pos the start location in the JTextComponent for this editor.
+     */
+    public final int getStartPos() {
+        return startPos;
+    }
+
+    /**
      * @return the current text of this editor.
      */
     public final String getText() {

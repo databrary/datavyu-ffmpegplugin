@@ -793,36 +793,6 @@ public final class OpenSHAPA extends SingleFrameApplication
      *            The command line arguments passed to OpenSHAPA.
      */
     public static void main(final String[] args) {
-        System.setProperty("jna.library.path", "/var/folders/f9/f98AOhp5Fv4Ib4z8cafuXU+++TI/-Tmp-/gstreamer-macosx-1.4");
-
-        Gst.init("VideoTest", args);
-        /*
-        pipe = new Pipeline("VideoTest");
-        final Element videosrc = ElementFactory.make("videotestsrc", "source");
-        final Element videofilter = ElementFactory.make("capsfilter", "filter");
-        videofilter.setCaps(Caps.fromString("video/x-raw-yuv, width=720, height=576"
-                + ", bpp=32, depth=32, framerate=25/1"));
-        SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                VideoComponent videoComponent = new VideoComponent();
-                Element videosink = videoComponent.getElement();
-                pipe.addMany(videosrc, videofilter, videosink);
-                Element.linkMany(videosrc, videofilter, videosink);
-
-                // Now create a JFrame to display the video output
-                JFrame frame = new JFrame("Swing Video Test");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.add(videoComponent, BorderLayout.CENTER);
-                videoComponent.setPreferredSize(new Dimension(720, 576));
-                frame.pack();
-                frame.setVisible(true);
-
-                // Start the pipeline processing
-                pipe.setState(State.PLAYING);
-            }
-        });
-        */
 
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {

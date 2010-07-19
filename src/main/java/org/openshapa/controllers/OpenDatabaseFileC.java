@@ -41,6 +41,8 @@ import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.io.FileInputStream;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.MatrixVocabElement.MatrixType;
 
 /**
  * Controller for opening a database from disk.
@@ -103,7 +105,46 @@ public final class OpenDatabaseFileC {
                                                             listStream,
                                                             errorStream);
 
-            return modbr.readDB();
+            MacshapaDatabase msdb = modbr.readDB();
+
+            //Convert all untyped to nominal and Bugz1703
+            for (DataColumn dc: msdb.getDataColumns()) {
+                // BugzID:1703 - Ignore old macshapa query variables, we don't have a
+                // reliable mechanisim for loading their predicates. Given problems
+                // between the untyped nature of macshapa and the typed nature of
+                // OpenSHAPA.
+                if (dc.getName().equals("###QueryVar###")) {
+                    msdb = removeDataColumn(msdb, dc);
+                }
+
+                if (dc.getItsMveType() == MatrixType.UNDEFINED) {
+                    dc.setItsMveType(MatrixType.NOMINAL);
+                }
+            }
+
+            for (MatrixVocabElement mve : msdb.getMatrixVEs()) {
+                for (int i = 0; i < mve.getNumFormalArgs(); i++) {
+                    FormalArgument fa = mve.getFormalArgCopy(i);
+                    if (fa.getFargType() == FormalArgument.FArgType.UNTYPED || fa.getFargType() == FormalArgument.FArgType.UNTYPED) {
+                        FormalArgument newFA = new NominalFormalArg(msdb, fa.getFargName());
+                        mve.replaceFormalArg(newFA, i);                        
+                    }
+                }
+                msdb.replaceMatrixVE(mve);
+            }
+
+            for (PredicateVocabElement pve : msdb.getPredVEs()) {
+                for (int i = 0; i < pve.getNumFormalArgs(); i++) {
+                    FormalArgument fa = pve.getFormalArgCopy(i);
+                    if (fa.getFargType() == FormalArgument.FArgType.UNTYPED || fa.getFargType() == FormalArgument.FArgType.UNTYPED) {
+                        FormalArgument newFA = new NominalFormalArg(msdb, fa.getFargName());
+                        pve.replaceFormalArg(newFA, i);                        
+                    }
+                }
+                msdb.replacePredVE(pve);
+            }
+
+            return msdb;
         } catch (FileNotFoundException e) {
             logger.error("Unable to load macshapa database.", e);
         } catch (SystemErrorException e) {
@@ -116,6 +157,29 @@ public final class OpenDatabaseFileC {
 
         // Error occured - return null.
         return null;
+    }
+
+    /**
+     * Remove data column from a MacSHAPA database.
+     * @param model MacSHAPA database
+     * @param dc DataColumn
+     * @return MacSHAPA database with dc removed
+     * @throws SystemErrorException see
+     */
+    private MacshapaDatabase removeDataColumn(MacshapaDatabase model,
+            DataColumn dc) throws SystemErrorException {
+        while (dc.getNumCells() > 0) {
+                    Cell c = model.getCell(dc.getID(), 1);
+                    // Check if the cell we are deleting is the last created
+                    // cell... Default this back to 0.
+                    model.removeCell(c.getID());
+                    dc = model.getDataColumn(dc.getID());
+                }
+                // Check if the column we are deleting was the last created
+                // column... Default this back to 0 if it is.
+                model.removeColumn(dc.getID());
+
+                return model;
     }
 
     /**
