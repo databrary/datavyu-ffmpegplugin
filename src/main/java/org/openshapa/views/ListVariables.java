@@ -269,6 +269,7 @@ implements ExternalColumnListListener, TableModelListener {
         variableList.setModel(tableModel);
         variableList.setMinimumSize(new java.awt.Dimension(400, 200));
         variableList.setName("variableList");
+        variableList.setAutoCreateRowSorter(true);
         jScrollPane1.setViewportView(variableList);
 
         MigLayout layout = new MigLayout("nogrid");
