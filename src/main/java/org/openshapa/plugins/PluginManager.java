@@ -1,7 +1,7 @@
 package org.openshapa.plugins;
 
-import com.usermetrix.jclient.Logger;
 
+import com.usermetrix.jclient.Logger;
 import java.io.File;
 import java.io.IOException;
 
@@ -29,6 +29,7 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.views.continuous.Plugin;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.views.continuous.gstreamer.GStreamerDataViewer;
 
 
 /**
@@ -44,7 +45,10 @@ public final class PluginManager {
     //
 
     /** The default plugin to present to the user when loading data. */
-    private static final String DEFAULT_VIEW = org.openshapa.views.continuous.gstreamer.GStreamerDataViewer.class.getName();
+    private static final String DEFAULT_VIEW = GStreamerDataViewer.class.getName();
+
+    /** The logger for this class. */
+    private Logger logger = UserMetrix.getLogger(PluginManager.class);
 
     /** A reference to the interface that plugins must override. */
     private static final Class<?> PLUGIN_CLASS;
@@ -67,9 +71,6 @@ public final class PluginManager {
 
     /** The single instance of the PluginManager for OpenSHAPA. */
     private static final PluginManager INSTANCE = new PluginManager();
-
-    /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(PluginManager.class);
 
     // --------------------------------------------------------------------------
     //
@@ -312,11 +313,9 @@ public final class PluginManager {
      * @return A list of all the filefilters representing viewer plugins.
      */
     public Iterable<FileFilter> getPluginFileFilters() {
-
         // Sort the file filters to create a default filter.
         List<FileFilter> result = new ArrayList<FileFilter>();
-        FileFilter defaultFilter = null;
-        // pluginLookup.get(DEFAULT_VIEW).getFileFilter();
+        FileFilter defaultFilter = pluginLookup.get(DEFAULT_VIEW).getFileFilter();
 
         for (FileFilter f : plugins.keySet()) {
 
