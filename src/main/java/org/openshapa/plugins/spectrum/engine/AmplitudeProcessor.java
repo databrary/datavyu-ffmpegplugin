@@ -125,12 +125,8 @@ public final class AmplitudeProcessor
 
                         if (!data.isTimeIntervalSet()) {
 
-                            System.out.println(buf.getTimestamp());
-
                             long timestamp = buf.getTimestamp().convertTo(
                                     MICROSECONDS);
-
-                            System.out.println(timestamp);
 
                             if (timestamp != 0) {
                                 data.setTimeInterval(timestamp / 2,
