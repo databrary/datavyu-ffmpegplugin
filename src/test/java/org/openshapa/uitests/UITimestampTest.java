@@ -1,6 +1,8 @@
 package org.openshapa.uitests;
 
 import java.awt.event.KeyEvent;
+import java.util.LinkedList;
+import java.util.List;
 
 import java.util.Vector;
 
@@ -10,6 +12,10 @@ import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.util.Platform;
+import org.openshapa.models.db.Cell;
+import org.openshapa.util.KeysItem;
+import org.openshapa.util.StringItem;
+import org.openshapa.util.TextItem;
 
 import org.openshapa.util.UIUtils;
 
@@ -67,28 +73,50 @@ public final class UITimestampTest extends OpenSHAPATestClass {
      *             on any error NEEDS TO BE REWRITTEN FOR FEST AFTER BUG IS
      *             FIXED.
      */
-    /*
-     * BugzID:540 public void testTimestampAdvancedEditing() throws Exception {
-     * String[] testInput = {"123456789", "1234", "a13", "12:34:56:789", "4.43",
-     * "12:34", "12:78:93:999", "12:34"}; int numOfTests = testInput.length;
-     * //advanced Input will be provided between testInput Key[][] advancedInput
-     * = {{Key.LEFT, Key.LEFT}, {Key.LEFT, Key.LEFT, Key.RIGHT}, {Key.BACKSPACE,
-     * Key.LEFT}, {Key.BACKSPACE, Key.LEFT, Key.LEFT, Key.LEFT, Key.DELETE,
-     * Key.RIGHT}, {Key.LEFT, Key.RIGHT}, {Key.BACKSPACE, Key.BACKSPACE,
-     * Key.BACKSPACE, Key.BACKSPACE, Key.BACKSPACE}, {Key.LEFT, Key.LEFT,
-     * Key.LEFT, Key.LEFT}}; String[] expectedTestOutput = {"12:34:56:712",
-     * "12:31:30:000", "12:34:56:789", "12:34:50:744", "44:31:23:400",
-     * "12:78:93:999", "12:78:91:234"}; Vector<Cell> c =
-     * createNewCells(numOfTests); for (int i = 0; i < numOfTests - 1; i++) {
-     * TextBox onset = c.elementAt(i).getOnset(); TextBox offset =
-     * c.elementAt(i).getOffset(); c.elementAt(i).enterText(Cell.ONSET,
-     * testInput[i], advancedInput[i], testInput[i+1]);
-     * c.elementAt(i).enterText(Cell.OFFSET, testInput[i], advancedInput[i],
-     * testInput[i+1]); assertTrue(c.elementAt(i).getOnset().getText().equals(
-     * expectedTestOutput[i]));
-     * assertTrue(c.elementAt(i).getOffset().getText().equals(
-     * expectedTestOutput[i])); } }
-     */
+    @Test
+    public void testTimestampAdvancedEditing() throws Exception {
+        String[] testInput = {"123456789", "1234", "a13", "12:34:56:789", "4.43",
+            "12:34", "12:78:93:999", "12:34"};
+        int numOfTests = testInput.length;
+        //advanced Input will be provided between testInput Key[][] advancedInput
+        int[][] advancedInput = {
+                {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT},
+                {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
+                {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT},
+                {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT,
+                         KeyEvent.VK_LEFT, KeyEvent.VK_DELETE, KeyEvent.VK_RIGHT},
+                {KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT},
+                {KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE,
+                         KeyEvent.VK_BACK_SPACE, KeyEvent.VK_BACK_SPACE},
+                {KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT, KeyEvent.VK_LEFT}
+        };
+        String[] expectedTestOutput = {"12:34:56:712",
+            "12:31:30:000", "12:34:56:789", "12:34:50:744", "44:31:23:400",
+            "13:19:33:999", "12:78:91:234"};
+        
+        Vector<SpreadsheetCellFixture> c = createNewCells(numOfTests);
+        
+        for (int i = 1; i < numOfTests - 1; i++) {
+            List<TextItem> inputs = new LinkedList<TextItem>();
+            inputs.add(new StringItem(testInput[i - 1]));
+            inputs.add(new KeysItem(advancedInput[i - 1]));
+            inputs.add(new StringItem(testInput[i]));
+
+            SpreadsheetCellFixture cell = c.elementAt(i-1);
+            cell.onsetTimestamp().focus();
+            for (TextItem input : inputs) {
+                input.enterItem(cell.onsetTimestamp());
+            }
+
+            cell.offsetTimestamp().focus();
+            for (TextItem input : inputs) {
+                input.enterItem(cell.offsetTimestamp());
+            }
+            Assert.assertEquals(cell.onsetTimestamp().text(), expectedTestOutput[i-1]);
+            Assert.assertEquals(cell.offsetTimestamp().text(), expectedTestOutput[i-1]);
+        }
+    }
+     
 
     /**
      * Test pasting the onset and offset timestamps.

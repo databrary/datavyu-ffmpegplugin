@@ -182,6 +182,12 @@ public final class TimeStampDataValueEditor extends EditorComponent {
                         setCaretPosition(getCaretPosition() + 1);
                     }
                     setCaretPosition(getCaretPosition() + 1);
+                    //Move an extra caret position if the next char is a ":"
+                    int c = Math.min(getText().length() - 1, getCaretPosition());
+                    if (isPreserved(getText().charAt(c))) {
+                        setCaretPosition(getCaretPosition() + 1);
+                    }
+
                     tdv.setItsValue(new TimeStamp(getText()));
                     updateDatabase();
                     e.consume();
@@ -207,8 +213,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             // the preserved character).
             int b = Math.max(0, getCaretPosition());
             c = Math.max(0, getCaretPosition() - 1);
-            if (isPreserved(getText().charAt(b))
-                    || isPreserved(getText().charAt(c))) {
+            if (isPreserved(getText().charAt(b))) {
                 setCaretPosition(Math.max(0, getCaretPosition() - 1));
             }
             e.consume();
@@ -318,10 +323,16 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             if (Character.isDigit(e.getKeyChar())
                     && getCaretPosition() <= getText().length()) {
                 removeAheadOfCaret();
-                StringBuffer currentValue = new StringBuffer(getText());
+                StringBuilder currentValue = new StringBuilder(getText());
                 currentValue.deleteCharAt(getCaretPosition());
                 currentValue.insert(getCaretPosition(), e.getKeyChar());
                 setCaretPosition(getCaretPosition() + 1);
+                //Move an extra caret position if the next char is a ":"
+                int c = Math.min(getText().length() - 1, getCaretPosition());
+                if (isPreserved(getText().charAt(c))) {
+                    setCaretPosition(getCaretPosition() + 1);
+                }
+
                 tdv.setItsValue(new TimeStamp(currentValue.toString()));
                 e.consume();
 
