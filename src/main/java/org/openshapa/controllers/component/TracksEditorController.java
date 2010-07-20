@@ -458,6 +458,13 @@ public final class TracksEditorController implements TrackMouseEventListener {
     }
 
     /**
+     * @return number of tracks being managed by this controller
+     */
+    public int numberOfTracks() {
+    	return tracks.size();
+    }
+    
+    /**
      * Sets the carriage movement locking state.
      *
      * @param lockState

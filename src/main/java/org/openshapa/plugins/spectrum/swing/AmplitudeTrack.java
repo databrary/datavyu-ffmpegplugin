@@ -3,7 +3,7 @@ package org.openshapa.plugins.spectrum.swing;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 
@@ -71,8 +71,8 @@ public final class AmplitudeTrack extends TrackPainter {
 
         for (Double amp : data.getDataL()) {
             long interval = data.getTimeInterval() * offsetCounter;
-            int offset = computePixelXCoord(TimeUnit.MILLISECONDS.convert(
-                        interval, data.getTimeUnit()));
+            int offset = computePixelXCoord(MILLISECONDS.convert(interval,
+                        data.getTimeUnit()));
             offsetCounter++;
 
             g.drawLine(xLineStart, yLineStart, startXPos + offset,
@@ -90,8 +90,8 @@ public final class AmplitudeTrack extends TrackPainter {
 
         for (Double amp : data.getDataR()) {
             long interval = data.getTimeInterval() * offsetCounter;
-            int offset = computePixelXCoord(TimeUnit.MILLISECONDS.convert(
-                        interval, data.getTimeUnit()));
+            int offset = computePixelXCoord(MILLISECONDS.convert(interval,
+                        data.getTimeUnit()));
             offsetCounter++;
 
             g.drawLine(xLineStart, yLineStart, startXPos + offset,
