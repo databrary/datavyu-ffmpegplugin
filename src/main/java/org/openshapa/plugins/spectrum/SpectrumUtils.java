@@ -42,8 +42,6 @@ public final class SpectrumUtils {
 
     /**
      * Get media file duration.
-     * <a href="http://groups.google.com/group/gstreamer-java/browse_thread/thread/3218a4d3c15047a3/2edb9b1d212b18bf?lnk=gst&q=duration#2edb9b1d212b18bf"
-     * >Source</a>.
      *
      * @param file
      *            Media file.
