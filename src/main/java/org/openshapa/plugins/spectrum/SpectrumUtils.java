@@ -57,33 +57,17 @@ public final class SpectrumUtils {
         playBin.setVideoSink(ElementFactory.make("fakesink", "videosink"));
         playBin.setInputFile(file);
 
-        final MutableLong result = new MutableLong();
+        long result;
 
-        Bus bus = playBin.getBus();
-        bus.connect(new Bus.EOS() {
-                @Override public void endOfStream(final GstObject source) {
-                    result.number = playBin.queryPosition(MILLISECONDS);
+        playBin.pause();
+        playBin.getState();
 
-                    synchronized (result) {
-                        result.notifyAll();
-                    }
-                }
-            });
-
-        playBin.setState(State.PLAYING);
-
-        synchronized (result) {
-
-            try {
-                result.wait();
-            } catch (InterruptedException e) {
-            }
-        }
+        result = playBin.queryDuration(MILLISECONDS);
 
         playBin.setState(State.NULL);
         playBin.dispose();
 
-        return result.number;
+        return result;
     }
 
     /**
