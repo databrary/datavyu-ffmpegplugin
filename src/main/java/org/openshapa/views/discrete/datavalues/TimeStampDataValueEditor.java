@@ -245,10 +245,8 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             b = Math.min(getText().length() - 1, getCaretPosition());
             c = Math.min(getText().length() - 1, getCaretPosition() + 1);
             if (c < getText().length()
-                    && (isPreserved(getText().charAt(c)) || isPreserved(getText()
-                            .charAt(b)))) {
-                setCaretPosition(Math.min(getText().length() - 1,
-                        getCaretPosition() + 1));
+                    && (isPreserved(getText().charAt(b)))) {
+                setCaretPosition(c);
             }
             e.consume();
 
