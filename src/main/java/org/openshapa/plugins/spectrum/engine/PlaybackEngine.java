@@ -5,8 +5,6 @@ import java.io.File;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import javax.swing.SwingUtilities;
@@ -14,28 +12,16 @@ import javax.swing.SwingUtilities;
 import org.gstreamer.Bin;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
-import org.gstreamer.ClockTime;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.Format;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
-import org.gstreamer.SeekFlags;
-import org.gstreamer.SeekType;
 import org.gstreamer.Structure;
 
 import org.gstreamer.elements.DecodeBin;
-
-import org.gstreamer.lowlevel.GstClockAPI;
-
-import org.gstreamer.query.PositionQuery;
-
-import org.openshapa.OpenSHAPA;
-
-import org.openshapa.OpenSHAPA.Platform;
 
 import org.openshapa.plugins.spectrum.SpectrumConstants;
 import org.openshapa.plugins.spectrum.swing.Spectrum;
@@ -47,8 +33,6 @@ import com.usermetrix.jclient.UserMetrix;
 
 import static org.gstreamer.Element.linkMany;
 import static org.gstreamer.Element.linkPadsFiltered;
-
-import static org.apache.commons.io.FilenameUtils.isExtension;
 
 
 /**
@@ -191,83 +175,67 @@ public final class PlaybackEngine extends Thread {
 
         pipeline = new Pipeline("Pipeline");
 
-        // Decoding bin.
-        DecodeBin decodeBin = new DecodeBin("Decode bin");
-
-        // Source is from a file.
-        Element fileSource = ElementFactory.make("filesrc", "Input File");
+        Element fileSource = ElementFactory.make("filesrc", "src");
         fileSource.set("location", audioFile.getAbsolutePath());
 
-        // Decode queue for buffering.
-        Element decodeQueue = ElementFactory.make("queue", "Decode Queue");
-        pipeline.addMany(fileSource, decodeQueue, decodeBin);
+        // Decoding bin.
+        DecodeBin decodeBin = new DecodeBin("decodebin");
 
-        if (!linkMany(fileSource, decodeBin, decodeQueue)) {
-            LOGGER.error(getName() + " : Failed to link decoding bin.");
-        }
+        pipeline.addMany(fileSource, decodeBin);
 
-        // Audio handling bin.
-        final Bin audioBin = new Bin("Audio bin");
+        // Audio bin.
+        final Bin audioBin = new Bin("audiobin");
 
-        // Set up audio converter.
-        Element audioConvert = ElementFactory.make("audioconvert", null);
+        Element tee = ElementFactory.make("tee", "tee");
 
-        // Set up audio resampler.
-        Element audioResample = ElementFactory.make("audioresample", null);
+        Element audioConvert = ElementFactory.make("audioconvert",
+                "audioconvert1");
+        Element audioResample = ElementFactory.make("audioresample",
+                "audioresample");
+        Element queue = ElementFactory.make("queue", "queue");
+        Element audioOutput = ElementFactory.make("autoaudiosink", "audiosink");
 
-        // Auto-select audio sink.
-        Element audioOutput = ElementFactory.make("autoaudiosink", "sink");
-
-        // Set up the spectrum analyzer.
+        Element audioConvert2 = ElementFactory.make("audioconvert",
+                "audioconvert2");
+        Element audioResample2 = ElementFactory.make("audioresample",
+                "audioresample2");
+        Element queue2 = ElementFactory.make("queue", "queue2");
         Element spectrum = ElementFactory.make("spectrum", "spectrum");
         spectrum.set("bands", SpectrumConstants.FFT_BANDS);
         spectrum.set("threshold", SpectrumConstants.MIN_MAGNITUDE);
         spectrum.set("post-messages", true);
 
-        Caps caps;
+        Caps spectrumCaps = Caps.fromString("audio/x-raw-int, rate="
+                + SpectrumConstants.SAMPLE_RATE);
 
-        // OSX audio sink cannot handle x-raw-int
-        if (OpenSHAPA.getPlatform() == Platform.MAC) {
-            caps = Caps.fromString("audio/x-raw-float, rate="
-                    + SpectrumConstants.SAMPLE_RATE);
-        } else {
-            caps = Caps.fromString("audio/x-raw-int, rate="
-                    + SpectrumConstants.SAMPLE_RATE);
-        }
+        audioBin.addMany(tee, audioConvert, audioResample, queue, audioOutput,
+            audioConvert2, audioResample2, queue2, spectrum);
 
-        audioBin.addMany(audioConvert, audioResample, spectrum, audioOutput);
-
-        if (!linkMany(audioConvert, audioResample)) {
-            LOGGER.error(getName()
-                + " : Failed to link converter to resampler.");
-        }
-
-        if (!linkPadsFiltered(audioResample, null, spectrum, null, caps)) {
-            LOGGER.error(getName()
-                + " : Failed to apply audio capability filter.");
-        }
-
-        if (!linkMany(spectrum, audioOutput)) {
-            LOGGER.error(getName() + " : Failed to link audio output.");
-        }
-
-        audioBin.addPad(new GhostPad("sink",
-                audioConvert.getStaticPad("sink")));
+        audioBin.addPad(new GhostPad("sink", tee.getStaticPad("sink")));
 
         pipeline.add(audioBin);
 
-        // Video handling bin
-        final Bin videoBin = new Bin("Video bin");
-        Element videoOutput = ElementFactory.make("fakesink", "videosink");
-        videoBin.add(videoOutput);
-        videoBin.addPad(new GhostPad("sink", videoOutput.getStaticPad("sink")));
+        if (!linkMany(fileSource, decodeBin)) {
+            LOGGER.error("Link failed: filesrc ! decodebin\n");
+        }
 
-        // Only add the video handling bin if we are not dealing with audio
-        // files.
-        if (
-            !isExtension(audioFile.getAbsolutePath(),
-                    new String[] { "mp3", "wav", "ogg" })) {
-            pipeline.add(videoBin);
+        if (!linkMany(tee, audioConvert, audioResample, queue, audioOutput)) {
+            LOGGER.error(
+                "Link failed: tee ! audioconvert ! audioresample ! queue ! autoaudiosink");
+        }
+
+        if (!linkMany(tee, audioConvert2, audioResample2)) {
+            LOGGER.error("Link failed: tee -> audioconvert -> audioresample");
+        }
+
+        if (!linkPadsFiltered(audioResample2, null, queue2, null,
+                    spectrumCaps)) {
+            LOGGER.error(
+                "Link failed: audioresample ! audio/x-raw-int, rate=48000 ! queue");
+        }
+
+        if (!linkMany(queue2, spectrum)) {
+            LOGGER.error("Link failed: queue ! spectrum");
         }
 
         decodeBin.connect(new DecodeBin.NEW_DECODED_PAD() {
@@ -283,9 +251,10 @@ public final class PlaybackEngine extends Thread {
                     Structure struct = caps.getStructure(0);
 
                     if (struct.getName().startsWith("audio/")) {
+
+                        // System.out.println(
+                        // "Linking audio pad: " + struct.getName());
                         pad.link(audioBin.getStaticPad("sink"));
-                    } else if (struct.getName().startsWith("video/")) {
-                        pad.link(videoBin.getStaticPad("sink"));
                     }
                 }
             });
@@ -324,11 +293,18 @@ public final class PlaybackEngine extends Thread {
      * Handles seeking through the current audio file.
      */
     private void engineSeeking() {
+        System.out.println("Playback speed: " + playbackSpeed);
+        System.out.println("C time: " + getCurrentTime());
+        System.out.println("N time: " + newTime);
+
+        pipeline.pause();
         pipeline.seek(newTime, MILLISECONDS);
 
-        // System.out.println("Playback speed: " + playbackSpeed);
-        // System.out.println("C time: " + getCurrentTime());
-        // System.out.println("N time: " + newTime);
+        if (playbackSpeed != 0) {
+            pipeline.play();
+        }
+
+
         //
         // if ((getCurrentTime() < newTime) && (playbackSpeed > 0)) {
         // pipeline.seek(newTime, MILLISECONDS);
