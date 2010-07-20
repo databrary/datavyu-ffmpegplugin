@@ -18,6 +18,7 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.views.discrete.SpreadsheetColumn;
 
 /**
  * The dialog to list database variables.
@@ -83,13 +84,26 @@ implements ExternalColumnListListener, TableModelListener {
 
         // Populate table with a variable listing from the database
         try {
+            Vector<SpreadsheetColumn> ssColumns = OpenSHAPA.getView().getSpreadsheetPanel().getColumns();
             Vector<DataColumn> dbColumns = database.getDataColumns();
 
-            for (int i = 0; i < dbColumns.size(); i++) {
-                DataColumn dbColumn = dbColumns.elementAt(i);
+            if (ssColumns.size() != database.getColumns().size()) {
+                for (int i = 0; i < dbColumns.size(); i++) {
+                    DataColumn dbColumn = dbColumns.elementAt(i);
 
-                // TODO bug #21 Add comment field.
-                addRow(dbColumn, rMap);
+                    // TODO bug #21 Add comment field.
+                    addRow(dbColumn, rMap);
+                }
+            } else {
+                for (int i = 0; i < ssColumns.size(); i++) {
+                    SpreadsheetColumn ssColumn = ssColumns.elementAt(i);
+
+                    DataColumn dbColumn = getDataColumn(getColumnName(ssColumn));
+                    if (dbColumn != null) {
+                        // TODO bug #21 Add comment field.
+                        addRow(dbColumn, rMap);
+                    }
+                }
             }
         } catch (SystemErrorException e) {
             logger.error("Unable to list variables.", e);
@@ -97,6 +111,36 @@ implements ExternalColumnListListener, TableModelListener {
 
         //Listeners
         tableModel.addTableModelListener(this);
+    }
+    
+    /**
+     * Returns the header name of a SpreadsheetColumn.
+     * @param col SpreadsheetColumn
+     * @return header name of col
+     */
+    private String getColumnName(SpreadsheetColumn col) {
+        String headerText = col.getText();
+        String headerName = headerText.substring(0,
+                headerText.lastIndexOf("  ("));
+        
+        return headerName;
+    }
+
+     /**
+     * Returns DataColumn with the specific column name.
+     * @param columnName name of column variable
+     * @return DataColumn for column, null if not found.
+     */
+    private DataColumn getDataColumn(final String columnName) throws SystemErrorException {
+        Vector<DataColumn> dataCol = database.getDataColumns();
+
+        for (DataColumn dc : dataCol) {
+            if (dc.getName().equalsIgnoreCase(columnName)) {
+                return dc;
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -269,6 +313,7 @@ implements ExternalColumnListListener, TableModelListener {
         variableList.setModel(tableModel);
         variableList.setMinimumSize(new java.awt.Dimension(400, 200));
         variableList.setName("variableList");
+        variableList.setAutoCreateRowSorter(true);
         jScrollPane1.setViewportView(variableList);
 
         MigLayout layout = new MigLayout("nogrid");

@@ -386,13 +386,14 @@ public final class MixerControllerV implements NeedleEventListener,
         final TrackPainter trackPainter) {
 
         // Check if the scale needs to be updated.
-        if ((duration + offset) > maxEnd) {
+        if ((duration + offset) > maxEnd || (tracksEditorController.numberOfTracks() == 0 && (duration + offset) > 0)) {
             maxEnd = duration + offset;
 
             ViewableModel model = timescaleController.getViewableModel();
             model.setEnd(maxEnd);
             timescaleController.setViewableModel(model);
             regionController.setViewableModel(model);
+            regionController.setPlaybackRegion(0, maxEnd);
             needleController.setViewableModel(model);
             tracksEditorController.setViewableModel(model);
             rescale();
@@ -578,10 +579,10 @@ public final class MixerControllerV implements NeedleEventListener,
 
         ViewableModel model = timescaleController.getViewableModel();
         model.setZoomWindowStart(0);
-        model.setZoomWindowEnd(60000);
+        model.setZoomWindowEnd(DEFAULT_DURATION);
 
         regionController.setViewableModel(model);
-        regionController.setPlaybackRegion(0, 60000);
+        regionController.setPlaybackRegion(0, DEFAULT_DURATION);
         needleController.setCurrentTime(0);
         needleController.setViewableModel(model);
         timescaleController.setViewableModel(model);

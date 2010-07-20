@@ -330,17 +330,19 @@ implements FocusListener, KeyListener, MouseListener {
                 }
                 break;
             case KeyEvent.VK_TAB:
-                if (currentEditor.getSelectionEnd() - currentEditor.getSelectionStart() != currentEditor.getText().length()) {
-                    setEditor(nextEditor());
-                } else if ((e.getModifiers() & InputEvent.SHIFT_MASK) > 0) {
-                    setEditor(prevEditor());
-                    if (currentEditor == NO_EDITOR) {
-                        setEditor(lastEditor());
-                    }
-                } else {
-                    setEditor(nextEditor());
-                    if (currentEditor == NO_EDITOR) {
-                        setEditor(firstEditor());
+                if (editors.size() > 1) {
+                    if (currentEditor.getSelectionEnd() - currentEditor.getSelectionStart() != currentEditor.getText().length()) {
+                        setEditor(nextEditor());
+                    } else if ((e.getModifiers() & InputEvent.SHIFT_MASK) > 0) {
+                        setEditor(prevEditor());
+                        if (currentEditor == NO_EDITOR) {
+                            setEditor(lastEditor());
+                        }
+                    } else {
+                        setEditor(nextEditor());
+                        if (currentEditor == NO_EDITOR) {
+                            setEditor(firstEditor());
+                        }
                     }
                 }
                 e.consume();

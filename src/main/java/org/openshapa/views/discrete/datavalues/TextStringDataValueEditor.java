@@ -20,7 +20,7 @@ public final class TextStringDataValueEditor extends DataValueEditor {
      * users are unable to enter into a text field.
      */
     // BugzID:524 - If Character is an escape key - ignore it.
-    private static final String RESERVED_CHARS = "\u001B";
+    private static final String RESERVED_CHARS = "\u001B\t";
 
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(TextStringDataValueEditor.class);
