@@ -33,7 +33,7 @@ public class Launcher {
 
             // Unpack and install applications necessary for OpenSHAPA to
             // function correctly.
-            String gstreamer = NativeLoader.unpackNativeApp("gstreamer-osx64-1.4");
+            String gstreamer = NativeLoader.unpackNativeApp("gstreamer-osx64-1.4B");
 
             // Build up environment variables required to execute OpenSHAPA
             // correctly, this includes variables required for our native
@@ -59,7 +59,7 @@ public class Launcher {
             }
         } catch (Exception e) {
             System.err.println("Unable to start OpenSHAPA: ");
-            System.err.println(e);
+            e.printStackTrace();
             returnStatus = 1;
 
         } finally {

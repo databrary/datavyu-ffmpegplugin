@@ -262,7 +262,7 @@
         <dependency>
           <groupId>com.googlecode</groupId>
           <artifactId>gstreamer-osx64</artifactId>
-          <version>1.4</version>
+          <version>1.4B</version>
         </dependency>
       </dependencies>
     </profile>
