@@ -10,6 +10,8 @@ import org.openshapa.models.db.ExternalColumnListListener;
 import org.openshapa.models.db.SystemErrorException;
 import java.util.HashMap;
 import java.util.Vector;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JTextField;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -17,6 +19,7 @@ import javax.swing.table.TableModel;
 import net.miginfocom.swing.MigLayout;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
@@ -29,20 +32,23 @@ implements ExternalColumnListListener, TableModelListener {
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(ListVariables.class);
 
+    /** The column for database ID of column. This column is not visible. */
+    private static final int IDCOLUMN = 0;
+
     /** The column for if a variable is visible or not. */
-    private static final int VCOLUMN = 0;
+    private static final int VCOLUMN = 1;
 
     /** The column for a variables name. */
-    private static final int NCOLUMN = 1;
+    private static final int NCOLUMN = 2;
 
     /** The column for a variables type. */
-    private static final int TCOLUMN = 2;
+    private static final int TCOLUMN = 3;
 
     /** The column for a variables comment. */
-    private static final int CCOLUMN = 3;
+    private static final int CCOLUMN = 4;
 
     /** The total number of columns in the variables list. */
-    private static final int TOTAL_COLUMNS = 4;
+    private static final int TOTAL_COLUMNS = 5;
 
     /** The database containing the variables you wish to list. */
     private Database database;
@@ -68,36 +74,32 @@ implements ExternalColumnListListener, TableModelListener {
                          final boolean modal,
                          final Database db) {
         super(parent, modal);
-        tableModel = new VListTableModel();
+            tableModel = new VListTableModel();
         dbToTableMap = new HashMap<Long, Integer>();
-
         initComponents();
         setName(this.getClass().getSimpleName());
-
-        database = db;        
-
+        database = db;
         // Set the names of the columns.
+        tableModel.addColumn(rMap.getString("Table.idColumn"));
         tableModel.addColumn(rMap.getString("Table.visibleColumn"));
         tableModel.addColumn(rMap.getString("Table.nameColumn"));
         tableModel.addColumn(rMap.getString("Table.typeColumn"));
         tableModel.addColumn(rMap.getString("Table.commentColumn"));
-
+        //Use JTextfield to edit variable name cells
+        variableList.getColumnModel().getColumn(NCOLUMN).setCellEditor(new DefaultCellEditor(new JTextField()));
         // Populate table with a variable listing from the database
         try {
             Vector<SpreadsheetColumn> ssColumns = OpenSHAPA.getView().getSpreadsheetPanel().getColumns();
             Vector<DataColumn> dbColumns = database.getDataColumns();
-
             if (ssColumns.size() != database.getColumns().size()) {
                 for (int i = 0; i < dbColumns.size(); i++) {
                     DataColumn dbColumn = dbColumns.elementAt(i);
-
                     // TODO bug #21 Add comment field.
                     addRow(dbColumn, rMap);
                 }
             } else {
                 for (int i = 0; i < ssColumns.size(); i++) {
                     SpreadsheetColumn ssColumn = ssColumns.elementAt(i);
-
                     DataColumn dbColumn = getDataColumn(getColumnName(ssColumn));
                     if (dbColumn != null) {
                         // TODO bug #21 Add comment field.
@@ -108,10 +110,11 @@ implements ExternalColumnListListener, TableModelListener {
         } catch (SystemErrorException e) {
             logger.error("Unable to list variables.", e);
         }
-
+        variableList.getColumnModel().removeColumn(variableList.getColumnModel().getColumn(IDCOLUMN));
         //Listeners
         tableModel.addTableModelListener(this);
     }
+
     
     /**
      * Returns the header name of a SpreadsheetColumn.
@@ -151,19 +154,38 @@ implements ExternalColumnListListener, TableModelListener {
         String columnName = model.getColumnName(column);
         Object data = model.getValueAt(row, column);
 
+        long varID = (Long)model.getValueAt(row, IDCOLUMN);
+        DataColumn dc = null;
+        try {
+            dc = database.getDataColumn(varID);
+        } catch (SystemErrorException ex) {
+            java.util.logging.Logger.getLogger(ListVariables.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         if (columnName.equals(rMap.getString("Table.visibleColumn"))) {
             try {
-                String varName = (String)model.getValueAt(row, 1);
-                DataColumn dc = database.getDataColumn(varName);
                 dc.setHidden(!(Boolean)data);
                 MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
                 msdb.replaceColumn(dc);
             } catch (SystemErrorException ex) {
                 java.util.logging.Logger.getLogger(ListVariables.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        } else if (columnName.equals(rMap.getString("Table.nameColumn"))) {
+            try {
+                if ((!dc.getName().equals((String)data)) && (dc.isValidColumnName(database, (String)data))) {
+                    MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
+                    dc.setName((String)data);
+                    msdb.replaceColumn(dc);
+                }
+            } catch (LogicErrorException fe) {
+                OpenSHAPA.getApplication().showWarningDialog(fe);
+                tableModel.setValueAt(dc.getName(), row, column);
+            } catch (SystemErrorException see) {
+                OpenSHAPA.getApplication().showErrorDialog();
+                tableModel.setValueAt(dc.getName(), row, column);
             }
-
-            OpenSHAPA.getView().showSpreadsheet();
         }
+        OpenSHAPA.getView().showSpreadsheet();
     }
 
 
@@ -176,6 +198,7 @@ implements ExternalColumnListListener, TableModelListener {
     public void addRow(final DataColumn dbColumn, final ResourceMap rMap) {
         Object[] vals = new Object[TOTAL_COLUMNS];
 
+        vals[IDCOLUMN] = dbColumn.getID();
         vals[VCOLUMN] = !dbColumn.getHidden();
         vals[NCOLUMN] = dbColumn.getName();
         switch (dbColumn.getItsMveType()) {
@@ -271,7 +294,7 @@ implements ExternalColumnListListener, TableModelListener {
         @Override
         public Class getColumnClass(int column) {
             try {
-                if (column == 0) {
+                if (column == VCOLUMN) {
                     return Class.forName("java.lang.Boolean");
                 }
                 return Class.forName("java.lang.Object");
@@ -283,7 +306,7 @@ implements ExternalColumnListListener, TableModelListener {
 
         @Override
         public boolean isCellEditable(int row, int column) {
-            if (column == 0) {
+            if (column == VCOLUMN || column == NCOLUMN) {
                 return true;
             }
             return false;
