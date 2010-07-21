@@ -1,5 +1,7 @@
 package org.openshapa.controllers.component;
 
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -93,9 +95,14 @@ public final class TrackController implements ViewerStateListener {
     /** Listener interested in custom action button events. */
     private CustomActionListener buttonListener;
 
+    /** The UserMetrix logger for this class. */
+    private static final Logger LOGGER =
+            UserMetrix.getLogger(TrackController.class);
+
     /** States. */
     // can the carriage be moved using the mouse when snap is switched on
     private boolean isMoveable;
+
 
     /**
      * Creates a new TrackController.
@@ -435,10 +442,39 @@ public final class TrackController implements ViewerStateListener {
      * and update the button icons too.
      *
      */
-    public void notifyStateChanged() {
+    @Override
+    public void notifyStateChanged(String propertyChanged, String newValue) {
+        if (propertyChanged != null) {
+            // Determine if we can handle the requested change
+            boolean handled = false;
+            String property = propertyChanged.toLowerCase();
+            if (property.equals("")) {
+                handled = true;
+            }
+            if (property.equals("duration")) {
+                handled = true;
+                Long val = null;
+                try {
+                    val = Long.parseLong(newValue);
+                } catch (NumberFormatException ex) {
+                    LOGGER.error("Error in format of long value: " + newValue);
+                    handled = false;
+                }
+                if (val != null) {
+                    trackModel.setDuration(val);
+                    view.repaint();
+                }
+            }
+            if (!handled) {
+                // We couldn't find a way to handle the change- report this.
+                LOGGER.error("Unhandled property change: notified update of "
+                        + propertyChanged + " to " + newValue);
+            }
+        }
         updateButtonIcons();
         OpenSHAPA.getProjectController().projectChanged();
         OpenSHAPA.getApplication().updateTitle();
+        OpenSHAPA.getDataController().updateMaxViewerDuration();
     }
 
     /**

@@ -643,22 +643,9 @@ public final class DataControllerV extends OpenSHAPADialog
         return clock.getTime();
     }
 
-    /**
-     * Remove the specifed viewer from the controller.
-     *
-     * @param viewer
-     *            The viewer to shutdown.
-     * @return True if the controller contained this viewer.
-     */
-    public boolean shutdown(final DataViewer viewer) {
-
-        // Was the viewer removed.
-        boolean removed = viewers.remove(viewer);
-
-        if (removed) {
-
-            // Recalculate the maximum playback duration.
-            long maxDuration = 0;
+    /** Recalculates the maximum viewer duration. */
+    public void updateMaxViewerDuration() {
+        long maxDuration = 0;
             Iterator<DataViewer> it = viewers.iterator();
 
             while (it.hasNext()) {
@@ -702,6 +689,24 @@ public final class DataControllerV extends OpenSHAPADialog
             // Reset the clock.
             clock.setTime(tracksTime);
             clockStep(tracksTime);
+    }
+
+    /**
+     * Remove the specifed viewer from the controller.
+     *
+     * @param viewer
+     *            The viewer to shutdown.
+     * @return True if the controller contained this viewer.
+     */
+    public boolean shutdown(final DataViewer viewer) {
+
+        // Was the viewer removed.
+        boolean removed = viewers.remove(viewer);
+
+        if (removed) {
+
+            // Recalculate the maximum playback duration.
+            updateMaxViewerDuration();
 
             // Data viewer removed, mark project as changed.
             OpenSHAPA.getProjectController().projectChanged();
