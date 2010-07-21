@@ -51,9 +51,6 @@ public class SpectrumDataViewer implements DataViewer {
     /** Playback engine. */
     private PlaybackEngine engine;
 
-    /** Audio FPS. */
-    private float fps;
-
     public SpectrumDataViewer(final Frame parent, final boolean modal) {
 
         Runnable edtTask = new Runnable() {

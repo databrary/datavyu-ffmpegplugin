@@ -6,27 +6,38 @@ import java.io.File;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import javax.swing.SwingUtilities;
 
 import org.gstreamer.Bin;
+import org.gstreamer.Buffer;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Format;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
+import org.gstreamer.SeekFlags;
+import org.gstreamer.SeekType;
 import org.gstreamer.Structure;
 
+import org.gstreamer.elements.AppSink;
 import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.AppSink.NEW_BUFFER;
 
 import org.openshapa.plugins.spectrum.SpectrumConstants;
 import org.openshapa.plugins.spectrum.swing.Spectrum;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
 import org.openshapa.plugins.spectrum.swing.SpectrumView;
+
+import com.google.common.collect.Lists;
+
+import com.sun.jna.Pointer;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
@@ -64,7 +75,7 @@ public final class PlaybackEngine extends Thread {
     /** Output pipeline. */
     private Pipeline pipeline;
 
-    private long relStartTime;
+    private long currentTime;
 
     /**
      * Creates a new engine thread.
@@ -83,8 +94,6 @@ public final class PlaybackEngine extends Thread {
         setName("AudioEngine-" + getName());
 
         this.dialog = dialog;
-
-        relStartTime = -1;
     }
 
     /**
@@ -95,7 +104,7 @@ public final class PlaybackEngine extends Thread {
     @Override public void run() {
 
         while (true) {
-            System.out.println("Command queue: " + commandQueue);
+            // System.out.println("Command queue: " + commandQueue);
 
             try {
 
@@ -205,11 +214,30 @@ public final class PlaybackEngine extends Thread {
         spectrum.set("threshold", SpectrumConstants.MIN_MAGNITUDE);
         spectrum.set("post-messages", true);
 
+        Element spectrumSink = ElementFactory.make("fakesink", "spectrumsink");
+        spectrumSink.set("sync", true);
+
+        Element queue3 = ElementFactory.make("queue", "queue3");
+        Element appSink = ElementFactory.make("appsink", "timestampListener");
+        final AppSink timestamp = (AppSink) appSink;
+        timestamp.set("emit-signals", true);
+        timestamp.connect(new NEW_BUFFER() {
+                @Override public void newBuffer(final Element elem,
+                    final Pointer userData) {
+                    Buffer buf = timestamp.pullBuffer();
+
+                    if (buf != null) {
+                        currentTime = buf.getTimestamp().toMillis();
+                    }
+                }
+            });
+
         Caps spectrumCaps = Caps.fromString("audio/x-raw-int, rate="
                 + SpectrumConstants.SAMPLE_RATE);
 
         audioBin.addMany(tee, audioConvert, audioResample, queue, audioOutput,
-            audioConvert2, audioResample2, queue2, spectrum);
+            audioConvert2, audioResample2, queue2, spectrum, spectrumSink,
+            queue3, appSink);
 
         audioBin.addPad(new GhostPad("sink", tee.getStaticPad("sink")));
 
@@ -219,12 +247,18 @@ public final class PlaybackEngine extends Thread {
             LOGGER.error("Link failed: filesrc ! decodebin\n");
         }
 
-        if (!linkMany(tee, audioConvert, audioResample, queue, audioOutput)) {
+        Pad pad1 = tee.getRequestPad("src%d");
+        pad1.link(audioConvert.getStaticPad("sink"));
+
+        if (!linkMany(audioConvert, audioResample, queue, audioOutput)) {
             LOGGER.error(
                 "Link failed: tee ! audioconvert ! audioresample ! queue ! autoaudiosink");
         }
 
-        if (!linkMany(tee, audioConvert2, audioResample2)) {
+        Pad pad2 = tee.getRequestPad("src%d");
+        pad2.link(audioConvert2.getStaticPad("sink"));
+
+        if (!linkMany(audioConvert2, audioResample2)) {
             LOGGER.error("Link failed: tee -> audioconvert -> audioresample");
         }
 
@@ -234,8 +268,15 @@ public final class PlaybackEngine extends Thread {
                 "Link failed: audioresample ! audio/x-raw-int, rate=48000 ! queue");
         }
 
-        if (!linkMany(queue2, spectrum)) {
-            LOGGER.error("Link failed: queue ! spectrum");
+        if (!linkMany(queue2, spectrum, spectrumSink)) {
+            LOGGER.error("Link failed: queue ! spectrum ! fakesink");
+        }
+
+        Pad pad3 = tee.getRequestPad("src%d");
+        pad3.link(queue3.getStaticPad("sink"));
+
+        if (!linkMany(queue3, appSink)) {
+            LOGGER.error("Link failed: tee ! queue ! appsink");
         }
 
         decodeBin.connect(new DecodeBin.NEW_DECODED_PAD() {
@@ -251,9 +292,6 @@ public final class PlaybackEngine extends Thread {
                     Structure struct = caps.getStructure(0);
 
                     if (struct.getName().startsWith("audio/")) {
-
-                        // System.out.println(
-                        // "Linking audio pad: " + struct.getName());
                         pad.link(audioBin.getStaticPad("sink"));
                     }
                 }
@@ -293,37 +331,24 @@ public final class PlaybackEngine extends Thread {
      * Handles seeking through the current audio file.
      */
     private void engineSeeking() {
-        System.out.println("Playback speed: " + playbackSpeed);
-        System.out.println("C time: " + getCurrentTime());
-        System.out.println("N time: " + newTime);
 
-        pipeline.pause();
-        pipeline.seek(newTime, MILLISECONDS);
+        if ((getCurrentTime() < newTime) && (playbackSpeed > 0)) {
+            pipeline.seek(newTime, MILLISECONDS);
+        } else if ((getCurrentTime() > newTime) && (playbackSpeed < 0)) {
+            pipeline.seek(newTime, MILLISECONDS);
+        } else if (playbackSpeed == 0) {
+            System.out.println("Jogging seek.");
 
-        if (playbackSpeed != 0) {
-            pipeline.play();
+            pipeline.seek(1D, Format.TIME, SeekFlags.FLUSH | SeekFlags.KEY_UNIT,
+                SeekType.SET, NANOSECONDS.convert(newTime, MILLISECONDS),
+                SeekType.NONE, -1);
+
+            /*
+             * Mark engine state with task complete so that isPlaying returns
+             * false while we are jogging.
+             */
+            engineState = EngineState.TASK_COMPLETE;
         }
-
-
-        //
-        // if ((getCurrentTime() < newTime) && (playbackSpeed > 0)) {
-        // pipeline.seek(newTime, MILLISECONDS);
-        // } else if ((getCurrentTime() > newTime) && (playbackSpeed < 0)) {
-        // pipeline.seek(newTime, MILLISECONDS);
-        // } else if (playbackSpeed == 0) {
-        // System.out.println("Jogging seek.");
-        //
-        // pipeline.seek(1D, Format.TIME, SeekFlags.FLUSH, SeekType.SET,
-        // NANOSECONDS.convert(newTime, MILLISECONDS), SeekType.NONE, 0);
-        //
-        // // pipeline.seek(newTime, TimeUnit.MILLISECONDS);
-        //
-        // /*
-        // * Mark engine state with task complete so that isPlaying returns
-        // * false while we are jogging.
-        // */
-        // engineState = EngineState.TASK_COMPLETE;
-        // }
     }
 
     /**
@@ -341,14 +366,14 @@ public final class PlaybackEngine extends Thread {
      * Start playing back the audio file.
      */
     private void enginePlaying() {
-        pipeline.setState(org.gstreamer.State.PLAYING);
+        pipeline.play();
     }
 
     /**
      * Stop audio output.
      */
     private void engineStop() {
-        pipeline.stop();
+        pipeline.pause();
         engineState = EngineState.TASK_COMPLETE;
     }
 
@@ -390,7 +415,7 @@ public final class PlaybackEngine extends Thread {
     public void seek(final long time) {
         newTime = time;
 
-        commandQueue.offer(EngineState.SEEKING);
+        // commandQueue.offer(EngineState.SEEKING);
     }
 
     public void adjustSpeed(final double speed) {
@@ -402,7 +427,7 @@ public final class PlaybackEngine extends Thread {
      * @return Current time in the audio file.
      */
     public long getCurrentTime() {
-        return pipeline.queryPosition(MILLISECONDS);
+        return currentTime;
     }
 
     /**
