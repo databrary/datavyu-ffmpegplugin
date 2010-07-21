@@ -1,5 +1,7 @@
 package org.openshapa;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Map;
 import org.openshapa.util.NativeLoader;
 
@@ -17,6 +19,7 @@ public class Launcher {
      */
     public static void main(final String[] args) {
         int returnStatus = 0;
+        final boolean dumpErrorStream = "true".equals(System.getProperty("openshapa.debug"));
 
         try {
             // Build a process for running the actual OpenSHAPA application, rather
@@ -46,6 +49,14 @@ public class Launcher {
             // Start the OpenSHAPA process.
             Process p = builder.start();
             p.waitFor();
+
+            if (dumpErrorStream) {
+                String s;
+                BufferedReader br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+                while ((s = br.readLine()) != null) {
+                    System.err.println(s);
+                }
+            }
         } catch (Exception e) {
             System.err.println("Unable to start OpenSHAPA: ");
             System.err.println(e);
