@@ -100,7 +100,7 @@ implements ExternalColumnListListener, TableModelListener {
             } else {
                 for (int i = 0; i < ssColumns.size(); i++) {
                     SpreadsheetColumn ssColumn = ssColumns.elementAt(i);
-                    DataColumn dbColumn = getDataColumn(getColumnName(ssColumn));
+                    DataColumn dbColumn = getDataColumn(ssColumn.getColID());
                     if (dbColumn != null) {
                         // TODO bug #21 Add comment field.
                         addRow(dbColumn, rMap);
@@ -116,19 +116,6 @@ implements ExternalColumnListListener, TableModelListener {
     }
 
     
-    /**
-     * Returns the header name of a SpreadsheetColumn.
-     * @param col SpreadsheetColumn
-     * @return header name of col
-     */
-    private String getColumnName(SpreadsheetColumn col) {
-        String headerText = col.getText();
-        String headerName = headerText.substring(0,
-                headerText.lastIndexOf("  ("));
-        
-        return headerName;
-    }
-
      /**
      * Returns DataColumn with the specific column name.
      * @param columnName name of column variable
@@ -139,6 +126,23 @@ implements ExternalColumnListListener, TableModelListener {
 
         for (DataColumn dc : dataCol) {
             if (dc.getName().equalsIgnoreCase(columnName)) {
+                return dc;
+            }
+        }
+
+        return null;
+    }
+
+         /**
+     * Returns DataColumn with the specific column name.
+     * @param columnID name of column variable
+     * @return DataColumn for column, null if not found.
+     */
+    private DataColumn getDataColumn(final long columnID) throws SystemErrorException {
+        Vector<DataColumn> dataCol = database.getDataColumns();
+
+        for (DataColumn dc : dataCol) {
+            if (dc.getID() == columnID) {
                 return dc;
             }
         }

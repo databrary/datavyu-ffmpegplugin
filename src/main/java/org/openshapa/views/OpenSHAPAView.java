@@ -63,6 +63,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.views.discrete.SpreadsheetColumn;
 
 
 /**
@@ -92,6 +93,7 @@ public final class OpenSHAPAView extends FrameView
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem ShowAllVariablesMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JMenuItem changeVarNameMenuItem;
     private javax.swing.JMenu controllerMenu;
     private javax.swing.JMenuItem deleteCellMenuItem;
     private javax.swing.JMenuItem deleteColumnMenuItem;
@@ -733,6 +735,23 @@ public final class OpenSHAPAView extends FrameView
         OpenSHAPA.getView().showSpreadsheet();
     }
 
+    /**
+     * Action for changing variable name.
+     */
+    @Action public void changeColumnName() {
+        Vector<DataColumn> cols = panel.getSelectedCols();
+        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
+
+        //Only one column should be selected, but just in case, we'll only change the first column
+        DataColumn col = cols.firstElement();
+        for (SpreadsheetColumn sCol : panel.getColumns()) {
+            if (sCol.getColID() == col.getID()) {
+                sCol.showChangeVarNameDialog();
+                break;
+            }
+        }
+    }
+
      /**
      * Action for showing all columns.
      */
@@ -829,6 +848,7 @@ public final class OpenSHAPAView extends FrameView
         newCellLeftMenuItem = new javax.swing.JMenuItem();
         newCellRightMenuItem = new javax.swing.JMenuItem();
         jSeparator8 = new javax.swing.JPopupMenu.Separator();
+        changeVarNameMenuItem = new javax.swing.JMenuItem();
         hideSelectedColumnsMenuItem = new javax.swing.JMenuItem();
         ShowAllVariablesMenuItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
@@ -994,6 +1014,14 @@ public final class OpenSHAPAView extends FrameView
 
         jSeparator8.setName("jSeparator8"); // NOI18N
         spreadsheetMenu.add(jSeparator8);
+
+        changeVarNameMenuItem.setName("changeVarNameMenuItem"); // NOI18N
+        changeVarNameMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeVarNameMenuItemActionPerformed(evt);
+            }
+        });
+        spreadsheetMenu.add(changeVarNameMenuItem);
 
         hideSelectedColumnsMenuItem.setName("hideSelectedColumnsMenuItem"); // NOI18N
         hideSelectedColumnsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1164,6 +1192,10 @@ public final class OpenSHAPAView extends FrameView
         this.getSpreadsheetPanel().deselectAll();
     }//GEN-LAST:event_ShowAllVariablesMenuItemActionPerformed
 
+    private void changeVarNameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeVarNameMenuItemActionPerformed
+        changeColumnName();
+    }//GEN-LAST:event_changeVarNameMenuItemActionPerformed
+
     /**
      * The action to invoke when the user selects 'strong temporal ordering'.
      *
@@ -1306,6 +1338,7 @@ public final class OpenSHAPAView extends FrameView
         if (panel.getSelectedCols().size() == 0) {
             deleteColumnMenuItem.setEnabled(false);
             hideSelectedColumnsMenuItem.setEnabled(false);
+            changeVarNameMenuItem.setEnabled(false);
         } else if (panel.getSelectedCols().size() == 1) {
             deleteColumnMenuItem.setText(rMap.getString(
                     "deleteColumnMenuItemSingle.text"));
@@ -1313,6 +1346,7 @@ public final class OpenSHAPAView extends FrameView
             hideSelectedColumnsMenuItem.setText(rMap.getString(
                     "hideSelectedColumnsMenuItemSingle.text"));
             hideSelectedColumnsMenuItem.setEnabled(true);
+            changeVarNameMenuItem.setEnabled(true);
         } else {
             deleteColumnMenuItem.setText(rMap.getString(
                     "deleteColumnMenuItemPlural.text"));
@@ -1320,6 +1354,7 @@ public final class OpenSHAPAView extends FrameView
             hideSelectedColumnsMenuItem.setText(rMap.getString(
                     "hideSelectedColumnsMenuItemPlural.text"));
             hideSelectedColumnsMenuItem.setEnabled(true);
+            changeVarNameMenuItem.setEnabled(false);
         }
 
         if (panel.getSelectedCells().size() == 0) {

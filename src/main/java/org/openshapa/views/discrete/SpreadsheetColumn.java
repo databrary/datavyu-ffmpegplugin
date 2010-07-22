@@ -4,9 +4,9 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.HeadlessException;
+import java.util.logging.Level;
 
-import org.jdesktop.application.Action;
-import org.openshapa.controllers.NewVariableC;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.Database;
 import org.openshapa.models.db.ExternalCascadeListener;
@@ -22,8 +22,14 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.models.db.Column;
+import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
@@ -75,6 +81,26 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
 
     /** column selection listener to notify of column selection changes. */
     private ColumnSelectionListener columnSelList;
+
+    public void showChangeVarNameDialog() throws HeadlessException {
+        //Edit variable name on double click
+        String newName = "";
+        while (newName != null) {
+            newName = (String) JOptionPane.showInputDialog(null, null, "New variable name", JOptionPane.PLAIN_MESSAGE, null, null, getColumnName());
+            if (newName != null) {
+                try {
+                    setColumnName(newName);
+                    break;
+                } catch (LogicErrorException ex) {
+                    continue;
+                } catch (SystemErrorException ex) {
+                    continue;
+                }
+            } else {
+                break;
+            }
+        }
+    }
 
     /**
      * Private class for recording the changes reported by the listener
@@ -469,17 +495,58 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param me The mouse event that triggered this action.
      */
     public void mouseClicked(final MouseEvent me) {
-        int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+        if (me.getClickCount() == 2) {
+            showChangeVarNameDialog();
+        } else {
+            int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
-        boolean groupSel = ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0
-                       || (me.getModifiers() & keyMask) != 0);
-        boolean curSelected = this.isSelected();
+            boolean groupSel = ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0
+                           || (me.getModifiers() & keyMask) != 0);
+            boolean curSelected = this.isSelected();
 
-        if (!groupSel) {
-            this.columnSelList.clearColumnSelection();
+            if (!groupSel) {
+                this.columnSelList.clearColumnSelection();
+            }
+            this.setSelected(!curSelected);
+            this.columnSelList.addColumnToSelection(this);
         }
-        this.setSelected(!curSelected);
-        this.columnSelList.addColumnToSelection(this);
+        me.consume();
+    }
+
+     /**
+     * Returns the header name of this SpreadsheetColumn.
+     * @param col SpreadsheetColumn
+     * @return header name of col
+     */
+    public String getColumnName() {
+        try {
+            return database.getDataColumn(dbColID).getName();
+        } catch (SystemErrorException ex) {
+            java.util.logging.Logger.getLogger(SpreadsheetColumn.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public void setColumnName(String newName) throws LogicErrorException, SystemErrorException {
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(Column.class);
+
+        try {
+            DataColumn dc = database.getDataColumn(dbColID);
+            if ((!dc.getName().equals(newName) && (DataColumn.isValidColumnName(database, newName)))) {
+                dc.setName(newName);
+                database.replaceColumn(dc);
+            }
+        } catch (LogicErrorException fe) {
+            OpenSHAPA.getApplication().showWarningDialog(fe);
+            throw new LogicErrorException(fe.getMessage(), fe);
+        } catch (SystemErrorException see) {
+            OpenSHAPA.getApplication().showErrorDialog();
+            throw new SystemErrorException(see.getMessage(), see);
+        }
+
+        OpenSHAPA.getView().showSpreadsheet();
     }
 
     /**
