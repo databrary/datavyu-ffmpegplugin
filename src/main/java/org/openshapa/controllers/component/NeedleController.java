@@ -133,16 +133,18 @@ public final class NeedleController {
      * @return a clone of the needle model
      */
     public NeedleModel getNeedleModel() {
+
         // return a clone to avoid model tainting
-    	return needleModel.clone();
+        return needleModel.clone();
     }
-    
+
     /**
-     * @return a clone of the viewable model
+     * @return a copy of the viewable model
      */
     public ViewableModel getViewableModel() {
+
         // return a clone to avoid model tainting
-        return viewableModel.clone();
+        return viewableModel.copy();
     }
 
     /**
@@ -160,7 +162,8 @@ public final class NeedleController {
         this.viewableModel.setIntervalTime(viewableModel.getIntervalTime());
         this.viewableModel.setIntervalWidth(viewableModel.getIntervalWidth());
         this.viewableModel.setZoomWindowEnd(viewableModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(viewableModel.getZoomWindowStart());
+        this.viewableModel.setZoomWindowStart(
+            viewableModel.getZoomWindowStart());
         view.setViewableModel(this.viewableModel);
     }
 
@@ -178,7 +181,7 @@ public final class NeedleController {
         private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(
                 Cursor.E_RESIZE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
-        
+
         @Override public void mouseEntered(final MouseEvent e) {
             JComponent source = (JComponent) e.getSource();
             source.setCursor(eastResizeCursor);

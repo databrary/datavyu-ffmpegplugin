@@ -2,6 +2,7 @@ package org.openshapa.controllers.component;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -9,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -24,6 +24,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
 import net.miginfocom.swing.MigLayout;
+
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.event.component.CarriageEvent;
@@ -47,6 +48,10 @@ public final class TrackController implements ViewerStateListener {
 
     /** Track panel border color. */
     private static final Color BORDER_COLOR = new Color(73, 73, 73);
+
+    /** The UserMetrix logger for this class. */
+    private static final Logger LOGGER = UserMetrix.getLogger(
+            TrackController.class);
 
     /** Main panel holding the track UI. */
     private final JPanel view;
@@ -94,10 +99,6 @@ public final class TrackController implements ViewerStateListener {
 
     /** Listener interested in custom action button events. */
     private CustomActionListener buttonListener;
-
-    /** The UserMetrix logger for this class. */
-    private static final Logger LOGGER =
-            UserMetrix.getLogger(TrackController.class);
 
     /** States. */
     // can the carriage be moved using the mouse when snap is switched on
@@ -174,10 +175,10 @@ public final class TrackController implements ViewerStateListener {
         lockUnlockButton.setContentAreaFilled(false);
         lockUnlockButton.setBorderPainted(false);
         lockUnlockButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                handleLockUnlockButtonEvent(e);
-            }
-        });
+                public void actionPerformed(final ActionEvent e) {
+                    handleLockUnlockButtonEvent(e);
+                }
+            });
         header.add(lockUnlockButton, "w 20!, h 20!");
         lockUnlockButton.setName("lockUnlockButton");
 
@@ -185,31 +186,31 @@ public final class TrackController implements ViewerStateListener {
         actionButton1 = new JButton();
         actionButton1.setName("actionButton1");
         actionButton1.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                buttonListener.handleActionButtonEvent1(e);
-                updateButtonIcons();
-            }
-        });
+                public void actionPerformed(final ActionEvent e) {
+                    buttonListener.handleActionButtonEvent1(e);
+                    updateButtonIcons();
+                }
+            });
         header.add(actionButton1, "w 20!, h 20!");
 
         actionButton2 = new JButton();
         actionButton2.setName("actionButton2");
         actionButton2.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                buttonListener.handleActionButtonEvent2(e);
-                updateButtonIcons();
-            }
-        });
+                public void actionPerformed(final ActionEvent e) {
+                    buttonListener.handleActionButtonEvent2(e);
+                    updateButtonIcons();
+                }
+            });
         header.add(actionButton2, "w 20!, h 20!");
 
         actionButton3 = new JButton();
         actionButton3.setName("actionButton3");
         actionButton3.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent e) {
-                buttonListener.handleActionButtonEvent3(e);
-                updateButtonIcons();
-            }
-        });
+                public void actionPerformed(final ActionEvent e) {
+                    buttonListener.handleActionButtonEvent3(e);
+                    updateButtonIcons();
+                }
+            });
         header.add(actionButton3, "w 20!, h 20!");
 
         view.add(header, "w 100!, h 75!");
@@ -364,12 +365,12 @@ public final class TrackController implements ViewerStateListener {
     }
 
     /**
-     * @return a clone of the viewable model used by the controller
+     * @return a copy of the viewable model used by the controller
      */
     public ViewableModel getViewableModel() {
 
         // return a clone to avoid model tainting
-        return viewableModel.clone();
+        return viewableModel.copy();
     }
 
     /**
@@ -442,38 +443,48 @@ public final class TrackController implements ViewerStateListener {
      * and update the button icons too.
      *
      */
-    @Override
-    public void notifyStateChanged(String propertyChanged, String newValue) {
+    @Override public void notifyStateChanged(final String propertyChanged,
+        final String newValue) {
+
         if (propertyChanged != null) {
+
             // Determine if we can handle the requested change
             boolean handled = false;
             String property = propertyChanged.toLowerCase();
+
             if (property.equals("")) {
                 handled = true;
             }
+
             if (property.equals("duration")) {
                 handled = true;
+
                 Long val = null;
+
                 try {
                     val = Long.parseLong(newValue);
                 } catch (NumberFormatException ex) {
                     LOGGER.error("Error in format of long value: " + newValue);
                     handled = false;
                 }
+
                 if (val != null) {
                     trackModel.setDuration(val);
                     view.repaint();
                     OpenSHAPA.getDataController().updateMaxViewerDuration();
-                    OpenSHAPA.getDataController().getMixerController().
-                                                        clearRegionAndZoomOut();
+                    OpenSHAPA.getDataController().getMixerController()
+                        .clearRegionAndZoomOut();
                 }
             }
+
             if (!handled) {
+
                 // We couldn't find a way to handle the change- report this.
                 LOGGER.error("Unhandled property change: notified update of "
-                        + propertyChanged + " to " + newValue);
+                    + propertyChanged + " to " + newValue);
             }
         }
+
         updateButtonIcons();
         OpenSHAPA.getProjectController().projectChanged();
         OpenSHAPA.getApplication().updateTitle();
