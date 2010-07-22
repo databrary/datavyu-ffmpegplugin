@@ -463,6 +463,9 @@ public final class TrackController implements ViewerStateListener {
                 if (val != null) {
                     trackModel.setDuration(val);
                     view.repaint();
+                    OpenSHAPA.getDataController().updateMaxViewerDuration();
+                    OpenSHAPA.getDataController().getMixerController().
+                                                        clearRegionAndZoomOut();
                 }
             }
             if (!handled) {
@@ -474,7 +477,6 @@ public final class TrackController implements ViewerStateListener {
         updateButtonIcons();
         OpenSHAPA.getProjectController().projectChanged();
         OpenSHAPA.getApplication().updateTitle();
-        OpenSHAPA.getDataController().updateMaxViewerDuration();
     }
 
     /**

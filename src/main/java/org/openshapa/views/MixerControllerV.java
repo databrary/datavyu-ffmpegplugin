@@ -386,7 +386,9 @@ public final class MixerControllerV implements NeedleEventListener,
         final TrackPainter trackPainter) {
 
         // Check if the scale needs to be updated.
-        if ((duration + offset) > maxEnd || (tracksEditorController.numberOfTracks() == 0 && (duration + offset) > 0)) {
+        if ((duration + offset) > maxEnd
+                || (tracksEditorController.numberOfTracks() == 0
+                    && (duration + offset) > 0)) {
             maxEnd = duration + offset;
 
             ViewableModel model = timescaleController.getViewableModel();
@@ -404,6 +406,12 @@ public final class MixerControllerV implements NeedleEventListener,
             offset, this, trackPainter);
 
         tracksScrollPane.validate();
+    }
+
+    /** Clears the region of interest and zooms all the way out. */
+    public void clearRegionAndZoomOut() {
+        clearRegionOfInterest();
+        zoomToRegion(null);
     }
 
     /**
