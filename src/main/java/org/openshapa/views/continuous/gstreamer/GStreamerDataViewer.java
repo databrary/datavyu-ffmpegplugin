@@ -210,7 +210,7 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
 			if (!isPlaying) {
 //		        playBin.setState(State.PAUSED);
 //				System.out.println("seeking...");
-				boolean result = playBin.seek(playbackRate != 0.0 ? playbackRate : 1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE | SeekFlags.SKIP, SeekType.SET, playBin.queryPosition(TimeUnit.NANOSECONDS), SeekType.NONE, 0);
+				boolean result = playBin.seek(playbackRate != 0.0 ? playbackRate : 1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE | /* SeekFlags.SKIP */ (1 << 4), SeekType.SET, TimeUnit.NANOSECONDS.convert(position, TimeUnit.MILLISECONDS), SeekType.NONE, 0);
 //				playBin.seek(ClockTime.fromMillis(position));
 //				lastSeekTime = System.currentTimeMillis();
 			} else {
@@ -292,7 +292,7 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
 			if (rate != 0) {
 					playBin.setState(State.PAUSED);
 					playBin.getState(); // wait for the state change to take effect
-					boolean result = playBin.seek(rate, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE | SeekFlags.SKIP, SeekType.NONE, 0, SeekType.NONE, 0);
+					boolean result = playBin.seek(rate, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE | /* SeekFlags.SKIP */ (1 << 4), SeekType.NONE, 0, SeekType.NONE, 0);
 					System.out.println("seek result for rate " + rate + " = " + result);
 					playBin.setState(State.PLAYING);
 				isPlaying = true;
