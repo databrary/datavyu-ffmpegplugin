@@ -327,9 +327,17 @@ public final class PlaybackEngine extends Thread {
      * Handles seeking through the current audio file.
      */
     private void engineSeeking() {
-        pipeline.seek(1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.SEGMENT,
-            SeekType.SET, TimeUnit.NANOSECONDS.convert(newTime, MILLISECONDS),
-            SeekType.NONE, -1);
+
+        if (playbackSpeed != 0) {
+            pipeline.seek(playbackSpeed, Format.TIME,
+                SeekFlags.FLUSH | SeekFlags.SEGMENT, SeekType.SET,
+                NANOSECONDS.convert(newTime, MILLISECONDS), SeekType.NONE, -1);
+        } else {
+            pipeline.pause();
+            pipeline.seek(1D, Format.TIME, SeekFlags.FLUSH | SeekFlags.SEGMENT,
+                SeekType.SET, NANOSECONDS.convert(newTime, MILLISECONDS),
+                SeekType.NONE, -1);
+        }
     }
 
     /**
