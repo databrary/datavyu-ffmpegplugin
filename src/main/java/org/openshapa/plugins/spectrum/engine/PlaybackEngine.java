@@ -105,7 +105,7 @@ public final class PlaybackEngine extends Thread {
     @Override public void run() {
 
         while (true) {
-            // System.out.println("Command queue: " + commandQueue);
+            System.out.println("Command queue: " + commandQueue);
 
             try {
 
@@ -344,6 +344,13 @@ public final class PlaybackEngine extends Thread {
      * Adjust playback speed.
      */
     private void engineAdjusting() {
+
+        if (playbackSpeed != 0) {
+            pipeline.seek(playbackSpeed, Format.TIME,
+                SeekFlags.FLUSH | SeekFlags.SEGMENT | SeekFlags.ACCURATE,
+                SeekType.NONE, -1, SeekType.NONE, -1);
+        }
+
         engineState = EngineState.TASK_COMPLETE;
     }
 
