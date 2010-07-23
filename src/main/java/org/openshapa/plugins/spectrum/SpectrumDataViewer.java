@@ -199,6 +199,7 @@ public class SpectrumDataViewer implements DataViewer {
      *            Event to handle.
      */
     private void dialogClosing(final WindowEvent evt) {
+        track.deregister();
 
         // Shutdown the engine
         engine.shutdown();
