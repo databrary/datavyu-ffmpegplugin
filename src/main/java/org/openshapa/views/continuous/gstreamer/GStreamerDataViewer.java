@@ -47,11 +47,6 @@ import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.ViewerStateListener;
 
 public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
-	public GStreamerDataViewer(Frame parent, boolean modal) {
-		super(parent, modal);
-		trackPainter = new DefaultTrackPainter();
-	}
-	
 	static {
 		Gst.init();
 		//DAVETODO add unload hooks
@@ -91,9 +86,11 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
     private PlayBin playBin;
     private long duration = 0;
     private boolean isPlaying = false;
-
+    private float playbackRate = 1;
 
     public GStreamerDataViewer(Frame parent, boolean modal) {
+    	super(parent, modal);
+    	
         System.out.println("GStreamerDataViewer.GStreamerDataViewer()");
         trackPainter = new DefaultTrackPainter();
         setOffset(0);
@@ -213,8 +210,8 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
 			if (!isPlaying) {
 //		        playBin.setState(State.PAUSED);
 //				System.out.println("seeking...");
-//				playBin.seek(1.0f, Format.TIME, SeekFlags.FLUSH | SeekFlags.SEGMENT, SeekType.SET, playBin.queryPosition(TimeUnit.NANOSECONDS), SeekType.SET, playBin.queryDuration(TimeUnit.NANOSECONDS));
-				playBin.seek(ClockTime.fromMillis(position));
+				boolean result = playBin.seek(playbackRate != 0.0 ? playbackRate : 1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE | SeekFlags.SKIP, SeekType.SET, playBin.queryPosition(TimeUnit.NANOSECONDS), SeekType.NONE, 0);
+//				playBin.seek(ClockTime.fromMillis(position));
 //				lastSeekTime = System.currentTimeMillis();
 			} else {
 //				System.out.println("ignoring seek.");
@@ -290,12 +287,13 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
 	@Override
 	public void setPlaybackSpeed(float rate) {
 		System.out.println("GStreamerDataViewer.setPlaybackSpeed(" + rate + ")");
+		this.playbackRate = rate;
 		if (playBin != null) {
-			if (rate > 0) {
+			if (rate != 0) {
 					playBin.setState(State.PAUSED);
 					playBin.getState(); // wait for the state change to take effect
-					boolean result = playBin.seek(rate, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE, SeekType.SET, playBin.queryPosition(TimeUnit.NANOSECONDS), SeekType.NONE, 0);
-					System.out.println("seek result = " + result);
+					boolean result = playBin.seek(rate, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE | SeekFlags.SKIP, SeekType.NONE, 0, SeekType.NONE, 0);
+					System.out.println("seek result for rate " + rate + " = " + result);
 					playBin.setState(State.PLAYING);
 				isPlaying = true;
 			} else {
