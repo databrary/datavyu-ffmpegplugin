@@ -255,9 +255,11 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
 		
 		duration = playBin.queryDuration(TimeUnit.MILLISECONDS);
 
+		/*
 		for (StreamInfo streamInfo : playBin.getStreamInfo()) {
 			System.out.println("StreamInfo: " + streamInfo.toString());
 		}
+		*/
 		
 		System.out.println("Data feed added");
 	}
