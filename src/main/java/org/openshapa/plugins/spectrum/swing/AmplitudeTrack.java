@@ -42,7 +42,6 @@ public final class AmplitudeTrack extends TrackPainter
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-        System.out.println("Property change");
 
         if (data == null) {
             return;
