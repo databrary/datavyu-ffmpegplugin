@@ -153,6 +153,7 @@ public final class AmplitudeTrack extends TrackPainter
         }
 
         this.data = data;
+        ampImage = null;
     }
 
     @Override protected void paintCustom(final Graphics g) {
