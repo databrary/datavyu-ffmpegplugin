@@ -123,11 +123,6 @@ public final class PlaybackEngine extends Thread {
 
                     break;
 
-                case SETTING_FPS:
-                    engineSettingFPS();
-
-                    break;
-
                 case SEEKING:
 
                     // Just want to seek to the latest time.
@@ -333,10 +328,11 @@ public final class PlaybackEngine extends Thread {
                 SeekFlags.FLUSH | SeekFlags.SEGMENT, SeekType.SET,
                 NANOSECONDS.convert(newTime, MILLISECONDS), SeekType.NONE, -1);
         } else {
-            pipeline.pause();
+            pipeline.play();
             pipeline.seek(1D, Format.TIME, SeekFlags.FLUSH | SeekFlags.SEGMENT,
                 SeekType.SET, NANOSECONDS.convert(newTime, MILLISECONDS),
                 SeekType.NONE, -1);
+            pipeline.pause();
         }
     }
 
@@ -349,12 +345,10 @@ public final class PlaybackEngine extends Thread {
             pipeline.seek(playbackSpeed, Format.TIME,
                 SeekFlags.FLUSH | SeekFlags.SEGMENT | SeekFlags.ACCURATE,
                 SeekType.NONE, -1, SeekType.NONE, -1);
+        } else {
+            pipeline.pause();
         }
 
-        engineState = EngineState.TASK_COMPLETE;
-    }
-
-    private void engineSettingFPS() {
         engineState = EngineState.TASK_COMPLETE;
     }
 
