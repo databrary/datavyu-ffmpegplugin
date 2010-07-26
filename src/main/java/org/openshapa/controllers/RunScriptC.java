@@ -69,11 +69,10 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
         if (result == JFileChooser.APPROVE_OPTION) {
             scriptFile = jd.getSelectedFile();
+            init();
         } else {
             scriptFile = null;
-        }
-
-        init();
+        }        
     }
 
     /**

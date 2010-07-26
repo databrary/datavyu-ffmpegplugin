@@ -12,6 +12,7 @@ import org.fest.swing.data.TableCell;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JTableFixture;
+import org.fest.swing.fixture.VariableListDialogFixture;
 import org.fest.swing.util.Platform;
 
 import org.jdesktop.application.Application;
@@ -54,22 +55,20 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         mainFrameFixture.closeScriptConsole();
 
         // 2. Check that variable list is populated with correct data
-        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
-
-        DialogFixture vlDialog = mainFrameFixture.dialog();
-
+        VariableListDialogFixture vlDialog = mainFrameFixture.openVariableList();
+       
         spreadsheet = mainFrameFixture.getSpreadsheet();
 
-        Assert.assertEquals(vlDialog.table().rowCount(),
+        Assert.assertEquals(vlDialog.getVariableListTable().rowCount(),
             spreadsheet.allColumns().size());
 
         for (int i = 0; i < spreadsheet.allColumns().size(); i++) {
             Assert.assertTrue(inTable(
                     spreadsheet.allColumns().elementAt(i).getColumnName(),
-                    vlDialog.table(), 1));
+                    vlDialog.getVariableListTable(), 1));
             Assert.assertTrue(inTable(
                     spreadsheet.allColumns().elementAt(i).getColumnType(),
-                    vlDialog.table(), 2));
+                    vlDialog.getVariableListTable(), 2));
         }
     }
 
