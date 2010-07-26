@@ -307,7 +307,24 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                         tableModel.setValueAt(dc.getName(), row, column);
                     }
                 }
+            } else if (columnName.equals(rMap.getString("Table.commentColumn"))) {
+                if (!dc.getComment().equals(data)) {
+                    try {
+                        if ((!dc.getComment().equals((String)data)) && (dc.isValidColumnComment(database, (String)data))) {
+                            MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
+                            dc.setComment((String)data);
+                            msdb.replaceColumn(dc);
+                        }
+                    } catch (LogicErrorException fe) {
+                        OpenSHAPA.getApplication().showWarningDialog(fe);
+                        tableModel.setValueAt(dc.getComment(), row, column);
+                    } catch (SystemErrorException see) {
+                        OpenSHAPA.getApplication().showErrorDialog();
+                        tableModel.setValueAt(dc.getComment(), row, column);
+                    }
+                }
             }
+
             OpenSHAPA.getView().showSpreadsheet();
         }
     }
@@ -361,7 +378,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                 break;
         }
 
-        // TODO bug #21 Add comment field.
+        // Comment field
+        vals[CCOLUMN] = dbColumn.getComment();
 
         // Add new row to table model.
         int rowId = tableModel.getRowCount();
@@ -513,7 +531,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
 
         @Override
         public boolean isCellEditable(int row, int column) {
-            if (column == VCOLUMN || column == NCOLUMN) {
+            if (column == VCOLUMN || column == NCOLUMN || column == CCOLUMN) {
                 return true;
             }
             return false;
