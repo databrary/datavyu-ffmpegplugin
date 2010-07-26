@@ -333,6 +333,7 @@ public final class PlaybackEngine extends Thread {
                 SeekType.SET, NANOSECONDS.convert(newTime, MILLISECONDS),
                 SeekType.NONE, -1);
             pipeline.pause();
+
         }
     }
 

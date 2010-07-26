@@ -7,11 +7,15 @@ import java.nio.ShortBuffer;
 import java.util.concurrent.TimeUnit;
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import static org.gstreamer.Element.linkMany;
 import static org.gstreamer.Element.linkPadsFiltered;
 
 import javax.swing.SwingWorker;
+
+import javax.xml.soap.MessageFactory;
 
 import org.gstreamer.Bin;
 import org.gstreamer.Buffer;
@@ -19,11 +23,14 @@ import org.gstreamer.Bus;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Format;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
+import org.gstreamer.SeekFlags;
+import org.gstreamer.SeekType;
 import org.gstreamer.State;
 import org.gstreamer.Structure;
 
@@ -47,7 +54,7 @@ import com.usermetrix.jclient.UserMetrix;
  * channels one and two. Assumes 16-bit audio.
  */
 public final class AmplitudeProcessor
-    extends SwingWorker<StereoAmplitudeData, StereoAmplitudeData> {
+    extends SwingWorker<StereoAmplitudeData, Void> {
 
     private static final Logger LOGGER = UserMetrix.getLogger(
             AmplitudeProcessor.class);
@@ -120,32 +127,25 @@ public final class AmplitudeProcessor
         appSink.connect(new NEW_BUFFER() {
                 @Override public void newBuffer(final Element elem,
                     final Pointer userData) {
+
                     Buffer buf = appSink.pullBuffer();
 
                     if (buf != null) {
 
+                        /*
+                         * Divide by two to convert from byte buffer length
+                         * to short buffer length.
+                         */
                         int size = buf.getSize() / 2;
-
-                        if (!data.isTimeIntervalSet()) {
-
-                            long timestamp = buf.getTimestamp().toMicros();
-
-                            if (timestamp != 0) {
-                                data.setTimeInterval(timestamp / 2,
-                                    MICROSECONDS);
-                            }
-                        }
 
                         ShortBuffer sb = buf.getByteBuffer().asShortBuffer();
 
-                        if (numChannels >= 1) {
-                            data.addDataL(sb.get(0));
-                            data.addDataL(sb.get((size / numChannels) - 1));
-                        }
+                        for (int i = 0; i < size; i += numChannels) {
+                            data.addDataL(sb.get(i));
 
-                        if (numChannels >= 2) {
-                            data.addDataR(sb.get(1));
-                            data.addDataR(sb.get(size / numChannels));
+                            if (numChannels >= 2) {
+                                data.addDataR(sb.get(i + 1));
+                            }
                         }
                     }
                 }
@@ -158,7 +158,9 @@ public final class AmplitudeProcessor
         }
 
         Caps caps = Caps.fromString(
-                "audio/x-raw-int, width=16, depth=16, signed=true, rate=96");
+                "audio/x-raw-int, width=16, depth=16, signed=true"
+                // TODO support custom rate.
+                + ", rate=96");
 
         if (!linkPadsFiltered(audioResample, null, audioOutput, null, caps)) {
             LOGGER.error("Link failed: audioresample -> appsink");
@@ -187,6 +189,7 @@ public final class AmplitudeProcessor
                 }
             });
 
+
         Bus bus = pipeline.getBus();
         bus.connect(new Bus.EOS() {
                 public void endOfStream(final GstObject source) {
@@ -197,7 +200,18 @@ public final class AmplitudeProcessor
                 }
             });
 
-        pipeline.setState(State.PLAYING);
+        pipeline.pause();
+
+        if (pipeline.getState(5, SECONDS) != State.PAUSED) {
+            // TODO stop thread.
+        }
+
+        // TODO fix this to support custom segment.
+        pipeline.seek(1D, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE,
+            SeekType.SET, 0, SeekType.SET,
+            NANOSECONDS.convert(10, TimeUnit.SECONDS));
+
+        pipeline.play();
 
         synchronized (data) {
             data.wait();
@@ -209,6 +223,7 @@ public final class AmplitudeProcessor
         data.normalizeL();
         data.normalizeR();
 
+        // TODO use custom segment time.
         // If the time interval is not set then we will just calculate one.
         if (!data.isTimeIntervalSet()) {
             long duration = SpectrumUtils.getDuration(mediaFile);
