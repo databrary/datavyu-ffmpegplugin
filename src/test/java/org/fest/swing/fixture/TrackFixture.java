@@ -121,8 +121,8 @@ public class TrackFixture extends ComponentFixture {
      */
     public void pressActionButton1() {
         new JButtonFixture(robot,
-            (JButton) field("actionButton1").ofType(JButton.class).in(
-                trackC).get()).click().click();
+            (JButton) field("actionButton1").ofType(JButton.class).in(trackC)
+                .get()).click().click();
     }
 
     /**
@@ -132,8 +132,8 @@ public class TrackFixture extends ComponentFixture {
     */
     public void pressActionButton2() {
         new JButtonFixture(robot,
-            (JButton) field("actionButton2").ofType(JButton.class).in(
-                trackC).get()).click();
+            (JButton) field("actionButton2").ofType(JButton.class).in(trackC)
+                .get()).click();
     }
 
     /**
@@ -142,8 +142,8 @@ public class TrackFixture extends ComponentFixture {
     */
     public void pressActionButton3() {
         new JButtonFixture(robot,
-            (JButton) field("actionButton3").ofType(JButton.class).in(
-                trackC).get()).click();
+            (JButton) field("actionButton3").ofType(JButton.class).in(trackC)
+                .get()).click();
     }
 
     /**
@@ -232,18 +232,18 @@ public class TrackFixture extends ComponentFixture {
                         + trackYOffset);
             } else {
                 startClick = new Point(topLeft.x
-                        + ((TrackPainter) target).getWidth()
-                        - carriagePoint.x - regionMarkerXOffset,
+                        + ((TrackPainter) target).getWidth() - carriagePoint.x
+                        - regionMarkerXOffset,
                         (topLeft.y
-                            + (((TrackPainter) target).getHeight() / 2)) - trackYOffset);
+                            + (((TrackPainter) target).getHeight() / 2))
+                        - trackYOffset);
             }
 
             robot.pressMouse(startClick, MouseButton.LEFT_BUTTON);
 
-            // Move mouse to new position
-            to = new Point(startClick.x + pixels, startClick.y);
         }
 
+        // Move mouse to new position
         to = new Point(MouseInfo.getPointerInfo().getLocation().x + pixels,
                 MouseInfo.getPointerInfo().getLocation().y);
         robot.moveMouse(to);

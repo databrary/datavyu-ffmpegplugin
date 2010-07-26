@@ -6,7 +6,7 @@ package org.openshapa.models.project;
  *
  * @author Douglas Teoh
  */
-public class TrackSettings implements Cloneable {
+public final class TrackSettings {
 
     /** TrackSettings specification version. */
     public static final int VERSION = 1;
@@ -80,7 +80,7 @@ public class TrackSettings implements Cloneable {
         this.filePath = filePath;
     }
 
-    @Override public TrackSettings clone() {
+    public TrackSettings copy() {
         return new TrackSettings(this);
     }
 }

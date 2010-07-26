@@ -108,8 +108,8 @@ public final class RegionController {
      */
     public RegionModel getRegionModel() {
 
-        // return a clone to avoid model tainting
-        return regionModel.clone();
+        // return a copy to avoid model tainting
+        return regionModel.copy();
     }
 
     /**

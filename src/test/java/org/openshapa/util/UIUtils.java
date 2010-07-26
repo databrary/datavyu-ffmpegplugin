@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+
 import java.text.SimpleDateFormat;
+
 import java.util.SimpleTimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +26,8 @@ import java.util.logging.Logger;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
+
+import org.apache.commons.io.IOUtils;
 
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
@@ -34,6 +38,7 @@ import org.fest.swing.util.Platform;
 import org.openshapa.controllers.RunScriptC;
 
 import org.openshapa.plugins.PluginManager;
+
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 
@@ -115,13 +120,13 @@ public final class UIUtils {
         String line1 = r1.readLine();
         String line2 = r2.readLine();
 
-        if (!line1.equals(line2)) {
+        if ((line1 != null) && !line1.equals(line2)) {
             return false;
         }
 
         while ((line1 != null) || (line2 != null)) {
 
-            if (!line1.equals(line2)) {
+            if ((line1 != null) && !line1.equals(line2)) {
                 return false;
             }
 
@@ -129,11 +134,11 @@ public final class UIUtils {
             line2 = r2.readLine();
         }
 
-        r1.close();
-        r2.close();
+        IOUtils.closeQuietly(r1);
+        IOUtils.closeQuietly(r2);
 
-        fr1.close();
-        fr2.close();
+        IOUtils.closeQuietly(fr1);
+        IOUtils.closeQuietly(fr2);
 
         return true;
     }
@@ -171,8 +176,7 @@ public final class UIUtils {
 
                 // Handle doubles
                 boolean result = FloatUtils.closeEnough(Double.parseDouble(
-                            value1),
-                        Double.parseDouble(value2));
+                            value1), Double.parseDouble(value2));
 
                 if (!result) {
                     System.out.println(value1 + "\n" + value2 + "\n");
@@ -272,16 +276,21 @@ public final class UIUtils {
 
     public static String getInnerTextFromHTML(final String html) {
         final StringBuilder s = new StringBuilder();
+
         try {
-            HTMLEditorKit.ParserCallback callback = new HTMLEditorKit.ParserCallback() {
-                public void handleText(char[] data, int pos) {
-                    s.append(data);
-                }
-            };
-            new ParserDelegator().parse(new StringReader(html), callback, false);
+            HTMLEditorKit.ParserCallback callback =
+                new HTMLEditorKit.ParserCallback() {
+                    public void handleText(final char[] data, final int pos) {
+                        s.append(data);
+                    }
+                };
+            new ParserDelegator().parse(new StringReader(html), callback,
+                false);
         } catch (IOException ex) {
-            Logger.getLogger(UIUtils.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UIUtils.class.getName()).log(Level.SEVERE, null,
+                ex);
         }
+
         return s.toString();
     }
 
@@ -328,8 +337,8 @@ public final class UIUtils {
                 } catch (Exception e) {
                     // keep trying
                 }
-            } while (worked == false
-                    && System.currentTimeMillis() < startTime + maxTestRunTime);
+            } while ((worked == false)
+                && (System.currentTimeMillis() < (startTime + maxTestRunTime)));
         }
     }
 }

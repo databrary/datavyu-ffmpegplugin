@@ -2,12 +2,14 @@ package org.openshapa.plugins.spectrum.swing;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.Path2D;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -23,15 +25,22 @@ public final class AmplitudeTrack extends TrackPainter
     implements PropertyChangeListener {
 
     /** Color used to paint the amplitude data. */
-    private static final Color DATA_COLOR = new Color(0, 0, 0, 100);
+    private static final Color DATA_COLOR = new Color(0, 0, 0, 200);
 
     /** Contains the amplitude data to visualize. */
     private StereoAmplitudeData data;
 
-    /** Amplitude data image. */
-    private BufferedImage ampImage;
-
+    /** Have we already registered for property changes. */
     private boolean registered;
+
+    /** Path for left channel amplitude data. */
+    private Path2D leftAmp;
+
+    /** Path for right channel amplitude data. */
+    private Path2D rightAmp;
+
+    /** Handles path pre-computing. */
+    private SwingWorker worker;
 
     public AmplitudeTrack() {
         registered = false;
@@ -44,26 +53,30 @@ public final class AmplitudeTrack extends TrackPainter
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
 
-        if (data == null) {
-            return;
+        if (worker != null) {
+
+            // If a worker is already in progress, cancel it.
+            worker.cancel(true);
         }
 
-        Runnable edtTask = new Runnable() {
+        // Make a worker thread to compute paths.
+        worker = new SwingWorker<Path2D[], Void>() {
+                @Override protected Path2D[] doInBackground() throws Exception {
 
-                @Override public void run() {
-                    ampImage = new BufferedImage(getWidth(), getHeight(),
-                            BufferedImage.TYPE_4BYTE_ABGR);
+                    if (data == null) {
+                        return null;
+                    }
 
-                    Graphics ampG = ampImage.getGraphics();
-
-                    // Calculate carriage start and end pixel positions.
-                    final int startXPos = computePixelXCoord(
-                            trackModel.getOffset());
-                    final int endXPos = computePixelXCoord(
-                            trackModel.getDuration() + trackModel.getOffset());
+                    Path2D[] amps = new Path2D[] {
+                            new Path2D.Double(), new Path2D.Double()
+                        };
 
                     // Carriage height.
                     final int carriageHeight = (int) (getHeight() * 7D / 10D);
+
+                    // Calculate carriage start pixel position.
+                    final double startXPos = computeXCoord(
+                            trackModel.getOffset());
 
                     // Carriage offset from top of panel.
                     final int carriageYOffset = (int) (getHeight() * 2D / 10D);
@@ -76,68 +89,73 @@ public final class AmplitudeTrack extends TrackPainter
                     final int midYRightPos = carriageYOffset
                         + (3 * carriageHeight / 4);
 
-                    ampG.setColor(DATA_COLOR);
-
-                    // Draw the baseline zero amplitude.
-                    ampG.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
-                    ampG.drawLine(startXPos, midYRightPos, endXPos,
-                        midYRightPos);
-
-                    if (data == null) {
-                        return;
-                    }
-
                     // Height for 100% amplitude.
                     final int ampHeight = carriageHeight / 4;
 
-                    // Draw left channel data
+                    // Calculate left amplitude data.
+                    amps[0].moveTo(startXPos, midYLeftPos);
+
                     int offsetCounter = 1;
 
-                    int xLineStart = startXPos;
-                    int yLineStart = midYLeftPos;
-
                     for (Double amp : data.getDataL()) {
+
+                        if (isCancelled()) {
+                            return null;
+                        }
+
                         long interval = data.getTimeInterval() * offsetCounter;
-                        int offset = computePixelXCoord(MILLISECONDS.convert(
-                                    interval, data.getTimeUnit()));
+                        double offset = computeXCoord(MILLISECONDS.convert(
+                                    interval, data.getTimeUnit())
+                                + trackModel.getOffset());
+
                         offsetCounter++;
 
-                        ampG.drawLine(xLineStart, yLineStart,
-                            startXPos + offset,
-                            midYLeftPos + (int) (-amp * ampHeight));
-
-                        xLineStart = startXPos + offset;
-                        yLineStart = midYLeftPos + (int) (-amp * ampHeight);
+                        amps[0].lineTo(offset,
+                            midYLeftPos + (-amp * ampHeight));
                     }
 
-                    // Draw right channel data
+                    // Calculate right amplitude data.
+                    amps[1].moveTo(startXPos, midYRightPos);
                     offsetCounter = 1;
 
-                    xLineStart = startXPos;
-                    yLineStart = midYRightPos;
-
                     for (Double amp : data.getDataR()) {
+
+                        if (isCancelled()) {
+                            return null;
+                        }
+
                         long interval = data.getTimeInterval() * offsetCounter;
-                        int offset = computePixelXCoord(MILLISECONDS.convert(
-                                    interval, data.getTimeUnit()));
+                        double offset = computeXCoord(MILLISECONDS.convert(
+                                    interval, data.getTimeUnit())
+                                + trackModel.getOffset());
                         offsetCounter++;
 
-                        ampG.drawLine(xLineStart, yLineStart,
-                            startXPos + offset,
-                            midYRightPos + (int) (-amp * ampHeight));
+                        amps[1].lineTo(offset,
+                            midYRightPos + (-amp * ampHeight));
+                    }
 
-                        xLineStart = startXPos + offset;
-                        yLineStart = midYRightPos + (int) (-amp * ampHeight);
+                    return amps;
+                }
+
+                @Override protected void done() {
+
+                    try {
+                        Path2D[] result = get();
+
+                        if (result != null) {
+                            leftAmp = result[0];
+                            rightAmp = result[1];
+                        }
+
+                        repaint();
+
+                    } catch (Exception e) {
+                        // Do nothing.
                     }
                 }
+
             };
-
-        if (SwingUtilities.isEventDispatchThread()) {
-            edtTask.run();
-        } else {
-            SwingUtilities.invokeLater(edtTask);
-        }
-
+        worker.execute();
     }
 
     /**
@@ -155,88 +173,95 @@ public final class AmplitudeTrack extends TrackPainter
         }
 
         this.data = data;
-        ampImage = null;
+        leftAmp = null;
+        rightAmp = null;
     }
 
     @Override protected void paintCustom(final Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON);
 
-        if (ampImage == null) {
+        // Calculate carriage start and end pixel positions.
+        final int startXPos = computePixelXCoord(trackModel.getOffset());
+        final int endXPos = computePixelXCoord(trackModel.getDuration()
+                + trackModel.getOffset());
 
-            ampImage = new BufferedImage(getWidth(), getHeight(),
-                    BufferedImage.TYPE_4BYTE_ABGR);
+        // Carriage height.
+        final int carriageHeight = (int) (getHeight() * 7D / 10D);
 
-            Graphics ampG = ampImage.getGraphics();
+        // Carriage offset from top of panel.
+        final int carriageYOffset = (int) (getHeight() * 2D / 10D);
 
-            // Calculate carriage start and end pixel positions.
-            final int startXPos = computePixelXCoord(trackModel.getOffset());
-            final int endXPos = computePixelXCoord(trackModel.getDuration()
-                    + trackModel.getOffset());
+        // Y-coordinate for left channel.
+        final int midYLeftPos = carriageYOffset + (carriageHeight / 4);
 
-            // Carriage height.
-            final int carriageHeight = (int) (getHeight() * 7D / 10D);
+        // Y-coordinate for right channel.
+        final int midYRightPos = carriageYOffset + (3 * carriageHeight / 4);
 
-            // Carriage offset from top of panel.
-            final int carriageYOffset = (int) (getHeight() * 2D / 10D);
+        // Height for 100% amplitude.
+        final int ampHeight = carriageHeight / 4;
 
-            // Y-coordinate for left channel.
-            final int midYLeftPos = carriageYOffset + (carriageHeight / 4);
+        // Draw the baseline zero amplitude.
+        g2d.setColor(DATA_COLOR);
+        g2d.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
+        g2d.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
 
-            // Y-coordinate for right channel.
-            final int midYRightPos = carriageYOffset + (3 * carriageHeight / 4);
+        if (data == null) {
+            return;
+        }
 
-            ampG.setColor(DATA_COLOR);
+        // Draw left channel data.
+        if (leftAmp == null) {
+            leftAmp = new Path2D.Double();
+            leftAmp.moveTo(startXPos, midYLeftPos);
 
-            // Draw the baseline zero amplitude.
-            ampG.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
-            ampG.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
-
-            if (data == null) {
-                return;
-            }
-
-            // Height for 100% amplitude.
-            final int ampHeight = carriageHeight / 4;
-
-            // Draw left channel data
             int offsetCounter = 1;
-
-            int xLineStart = startXPos;
-            int yLineStart = midYLeftPos;
 
             for (Double amp : data.getDataL()) {
                 long interval = data.getTimeInterval() * offsetCounter;
-                int offset = computePixelXCoord(MILLISECONDS.convert(interval,
-                            data.getTimeUnit()));
+                double offset = computeXCoord(MILLISECONDS.convert(interval,
+                            data.getTimeUnit()) + trackModel.getOffset());
                 offsetCounter++;
 
-                ampG.drawLine(xLineStart, yLineStart, startXPos + offset,
-                    midYLeftPos + (int) (-amp * ampHeight));
-
-                xLineStart = startXPos + offset;
-                yLineStart = midYLeftPos + (int) (-amp * ampHeight);
-            }
-
-            // Draw right channel data
-            offsetCounter = 1;
-
-            xLineStart = startXPos;
-            yLineStart = midYRightPos;
-
-            for (Double amp : data.getDataR()) {
-                long interval = data.getTimeInterval() * offsetCounter;
-                int offset = computePixelXCoord(MILLISECONDS.convert(interval,
-                            data.getTimeUnit()));
-                offsetCounter++;
-
-                ampG.drawLine(xLineStart, yLineStart, startXPos + offset,
-                    midYRightPos + (int) (-amp * ampHeight));
-
-                xLineStart = startXPos + offset;
-                yLineStart = midYRightPos + (int) (-amp * ampHeight);
+                leftAmp.lineTo(offset, midYLeftPos + (-amp * ampHeight));
             }
         }
 
-        g.drawImage(ampImage, 0, 0, null);
+        g2d.draw(leftAmp);
+
+        // Draw right channel data.
+        if (rightAmp == null) {
+            rightAmp = new Path2D.Double();
+            rightAmp.moveTo(startXPos, midYRightPos);
+
+            int offsetCounter = 1;
+
+            for (Double amp : data.getDataR()) {
+                long interval = data.getTimeInterval() * offsetCounter;
+                double offset = computeXCoord(MILLISECONDS.convert(interval,
+                            data.getTimeUnit()) + trackModel.getOffset());
+                offsetCounter++;
+
+                rightAmp.lineTo(offset, midYRightPos + (-amp * ampHeight));
+            }
+        }
+
+        g2d.draw(rightAmp);
+    }
+
+    /**
+     * Used to compute pixel x-coordinates based on a time value.
+     *
+     * @param time
+     *            Time in milliseconds.
+     * @return Pixel coordinate.
+     */
+    private double computeXCoord(final long time) {
+        final double ratio = viewableModel.getIntervalWidth()
+            / viewableModel.getIntervalTime();
+
+        return (time * ratio) - (viewableModel.getZoomWindowStart() * ratio);
     }
 
 }

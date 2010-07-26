@@ -4,14 +4,17 @@ package org.openshapa.models.component;
  * This model provides information used to render a visualisation of the
  * viewable playback window on the tracks interface.
  */
-public class RegionModel implements Cloneable {
+public final class RegionModel {
 
     /** Amount of padding for this component from the top */
     private int paddingTop;
+
     /** Amount of padding for this component from the left */
     private int paddingLeft;
+
     /** Start of the custom playback region */
     private long regionStart;
+
     /** End of the custom playback region */
     private long regionEnd;
 
@@ -27,7 +30,7 @@ public class RegionModel implements Cloneable {
 
     /**
      * s
-     * 
+     *
      * @return Amount of padding for this component from the left
      */
     public int getPaddingLeft() {
@@ -36,7 +39,7 @@ public class RegionModel implements Cloneable {
 
     /**
      * Set the amount of padding for this component from the left
-     * 
+     *
      * @param paddingLeft
      */
     public void setPaddingLeft(final int paddingLeft) {
@@ -52,7 +55,7 @@ public class RegionModel implements Cloneable {
 
     /**
      * Set the amount of padding for this component from the top
-     * 
+     *
      * @param paddingTop
      */
     public void setPaddingTop(final int paddingTop) {
@@ -68,7 +71,7 @@ public class RegionModel implements Cloneable {
 
     /**
      * Set the end of the custom playback region
-     * 
+     *
      * @param regionEnd
      */
     public void setRegionEnd(final long regionEnd) {
@@ -84,49 +87,55 @@ public class RegionModel implements Cloneable {
 
     /**
      * Sets the start of the custom playback region
-     * 
+     *
      * @param regionStart
      */
     public void setRegionStart(final long regionStart) {
         this.regionStart = regionStart;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @Override public boolean equals(final Object obj) {
+
         if (obj == null) {
             return false;
         }
+
         if (getClass() != obj.getClass()) {
             return false;
         }
+
         final RegionModel other = (RegionModel) obj;
+
         if (paddingTop != other.paddingTop) {
             return false;
         }
+
         if (paddingLeft != other.paddingLeft) {
             return false;
         }
+
         if (regionStart != other.regionStart) {
             return false;
         }
+
         if (regionEnd != other.regionEnd) {
             return false;
         }
+
         return true;
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
         int hash = 5;
-        hash = 79 * hash + paddingTop;
-        hash = 79 * hash + paddingLeft;
-        hash = 79 * hash + (int) (regionStart ^ (regionStart >>> 32));
-        hash = 79 * hash + (int) (regionEnd ^ (regionEnd >>> 32));
+        hash = (79 * hash) + paddingTop;
+        hash = (79 * hash) + paddingLeft;
+        hash = (79 * hash) + (int) (regionStart ^ (regionStart >>> 32));
+        hash = (79 * hash) + (int) (regionEnd ^ (regionEnd >>> 32));
+
         return hash;
     }
 
-    @Override
-    public RegionModel clone() {
+    public RegionModel copy() {
         return new RegionModel(this);
     }
 
