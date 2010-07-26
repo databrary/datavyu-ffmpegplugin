@@ -148,6 +148,7 @@ public final class AmplitudeTrack extends TrackPainter
     public void setData(final StereoAmplitudeData data) {
 
         if (!registered) {
+            trackModel.addPropertyChangeListener(this);
             viewableModel.addPropertyChangeListener(this);
             registered = true;
         }
@@ -159,7 +160,6 @@ public final class AmplitudeTrack extends TrackPainter
     @Override protected void paintCustom(final Graphics g) {
 
         if (ampImage == null) {
-
 
             ampImage = new BufferedImage(getWidth(), getHeight(),
                     BufferedImage.TYPE_4BYTE_ABGR);
