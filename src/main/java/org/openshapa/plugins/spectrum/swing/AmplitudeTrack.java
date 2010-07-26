@@ -5,14 +5,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Path2D;
-import java.awt.image.BufferedImage;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import java.util.concurrent.ExecutionException;
-
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -34,12 +30,16 @@ public final class AmplitudeTrack extends TrackPainter
     /** Contains the amplitude data to visualize. */
     private StereoAmplitudeData data;
 
+    /** Have we already registered for property changes. */
     private boolean registered;
 
+    /** Path for left channel amplitude data. */
     private Path2D leftAmp;
 
+    /** Path for right channel amplitude data. */
     private Path2D rightAmp;
 
+    /** Handles path pre-computing. */
     private SwingWorker worker;
 
     public AmplitudeTrack() {
@@ -54,9 +54,12 @@ public final class AmplitudeTrack extends TrackPainter
     @Override public void propertyChange(final PropertyChangeEvent evt) {
 
         if (worker != null) {
+
+            // If a worker is already in progress, cancel it.
             worker.cancel(true);
         }
 
+        // Make a worker thread to compute paths.
         worker = new SwingWorker<Path2D[], Void>() {
                 @Override protected Path2D[] doInBackground() throws Exception {
 
@@ -134,7 +137,7 @@ public final class AmplitudeTrack extends TrackPainter
                     return amps;
                 }
 
-                protected void done() {
+                @Override protected void done() {
 
                     try {
                         Path2D[] result = get();
@@ -250,6 +253,13 @@ public final class AmplitudeTrack extends TrackPainter
         g2d.draw(rightAmp);
     }
 
+    /**
+     * Used to compute pixel x-coordinates based on a time value.
+     *
+     * @param time
+     *            Time in milliseconds.
+     * @return Pixel coordinate.
+     */
     private double computeXCoord(final long time) {
         final double ratio = viewableModel.getIntervalWidth()
             / viewableModel.getIntervalTime();
