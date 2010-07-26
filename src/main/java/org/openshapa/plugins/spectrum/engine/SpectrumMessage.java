@@ -51,18 +51,17 @@ public class SpectrumMessage implements MESSAGE {
 
             if (freqVals == null) {
 
-                final double[] frequencies =
-                    new double[SpectrumConstants.SPECTRUM_BANDS];
+                freqVals = new double[SpectrumConstants.SPECTRUM_BANDS];
 
                 for (int i = 0; i < SpectrumConstants.SPECTRUM_BANDS; i++) {
                     int idx = indices[i];
 
-                    frequencies[i] = (((SpectrumConstants.SAMPLE_RATE / 2)
-                                * idx) + (SpectrumConstants.SAMPLE_RATE / 4D))
+                    freqVals[i] = (((SpectrumConstants.SAMPLE_RATE / 2) * idx)
+                            + (SpectrumConstants.SAMPLE_RATE / 4D))
                         / SpectrumConstants.FFT_BANDS;
                 }
 
-                spectrumView.setFreqVals(frequencies);
+                spectrumView.setFreqVals(freqVals);
             }
 
             final double[] result =
