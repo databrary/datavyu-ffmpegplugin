@@ -238,6 +238,50 @@ public class DataColumn extends Column
 
     } /* DataColumn::DataColumn(db, name, hidden, readOnly, mveID) */
 
+    public DataColumn(Database db,
+            String name,
+            boolean hidden,
+            boolean readOnly,
+            long mveID,
+            String comment)
+            throws SystemErrorException {
+        super(db);
+
+        final String mName =
+                "DataColumn::DataColumn(db, name, hidden, readOnly, mveID): ";
+        MatrixVocabElement mve;
+
+        mve = this.lookupMatrixVE(mveID);
+
+        if (name == null) {
+            throw new SystemErrorException(mName + "name null on entry.");
+        }
+
+        if (name.compareTo(mve.getName()) != 0) {
+            throw new SystemErrorException(mName + "name doesn't match mve");
+        }
+
+        if (db.cl.inColumnList(name)) {
+            throw new SystemErrorException(mName +
+                    "name already appears in column list");
+        }
+
+        this.itsMveID = mveID;
+
+        this.name = new String(name);
+
+        this.comment = comment;
+
+        this.hidden = hidden;
+
+        this.readOnly = readOnly;
+
+        this.itsMveType = mve.getType();
+
+        this.varLen = mve.getVarLen();
+
+    } /* DataColumn::DataColumn(db, name, hidden, readOnly, mveID, comment) */
+
 
     public DataColumn(DataColumn dc)
             throws SystemErrorException {
@@ -248,6 +292,7 @@ public class DataColumn extends Column
         this.itsMveID = dc.itsMveID;
         this.itsMveType = dc.itsMveType;
         this.varLen = dc.varLen;
+        this.comment = dc.getComment();
 
     } /* DataColumn::DataColumn(dc) */
 

@@ -1442,7 +1442,6 @@ public class ColumnList
         new_dc.setListeners(old_dc.getListeners());
         old_dc.setListeners(null);
 
-
         /* finally, replace the old DataColumn with the new in the
          * column list.  Similarly, replace the DataColumn in the index.  If
          * the name has changed, replace the old name with the new in the name

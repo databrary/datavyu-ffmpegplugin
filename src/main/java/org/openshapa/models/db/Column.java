@@ -41,8 +41,6 @@ public abstract class Column
     /***************************** Fields: ***********************************/
     /*************************************************************************/
 
-    // TODO add comments field and supporting methods.
-
     /*
      * name: String containing the name of the Column.
      *      This name must be a valid svar name, and must be unique in both
@@ -73,6 +71,8 @@ public abstract class Column
      *      column is advised of the end of the cascade, it must notify the
      *      members of the set so they can replace their old incarnations with
      *      new ones.
+     *
+     * comments:  A comment associated with this column.
      */
 
     /** column name */
@@ -97,6 +97,12 @@ public abstract class Column
 
     /** whether the column is selected */
     boolean selected = false;
+
+    /** comment for column. */
+    protected String comment = "";
+
+    /** invalid comment characters. */
+    private static final String INVALID_COMMENT_CHARS = "\n(),";
 
 //    /** Column Change Listeners */
 //    protected Vector<ColumnListener> changeListeners =
@@ -389,6 +395,46 @@ public abstract class Column
         return retVal;
 
     } /* Column::getName() */
+    
+     /**
+     * getComment(), and setComment()
+     *
+     * Get and set the comment for the column.
+     *
+     * For setComment() the supplied name must be a valid string and not contain
+     * a new line character.
+     */
+
+    public String getComment()
+    {
+        return comment;
+
+    } /* Column::getComment() */
+    
+        /**
+     * Sets a comment for the column
+     *
+     * @param comment The new comment for the column. Replaces old comment
+     *
+     * @throws org.openshapa.db.SystemErrorException when unable to set
+     * a comment for the column, either the database or the comment is invalid.
+     */
+    public void setComment (final String comment) throws SystemErrorException {
+        try {
+            if (this.getDB() == null) {
+                throw new SystemErrorException("Column.setComment: null db");
+            }
+
+            // Throws exception if new comment is not valid.
+            Column.isValidColumnComment(this.getDB(), comment);
+            this.comment = comment;
+            return;
+
+        } catch (LogicErrorException e) {
+            throw new SystemErrorException("Column.setCommend: Invalid column comment.", e);
+        }
+    } /* Column::setComment() */
+
 
     /**
      * Validates the new name to use for the column.
@@ -437,6 +483,41 @@ public abstract class Column
         return true;
 
     } /* Column::isValidColumnName() */
+
+     /**
+     * Validates the comment to use for the column.
+     *
+     * @param d The database to use when validating the column comment.
+     * @param comment The new comment to use for the column
+     *
+     * @return True if the comment for the supplied column is valid.
+     *
+     * @throws org.openshapa.db.SystemErrorException If we encounter an
+     * unrecoverable database problem while validating the column comment.
+     * @throws org.openshapa.db.LogicErrorException If we encounter an error
+     * that the user can recover from - i.e. if the column comment contains invalid
+     * characters
+     */
+
+    public static boolean isValidColumnComment(final Database d,
+                                            final String comment)
+        throws SystemErrorException,
+               LogicErrorException
+    {
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+                                      .getContext()
+                                      .getResourceMap(Column.class);
+
+        for (int i = 0; i < INVALID_COMMENT_CHARS.length(); i++) {
+            if (comment.indexOf(INVALID_COMMENT_CHARS.charAt(i)) > -1) {
+                throw new LogicErrorException(rMap.getString("Error.invalidcomment",
+                                                         comment));
+            }
+        }
+
+        return true;
+
+    } /* Column::isValidColumnComment() */
 
     /**
      * Sets the name of the column
