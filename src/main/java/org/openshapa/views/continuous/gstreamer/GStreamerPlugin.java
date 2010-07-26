@@ -36,40 +36,33 @@ public class GStreamerPlugin implements Plugin {
                     || file.getName().endsWith(".mp4")
                     || file.isDirectory());
             }
-        };
+    };
 
-	@Override
-	public DataViewer getNewDataViewer(Frame parent, boolean modal) {
-            // TODO Auto-generated method stub
-            return new GStreamerDataViewer(parent, modal);
-	}
+    @Override public DataViewer getNewDataViewer(Frame parent, boolean modal) {
+        // TODO Auto-generated method stub
+        return new GStreamerDataViewer(parent, modal);
+    }
 
-	@Override
-	public FileFilter getFileFilter() {
-            return filter;
-	}
+    @Override public FileFilter getFileFilter() {
+        return filter;
+    }
 
-	@Override
-	public ImageIcon getTypeIcon() {
-            URL typeIconURL = getClass().getResource("/icons/gstreamerplugin-icon.png");
-            return new ImageIcon(typeIconURL);
-	}
+    @Override public ImageIcon getTypeIcon() {
+        URL typeIconURL = getClass().getResource("/icons/gstreamerplugin-icon.png");
+        return new ImageIcon(typeIconURL);
+    }
 
-	@Override
-	public boolean isActionSupported1() {
-            // TODO Auto-generated method stub
-            return false;
-	}
+    @Override public boolean isActionSupported1() {
+        return true;
+    }
 
-	@Override
-	public boolean isActionSupported2() {
-            // TODO Auto-generated method stub
-            return false;
-	}
+    @Override public boolean isActionSupported2() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	@Override
-	public boolean isActionSupported3() {
-            // TODO Auto-generated method stub
-            return false;
-	}
+    @Override public boolean isActionSupported3() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

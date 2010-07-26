@@ -11,9 +11,6 @@ public enum EngineState {
     /** Engine is adjusting playback speed. */
     ADJUSTING_SPEED("Adjusting speed"),
 
-    /** Engine is setting audio FPS. */
-    SETTING_FPS("Setting FPS"),
-
     /** Engine is seeking through media. */
     SEEKING("Seeking"),
 

@@ -5,6 +5,7 @@ import java.io.File;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
@@ -104,7 +105,7 @@ public final class PlaybackEngine extends Thread {
     @Override public void run() {
 
         while (true) {
-            // System.out.println("Command queue: " + commandQueue);
+            System.out.println("Command queue: " + commandQueue);
 
             try {
 
@@ -119,11 +120,6 @@ public final class PlaybackEngine extends Thread {
 
                 case ADJUSTING_SPEED:
                     engineAdjusting();
-
-                    break;
-
-                case SETTING_FPS:
-                    engineSettingFPS();
 
                     break;
 
@@ -307,11 +303,6 @@ public final class PlaybackEngine extends Thread {
                         + " message=" + message);
                 }
             });
-        bus.connect(new Bus.EOS() {
-                public void endOfStream(final GstObject source) {
-                    pipeline.setState(org.gstreamer.State.NULL);
-                }
-            });
 
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
@@ -332,22 +323,16 @@ public final class PlaybackEngine extends Thread {
      */
     private void engineSeeking() {
 
-        if ((getCurrentTime() < newTime) && (playbackSpeed > 0)) {
-            pipeline.seek(newTime, MILLISECONDS);
-        } else if ((getCurrentTime() > newTime) && (playbackSpeed < 0)) {
-            pipeline.seek(newTime, MILLISECONDS);
-        } else if (playbackSpeed == 0) {
-            System.out.println("Jogging seek.");
-
-            pipeline.seek(1D, Format.TIME, SeekFlags.FLUSH | SeekFlags.KEY_UNIT,
+        if (playbackSpeed != 0) {
+            pipeline.seek(playbackSpeed, Format.TIME,
+                SeekFlags.FLUSH | SeekFlags.SEGMENT, SeekType.SET,
+                NANOSECONDS.convert(newTime, MILLISECONDS), SeekType.NONE, -1);
+        } else {
+            pipeline.play();
+            pipeline.seek(1D, Format.TIME, SeekFlags.FLUSH | SeekFlags.SEGMENT,
                 SeekType.SET, NANOSECONDS.convert(newTime, MILLISECONDS),
                 SeekType.NONE, -1);
-
-            /*
-             * Mark engine state with task complete so that isPlaying returns
-             * false while we are jogging.
-             */
-            engineState = EngineState.TASK_COMPLETE;
+            pipeline.pause();
         }
     }
 
@@ -355,10 +340,15 @@ public final class PlaybackEngine extends Thread {
      * Adjust playback speed.
      */
     private void engineAdjusting() {
-        engineState = EngineState.TASK_COMPLETE;
-    }
 
-    private void engineSettingFPS() {
+        if (playbackSpeed != 0) {
+            pipeline.seek(playbackSpeed, Format.TIME,
+                SeekFlags.FLUSH | SeekFlags.SEGMENT | SeekFlags.ACCURATE,
+                SeekType.NONE, -1, SeekType.NONE, -1);
+        } else {
+            pipeline.pause();
+        }
+
         engineState = EngineState.TASK_COMPLETE;
     }
 
@@ -415,7 +405,7 @@ public final class PlaybackEngine extends Thread {
     public void seek(final long time) {
         newTime = time;
 
-        // commandQueue.offer(EngineState.SEEKING);
+        commandQueue.offer(EngineState.SEEKING);
     }
 
     public void adjustSpeed(final double speed) {

@@ -95,12 +95,12 @@ public final class RegionController {
     }
 
     /**
-     * @return returns a clone of the viewable model
+     * @return returns a copy of the viewable model
      */
     public ViewableModel getViewableModel() {
 
         // return a clone to avoid model tainting
-        return viewableModel.clone();
+        return viewableModel.copy();
     }
 
     /**
@@ -118,7 +118,7 @@ public final class RegionController {
      * @param viewableModel
      */
     public void setViewableModel(final ViewableModel viewableModel) {
-    	this.viewableModel.copyFrom(viewableModel);
+        this.viewableModel.copyFrom(viewableModel);
         view.setViewableModel(this.viewableModel);
     }
 
@@ -227,14 +227,22 @@ public final class RegionController {
         }
 
         @Override public void mouseDragged(final MouseEvent e) {
-            if (onStartMarker || onEndMarker) {
-                final int x = Math.min(Math.max(e.getX(), 0), view.getSize().width);
-                final double ratio = viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();
-                double newTime = (x - regionModel.getPaddingLeft() + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
-                newTime = Math.min(Math.max(newTime, viewableModel.getZoomWindowStart()), viewableModel.getZoomWindowEnd());
 
-            	assert !(onStartMarker && onEndMarker);
-                fireMarkerEvent(onStartMarker ? Marker.START_MARKER : Marker.END_MARKER, Math.round(newTime));
+            if (onStartMarker || onEndMarker) {
+                final int x = Math.min(Math.max(e.getX(), 0),
+                        view.getSize().width);
+                final double ratio = viewableModel.getIntervalWidth()
+                    / viewableModel.getIntervalTime();
+                double newTime = (x - regionModel.getPaddingLeft()
+                        + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
+                newTime = Math.min(Math.max(newTime,
+                            viewableModel.getZoomWindowStart()),
+                        viewableModel.getZoomWindowEnd());
+
+                assert !(onStartMarker && onEndMarker);
+                fireMarkerEvent(onStartMarker ? Marker.START_MARKER
+                                              : Marker.END_MARKER,
+                    Math.round(newTime));
             }
         }
 

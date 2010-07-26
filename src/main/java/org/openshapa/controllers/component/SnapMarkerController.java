@@ -52,12 +52,12 @@ public final class SnapMarkerController {
     }
 
     /**
-     * @return a clone of the viewable model
+     * @return a copy of the viewable model
      */
     public ViewableModel getViewableModel() {
 
         // return a clone to avoid model tainting
-        return viewableModel.clone();
+        return viewableModel.copy();
     }
 
     /**
