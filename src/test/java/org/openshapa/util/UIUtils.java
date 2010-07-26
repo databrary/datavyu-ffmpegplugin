@@ -120,13 +120,13 @@ public final class UIUtils {
         String line1 = r1.readLine();
         String line2 = r2.readLine();
 
-        if (!line1.equals(line2)) {
+        if ((line1 != null) && !line1.equals(line2)) {
             return false;
         }
 
         while ((line1 != null) || (line2 != null)) {
 
-            if (!line1.equals(line2)) {
+            if ((line1 != null) && !line1.equals(line2)) {
                 return false;
             }
 
