@@ -207,9 +207,6 @@ public final class AmplitudeTrack extends TrackPainter
         g2d.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
         g2d.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
 
-        g2d.drawOval((int) computeXCoord(trackModel.getOffset()),
-            carriageYOffset, 30, 30);
-
         if (data == null) {
             return;
         }
