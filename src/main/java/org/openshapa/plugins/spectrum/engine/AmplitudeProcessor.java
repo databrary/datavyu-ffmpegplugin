@@ -4,7 +4,9 @@ import java.io.File;
 
 import java.nio.ShortBuffer;
 
+import java.util.concurrent.TimeUnit;
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import static org.gstreamer.Element.linkMany;
 import static org.gstreamer.Element.linkPadsFiltered;
@@ -30,6 +32,7 @@ import org.gstreamer.elements.DecodeBin;
 import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.AppSink.NEW_BUFFER;
 
+import org.openshapa.plugins.spectrum.SpectrumUtils;
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 import org.openshapa.plugins.spectrum.swing.AmplitudeTrack;
 
@@ -125,8 +128,7 @@ public final class AmplitudeProcessor
 
                         if (!data.isTimeIntervalSet()) {
 
-                            long timestamp = buf.getTimestamp().convertTo(
-                                    MICROSECONDS);
+                            long timestamp = buf.getTimestamp().toMicros();
 
                             if (timestamp != 0) {
                                 data.setTimeInterval(timestamp / 2,
@@ -156,7 +158,7 @@ public final class AmplitudeProcessor
         }
 
         Caps caps = Caps.fromString(
-                "audio/x-raw-int, width=16, depth=16, signed=true");
+                "audio/x-raw-int, width=16, depth=16, signed=true, rate=96");
 
         if (!linkPadsFiltered(audioResample, null, audioOutput, null, caps)) {
             LOGGER.error("Link failed: audioresample -> appsink");
@@ -207,6 +209,13 @@ public final class AmplitudeProcessor
         data.normalizeL();
         data.normalizeR();
 
+        // If the time interval is not set then we will just calculate one.
+        if (!data.isTimeIntervalSet()) {
+            long duration = SpectrumUtils.getDuration(mediaFile);
+            long interval = (long) (duration / (double) data.sizeL());
+            data.setTimeInterval(interval, MILLISECONDS);
+        }
+
         return data;
     }
 
@@ -222,6 +231,7 @@ public final class AmplitudeProcessor
             track.setData(get());
             track.repaint();
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.error(e);
         }
 

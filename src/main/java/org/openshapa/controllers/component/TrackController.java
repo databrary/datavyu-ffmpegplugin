@@ -397,7 +397,7 @@ public final class TrackController implements ViewerStateListener {
      * @return a clone of the track model used by the controller
      */
     public TrackModel getTrackModel() {
-        return trackModel.clone();
+        return trackModel.copy();
     }
 
     /**
