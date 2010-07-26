@@ -12,7 +12,7 @@ import org.apache.commons.io.IOUtils;
 /**
  * Stores user settings for a data viewer
  */
-public class ViewerSetting implements Cloneable {
+public final class ViewerSetting {
 
     /** ViewerSetting specification version. */
     public static final int VERSION = 2;
@@ -144,7 +144,7 @@ public class ViewerSetting implements Cloneable {
         return settingsOutput;
     }
 
-    @Override public ViewerSetting clone() {
+    public ViewerSetting copy() {
         return new ViewerSetting(this);
     }
 

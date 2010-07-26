@@ -53,13 +53,13 @@ public final class Project implements Cloneable {
         viewerSettings = new LinkedList<ViewerSetting>();
 
         for (ViewerSetting vs : other.viewerSettings) {
-            viewerSettings.add(vs.clone());
+            viewerSettings.add(vs.copy());
         }
 
         interfaceSettings = new LinkedList<TrackSettings>();
 
         for (TrackSettings is : other.interfaceSettings) {
-            interfaceSettings.add(is.clone());
+            interfaceSettings.add(is.copy());
         }
     }
 
