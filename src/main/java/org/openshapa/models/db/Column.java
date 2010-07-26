@@ -101,6 +101,9 @@ public abstract class Column
     /** comment for column. */
     protected String comment = "";
 
+    /** invalid comment characters. */
+    private static final String INVALID_COMMENT_CHARS = "\n(),";
+
 //    /** Column Change Listeners */
 //    protected Vector<ColumnListener> changeListeners =
 //            new Vector<ColumnListener>();
@@ -505,9 +508,11 @@ public abstract class Column
                                       .getContext()
                                       .getResourceMap(Column.class);
 
-        if (comment.indexOf("\n") > -1) {
-            throw new LogicErrorException(rMap.getString("Error.invalidcomment",
+        for (int i = 0; i < INVALID_COMMENT_CHARS.length(); i++) {
+            if (comment.indexOf(INVALID_COMMENT_CHARS.charAt(i)) > -1) {
+                throw new LogicErrorException(rMap.getString("Error.invalidcomment",
                                                          comment));
+            }
         }
 
         return true;

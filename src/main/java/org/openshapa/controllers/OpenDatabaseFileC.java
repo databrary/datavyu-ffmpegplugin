@@ -207,7 +207,14 @@ public final class OpenDatabaseFileC {
 
             // If we have a version identifier parse the file using the schema
             // that matches that identifier.
-            if (line.equalsIgnoreCase("#3")) {
+            if (line.equalsIgnoreCase("#4")) {
+                //Version 4 includes a comment for columns.
+                line = parseDefinitions(csvFile, db);
+                while (line != null) {
+                    line = parseVariable(csvFile, line, db, "#4");
+                }
+            }
+            else if(line.equalsIgnoreCase("#3")) {
                 //Version 3 includes column visible status after the column type
                 // Parse predicate definitions first.
                 line = parseDefinitions(csvFile, db);
@@ -698,8 +705,15 @@ public final class OpenDatabaseFileC {
         String[] tokens = line.split("\\(");
         String varName = this.stripEscChars(tokens[0].trim());
         String varType = null;
+        String varComment = "";
         boolean varVisible = true;
-        if (version.equals("#3")) {
+        if (version.equals("#4")) {
+            String[] varArgs = tokens[1].split(",");
+            varType = varArgs[0];
+            varVisible = Boolean.parseBoolean(varArgs[1]);
+            varComment = varArgs[2].substring(0, varArgs[2].indexOf(")"));
+        }
+        else if(version.equals("#3")) {
             varType = tokens[1].substring(0, tokens[1].indexOf(","));
             varVisible = Boolean.parseBoolean(tokens[1].substring(tokens[1].indexOf(",") + 1, tokens[1].indexOf(")")));
         } else {
@@ -724,6 +738,7 @@ public final class OpenDatabaseFileC {
         Column.isValidColumnName(db, varName);
         DataColumn dc = new DataColumn(db, varName, getVarType(varType));
         dc.setHidden(!varVisible);
+        dc.setComment(varComment);
         long colId = db.addColumn(dc);
         dc = db.getDataColumn(colId);
 
