@@ -226,9 +226,4 @@ public final class SpectrumUtils {
         int number;
     }
 
-    /** Helper class for storing intermediate long integer results. */
-    private static final class MutableLong {
-        long number;
-    }
-
 }
