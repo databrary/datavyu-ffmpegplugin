@@ -766,8 +766,10 @@ public final class OpenSHAPAView extends FrameView
 
         for (DataColumn col : cols) {
             try {
-                col.setHidden(false);
-                msdb.replaceColumn(col);
+                if (col.getHidden() == true) {
+                    col.setHidden(false);
+                    msdb.replaceColumn(col);
+                }
             } catch (SystemErrorException ex) {
                 java.util.logging.Logger.getLogger(OpenSHAPAView.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -786,7 +788,6 @@ public final class OpenSHAPAView extends FrameView
      * Set the SheetLayoutType for the spreadsheet.
      */
     private void setSheetLayout() {
-
         try {
             SheetLayoutType type = SheetLayoutType.Ordinal;
             OpenSHAPA.getProjectController().getDB().setTemporalOrdering(false);

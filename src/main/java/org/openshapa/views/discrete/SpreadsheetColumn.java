@@ -82,27 +82,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
     /** column selection listener to notify of column selection changes. */
     private ColumnSelectionListener columnSelList;
 
-    public void showChangeVarNameDialog() throws HeadlessException {
-        //Edit variable name on double click
-        String newName = "";
-        while (newName != null) {
-            newName = (String) JOptionPane.showInputDialog(null, null, "New variable name", JOptionPane.PLAIN_MESSAGE, null, null, getColumnName());
-            if (newName != null) {
-                try {
-                    setColumnName(newName);
-                    break;
-                } catch (LogicErrorException ex) {
-                    continue;
-                } catch (SystemErrorException ex) {
-                    continue;
-                }
-            } else {
-                break;
-            }
-        }
-    }
-
-    /**
+     /**
      * Private class for recording the changes reported by the listener
      * callbacks on this column.
      */
@@ -201,6 +181,30 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
             datapanel.deregisterListeners();
         } catch (SystemErrorException e) {
             logger.error("Unable to register listeners for the column.", e);
+        }
+    }
+
+    /**
+     * Opens an input dialog to change a variable name.
+     * @throws HeadlessException
+     */
+    public void showChangeVarNameDialog() throws HeadlessException {
+        //Edit variable name on double click
+        String newName = "";
+        while (newName != null) {
+            newName = (String) JOptionPane.showInputDialog(null, null, "New variable name", JOptionPane.PLAIN_MESSAGE, null, null, getColumnName());
+            if (newName != null) {
+                try {
+                    setColumnName(newName);
+                    break;
+                } catch (LogicErrorException ex) {
+                    continue;
+                } catch (SystemErrorException ex) {
+                    continue;
+                }
+            } else {
+                break;
+            }
         }
     }
 
