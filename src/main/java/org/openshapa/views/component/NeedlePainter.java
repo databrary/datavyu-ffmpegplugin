@@ -14,6 +14,7 @@ import javax.swing.JComponent;
 import org.openshapa.models.component.NeedleModel;
 import org.openshapa.models.component.ViewableModel;
 
+
 /**
  * This class paints a timing needle.
  */
@@ -30,12 +31,15 @@ public class NeedlePainter extends JComponent {
     private NeedleModel needleModel;
     private ViewableModel viewableModel;
 
+
+    private final Color needleColor = new Color(250, 0, 0, 100);
+
     public NeedlePainter() {
         super();
     }
 
     public NeedleModel getNeedleModel() {
-        return needleModel.clone();
+        return needleModel.copy();
     }
 
     public void setNeedleModel(final NeedleModel needleModel) {
@@ -48,33 +52,32 @@ public class NeedlePainter extends JComponent {
         this.repaint();
     }
 
-    @Override
-    public synchronized boolean contains(final Point p) {
-        return needleMarker != null && needleMarker.contains(p);
+    @Override public synchronized boolean contains(final Point p) {
+        return (needleMarker != null) && needleMarker.contains(p);
     }
 
-    @Override
-    public synchronized boolean contains(final int x, final int y) {
-        return needleMarker != null && needleMarker.contains(x, y);
+    @Override public synchronized boolean contains(final int x, final int y) {
+        return (needleMarker != null) && needleMarker.contains(x, y);
     }
 
+    @Override public synchronized void paint(final Graphics g) {
 
-    private final Color needleColor = new Color(250, 0, 0, 100); 
-
-    @Override
-    public synchronized void paint(final Graphics g) {
-        if (needleModel == null || viewableModel == null) {
+        if ((needleModel == null) || (viewableModel == null)) {
             return;
         }
 
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON);
 
-        assert needleModel.getNeedleHeadWidth() > 0 && needleModel.getNeedleHeadHeight() > 0;
+        assert (needleModel.getNeedleHeadWidth() > 0)
+            && (needleModel.getNeedleHeadHeight() > 0);
+
         final double needleHeadWidth = needleModel.getNeedleHeadWidth();
         final double needleHeadHeight = needleModel.getNeedleHeadHeight();
-        
+
         final long currentTime = needleModel.getCurrentTime();
+
         // Don't paint if the needle if it is out of the current window
         if ((currentTime < viewableModel.getZoomWindowStart())
                 || (viewableModel.getZoomWindowEnd() < currentTime)) {
@@ -84,14 +87,20 @@ public class NeedlePainter extends JComponent {
         Dimension size = this.getSize();
 
         // Calculate the needle position based on the selected time
-        double ratio = (double) viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();
-        double pos = (currentTime * ratio - viewableModel.getZoomWindowStart() * ratio) + needleModel.getPaddingLeft();
+        double ratio = (double) viewableModel.getIntervalWidth()
+            / viewableModel.getIntervalTime();
+        double pos = ((currentTime * ratio)
+                - (viewableModel.getZoomWindowStart() * ratio))
+            + needleModel.getPaddingLeft();
 
         final int paddingTop = needleModel.getPaddingTop();
         needleMarker = new GeneralPath();
-        needleMarker.moveTo((float) (pos - needleHeadWidth), (float) (paddingTop)); // top-left corner
-        needleMarker.lineTo((float) (pos + needleHeadWidth), (float) (paddingTop)); // top-right corner
-        needleMarker.lineTo((float) (pos),                   (float) (needleHeadHeight + paddingTop)); // bottom corner
+        needleMarker.moveTo((float) (pos - needleHeadWidth),
+            (float) (paddingTop)); // top-left corner
+        needleMarker.lineTo((float) (pos + needleHeadWidth),
+            (float) (paddingTop)); // top-right corner
+        needleMarker.lineTo((float) (pos),
+            (float) (needleHeadHeight + paddingTop)); // bottom corner
         needleMarker.closePath();
 
         g2d.setColor(needleColor);

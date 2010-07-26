@@ -130,12 +130,12 @@ public final class NeedleController {
     }
 
     /**
-     * @return a clone of the needle model
+     * @return a copy of the needle model
      */
     public NeedleModel getNeedleModel() {
 
-        // return a clone to avoid model tainting
-        return needleModel.clone();
+        // return a copy to avoid model tainting
+        return needleModel.copy();
     }
 
     /**
