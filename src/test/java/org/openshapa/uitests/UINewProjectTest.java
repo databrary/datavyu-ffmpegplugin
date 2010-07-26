@@ -19,7 +19,7 @@ import org.fest.swing.fixture.VocabEditorDialogFixture;
 import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
-import org.openshapa.views.ListVariables;
+import org.openshapa.views.VariableListV;
 import org.openshapa.views.NewProjectV;
 import org.openshapa.views.VocabEditorV;
 
@@ -89,7 +89,7 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
                 new GenericTypeMatcher<JDialog>(JDialog.class) {
                     @Override protected boolean isMatching(
                         final JDialog dialog) {
-                        return dialog.getClass().equals(ListVariables.class);
+                        return dialog.getClass().equals(VariableListV.class);
                     }
                 }, Timeout.timeout(5, TimeUnit.SECONDS));
 
