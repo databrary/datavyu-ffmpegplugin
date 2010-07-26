@@ -39,6 +39,7 @@ public final class AmplitudeTrack extends TrackPainter
 
     public void deregister() {
         viewableModel.removePropertyChangeListener(this);
+        trackModel.removePropertyChangeListener(this);
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
