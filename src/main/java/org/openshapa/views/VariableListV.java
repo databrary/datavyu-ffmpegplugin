@@ -28,11 +28,11 @@ import org.openshapa.views.discrete.SpreadsheetColumn;
 /**
  * The dialog to list database variables.
  */
-public final class ListVariables extends OpenSHAPADialog
+public final class VariableListV extends OpenSHAPADialog
 implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnListListener, TableModelListener {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(ListVariables.class);
+    private Logger logger = UserMetrix.getLogger(VariableListV.class);
 
     /** Records changes to column during a cascade. */
     private ColumnChanges colChanges;
@@ -63,7 +63,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
 
     private ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
-                                      .getResourceMap(ListVariables.class);
+                                      .getResourceMap(VariableListV.class);
 
     public void populateTable() {
         // Populate table with a variable listing from the database
@@ -101,7 +101,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
             try {
                 dbColumn = database.getDataColumn((String) tableModel.getValueAt(i, NCOLUMN));
             } catch (SystemErrorException ex) {
-                java.util.logging.Logger.getLogger(ListVariables.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(VariableListV.class.getName()).log(Level.SEVERE, null, ex);
             }
             dbToTableMap.put(dbColumn.getID(), i);
         }
@@ -154,7 +154,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
      * @param modal Is this dialog to be modal (true), or not.
      * @param db The database containing the variables you wish to list.
      */
-    public ListVariables(final java.awt.Frame parent,
+    public VariableListV(final java.awt.Frame parent,
                          final boolean modal,
                          final Database db) {
         super(parent, modal);
@@ -277,7 +277,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
             try {
                 dc = database.getDataColumn(varID);
             } catch (SystemErrorException ex) {
-                java.util.logging.Logger.getLogger(ListVariables.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(VariableListV.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             if (columnName.equals(rMap.getString("Table.visibleColumn"))) {
@@ -288,7 +288,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                         MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
                         msdb.replaceColumn(dc);
                     } catch (SystemErrorException ex) {
-                        java.util.logging.Logger.getLogger(ListVariables.class.getName()).log(Level.SEVERE, null, ex);
+                        java.util.logging.Logger.getLogger(VariableListV.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             } else if (columnName.equals(rMap.getString("Table.nameColumn"))) {
@@ -419,7 +419,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                 }
             }
         } catch (SystemErrorException ex) {
-            java.util.logging.Logger.getLogger(ListVariables.class.getName()).log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(VariableListV.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -438,7 +438,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                              final Vector<Long> new_cov) {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
-                                      .getResourceMap(ListVariables.class);
+                                      .getResourceMap(VariableListV.class);
         colChanges.changes = true;
         try {
             DataColumn dbColumn = db.getDataColumn(colID);
@@ -491,7 +491,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                 try {
                     tableModel.setValueAt(!database.getColumn(colID).getHidden(), getRowWithID(colID), VCOLUMN);
                 } catch (SystemErrorException ex) {
-                    java.util.logging.Logger.getLogger(ListVariables.class.getName()).log(Level.SEVERE, null, ex);
+                    java.util.logging.Logger.getLogger(VariableListV.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -501,7 +501,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                 try {
                     tableModel.setValueAt(database.getColumn(colID).getName(), getRowWithID(colID), NCOLUMN);
                 } catch (SystemErrorException ex) {
-                    java.util.logging.Logger.getLogger(ListVariables.class.getName()).log(Level.SEVERE, null, ex);
+                    java.util.logging.Logger.getLogger(VariableListV.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -552,7 +552,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
         variableList = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(ListVariables.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(VariableListV.class);
         setTitle(resourceMap.getString("variableListDialog.title")); // NOI18N
         setName("variableListDialog"); // NOI18N
 

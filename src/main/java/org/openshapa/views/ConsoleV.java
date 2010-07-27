@@ -16,7 +16,7 @@ import javax.swing.LayoutStyle;
 public final class ConsoleV extends OpenSHAPADialog {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(ListVariables.class);
+    private Logger logger = UserMetrix.getLogger(VariableListV.class);
 
     /** The instance of the console. */
     private static ConsoleV instance;

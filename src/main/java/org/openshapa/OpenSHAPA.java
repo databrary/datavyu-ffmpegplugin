@@ -40,7 +40,7 @@ import org.openshapa.util.MacHandler;
 
 import org.openshapa.views.AboutV;
 import org.openshapa.views.DataControllerV;
-import org.openshapa.views.ListVariables;
+import org.openshapa.views.VariableListV;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
 
@@ -109,7 +109,7 @@ public final class OpenSHAPA extends SingleFrameApplication
     private List<File> lastFilesOpened;
 
     /** The view to use when listing all variables in the database. */
-    private ListVariables listVarView;
+    private VariableListV listVarView;
 
     /** The view to use for the quick time video controller. */
     private DataControllerV dataController;
@@ -371,7 +371,7 @@ public final class OpenSHAPA extends SingleFrameApplication
      */
     public void showVariableList() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        listVarView = new ListVariables(mainFrame, false,
+        listVarView = new VariableListV(mainFrame, false,
                 projectController.getDB());
 
         try {

@@ -251,6 +251,13 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
     }
 
     /**
+     * @return selected status.
+     */
+    public boolean getSelected() {
+        return selected;
+    }
+
+    /**
      * @return The datapanel.
      */
     public JComponent getDataPanel() {

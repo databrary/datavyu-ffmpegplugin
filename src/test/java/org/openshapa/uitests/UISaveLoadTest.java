@@ -653,7 +653,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     @Test public void testODBtoOPF() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         String inputFile = "macshapa-file.odb";
-        String odbOutputCSV = "odfCSV.csv";
+        String odbOutputCSV = "odbCSV.csv";
         String opfOutputCSV = "opfCSV.csv";
 
         File iFile = new File(testFolder + "/ui/" + inputFile);
@@ -706,7 +706,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(spreadsheet.allColumns().size() > 0);
 
         // Save file as a OPF
-        File toSave = new File(tempFolder + "/odfOPF.opf");
+        File toSave = new File(tempFolder + "/odbOPF.opf");
 
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
@@ -790,16 +790,16 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * Test loading an ODB file.
      * @throws Exception on any error.
      */
-    /*//@Test*/ public void testLoadingODB1() throws Exception {
+    @Test public void testLoadingODB1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
-        legacyFileLoadTest("macshapa-file.odb", "odfload.csv");
+        legacyFileLoadTest("macshapa-file.odb", "odbCSV.csv");
     }
 
     /**
     * Test loading an SHAPA file.
     * @throws Exception on any error.
     */
-    /*//@Test*/ public void testLoadingSHAPA1() throws Exception {
+    @Test public void testLoadingSHAPA1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         legacyFileLoadTest("test.shapa", "modify-test-out.csv");
     }
@@ -809,7 +809,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testSaveAsCSV1() throws Exception {
+    @Test public void testSaveAsCSV1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedCSV", "csv");
     }
@@ -819,7 +819,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testSaveAsCSV2() throws Exception {
+    @Test public void testSaveAsCSV2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedCSV.csv", "csv");
     }
@@ -829,7 +829,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     * @throws java.lang.Exception
     *             on any error
     */
-    /*//@Test*/ public void testSaveAsOPF1() throws Exception {
+    @Test public void testSaveAsOPF1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
@@ -841,7 +841,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testSaveOPF1() throws Exception {
+    @Test public void testSaveOPF1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
@@ -853,7 +853,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testSaveAsOPF2() throws Exception {
+    @Test public void testSaveAsOPF2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
@@ -865,7 +865,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testSaveOPF2() throws Exception {
+    @Test public void testSaveOPF2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
@@ -877,7 +877,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testSaveAsOPF3() throws Exception {
+    @Test public void testSaveAsOPF3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
@@ -889,7 +889,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testSaveOPF3() throws Exception {
+    @Test public void testSaveOPF3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // This will also test file loading
@@ -901,7 +901,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testSaveAsCSV3() throws Exception {
+    @Test public void testSaveAsCSV3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveAsTest("savedCSV.shapa", "csv");
     }
@@ -913,7 +913,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    /*//@Test*/ public void testSaveCSV1() throws Exception {
+    @Test public void testSaveCSV1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV", "csv");
     }
@@ -923,7 +923,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     * @throws java.lang.Exception
     *             on any error
     */
-    /*//@Test*/ public void testSaveCSV2() throws Exception {
+    @Test public void testSaveCSV2() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV.csv", "csv");
     }
@@ -933,7 +933,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     * @throws java.lang.Exception
     *             on any error
     */
-    /*//@Test*/ public void testSaveCSV3() throws Exception {
+    @Test public void testSaveCSV3() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         saveTest("savedCSV.shapa", "csv");
     }
@@ -1000,7 +1000,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * location.
      * In the FEST port, this was changed to a generic file dialog location test
      */
-    /*//@Test*/ public void testDialogLocation() {
+    @Test public void testDialogLocation() {
 
         if (Platform.isOSX()) {
             return;
@@ -1032,7 +1032,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     // Need to figure out to how to set readonly permissions on file across
     // operating systems.
-    /*//@Test*/ public void saveWithoutPermissions() {
+    @Test public void saveWithoutPermissions() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         final String root = testFolder + "/ui/";
@@ -1071,7 +1071,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     /**
      *  Having \ as the last character in a text field breaks the file.
      */
-    /*//@Test*/ public void testBug1568() throws IOException {
+    @Test public void testBug1568() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         
@@ -1156,7 +1156,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * Bug 1694 - Test handling of missing video file.
      * @throws IOException on file reading error
      */
-    /*//@Test*/ public void testMissingVideoFiles() throws IOException {
+    @Test public void testMissingVideoFiles() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String root = testFolder + "/ui/";
