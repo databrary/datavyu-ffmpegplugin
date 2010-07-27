@@ -289,10 +289,6 @@ public final class AmplitudeProcessor
         pipeline.stop();
         pipeline.dispose();
 
-        if (data == null) {
-            return null;
-        }
-
         data.normalizeL();
         data.normalizeR();
 
