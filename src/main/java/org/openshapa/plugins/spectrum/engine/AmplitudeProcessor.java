@@ -5,7 +5,6 @@ import java.io.File;
 import java.nio.ShortBuffer;
 
 import java.util.concurrent.TimeUnit;
-import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -14,8 +13,6 @@ import static org.gstreamer.Element.linkMany;
 import static org.gstreamer.Element.linkPadsFiltered;
 
 import javax.swing.SwingWorker;
-
-import javax.xml.soap.MessageFactory;
 
 import org.gstreamer.Bin;
 import org.gstreamer.Buffer;
@@ -36,10 +33,8 @@ import org.gstreamer.Structure;
 
 import org.gstreamer.elements.AppSink;
 import org.gstreamer.elements.DecodeBin;
-import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.AppSink.NEW_BUFFER;
 
-import org.openshapa.plugins.spectrum.SpectrumUtils;
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 import org.openshapa.plugins.spectrum.swing.AmplitudeTrack;
 
@@ -56,6 +51,7 @@ import com.usermetrix.jclient.UserMetrix;
 public final class AmplitudeProcessor
     extends SwingWorker<StereoAmplitudeData, Void> {
 
+    /** Logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(
             AmplitudeProcessor.class);
 
@@ -67,6 +63,9 @@ public final class AmplitudeProcessor
 
     /** Number of channels in the audio file. */
     private final int numChannels;
+
+    /** The processed amplitude data. */
+    private StereoAmplitudeData data;
 
     /**
      * Creates a new worker thread.
@@ -83,6 +82,42 @@ public final class AmplitudeProcessor
         this.mediaFile = mediaFile;
         this.track = track;
         this.numChannels = numChannels;
+        data = new StereoAmplitudeData();
+    }
+
+    /**
+     * Set the time segment to process.
+     *
+     * @param start
+     *            Start time
+     * @param end
+     *            End time
+     * @param unit
+     *            Start and end time units.
+     */
+    public void setDataTimeSegment(final long start, final long end,
+        final TimeUnit unit) {
+
+        if (end < start) {
+            throw new IllegalArgumentException("Invalid time segment.");
+        }
+
+        data.setDataTimeStart(start);
+        data.setDataTimeEnd(end);
+        data.setDataTimeUnit(unit);
+    }
+
+    /**
+     * @param sampleRate
+     *            the sample rate to set.
+     */
+    public void setSampleRate(final int sampleRate) {
+
+        if (sampleRate < 1) {
+            throw new IllegalArgumentException("Invalid sample rate.");
+        }
+
+        data.setSampleRate(sampleRate);
     }
 
     /**
@@ -91,8 +126,6 @@ public final class AmplitudeProcessor
      * @see javax.swing.SwingWorker#doInBackground()
      */
     @Override protected StereoAmplitudeData doInBackground() throws Exception {
-        final StereoAmplitudeData data = new StereoAmplitudeData();
-
         Gst.init();
 
         final Pipeline pipeline = new Pipeline("Processor");
@@ -127,7 +160,6 @@ public final class AmplitudeProcessor
         appSink.connect(new NEW_BUFFER() {
                 @Override public void newBuffer(final Element elem,
                     final Pointer userData) {
-
                     Buffer buf = appSink.pullBuffer();
 
                     if (buf != null) {
@@ -140,12 +172,36 @@ public final class AmplitudeProcessor
 
                         ShortBuffer sb = buf.getByteBuffer().asShortBuffer();
 
-                        for (int i = 0; i < size; i += numChannels) {
-                            data.addDataL(sb.get(i));
+                        // Find largest and smallest left channel data.
+                        if (numChannels >= 1) {
+                            double largest = Double.MIN_VALUE;
+                            double smallest = Double.MAX_VALUE;
 
-                            if (numChannels >= 2) {
-                                data.addDataR(sb.get(i + 1));
+                            for (int i = 0; i < size; i += numChannels) {
+                                double val = sb.get(i);
+
+                                largest = Math.max(val, largest);
+                                smallest = Math.min(smallest, val);
                             }
+
+                            data.addDataL(largest);
+                            data.addDataL(smallest);
+                        }
+
+                        // Find largest and smallest right channel data.
+                        if (numChannels >= 1) {
+                            double largest = Double.MIN_VALUE;
+                            double smallest = Double.MAX_VALUE;
+
+                            for (int i = 1; i < size; i += numChannels) {
+                                double val = sb.get(i);
+
+                                largest = Math.max(val, largest);
+                                smallest = Math.min(smallest, val);
+                            }
+
+                            data.addDataR(largest);
+                            data.addDataR(smallest);
                         }
                     }
                 }
@@ -158,9 +214,8 @@ public final class AmplitudeProcessor
         }
 
         Caps caps = Caps.fromString(
-                "audio/x-raw-int, width=16, depth=16, signed=true"
-                // TODO support custom rate.
-                + ", rate=96");
+                "audio/x-raw-int, width=16, depth=16, signed=true, rate="
+                + data.getSampleRate());
 
         if (!linkPadsFiltered(audioResample, null, audioOutput, null, caps)) {
             LOGGER.error("Link failed: audioresample -> appsink");
@@ -200,36 +255,55 @@ public final class AmplitudeProcessor
                 }
             });
 
+
         pipeline.pause();
 
-        if (pipeline.getState(5, SECONDS) != State.PAUSED) {
-            // TODO stop thread.
+        if (pipeline.getState(2, SECONDS) != State.PAUSED) {
+            return null;
         }
 
-        // TODO fix this to support custom segment.
         pipeline.seek(1D, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE,
-            SeekType.SET, 0, SeekType.SET,
-            NANOSECONDS.convert(10, TimeUnit.SECONDS));
+            SeekType.SET,
+            NANOSECONDS.convert(data.getDataTimeStart(),
+                data.getDataTimeUnit()), SeekType.SET,
+            NANOSECONDS.convert(data.getDataTimeEnd(), data.getDataTimeUnit()));
 
         pipeline.play();
 
+
         synchronized (data) {
-            data.wait();
+
+            try {
+                data.wait();
+            } catch (InterruptedException e) {
+
+                if (isCancelled()) {
+                    pipeline.stop();
+                    pipeline.dispose();
+
+                    return null;
+                }
+            }
         }
 
-        pipeline.setState(State.NULL);
+        pipeline.stop();
         pipeline.dispose();
+
+        if (data == null) {
+            return null;
+        }
 
         data.normalizeL();
         data.normalizeR();
 
-        // TODO use custom segment time.
-        // If the time interval is not set then we will just calculate one.
-        if (!data.isTimeIntervalSet()) {
-            long duration = SpectrumUtils.getDuration(mediaFile);
-            long interval = (long) (duration / (double) data.sizeL());
-            data.setTimeInterval(interval, MILLISECONDS);
-        }
+        // Calculate the time interval between points.
+        long end = MILLISECONDS.convert(data.getDataTimeEnd(),
+                data.getDataTimeUnit());
+        long start = MILLISECONDS.convert(data.getDataTimeStart(),
+                data.getDataTimeUnit());
+
+        double interval = ((end - start) / (double) data.sizeL());
+        data.setTimeInterval(interval, MILLISECONDS);
 
         return data;
     }
@@ -243,8 +317,12 @@ public final class AmplitudeProcessor
     @Override protected void done() {
 
         try {
-            track.setData(get());
-            track.repaint();
+            StereoAmplitudeData result = get();
+
+            if (result != null) {
+                track.setData(result);
+                track.repaint();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e);

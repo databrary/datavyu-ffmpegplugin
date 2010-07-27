@@ -10,6 +10,18 @@ import java.util.concurrent.TimeUnit;
  */
 public final class StereoAmplitudeData {
 
+    /** Start time of the data in the buffer. */
+    private long dataTimeStart;
+
+    /** End time of the data in the buffer. */
+    private long dataTimeEnd;
+
+    /** Time unit of the start and end times. */
+    private TimeUnit dataTimeUnit;
+
+    /** Sampling rate. */
+    private int sampleRate;
+
     /** Left channel data. */
     private List<Double> ampDataL;
 
@@ -17,7 +29,7 @@ public final class StereoAmplitudeData {
     private List<Double> ampDataR;
 
     /** Time interval between data points. */
-    private long timeInterval;
+    private double timeInterval;
 
     /** Time unit of the interval. */
     private TimeUnit timeUnit;
@@ -37,6 +49,66 @@ public final class StereoAmplitudeData {
     }
 
     /**
+     * @return the dataTimeStart
+     */
+    public long getDataTimeStart() {
+        return dataTimeStart;
+    }
+
+    /**
+     * @param dataTimeStart
+     *            the dataTimeStart to set
+     */
+    public void setDataTimeStart(final long dataTimeStart) {
+        this.dataTimeStart = dataTimeStart;
+    }
+
+    /**
+     * @return the dataTimeEnd
+     */
+    public long getDataTimeEnd() {
+        return dataTimeEnd;
+    }
+
+    /**
+     * @param dataTimeEnd
+     *            the dataTimeEnd to set
+     */
+    public void setDataTimeEnd(final long dataTimeEnd) {
+        this.dataTimeEnd = dataTimeEnd;
+    }
+
+    /**
+     * @return the dataTimeUnit
+     */
+    public TimeUnit getDataTimeUnit() {
+        return dataTimeUnit;
+    }
+
+    /**
+     * @param dataTimeUnit
+     *            the dataTimeUnit to set
+     */
+    public void setDataTimeUnit(final TimeUnit dataTimeUnit) {
+        this.dataTimeUnit = dataTimeUnit;
+    }
+
+    /**
+     * @return the sampleRate
+     */
+    public int getSampleRate() {
+        return sampleRate;
+    }
+
+    /**
+     * @param sampleRate
+     *            the sampleRate to set
+     */
+    public void setSampleRate(final int sampleRate) {
+        this.sampleRate = sampleRate;
+    }
+
+    /**
      * Set the time interval between data points.
      *
      * @param interval
@@ -44,12 +116,7 @@ public final class StereoAmplitudeData {
      * @param unit
      *            time unit.
      */
-    public void setTimeInterval(final long interval, final TimeUnit unit) {
-
-        if (interval < 1) {
-            throw new IllegalArgumentException("Expecting positive interval.");
-        }
-
+    public void setTimeInterval(final double interval, final TimeUnit unit) {
         timeInterval = interval;
         timeUnit = unit;
     }
@@ -66,7 +133,7 @@ public final class StereoAmplitudeData {
     /**
      * @return Time interval between data points.
      */
-    public long getTimeInterval() {
+    public double getTimeInterval() {
         return timeInterval;
     }
 
@@ -153,6 +220,33 @@ public final class StereoAmplitudeData {
         for (int i = 0; i < ampDataR.size(); i++) {
             ampDataR.set(i, ampDataR.get(i) / maxR);
         }
+    }
+
+    @Override public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("StereoAmplitudeData [ampDataL=");
+        builder.append(ampDataL);
+        builder.append(", ampDataR=");
+        builder.append(ampDataR);
+        builder.append(", dataTimeEnd=");
+        builder.append(dataTimeEnd);
+        builder.append(", dataTimeStart=");
+        builder.append(dataTimeStart);
+        builder.append(", dataTimeUnit=");
+        builder.append(dataTimeUnit);
+        builder.append(", maxL=");
+        builder.append(maxL);
+        builder.append(", maxR=");
+        builder.append(maxR);
+        builder.append(", sampleRate=");
+        builder.append(sampleRate);
+        builder.append(", timeInterval=");
+        builder.append(timeInterval);
+        builder.append(", timeUnit=");
+        builder.append(timeUnit);
+        builder.append("]");
+
+        return builder.toString();
     }
 
 }
