@@ -324,7 +324,6 @@ public final class AmplitudeProcessor
                 track.repaint();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.error(e);
         }
 

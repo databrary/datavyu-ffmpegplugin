@@ -69,8 +69,6 @@ public final class AmplitudeTrack extends TrackPainter
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-        System.out.println(viewableModel);
-
         execProcessor();
 
         leftAmp = null;
@@ -146,9 +144,6 @@ public final class AmplitudeTrack extends TrackPainter
         if (rightAmp != null) {
             g2d.draw(rightAmp);
         }
-
-        System.out.println("AmplitudeTrack.paintCustom()");
-        System.out.println(System.currentTimeMillis());
 
     }
 
