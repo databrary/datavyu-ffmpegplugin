@@ -137,4 +137,11 @@ public class SpreadsheetColumnFixture extends JLabelFixture {
                 (JButton) field("newCellButton").ofType(JButton.class).in(
                     (ColumnDataPanel)ssColumn.getDataPanel()).get()).click();
     }
+
+    /**
+     * @return true if column is selected, else false
+     */
+    public boolean isSelected() {
+        return ssColumn.getSelected();
+    }
 }
