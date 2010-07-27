@@ -30,13 +30,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.miginfocom.swing.MigLayout;
 
-import org.gstreamer.ClockTime;
 import org.gstreamer.Format;
 import org.gstreamer.Gst;
 import org.gstreamer.SeekFlags;
 import org.gstreamer.SeekType;
 import org.gstreamer.State;
-import org.gstreamer.StreamInfo;
 import org.gstreamer.elements.PlayBin;
 import org.gstreamer.swing.VideoComponent;
 import org.openshapa.views.OpenSHAPADialog;
@@ -47,11 +45,6 @@ import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.ViewerStateListener;
 
 public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
-	static {
-		Gst.init();
-		//DAVETODO add unload hooks
-	}
-
     /** Icon for displaying volume slider. */
     private final ImageIcon volumeIcon =
             new ImageIcon(getClass().getResource("/icons/audio-volume.png"));
@@ -87,11 +80,20 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
     private long duration = 0;
     private boolean isPlaying = false;
     private float playbackRate = 1;
+    private VideoComponent videoComponent;
 
+    /** GStreamer Playbin mute volume */
+    private final double MUTE_VOLUME = 0.0;
+    /** Duration of time (seconds) to wait for before aborting an attempt to load a video. */
+    private final long VIDEO_LOADING_TIMEOUT_SECONDS = 30;
+    
     public GStreamerDataViewer(Frame parent, boolean modal) {
-    	super(parent, modal);
-    	
+        super(parent, modal);
+        
         System.out.println("GStreamerDataViewer.GStreamerDataViewer()");
+
+        Gst.init();
+        
         trackPainter = new DefaultTrackPainter();
         setOffset(0);
 
@@ -125,6 +127,10 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
             });
     }
 
+    private void waitForPlaybinStateChange() {
+        playBin.getState(TimeUnit.NANOSECONDS.convert(500, TimeUnit.MILLISECONDS));
+    }
+    
     private void handleVolumeSliderEvent(final ChangeEvent e) {
         if (playBin != null) {
             // Calculate volume as a percentage.
@@ -140,98 +146,110 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
      * the volume).
      */
     private void setVolume() {
-        if (isVisible) {
+        playBin.setVolume(isVisible ? volume : MUTE_VOLUME);
+    }
+    
+    @Override
+    public long getCurrentTime() {
+        System.out.println("GStreamerDataViewer.getCurrentTime() = " + (playBin != null ? playBin.queryPosition(TimeUnit.MILLISECONDS) : 0));
+        return playBin != null ? playBin.queryPosition(TimeUnit.MILLISECONDS) : 0;
+    }
+
+    @Override
+    public File getDataFeed() {
+        System.out.println("GStreamerDataViewer.getDataFeed()");
+        return dataFeed;
+    }
+
+    @Override
+    public long getDuration() {
+        return duration;
+    }
+
+    @Override
+    public float getFrameRate() {
+        System.out.println("GStreamerDataViewer.getFrameRate()");
+        //DAVETODO
+        return 25;
+    }
+
+    @Override
+    public long getOffset() {
+        return offset;
+    }
+
+    @Override
+    public JDialog getParentJDialog() {
+        System.out.println("GStreamerDataViewer.getParentJDialog()");
+        return this;
+    }
+
+    @Override
+    public TrackPainter getTrackPainter() {
+        System.out.println("GStreamerDataViewer.getTrackPainter()");
+        return trackPainter;
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    @Override
+    public synchronized void play() {
+        System.out.println("GStreamerDataViewer.play()");
+        if (playBin != null) {
+            final int seekFlags = SeekFlags.FLUSH | SeekFlags.ACCURATE | (1 << 4) /*SeekFlags.SKIP*/;
+            playBin.seek(playbackRate, Format.TIME, seekFlags, SeekType.NONE, 0, SeekType.NONE, 0);
             playBin.setVolume(volume);
-        } else {
-            playBin.setVolume(0.0F);
+            playBin.setState(State.PLAYING);
+            waitForPlaybinStateChange();
+            isPlaying = true;
         }
     }
-	
-	@Override
-	public long getCurrentTime() throws Exception {
-//		System.out.println("GStreamerDataViewer.getCurrentTime() = " + (playBin != null ? playBin.queryPosition(TimeUnit.MILLISECONDS) : 0));
-		return 0;
-//		return playBin != null ? playBin.queryPosition(TimeUnit.MILLISECONDS) : 0;
-	}
 
-	@Override
-	public File getDataFeed() {
-		System.out.println("GStreamerDataViewer.getDataFeed()");
-		return dataFeed;
-	}
-
-	@Override
-	public long getDuration() {
-		return duration;
-	}
-
-	@Override
-	public float getFrameRate() {
-		System.out.println("GStreamerDataViewer.getFrameRate()");
-		return 25;
-	}
-
-	@Override
-	public long getOffset() {
-		return offset;
-	}
-
-	@Override
-	public JDialog getParentJDialog() {
-		System.out.println("GStreamerDataViewer.getParentJDialog()");
-		return this;
-	}
-
-	@Override
-	public TrackPainter getTrackPainter() {
-		System.out.println("GStreamerDataViewer.getTrackPainter()");
-		return trackPainter;
-	}
-
-	@Override
-	public synchronized boolean isPlaying() {
-		return isPlaying;
-	}
-
-	@Override
-	public synchronized void play() {
-		System.out.println("GStreamerDataViewer.play()");
-		if (playBin != null) {
-			playBin.setState(State.PLAYING);
-			isPlaying = true;
-//			playBin.getState(); // wait for the state change to take effect
-		}
-	}
-
-	@Override
-	public synchronized void seekTo(long position) {
-//		System.out.println("GStreamerDataViewer.seekTo(" + position + ")");
-		if (playBin != null) {
-			if (!isPlaying) {
-//		        playBin.setState(State.PAUSED);
-//				System.out.println("seeking...");
-				boolean result = playBin.seek(playbackRate != 0.0 ? playbackRate : 1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE | /* SeekFlags.SKIP */ (1 << 4), SeekType.SET, TimeUnit.NANOSECONDS.convert(position, TimeUnit.MILLISECONDS), SeekType.NONE, 0);
-//				playBin.seek(ClockTime.fromMillis(position));
-//				lastSeekTime = System.currentTimeMillis();
-			} else {
-//				System.out.println("ignoring seek.");
-			}
-		}
-	}
-	
-	@Override
-	public synchronized void setDataFeed(final File dataFeed) {
-		if (this.dataFeed != null) {
-			return;
-		}
-		
-		this.dataFeed = dataFeed;
-		
-		playBin = new PlayBin("OpenSHAPA");
+    @Override
+    public synchronized void seekTo(long position) {
+        System.out.println("GStreamerDataViewer.seekTo(" + position + "), currentTime=" + getCurrentTime() + ", difference=" + (position - getCurrentTime()) + ", playbackSpeed=" + playbackRate);
+        if (playBin != null) {
+            final double seekPlaybackRate = Math.abs(playbackRate != 0.0 ? playbackRate : 1.0);
+            final int seekFlags = SeekFlags.FLUSH | SeekFlags.ACCURATE | (1 << 4) /*SeekFlags.SKIP*/;
+            final SeekType startSeekType = SeekType.SET;
+            final long startSeekTime = TimeUnit.NANOSECONDS.convert(position, TimeUnit.MILLISECONDS);
+            final SeekType endSeekType = isPlaying ? SeekType.END : SeekType.SET;
+            final long endSeekTime = isPlaying ? 0 : TimeUnit.NANOSECONDS.convert(position + 1, TimeUnit.MILLISECONDS);
+            final double minimumPlaybackRateForAudio = 1.0;
+            final double maximumPlaybackRateForAudio = 1.0;
+            playBin.setVolume(isPlaying && ((playbackRate >= minimumPlaybackRateForAudio) && (playbackRate <= maximumPlaybackRateForAudio)) ? volume : MUTE_VOLUME);
+            playBin.seek(seekPlaybackRate, Format.TIME, seekFlags, startSeekType, startSeekTime, endSeekType, endSeekTime);
+            playBin.setState(State.PLAYING);
+            waitForPlaybinStateChange();
+        }
+    }
+    
+    @Override
+    public synchronized void setDataFeed(final File dataFeed) {
+        if (this.dataFeed != null) {
+            return;
+        }
+        
+        this.dataFeed = dataFeed;
+        
+        playBin = new PlayBin("OpenSHAPA");
         playBin.setInputFile(dataFeed);
 
-        final VideoComponent videoComponent = new VideoComponent();
+        videoComponent = new VideoComponent();
         playBin.setVideoSink(videoComponent.getElement());
+
+        playBin.setState(State.PAUSED);
+        State state = playBin.getState(TimeUnit.NANOSECONDS.convert(VIDEO_LOADING_TIMEOUT_SECONDS, TimeUnit.SECONDS));
+        if (state != State.PAUSED) {
+            throw new RuntimeException("Couldn't add video file " + dataFeed.getAbsolutePath());
+        }
+        
+        isPlaying = false;
+        duration = playBin.queryDuration(TimeUnit.MILLISECONDS);
+        seekTo(0);
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -248,74 +266,64 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
                 frame.setVisible(true);
             }
         });
-        
-		playBin.setState(State.PAUSED);
-		isPlaying = false;
-		playBin.getState(-1); // wait for the state change to take effect
-		
-		duration = playBin.queryDuration(TimeUnit.MILLISECONDS);
-
-		/*
-		for (StreamInfo streamInfo : playBin.getStreamInfo()) {
-			System.out.println("StreamInfo: " + streamInfo.toString());
-		}
-		*/
-		
-		System.out.println("Data feed added");
-	}
-	
+    }
+    
     public void windowClosing(final WindowEvent evt) {
-    	if (playBin != null) {
-    		playBin.setState(State.NULL);
-    	}
-    	
+        if (playBin != null) {
+            playBin.setVolume(MUTE_VOLUME);
+            playBin.setState(State.NULL);
+            playBin = null;
+            videoComponent = null;
+        }
+        
+        Gst.deinit();
+        
         if (parentDataController != null) {
-        	parentDataController.shutdown(this);
+            parentDataController.shutdown(this);
         }
     }
     
-	@Override
-	public void setOffset(long offset) {
-		System.out.println("GStreamerDataViewer.setOffset(" + offset + ")");
-		this.offset = offset;
-	}
+    @Override
+    public void setOffset(long offset) {
+        System.out.println("GStreamerDataViewer.setOffset(" + offset + ")");
+        this.offset = offset;
+    }
 
-	@Override
-	public synchronized void setParentController(DataController dataController) {
-		System.out.println("GStreamerDataViewer.setParentController()");
-		parentDataController = dataController;
-	}
+    @Override
+    public synchronized void setParentController(DataController dataController) {
+        System.out.println("GStreamerDataViewer.setParentController()");
+        parentDataController = dataController;
+    }
 
-	@Override
-	public void setPlaybackSpeed(float rate) {
-		System.out.println("GStreamerDataViewer.setPlaybackSpeed(" + rate + ")");
-		this.playbackRate = rate;
-		if (playBin != null) {
-			if (rate != 0) {
-					playBin.setState(State.PAUSED);
-					playBin.getState(); // wait for the state change to take effect
-					boolean result = playBin.seek(rate, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE | /* SeekFlags.SKIP */ (1 << 4), SeekType.NONE, 0, SeekType.NONE, 0);
-					System.out.println("seek result for rate " + rate + " = " + result);
-					playBin.setState(State.PLAYING);
-				isPlaying = true;
-			} else {
-				playBin.setState(State.PAUSED);
-				isPlaying = false;
-			}
-//			playBin.getState(); // wait for the state change to take effect
-		}
-	}
+    @Override
+    public void setPlaybackSpeed(float rate) {
+        System.out.println("GStreamerDataViewer.setPlaybackSpeed(" + rate + ")");
+        this.playbackRate = rate;
+        if (playBin != null) {
+            if (rate != 0) {
+                playBin.setVolume(volume);
+                playBin.seek(rate, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE | /* SeekFlags.SKIP */ (1 << 4), SeekType.NONE, 0, SeekType.END, 0);
+                playBin.setState(State.PLAYING);
+                isPlaying = true;
+            } else {
+                playBin.setVolume(MUTE_VOLUME);
+                playBin.setState(State.PAUSED);
+                isPlaying = false;
+            }
+            waitForPlaybinStateChange();
+        }
+    }
 
-	@Override
-	public synchronized void stop() {
-		System.out.println("GStreamerDataViewer.stop()");
-		if (playBin != null) {
-			playBin.setState(State.PAUSED);
-			isPlaying = false;
-//			playBin.getState(); // wait for the state change to take effect
-		}
-	}
-
+    @Override
+    public synchronized void stop() {
+        System.out.println("GStreamerDataViewer.stop()");
+        if (playBin != null) {
+            playBin.setVolume(MUTE_VOLUME);
+            playBin.setState(State.PAUSED);
+            waitForPlaybinStateChange();
+            isPlaying = false;
+        }
+    }
 
     @Override public void loadSettings(InputStream is) {
         Properties settings = new Properties();
@@ -329,7 +337,7 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
             property = settings.getProperty("volume");
             if (property != null & !property.equals("")) {
                 volume = Float.parseFloat(property);
-                volumeSlider.setValue((int) (volume * 100));
+                volumeSlider.setValue((int) Math.round(volume * 100));
             }
             property = settings.getProperty("visible");
             if (property != null & !property.equals("")) {
@@ -403,8 +411,8 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
         // hidden from view.
         if (isVisible) {
             // Show the volume frame.
-            volumeDialog.setVisible(true);
             volumeDialog.setLocation(button.getLocationOnScreen());
+            volumeDialog.setVisible(true);
         }
     }
 
