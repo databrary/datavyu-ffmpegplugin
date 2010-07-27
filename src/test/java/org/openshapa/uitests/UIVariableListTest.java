@@ -1,6 +1,5 @@
 package org.openshapa.uitests;
 
-import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
@@ -10,13 +9,12 @@ import java.io.File;
 
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.data.TableCell;
-import org.fest.swing.driver.BasicJComboBoxCellReader;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.JTableFixture;
-import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.fixture.VariableListDialogFixture;
+import org.fest.swing.fixture.WindowFixture;
 import org.fest.swing.util.Platform;
 
 import org.jdesktop.application.Application;
@@ -50,11 +48,11 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Test adding new variables with a script.
      */
-    /*//@Test*/ public void testAddingVariablesWithScript() {
+    @Test public void testAddingVariablesWithScript() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         
-        File demoFile = new File(testFolder + "/ui/demo_data.rb");
+        File demoFile = new File(testFolder + "/ui/demo_data_small.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. We open the variable list dialog first, because it should update live
@@ -80,7 +78,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Test adding new variables manually.
      */
-    /*//@Test*/ public void testAddingVariablesManually() {
+    @Test public void testAddingVariablesManually() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String[] varNames = {"t", "p", "i", "n", "m", "f"};
@@ -111,11 +109,11 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Test adding new variables with a script.
      */
-    /*//@Test*/ public void testRemovalWithNewDatabase() {
+    @Test public void testRemovalWithNewDatabase() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         
-        File demoFile = new File(testFolder + "/ui/demo_data.rb");
+        File demoFile = new File(testFolder + "/ui/demo_data_small.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -163,7 +161,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     @Test public void testVariableVisibility() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        File demoFile = new File(testFolder + "/ui/demo_data.rb");
+        File demoFile = new File(testFolder + "/ui/demo_data_small.rb");
         Assert.assertTrue(demoFile.exists());
 
         // 1. Run script to populate
@@ -221,6 +219,103 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     }
 
     /**
+     * Test editing variable name.
+     */
+    @Test public void testEditingVariableName() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        String reservedName = "ge";
+        String invalidName = "(hello)";
+        String validName = "v";
+
+        File demoFile = new File(testFolder + "/ui/demo_data_small.rb");
+        Assert.assertTrue(demoFile.exists());
+
+        // 1. Run script to populate
+        mainFrameFixture.runScript(demoFile);
+        mainFrameFixture.closeScriptConsole();
+
+        // 2. Check that variable list is populated
+        VariableListDialogFixture vlDialog = mainFrameFixture.openVariableList();
+
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        int numOfVars = spreadsheet.numOfColumns();
+
+        Assert.assertEquals(vlDialog.table().rowCount(),
+            spreadsheet.allColumns().size());
+
+        /* 3. For each variable, do the following through the variable list dialog and directly:
+         * a. Try reserved name - ge
+         * b. Try duplicate name
+         * c. Try invalid name - (hello)
+         * d. Try removing name completely
+         * e. Make an acceptable change
+         */
+        //for (int i =0; i < numOfVars; i++) {
+        //Rather than do it to every variable, we'll pick one at random
+        int i = (int)(Math.random() * numOfVars);
+            TableCell tc = TableCell.row(i).column(NAME_COL);
+
+            //a. Try reserved name
+            replaceTableCellValue(vlDialog.getVariableListTable(), tc, reservedName);
+            handleWarningMessage(vlDialog);
+            enterNewNameDirectly(i, reservedName);
+
+            //b. Try duplicate name
+            int row = (i + 1) % numOfVars;
+            String duplicateName = vlDialog.getVariableListTable().valueAt(TableCell.row(row).column(NAME_COL));
+            replaceTableCellValue(vlDialog.getVariableListTable(), tc, duplicateName);
+            handleWarningMessage(vlDialog);
+            enterNewNameDirectly(i, duplicateName);
+
+            //c. Try invalid name
+            replaceTableCellValue(vlDialog.getVariableListTable(), tc, invalidName);
+            handleWarningMessage(vlDialog);
+            enterNewNameDirectly(i, invalidName);
+
+            //d. Try removing name completely
+            replaceTableCellValue(vlDialog.getVariableListTable(), tc, "");
+            handleWarningMessage(vlDialog);
+            enterNewNameDirectly(i, "");
+
+            //e. Make an acceptable change
+            replaceTableCellValue(vlDialog.getVariableListTable(), tc, validName);
+            spreadsheet = mainFrameFixture.getSpreadsheet();
+            vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(NAME_COL), validName);
+            Assert.assertNotNull(spreadsheet.column(validName));
+
+            spreadsheet = mainFrameFixture.getSpreadsheet();
+            spreadsheet.column(i).doubleClick();
+            mainFrameFixture.optionPane().textBox().enterText(validName + validName);
+            mainFrameFixture.optionPane().okButton().click();
+
+            spreadsheet = mainFrameFixture.getSpreadsheet();
+            vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(NAME_COL), validName + validName);
+            Assert.assertNotNull(spreadsheet.column(validName + validName));
+
+//        }
+    }
+
+    private void enterNewNameDirectly(int i, String newName) {
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        spreadsheet.column(i).doubleClick();
+        mainFrameFixture.optionPane().textBox().pressAndReleaseKeys(KeyEvent.VK_DELETE);
+        mainFrameFixture.optionPane().textBox().enterText(newName);
+        mainFrameFixture.optionPane().okButton().click();
+        handleWarningMessage(mainFrameFixture);
+        mainFrameFixture.optionPane().cancelButton().click();
+    }
+
+    private JOptionPaneFixture handleWarningMessage(WindowFixture dialog) {
+        JOptionPaneFixture warning = dialog.optionPane();
+        warning.requireTitle("Warning:");
+        warning.requireWarningMessage();
+        warning.okButton().click();
+        return warning;
+    }
+
+    /**
      * Because variable list is not in order, checks if String is in a Table
      * column.
      *
@@ -243,5 +338,20 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         }
 
         return false;
+    }
+
+    /**
+     * To handle a warning dialog popping up after entering text,
+     * we need to manually enter a value.
+     * @param tcell TableCell
+     * @param value value to enter
+     */
+    private void replaceTableCellValue(JTableFixture table, TableCell tcell, String value) {
+        table.cell(tcell).startEditing();
+        for (int i = 0; i < table.cell(tcell).value().length(); i++) {
+            mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_BACK_SPACE);
+        }
+        mainFrameFixture.robot.enterText(value);
+        mainFrameFixture.robot.pressAndReleaseKeys(KeyEvent.VK_ENTER);
     }
 }
