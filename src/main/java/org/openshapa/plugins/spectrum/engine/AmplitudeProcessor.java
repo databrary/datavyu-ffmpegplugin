@@ -320,7 +320,10 @@ public final class AmplitudeProcessor
                 track.repaint();
             }
         } catch (Exception e) {
-            LOGGER.error(e);
+            /*
+             * Do not log; the exception that is generated is normal
+             * (thread interruptions and subsequently, task cancellation.).
+             */
         }
 
     }
