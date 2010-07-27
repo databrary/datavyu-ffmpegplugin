@@ -38,6 +38,11 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     private ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
         .getContext().getResourceMap(NewProjectV.class);
 
+    private static final int VISIBLE_COL = 0;
+    private static final int NAME_COL = 1;
+    private static final int TYPE_COL = 2;
+    private static final int COMMENT_COL = 3;
+
     /**
      * Test adding new variables with a script.
      */
@@ -48,14 +53,14 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         File demoFile = new File(testFolder + "/ui/demo_data.rb");
         Assert.assertTrue(demoFile.exists());
 
-        // 1. Run script to populate
-        mainFrameFixture.runScript(demoFile);
+        // 1. We open the variable list dialog first, because it should update live
+        VariableListDialogFixture vlDialog = mainFrameFixture.openVariableList();
 
-        // Close script console
+        // 2. Run script to populate
+        mainFrameFixture.runScript(demoFile);
         mainFrameFixture.closeScriptConsole();
 
-        // 2. Check that variable list is populated with correct data
-        VariableListDialogFixture vlDialog = mainFrameFixture.openVariableList();
+        // 3. Check that variable list has been updated
        
         spreadsheet = mainFrameFixture.getSpreadsheet();
 
@@ -63,12 +68,8 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
             spreadsheet.allColumns().size());
 
         for (int i = 0; i < spreadsheet.allColumns().size(); i++) {
-            Assert.assertTrue(inTable(
-                    spreadsheet.allColumns().elementAt(i).getColumnName(),
-                    vlDialog.getVariableListTable(), 1));
-            Assert.assertTrue(inTable(
-                    spreadsheet.allColumns().elementAt(i).getColumnType(),
-                    vlDialog.getVariableListTable(), 2));
+            vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(NAME_COL), spreadsheet.allColumns().elementAt(i).getColumnName());
+            vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(TYPE_COL), spreadsheet.allColumns().elementAt(i).getColumnType());
         }
     }
 
@@ -83,11 +84,8 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
                 "text", "predicate", "integer", "nominal", "matrix", "float"
             };
 
-        // 1. Create a new variable, then check that variable list is
-        // populated with correct data
-        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
-
-        DialogFixture vlDialog = mainFrameFixture.dialog();
+        // 1. We open the variable list dialog first, because it should update live
+        VariableListDialogFixture vlDialog = mainFrameFixture.openVariableList();
 
         spreadsheet = mainFrameFixture.getSpreadsheet();
 
@@ -99,17 +97,10 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
 
             // Check that variable list is populated with correct data
             Assert.assertEquals(spreadsheet.allColumns().size(), numCols);
-            Assert.assertEquals(vlDialog.table().rowCount(),
+            Assert.assertEquals(vlDialog.getVariableListTable().rowCount(),
                 spreadsheet.allColumns().size());
-
-            for (int j = 0; j < spreadsheet.allColumns().size(); j++) {
-                Assert.assertTrue(inTable(
-                        spreadsheet.allColumns().elementAt(j).getColumnName(),
-                        vlDialog.table(), 1));
-                Assert.assertTrue(inTable(
-                        spreadsheet.allColumns().elementAt(j).getColumnType(),
-                        vlDialog.table(), 2));
-            }
+            vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(NAME_COL), spreadsheet.allColumns().elementAt(i).getColumnName());
+            vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(TYPE_COL), spreadsheet.allColumns().elementAt(i).getColumnType());
         }
     }
 
@@ -125,14 +116,10 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         mainFrameFixture.runScript(demoFile);
-
-        // Close script console
         mainFrameFixture.closeScriptConsole();
 
         // 2. Check that variable list is populated
-        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
-
-        DialogFixture vlDialog = mainFrameFixture.dialog();
+        VariableListDialogFixture vlDialog = mainFrameFixture.openVariableList();
 
         spreadsheet = mainFrameFixture.getSpreadsheet();
 
@@ -156,16 +143,13 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         }
 
         DialogFixture newProjectDialog = mainFrameFixture.dialog("NewProjectV");
-        
+
         newProjectDialog.textBox("nameField").enterText("n");
 
         newProjectDialog.button("okButton").click();
 
         // 4. Check that variable list is empty
-        mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Variable List");
-
-        vlDialog = mainFrameFixture.dialog();
-        Assert.assertTrue(vlDialog.table().rowCount() == 0);
+        vlDialog = mainFrameFixture.openVariableList();
 
     }
 

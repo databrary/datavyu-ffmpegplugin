@@ -27,6 +27,7 @@ import org.openshapa.models.db.MatrixVocabElement.MatrixType;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.io.FileOutputStream;
+import org.openshapa.models.db.FormalArgument.FArgType;
 
 import org.openshapa.util.StringUtils;
 
@@ -156,7 +157,11 @@ public final class SaveDatabaseFileC {
             if (predicates.size() > 0) {
                 int counter = 0;
 
-                for (PredicateVocabElement pve : predicates) {
+                //Read them in reverse because they're loaded in reverse.
+                //This can be resolved by finding why they're loaded in reverse (database)
+                //for (PredicateVocabElement pve : predicates) {\
+                for (int i = predicates.size() - 1; i >= 0; i--) {
+                    PredicateVocabElement pve = predicates.elementAt(i);
                     ps.printf("%d:%s-", counter,
                         StringUtils.escapeCSV(pve.getName()));
 
@@ -164,8 +169,13 @@ public final class SaveDatabaseFileC {
                         FormalArgument fa = pve.getFormalArgCopy(j);
                         String name = fa.getFargName().substring(1,
                                 fa.getFargName().length() - 1);
-                        ps.printf("%s|%s", StringUtils.escapeCSV(name),
-                            fa.getFargType().toString());
+                        if (fa.getFargType() == FArgType.UNTYPED || fa.getFargType() == FArgType.UNDEFINED) {
+                            ps.printf("%s|%s", StringUtils.escapeCSV(name),
+                                FArgType.NOMINAL.toString());
+                        } else {
+                            ps.printf("%s|%s", StringUtils.escapeCSV(name),
+                                fa.getFargType().toString());
+                        }
 
                         if (j < (pve.getNumFormalArgs() - 1)) {
                             ps.print(',');
@@ -183,8 +193,13 @@ public final class SaveDatabaseFileC {
             for (int i = 0; i < colIds.size(); i++) {
                 DataColumn dc = db.getDataColumn(colIds.get(i));
                 boolean isMatrix = false;
-                ps.printf("%s (%s,%s,%s)", StringUtils.escapeCSV(dc.getName()),
-                    dc.getItsMveType(), !dc.getHidden(), dc.getComment());
+                if (dc.getItsMveType() == MatrixType.UNDEFINED) {
+                    ps.printf("%s (%s,%s,%s)", StringUtils.escapeCSV(dc.getName()),
+                        MatrixType.NOMINAL, !dc.getHidden(), dc.getComment());
+                } else {
+                    ps.printf("%s (%s,%s,%s)", StringUtils.escapeCSV(dc.getName()),
+                        dc.getItsMveType(), !dc.getHidden(), dc.getComment());
+                }
 
                 // If we a matrix type - we need to dump the formal args.
                 MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
@@ -197,8 +212,13 @@ public final class SaveDatabaseFileC {
                         FormalArgument fa = mve.getFormalArgCopy(j);
                         String name = fa.getFargName().substring(1,
                                 fa.getFargName().length() - 1);
-                        ps.printf("%s|%s", StringUtils.escapeCSV(name),
-                            fa.getFargType().toString());
+                        if (fa.getFargType() == FArgType.UNTYPED || fa.getFargType() == FArgType.UNDEFINED) {
+                            ps.printf("%s|%s", StringUtils.escapeCSV(name),
+                                FArgType.NOMINAL.toString());
+                        } else {
+                            ps.printf("%s|%s", StringUtils.escapeCSV(name),
+                                fa.getFargType().toString());
+                        }
 
                         if (j < (mve.getNumFormalArgs() - 1)) {
                             ps.print(',');
