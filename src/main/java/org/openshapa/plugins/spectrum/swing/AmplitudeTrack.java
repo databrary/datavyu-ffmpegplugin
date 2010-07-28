@@ -217,9 +217,9 @@ public final class AmplitudeTrack extends TrackPainter
 
         // 3. Calculate the times to sample.
         long start = Math.max(viewableModel.getZoomWindowStart(),
-                trackModel.getOffset());
+                trackModel.getOffset()) - trackModel.getOffset();
         long end = Math.min(trackModel.getOffset() + trackModel.getDuration(),
-                viewableModel.getZoomWindowEnd());
+                viewableModel.getZoomWindowEnd()) - trackModel.getOffset();
 
         // 4. Make the worker thread.
         processor = new AmplitudeProcessor(mediaFile, this, channels);
@@ -247,7 +247,8 @@ public final class AmplitudeTrack extends TrackPainter
 
             // Calculate carriage start pixel position.
             final double startXPos = computeXCoord(MILLISECONDS.convert(
-                        data.getDataTimeStart(), data.getDataTimeUnit()));
+                        data.getDataTimeStart(), data.getDataTimeUnit())
+                    + trackModel.getOffset());
 
             // Carriage offset from top of panel.
             final int carriageYOffset = (int) (getHeight() * 2D / 10D);
@@ -273,8 +274,8 @@ public final class AmplitudeTrack extends TrackPainter
                 }
 
                 double interval = data.getTimeInterval() * offsetCounter;
-                double offset = computeXCoord(interval
-                        + data.getDataTimeStart());
+                double offset = computeXCoord(interval + data
+                        .getDataTimeStart() + trackModel.getOffset());
 
                 offsetCounter++;
 
@@ -292,8 +293,8 @@ public final class AmplitudeTrack extends TrackPainter
                 }
 
                 double interval = data.getTimeInterval() * offsetCounter;
-                double offset = computeXCoord(interval
-                        + data.getDataTimeStart());
+                double offset = computeXCoord(interval + data
+                        .getDataTimeStart() + trackModel.getOffset());
                 offsetCounter++;
 
                 if (amp != 0) {
