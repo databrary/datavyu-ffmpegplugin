@@ -23,7 +23,6 @@ import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 import org.openshapa.views.component.TrackPainter;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 
 
 /**
