@@ -333,7 +333,6 @@ public final class PlaybackEngine extends Thread {
                 SeekType.SET, NANOSECONDS.convert(newTime, MILLISECONDS),
                 SeekType.NONE, -1);
             pipeline.pause();
-
         }
     }
 
@@ -426,7 +425,6 @@ public final class PlaybackEngine extends Thread {
      */
     public void shutdown() {
         pipeline.stop();
-        pipeline.setState(org.gstreamer.State.NULL);
         pipeline.dispose();
     }
 
