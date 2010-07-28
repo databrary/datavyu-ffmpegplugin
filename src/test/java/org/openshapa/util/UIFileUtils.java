@@ -166,7 +166,9 @@ public final class UIFileUtils {
                 Assert.assertTrue(false, "Bad file extension:" + ext);
             }
 
-            mainFrameFixture.fileChooser().selectFile(fileToSave).approve();
+            if (!fileToSave.exists()) {
+                mainFrameFixture.fileChooser().selectFile(fileToSave).approve();
+            }
         }
     }
 
