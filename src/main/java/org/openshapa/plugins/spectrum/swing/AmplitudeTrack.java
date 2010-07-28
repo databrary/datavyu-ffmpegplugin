@@ -23,7 +23,6 @@ import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 import org.openshapa.views.component.TrackPainter;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 
 
 /**
@@ -80,7 +79,7 @@ public final class AmplitudeTrack extends TrackPainter
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
 
-        if (Iterables.contains(EXCLUDED_PROPS, evt.getPropertyName())) {
+        if (EXCLUDED_PROPS.contains(evt.getPropertyName())) {
             return;
         }
 
@@ -218,8 +217,8 @@ public final class AmplitudeTrack extends TrackPainter
             / (double) viewableModel.getIntervalWidth();
 
         // TODO refactor magic constants.
-        resolution = Math.min(resolution, 200); // Min resample = 5Hz
-        resolution = Math.max(1, resolution); // Max resample = 1kHz
+        resolution = Math.min(resolution, 200); // Min resample = 500Hz
+        resolution = Math.max(1, resolution); // Max resample = 100000Hz
 
         // 2. Calculate the resampling rate.
         int rate = (int) (1000000 / resolution);
@@ -308,11 +307,7 @@ public final class AmplitudeTrack extends TrackPainter
                         .getDataTimeStart() + trackModel.getOffset());
                 offsetCounter++;
 
-                if (amp != 0) {
-                    amps[1].lineTo(offset, midYRightPos + (-amp * ampHeight));
-                } else {
-                    amps[1].lineTo(offset, midYRightPos);
-                }
+                amps[1].lineTo(offset, midYRightPos + (-amp * ampHeight));
 
             }
 
