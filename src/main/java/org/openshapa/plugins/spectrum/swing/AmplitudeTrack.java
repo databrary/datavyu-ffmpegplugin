@@ -11,6 +11,8 @@ import java.beans.PropertyChangeListener;
 
 import java.io.File;
 
+import java.util.List;
+
 import javax.swing.SwingWorker;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -19,6 +21,9 @@ import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor;
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 
 import org.openshapa.views.component.TrackPainter;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 
 /**
@@ -29,6 +34,11 @@ public final class AmplitudeTrack extends TrackPainter
 
     /** Color used to paint the amplitude data. */
     private static final Color DATA_COLOR = new Color(0, 0, 0, 200);
+
+    /** Excluded properties. */
+    private static final List<String> EXCLUDED_PROPS = ImmutableList.of(
+            "locked", "trackId", "erroneous", "bookmark", "trackName",
+            "selected", "state");
 
     /** Contains the amplitude data to visualize. */
     private StereoAmplitudeData data;
@@ -69,6 +79,11 @@ public final class AmplitudeTrack extends TrackPainter
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
+
+        if (Iterables.contains(EXCLUDED_PROPS, evt.getPropertyName())) {
+            return;
+        }
+
         execProcessor();
 
         leftAmp = null;
@@ -161,14 +176,25 @@ public final class AmplitudeTrack extends TrackPainter
         return (time * ratio) - (viewableModel.getZoomWindowStart() * ratio);
     }
 
+    /**
+     * Helper function to process amplitude data.
+     */
     private void execProcessor() {
 
-        if (processor != null) {
-            processor.cancel(true);
-        }
-
+        // No media file; nothing to process.
         if (mediaFile == null) {
             return;
+        }
+
+        // If the first processing run is already underway, do not cancel it.
+        if ((processor != null) && (data == null)) {
+            return;
+        }
+
+        // If some processing run is underway, cancel it because something
+        // changed.
+        if (processor != null) {
+            processor.cancel(true);
         }
 
         // 1. Find the resolution of a single pixel, ms/pixel.
@@ -197,6 +223,9 @@ public final class AmplitudeTrack extends TrackPainter
         processor.execute();
     }
 
+    /**
+     * Inner worker for calculating paths.
+     */
     private final class PathWorker extends SwingWorker<Path2D[], Void> {
         @Override protected Path2D[] doInBackground() throws Exception {
 
