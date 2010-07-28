@@ -82,7 +82,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Test adding new variables with a script.
      */
-    /*//@Test*/ public void testAddingVariablesWithScript() {
+    @Test public void testAddingVariablesWithScript() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         
@@ -112,7 +112,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Test adding new variables manually.
      */
-    /*//@Test*/ public void testAddingVariablesManually() {
+    @Test public void testAddingVariablesManually() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String[] varNames = {"t", "p", "i", "n", "m", "f"};
@@ -143,7 +143,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Test adding new variables with a script.
      */
-    /*//@Test*/ public void testRemovalWithNewDatabase() {
+    @Test public void testRemovalWithNewDatabase() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         
@@ -192,7 +192,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Test hiding and showing variables.
      */
-    /*//@Test*/ public void testVariableVisibility() {
+    @Test public void testVariableVisibility() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         File demoFile = new File(testFolder + "/ui/demo_data_small.rb");
@@ -255,7 +255,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
     /**
      * Test editing variable name.
      */
-    /*//@Test*/ public void testEditingVariableName() {
+    @Test public void testEditingVariableName() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         String reservedName = "ge";
@@ -405,6 +405,25 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
             String varName = vlDialog.getVariableListTable().valueAt(TableCell.row(j).column(NAME_COL));
             tc = TableCell.row(j).column(COMMENT_COL);
             Assert.assertEquals(vlDialog.getVariableListTable().valueAt(TableCell.row(j).column(COMMENT_COL)), varName + comment);
+        }
+
+        //c. Try removing comments
+        for (int j = 0; j < numOfVars; j++) {
+            String varName = vlDialog.getVariableListTable().valueAt(TableCell.row(j).column(NAME_COL));
+            tc = TableCell.row(j).column(COMMENT_COL);
+            replaceTableCellValue(vlDialog.getVariableListTable(), tc, "");
+            Assert.assertEquals(vlDialog.getVariableListTable().valueAt(TableCell.row(j).column(COMMENT_COL)), "");
+        }
+
+        //Save and confirm everything is still correct
+        UIFileUtils.saveFile(mainFrameFixture, toSave);
+        UIFileUtils.loadFile(mainFrameFixture, toSave);
+
+        vlDialog = mainFrameFixture.openVariableList();
+        for (int j = 0; j < numOfVars; j++) {
+            String varName = vlDialog.getVariableListTable().valueAt(TableCell.row(j).column(NAME_COL));
+            tc = TableCell.row(j).column(COMMENT_COL);
+            Assert.assertEquals(vlDialog.getVariableListTable().valueAt(TableCell.row(j).column(COMMENT_COL)), "");
         }
     }
 
