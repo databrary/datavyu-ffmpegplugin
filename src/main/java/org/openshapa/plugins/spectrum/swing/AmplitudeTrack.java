@@ -308,9 +308,7 @@ public final class AmplitudeTrack extends TrackPainter
                         .getDataTimeStart() + trackModel.getOffset());
                 offsetCounter++;
 
-                if (amp != 0) {
-                    amps[1].lineTo(offset, midYRightPos + (-amp * ampHeight));
-                }
+                amps[1].lineTo(offset, midYRightPos + (-amp * ampHeight));
 
             }
 
