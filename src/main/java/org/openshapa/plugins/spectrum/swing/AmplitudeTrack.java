@@ -139,25 +139,30 @@ public final class AmplitudeTrack extends TrackPainter
         // Y-coordinate for right channel.
         final int midYRightPos = carriageYOffset + (3 * carriageHeight / 4);
 
-        // Draw the baseline zero amplitude.
-        g2d.setColor(DATA_COLOR);
-        g2d.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
-        g2d.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
-
         if (data == null) {
             execProcessor();
 
             return;
         }
 
+        g2d.setColor(DATA_COLOR);
+
         // Draw left channel data.
         if (leftAmp != null) {
             g2d.draw(leftAmp);
+        } else {
+
+            // Baseline zero amplitude.
+            g2d.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
         }
 
         // Draw right channel data.
         if (rightAmp != null) {
             g2d.draw(rightAmp);
+        } else {
+
+            // Baseline zero amplitude.
+            g2d.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
         }
 
     }
