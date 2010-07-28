@@ -34,7 +34,7 @@ public class SpectrumConstants {
      * Number of spectrum updates to display in a second. Must divide 1000
      * evenly.
      */
-    public static final int FPS = 25;
+    public static final int FPS = 10;
 
     /**
      * GStreamer spectrum plugin message interval.

@@ -145,12 +145,13 @@ public class SpectrumDataViewer implements DataViewer {
         // Find number of audio channels first.
         final int channels = SpectrumUtils.getNumChannels(file);
 
-        // Get the engine up and running.
-        engine = new PlaybackEngine(mediaFile, dialog);
-        engine.start();
-
         // Record media duration and audio FPS
         duration = SpectrumUtils.getDuration(file);
+
+        // Get the engine up and running.
+        engine = new PlaybackEngine(mediaFile, dialog);
+        engine.setMediaLength(duration);
+        engine.start();
 
         // Show the dialog, set up the track.
         Runnable edtTask = new Runnable() {

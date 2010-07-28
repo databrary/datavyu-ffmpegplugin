@@ -99,7 +99,8 @@ public final class AmplitudeProcessor
         final TimeUnit unit) {
 
         if (end < start) {
-            throw new IllegalArgumentException("Invalid time segment.");
+            throw new IllegalArgumentException("Invalid time segment: start="
+                + start + " end=" + end);
         }
 
         data.setDataTimeStart(start);

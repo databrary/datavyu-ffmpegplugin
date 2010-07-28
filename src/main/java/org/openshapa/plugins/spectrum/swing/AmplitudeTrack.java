@@ -11,6 +11,8 @@ import java.beans.PropertyChangeListener;
 
 import java.io.File;
 
+import java.util.List;
+
 import javax.swing.SwingWorker;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -19,6 +21,9 @@ import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor;
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 
 import org.openshapa.views.component.TrackPainter;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 
 /**
@@ -29,6 +34,11 @@ public final class AmplitudeTrack extends TrackPainter
 
     /** Color used to paint the amplitude data. */
     private static final Color DATA_COLOR = new Color(0, 0, 0, 200);
+
+    /** Excluded properties. */
+    private static final List<String> EXCLUDED_PROPS = ImmutableList.of(
+            "locked", "trackId", "erroneous", "bookmark", "trackName",
+            "selected", "state");
 
     /** Contains the amplitude data to visualize. */
     private StereoAmplitudeData data;
@@ -69,6 +79,11 @@ public final class AmplitudeTrack extends TrackPainter
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
+
+        if (Iterables.contains(EXCLUDED_PROPS, evt.getPropertyName())) {
+            return;
+        }
+
         execProcessor();
 
         leftAmp = null;
@@ -124,25 +139,30 @@ public final class AmplitudeTrack extends TrackPainter
         // Y-coordinate for right channel.
         final int midYRightPos = carriageYOffset + (3 * carriageHeight / 4);
 
-        // Draw the baseline zero amplitude.
-        g2d.setColor(DATA_COLOR);
-        g2d.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
-        g2d.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
-
         if (data == null) {
             execProcessor();
 
             return;
         }
 
+        g2d.setColor(DATA_COLOR);
+
         // Draw left channel data.
         if (leftAmp != null) {
             g2d.draw(leftAmp);
+        } else {
+
+            // Baseline zero amplitude.
+            g2d.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
         }
 
         // Draw right channel data.
         if (rightAmp != null) {
             g2d.draw(rightAmp);
+        } else {
+
+            // Baseline zero amplitude.
+            g2d.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
         }
 
     }
@@ -161,14 +181,25 @@ public final class AmplitudeTrack extends TrackPainter
         return (time * ratio) - (viewableModel.getZoomWindowStart() * ratio);
     }
 
+    /**
+     * Helper function to process amplitude data.
+     */
     private void execProcessor() {
 
-        if (processor != null) {
-            processor.cancel(true);
-        }
-
+        // No media file; nothing to process.
         if (mediaFile == null) {
             return;
+        }
+
+        // If the first processing run is already underway, do not cancel it.
+        if ((processor != null) && (data == null)) {
+            return;
+        }
+
+        // If some processing run is underway, cancel it because something
+        // changed.
+        if (processor != null) {
+            processor.cancel(true);
         }
 
         // 1. Find the resolution of a single pixel, ms/pixel.
@@ -186,9 +217,9 @@ public final class AmplitudeTrack extends TrackPainter
 
         // 3. Calculate the times to sample.
         long start = Math.max(viewableModel.getZoomWindowStart(),
-                trackModel.getOffset());
+                trackModel.getOffset()) - trackModel.getOffset();
         long end = Math.min(trackModel.getOffset() + trackModel.getDuration(),
-                viewableModel.getZoomWindowEnd());
+                viewableModel.getZoomWindowEnd()) - trackModel.getOffset();
 
         // 4. Make the worker thread.
         processor = new AmplitudeProcessor(mediaFile, this, channels);
@@ -197,6 +228,9 @@ public final class AmplitudeTrack extends TrackPainter
         processor.execute();
     }
 
+    /**
+     * Inner worker for calculating paths.
+     */
     private final class PathWorker extends SwingWorker<Path2D[], Void> {
         @Override protected Path2D[] doInBackground() throws Exception {
 
@@ -213,7 +247,8 @@ public final class AmplitudeTrack extends TrackPainter
 
             // Calculate carriage start pixel position.
             final double startXPos = computeXCoord(MILLISECONDS.convert(
-                        data.getDataTimeStart(), data.getDataTimeUnit()));
+                        data.getDataTimeStart(), data.getDataTimeUnit())
+                    + trackModel.getOffset());
 
             // Carriage offset from top of panel.
             final int carriageYOffset = (int) (getHeight() * 2D / 10D);
@@ -239,8 +274,8 @@ public final class AmplitudeTrack extends TrackPainter
                 }
 
                 double interval = data.getTimeInterval() * offsetCounter;
-                double offset = computeXCoord(interval
-                        + data.getDataTimeStart());
+                double offset = computeXCoord(interval + data
+                        .getDataTimeStart() + trackModel.getOffset());
 
                 offsetCounter++;
 
@@ -258,8 +293,8 @@ public final class AmplitudeTrack extends TrackPainter
                 }
 
                 double interval = data.getTimeInterval() * offsetCounter;
-                double offset = computeXCoord(interval
-                        + data.getDataTimeStart());
+                double offset = computeXCoord(interval + data
+                        .getDataTimeStart() + trackModel.getOffset());
                 offsetCounter++;
 
                 if (amp != 0) {
