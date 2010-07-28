@@ -80,7 +80,7 @@ public final class AmplitudeTrack extends TrackPainter
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
 
-        if (Iterables.contains(EXCLUDED_PROPS, evt.getPropertyName())) {
+        if (EXCLUDED_PROPS.contains(evt.getPropertyName())) {
             return;
         }
 
