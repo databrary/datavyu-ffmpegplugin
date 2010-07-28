@@ -218,8 +218,8 @@ public final class AmplitudeTrack extends TrackPainter
             / (double) viewableModel.getIntervalWidth();
 
         // TODO refactor magic constants.
-        resolution = Math.min(resolution, 200); // Min resample = 5Hz
-        resolution = Math.max(1, resolution); // Max resample = 1kHz
+        resolution = Math.min(resolution, 200); // Min resample = 500Hz
+        resolution = Math.max(1, resolution); // Max resample = 100000Hz
 
         // 2. Calculate the resampling rate.
         int rate = (int) (1000000 / resolution);
@@ -310,8 +310,6 @@ public final class AmplitudeTrack extends TrackPainter
 
                 if (amp != 0) {
                     amps[1].lineTo(offset, midYRightPos + (-amp * ampHeight));
-                } else {
-                    amps[1].lineTo(offset, midYRightPos);
                 }
 
             }
