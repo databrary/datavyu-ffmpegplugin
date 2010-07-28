@@ -82,7 +82,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Open spreadsheet and check that script has data
         spreadsheet = mainFrameFixture.getSpreadsheet();

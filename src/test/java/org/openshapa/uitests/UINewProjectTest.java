@@ -48,7 +48,7 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Check that the database is populated
         spreadsheet = mainFrameFixture.getSpreadsheet();
@@ -119,7 +119,7 @@ public final class UINewProjectTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Sequentially select each column and delete
         spreadsheet = mainFrameFixture.getSpreadsheet();

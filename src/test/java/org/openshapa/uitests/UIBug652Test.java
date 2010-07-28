@@ -86,7 +86,7 @@ public final class UIBug652Test extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
 

@@ -40,7 +40,7 @@ public final class UIBug583Test extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Get each float cell
         for (String floatVal : floatCellValues) {

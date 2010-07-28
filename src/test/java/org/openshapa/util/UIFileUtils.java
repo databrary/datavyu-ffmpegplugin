@@ -153,20 +153,20 @@ public final class UIFileUtils {
             SpreadsheetPanelFixture spreadsheet = mainFrameFixture.getSpreadsheet();
             mainFrameFixture.clickMenuItemWithPath("File", "Save");
 
-            if (ext.equals("opf")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new OPFFilter());
-            } else if (ext.equals("csv")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new CSVFilter());
-            } else if (ext.equals("odb")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new MODBFilter());
-            } else {
-                Assert.assertTrue(false, "Bad file extension:" + ext);
-            }
-
             if (!fileToSave.exists()) {
+                if (ext.equals("opf")) {
+                    mainFrameFixture.fileChooser().component().setFileFilter(
+                        new OPFFilter());
+                } else if (ext.equals("csv")) {
+                    mainFrameFixture.fileChooser().component().setFileFilter(
+                        new CSVFilter());
+                } else if (ext.equals("odb")) {
+                    mainFrameFixture.fileChooser().component().setFileFilter(
+                        new MODBFilter());
+                } else {
+                    Assert.assertTrue(false, "Bad file extension:" + ext);
+                }
+            
                 mainFrameFixture.fileChooser().selectFile(fileToSave).approve();
             }
         }

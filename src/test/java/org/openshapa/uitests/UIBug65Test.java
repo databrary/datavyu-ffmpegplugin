@@ -36,7 +36,7 @@ public final class UIBug65Test extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Save column vector
         spreadsheet = mainFrameFixture.getSpreadsheet();

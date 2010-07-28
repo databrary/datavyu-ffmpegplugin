@@ -84,7 +84,7 @@ public final class UIScriptsTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 1a. Check that database is populated
         spreadsheet = mainFrameFixture.getSpreadsheet();
@@ -98,7 +98,7 @@ public final class UIScriptsTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(modifyFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 3. Save the database
         
@@ -143,7 +143,7 @@ public final class UIScriptsTest extends OpenSHAPATestClass {
 
         //Run script
         mainFrameFixture.runScript(script1);
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         //Check recent scripts
         JMenuItemFixture recentScriptMenu = mainFrameFixture.menuItemWithPath("Script", "Run recent script").click();
@@ -154,7 +154,7 @@ public final class UIScriptsTest extends OpenSHAPATestClass {
         
         //Run script again
         mainFrameFixture.runScript(script1);
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         //Check recent scripts
         recentScriptMenu = mainFrameFixture.menuItemWithPath("Script", "Run recent script").click();
@@ -165,7 +165,7 @@ public final class UIScriptsTest extends OpenSHAPATestClass {
         
         //Run different script
         mainFrameFixture.runScript(script2);
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         //Check recent scripts
         recentScriptMenu = mainFrameFixture.menuItemWithPath("Script", "Run recent script").click();
