@@ -45,7 +45,7 @@ import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.ViewerStateListener;
 
-public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
+public class GStreamerDataViewer implements DataViewer {
     /** Icon for displaying volume slider. */
     private final ImageIcon volumeIcon =
             new ImageIcon(getClass().getResource("/icons/audio-volume.png"));
@@ -73,6 +73,7 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
     private final List<ViewerStateListener> viewerListeners =
             new LinkedList<ViewerStateListener>();
 
+    private JDialog videoDialog;
     private long offset;
     private final TrackPainter trackPainter;
     private File dataFeed;
@@ -91,7 +92,6 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
     private final long VIDEO_LOADING_TIMEOUT_SECONDS = 30;
     
     public GStreamerDataViewer(Frame parent, boolean modal) {
-        super(parent, modal);
         
         System.out.println("GStreamerDataViewer.GStreamerDataViewer()");
 
@@ -128,6 +128,16 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
                     volumeDialog.setVisible(false);
                 }
             });
+        
+        videoDialog = new JDialog(parent, false);
+        videoDialog.setVisible(false);
+        videoDialog.setName("videoDialog");
+        videoDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        videoDialog.addWindowListener(new WindowAdapter() {
+            public void windowClosing(final WindowEvent evt) {
+                GStreamerDataViewer.this.windowClosing(evt);
+            }
+        });
     }
 
     private void waitForPlaybinStateChange() {
@@ -183,7 +193,7 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
     @Override
     public JDialog getParentJDialog() {
         System.out.println("GStreamerDataViewer.getParentJDialog()");
-        return this;
+        return videoDialog;
     }
 
     @Override
@@ -266,6 +276,7 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
         playBin.setState(State.PAUSED);
         State state = playBin.getState(TimeUnit.NANOSECONDS.convert(VIDEO_LOADING_TIMEOUT_SECONDS, TimeUnit.SECONDS));
         if (state != State.PAUSED) {
+        	this.dataFeed = null;
             throw new RuntimeException("Couldn't add video file " + dataFeed.getAbsolutePath());
         }
         
@@ -287,18 +298,11 @@ public class GStreamerDataViewer extends OpenSHAPADialog implements DataViewer {
         
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JFrame frame = new JFrame(dataFeed.getName());
-                frame.setVisible(false);
-                frame.getContentPane().add(videoComponent, BorderLayout.CENTER);
-                videoComponent.setPreferredSize(videoSize);
-                frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                frame.addWindowListener(new WindowAdapter() {
-                    public void windowClosing(final WindowEvent evt) {
-                        GStreamerDataViewer.this.windowClosing(evt);
-                    }
-                });
-                frame.pack();
-                frame.setVisible(true);
+                videoDialog.setTitle(dataFeed.getName());
+                videoDialog.getContentPane().add(videoComponent, BorderLayout.CENTER);
+                videoDialog.setPreferredSize(videoSize);
+                videoDialog.pack();
+                videoDialog.setVisible(true);
             }
         });
     }

@@ -5,7 +5,6 @@ import java.io.File;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
@@ -31,12 +30,11 @@ import org.gstreamer.elements.AppSink;
 import org.gstreamer.elements.DecodeBin;
 import org.gstreamer.elements.AppSink.NEW_BUFFER;
 
+import static org.openshapa.plugins.spectrum.SpectrumConstants.SPECTRUM_MSG_INTERVAL;
 import org.openshapa.plugins.spectrum.SpectrumConstants;
 import org.openshapa.plugins.spectrum.swing.Spectrum;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
 import org.openshapa.plugins.spectrum.swing.SpectrumView;
-
-import com.google.common.collect.Lists;
 
 import com.sun.jna.Pointer;
 
@@ -77,6 +75,8 @@ public final class PlaybackEngine extends Thread {
     private Pipeline pipeline;
 
     private long currentTime;
+
+    private long mediaLength;
 
     /**
      * Creates a new engine thread.
@@ -324,16 +324,48 @@ public final class PlaybackEngine extends Thread {
     private void engineSeeking() {
 
         if (playbackSpeed != 0) {
-            pipeline.seek(playbackSpeed, Format.TIME,
-                SeekFlags.FLUSH | SeekFlags.SEGMENT, SeekType.SET,
-                NANOSECONDS.convert(newTime, MILLISECONDS), SeekType.NONE, -1);
-        } else {
-            pipeline.play();
-            pipeline.seek(1D, Format.TIME, SeekFlags.FLUSH | SeekFlags.SEGMENT,
-                SeekType.SET, NANOSECONDS.convert(newTime, MILLISECONDS),
-                SeekType.NONE, -1);
-            pipeline.pause();
 
+            if (newTime < currentTime) {
+
+                // Backward seek
+                pipeline.seek(playbackSpeed, Format.TIME,
+                    SeekFlags.FLUSH | SeekFlags.SEGMENT, SeekType.SET, 0,
+                    SeekType.SET, NANOSECONDS.convert(newTime, MILLISECONDS));
+            } else {
+
+                // Forward seek
+                pipeline.seek(playbackSpeed, Format.TIME,
+                    SeekFlags.FLUSH | SeekFlags.SEGMENT, SeekType.SET,
+                    NANOSECONDS.convert(newTime, MILLISECONDS), SeekType.SET,
+                    NANOSECONDS.convert(mediaLength, MILLISECONDS));
+            }
+
+        } else {
+            pipeline.pause();
+            pipeline.getState(50, MILLISECONDS);
+
+            if (newTime < currentTime) {
+
+                // Backward seek
+                pipeline.seek(-1D, Format.TIME,
+                    SeekFlags.FLUSH | SeekFlags.SEGMENT | SeekFlags.ACCURATE,
+                    SeekType.SET, NANOSECONDS.convert(newTime, MILLISECONDS),
+                    SeekType.SET,
+                    NANOSECONDS.convert(newTime, MILLISECONDS)
+                    + SPECTRUM_MSG_INTERVAL);
+            } else {
+                long start = NANOSECONDS.convert(newTime, MILLISECONDS)
+                    - SPECTRUM_MSG_INTERVAL;
+                start = Math.max(0, start);
+
+                // Forward seek
+                pipeline.seek(1D, Format.TIME,
+                    SeekFlags.FLUSH | SeekFlags.SEGMENT | SeekFlags.ACCURATE,
+                    SeekType.SET, start, SeekType.SET,
+                    NANOSECONDS.convert(newTime, MILLISECONDS));
+            }
+
+            pipeline.play();
         }
     }
 
@@ -422,11 +454,18 @@ public final class PlaybackEngine extends Thread {
     }
 
     /**
+     * @param mediaLength
+     *            the mediaLength to set
+     */
+    public void setMediaLength(final long mediaLength) {
+        this.mediaLength = mediaLength;
+    }
+
+    /**
      * Shutdown the engine.
      */
     public void shutdown() {
         pipeline.stop();
-        pipeline.setState(org.gstreamer.State.NULL);
         pipeline.dispose();
     }
 

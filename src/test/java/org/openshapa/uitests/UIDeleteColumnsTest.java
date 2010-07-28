@@ -30,7 +30,7 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Sequentially select each column and delete
         spreadsheet = mainFrameFixture.getSpreadsheet();
@@ -63,7 +63,7 @@ public final class UIDeleteColumnsTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Select all columns and delete
         spreadsheet = mainFrameFixture.getSpreadsheet();

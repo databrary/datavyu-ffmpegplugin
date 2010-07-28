@@ -14,7 +14,6 @@ import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor;
 import org.openshapa.plugins.spectrum.engine.PlaybackEngine;
 import org.openshapa.plugins.spectrum.swing.AmplitudeTrack;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
@@ -89,6 +88,8 @@ public class SpectrumDataViewer implements DataViewer {
     }
 
     @Override public float getFrameRate() {
+
+        // TODO review this API.
         return SpectrumConstants.FPS;
     }
 
@@ -142,21 +143,17 @@ public class SpectrumDataViewer implements DataViewer {
         mediaFile = file;
 
         // Find number of audio channels first.
-        int channels = SpectrumUtils.getNumChannels(file);
-
-        // Start processing data for the track display.
-        AmplitudeProcessor ap = new AmplitudeProcessor(file, track, channels);
-        ap.execute();
-
-        // Get the engine up and running.
-        engine = new PlaybackEngine(mediaFile, dialog);
-        engine.start();
-
+        final int channels = SpectrumUtils.getNumChannels(file);
 
         // Record media duration and audio FPS
         duration = SpectrumUtils.getDuration(file);
 
-        // Show the dialog.
+        // Get the engine up and running.
+        engine = new PlaybackEngine(mediaFile, dialog);
+        engine.setMediaLength(duration);
+        engine.start();
+
+        // Show the dialog, set up the track.
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
 
@@ -164,6 +161,9 @@ public class SpectrumDataViewer implements DataViewer {
                         dialog.setVisible(true);
                         dialog.setTitle("Spectrum - " + file.getName());
                     }
+
+                    track.setMedia(mediaFile, channels);
+                    track.repaint();
                 }
             };
 

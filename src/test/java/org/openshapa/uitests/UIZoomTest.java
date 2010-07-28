@@ -39,7 +39,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Get the spreadsheet, check that cells do exist
         spreadsheet = mainFrameFixture.getSpreadsheet();
@@ -152,7 +152,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Get the spreadsheet, check that cells do exist
         spreadsheet = mainFrameFixture.getSpreadsheet();
@@ -238,7 +238,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Get the spreadsheet, check that cells do exist
         spreadsheet = mainFrameFixture.getSpreadsheet();

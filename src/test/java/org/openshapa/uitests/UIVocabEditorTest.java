@@ -66,7 +66,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 3. Check that vocab editor is populated
         veDialog = mainFrameFixture.openVocabEditor();
@@ -307,7 +307,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Get current data
         VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
@@ -367,7 +367,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Get current data
         VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
@@ -499,7 +499,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Get current data
         VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
@@ -796,7 +796,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Get number of elements
         VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
@@ -851,7 +851,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Get number of elements
         VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
@@ -884,7 +884,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Get number of elements
         VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
@@ -935,7 +935,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         mainFrameFixture.runScript(demoFile);
 
         // Close script console
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Get number of elements
         VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
