@@ -202,6 +202,17 @@ public final class AmplitudeTrack extends TrackPainter
             processor.cancel(true);
         }
 
+        // Track is past the end window, so it is not visible.
+        if (viewableModel.getZoomWindowEnd() < trackModel.getOffset()) {
+            return;
+        }
+
+        // Track is before the start window, so it is not visible.
+        if ((trackModel.getDuration() + trackModel.getOffset())
+                < viewableModel.getZoomWindowStart()) {
+            return;
+        }
+
         // 1. Find the resolution of a single pixel, ms/pixel.
         double resolution = viewableModel.getIntervalTime()
             / (double) viewableModel.getIntervalWidth();
