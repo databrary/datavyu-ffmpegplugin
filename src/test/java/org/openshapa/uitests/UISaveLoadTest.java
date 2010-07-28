@@ -36,6 +36,7 @@ import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
 import org.openshapa.util.FileFilters.OPFFilter;
+import org.openshapa.util.UIFileUtils;
 
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
@@ -98,31 +99,19 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     private void saveAsTest(final String fileName, final String extension)
         throws IOException {
-        
-
-        
+                
         File demoFile = new File(testFolder + "/ui/demo_data_to_csv2.rb");
-        File toSave = null;
+        File toSave = new File(tempFolder + "/" + fileName);;
         Assert.assertTrue(demoFile.exists(),
             "Expecting demo_data_to_csv.rb to exist");
 
         mainFrameFixture.runScript(demoFile);
-
-        // Close script console
-        DialogFixture scriptConsole = mainFrameFixture.dialog();
-        long currentTime = System.currentTimeMillis();
-        long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT; // timeout
-
-        while ((System.currentTimeMillis() < maxTime)
-                && (!scriptConsole.textBox().text().contains("Finished"))) {
-            Thread.yield();
-        }
-
-        scriptConsole.button("closeButton").click();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // Check that asterisk is present
         Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
 
+        //Not using a function, because we're using the short cut here.
         // 2. Save the file
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
@@ -134,7 +123,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
                 fc.setFileFilter(new CSVFilter());
             }
 
-            toSave = new File(tempFolder + "/" + fileName);
 
             fc.setSelectedFile(toSave);
 
@@ -156,7 +144,6 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
                     new CSVFilter());
             }
 
-            toSave = new File(tempFolder + "/" + fileName);
             mainFrameFixture.fileChooser().selectFile(toSave).approve();
         }
 
@@ -176,7 +163,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         if (extension.equals("csv")) {
             expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
-            loadFile(new File(pc.getProjectDirectory(),
+            UIFileUtils.loadFile(mainFrameFixture, new File(pc.getProjectDirectory(),
                     pc.getDatabaseFileName()));
             outputFile = saveAsCSV(fileName + "new");
         } else if (extension.equals("opf")) {
@@ -184,7 +171,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             // Open the opf and save it as a csv
             // This will also test opf opening. Later this can be refactored to
             // its own test.
-            loadFile(justSaved);
+            UIFileUtils.loadFile(mainFrameFixture, justSaved);
             outputFile = saveAsCSV(fileName);
 
             expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
@@ -232,92 +219,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         return toSave;
     }
-
-    /**
-     * Loads file after creating a new project.
-     * @param file opf file to load
-     */
-    private void loadFile(final File file) {
-
-        // Create a new project, this is for the discard changes dialog.
-        if (Platform.isOSX()) {
-            mainFrameFixture.pressAndReleaseKey(KeyPressInfo.keyCode(
-                    KeyEvent.VK_N).modifiers(InputEvent.META_MASK));
-        } else {
-            mainFrameFixture.menuItemWithPath("File", "New").click();
-        }
-
-        try {
-            JOptionPaneFixture warning = mainFrameFixture.optionPane();
-            warning.requireTitle("Unsaved changes");
-            warning.buttonWithText("OK").click();
-        } catch (Exception e) {
-            // Do nothing
-        }
-
-        // Get New Database dialog
-        DialogFixture newProjectDialog = mainFrameFixture.dialog("NewProjectV");
-
-        newProjectDialog.textBox("nameField").enterText("n");
-
-        newProjectDialog.button("okButton").click();
-
-        // Open file
-        Assert.assertTrue(file.exists());
-
-        // 1. Load  File
-        if (Platform.isOSX()) {
-            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-            fc.setVisible(false);
-
-            String ext = file.getName().substring(file.getName().length() - 3,
-                    file.getName().length());
-
-            if (ext.equalsIgnoreCase("csv")) {
-                fc.setFileFilter(new CSVFilter());
-            } else if (ext.equalsIgnoreCase("opf")) {
-                fc.setFileFilter(new OPFFilter());
-            } else if (ext.equalsIgnoreCase("odb")) {
-                fc.setFileFilter(new MODBFilter());
-            } else {
-                Assert.assertTrue(false, "Bad file extension");
-            }
-
-            fc.setSelectedFile(file);
-
-            method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
-                OpenSHAPA.getView()).invoke(fc);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
-
-            try {
-                JOptionPaneFixture warning = mainFrameFixture.optionPane();
-                warning.requireTitle("Unsaved changes");
-                warning.buttonWithText("OK").click();
-            } catch (Exception e) {
-                // Do nothing
-            }
-
-            String ext = file.getName().substring(file.getName().length() - 3,
-                    file.getName().length());
-
-            if (ext.equalsIgnoreCase("csv")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new CSVFilter());
-            } else if (ext.equalsIgnoreCase("opf")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new OPFFilter());
-            } else if (ext.equalsIgnoreCase("odb")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new MODBFilter());
-            } else {
-                Assert.assertTrue(false, "Bad file extension");
-            }
-
-            mainFrameFixture.fileChooser().selectFile(file).approve();
-        }
-    }
-
+    
+    
     /**
      * Test saving a database to a file with Save.
      * @param fileName
@@ -329,42 +232,12 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     private void saveTest(final String fileName, final String extension)
         throws IOException {
-        
 
+        File toSave = new File(tempFolder + "/" + fileName + "." + extension);
         // 1. Click save on empty project. Expecting it to act like Save As
-        // Check that asterisk is present
-        Assert.assertTrue(mainFrameFixture.getTitle().endsWith("*"));
+        Assert.assertFalse(toSave.exists());
 
-        if (Platform.isOSX()) {
-            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-            fc.setVisible(false);
-
-            if (extension.equals("opf")) {
-                fc.setFileFilter(new OPFFilter());
-            } else if (extension.equals("csv")) {
-                fc.setFileFilter(new CSVFilter());
-            }
-
-            File toSave = new File(tempFolder + "/" + fileName);
-
-            fc.setSelectedFile(toSave);
-
-            method("save").withParameterTypes(OpenSHAPAFileChooser.class).in(
-                OpenSHAPA.getView()).invoke(fc);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("File", "Save");
-
-            if (extension.equals("opf")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new OPFFilter());
-            } else if (extension.equals("csv")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new CSVFilter());
-            }
-
-            File toSave = new File(tempFolder + "/" + fileName);
-            mainFrameFixture.fileChooser().selectFile(toSave).approve();
-        }
+        UIFileUtils.saveFile(mainFrameFixture, toSave);
 
         // Check that no asterisk is present
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
@@ -374,14 +247,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(demoFile.exists(),
             "Expecting demo_data_to_csv2.rb to exist");
 
-        String justSavedPath = tempFolder + "/" + fileName;
-
-        if (!justSavedPath.endsWith(extension)) {
-            justSavedPath = justSavedPath + "." + extension;
-        }
-
-        File justSaved = new File(justSavedPath);
-        Assert.assertTrue(justSaved.exists(), "Expecting saved file to exist.");
+        Assert.assertTrue(toSave.exists(), "Expecting saved file to exist.");
 
         // 2. Run script to populate database
         mainFrameFixture.runScript(demoFile);
@@ -417,7 +283,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         if (extension.equals("csv")) {
             expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
-            loadFile(new File(pc.getProjectDirectory(),
+            UIFileUtils.loadFile(mainFrameFixture, new File(pc.getProjectDirectory(),
                     pc.getDatabaseFileName()));
             outputFile = saveAsCSV(fileName + "new");
 
@@ -426,7 +292,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             // Open the opf and save it as a csv
             // This will also test opf opening. Later this can be refactored to
             // its own test.
-            loadFile(justSaved);
+            UIFileUtils.loadFile(mainFrameFixture, toSave);
             outputFile = saveAsCSV(fileName);
 
             expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
@@ -484,26 +350,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         fileWriter.close();
 
         // 3. Now load the newly created project in openshapa
-        if (Platform.isOSX()) {
-            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-            fc.setVisible(false);
-            fc.setFileFilter(new SHAPAFilter());
-            fc.setSelectedFile(newSHAPA);
-
-            method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
-                OpenSHAPA.getView()).invoke(fc);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
-
-            // This will fail if a dialog is not shown.
-            JOptionPaneFixture warning = mainFrameFixture.optionPane();
-            warning.requireTitle("Unsaved changes");
-            warning.buttonWithText("OK").click();
-
-            mainFrameFixture.fileChooser().component().setFileFilter(
-                new SHAPAFilter());
-            mainFrameFixture.fileChooser().selectFile(newSHAPA).approve();
-        }
+        UIFileUtils.loadFile(mainFrameFixture, newSHAPA);
 
         // Check that the title bar file name does not have an asterisk
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
@@ -562,41 +409,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(iFile.exists());
 
         // 1. Load ODB File
-        if (Platform.isOSX()) {
-            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-            fc.setVisible(false);
-
-            if (inputFile.endsWith("odb")) {
-                fc.setFileFilter(new MODBFilter());
-            } else if (inputFile.endsWith("shapa")) {
-                fc.setFileFilter(new SHAPAFilter());
-            }
-
-            fc.setSelectedFile(iFile);
-
-            method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
-                OpenSHAPA.getView()).invoke(fc);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
-
-            try {
-                JOptionPaneFixture warning = mainFrameFixture.optionPane();
-                warning.requireTitle("Unsaved changes");
-                warning.buttonWithText("OK").click();
-            } catch (Exception e) {
-                // Do nothing
-            }
-
-            if (inputFile.endsWith("odb")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new MODBFilter());
-            } else if (inputFile.endsWith("shapa")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new SHAPAFilter());
-            }
-
-            mainFrameFixture.fileChooser().selectFile(iFile).approve();
-        }
+        UIFileUtils.loadFile(mainFrameFixture, iFile);
 
         // Check that the title bar file name does not have an asterix
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
@@ -661,41 +474,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(iFile.exists());
 
         // 1. Load ODB File
-        if (Platform.isOSX()) {
-            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-            fc.setVisible(false);
-
-            if (inputFile.endsWith("odb")) {
-                fc.setFileFilter(new MODBFilter());
-            } else if (inputFile.endsWith("shapa")) {
-                fc.setFileFilter(new SHAPAFilter());
-            }
-
-            fc.setSelectedFile(iFile);
-
-            method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
-                OpenSHAPA.getView()).invoke(fc);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
-
-            try {
-                JOptionPaneFixture warning = mainFrameFixture.optionPane();
-                warning.requireTitle("Unsaved changes");
-                warning.buttonWithText("OK").click();
-            } catch (Exception e) {
-                // Do nothing
-            }
-
-            if (inputFile.endsWith("odb")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new MODBFilter());
-            } else if (inputFile.endsWith("shapa")) {
-                mainFrameFixture.fileChooser().component().setFileFilter(
-                    new SHAPAFilter());
-            }
-
-            mainFrameFixture.fileChooser().selectFile(iFile).approve();
-        }
+        UIFileUtils.loadFile(mainFrameFixture, iFile);
 
         // Check that the title bar file name does not have an asterix
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
@@ -724,7 +503,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         }
 
         // Close and reopen OPF
-        loadFile(toSave);
+        UIFileUtils.loadFile(mainFrameFixture, toSave);
 
         // Save as CSV file
         File opfCSV = saveAsCSV("opf");
@@ -750,32 +529,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(inputFile.exists());
 
         //Load file
-        if (Platform.isOSX()) {
-            OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-            fc.setVisible(false);
-
-            fc.setFileFilter(new OPFFilter());
-
-            fc.setSelectedFile(inputFile);
-
-            method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
-                    OpenSHAPA.getView()).invoke(fc);
-        } else {
-            mainFrameFixture.clickMenuItemWithPath("File", "Open...");
-
-            try {
-                JOptionPaneFixture warning = mainFrameFixture.optionPane();
-                warning.requireTitle("Unsaved changes");
-                warning.buttonWithText("OK").click();
-            } catch (Exception e) {
-                // Do nothing
-            }
-
-            mainFrameFixture.fileChooser().component().setFileFilter(
-                    new OPFFilter());
-
-            mainFrameFixture.fileChooser().selectFile(inputFile).approve();
-        }
+        UIFileUtils.loadFile(mainFrameFixture, inputFile);
 
         // Check that the title bar file name does not have an asterix
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
@@ -1138,7 +892,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         Assert.assertTrue(justSaved.exists(), "Expecting saved file to exist.");
 
         // 3. Check that the generated file is correct
-        loadFile(toSave);
+        UIFileUtils.loadFile(mainFrameFixture, toSave);
 
         // Check loaded project
         spreadsheet = mainFrameFixture.getSpreadsheet();

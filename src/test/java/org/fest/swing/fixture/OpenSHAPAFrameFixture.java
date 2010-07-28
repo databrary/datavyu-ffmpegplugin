@@ -177,7 +177,7 @@ public class OpenSHAPAFrameFixture extends FrameFixture {
     /**
      * Closes the script console.
      */
-    public final void closeScriptConsole() {
+    public final void closeScriptConsoleOnFinish() {
         DialogFixture scriptConsole = WindowFinder.findDialog(
                 ConsoleV.class).withTimeout(DIALOG_TIMEOUT).using(robot);
 

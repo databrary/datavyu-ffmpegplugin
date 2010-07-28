@@ -60,7 +60,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
 
         // 2. Run script to populate
         mainFrameFixture.runScript(demoFile);
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 3. Check that variable list has been updated
        
@@ -118,7 +118,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         mainFrameFixture.runScript(demoFile);
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Check that variable list is populated
         VariableListDialogFixture vlDialog = mainFrameFixture.openVariableList();
@@ -166,7 +166,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         mainFrameFixture.runScript(demoFile);
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Check that variable list is populated
         VariableListDialogFixture vlDialog = mainFrameFixture.openVariableList();
@@ -233,7 +233,7 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
 
         // 1. Run script to populate
         mainFrameFixture.runScript(demoFile);
-        mainFrameFixture.closeScriptConsole();
+        mainFrameFixture.closeScriptConsoleOnFinish();
 
         // 2. Check that variable list is populated
         VariableListDialogFixture vlDialog = mainFrameFixture.openVariableList();
@@ -245,56 +245,137 @@ public final class UIVariableListTest extends OpenSHAPATestClass {
         Assert.assertEquals(vlDialog.table().rowCount(),
             spreadsheet.allColumns().size());
 
-        /* 3. For each variable, do the following through the variable list dialog and directly:
+        /* 3. Instead of cycling through every variable, we do the following for a random variable.
          * a. Try reserved name - ge
          * b. Try duplicate name
          * c. Try invalid name - (hello)
          * d. Try removing name completely
          * e. Make an acceptable change
          */
-        //for (int i =0; i < numOfVars; i++) {
-        //Rather than do it to every variable, we'll pick one at random
-        int i = (int)(Math.random() * numOfVars);
-            TableCell tc = TableCell.row(i).column(NAME_COL);
+        int i = (int) (Math.random() * numOfVars);
+        TableCell tc = TableCell.row(i).column(NAME_COL);
 
-            //a. Try reserved name
-            replaceTableCellValue(vlDialog.getVariableListTable(), tc, reservedName);
-            handleWarningMessage(vlDialog);
-            enterNewNameDirectly(i, reservedName);
+        //a. Try reserved name
+        replaceTableCellValue(vlDialog.getVariableListTable(), tc, reservedName);
+        handleWarningMessage(vlDialog);
+        enterNewNameDirectly(i, reservedName);
 
-            //b. Try duplicate name
-            int row = (i + 1) % numOfVars;
-            String duplicateName = vlDialog.getVariableListTable().valueAt(TableCell.row(row).column(NAME_COL));
-            replaceTableCellValue(vlDialog.getVariableListTable(), tc, duplicateName);
-            handleWarningMessage(vlDialog);
-            enterNewNameDirectly(i, duplicateName);
+        //b. Try duplicate name
+        int row = (i + 1) % numOfVars;
+        String duplicateName = vlDialog.getVariableListTable().valueAt(TableCell.row(row).column(NAME_COL));
+        replaceTableCellValue(vlDialog.getVariableListTable(), tc, duplicateName);
+        handleWarningMessage(vlDialog);
+        enterNewNameDirectly(i, duplicateName);
 
-            //c. Try invalid name
-            replaceTableCellValue(vlDialog.getVariableListTable(), tc, invalidName);
-            handleWarningMessage(vlDialog);
-            enterNewNameDirectly(i, invalidName);
+        //c. Try invalid name
+        replaceTableCellValue(vlDialog.getVariableListTable(), tc, invalidName);
+        handleWarningMessage(vlDialog);
+        enterNewNameDirectly(i, invalidName);
 
-            //d. Try removing name completely
-            replaceTableCellValue(vlDialog.getVariableListTable(), tc, "");
-            handleWarningMessage(vlDialog);
-            enterNewNameDirectly(i, "");
+        //d. Try removing name completely
+        replaceTableCellValue(vlDialog.getVariableListTable(), tc, "");
+        handleWarningMessage(vlDialog);
+        enterNewNameDirectly(i, "");
 
-            //e. Make an acceptable change
-            replaceTableCellValue(vlDialog.getVariableListTable(), tc, validName);
-            spreadsheet = mainFrameFixture.getSpreadsheet();
-            vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(NAME_COL), validName);
-            Assert.assertNotNull(spreadsheet.column(validName));
+        //e. Make an acceptable change
+        replaceTableCellValue(vlDialog.getVariableListTable(), tc, validName);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(NAME_COL), validName);
+        Assert.assertNotNull(spreadsheet.column(validName));
 
-            spreadsheet = mainFrameFixture.getSpreadsheet();
-            spreadsheet.column(i).doubleClick();
-            mainFrameFixture.optionPane().textBox().enterText(validName + validName);
-            mainFrameFixture.optionPane().okButton().click();
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        spreadsheet.column(i).doubleClick();
+        mainFrameFixture.optionPane().textBox().enterText(validName + validName);
+        mainFrameFixture.optionPane().okButton().click();
 
-            spreadsheet = mainFrameFixture.getSpreadsheet();
-            vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(NAME_COL), validName + validName);
-            Assert.assertNotNull(spreadsheet.column(validName + validName));
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(NAME_COL), validName + validName);
+        Assert.assertNotNull(spreadsheet.column(validName + validName));
 
-//        }
+    }
+
+    /**
+     * Test adding, editing, and removing comments.
+     */
+    @Test public void testComments() {
+        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
+        String comment = "Comment ";
+        String invalidComment = "Comment, here";
+
+        File demoFile = new File(testFolder + "/ui/demo_data_small.rb");
+        Assert.assertTrue(demoFile.exists());
+
+        // 1. Run script to populate
+        mainFrameFixture.runScript(demoFile);
+        mainFrameFixture.closeScriptConsoleOnFinish();
+
+        // 2. Check that variable list is populated
+        VariableListDialogFixture vlDialog = mainFrameFixture.openVariableList();
+
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        int numOfVars = spreadsheet.numOfColumns();
+
+        Assert.assertEquals(vlDialog.table().rowCount(),
+            spreadsheet.allColumns().size());
+
+        /* 3. Where approproiate, we do the following for a random variable. Otherwise we do it for all variables.
+         * Where appropriate, we save and re-open the file to confirm that the changes remain.
+         * a. Try an invalid comment - ie. contains ",". Note: If requested, we could allow commas by escaping them
+         * b. Try adding a comment
+         * c. Try editing a comment
+         * d. Try removing a comment
+         */
+        int i = (int) (Math.random() * numOfVars);
+        TableCell tc = TableCell.row(i).column(COMMENT_COL);
+
+        //a. Try an invalid comment
+        replaceTableCellValue(vlDialog.getVariableListTable(), tc, invalidComment);
+        handleWarningMessage(vlDialog);
+
+        for (int j = 0; j < numOfVars; j++) {
+            //b. Try adding a comment
+            String varName = vlDialog.getVariableListTable().valueAt(TableCell.row(j).column(NAME_COL));
+            tc = TableCell.row(j).column(COMMENT_COL);
+            replaceTableCellValue(vlDialog.getVariableListTable(), tc, comment + varName);
+            Assert.assertEquals(vlDialog.getVariableListTable().valueAt(TableCell.row(j).column(COMMENT_COL)), comment + varName);
+        }
+
+        //Save and confirm everything is still correct
+
+
+        int row = (i + 1) % numOfVars;
+        String duplicateName = vlDialog.getVariableListTable().valueAt(TableCell.row(row).column(NAME_COL));
+        replaceTableCellValue(vlDialog.getVariableListTable(), tc, duplicateName);
+        handleWarningMessage(vlDialog);
+        enterNewNameDirectly(i, duplicateName);
+
+        //c. Try invalid name
+        replaceTableCellValue(vlDialog.getVariableListTable(), tc, invalidName);
+        handleWarningMessage(vlDialog);
+        enterNewNameDirectly(i, invalidName);
+
+        //d. Try removing name completely
+        replaceTableCellValue(vlDialog.getVariableListTable(), tc, "");
+        handleWarningMessage(vlDialog);
+        enterNewNameDirectly(i, "");
+
+        //e. Make an acceptable change
+        replaceTableCellValue(vlDialog.getVariableListTable(), tc, validName);
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(NAME_COL), validName);
+        Assert.assertNotNull(spreadsheet.column(validName));
+
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        spreadsheet.column(i).doubleClick();
+        mainFrameFixture.optionPane().textBox().enterText(validName + validName);
+        mainFrameFixture.optionPane().okButton().click();
+
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+        vlDialog.getVariableListTable().requireCellValue(TableCell.row(i).column(NAME_COL), validName + validName);
+        Assert.assertNotNull(spreadsheet.column(validName + validName));
+
     }
 
     private void enterNewNameDirectly(int i, String newName) {
