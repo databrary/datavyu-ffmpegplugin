@@ -1487,6 +1487,7 @@ public final class PlaybackController implements PlaybackListener,
             DataViewer dataViewer = plugin.getNewDataViewer(
                     OpenSHAPA.getApplication().getMainFrame(), false);
             dataViewer.setDataFeed(f);
+            dataViewer.seekTo(clock.getTime());
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                 dataViewer.getTrackPainter());
             mixerControllerV.bindTrackActions(f.getAbsolutePath(), dataViewer,
