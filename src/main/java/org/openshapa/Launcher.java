@@ -3,6 +3,9 @@ package org.openshapa;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Map;
+
+import javax.swing.JOptionPane;
+
 import org.openshapa.util.NativeLoader;
 
 /**
@@ -59,6 +62,7 @@ public class Launcher {
             }
         } catch (Exception e) {
             System.err.println("Unable to start OpenSHAPA: ");
+        	JOptionPane.showMessageDialog(null, "Unable to start OpenSHAPA: " + e.getMessage());
             e.printStackTrace();
             returnStatus = 1;
 

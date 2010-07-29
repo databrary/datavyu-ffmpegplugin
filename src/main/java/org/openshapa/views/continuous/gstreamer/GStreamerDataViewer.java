@@ -292,14 +292,14 @@ public class GStreamerDataViewer implements DataViewer {
 
         videoSize = playBin.getVideoSize();
         if (videoSize == null) {
-        	videoSize = new Dimension(640, 480);
+        	videoSize = new Dimension(320, 240);
         }
         
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 videoDialog.setTitle(dataFeed.getName());
                 videoDialog.getContentPane().add(videoComponent, BorderLayout.CENTER);
-                videoDialog.setPreferredSize(videoSize);
+                videoComponent.setPreferredSize(videoSize);
                 videoDialog.pack();
                 videoDialog.setVisible(true);
             }
