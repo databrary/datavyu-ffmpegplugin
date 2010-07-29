@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import org.fest.swing.fixture.DialogFixture;
+import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.util.UIImageUtils;
@@ -31,7 +32,7 @@ public final class UIAboutDialogTest extends OpenSHAPATestClass {
         if (!Platform.isOSX()) {
             mainFrameFixture.clickMenuItemWithPath("Help", "About");
 
-            DialogFixture about = mainFrameFixture.dialog();
+            DialogFixture about = mainFrameFixture.dialog(Timeout.timeout(5000));
 
             // Check that image is roughly correct
             BufferedImage aboutBI = UIImageUtils.captureAsScreenshot(
