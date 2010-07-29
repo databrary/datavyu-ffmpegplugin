@@ -542,7 +542,7 @@
                 <preCp>jruby-complete-1.4.0.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
-                <preCp>openshapa-lib-0.0.20.jar</preCp>
+                <preCp>openshapa-lib-0.0.21.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.5.jar</preCp>
                 <preCp>miglayout-3.7.3.1-swing.jar</preCp>
@@ -550,7 +550,9 @@
                 <preCp>fest-reflect-1.2.jar</preCp>
                 <preCp>google-collections-1.0.jar</preCp>
                 <preCp>jna-3.2.5.jar</preCp>
+<!--  TODO temporarily disabled as it has been integrated into openshapa-lib                
                 <preCp>gstreamer-java-1.4.jar</preCp>
+-->                
             </classPath>
         </configuration>
       </plugin>
@@ -602,7 +604,7 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.20</version>
+      <version>0.0.21</version>
     </dependency>
 
     <dependency>
@@ -668,11 +670,13 @@
       <version>3.2.5</version>
     </dependency>
 
+<!-- TODO temporarily disabled as it has been integrated into openshapa-lib 
     <dependency>
       <groupId>com.googlecode.gstreamer-java</groupId>
       <artifactId>gstreamer-java</artifactId>
       <version>1.4</version>
     </dependency>
+-->    
   </dependencies>
 </project>
 

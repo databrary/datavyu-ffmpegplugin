@@ -36,7 +36,7 @@ import org.gstreamer.elements.DecodeBin;
 import org.gstreamer.elements.AppSink.NEW_BUFFER;
 
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
-import org.openshapa.plugins.spectrum.swing.AmplitudeTrack;
+import org.openshapa.plugins.spectrum.swing.Amplitude;
 
 import com.sun.jna.Pointer;
 
@@ -58,8 +58,8 @@ public final class AmplitudeProcessor
     /** Media file to process. */
     private File mediaFile;
 
-    /** Track to send processed data to. */
-    private AmplitudeTrack track;
+    /** Processed data handler. */
+    private Amplitude dataHandler;
 
     /** Number of channels in the audio file. */
     private final int numChannels;
@@ -72,15 +72,15 @@ public final class AmplitudeProcessor
      *
      * @param mediaFile
      *            Media file to process.
-     * @param track
-     *            Track to send processed data to.
+     * @param handler
+     *            Processed data handler.
      * @param numChannels
      *            number of channels in the audio file.
      */
-    public AmplitudeProcessor(final File mediaFile, final AmplitudeTrack track,
+    public AmplitudeProcessor(final File mediaFile, final Amplitude handler,
         final int numChannels) {
         this.mediaFile = mediaFile;
-        this.track = track;
+        this.dataHandler = handler;
         this.numChannels = numChannels;
         data = new StereoAmplitudeData();
     }
@@ -317,8 +317,7 @@ public final class AmplitudeProcessor
             StereoAmplitudeData result = get();
 
             if (result != null) {
-                track.setData(result);
-                track.repaint();
+                dataHandler.setData(result);
             }
         } catch (Exception e) {
             /*

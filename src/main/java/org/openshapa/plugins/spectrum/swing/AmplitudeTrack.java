@@ -1,10 +1,12 @@
 package org.openshapa.plugins.spectrum.swing;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Path2D;
+import java.awt.image.BufferedImage;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -13,6 +15,7 @@ import java.io.File;
 
 import java.util.List;
 
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -28,8 +31,8 @@ import com.google.common.collect.ImmutableList;
 /**
  * Used to plot amplitude data over the time domain.
  */
-public final class AmplitudeTrack extends TrackPainter
-    implements PropertyChangeListener {
+public final class AmplitudeTrack extends TrackPainter implements Amplitude,
+    PropertyChangeListener {
 
     /** Color used to paint the amplitude data. */
     private static final Color DATA_COLOR = new Color(0, 0, 0, 200);
@@ -44,6 +47,8 @@ public final class AmplitudeTrack extends TrackPainter
 
     /** Have we already registered for property changes. */
     private boolean registered;
+
+    private BufferedImage cachedAmps;
 
     /** Path for left channel amplitude data. */
     private Path2D leftAmp;
@@ -62,6 +67,8 @@ public final class AmplitudeTrack extends TrackPainter
 
     /** Handles amplitude processing. */
     private AmplitudeProcessor processor;
+
+    private CacheHandler cacheHandler;
 
     public AmplitudeTrack() {
         registered = false;
@@ -95,7 +102,7 @@ public final class AmplitudeTrack extends TrackPainter
      * @param data
      *            amplitude data to visualize.
      */
-    public void setData(final StereoAmplitudeData data) {
+    @Override public void setData(final StereoAmplitudeData data) {
         this.data = data;
 
         if (worker != null) {
@@ -104,9 +111,15 @@ public final class AmplitudeTrack extends TrackPainter
             worker.cancel(true);
         }
 
-        // Make a worker thread to compute paths.
-        worker = new PathWorker();
-        worker.execute();
+        SwingUtilities.invokeLater(new Runnable() {
+
+                @Override public void run() {
+
+                    // Make a worker thread to compute paths.
+                    worker = new PathWorker(new Dimension(getSize()), data);
+                    worker.execute();
+                }
+            });
     }
 
     @Override protected void paintCustom(final Graphics g) {
@@ -140,8 +153,10 @@ public final class AmplitudeTrack extends TrackPainter
 
         if (data == null) {
             execProcessor();
+        }
 
-            return;
+        if (cacheHandler == null) {
+            cacheHandler = new CacheHandler();
         }
 
         g2d.setColor(DATA_COLOR);
@@ -149,20 +164,34 @@ public final class AmplitudeTrack extends TrackPainter
         // Draw left channel data.
         if (leftAmp != null) {
             g2d.draw(leftAmp);
+
+        } else if (cachedAmps != null) {
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2d.drawImage(cachedAmps, startXPos, carriageYOffset, endXPos,
+                carriageYOffset + carriageHeight, 0, 0, cachedAmps.getWidth(),
+                cachedAmps.getHeight(), null);
+
         } else {
 
             // Baseline zero amplitude.
             g2d.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
         }
 
+        g2d.setColor(DATA_COLOR);
+
         // Draw right channel data.
         if (rightAmp != null) {
             g2d.draw(rightAmp);
+        } else if (cachedAmps != null) {
+            // Do nothing, already drawn. Do not remove this conditional or
+            // the baseline will be drawn.
         } else {
 
             // Baseline zero amplitude.
             g2d.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
         }
+
 
     }
 
@@ -242,6 +271,14 @@ public final class AmplitudeTrack extends TrackPainter
      * Inner worker for calculating paths.
      */
     private final class PathWorker extends SwingWorker<Path2D[], Void> {
+        private Dimension dim;
+        private StereoAmplitudeData data;
+
+        public PathWorker(final Dimension d, final StereoAmplitudeData data) {
+            dim = d;
+            this.data = data;
+        }
+
         @Override protected Path2D[] doInBackground() throws Exception {
 
             if (data == null) {
@@ -253,7 +290,7 @@ public final class AmplitudeTrack extends TrackPainter
                 };
 
             // Carriage height.
-            final int carriageHeight = (int) (getHeight() * 7D / 10D);
+            final int carriageHeight = (int) (dim.getHeight() * 7D / 10D);
 
             // Calculate carriage start pixel position.
             final double startXPos = computeXCoord(MILLISECONDS.convert(
@@ -261,7 +298,7 @@ public final class AmplitudeTrack extends TrackPainter
                     + trackModel.getOffset());
 
             // Carriage offset from top of panel.
-            final int carriageYOffset = (int) (getHeight() * 2D / 10D);
+            final int carriageYOffset = (int) (dim.getHeight() * 2D / 10D);
 
             // Y-coordinate for left channel.
             final int midYLeftPos = carriageYOffset + (carriageHeight / 4);
@@ -325,9 +362,130 @@ public final class AmplitudeTrack extends TrackPainter
                 }
 
                 repaint();
-
             } catch (Exception e) {
                 // Do nothing.
+            }
+        }
+    }
+
+    /**
+     * Inner class for handling cached data.
+     */
+    private final class CacheHandler implements Amplitude {
+
+        private StereoAmplitudeData cache;
+
+        public CacheHandler() {
+            AmplitudeProcessor p = new AmplitudeProcessor(mediaFile, this,
+                    channels);
+            p.setDataTimeSegment(0, trackModel.getDuration(), MILLISECONDS);
+            p.setSampleRate(10000);
+            p.execute();
+        }
+
+        @Override public void setData(final StereoAmplitudeData data) {
+            cache = data;
+
+            // Generate cached data.
+            new CacheWorker(cache, new Dimension(getSize())).execute();
+        }
+    }
+
+    /**
+     * Inner class for generating cached image.
+     */
+    private final class CacheWorker extends SwingWorker<BufferedImage, Void> {
+        private StereoAmplitudeData cache;
+        private Dimension dim;
+
+        public CacheWorker(final StereoAmplitudeData data, final Dimension d) {
+            cache = data;
+            dim = d;
+        }
+
+        @Override protected BufferedImage doInBackground() throws Exception {
+
+            // Pixel spacing between data points.
+            final double spacing = 0.5;
+
+            BufferedImage img = new BufferedImage((int) (cache.sizeL()
+                        * spacing), (int) dim.getHeight(),
+                    BufferedImage.TYPE_4BYTE_ABGR);
+
+            if (data == null) {
+                return null;
+            }
+
+            // Carriage height.
+            final int carriageHeight = (int) (dim.getHeight() * 7D / 10D);
+
+            // Calculate carriage start pixel position.
+            final double startXPos = 0;
+
+            // Carriage offset from top of panel.
+            final int carriageYOffset = (int) (dim.getHeight() * 2D / 10D);
+
+            // Y-coordinate for left channel.
+            final int midYLeftPos = carriageYOffset + (carriageHeight / 4);
+
+            // Y-coordinate for right channel.
+            final int midYRightPos = carriageYOffset + (3 * carriageHeight / 4);
+
+            // Height for 100% amplitude.
+            final int ampHeight = carriageHeight / 4;
+
+            Graphics2D g2d = (Graphics2D) img.getGraphics();
+
+            g2d.setColor(DATA_COLOR);
+
+            // Draw left channel data.
+            {
+                Path2D left = new Path2D.Double();
+
+                left.moveTo(startXPos, midYLeftPos);
+
+                int offsetCounter = 1;
+
+                for (Double amp : cache.getDataL()) {
+                    double offset = offsetCounter * spacing;
+                    left.lineTo(offset, midYLeftPos + (-amp * ampHeight));
+                    offsetCounter++;
+                }
+
+                g2d.draw(left);
+            }
+
+            // Draw right channel data.
+            {
+                Path2D right = new Path2D.Double();
+
+                right.moveTo(startXPos, midYRightPos);
+
+                int offsetCounter = 1;
+
+                for (Double amp : cache.getDataR()) {
+                    double offset = offsetCounter * spacing;
+                    right.lineTo(offset, midYRightPos + (-amp * ampHeight));
+                    offsetCounter++;
+                }
+
+                g2d.draw(right);
+            }
+
+            return img;
+        }
+
+        @Override protected void done() {
+
+            try {
+                BufferedImage result = get();
+
+                if (result != null) {
+                    cachedAmps = result;
+                }
+
+                repaint();
+            } catch (Exception e) {
             }
         }
     }
