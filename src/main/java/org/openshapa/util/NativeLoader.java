@@ -10,6 +10,8 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.swing.JOptionPane;
+
 public class NativeLoader {
 
     /** The size of the buffer to use when un zipping native libraries. */
@@ -78,7 +80,11 @@ public class NativeLoader {
 
         // Unable to find jar file - abort decompression.
         } else {
-            throw new Exception();
+        	System.err.println("Unable to find jar file for unpacking: " + appJar + ". Java classpath is:");
+            for (String s : System.getProperty("java.class.path").split(File.pathSeparator)) {
+            	System.err.println("    " + s);
+            }
+            throw new Exception("Unable to find '" + appJar + "' for unpacking.");
         }
 
         return System.getProperty("java.io.tmpdir") + appJar;
