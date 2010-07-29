@@ -20,6 +20,9 @@ import javax.swing.SwingWorker;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+import org.openshapa.models.component.TrackModel;
+import org.openshapa.models.component.ViewableModel;
+
 import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor;
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 
@@ -48,7 +51,16 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
     /** Have we already registered for property changes. */
     private boolean registered;
 
+    /** Cached amplitude image for entire file. */
     private BufferedImage cachedAmps;
+
+    /** Cached image of the last zoomed segment. */
+    private BufferedImage localAmps;
+
+    /** Viewable model associated with the last zoomed segment. */
+    private ViewableModel localVM;
+
+    private TrackModel localTM;
 
     /** Path for left channel amplitude data. */
     private Path2D leftAmp;
@@ -163,15 +175,43 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
         // Draw left channel data.
         if (leftAmp != null) {
-            g2d.draw(leftAmp);
+            localTM = trackModel.copy();
+            localVM = viewableModel.copy();
 
+            // Buffer the drawn data.
+            localAmps = new BufferedImage(getWidth(), getHeight(),
+                    BufferedImage.TYPE_4BYTE_ABGR);
+
+            Graphics2D imgG = (Graphics2D) localAmps.getGraphics();
+            imgG.setColor(DATA_COLOR);
+            imgG.draw(leftAmp);
         } else if (cachedAmps != null) {
-            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            g2d.drawImage(cachedAmps, startXPos, carriageYOffset, endXPos,
-                carriageYOffset + carriageHeight, 0, 0, cachedAmps.getWidth(),
-                cachedAmps.getHeight(), null);
+            BufferedImage image2 = new BufferedImage(getWidth(), getHeight(),
+                    BufferedImage.TYPE_4BYTE_ABGR);
+            Graphics2D g3 = (Graphics2D) image2.getGraphics();
 
+            g3.setBackground(new Color(0, 0, 0, 0));
+
+            g3.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+            g3.drawImage(cachedAmps, startXPos, 0, endXPos, getHeight(), 0, 0,
+                cachedAmps.getWidth(), cachedAmps.getHeight(), null);
+
+            final int x1 = computePixelXCoord(localVM.getZoomWindowStart()
+                    + localTM.getOffset());
+            final int y1 = 0;
+            final int x2 = computePixelXCoord(localVM.getZoomWindowEnd()
+                    + localTM.getOffset());
+            final int y2 = getHeight();
+
+            g3.clearRect(x1, y1, x2 - x1, y2 - y1);
+
+            g3.drawImage(localAmps, x1, y1, x2, y2, 0, 0, localAmps.getWidth(),
+                localAmps.getHeight(), null);
+
+            g2d.drawImage(image2, 0, 0, getWidth(), getHeight(), 0, 0,
+                image2.getWidth(), image2.getHeight(), null);
         } else {
 
             // Baseline zero amplitude.
@@ -182,7 +222,11 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
         // Draw right channel data.
         if (rightAmp != null) {
-            g2d.draw(rightAmp);
+            Graphics2D imgG = (Graphics2D) localAmps.getGraphics();
+            imgG.setColor(DATA_COLOR);
+            imgG.draw(rightAmp);
+
+            g2d.drawImage(localAmps, 0, 0, null);
         } else if (cachedAmps != null) {
             // Do nothing, already drawn. Do not remove this conditional or
             // the baseline will be drawn.
