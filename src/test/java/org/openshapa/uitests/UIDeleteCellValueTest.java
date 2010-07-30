@@ -24,6 +24,7 @@ import org.fest.swing.util.Platform;
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.util.FileFilters.OPFFilter;
+import org.openshapa.util.UIUtils;
 
 import org.openshapa.views.OpenSHAPAFileChooser;
 
@@ -114,8 +115,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
      * @throws java.lang.Exception
      *             on any error
      */
-    // BugzID:1351
-    /*@Test*/ public void testDeleteFloatCell() throws Exception {
+    @Test public void testDeleteFloatCell() throws Exception {
         String type = "FLOAT";
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
         testDeleteCellValue(type);
@@ -238,7 +238,11 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
                     KeyEvent.VK_BACK_SPACE));
         }
 
-        Assert.assertEquals(cell.cellValue().text(), "<val>");
+        if (type.equalsIgnoreCase("FLOAT")) {
+            Assert.assertTrue(UIUtils.equalValues(cell.cellValue().text(), "0.0"));
+        } else {
+            Assert.assertEquals(cell.cellValue().text(), "<val>");
+        }
     }
 
     /**
@@ -273,7 +277,11 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
                     KeyEvent.VK_DELETE));
         }
 
-        Assert.assertEquals(cell.cellValue().text(), "<val>");
+        if (type.equalsIgnoreCase("FLOAT")) {
+            Assert.assertTrue(UIUtils.equalValues(cell.cellValue().text(), "0.0"));
+        } else {
+            Assert.assertEquals(cell.cellValue().text(), "<val>");
+        }
     }
 
     /**

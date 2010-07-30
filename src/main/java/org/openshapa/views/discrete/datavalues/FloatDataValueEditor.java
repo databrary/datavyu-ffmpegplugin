@@ -155,6 +155,16 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 int prevCaretPos = getCaretPosition();
                 double prevDouble = fdv.getItsValue();
 
+                //If we're at the leading zero, just skip over it
+                if ((getText().matches("-?0.[0-9]{1,6}"))
+                        && (getCaretPosition() < getText().indexOf("."))
+                        && (getText().substring(getCaretPosition() + 1, getCaretPosition() + 2)
+                        .equals("."))) {
+                    setCaretPosition(getCaretPosition() + 1);
+                    e.consume();
+                    return;
+                }
+
                 //Perform change. Ideally we should simulate this change.
                 removeAheadOfCaret();
                 Double newD = buildValue(getText());
@@ -601,11 +611,6 @@ public final class FloatDataValueEditor extends DataValueEditor {
 
         try {
             Double value = Double.parseDouble(pastedField.getText());
-//            // Determine the precision to use - prevent the user from exceding
-//            // six decimal places.
-//            DecimalFormat formatter = new DecimalFormat(Constants.FLOAT_FORMAT);
-//            formatter.setMaximumFractionDigits(MAX_DECIMAL_PLACES);
-//            pastedField.setText(formatter.format(value));
             pastedField.setText(fixString(pastedField.getText()));
             setText(pastedField.getText());
             setCaretPosition(pastedField.getCaretPosition());
