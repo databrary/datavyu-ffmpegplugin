@@ -14,16 +14,20 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
 
 import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor;
+import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor.Strategy;
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 
 import org.openshapa.views.component.TrackPainter;
@@ -44,6 +48,8 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
     private static final List<String> EXCLUDED_PROPS = ImmutableList.of(
             "locked", "trackId", "erroneous", "bookmark", "trackName",
             "selected", "state");
+
+    private static final long THRESHOLD = MINUTES.convert(60, SECONDS);
 
     /** Contains the amplitude data to visualize. */
     private StereoAmplitudeData data;
@@ -308,6 +314,13 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
         processor = new AmplitudeProcessor(mediaFile, this, channels);
         processor.setDataTimeSegment(start, end, MILLISECONDS);
         processor.setSampleRate(rate);
+
+        if (MINUTES.convert(end - start, MILLISECONDS) > THRESHOLD) {
+            processor.setStrategy(Strategy.FIXED, 6000);
+        } else {
+            processor.setStrategy(Strategy.HIGH_LOW, -1);
+        }
+
         processor.execute();
     }
 
@@ -424,6 +437,14 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
                     channels);
             p.setDataTimeSegment(0, trackModel.getDuration(), MILLISECONDS);
             p.setSampleRate(10000);
+
+            if (MINUTES.convert(trackModel.getDuration(), MILLISECONDS)
+                    > THRESHOLD) {
+                p.setStrategy(Strategy.FIXED, 20000);
+            } else {
+                p.setStrategy(Strategy.HIGH_LOW, -1);
+            }
+
             p.execute();
         }
 

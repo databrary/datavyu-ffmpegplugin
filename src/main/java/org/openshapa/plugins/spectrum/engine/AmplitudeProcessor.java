@@ -33,12 +33,9 @@ import org.gstreamer.Structure;
 
 import org.gstreamer.elements.AppSink;
 import org.gstreamer.elements.DecodeBin;
-import org.gstreamer.elements.AppSink.NEW_BUFFER;
 
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 import org.openshapa.plugins.spectrum.swing.Amplitude;
-
-import com.sun.jna.Pointer;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
@@ -55,6 +52,10 @@ public final class AmplitudeProcessor
     private static final Logger LOGGER = UserMetrix.getLogger(
             AmplitudeProcessor.class);
 
+    public enum Strategy {
+        FIXED, HIGH_LOW
+    }
+
     /** Media file to process. */
     private File mediaFile;
 
@@ -66,6 +67,11 @@ public final class AmplitudeProcessor
 
     /** The processed amplitude data. */
     private StereoAmplitudeData data;
+
+    /** The processing strategy to use. */
+    private Strategy strat;
+
+    private int opts;
 
     /**
      * Creates a new worker thread.
@@ -121,6 +127,11 @@ public final class AmplitudeProcessor
         data.setSampleRate(sampleRate);
     }
 
+    public void setStrategy(final Strategy strategy, final int options) {
+        strat = strategy;
+        opts = options;
+    }
+
     /**
      * Process amplitude data.
      *
@@ -160,7 +171,17 @@ public final class AmplitudeProcessor
         final AppSink appSink = (AppSink) audioOutput;
         appSink.set("emit-signals", true);
         appSink.setSync(false);
-        appSink.connect(new BufferProcessor(appSink, numChannels, data, 5000));
+
+        if (strat == Strategy.FIXED) {
+            appSink.connect(new FixedBufferProcessor(appSink, numChannels, data,
+                    opts));
+        } else if (strat == Strategy.HIGH_LOW) {
+            appSink.connect(new HiLoBufferProcessor(appSink, numChannels,
+                    data));
+        } else {
+            pipeline.dispose();
+            throw new IllegalStateException("Processing strategy unset.");
+        }
 
         audioBin.addMany(audioConvert, audioResample, audioOutput);
 
@@ -269,7 +290,6 @@ public final class AmplitudeProcessor
      * @see javax.swing.SwingWorker#done()
      */
     @Override protected void done() {
-        System.out.println("Finished=" + System.currentTimeMillis());
 
         try {
             StereoAmplitudeData result = get();
@@ -278,7 +298,6 @@ public final class AmplitudeProcessor
                 dataHandler.setData(result);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             /*
              * Do not log; the exception that is generated is normal
              * (thread interruptions and subsequently, task cancellation.).
