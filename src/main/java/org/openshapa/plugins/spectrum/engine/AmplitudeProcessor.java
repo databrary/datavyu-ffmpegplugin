@@ -127,6 +127,8 @@ public final class AmplitudeProcessor
      * @see javax.swing.SwingWorker#doInBackground()
      */
     @Override protected StereoAmplitudeData doInBackground() throws Exception {
+        System.out.println("Started=" + System.currentTimeMillis());
+
         Gst.init();
 
         final Pipeline pipeline = new Pipeline("Processor");
@@ -158,55 +160,7 @@ public final class AmplitudeProcessor
         final AppSink appSink = (AppSink) audioOutput;
         appSink.set("emit-signals", true);
         appSink.setSync(false);
-        appSink.connect(new NEW_BUFFER() {
-                @Override public void newBuffer(final Element elem,
-                    final Pointer userData) {
-                    Buffer buf = appSink.pullBuffer();
-
-                    if (buf != null) {
-
-                        /*
-                         * Divide by two to convert from byte buffer length
-                         * to short buffer length.
-                         */
-                        int size = buf.getSize() / 2;
-
-                        ShortBuffer sb = buf.getByteBuffer().asShortBuffer();
-
-                        // Find largest and smallest left channel data.
-                        if (numChannels >= 1) {
-                            double largest = Double.MIN_VALUE;
-                            double smallest = Double.MAX_VALUE;
-
-                            for (int i = 0; i < size; i += numChannels) {
-                                double val = sb.get(i);
-
-                                largest = Math.max(val, largest);
-                                smallest = Math.min(smallest, val);
-                            }
-
-                            data.addDataL(largest);
-                            data.addDataL(smallest);
-                        }
-
-                        // Find largest and smallest right channel data.
-                        if (numChannels >= 1) {
-                            double largest = Double.MIN_VALUE;
-                            double smallest = Double.MAX_VALUE;
-
-                            for (int i = 1; i < size; i += numChannels) {
-                                double val = sb.get(i);
-
-                                largest = Math.max(val, largest);
-                                smallest = Math.min(smallest, val);
-                            }
-
-                            data.addDataR(largest);
-                            data.addDataR(smallest);
-                        }
-                    }
-                }
-            });
+        appSink.connect(new BufferProcessor(appSink, numChannels, data, 5000));
 
         audioBin.addMany(audioConvert, audioResample, audioOutput);
 
@@ -215,8 +169,9 @@ public final class AmplitudeProcessor
         }
 
         Caps caps = Caps.fromString(
-                "audio/x-raw-int, width=16, depth=16, signed=true, rate="
-                + data.getSampleRate());
+                "audio/x-raw-int, width=16, depth=16, signed=true"
+                // + ", rate=" + data.getSampleRate()
+                );
 
         if (!linkPadsFiltered(audioResample, null, audioOutput, null, caps)) {
             LOGGER.error("Link failed: audioresample -> appsink");
@@ -290,6 +245,8 @@ public final class AmplitudeProcessor
         pipeline.stop();
         pipeline.dispose();
 
+        System.out.println("Processed size=" + data.sizeL());
+
         data.normalizeL();
         data.normalizeR();
 
@@ -312,6 +269,7 @@ public final class AmplitudeProcessor
      * @see javax.swing.SwingWorker#done()
      */
     @Override protected void done() {
+        System.out.println("Finished=" + System.currentTimeMillis());
 
         try {
             StereoAmplitudeData result = get();
@@ -320,6 +278,7 @@ public final class AmplitudeProcessor
                 dataHandler.setData(result);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             /*
              * Do not log; the exception that is generated is normal
              * (thread interruptions and subsequently, task cancellation.).
