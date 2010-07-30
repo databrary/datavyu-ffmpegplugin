@@ -109,7 +109,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement to ensure needle time is the same as the clock time.
     */
-    /*//@Test*/ public void testNeedleMovement() {
+    @Test public void testNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -170,7 +170,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test needle movement to ensure needle can't go beyond start or end.
      */
-    /*//@Test*/ public void testRangeOfNeedleMovement() {
+    @Test public void testRangeOfNeedleMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -205,7 +205,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test needle movement by clicking on timescale.
      */
-    /*//@Test*/ public void testNeedleMovementBySingleClicking() {
+    @Test public void testNeedleMovementBySingleClicking() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -246,7 +246,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement by single clicking on timescale.
     */
-    /*//@Test*/ public void testNeedleMovementBySingleClickWithZoom() {
+    @Test public void testNeedleMovementBySingleClickWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -293,7 +293,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test needle movement by single clicking on timescale.
     */
-    /*//@Test*/ public void testNeedleMovementBySingleClickOutsideRegion() {
+    @Test public void testNeedleMovementBySingleClickOutsideRegion() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -362,7 +362,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * 6. Left region can't cross (go beyond) right
      * 7. Right region can't cross left
      */
-    /*//@Test*/ public void testRegionMovement() {
+    @Test public void testRegionMovement() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -466,7 +466,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test moving track while locked and unlocked.
      */
-    /*//@Test*/ public void testLockUnlockTrack() throws IOException {
+    @Test public void testLockUnlockTrack() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -530,17 +530,11 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open first video
-        
+
         final File videoFile1 = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile1.exists());
 
         UIUtils.openData(videoFile1, dcf);
-
-        // c. Open second video
-        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
-        Assert.assertTrue(videoFile2.exists());
-
-        UIUtils.openData(videoFile2, dcf);
 
         // Get first window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
@@ -551,7 +545,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
+        // c. Open second video
+        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
+        Assert.assertTrue(videoFile2.exists());
+
+        UIUtils.openData(videoFile2, dcf);
+
         // Get second window
+        vidWindows = dcf.getVideoWindows();
         vidWindows.get(1).focus();
         vidWindows.get(1).resizeHeightTo(300);
 
@@ -724,7 +725,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test for Unlock Lock with zooming.
      */
-    /*//@Test*/ public void testLockUnlockTrackWithZoom() throws IOException {
+    @Test public void testLockUnlockTrackWithZoom() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         JSliderFixture zoomSlider = dcf.getTrackMixerController()
@@ -802,7 +803,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * Test needle movement to ensure needle can't go beyond start or end,
      * with zoom applied.
      */
-    /*//@Test*/ public void testRangeOfNeedleMovementWithZoom() {
+    @Test public void testRangeOfNeedleMovementWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         JSliderFixture zoomSlider = dcf.getTrackMixerController()
@@ -870,24 +871,17 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /*BugzID1992:@Test*/ public void testTrackSnappingWithZoom() {
+    @Test public void testTrackSnappingWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         JSliderFixture zoomSlider = dcf.getTrackMixerController()
             .getZoomSlider();
 
         // c. Open first video
-        
         final File videoFile1 = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile1.exists());
 
         UIUtils.openData(videoFile1, dcf);
-
-        // c. Open second video
-        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
-        Assert.assertTrue(videoFile2.exists());
-
-        UIUtils.openData(videoFile2, dcf);
 
         // Get first window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
@@ -898,7 +892,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
+        // c. Open second video
+        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
+        Assert.assertTrue(videoFile2.exists());
+
+        UIUtils.openData(videoFile2, dcf);
+
         // Get second window
+        vidWindows = dcf.getVideoWindows();
         vidWindows.get(1).focus();
         vidWindows.get(1).resizeHeightTo(300);
 
@@ -1069,7 +1070,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     * Test closing of video while play.
     * Should reset datacontroller and remove track.
     */
-    /*//@Test*/ public void testCloseVideoWhilePlaying() {
+    @Test public void testCloseVideoWhilePlaying() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -1119,7 +1120,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     * Test closing of video.
     * Should reset datacontroller and remove track.
     */
-    /*//@Test*/ public void testCloseVideo() {
+    @Test public void testCloseVideo() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -1171,7 +1172,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test hiding and showing the video.
     */
-    /*//@Test*/ public void testShowHideVideo() throws IOException {
+    @Test public void testShowHideVideo() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -1310,7 +1311,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test hiding and showing the video.
     */
-    /*//@Test*/ public void testShowHideVideoWhilePlaying() throws Exception {
+    @Test public void testShowHideVideoWhilePlaying() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -1446,7 +1447,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).requireVisible();
     }
 
-    /*//@Test*/ public void testRegionSnapping() {
+    @Test public void testRegionSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -1500,7 +1501,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * Test preservation of track order and parameters (such as visibility)
      * after save.
      */
-    /*//@Test*/ public void testTrackOrderAndParametersAfterSave()
+    @Test public void testTrackOrderAndParametersAfterSave()
         throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
@@ -1740,7 +1741,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test mute icon.
     */
-    /*//@Test*/ public void testMuteIcon() throws IOException {
+    @Test public void testMuteIcon() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
@@ -1819,7 +1820,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
     * Test change video size 25%, 50%, 75%, 100%.
     */
-    /*//@Test*/ public void testChangeVideoSize() throws IOException {
+    @Test public void testChangeVideoSize() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video

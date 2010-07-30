@@ -93,13 +93,20 @@ public final class UICellValueTest extends OpenSHAPATestClass {
         String varName = "n";
         String varRadio = "nominal";
 
-        String[] expectedNominalTestOutput = {
+        String[] expectedNominalTestOutputCutPaste = {
                 "Subject stands up", "$10432", "Hand me the manual!",
                 "Tote_that_bale", "Jeune fille celebre", "If x7 then x2"
             };
 
-        cutAndPasteTest(varName, varRadio, nominalTestInput,
-            expectedNominalTestOutput);
+        String[] expectedNominalTestOutputPaste = {
+                "Subject stands up ", "$10432", "Hand me the manual!",
+                "Tote_that_bale", "Jeune fille celebre", "If x7 then x2"
+            };
+
+        cutAndPasteTestOnEmptyValue(varName, varRadio, nominalTestInput,
+            expectedNominalTestOutputCutPaste);
+
+        pasteTestOverExistingValues(varName, nominalTestInput, expectedNominalTestOutputPaste);
     }
 
     /**
@@ -176,7 +183,9 @@ public final class UICellValueTest extends OpenSHAPATestClass {
         String varRadio = "text";
 
         String[] expectedTestOutput = textTestInput;
-        cutAndPasteTest(varName, varRadio, textTestInput, expectedTestOutput);
+        cutAndPasteTestOnEmptyValue(varName, varRadio, textTestInput, expectedTestOutput);
+
+        pasteTestOverExistingValues(varName, textTestInput, expectedTestOutput);
     }
 
     /**
@@ -188,12 +197,19 @@ public final class UICellValueTest extends OpenSHAPATestClass {
         String varName = "i";
         String varRadio = "integer";
 
-        String[] expectedTestOutput = {
+        String[] expectedTestOutputCutPaste = {
                 "19", "-43210", "289", "178", "<val>", "72",
                 "999999999999999999", "3895", "<val>", "0", "-123"
             };
-        cutAndPasteTest(varName, varRadio, integerTestInput,
-            expectedTestOutput);
+
+        String[] expectedTestOutputPaste = {
+                "19", "-43210", "289", "178", "<val>", "72",
+                "999999999999999999", "3895", "<val>", "-", "-123"
+            };
+        cutAndPasteTestOnEmptyValue(varName, varRadio, integerTestInput,
+            expectedTestOutputCutPaste);
+
+        pasteTestOverExistingValues(varName, integerTestInput, expectedTestOutputPaste);
     }
 
     /**
@@ -268,7 +284,10 @@ public final class UICellValueTest extends OpenSHAPATestClass {
                 "-0.34", "-23.34", "0.34", "12.34", "-123"
             };
 
-        cutAndPasteTest(varName, varRadio, floatTestInput, expectedTestOutput);
+        cutAndPasteTestOnEmptyValue(varName, varRadio, floatTestInput, expectedTestOutput);
+
+        pasteTestOverExistingValues(varName, floatTestInput, expectedTestOutput);
+
     }
 
     /**
@@ -914,7 +933,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
     }
 
     /**
-     * Tests for pasting.
+     * Tests for pasting over empty value.
      *
      * @param varName
      *            variable name
@@ -925,7 +944,7 @@ public final class UICellValueTest extends OpenSHAPATestClass {
      * @param expectedTestOutput
      *            expected test output values
      */
-    private void cutAndPasteTest(final String varName, final String varRadio,
+    private void cutAndPasteTestOnEmptyValue(final String varName, final String varRadio,
         final String[] testInput, final String[] expectedTestOutput) throws BadLocationException {
         int numOfTests = testInput.length;
 
@@ -987,6 +1006,43 @@ public final class UICellValueTest extends OpenSHAPATestClass {
                     expectedTestOutput[inputIndex]),
                 "Expecting different cell contents.");
         }
+    }
+
+     /**
+     * Tests for pasting over existing values, if any.
+     *
+     * @param varName
+     *            variable name
+     * @param varRadio
+     *            radio for variable
+     * @param testInput
+     *            test input values
+     * @param expectedTestOutput
+     *            expected test output values
+     */
+    private void pasteTestOverExistingValues(final String varName,
+            final String[] testInput, final String[] expectedTestOutput)
+            throws BadLocationException {
+
+
+        spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        int numOfTests = Math.min(spreadsheet.column(varName).numOfCells(), testInput.length);
+
+       for (int i = 0; i < numOfTests; i++) {
+           SpreadsheetCellFixture currCell = spreadsheet.column(varName).cell(i + 1);
+           currCell.select(SpreadsheetCellFixture.VALUE, 0, currCell.cellValue().text().length());
+           UIUtils.setClipboard(testInput[i]);
+
+           pasteCellValue(varName, i + 1);
+           if (expectedTestOutput[i].equals("<val>")) {
+               continue;
+           }
+           Assert.assertTrue(cellHasValue(varName, i + 1,
+                    expectedTestOutput[i]),
+                "Expecting:" + expectedTestOutput[i] + ",Actual:" + currCell.cellValue().text());
+
+       }
     }
 
     /**

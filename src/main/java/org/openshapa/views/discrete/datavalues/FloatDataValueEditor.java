@@ -16,6 +16,7 @@ import org.openshapa.models.db.Matrix;
 import org.openshapa.models.db.PredDataValue;
 import org.openshapa.util.Constants;
 import org.openshapa.util.FloatUtils;
+import org.openshapa.views.discrete.EditorComponent;
 
 /**
  * This class is the character editor of a FloatDataValue.
@@ -90,10 +91,13 @@ public final class FloatDataValueEditor extends DataValueEditor {
      */
     @Override
     public void focusLost(final FocusEvent fe) {
-        //Make strings valid on focus lost
-        String fixedString = fixString(getText());
-        if (fixedString != null) {
-            setText(fixedString);
+        FloatDataValue fdv = (FloatDataValue) getModel();
+        if (!fdv.isEmpty()) {
+            //Make strings valid on focus lost
+            String fixedString = fixString(getText());
+            if (fixedString != null) {
+                setText(fixedString);
+            }
         }
         super.focusLost(fe);
     }
@@ -196,7 +200,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
         newValue.select(getSelectionStart(), getSelectionEnd());
 
         //Ignore everything in front of the -ve
-        if (getText().startsWith("-") && getCaretPosition() == 0) {
+        if (getText().startsWith("-") && getCaretPosition() == 0 && !(getSelectionStart() == 0 && getSelectionEnd() > 0)) {
             e.consume();
             return;
         }
@@ -206,8 +210,16 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 .getKeyCode() == KeyEvent.KEY_LOCATION_UNKNOWN)
                 && e.getKeyChar() == '-') {
 
+            //Delete selected value first
+            if (!fdv.isEmpty() && (getSelectionStart() != getSelectionEnd())) {
+                keyPressed(new KeyEvent(e.getComponent(), e.getID(), e.getWhen(), e.getModifiers(), KeyEvent.VK_UNDEFINED, '\u0008'));
+                valueAsDouble = fdv.getItsValue();
+            }
+            
             valueAsDouble = -valueAsDouble;
             newValue.setText("" + valueAsDouble);
+            
+
             // Move the caret to behind the - sign, or front of the number.
             if (newValue.getText().startsWith("-")) {
                 newValue.setCaretPosition(1);
@@ -269,8 +281,10 @@ public final class FloatDataValueEditor extends DataValueEditor {
             int prevCaretPos = getCaretPosition();
             double prevDouble = fdv.getItsValue();
 
-            //Perform change
+            //Delete selected value first
             newValue = removeSelectedText(newValue);
+            newValue.setCaretPosition(getSelectionStart());
+
 
             // BugzID: 565 - Reject keystroke if a leading zero.
             if (e.getKeyChar() == '0' && newValue.getText().length() > 0
@@ -278,8 +292,16 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 if ((fdv.getItsValue() > 0 && getCaretPosition() == 0)
                         || (fdv.getItsValue() < 0 && getCaretPosition() <= 1)
                         || FloatUtils.closeEnough(fdv.getItsValue(), 0)) {
-                    e.consume();
-                    return;
+                    newValue.insert(Character.toString(e.getKeyChar()),
+                            newValue.getCaretPosition());
+                    //Let's see if this is could result in a valid state. If not, reject it as before.
+                    if (validState(newValue.getText()) != null) {
+                        newValue.setText(prevValue);
+                        newValue.setCaretPosition(prevCaretPos);
+                    } else {
+                        e.consume();
+                        return;
+                    }
                 }
             }
 
@@ -351,7 +373,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
                 e.consume();
                 return;
             } else {
-                setText(newValue.getText());
+                setText(validString);
                 setCaretPosition(newValue.getCaretPosition());
                 fdv.setItsValue(buildValue(newValue.getText()));
                 e.consume();
@@ -375,6 +397,15 @@ public final class FloatDataValueEditor extends DataValueEditor {
      */
     public boolean exceedsPrecision() {
         String text = getText();
+        return exceedsPrecision(text);
+    }
+
+    /**
+     * @return True if adding another character at the current caret position
+     *         will exceed the allowed precision for a floating value, false
+     *         otherwise.
+     */
+    public boolean exceedsPrecision(String text) {
         if ((text.length() - text.indexOf('.') > MAX_DECIMAL_PLACES)
                 && (getCaretPosition() - text.indexOf('.')
                 > MAX_DECIMAL_PLACES)) {
@@ -484,6 +515,15 @@ public final class FloatDataValueEditor extends DataValueEditor {
             return text + ".0";
         }
 
+        if (text.length() > MAX_LENGTH) {
+            return text.substring(0, MAX_LENGTH);
+        }
+
+        if ((text.length() - text.indexOf(".")) > MAX_DECIMAL_PLACES + 1) {
+            return text.substring(0, text.indexOf(".") + MAX_DECIMAL_PLACES + 1);
+        }
+
+
         try {
             if (FloatUtils.closeEnough(Double.parseDouble(text), 0)
                     && (!text.matches("0.0+"))) {
@@ -542,5 +582,36 @@ public final class FloatDataValueEditor extends DataValueEditor {
             result.setCaretPosition(0);
         }
         return result;
+    }
+
+    /**
+     * Paste the contents of the clipboard into the FloatDataValueEditor, then
+     * try and fix it as necessary. If it fails, then try the old way of
+     * typing in each character.
+     */
+
+    @Override
+    public void paste() {
+        FloatDataValue fdv = (FloatDataValue) getModel();
+        JTextArea pastedField = new JTextArea(getText());
+        pastedField.setCaretPosition(getCaretPosition());
+        pastedField.setSelectionStart(getSelectionStart());
+        pastedField.setSelectionEnd(getSelectionEnd());
+        pastedField.paste();
+
+        try {
+            Double value = Double.parseDouble(pastedField.getText());
+//            // Determine the precision to use - prevent the user from exceding
+//            // six decimal places.
+//            DecimalFormat formatter = new DecimalFormat(Constants.FLOAT_FORMAT);
+//            formatter.setMaximumFractionDigits(MAX_DECIMAL_PLACES);
+//            pastedField.setText(formatter.format(value));
+            pastedField.setText(fixString(pastedField.getText()));
+            setText(pastedField.getText());
+            setCaretPosition(pastedField.getCaretPosition());
+            fdv.setItsValue(buildValue(pastedField.getText()));
+        } catch (Exception e) {
+            super.paste();
+        }
     }
 }
