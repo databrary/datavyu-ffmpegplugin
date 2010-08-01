@@ -8,6 +8,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -29,6 +30,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.miginfocom.swing.MigLayout;
 
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
 import org.gstreamer.Format;
 import org.gstreamer.Gst;
 import org.gstreamer.SeekFlags;
@@ -127,7 +130,12 @@ public class GStreamerDataViewer implements DataViewer {
                 }
             });
         
-        videoDialog = new JDialog(parent, false);
+        final boolean useFixedAspectRatioDialog = false;
+        if (useFixedAspectRatioDialog) {
+        	videoDialog = new FixedAspectRatioDialog(parent, false);
+        } else {
+        	videoDialog = new JDialog(parent, false);
+        }
         videoDialog.setVisible(false);
         videoDialog.setName("videoDialog");
         videoDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -209,7 +217,7 @@ public class GStreamerDataViewer implements DataViewer {
     public synchronized void play() {
         System.out.println("GStreamerDataViewer.play()");
         if (playBin != null && !isPlaying) {
-            final int seekFlags = SeekFlags.FLUSH | SeekFlags.ACCURATE | (1 << 4) /*SeekFlags.SKIP*/;
+            final int seekFlags = SeekFlags.FLUSH | SeekFlags.ACCURATE /*| SeekFlags.SKIP*/;
             playBin.seek(playbackRate, Format.TIME, seekFlags, SeekType.NONE, 0, SeekType.NONE, 0);
             playBin.setVolume(volume);
             playBin.setState(State.PLAYING);
@@ -251,6 +259,9 @@ public class GStreamerDataViewer implements DataViewer {
     public synchronized void seekTo(long position) {
         System.out.println("GStreamerDataViewer.seekTo(" + position + "), currentTime=" + getCurrentTime() + ", difference=" + (position - getCurrentTime()) + ", playbackSpeed=" + playbackRate + ", isPlaying=" + isPlaying);
         if (playBin != null && position != getCurrentTime()) {
+        	if (isPlaying) {
+        		return;
+        	}
         	updatePlaybackVolume();
         	gstreamerSeek(TimeUnit.NANOSECONDS.convert(position, TimeUnit.MILLISECONDS));
             waitForPlaybinStateChange();
@@ -268,10 +279,18 @@ public class GStreamerDataViewer implements DataViewer {
         playBin = new PlayBin("OpenSHAPA");
         playBin.setInputFile(dataFeed);
 
-        videoComponent = new VideoComponent();
-        ((RGBDataSink) videoComponent.getElement()).getSinkElement().setMaximumLateness(-1, TimeUnit.MILLISECONDS); //TODO ugly hack!
-        playBin.setVideoSink(videoComponent.getElement());
-
+        final boolean useXImageSink = false;
+        
+        if (useXImageSink) {
+	        Element ximagesink = ElementFactory.make("ximagesink", "ximagesink");
+	        ximagesink.set("force-aspect-ratio", true);
+	        playBin.setVideoSink(ximagesink);
+        } else {
+	        videoComponent = new VideoComponent();
+	        ((RGBDataSink) videoComponent.getElement()).getSinkElement().setMaximumLateness(-1, TimeUnit.MILLISECONDS); //TODO ugly hack!
+	        playBin.setVideoSink(videoComponent.getElement());
+        }
+        
         playBin.setState(State.PAUSED);
         State state = playBin.getState(TimeUnit.NANOSECONDS.convert(VIDEO_LOADING_TIMEOUT_SECONDS, TimeUnit.SECONDS));
         if (state != State.PAUSED) {
@@ -280,7 +299,7 @@ public class GStreamerDataViewer implements DataViewer {
         }
         
         isPlaying = false;
-        playBin.seek(1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE | SeekFlags.SKIP, SeekType.SET, 0, SeekType.END, 0);
+        playBin.seek(1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE /*| SeekFlags.SKIP*/, SeekType.SET, 0, SeekType.END, 0);
         waitForPlaybinStateChange();
         
         duration = playBin.queryDuration(TimeUnit.MILLISECONDS);
