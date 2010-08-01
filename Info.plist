@@ -43,7 +43,7 @@
         <string>$JAVAROOT/repo/org/easytesting/fest-reflect/1.2/fest-reflect-1.2.jar</string>
         <string>$JAVAROOT/repo/com/google/collections/google-collections/1.0/google-collections-1.0.jar</string>
         <string>$JAVAROOT/repo/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar</string>
-        <string>$JAVAROOT/repo/net/java/dev/jna/jna/jna-3.2.5.jar</string>
+        <string>$JAVAROOT/repo/net/java/dev/jna/jna/jna-3.2.7.jar</string>
 <!-- temporarily disabled due to move into openshapa-lib        
         <string>$JAVAROOT/repo/com/googlecode/gstreamer-java/gstreamer-java/1.4/gstreamer-java-1.4.jar</string>
 -->        
