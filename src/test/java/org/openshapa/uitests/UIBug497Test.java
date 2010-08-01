@@ -4,8 +4,6 @@ import java.awt.event.KeyEvent;
 
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.core.matcher.JTextComponentMatcher;
-import org.fest.swing.fixture.JLabelFixture;
-import org.fest.swing.fixture.JPanelFixture;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.util.Platform;
 
@@ -57,7 +55,7 @@ public final class UIBug497Test extends OpenSHAPATestClass {
                 Platform.controlOrCommandMask()));
 
         // c. Check text
-        Assert.assertEquals(cell.text(), expectedTestOutput);
+        Assert.assertTrue(UIUtils.equalValues(cell.text(), expectedTestOutput));
     }
 
     /**
@@ -94,6 +92,6 @@ public final class UIBug497Test extends OpenSHAPATestClass {
                 Platform.controlOrCommandMask()));
 
         // c. Check text
-        Assert.assertEquals(cell.text(), expectedTestOutput);
+        Assert.assertTrue(UIUtils.equalValues(cell.text(), expectedTestOutput));
     }
 }

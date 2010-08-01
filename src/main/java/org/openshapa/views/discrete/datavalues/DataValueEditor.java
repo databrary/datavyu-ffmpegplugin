@@ -218,7 +218,7 @@ public abstract class DataValueEditor extends EditorComponent {
      *            Focus Event
      */
     @Override
-    public void focusGained(final FocusEvent fe) {
+    public void focusGained(final FocusEvent fe) {        
         textOnFocus = getText();
     }
 

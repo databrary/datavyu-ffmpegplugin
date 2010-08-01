@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.swing.JMenuItem;
 
 import javax.swing.JPopupMenu;
+import javax.swing.MenuElement;
 import org.fest.swing.fixture.JMenuItemFixture;
 import org.fest.swing.util.Platform;
 
@@ -149,8 +150,14 @@ public final class UIScriptsTest extends OpenSHAPATestClass {
         JMenuItemFixture recentScriptMenu = mainFrameFixture.menuItemWithPath("Script", "Run recent script").click();
         JPopupMenu recentScripts = (JPopupMenu)recentScriptMenu.component().getSubElements()[0];
 
-        Assert.assertEquals(recentScripts.getSubElements().length, 2);
-        Assert.assertTrue(((JMenuItem)recentScripts.getSubElements()[1]).getText().endsWith("script1.rb"));
+        Assert.assertTrue(recentScripts.getSubElements().length > 1);
+        int count1 = 0;
+        for (MenuElement me : recentScripts.getSubElements()) {
+            if (((JMenuItem)me).getText().endsWith(script1.getName())) {
+                count1++;
+            }
+        }
+        Assert.assertEquals(count1, 1);
         
         //Run script again
         mainFrameFixture.runScript(script1);
@@ -160,8 +167,14 @@ public final class UIScriptsTest extends OpenSHAPATestClass {
         recentScriptMenu = mainFrameFixture.menuItemWithPath("Script", "Run recent script").click();
         recentScripts = (JPopupMenu)recentScriptMenu.component().getSubElements()[0];
 
-        Assert.assertEquals(recentScripts.getSubElements().length, 2);
-        Assert.assertTrue(((JMenuItem)recentScripts.getSubElements()[1]).getText().endsWith("script1.rb"));
+        Assert.assertTrue(recentScripts.getSubElements().length > 1);
+        count1 = 0;
+        for (MenuElement me : recentScripts.getSubElements()) {
+            if (((JMenuItem)me).getText().endsWith(script1.getName())) {
+                count1++;
+            }
+        }
+        Assert.assertEquals(count1, 1);
         
         //Run different script
         mainFrameFixture.runScript(script2);
@@ -171,9 +184,20 @@ public final class UIScriptsTest extends OpenSHAPATestClass {
         recentScriptMenu = mainFrameFixture.menuItemWithPath("Script", "Run recent script").click();
         recentScripts = (JPopupMenu)recentScriptMenu.component().getSubElements()[0];
 
-        Assert.assertEquals(recentScripts.getSubElements().length, 3);
-        Assert.assertTrue(((JMenuItem)recentScripts.getSubElements()[1]).getText().endsWith("script2.rb"));
-        Assert.assertTrue(((JMenuItem)recentScripts.getSubElements()[2]).getText().endsWith("script1.rb"));
+        Assert.assertTrue(recentScripts.getSubElements().length > 2);
+        count1 = 0;
+        int count2 = 0;
+        for (MenuElement me : recentScripts.getSubElements()) {
+            if (((JMenuItem)me).getText().endsWith(script1.getName())) {
+                count1++;
+            }
+
+            if (((JMenuItem)me).getText().endsWith(script2.getName())) {
+                count2++;
+            }
+        }
+        Assert.assertEquals(count1, 1);
+        Assert.assertEquals(count2, 1);
 
         //Click spreadsheet to unfocus from menu
         mainFrameFixture.getSpreadsheet().click();

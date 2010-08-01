@@ -91,23 +91,23 @@ public final class TextStringDataValueEditor extends DataValueEditor {
             this.setCaretPosition(pos);
             e.consume();
 
+            // Push the character changes into the database.
+            try {
+                // BugzID:668 - The user is reverting back to a 'placeholder' state.
+                if (this.getText().equals("")) {
+                    tsdv.clearValue();
+                } else {
+                    tsdv.setItsValue(this.getText());
+                }
+                updateDatabase();
+            } catch (SystemErrorException se) {
+                logger.error("Unable to edit text string", se);
+            }
+
         // All other key strokes are consumed.
         } else {
             e.consume();
-        }
-
-        // Push the character changes into the database.
-        try {
-            // BugzID:668 - The user is reverting back to a 'placeholder' state.
-            if (this.getText().equals("")) {
-                tsdv.clearValue();
-            } else {
-                tsdv.setItsValue(this.getText());
-            }
-            updateDatabase();
-        } catch (SystemErrorException se) {
-            logger.error("Unable to edit text string", se);
-        }
+        }        
     }
 
     /**

@@ -280,10 +280,10 @@ public class DataControllerFixture extends DialogFixture {
      */
     public final ArrayList<DialogFixture> getVideoWindows() {
         ArrayList<DialogFixture> vidWindows = new ArrayList<DialogFixture>();
-        Iterator it = getDataViewers().iterator();
+        Iterator<DataViewer> it = getDataViewers().iterator();
 
         while (it.hasNext()) {
-            JDialog vid = ((JDialog) it.next());
+            JDialog vid = (it.next().getParentJDialog());
             vidWindows.add(new DialogFixture(robot, vid));
         }
 

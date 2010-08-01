@@ -171,7 +171,6 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             cacheHandler = new CacheHandler();
         }
 
-        g2d.setColor(DATA_COLOR);
 
         // Draw left channel data.
         if (leftAmp != null) {
@@ -199,10 +198,10 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
                 cachedAmps.getWidth(), cachedAmps.getHeight(), null);
 
             final int x1 = computePixelXCoord(localVM.getZoomWindowStart()
-                    + localTM.getOffset());
+                    + trackModel.getOffset() - localTM.getOffset());
             final int y1 = 0;
             final int x2 = computePixelXCoord(localVM.getZoomWindowEnd()
-                    + localTM.getOffset());
+                    + trackModel.getOffset() - localTM.getOffset());
             final int y2 = getHeight();
 
             g3.clearRect(x1, y1, x2 - x1, y2 - y1);
@@ -215,10 +214,10 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
         } else {
 
             // Baseline zero amplitude.
+            g2d.setColor(DATA_COLOR);
             g2d.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
         }
 
-        g2d.setColor(DATA_COLOR);
 
         // Draw right channel data.
         if (rightAmp != null) {
@@ -233,6 +232,7 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
         } else {
 
             // Baseline zero amplitude.
+            g2d.setColor(DATA_COLOR);
             g2d.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
         }
 

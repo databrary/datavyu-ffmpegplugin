@@ -221,7 +221,9 @@ implements FocusListener, KeyListener, MouseListener {
     public void focusGained(final FocusEvent fe) {
         if (currentEditor.equals(NO_EDITOR)) {
             setEditor(findEditor(0), 0, 0);
-        } 
+        } else {
+            setEditor(findEditor(getCurrentEditor().getCaretPosition()), getCurrentEditor().getSelectionStart(), getCurrentEditor().getSelectionEnd());
+        }
     }
 
     /**
