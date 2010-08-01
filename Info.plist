@@ -35,7 +35,7 @@
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.4.0/jruby-complete-1.4.0.jar</string>
         <string>$JAVAROOT/repo/org/jdesktop/appframework/1.0.3/appframework-1.0.3.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openhashtable/0.1/openhashtable-0.1.jar</string>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.21/openshapa-lib-0.0.21.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.22/openshapa-lib-0.0.22.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.5/snakeyaml-1.5.jar</string>
         <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.5/UserMetrix-jclient-0.0.5.jar</string>
         <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.3.1/miglayout-3.7.3.1-swing.jar</string>
