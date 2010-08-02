@@ -1,5 +1,6 @@
 package org.openshapa.views.continuous.gstreamer;
 
+import com.sun.jna.Platform;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.BorderLayout;
@@ -8,6 +9,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -29,13 +31,17 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.miginfocom.swing.MigLayout;
 
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
 import org.gstreamer.Format;
 import org.gstreamer.Gst;
 import org.gstreamer.SeekFlags;
 import org.gstreamer.SeekType;
 import org.gstreamer.State;
+import org.gstreamer.elements.OSXVideoSink;
 import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.RGBDataSink;
+import org.gstreamer.swing.OSXVideoComponent;
 import org.gstreamer.swing.VideoComponent;
 import org.openshapa.views.component.DefaultTrackPainter;
 import org.openshapa.views.component.TrackPainter;
@@ -127,7 +133,12 @@ public class GStreamerDataViewer implements DataViewer {
                 }
             });
         
-        videoDialog = new JDialog(parent, false);
+        final boolean useFixedAspectRatioDialog = false;
+        if (useFixedAspectRatioDialog) {
+        	videoDialog = new FixedAspectRatioDialog(parent, false);
+        } else {
+        	videoDialog = new JDialog(parent, false);
+        }
         videoDialog.setVisible(false);
         videoDialog.setName("videoDialog");
         videoDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -209,7 +220,7 @@ public class GStreamerDataViewer implements DataViewer {
     public synchronized void play() {
         System.out.println("GStreamerDataViewer.play()");
         if (playBin != null && !isPlaying) {
-            final int seekFlags = SeekFlags.FLUSH | SeekFlags.ACCURATE | (1 << 4) /*SeekFlags.SKIP*/;
+            final int seekFlags = SeekFlags.FLUSH | SeekFlags.ACCURATE | SeekFlags.SKIP /* */;
             playBin.seek(playbackRate, Format.TIME, seekFlags, SeekType.NONE, 0, SeekType.NONE, 0);
             playBin.setVolume(volume);
             playBin.setState(State.PLAYING);
@@ -226,7 +237,7 @@ public class GStreamerDataViewer implements DataViewer {
 
     private void gstreamerSeek(long positionNanoseconds) {
         final double seekPlaybackRate = playbackRate != 0.0 ? playbackRate : 1.0;
-        final int seekFlags = SeekFlags.FLUSH | SeekFlags.ACCURATE | SeekFlags.SKIP;
+        final int seekFlags = SeekFlags.FLUSH | SeekFlags.ACCURATE | SeekFlags.SKIP /* */;
         final SeekType startSeekType;
         final long startSeekTime;
         final SeekType endSeekType;
@@ -251,10 +262,19 @@ public class GStreamerDataViewer implements DataViewer {
     public synchronized void seekTo(long position) {
         System.out.println("GStreamerDataViewer.seekTo(" + position + "), currentTime=" + getCurrentTime() + ", difference=" + (position - getCurrentTime()) + ", playbackSpeed=" + playbackRate + ", isPlaying=" + isPlaying);
         if (playBin != null && position != getCurrentTime()) {
+        	if (isPlaying) {
+//        		return;
+        	}
         	updatePlaybackVolume();
         	gstreamerSeek(TimeUnit.NANOSECONDS.convert(position, TimeUnit.MILLISECONDS));
             waitForPlaybinStateChange();
         }
+    }
+    
+    private enum VideoSinkType {
+    	swingRenderer,
+    	osxRenderer,
+    	xWindowsRenderer,
     }
     
     @Override
@@ -268,10 +288,50 @@ public class GStreamerDataViewer implements DataViewer {
         playBin = new PlayBin("OpenSHAPA");
         playBin.setInputFile(dataFeed);
 
-        videoComponent = new VideoComponent();
-        ((RGBDataSink) videoComponent.getElement()).getSinkElement().setMaximumLateness(-1, TimeUnit.MILLISECONDS); //TODO ugly hack!
-        playBin.setVideoSink(videoComponent.getElement());
-
+        final VideoSinkType renderer;
+        if (Platform.isMac()) {
+        	renderer = VideoSinkType.osxRenderer;
+        } else {
+        	renderer = VideoSinkType.swingRenderer;
+//        	renderer = VideoSinkType.xWindowsRenderer;
+        }
+        
+        switch (renderer) {
+        case swingRenderer: {
+	        videoComponent = new VideoComponent();
+	        ((RGBDataSink) videoComponent.getElement()).getSinkElement().setMaximumLateness(-1, TimeUnit.MILLISECONDS); //TODO ugly hack!
+	        playBin.setVideoSink(videoComponent.getElement());
+        }
+        
+        case xWindowsRenderer: {
+	        Element ximagesink = ElementFactory.make("ximagesink", "ximagesink");
+	        ximagesink.set("force-aspect-ratio", true);
+	        playBin.setVideoSink(ximagesink);
+        }
+        
+        case osxRenderer: {
+        	OSXVideoSink osxvideosink = new OSXVideoSink("osxvideosink");
+        	playBin.setVideoSink(osxvideosink);
+	        osxvideosink.listenForNewViews(playBin.getBus());
+	    	
+	        osxvideosink.addListener(new OSXVideoSink.Listener() {
+				@Override
+				public void newVideoComponent(Object source, OSXVideoComponent osxVideoComponent) {
+	                videoDialog.getContentPane().add(osxVideoComponent, BorderLayout.CENTER);
+	                osxVideoComponent.setPreferredSize(playBin.getVideoSize());
+	                videoDialog.pack();
+				}
+			});
+	        
+	        SwingUtilities.invokeLater(new Runnable() {
+	        	public void run() {
+		            videoDialog.setTitle(dataFeed.getName());
+		            videoDialog.setVisible(true);
+	        	}
+	        });	        
+        }
+        }
+        
         playBin.setState(State.PAUSED);
         State state = playBin.getState(TimeUnit.NANOSECONDS.convert(VIDEO_LOADING_TIMEOUT_SECONDS, TimeUnit.SECONDS));
         if (state != State.PAUSED) {
@@ -280,30 +340,35 @@ public class GStreamerDataViewer implements DataViewer {
         }
         
         isPlaying = false;
-        playBin.seek(1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE | SeekFlags.SKIP, SeekType.SET, 0, SeekType.END, 0);
+        playBin.seek(1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE /*| SeekFlags.SKIP*/, SeekType.SET, 0, SeekType.END, 0);
         waitForPlaybinStateChange();
         
         duration = playBin.queryDuration(TimeUnit.MILLISECONDS);
+
+    	final double defaultVideoFrameRate = 25;
+    	final Dimension defaultVideoSize = new Dimension(320, 240);
+        
         videoFrameRate = playBin.getVideoSinkFrameRate();
         if (videoFrameRate <= 0) {
-        	final double defaultVideoFrameRate = 25;
         	videoFrameRate = defaultVideoFrameRate;
         }
 
         videoSize = playBin.getVideoSize();
         if (videoSize == null) {
-        	videoSize = new Dimension(320, 240);
+        	videoSize = defaultVideoSize;
         }
         
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                videoDialog.setTitle(dataFeed.getName());
-                videoDialog.getContentPane().add(videoComponent, BorderLayout.CENTER);
-                videoComponent.setPreferredSize(videoSize);
-                videoDialog.pack();
-                videoDialog.setVisible(true);
-            }
-        });
+        if (renderer == VideoSinkType.swingRenderer) {
+	        SwingUtilities.invokeLater(new Runnable() {
+	            public void run() {
+	                videoDialog.setTitle(dataFeed.getName());
+	                videoDialog.getContentPane().add(videoComponent, BorderLayout.CENTER);
+	                videoComponent.setPreferredSize(videoSize);
+	                videoDialog.pack();
+	                videoDialog.setVisible(true);
+	            }
+	        });
+        }
     }
     
     public void windowClosing(final WindowEvent evt) {

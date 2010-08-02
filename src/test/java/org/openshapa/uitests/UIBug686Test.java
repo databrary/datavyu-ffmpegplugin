@@ -10,6 +10,7 @@ import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.DialogFixture;
 
 import org.openshapa.util.UIUtils;
+import org.openshapa.views.continuous.gstreamer.GStreamerDataViewer;
 
 import org.testng.Assert;
 

@@ -165,8 +165,8 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         cell1.cellValue().enterText(testInputArray[0]);
         cell2.cellValue().enterText(testInputArray[1]);
 
-        Assert.assertEquals(cell1.cellValue().text(), testExpectedArray[0]);
-        Assert.assertEquals(cell2.cellValue().text(), testExpectedArray[1]);
+        Assert.assertTrue(UIUtils.equalValues(cell1.cellValue().text(), testExpectedArray[0]));
+        Assert.assertTrue(UIUtils.equalValues(cell2.cellValue().text(), testExpectedArray[1]));
         cell2.fillSelectCell(true);
 
         // 7. Jog forward 5 times and change cell onset.
@@ -833,7 +833,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         dcf.pressGoBackButton();
 
         currTS = new TimeStamp(dcf.getCurrentTime());
-        Assert.assertTrue((currTS.gt(new TimeStamp("00:00:55:000")))
+        Assert.assertTrue((currTS.ge(new TimeStamp("00:00:55:000")))
             && (currTS.lt(new TimeStamp("00:01:00:000"))),
             currTS.toHMSFString());
 
@@ -842,7 +842,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         dcf.pressFindButton();
         dcf.pressGoBackButton();
         currTS = new TimeStamp(dcf.getCurrentTime());
-        Assert.assertTrue((currTS.gt(new TimeStamp("00:00:30:000")))
+        Assert.assertTrue((currTS.ge(new TimeStamp("00:00:30:000")))
             && (currTS.lt(new TimeStamp("00:00:35:000"))),
             currTS.toHMSFString());
 
@@ -851,7 +851,7 @@ public final class UIDataControllerTest extends OpenSHAPATestClass {
         dcf.pressFindButton();
         dcf.pressGoBackButton();
         currTS = new TimeStamp(dcf.getCurrentTime());
-        Assert.assertTrue((currTS.gt(new TimeStamp("00:00:00:000")))
+        Assert.assertTrue((currTS.ge(new TimeStamp("00:00:00:000")))
             && (currTS.lt(new TimeStamp("00:00:05:000"))),
             currTS.toHMSFString());
 

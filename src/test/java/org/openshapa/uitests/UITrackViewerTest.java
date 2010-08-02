@@ -526,21 +526,15 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /*BugzID1992:@Test*/ public void testTrackSnapping() {
+    @Test public void testTrackSnapping() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open first video
-        
+
         final File videoFile1 = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile1.exists());
 
         UIUtils.openData(videoFile1, dcf);
-
-        // c. Open second video
-        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
-        Assert.assertTrue(videoFile2.exists());
-
-        UIUtils.openData(videoFile2, dcf);
 
         // Get first window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
@@ -551,7 +545,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
+        // c. Open second video
+        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
+        Assert.assertTrue(videoFile2.exists());
+
+        UIUtils.openData(videoFile2, dcf);
+
         // Get second window
+        vidWindows = dcf.getVideoWindows();
         vidWindows.get(1).focus();
         vidWindows.get(1).resizeHeightTo(300);
 
@@ -870,24 +871,17 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     /**
      * Test snapping tracks.
      */
-    /*BugzID1992:@Test*/ public void testTrackSnappingWithZoom() {
+    @Test public void testTrackSnappingWithZoom() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         JSliderFixture zoomSlider = dcf.getTrackMixerController()
             .getZoomSlider();
 
         // c. Open first video
-        
         final File videoFile1 = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile1.exists());
 
         UIUtils.openData(videoFile1, dcf);
-
-        // c. Open second video
-        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
-        Assert.assertTrue(videoFile2.exists());
-
-        UIUtils.openData(videoFile2, dcf);
 
         // Get first window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
@@ -898,7 +892,14 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
                 100));
 
+        // c. Open second video
+        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
+        Assert.assertTrue(videoFile2.exists());
+
+        UIUtils.openData(videoFile2, dcf);
+
         // Get second window
+        vidWindows = dcf.getVideoWindows();
         vidWindows.get(1).focus();
         vidWindows.get(1).resizeHeightTo(300);
 
@@ -1069,7 +1070,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
     * Test closing of video while play.
     * Should reset datacontroller and remove track.
     */
-    /*BugzID1796:@Test*/ public void testCloseVideoWhilePlaying() {
+    @Test public void testCloseVideoWhilePlaying() {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
