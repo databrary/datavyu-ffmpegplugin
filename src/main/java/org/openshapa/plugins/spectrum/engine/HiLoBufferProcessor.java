@@ -13,14 +13,30 @@ import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 import com.sun.jna.Pointer;
 
 
+/**
+ * Picks the highest and lowest value from each incoming buffer.
+ */
 public class HiLoBufferProcessor implements NEW_BUFFER {
 
+    /** The sink to pull buffers from. */
     private AppSink sink;
 
+    /** Number of audio channels in the buffer. */
     private int mediaChannels;
 
+    /** Buffer to store picked points in. */
     private StereoAmplitudeData data;
 
+    /**
+     * Constructs a new buffer processor.
+     *
+     * @param sink
+     *            The sink to pull data from.
+     * @param mediaChannels
+     *            Number of audio channels.
+     * @param data
+     *            Result buffer.
+     */
     public HiLoBufferProcessor(final AppSink sink, final int mediaChannels,
         final StereoAmplitudeData data) {
         this.sink = sink;
@@ -41,6 +57,9 @@ public class HiLoBufferProcessor implements NEW_BUFFER {
             int size = buf.getSize() / 2;
 
             ShortBuffer sb = buf.getByteBuffer().asShortBuffer();
+
+            // System.out.println("Buffer size=" + size + ", Timestamp="
+            // + buf.getTimestamp().toMillis());
 
             // Find largest and smallest left channel data.
             if (mediaChannels >= 1) {

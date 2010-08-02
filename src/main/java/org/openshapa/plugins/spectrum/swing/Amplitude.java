@@ -1,7 +1,5 @@
 package org.openshapa.plugins.spectrum.swing;
 
-import java.awt.geom.Path2D;
-
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 
 

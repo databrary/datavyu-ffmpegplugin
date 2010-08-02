@@ -15,20 +15,41 @@ import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 import com.sun.jna.Pointer;
 
 
+/**
+ * Selects a fixed number of equally spaced points from the buffer.
+ */
 public class FixedBufferProcessor implements NEW_BUFFER {
 
+    /** The sink to pull buffers from. */
     private AppSink sink;
 
+    /** Number of audio channels in the buffer. */
     private int mediaChannels;
 
+    /** Buffer to store picked points in. */
     private StereoAmplitudeData data;
 
+    /** Time interval between processing intervals. */
     private long interval;
 
+    /** Timestamp of the previous buffer. */
     private long prevBufTime;
 
+    /** Time of the next value to extract. */
     private long next;
 
+    /**
+     * Constructs a new buffer processor.
+     *
+     * @param sink
+     *            The sink to pull data from.
+     * @param mediaChannels
+     *            Number of audio channels.
+     * @param data
+     *            Result buffer.
+     * @param numSamples
+     *            Number of samples to extract.
+     */
     public FixedBufferProcessor(final AppSink sink, final int mediaChannels,
         final StereoAmplitudeData data, final int numSamples) {
         this.sink = sink;
@@ -41,8 +62,6 @@ public class FixedBufferProcessor implements NEW_BUFFER {
         interval = (long) (NANOSECONDS.convert(
                     data.getDataTimeEnd() - data.getDataTimeStart(),
                     data.getDataTimeUnit()) / (double) numSamples);
-
-        System.out.println("Interval=" + interval);
     }
 
     @Override public void newBuffer(final Element elem,
@@ -58,6 +77,9 @@ public class FixedBufferProcessor implements NEW_BUFFER {
             int size = buf.getSize() / 2;
 
             ShortBuffer sb = buf.getByteBuffer().asShortBuffer();
+
+            // System.out.println("Buffer size=" + size + ", Timestamp="
+            // + buf.getTimestamp().toMillis());
 
             // 1. Calculate the time interval between each magnitude value.
             double bufferInterval = (buf.getTimestamp().toNanos()

@@ -2,8 +2,6 @@ package org.openshapa.plugins.spectrum.engine;
 
 import java.io.File;
 
-import java.nio.ShortBuffer;
-
 import java.util.concurrent.TimeUnit;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -15,7 +13,6 @@ import static org.gstreamer.Element.linkPadsFiltered;
 import javax.swing.SwingWorker;
 
 import org.gstreamer.Bin;
-import org.gstreamer.Buffer;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
@@ -53,7 +50,7 @@ public final class AmplitudeProcessor
             AmplitudeProcessor.class);
 
     public enum Strategy {
-        FIXED, HIGH_LOW
+        FIXED, HIGH_LOW, FIXED_HIGH_LOW
     }
 
     /** Media file to process. */
@@ -138,8 +135,6 @@ public final class AmplitudeProcessor
      * @see javax.swing.SwingWorker#doInBackground()
      */
     @Override protected StereoAmplitudeData doInBackground() throws Exception {
-        System.out.println("Started=" + System.currentTimeMillis());
-
         Gst.init();
 
         final Pipeline pipeline = new Pipeline("Processor");
@@ -172,13 +167,27 @@ public final class AmplitudeProcessor
         appSink.set("emit-signals", true);
         appSink.setSync(false);
 
-        if (strat == Strategy.FIXED) {
+        switch (strat) {
+
+        case FIXED:
             appSink.connect(new FixedBufferProcessor(appSink, numChannels, data,
                     opts));
-        } else if (strat == Strategy.HIGH_LOW) {
+
+            break;
+
+        case HIGH_LOW:
             appSink.connect(new HiLoBufferProcessor(appSink, numChannels,
                     data));
-        } else {
+
+            break;
+
+        case FIXED_HIGH_LOW:
+            appSink.connect(new FixedHiLoBufferProcessor(appSink, numChannels,
+                    data, opts));
+
+            break;
+
+        default:
             pipeline.dispose();
             throw new IllegalStateException("Processing strategy unset.");
         }
@@ -266,8 +275,6 @@ public final class AmplitudeProcessor
         pipeline.stop();
         pipeline.dispose();
 
-        System.out.println("Processed size=" + data.sizeL());
-
         data.normalizeL();
         data.normalizeR();
 
@@ -279,6 +286,8 @@ public final class AmplitudeProcessor
 
         double interval = ((end - start) / (double) data.sizeL());
         data.setTimeInterval(interval, MILLISECONDS);
+
+        System.out.println("Data size=" + data.sizeL() + ", Opts=" + opts);
 
         return data;
     }

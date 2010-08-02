@@ -2,7 +2,6 @@ package org.openshapa.plugins.spectrum;
 
 import java.io.File;
 
-import java.util.concurrent.TimeUnit;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.gstreamer.Bin;
@@ -17,7 +16,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
-import org.gstreamer.GstObject;
 import org.gstreamer.Message;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
