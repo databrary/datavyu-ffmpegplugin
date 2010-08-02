@@ -69,14 +69,7 @@ public class SpectrumMessage implements MESSAGE {
 
             for (int i = 0; i < SpectrumConstants.SPECTRUM_BANDS; i++) {
                 int idx = indices[i];
-
-                GValue value = method("getValue").withReturnType(
-                        GValueAPI.GValue.class).withParameterTypes(int.class)
-                    .in(mags).invoke(idx);
-
-                float mag = GValueAPI.GVALUE_API.g_value_get_float(value);
-
-                result[i] = mag;
+                result[i] = mags.getFloat(idx);
             }
 
             spectrumView.setMagnitudelVals(result);
