@@ -41,8 +41,6 @@ public final class NeedleController {
         view = new NeedlePainter();
 
         needleModel = new NeedleModel();
-        needleModel.setPaddingTop(0);
-        needleModel.setPaddingLeft(101);
         needleModel.setNeedleWidth(1);
         needleModel.setNeedleHeadWidth(9);
         needleModel.setNeedleHeadHeight(17);
@@ -158,12 +156,7 @@ public final class NeedleController {
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
          */
-        this.viewableModel.setEnd(viewableModel.getEnd());
-        this.viewableModel.setIntervalTime(viewableModel.getIntervalTime());
-        this.viewableModel.setIntervalWidth(viewableModel.getIntervalWidth());
-        this.viewableModel.setZoomWindowEnd(viewableModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(
-            viewableModel.getZoomWindowStart());
+        this.viewableModel.copyFrom(viewableModel);
         view.setViewableModel(this.viewableModel);
     }
 
@@ -211,8 +204,8 @@ public final class NeedleController {
             // Calculate the time represented by the new location
             float ratio = viewableModel.getIntervalWidth()
                 / viewableModel.getIntervalTime();
-            float newTime = (x - needleModel.getPaddingLeft()
-                    + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
+            float newTime = (x + (viewableModel.getZoomWindowStart() * ratio))
+                / ratio;
 
             if (newTime < 0) {
                 newTime = 0;

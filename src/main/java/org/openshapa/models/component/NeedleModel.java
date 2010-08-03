@@ -6,12 +6,6 @@ package org.openshapa.models.component;
  */
 public final class NeedleModel {
 
-    /** Amount of padding for this component from the top */
-    private int paddingTop;
-
-    /** Amount of padding for this component from the left */
-    private int paddingLeft;
-
     /** Width of the needle line in pixels */
     private double needleWidth;
 
@@ -28,8 +22,6 @@ public final class NeedleModel {
     }
 
     protected NeedleModel(final NeedleModel other) {
-        paddingTop = other.paddingTop;
-        paddingLeft = other.paddingLeft;
         needleWidth = other.needleWidth;
         needleHeadWidth = other.needleHeadWidth;
         needleHeadHeight = other.needleHeadHeight;
@@ -50,29 +42,6 @@ public final class NeedleModel {
      */
     public void setCurrentTime(final long currentTime) {
         this.currentTime = currentTime;
-    }
-
-    /**
-     * @return Amount of padding for this component from the left
-     */
-    public int getPaddingLeft() {
-        return paddingLeft;
-    }
-
-    /**
-     * Set the amount of padding for this component from the left
-     *
-     * @param paddingLeft
-     */
-    public void setPaddingLeft(final int paddingLeft) {
-        this.paddingLeft = paddingLeft;
-    }
-
-    /**
-     * @return Amount of padding for this component from the top
-     */
-    public int getPaddingTop() {
-        return paddingTop;
     }
 
     /**
@@ -117,64 +86,59 @@ public final class NeedleModel {
         this.needleHeadHeight = needleHeadHeight;
     }
 
-    /**
-     * Set the amount of padding for this component from the top
-     *
-     * @param paddingTop
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
      */
-    public void setPaddingTop(final int paddingTop) {
-        this.paddingTop = paddingTop;
-    }
-
     @Override public boolean equals(final Object obj) {
 
-        if (obj == null) {
-            return false;
-        }
+        if (this == obj)
+            return true;
 
-        if (getClass() != obj.getClass()) {
+        if (obj == null)
             return false;
-        }
 
-        final NeedleModel other = (NeedleModel) obj;
-
-        if (paddingTop != other.paddingTop) {
+        if (getClass() != obj.getClass())
             return false;
-        }
 
-        if (paddingLeft != other.paddingLeft) {
-            return false;
-        }
+        NeedleModel other = (NeedleModel) obj;
 
-        if (currentTime != other.currentTime) {
+        if (currentTime != other.currentTime)
             return false;
-        }
 
-        if (needleWidth != other.needleWidth) {
+        if (Double.doubleToLongBits(needleHeadHeight)
+                != Double.doubleToLongBits(other.needleHeadHeight))
             return false;
-        }
 
-        if (needleHeadWidth != other.needleHeadWidth) {
+        if (Double.doubleToLongBits(needleHeadWidth)
+                != Double.doubleToLongBits(other.needleHeadWidth))
             return false;
-        }
 
-        if (needleHeadHeight != other.needleHeadHeight) {
+        if (Double.doubleToLongBits(needleWidth)
+                != Double.doubleToLongBits(other.needleWidth))
             return false;
-        }
 
         return true;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override public int hashCode() {
-        int hash = 7;
-        hash = (83 * hash) + paddingTop;
-        hash = (83 * hash) + paddingLeft;
-        hash = (83 * hash) + (int) Double.doubleToLongBits(needleWidth);
-        hash = (83 * hash) + (int) Double.doubleToLongBits(needleHeadWidth);
-        hash = (83 * hash) + (int) Double.doubleToLongBits(needleHeadHeight);
-        hash = (83 * hash) + (int) (currentTime ^ (currentTime >>> 32));
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + (int) (currentTime ^ (currentTime >>> 32));
 
-        return hash;
+        long temp;
+        temp = Double.doubleToLongBits(needleHeadHeight);
+        result = (prime * result) + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(needleHeadWidth);
+        result = (prime * result) + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(needleWidth);
+        result = (prime * result) + (int) (temp ^ (temp >>> 32));
+
+        return result;
     }
 
     public NeedleModel copy() {

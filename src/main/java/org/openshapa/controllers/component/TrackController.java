@@ -53,6 +53,12 @@ public final class TrackController implements ViewerStateListener {
     private static final Logger LOGGER = UserMetrix.getLogger(
             TrackController.class);
 
+    private static final int CARRIAGE_WIDTH = 653;
+    private static final int CARRIAGE_HEIGHT = 75;
+    private static final int HEADER_WIDTH = 100;
+    private static final int ACTION_BUTTON_WIDTH = 20;
+    private static final int ACTION_BUTTON_HEIGHT = 20;
+
     /** Main panel holding the track UI. */
     private final JPanel view;
 

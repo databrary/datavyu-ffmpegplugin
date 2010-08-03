@@ -24,6 +24,7 @@ import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.component.TracksEditorPainter;
 import org.openshapa.views.continuous.CustomActionListener;
 
+
 /**
  * Tracks editor controller is responsible for managing multiple TrackController
  * instances.
@@ -90,11 +91,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
          */
-        this.viewableModel.setEnd(newModel.getEnd());
-        this.viewableModel.setIntervalTime(newModel.getIntervalTime());
-        this.viewableModel.setIntervalWidth(newModel.getIntervalWidth());
-        this.viewableModel.setZoomWindowEnd(newModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(newModel.getZoomWindowStart());
+        this.viewableModel.copyFrom(newModel);
 
         for (Track track : tracks) {
             track.trackController.setViewableModel(newModel);
@@ -461,9 +458,9 @@ public final class TracksEditorController implements TrackMouseEventListener {
      * @return number of tracks being managed by this controller
      */
     public int numberOfTracks() {
-    	return tracks.size();
+        return tracks.size();
     }
-    
+
     /**
      * Sets the carriage movement locking state.
      *

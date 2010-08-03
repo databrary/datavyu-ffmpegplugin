@@ -9,6 +9,7 @@ import javax.swing.JComponent;
 import org.openshapa.models.component.SnapMarkerModel;
 import org.openshapa.models.component.ViewableModel;
 
+
 /**
  * This class paints a timing needle.
  */
@@ -42,13 +43,14 @@ public class SnapMarkerPainter extends JComponent {
         this.repaint();
     }
 
-    @Override
-    public void paint(final Graphics g) {
-        if (snapMarkerModel == null || viewableModel == null) {
+    @Override public void paintComponent(final Graphics g) {
+
+        if ((snapMarkerModel == null) || (viewableModel == null)) {
             return;
         }
 
         final long markerTime = snapMarkerModel.getMarkerTime();
+
         // Don't paint if the needle is out of the current window
         if ((markerTime < viewableModel.getZoomWindowStart())
                 || (viewableModel.getZoomWindowEnd() < markerTime)) {
@@ -60,13 +62,12 @@ public class SnapMarkerPainter extends JComponent {
         g.setColor(SNAP_MARKER_COLOR);
 
         // Calculate the needle position based on the selected time
-        float ratio =
-                viewableModel.getIntervalWidth()
-                        / viewableModel.getIntervalTime();
+        float ratio = viewableModel.getIntervalWidth()
+            / viewableModel.getIntervalTime();
         int pos =
-                (int) (markerTime * ratio - viewableModel.getZoomWindowStart()
-                        * ratio)
-                        + snapMarkerModel.getPaddingLeft();
+            (int) ((markerTime * ratio)
+                - (viewableModel.getZoomWindowStart() * ratio))
+            + snapMarkerModel.getPaddingLeft();
 
         final int paddingTop = snapMarkerModel.getPaddingTop();
 

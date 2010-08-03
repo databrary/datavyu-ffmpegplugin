@@ -38,8 +38,6 @@ public final class RegionController {
         view = new RegionPainter();
 
         regionModel = new RegionModel();
-        regionModel.setPaddingTop(0);
-        regionModel.setPaddingLeft(101);
 
         viewableModel = new ViewableModel();
 
@@ -233,8 +231,8 @@ public final class RegionController {
                         view.getSize().width);
                 final double ratio = viewableModel.getIntervalWidth()
                     / viewableModel.getIntervalTime();
-                double newTime = (x - regionModel.getPaddingLeft()
-                        + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
+                double newTime =
+                    (x + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
                 newTime = Math.min(Math.max(newTime,
                             viewableModel.getZoomWindowStart()),
                         viewableModel.getZoomWindowEnd());

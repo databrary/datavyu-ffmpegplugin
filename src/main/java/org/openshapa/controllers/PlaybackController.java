@@ -28,6 +28,7 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.controllers.component.MixerController;
 import org.openshapa.event.PlaybackEvent;
 import org.openshapa.event.PlaybackListener;
 import org.openshapa.event.component.CarriageEvent;
@@ -45,7 +46,6 @@ import org.openshapa.util.ClockTimer;
 import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer.ClockListener;
 
-import org.openshapa.views.MixerControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.PlaybackV;
 import org.openshapa.views.component.TrackPainter;
@@ -177,7 +177,7 @@ public final class PlaybackController implements PlaybackListener,
     private boolean tracksPanelEnabled = false;
 
     /** The controller for manipulating tracks. */
-    private final MixerControllerV mixerControllerV;
+    private final MixerController mixerControllerV;
 
     /** Model containing playback information. */
     private final PlaybackModel playbackModel;
@@ -211,7 +211,7 @@ public final class PlaybackController implements PlaybackListener,
         playbackModel.setWindowPlayEnd(defaultEndTime);
 
 
-        mixerControllerV = new MixerControllerV();
+        mixerControllerV = new MixerController();
         mixerControllerV.addTracksControllerListener(this);
 
         playbackView = new PlaybackV(OpenSHAPA.getApplication().getMainFrame(),
@@ -956,7 +956,7 @@ public final class PlaybackController implements PlaybackListener,
     /**
      * @return the mixer controller.
      */
-    public MixerControllerV getMixerController() {
+    public MixerController getMixerController() {
         return mixerControllerV;
     }
 

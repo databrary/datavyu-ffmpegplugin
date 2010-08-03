@@ -1,19 +1,13 @@
 package org.fest.swing.fixture;
 
-import static org.fest.reflect.core.Reflection.method;
-import static org.fest.reflect.core.Reflection.field;
-
 import java.awt.Point;
 
 import org.fest.swing.core.MouseButton;
 import org.fest.swing.core.Robot;
-import org.openshapa.OpenSHAPA;
 
 import org.openshapa.controllers.component.TimescaleController;
-import org.openshapa.models.component.TimescaleModel;
 
 import org.openshapa.util.UIUtils;
-import org.openshapa.views.OpenSHAPAFileChooser;
 
 
 /**
@@ -84,19 +78,14 @@ public class TimescaleFixture extends ComponentFixture {
     public final void singleClickAt(final int pixel) {
         final int timescaleYOffset = 20;
         Point click = null;
-        TimescaleModel tm = field("timescaleModel").ofType(TimescaleModel.class)
-               .in(timescaleC).get();
         int effectiveWidth = getEffectiveWidth();
-        int x = tm.getPaddingLeft() + (pixel > effectiveWidth ? effectiveWidth : pixel);
+        int x = ((pixel > effectiveWidth) ? effectiveWidth : pixel);
         click = new Point(x, timescaleYOffset);
 
         robot.click(target, click, MouseButton.LEFT_BUTTON, 1);
     }
 
     public int getEffectiveWidth() {
-        TimescaleModel tm = field("timescaleModel").ofType(TimescaleModel.class)
-               .in(timescaleC).get();
-
-        return target.getWidth() - tm.getPaddingLeft() - tm.getPaddingRight();
+        return target.getWidth();
     }
 }

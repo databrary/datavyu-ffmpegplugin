@@ -91,16 +91,18 @@ public class NeedlePainter extends JComponent {
             / viewableModel.getIntervalTime();
         double pos = ((currentTime * ratio)
                 - (viewableModel.getZoomWindowStart() * ratio))
-            + needleModel.getPaddingLeft();
+            + Math.ceil(needleHeadWidth);
 
-        final int paddingTop = needleModel.getPaddingTop();
         needleMarker = new GeneralPath();
-        needleMarker.moveTo((float) (pos - needleHeadWidth),
-            (float) (paddingTop)); // top-left corner
-        needleMarker.lineTo((float) (pos + needleHeadWidth),
-            (float) (paddingTop)); // top-right corner
-        needleMarker.lineTo((float) (pos),
-            (float) (needleHeadHeight + paddingTop)); // bottom corner
+
+        // top-left corner
+        needleMarker.moveTo((float) (pos - needleHeadWidth), 0);
+
+        // top-right corner
+        needleMarker.lineTo((float) (pos + needleHeadWidth), 0);
+
+        // bottom corner
+        needleMarker.lineTo((float) pos, (float) needleHeadHeight);
         needleMarker.closePath();
 
         g2d.setColor(needleColor);
@@ -111,7 +113,7 @@ public class NeedlePainter extends JComponent {
 
         // Draw the timing needle
         float x1 = (float) pos;
-        float y1 = (float) (paddingTop + needleHeadHeight);
+        float y1 = (float) needleHeadHeight;
         float x2 = (float) pos;
         float y2 = (float) size.height;
 

@@ -1,6 +1,7 @@
 package org.openshapa.views;
 
 import com.usermetrix.jclient.Logger;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -37,6 +38,7 @@ import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
+import org.openshapa.controllers.component.MixerController;
 
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.MarkerEvent;
@@ -46,6 +48,7 @@ import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
 import org.openshapa.models.PlaybackModel;
+
 import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.ClockTimer;
@@ -132,19 +135,15 @@ public final class DataControllerV extends OpenSHAPADialog
         Color minutesColor = Color.green.darker().darker().darker();
         Color secondsColor = Color.blue.darker().darker();
         Color millisecondsColor = Color.gray.darker();
-                
-        CLOCK_FORMAT_HTML = new SimpleDateFormat(
-        		"'<html>" + 
-        		 "<font color=\"" + toRGBString(hoursColor) + "\">'HH'</font>':" +
-        		"'<font color=\"" + toRGBString(minutesColor) + "\">'mm'</font>':" + 
-        		"'<font color=\"" + toRGBString(secondsColor) + "\">'ss'</font>':" +
-        		"'<font color=\"" + toRGBString(millisecondsColor) + "\">'SSS'</font>" + 
-        		"</html>'");
+
+        CLOCK_FORMAT_HTML = new SimpleDateFormat("'<html>" + "<font color=\""
+                + toRGBString(hoursColor) + "\">'HH'</font>':"
+                + "'<font color=\"" + toRGBString(minutesColor)
+                + "\">'mm'</font>':" + "'<font color=\""
+                + toRGBString(secondsColor) + "\">'ss'</font>':"
+                + "'<font color=\"" + toRGBString(millisecondsColor)
+                + "\">'SSS'</font>" + "</html>'");
         CLOCK_FORMAT_HTML.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
-    }
-    
-    private static String toRGBString(Color color) {
-    	return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
     }
 
     /**
@@ -208,7 +207,7 @@ public final class DataControllerV extends OpenSHAPADialog
     private boolean tracksPanelEnabled = false;
 
     /** The controller for manipulating tracks. */
-    private MixerControllerV mixerControllerV;
+    private MixerController mixerControllerV;
 
     /** */
     private javax.swing.JButton createNewCell;
@@ -343,11 +342,16 @@ public final class DataControllerV extends OpenSHAPADialog
         playbackModel.setWindowPlayStart(0);
         playbackModel.setWindowPlayEnd(defaultEndTime);
 
-        mixerControllerV = new MixerControllerV();
+        mixerControllerV = new MixerController();
         tracksPanel.add(mixerControllerV.getTracksPanel());
         mixerControllerV.addTracksControllerListener(this);
 
         showTracksPanel(false);
+    }
+
+    private static String toRGBString(final Color color) {
+        return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(),
+                color.getBlue());
     }
 
     /**
@@ -363,8 +367,8 @@ public final class DataControllerV extends OpenSHAPADialog
         Plugin plugin = pm.getAssociatedPlugin(ff);
 
         if (plugin != null) {
-            DataViewer dataViewer = plugin.getNewDataViewer(
-                        OpenSHAPA.getApplication().getMainFrame(), false);
+            DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
+                    .getApplication().getMainFrame(), false);
             dataViewer.setDataFeed(f);
             dataViewer.seekTo(clock.getTime());
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
@@ -420,7 +424,7 @@ public final class DataControllerV extends OpenSHAPADialog
         setCurrentTime(playTime);
         clock.setTime(playTime);
         clock.setRate(currentRate);
-        
+
         clock.start();
     }
 
@@ -539,7 +543,7 @@ public final class DataControllerV extends OpenSHAPADialog
      *            Current clock time in milliseconds.
      */
     public void clockStop(final long time) {
-    	clock.stop();
+        clock.stop();
         resetSync();
         setCurrentTime(time);
 
@@ -615,7 +619,7 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * @return the mixer controller.
      */
-    public MixerControllerV getMixerController() {
+    public MixerController getMixerController() {
         return mixerControllerV;
     }
 
@@ -627,14 +631,18 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void setCurrentTime(final long milliseconds) {
         resetSync();
-        timestampLabel.setText(tracksPanelEnabled ? CLOCK_FORMAT_HTML.format(milliseconds) : CLOCK_FORMAT.format(milliseconds));
+        timestampLabel.setText(tracksPanelEnabled
+                ? CLOCK_FORMAT_HTML.format(milliseconds)
+                : CLOCK_FORMAT.format(milliseconds));
         mixerControllerV.setCurrentTime(milliseconds);
     }
 
     private void updateCurrentTimeLabel() {
-        timestampLabel.setText(tracksPanelEnabled ? CLOCK_FORMAT_HTML.format(getCurrentTime()) : CLOCK_FORMAT.format(getCurrentTime()));
+        timestampLabel.setText(tracksPanelEnabled
+                ? CLOCK_FORMAT_HTML.format(getCurrentTime())
+                : CLOCK_FORMAT.format(getCurrentTime()));
     }
-    
+
     /**
      * Get the current master clock time for the controller.
      *
@@ -647,49 +655,49 @@ public final class DataControllerV extends OpenSHAPADialog
     /** Recalculates the maximum viewer duration. */
     public void updateMaxViewerDuration() {
         long maxDuration = 0;
-            Iterator<DataViewer> it = viewers.iterator();
+        Iterator<DataViewer> it = viewers.iterator();
 
-            while (it.hasNext()) {
-                DataViewer dv = it.next();
+        while (it.hasNext()) {
+            DataViewer dv = it.next();
 
-                if ((dv.getDuration() + dv.getOffset()) > maxDuration) {
-                    maxDuration = dv.getDuration() + dv.getOffset();
-                }
+            if ((dv.getDuration() + dv.getOffset()) > maxDuration) {
+                maxDuration = dv.getDuration() + dv.getOffset();
             }
+        }
 
-            playbackModel.setMaxDuration(maxDuration);
+        playbackModel.setMaxDuration(maxDuration);
 
-            mixerControllerV.setMaxEnd(maxDuration);
+        mixerControllerV.setMaxEnd(maxDuration);
 
-            // Reset visualisation of playback regions.
-            if (playbackModel.getWindowPlayEnd() > maxDuration) {
-                playbackModel.setWindowPlayEnd(maxDuration);
-                mixerControllerV.setPlayRegionEnd(maxDuration);
-            }
+        // Reset visualisation of playback regions.
+        if (playbackModel.getWindowPlayEnd() > maxDuration) {
+            playbackModel.setWindowPlayEnd(maxDuration);
+            mixerControllerV.setPlayRegionEnd(maxDuration);
+        }
 
-            if (playbackModel.getWindowPlayStart()
-                    > playbackModel.getWindowPlayEnd()) {
-                playbackModel.setWindowPlayStart(0);
-                mixerControllerV.setPlayRegionStart(
-                    playbackModel.getWindowPlayStart());
-            }
+        if (playbackModel.getWindowPlayStart()
+                > playbackModel.getWindowPlayEnd()) {
+            playbackModel.setWindowPlayStart(0);
+            mixerControllerV.setPlayRegionStart(
+                playbackModel.getWindowPlayStart());
+        }
 
-            // Reset visualisation of current playback time.
-            long tracksTime = mixerControllerV.getCurrentTime();
+        // Reset visualisation of current playback time.
+        long tracksTime = mixerControllerV.getCurrentTime();
 
-            if (tracksTime < playbackModel.getWindowPlayStart()) {
-                tracksTime = playbackModel.getWindowPlayStart();
-            }
+        if (tracksTime < playbackModel.getWindowPlayStart()) {
+            tracksTime = playbackModel.getWindowPlayStart();
+        }
 
-            if (tracksTime > playbackModel.getWindowPlayEnd()) {
-                tracksTime = playbackModel.getWindowPlayEnd();
-            }
+        if (tracksTime > playbackModel.getWindowPlayEnd()) {
+            tracksTime = playbackModel.getWindowPlayEnd();
+        }
 
-            mixerControllerV.setCurrentTime(tracksTime);
+        mixerControllerV.setCurrentTime(tracksTime);
 
-            // Reset the clock.
-            clock.setTime(tracksTime);
-            clockStep(tracksTime);
+        // Reset the clock.
+        clock.setTime(tracksTime);
+        clockStep(tracksTime);
     }
 
     /**
@@ -1526,8 +1534,10 @@ public final class DataControllerV extends OpenSHAPADialog
         viewers.add(viewer);
         viewer.setParentController(this);
         viewer.setOffset(offset);
+
         boolean visible = viewer.getParentJDialog().isVisible();
         OpenSHAPA.getApplication().show(viewer.getParentJDialog());
+
         if (!visible) {
             viewer.getParentJDialog().setVisible(false);
         }
@@ -1632,11 +1642,12 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param e The timescale event that triggered this action.
      */
     private void handleTimescaleEvent(final TimescaleEvent e) {
-    	final boolean wasClockRunning = !clock.isStopped();
-    	final boolean togglePlaybackMode = e.getTogglePlaybackMode();
+        final boolean wasClockRunning = !clock.isStopped();
+        final boolean togglePlaybackMode = e.getTogglePlaybackMode();
+
         if (!wasClockRunning && togglePlaybackMode) {
-        	playAt(PLAY_RATE);
-        	clockStart(e.getTime());
+            playAt(PLAY_RATE);
+            clockStart(e.getTime());
         } else {
             gotoTime(e.getTime());
         }
@@ -1800,7 +1811,9 @@ public final class DataControllerV extends OpenSHAPADialog
         OpenSHAPA.getApplication().updateTitle();
 
         // Recalculate the maximum playback duration.
-        boolean updateEndRegionMarker = playbackModel.getMaxDuration() == mixerControllerV.getRegionController().getRegionModel().getRegionEnd();
+        boolean updateEndRegionMarker = playbackModel.getMaxDuration()
+            == mixerControllerV.getRegionController().getRegionModel()
+            .getRegionEnd();
         long maxDuration = 0;
 
         for (DataViewer viewer : viewers) {
@@ -1815,7 +1828,8 @@ public final class DataControllerV extends OpenSHAPADialog
         mixerControllerV.setMaxEnd(maxDuration);
 
         // Reset our playback windows
-        if (playbackModel.getWindowPlayEnd() > maxDuration || updateEndRegionMarker) {
+        if ((playbackModel.getWindowPlayEnd() > maxDuration)
+                || updateEndRegionMarker) {
             playbackModel.setWindowPlayEnd(maxDuration);
             mixerControllerV.setPlayRegionEnd(maxDuration);
         }

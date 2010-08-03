@@ -14,6 +14,7 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.controllers.component.MixerController;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.project.Project;
@@ -24,7 +25,6 @@ import org.openshapa.plugins.PluginManager;
 import org.openshapa.util.FileUtils;
 
 import org.openshapa.views.DataControllerV;
-import org.openshapa.views.MixerControllerV;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 
@@ -263,7 +263,7 @@ public final class ProjectController {
 
         List<String> missingFilesList = new LinkedList<String>();
 
-        MixerControllerV mixerController = dataController.getMixerController();
+        MixerController mixerController = dataController.getMixerController();
 
         // Load the viewer settings.
         for (ViewerSetting setting : project.getViewerSettings()) {

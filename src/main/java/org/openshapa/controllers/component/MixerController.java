@@ -1,14 +1,14 @@
-package org.openshapa.views;
+package org.openshapa.controllers.component;
 
 import java.awt.Adjustable;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
 import java.util.EventObject;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -21,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -28,12 +29,6 @@ import javax.swing.event.EventListenerList;
 import net.miginfocom.swing.MigLayout;
 
 import org.openshapa.OpenSHAPA;
-
-import org.openshapa.controllers.component.NeedleController;
-import org.openshapa.controllers.component.RegionController;
-import org.openshapa.controllers.component.TimescaleController;
-import org.openshapa.controllers.component.TrackController;
-import org.openshapa.controllers.component.TracksEditorController;
 
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.CarriageEvent.EventType;
@@ -55,11 +50,15 @@ import org.openshapa.models.component.ViewableModel;
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.CustomActionListener;
 
+import com.google.common.collect.Maps;
+
+import org.apache.commons.lang.text.StrSubstitutor;
+
 
 /**
  * This class manages the tracks information interface.
  */
-public final class MixerControllerV implements NeedleEventListener,
+public final class MixerController implements NeedleEventListener,
     MarkerEventListener, CarriageEventListener, AdjustmentListener,
     TimescaleListener {
 
@@ -130,7 +129,21 @@ public final class MixerControllerV implements NeedleEventListener,
     /**
      * Create a new MixerController.
      */
-    public MixerControllerV() {
+    public MixerController() {
+        Runnable edtTask = new Runnable() {
+                @Override public void run() {
+                    initView();
+                }
+            };
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            edtTask.run();
+        } else {
+            SwingUtilities.invokeLater(edtTask);
+        }
+    }
+
+    private void initView() {
 
         // Set default scale values
         maxEnd = DEFAULT_DURATION;
@@ -138,8 +151,8 @@ public final class MixerControllerV implements NeedleEventListener,
 
         listenerList = new EventListenerList();
 
-        // Not using MigLayout with JLayeredPane because of layout issues
         layeredPane = new JLayeredPane();
+        layeredPane.setLayout(new MigLayout("ins 0", "[]", "[]"));
 
         // Set up the root panel
         tracksPanel = new JPanel();
@@ -181,21 +194,13 @@ public final class MixerControllerV implements NeedleEventListener,
             });
         clearRegion.setName("clearRegionButton");
 
-        zoomSlide = new JSlider(JSlider.HORIZONTAL, 1, 1000, 50);
-//        zoomSlide.setToolTipText("1.00x");
+        zoomSlide = new JSlider(JSlider.HORIZONTAL, 1, 1000, 1);
         zoomSlide.addChangeListener(new ChangeListener() {
                 public void stateChanged(final ChangeEvent e) {
 
                     if (!isUpdatingZoomSlide) {
                         zoomScale(e);
                     }
-
-/*
-                    if (!zoomSlide.getValueIsAdjusting()) {
-                        zoomSlide.setToolTipText(
-                            ((float) zoomSlide.getValue() / 100) + "x");
-                    }
-*/
                 }
             });
         zoomSlide.setName("zoomSlider");
@@ -234,7 +239,7 @@ public final class MixerControllerV implements NeedleEventListener,
         final int tracksScrollPaneHeight = timescaleViewY - tracksScrollPaneY;
         final int tracksScrollBarY = timescaleViewY + timescaleViewHeight;
         final int needleAndRegionMarkerHeight = (timescaleViewY
-                + timescaleController.getTimescaleModel().getHeight()
+                + timescaleViewHeight
                 - timescaleController.getTimescaleModel()
                 .getZoomWindowIndicatorHeight()
                 - timescaleController.getTimescaleModel()
@@ -244,22 +249,37 @@ public final class MixerControllerV implements NeedleEventListener,
         // Add the timescale
         timescaleController.addTimescaleEventListener(this);
 
-        JComponent timescaleView = timescaleController.getView();
-
         {
-            Dimension size = new Dimension();
-            size.setSize(785, timescaleViewHeight);
-            timescaleView.setSize(size);
-            timescaleView.setPreferredSize(size);
-            timescaleView.setLocation(0, timescaleViewY);
+            JComponent timescaleView = timescaleController.getView();
+
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("x", "101");
+            constraints.put("y", Integer.toString(timescaleViewY));
+            constraints.put("x2", "755");
+            constraints.put("width", "654"); // x2 - x
+            constraints.put("height", Integer.toString(timescaleViewHeight));
+
+            String template =
+                "id tscale, pos ${x} ${y} ${x2} (tscale.y+${height}), w ${width}::";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
+
+            // Temporary workaround.
+            timescaleView.setSize(654, timescaleViewHeight);
+
+            // Must call setLayer first.
+            layeredPane.setLayer(timescaleView, 0);
+            layeredPane.add(timescaleView, sub.replace(template), 0);
+
             timescaleController.setConstraints(minStart, maxEnd);
 
             ViewableModel vm = timescaleController.getViewableModel();
             vm.setEnd(maxEnd);
+            vm.setZoomWindowStart(minStart);
+            vm.setZoomWindowEnd(maxEnd);
             timescaleController.setViewableModel(vm);
-        }
 
-        layeredPane.add(timescaleView, Integer.valueOf(0));
+            System.out.println(vm);
+        }
 
         // Add the scroll pane
         tracksEditorController = new TracksEditorController();
@@ -276,89 +296,126 @@ public final class MixerControllerV implements NeedleEventListener,
 
         // Set an explicit size of the scroll pane
         {
-            Dimension size = new Dimension();
-            size.setSize(785, tracksScrollPaneHeight);
-            tracksScrollPane.setSize(size);
-            tracksScrollPane.setPreferredSize(size);
-            tracksScrollPane.setLocation(0, tracksScrollPaneY);
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("x", "0");
+            constraints.put("y", Integer.toString(tracksScrollPaneY));
+            constraints.put("width", Integer.toString(785));
+            constraints.put("height", Integer.toString(tracksScrollPaneHeight));
+
+            String template =
+                "id tscroll, pos ${x} ${y} n n, w ${width}!, h ${height}!";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
+
+            layeredPane.setLayer(tracksScrollPane, 10);
+            layeredPane.add(tracksScrollPane, sub.replace(template), 10);
         }
 
-        layeredPane.add(tracksScrollPane, Integer.valueOf(0));
 
         // Create the region markers
-        regionController = new RegionController();
-
-        JComponent regionView = regionController.getView();
-
         {
-            Dimension size = new Dimension();
-            size.setSize(785, needleAndRegionMarkerHeight);
-            regionView.setSize(size);
-            regionView.setPreferredSize(size);
+            regionController = new RegionController();
+
+            JComponent regionView = regionController.getView();
+
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("x", "90");
+            constraints.put("y", "0");
+            constraints.put("width", "785");
+            constraints.put("height",
+                Integer.toString(needleAndRegionMarkerHeight));
+
+            String template =
+                "id rmarker, pos ${x} ${y} n n, w ${width}!, h ${height}!";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
 
             regionController.setViewableModel(
                 timescaleController.getViewableModel());
             regionController.setPlaybackRegion(minStart, maxEnd);
+            regionController.addMarkerEventListener(this);
+
+            layeredPane.setLayer(regionView, 20);
+            layeredPane.add(regionView, sub.replace(template), 20);
         }
 
-        regionController.addMarkerEventListener(this);
-
-        layeredPane.add(regionView, Integer.valueOf(20));
-
-        // Create the timing needle
-        JComponent needleView = needleController.getView();
-
+        // Set up the timing needle
         {
-            Dimension size = new Dimension();
-            size.setSize(785, needleAndRegionMarkerHeight);
-            needleView.setSize(size);
-            needleView.setPreferredSize(size);
+            JComponent needleView = needleController.getView();
 
-            // Values determined through trial-and-error.
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("x", "92");
+            constraints.put("y", "0");
+            constraints.put("width", Integer.toString(785));
+            constraints.put("height",
+                Integer.toString(needleAndRegionMarkerHeight));
+
+            String template =
+                "id needle, pos ${x} ${y}, w ${width}!, h ${height}!";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
+
             needleController.setViewableModel(
                 timescaleController.getViewableModel());
+            needleController.addNeedleEventListener(this);
+
+            layeredPane.setLayer(needleView, 30);
+            layeredPane.add(needleView, sub.replace(template), 30);
         }
 
-        needleController.addNeedleEventListener(this);
-        layeredPane.add(needleView, Integer.valueOf(30));
 
         // Create the snap marker
-        JComponent markerView = tracksEditorController.getMarkerView();
-
         {
-            Dimension size = new Dimension();
-            size.setSize(785, 234);
-            markerView.setSize(size);
-            markerView.setPreferredSize(size);
+            JComponent markerView = tracksEditorController.getMarkerView();
+
+            // TODO refactor padding
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("y", "0");
+            constraints.put("x", "0");
+            constraints.put("width", Integer.toString(785));
+            constraints.put("height", Integer.toString(234));
+
+            String template =
+                "id smarker, pos ${x} ${y} n n, w ${width}!, h ${height}!";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
+
+            layeredPane.setLayer(markerView, 5);
+            layeredPane.add(markerView, sub.replace(template), 5);
         }
 
-        layeredPane.add(markerView, Integer.valueOf(5));
-
-        tracksScrollBar = new JScrollBar(Adjustable.HORIZONTAL);
-
+        // Set up the tracks horizontal scroll bar
         {
-            Dimension size = new Dimension();
-            size.setSize(timescaleController.getTimescaleModel()
-                .getEffectiveWidth(), tracksScrollBarHeight);
-            tracksScrollBar.setSize(size);
-            tracksScrollBar.setPreferredSize(size);
-            tracksScrollBar.setLocation(timescaleController.getTimescaleModel()
-                .getPaddingLeft(), tracksScrollBarY);
+            tracksScrollBar = new JScrollBar(Adjustable.HORIZONTAL);
+            tracksScrollBar.setValues(0, TRACKS_SCROLL_BAR_RANGE, 0,
+                TRACKS_SCROLL_BAR_RANGE);
+            tracksScrollBar.setUnitIncrement(TRACKS_SCROLL_BAR_RANGE / 20);
+            tracksScrollBar.setBlockIncrement(TRACKS_SCROLL_BAR_RANGE / 2);
+            tracksScrollBar.addAdjustmentListener(this);
+            tracksScrollBar.setValueIsAdjusting(false);
+            tracksScrollBar.setVisible(false);
+            tracksScrollBar.setName("horizontalScrollBar");
+
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("y", Integer.toString(tracksScrollBarY));
+            constraints.put("height", Integer.toString(tracksScrollBarHeight));
+
+            String template =
+                "id hsb, pos rmarker.x ${y} rmarker.w n, h ${height}!";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
+
+            layeredPane.setLayer(tracksScrollBar, 100);
+            layeredPane.add(tracksScrollBar, sub.replace(template), 100);
         }
 
-        tracksScrollBar.setValues(0, TRACKS_SCROLL_BAR_RANGE, 0,
-            TRACKS_SCROLL_BAR_RANGE);
-        tracksScrollBar.setUnitIncrement(TRACKS_SCROLL_BAR_RANGE / 20);
-        tracksScrollBar.setBlockIncrement(TRACKS_SCROLL_BAR_RANGE / 2);
-        tracksScrollBar.addAdjustmentListener(this);
-        tracksScrollBar.setValueIsAdjusting(false);
-        tracksScrollBar.setVisible(false);
-        tracksScrollBar.setName("horizontalScrollBar");
+        {
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("span", "6");
+            constraints.put("width", Integer.toString(785));
+            constraints.put("height", Integer.toString(layeredPaneHeight));
 
-        layeredPane.add(tracksScrollBar, Integer.valueOf(100));
+            String template = "span ${span}, w ${width}!, h ${height}!, wrap";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
 
-        tracksPanel.add(layeredPane,
-            "span 6, w 785!, h " + layeredPaneHeight + "!, wrap");
+            tracksPanel.add(layeredPane, sub.replace(template));
+        }
+
         tracksPanel.validate();
     }
 
@@ -668,6 +725,7 @@ public final class MixerControllerV implements NeedleEventListener,
     }
 
     private void updateZoomSlide(final long startTime, final long endTime) {
+        // System.out.println("startTime=" + startTime + "endTime=" + endTime);
 
         try {
             isUpdatingZoomSlide = true;
@@ -847,6 +905,7 @@ public final class MixerControllerV implements NeedleEventListener,
                 model.getZoomWindowEnd());
         } finally {
             isUpdatingTracksScrollBar = false;
+            tracksPanel.validate();
         }
     }
 

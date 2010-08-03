@@ -6,12 +6,6 @@ package org.openshapa.models.component;
  */
 public final class RegionModel {
 
-    /** Amount of padding for this component from the top */
-    private int paddingTop;
-
-    /** Amount of padding for this component from the left */
-    private int paddingLeft;
-
     /** Start of the custom playback region */
     private long regionStart;
 
@@ -22,44 +16,8 @@ public final class RegionModel {
     }
 
     protected RegionModel(final RegionModel other) {
-        paddingTop = other.paddingTop;
-        paddingLeft = other.paddingLeft;
         regionStart = other.regionStart;
         regionEnd = other.regionEnd;
-    }
-
-    /**
-     * s
-     *
-     * @return Amount of padding for this component from the left
-     */
-    public int getPaddingLeft() {
-        return paddingLeft;
-    }
-
-    /**
-     * Set the amount of padding for this component from the left
-     *
-     * @param paddingLeft
-     */
-    public void setPaddingLeft(final int paddingLeft) {
-        this.paddingLeft = paddingLeft;
-    }
-
-    /**
-     * @return Amount of padding for this component from the top
-     */
-    public int getPaddingTop() {
-        return paddingTop;
-    }
-
-    /**
-     * Set the amount of padding for this component from the top
-     *
-     * @param paddingTop
-     */
-    public void setPaddingTop(final int paddingTop) {
-        this.paddingTop = paddingTop;
     }
 
     /**
@@ -94,45 +52,43 @@ public final class RegionModel {
         this.regionStart = regionStart;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override public boolean equals(final Object obj) {
 
-        if (obj == null) {
-            return false;
-        }
+        if (this == obj)
+            return true;
 
-        if (getClass() != obj.getClass()) {
+        if (obj == null)
             return false;
-        }
 
-        final RegionModel other = (RegionModel) obj;
-
-        if (paddingTop != other.paddingTop) {
+        if (getClass() != obj.getClass())
             return false;
-        }
 
-        if (paddingLeft != other.paddingLeft) {
-            return false;
-        }
+        RegionModel other = (RegionModel) obj;
 
-        if (regionStart != other.regionStart) {
+        if (regionEnd != other.regionEnd)
             return false;
-        }
 
-        if (regionEnd != other.regionEnd) {
+        if (regionStart != other.regionStart)
             return false;
-        }
 
         return true;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override public int hashCode() {
-        int hash = 5;
-        hash = (79 * hash) + paddingTop;
-        hash = (79 * hash) + paddingLeft;
-        hash = (79 * hash) + (int) (regionStart ^ (regionStart >>> 32));
-        hash = (79 * hash) + (int) (regionEnd ^ (regionEnd >>> 32));
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + (int) (regionEnd ^ (regionEnd >>> 32));
+        result = (prime * result) + (int) (regionStart ^ (regionStart >>> 32));
 
-        return hash;
+        return result;
     }
 
     public RegionModel copy() {

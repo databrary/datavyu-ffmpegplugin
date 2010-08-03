@@ -2,7 +2,7 @@ package org.fest.swing.fixture;
 
 import org.fest.swing.core.Robot;
 
-import org.openshapa.views.MixerControllerV;
+import org.openshapa.controllers.component.MixerController;
 
 
 /**
@@ -11,7 +11,7 @@ import org.openshapa.views.MixerControllerV;
 public class MixerControllerFixture {
 
     /** The underlying mixercontroller. */
-    private MixerControllerV mixControl;
+    private MixerController mixControl;
 
     /** Robot for FEST. */
     private Robot r;
@@ -22,7 +22,7 @@ public class MixerControllerFixture {
      * @param target mixercontroller class
      */
     public MixerControllerFixture(final Robot robot,
-        final MixerControllerV target) {
+        final MixerController target) {
         r = robot;
         mixControl = target;
     }

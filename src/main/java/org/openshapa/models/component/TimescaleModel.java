@@ -9,12 +9,6 @@ import java.awt.Color;
  */
 public final class TimescaleModel {
 
-    /** Pad the scale from the left by this many pixels */
-    private int paddingLeft;
-
-    /** Pad the scale from the right by this many pixels */
-    private int paddingRight;
-
     /** Height of the zoom window indicator in pixels */
     private int zoomWindowIndicatorHeight;
 
@@ -49,8 +43,6 @@ public final class TimescaleModel {
     }
 
     protected TimescaleModel(final TimescaleModel other) {
-        paddingLeft = other.paddingLeft;
-        paddingRight = other.paddingRight;
         zoomWindowIndicatorHeight = other.zoomWindowIndicatorHeight;
         zoomWindowToTrackTransitionHeight =
             other.zoomWindowToTrackTransitionHeight;
@@ -78,38 +70,6 @@ public final class TimescaleModel {
      */
     public void setEffectiveWidth(final int effectiveWidth) {
         this.effectiveWidth = effectiveWidth;
-    }
-
-    /**
-     * @return The scale is padded from the left by this many pixels
-     */
-    public int getPaddingLeft() {
-        return paddingLeft;
-    }
-
-    /**
-     * Set the scale padding from the left by this many pixels
-     *
-     * @param paddingLeft
-     */
-    public void setPaddingLeft(final int paddingLeft) {
-        this.paddingLeft = paddingLeft;
-    }
-
-    /**
-     * @return The scale is padded from the right by this many pixels
-     */
-    public int getPaddingRight() {
-        return paddingRight;
-    }
-
-    /**
-     * Set the scale padding from the right by this many pixels
-     *
-     * @param paddingRight
-     */
-    public void setPaddingRight(final int paddingRight) {
-        this.paddingRight = paddingRight;
     }
 
     /**
@@ -211,49 +171,112 @@ public final class TimescaleModel {
         this.millisecondsMarkerColor = millisecondsMarkerColor;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override public boolean equals(final Object obj) {
 
-        if (obj == null) {
+        if (this == obj)
+            return true;
+
+        if (obj == null)
             return false;
-        }
 
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
 
-        final TimescaleModel other = (TimescaleModel) obj;
+        TimescaleModel other = (TimescaleModel) obj;
 
-        return (paddingLeft == other.paddingLeft)
-            && (paddingRight == other.paddingRight)
-            && (zoomWindowIndicatorHeight == other.zoomWindowIndicatorHeight)
-            && (zoomWindowToTrackTransitionHeight
-                == other.zoomWindowToTrackTransitionHeight)
-            && (effectiveWidth == other.effectiveWidth)
-            && (height == other.height)
-            && zoomWindowIndicatorColor.equals(other.zoomWindowIndicatorColor)
-            && timescaleBackgroundColor.equals(other.timescaleBackgroundColor)
-            && hoursMarkerColor.equals(other.hoursMarkerColor)
-            && minutesMarkerColor.equals(other.minutesMarkerColor)
-            && secondsMarkerColor.equals(other.secondsMarkerColor)
-            && millisecondsMarkerColor.equals(other.millisecondsMarkerColor);
+        if (effectiveWidth != other.effectiveWidth)
+            return false;
+
+        if (height != other.height)
+            return false;
+
+        if (hoursMarkerColor == null) {
+
+            if (other.hoursMarkerColor != null)
+                return false;
+        } else if (!hoursMarkerColor.equals(other.hoursMarkerColor))
+            return false;
+
+        if (millisecondsMarkerColor == null) {
+
+            if (other.millisecondsMarkerColor != null)
+                return false;
+        } else if (
+            !millisecondsMarkerColor.equals(other.millisecondsMarkerColor))
+            return false;
+
+        if (minutesMarkerColor == null) {
+
+            if (other.minutesMarkerColor != null)
+                return false;
+        } else if (!minutesMarkerColor.equals(other.minutesMarkerColor))
+            return false;
+
+        if (secondsMarkerColor == null) {
+
+            if (other.secondsMarkerColor != null)
+                return false;
+        } else if (!secondsMarkerColor.equals(other.secondsMarkerColor))
+            return false;
+
+        if (timescaleBackgroundColor == null) {
+
+            if (other.timescaleBackgroundColor != null)
+                return false;
+        } else if (
+            !timescaleBackgroundColor.equals(other.timescaleBackgroundColor))
+            return false;
+
+        if (zoomWindowIndicatorColor == null) {
+
+            if (other.zoomWindowIndicatorColor != null)
+                return false;
+        } else if (
+            !zoomWindowIndicatorColor.equals(other.zoomWindowIndicatorColor))
+            return false;
+
+        if (zoomWindowIndicatorHeight != other.zoomWindowIndicatorHeight)
+            return false;
+
+        if (zoomWindowToTrackTransitionHeight
+                != other.zoomWindowToTrackTransitionHeight)
+            return false;
+
+        return true;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override public int hashCode() {
-        int hash = 5;
-        hash = (71 * hash) + paddingLeft;
-        hash = (71 * hash) + paddingRight;
-        hash = (71 * hash) + zoomWindowIndicatorHeight;
-        hash = (71 * hash) + zoomWindowToTrackTransitionHeight;
-        hash = (71 * hash) + effectiveWidth;
-        hash = (71 * hash) + height;
-        hash = (71 * hash) + zoomWindowIndicatorColor.hashCode();
-        hash = (71 * hash) + timescaleBackgroundColor.hashCode();
-        hash = (71 * hash) + hoursMarkerColor.hashCode();
-        hash = (71 * hash) + minutesMarkerColor.hashCode();
-        hash = (71 * hash) + secondsMarkerColor.hashCode();
-        hash = (71 * hash) + millisecondsMarkerColor.hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + effectiveWidth;
+        result = (prime * result) + height;
+        result = (prime * result)
+            + ((hoursMarkerColor == null) ? 0 : hoursMarkerColor.hashCode());
+        result = (prime * result)
+            + ((millisecondsMarkerColor == null)
+                ? 0 : millisecondsMarkerColor.hashCode());
+        result = (prime * result)
+            + ((minutesMarkerColor == null) ? 0 : minutesMarkerColor.hashCode());
+        result = (prime * result)
+            + ((secondsMarkerColor == null) ? 0 : secondsMarkerColor.hashCode());
+        result = (prime * result)
+            + ((timescaleBackgroundColor == null)
+                ? 0 : timescaleBackgroundColor.hashCode());
+        result = (prime * result)
+            + ((zoomWindowIndicatorColor == null)
+                ? 0 : zoomWindowIndicatorColor.hashCode());
+        result = (prime * result) + zoomWindowIndicatorHeight;
+        result = (prime * result) + zoomWindowToTrackTransitionHeight;
 
-        return hash;
+        return result;
     }
 
     public TimescaleModel copy() {

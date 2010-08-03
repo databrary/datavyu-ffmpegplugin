@@ -35,8 +35,6 @@ public final class TimescaleController {
         view = new TimescalePainter();
 
         timescaleModel = new TimescaleModel();
-        timescaleModel.setPaddingLeft(101);
-        timescaleModel.setPaddingRight(30);
         timescaleModel.setZoomWindowIndicatorHeight(8);
         timescaleModel.setZoomWindowToTrackTransitionHeight(20);
         timescaleModel.setHeight(50
@@ -71,13 +69,13 @@ public final class TimescaleController {
         viewableModel.setZoomWindowStart(start);
         viewableModel.setZoomWindowEnd(end);
 
-        final int effectiveWidth = view.getWidth()
-            - timescaleModel.getPaddingLeft()
-            - timescaleModel.getPaddingRight();
+        final int effectiveWidth = view.getWidth();
         timescaleModel.setEffectiveWidth(effectiveWidth);
 
         viewableModel.setIntervalTime(end - start + 1);
         viewableModel.setIntervalWidth(effectiveWidth);
+
+        System.out.println(viewableModel);
 
         view.setViewableModel(viewableModel);
         view.setTimescaleModel(timescaleModel);
@@ -89,12 +87,7 @@ public final class TimescaleController {
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
          */
-        this.viewableModel.setEnd(viewableModel.getEnd());
-        this.viewableModel.setIntervalTime(viewableModel.getIntervalTime());
-        this.viewableModel.setIntervalWidth(viewableModel.getIntervalWidth());
-        this.viewableModel.setZoomWindowEnd(viewableModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(
-            viewableModel.getZoomWindowStart());
+        this.viewableModel.copyFrom(viewableModel);
         view.setViewableModel(this.viewableModel);
     }
 
@@ -176,9 +169,7 @@ public final class TimescaleController {
         }
 
         private boolean isMouseInsideTimescale(final MouseEvent e) {
-            return (e.getX() >= timescaleModel.getPaddingLeft())
-                && ((e.getX() + timescaleModel.getPaddingRight())
-                    < view.getSize().width);
+            return (e.getX() >= 0) && ((e.getX()) < view.getSize().width);
         }
 
         @Override public void mouseClicked(final MouseEvent e) {
@@ -197,8 +188,7 @@ public final class TimescaleController {
         }
 
         private long getNewNeedlePosition(final MouseEvent e) {
-            final int dx = Math.min(Math.max(
-                        e.getX() - timescaleModel.getPaddingLeft(), 0),
+            final int dx = Math.min(Math.max(e.getX(), 0),
                     view.getSize().width - 1);
 
             // Calculate the time represented by the new location
