@@ -550,6 +550,7 @@
                 <preCp>commons-io-1.4.jar</preCp>
                 <preCp>fest-reflect-1.2.jar</preCp>
                 <preCp>google-collections-1.0.jar</preCp>
+                <preCp>commons-lang-2.5.jar</preCp>
 <!--  TODO temporarily disabled as it has been integrated into openshapa-lib                
                 <preCp>gstreamer-java-1.4.jar</preCp>
 -->                

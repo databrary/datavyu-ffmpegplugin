@@ -40,6 +40,7 @@
         <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.5/UserMetrix-jclient-0.0.5.jar</string>
         <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.3.1/miglayout-3.7.3.1-swing.jar</string>
         <string>$JAVAROOT/repo/commons-io/commons-io/1.4/commons-io-1.4.jar</string>
+        <string>$JAVAROOT/repo/commons-lang/commons-lang/2.5/commons-lang-2.5.jar</string>
         <string>$JAVAROOT/repo/org/easytesting/fest-reflect/1.2/fest-reflect-1.2.jar</string>
         <string>$JAVAROOT/repo/com/google/collections/google-collections/1.0/google-collections-1.0.jar</string>
         <string>$JAVAROOT/repo/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar</string>
