@@ -64,16 +64,12 @@ public class SnapMarkerPainter extends JComponent {
         // Calculate the needle position based on the selected time
         float ratio = viewableModel.getIntervalWidth()
             / viewableModel.getIntervalTime();
-        int pos =
-            (int) ((markerTime * ratio)
-                - (viewableModel.getZoomWindowStart() * ratio))
-            + snapMarkerModel.getPaddingLeft();
-
-        final int paddingTop = snapMarkerModel.getPaddingTop();
+        int pos = (int) ((markerTime * ratio)
+                - (viewableModel.getZoomWindowStart() * ratio));
 
         // Draw the snap marker needle
         int x1 = pos;
-        int y1 = paddingTop + 39;
+        int y1 = 0;
         int x2 = pos + 1;
         int y2 = size.height;
 

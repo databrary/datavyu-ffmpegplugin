@@ -75,8 +75,6 @@ public final class TimescaleController {
         viewableModel.setIntervalTime(end - start + 1);
         viewableModel.setIntervalWidth(effectiveWidth);
 
-        System.out.println(viewableModel);
-
         view.setViewableModel(viewableModel);
         view.setTimescaleModel(timescaleModel);
     }

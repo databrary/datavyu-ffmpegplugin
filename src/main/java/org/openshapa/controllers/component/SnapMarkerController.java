@@ -24,8 +24,6 @@ public final class SnapMarkerController {
         view = new SnapMarkerPainter();
 
         snapMarkerModel = new SnapMarkerModel();
-        snapMarkerModel.setPaddingTop(0);
-        snapMarkerModel.setPaddingLeft(101);
         snapMarkerModel.setMarkerTime(-1);
 
         viewableModel = new ViewableModel();
@@ -71,12 +69,7 @@ public final class SnapMarkerController {
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
          */
-        this.viewableModel.setEnd(viewableModel.getEnd());
-        this.viewableModel.setIntervalTime(viewableModel.getIntervalTime());
-        this.viewableModel.setIntervalWidth(viewableModel.getIntervalWidth());
-        this.viewableModel.setZoomWindowEnd(viewableModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(
-            viewableModel.getZoomWindowStart());
+        this.viewableModel.copyFrom(viewableModel);
         view.setViewableModel(this.viewableModel);
     }
 

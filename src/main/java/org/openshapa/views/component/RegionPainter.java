@@ -127,9 +127,6 @@ public class RegionPainter extends JComponent {
         // If the left region marker is visible, paint the marker
         if (regionStart >= viewableModel.getZoomWindowStart()) {
             final double xPos = getXForTime(regionModel.getRegionStart());
-
-            System.out.println("LMarker xPos=" + xPos);
-
             startMarkerPolygon = new GeneralPath();
             startMarkerPolygon.moveTo((float) (xPos - RMARKER_WIDTH
                     - needleWidth), 0);

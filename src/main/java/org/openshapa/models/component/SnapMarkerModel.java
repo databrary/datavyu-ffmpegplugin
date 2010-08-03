@@ -6,12 +6,6 @@ package org.openshapa.models.component;
  */
 public final class SnapMarkerModel {
 
-    /** Amount of padding for this component from the top */
-    private int paddingTop;
-
-    /** Amount of padding for this component from the left */
-    private int paddingLeft;
-
     /** Current time represented by the marker */
     private long markerTime;
 
@@ -19,8 +13,6 @@ public final class SnapMarkerModel {
     }
 
     protected SnapMarkerModel(final SnapMarkerModel other) {
-        paddingTop = other.paddingTop;
-        paddingLeft = other.paddingLeft;
         markerTime = other.markerTime;
     }
 
@@ -40,72 +32,39 @@ public final class SnapMarkerModel {
         this.markerTime = markerTime;
     }
 
-    /**
-     * @return Amount of padding for this component from the left
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
      */
-    public int getPaddingLeft() {
-        return paddingLeft;
-    }
-
-    /**
-     * Set the amount of padding for this component from the left
-     *
-     * @param paddingLeft
-     */
-    public void setPaddingLeft(final int paddingLeft) {
-        this.paddingLeft = paddingLeft;
-    }
-
-    /**
-     * @return Amount of padding for this component from the top
-     */
-    public int getPaddingTop() {
-        return paddingTop;
-    }
-
-    /**
-     * Set the amount of padding for this component from the top
-     *
-     * @param paddingTop
-     */
-    public void setPaddingTop(final int paddingTop) {
-        this.paddingTop = paddingTop;
-    }
-
     @Override public boolean equals(final Object obj) {
 
-        if (obj == null) {
-            return false;
-        }
+        if (this == obj)
+            return true;
 
-        if (getClass() != obj.getClass()) {
+        if (obj == null)
             return false;
-        }
 
-        final SnapMarkerModel other = (SnapMarkerModel) obj;
-
-        if (paddingTop != other.paddingTop) {
+        if (getClass() != obj.getClass())
             return false;
-        }
 
-        if (paddingLeft != other.paddingLeft) {
-            return false;
-        }
+        SnapMarkerModel other = (SnapMarkerModel) obj;
 
-        if (markerTime != other.markerTime) {
+        if (markerTime != other.markerTime)
             return false;
-        }
 
         return true;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override public int hashCode() {
-        int hash = 7;
-        hash = (83 * hash) + paddingTop;
-        hash = (83 * hash) + paddingLeft;
-        hash = (83 * hash) + (int) (markerTime ^ (markerTime >>> 32));
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + (int) (markerTime ^ (markerTime >>> 32));
 
-        return hash;
+        return result;
     }
 
     public SnapMarkerModel copy() {

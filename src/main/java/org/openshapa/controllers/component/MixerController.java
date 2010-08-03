@@ -231,9 +231,10 @@ public final class MixerController implements NeedleEventListener,
             .getHeight();
 
         final int needleAndRegionMarkerTopY = 0;
+        final int needleHeadHeight = (int) Math.ceil(
+                needleController.getNeedleModel().getNeedleHeadHeight());
         final int tracksScrollPaneY = needleAndRegionMarkerTopY
-            + (int) Math.ceil(needleController.getNeedleModel()
-                .getNeedleHeadHeight()) + 1;
+            + needleHeadHeight + 1;
         final int timescaleViewY = layeredPaneHeight - tracksScrollBarHeight
             - timescaleViewHeight;
         final int tracksScrollPaneHeight = timescaleViewY - tracksScrollPaneY;
@@ -277,8 +278,6 @@ public final class MixerController implements NeedleEventListener,
             vm.setZoomWindowStart(minStart);
             vm.setZoomWindowEnd(maxEnd);
             timescaleController.setViewableModel(vm);
-
-            System.out.println(vm);
         }
 
         // Add the scroll pane
@@ -360,24 +359,24 @@ public final class MixerController implements NeedleEventListener,
             layeredPane.add(needleView, sub.replace(template), 30);
         }
 
-
         // Create the snap marker
         {
             JComponent markerView = tracksEditorController.getMarkerView();
 
-            // TODO refactor padding
             Map<String, String> constraints = Maps.newHashMap();
-            constraints.put("y", "0");
-            constraints.put("x", "0");
-            constraints.put("width", Integer.toString(785));
-            constraints.put("height", Integer.toString(234));
+            constraints.put("y", Integer.toString(needleHeadHeight + 1));
+            constraints.put("x", "101");
+            constraints.put("width", "785");
+            constraints.put("height",
+                Integer.toString(
+                    needleAndRegionMarkerHeight - needleHeadHeight - 1));
 
             String template =
                 "id smarker, pos ${x} ${y} n n, w ${width}!, h ${height}!";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
-            layeredPane.setLayer(markerView, 5);
-            layeredPane.add(markerView, sub.replace(template), 5);
+            layeredPane.setLayer(markerView, 50);
+            layeredPane.add(markerView, sub.replace(template), 50);
         }
 
         // Set up the tracks horizontal scroll bar
