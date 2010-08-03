@@ -48,6 +48,7 @@ import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
 import org.openshapa.models.PlaybackModel;
+import org.openshapa.models.component.TimescaleConstants;
 
 import org.openshapa.plugins.PluginManager;
 
@@ -130,11 +131,10 @@ public final class DataControllerV extends OpenSHAPADialog
         CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
 
-        //TODO these should match up with the colors in TimescaleController.TimescaleController()
-        Color hoursColor = Color.red.darker();
-        Color minutesColor = Color.green.darker().darker().darker();
-        Color secondsColor = Color.blue.darker().darker();
-        Color millisecondsColor = Color.gray.darker();
+        Color hoursColor = TimescaleConstants.HOURS_COLOR;
+        Color minutesColor = TimescaleConstants.MINUTES_COLOR;
+        Color secondsColor = TimescaleConstants.SECONDS_COLOR;
+        Color millisecondsColor = TimescaleConstants.MILLISECONDS_COLOR;
 
         CLOCK_FORMAT_HTML = new SimpleDateFormat("'<html>" + "<font color=\""
                 + toRGBString(hoursColor) + "\">'HH'</font>':"

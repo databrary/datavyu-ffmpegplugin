@@ -10,6 +10,7 @@ import javax.swing.event.MouseInputAdapter;
 import org.openshapa.event.component.TimescaleEvent;
 import org.openshapa.event.component.TimescaleListener;
 
+import org.openshapa.models.component.TimescaleConstants;
 import org.openshapa.models.component.TimescaleModel;
 import org.openshapa.models.component.ViewableModel;
 
@@ -43,12 +44,11 @@ public final class TimescaleController {
         timescaleModel.setZoomWindowIndicatorColor(new Color(192, 192, 192));
         timescaleModel.setTimescaleBackgroundColor(new Color(237, 237, 237));
 
-        // TODO these should match up with the colors in
-        // DataControllerV.static{}
-        timescaleModel.setHoursMarkerColor(Color.red.darker());
-        timescaleModel.setMinutesMarkerColor(Color.green.darker().darker());
-        timescaleModel.setSecondsMarkerColor(Color.blue.darker().darker());
-        timescaleModel.setMillisecondsMarkerColor(Color.gray.darker());
+        timescaleModel.setHoursMarkerColor(TimescaleConstants.HOURS_COLOR);
+        timescaleModel.setMinutesMarkerColor(TimescaleConstants.MINUTES_COLOR);
+        timescaleModel.setSecondsMarkerColor(TimescaleConstants.SECONDS_COLOR);
+        timescaleModel.setMillisecondsMarkerColor(
+            TimescaleConstants.MILLISECONDS_COLOR);
 
         viewableModel = new ViewableModel();
 

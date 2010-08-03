@@ -36,6 +36,8 @@ import org.openshapa.event.PlaybackEvent;
 import org.openshapa.event.PlaybackListener;
 import org.openshapa.event.PlaybackEvent.PlaybackType;
 
+import org.openshapa.models.component.TimescaleConstants;
+
 
 /**
  * Playback UI.
@@ -44,11 +46,26 @@ public final class PlaybackV extends OpenSHAPADialog {
 
     /** Format for representing time. */
     private static final DateFormat CLOCK_FORMAT;
+    private static final DateFormat CLOCK_FORMAT_HTML;
 
     // initialize standard date format for clock display.
     static {
         CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
         CLOCK_FORMAT.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
+
+        Color hoursColor = TimescaleConstants.HOURS_COLOR;
+        Color minutesColor = TimescaleConstants.MINUTES_COLOR;
+        Color secondsColor = TimescaleConstants.SECONDS_COLOR;
+        Color millisecondsColor = TimescaleConstants.MILLISECONDS_COLOR;
+
+        CLOCK_FORMAT_HTML = new SimpleDateFormat("'<html>" + "<font color=\""
+                + toRGBString(hoursColor) + "\">'HH'</font>':"
+                + "'<font color=\"" + toRGBString(minutesColor)
+                + "\">'mm'</font>':" + "'<font color=\""
+                + toRGBString(secondsColor) + "\">'ss'</font>':"
+                + "'<font color=\"" + toRGBString(millisecondsColor)
+                + "\">'SSS'</font>" + "</html>'");
+        CLOCK_FORMAT_HTML.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
     /** */
@@ -1436,6 +1453,11 @@ public final class PlaybackV extends OpenSHAPADialog {
         for (PlaybackListener listener : listeners) {
             listener.setNewCellOffsetEvent(event);
         }
+    }
+
+    private static String toRGBString(final Color color) {
+        return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(),
+                color.getBlue());
     }
 
 }
