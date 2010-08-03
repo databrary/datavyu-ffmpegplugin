@@ -27,7 +27,7 @@
       <key>JVMVersion</key>
       <string>1.6+</string>
       <key>SplashFile</key>
-      <string>$JAVAROOT/images/splash.png</string>
+      <string>$JAVAROOT/../splash.png</string>
       <key>ClassPath</key>
       <array>
         <string>$JAVAROOT/repo/org/openshapa/openshapa/1.08/openshapa-1.08.jar</string>
