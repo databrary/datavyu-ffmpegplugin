@@ -216,7 +216,7 @@ public final class TrackController implements ViewerStateListener {
         view.add(header, "w 100!, h 75!");
 
         // Create the Carriage panel
-        view.add(trackPainter, "w 662!, h 75!");
+        view.add(trackPainter, "w 653!, h 75!");
     }
 
     private void updateButtonIcons() {
