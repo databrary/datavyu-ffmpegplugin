@@ -390,11 +390,7 @@ public final class TrackController implements ViewerStateListener {
          * Just copy the values, do not spread references all over the place to
          * avoid model tainting.
          */
-        this.viewableModel.setEnd(newModel.getEnd());
-        this.viewableModel.setIntervalTime(newModel.getIntervalTime());
-        this.viewableModel.setIntervalWidth(newModel.getIntervalWidth());
-        this.viewableModel.setZoomWindowEnd(newModel.getZoomWindowEnd());
-        this.viewableModel.setZoomWindowStart(newModel.getZoomWindowStart());
+        this.viewableModel.copyFrom(newModel);
         trackPainter.setViewableModel(this.viewableModel);
         view.repaint();
     }
