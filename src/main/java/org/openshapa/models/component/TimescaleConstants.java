@@ -16,4 +16,6 @@ public final class TimescaleConstants {
 
     public static final Color MILLISECONDS_COLOR = Color.GRAY.darker();
 
+    public static final int XPOS_ABS = 101;
+
 }

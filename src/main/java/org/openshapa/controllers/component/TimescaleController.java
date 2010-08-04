@@ -3,6 +3,9 @@ package org.openshapa.controllers.component;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
@@ -16,11 +19,13 @@ import org.openshapa.models.component.ViewableModel;
 
 import org.openshapa.views.component.TimescalePainter;
 
+import bsh.This;
+
 
 /**
  * Timescale controller is responsible for managing a TimescalePainter
  */
-public final class TimescaleController {
+public final class TimescaleController implements PropertyChangeListener {
 
     /** View */
     private final TimescalePainter view;
@@ -69,11 +74,8 @@ public final class TimescaleController {
         viewableModel.setZoomWindowStart(start);
         viewableModel.setZoomWindowEnd(end);
 
-        final int effectiveWidth = view.getWidth();
-        timescaleModel.setEffectiveWidth(effectiveWidth);
-
         viewableModel.setIntervalTime(end - start + 1);
-        viewableModel.setIntervalWidth(effectiveWidth);
+        viewableModel.setIntervalWidth(view.getWidth());
 
         view.setViewableModel(viewableModel);
         view.setTimescaleModel(timescaleModel);
@@ -107,6 +109,10 @@ public final class TimescaleController {
      */
     public JComponent getView() {
         return view;
+    }
+
+    @Override public void propertyChange(final PropertyChangeEvent evt) {
+        setViewableModel((ViewableModel) evt.getSource());
     }
 
     public void addTimescaleEventListener(final TimescaleListener listener) {
@@ -200,4 +206,5 @@ public final class TimescaleController {
             return Math.round(newTime);
         }
     }
+
 }

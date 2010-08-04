@@ -2,6 +2,9 @@ package org.openshapa.controllers.component;
 
 import java.awt.event.MouseEvent;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -17,6 +20,7 @@ import org.openshapa.event.component.CarriageEventAdapter;
 import org.openshapa.event.component.CarriageEventListener;
 import org.openshapa.event.component.TrackMouseEventListener;
 
+import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
 
@@ -31,7 +35,8 @@ import org.openshapa.views.continuous.CustomActionListener;
  *
  * @author dteoh
  */
-public final class TracksEditorController implements TrackMouseEventListener {
+public final class TracksEditorController implements TrackMouseEventListener,
+    PropertyChangeListener {
 
     /** Main UI panel. */
     private JPanel editingPanel;
@@ -100,6 +105,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
         snapMarkerController.setViewableModel(newModel);
     }
 
+    @Override public void propertyChange(final PropertyChangeEvent evt) {
+        setViewableModel((ViewableModel) evt.getSource());
+    }
+
     /**
      * Adds a new track to the interface.
      *
@@ -142,8 +151,9 @@ public final class TracksEditorController implements TrackMouseEventListener {
 
         tracks.add(track);
 
-        editingPanel.add(trackController.getView());
-        editingPanel.validate();
+        editingPanel.add(trackController.getView(),
+            "pad 0 0 0 " + -RegionConstants.RMARKER_WIDTH + ", growx");
+        editingPanel.invalidate();
     }
 
     /**
@@ -598,4 +608,5 @@ public final class TracksEditorController implements TrackMouseEventListener {
         /** The snap marker position to paint. */
         public long snapMarkerPosition;
     }
+
 }

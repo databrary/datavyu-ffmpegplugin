@@ -5,6 +5,8 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import org.openshapa.models.component.TimescaleConstants;
+
 import net.miginfocom.swing.MigLayout;
 
 
@@ -15,7 +17,7 @@ public final class TracksEditorPainter extends JPanel {
     private static final Color TRACK_BG_COLOR = new Color(237, 237, 237);
 
     public TracksEditorPainter() {
-        setLayout(new MigLayout("wrap, ins 0", "", ""));
+        setLayout(new MigLayout("fillx, wrap, ins 0", "", ""));
         setOpaque(false);
     }
 
@@ -24,9 +26,7 @@ public final class TracksEditorPainter extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
 
         g.setColor(TRACK_BG_COLOR);
-
-        //TODO need to get these numbers from the MixerControllerV class
-        g.fillRect(101, 0, 654, getHeight());
+        g.fillRect(TimescaleConstants.XPOS_ABS, 0, getWidth(), getHeight());
 
         super.paint(g);
     }

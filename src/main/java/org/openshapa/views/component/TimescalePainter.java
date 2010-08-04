@@ -65,7 +65,6 @@ public class TimescalePainter extends JComponent {
             RenderingHints.VALUE_ANTIALIAS_ON);
 
         assert viewableModel.getZoomWindowStart() >= 0;
-        assert timescaleModel.getEffectiveWidth() > 0;
 
         final long end = Math.max(viewableModel.getEnd(), 1);
 
@@ -77,25 +76,20 @@ public class TimescalePainter extends JComponent {
         final int transitionAreaTop = transitionAreaBottom
             - timescaleModel.getZoomWindowToTrackTransitionHeight() + 1;
         final float transitionAreaLeft = 0;
-        final float transitionAreaRight = timescaleModel.getEffectiveWidth();
+        final float transitionAreaRight = getWidth();
 
         final float minimumZoomIndicatorWidth = 1f;
         float zoomIndicatorWidth =
             (float) (viewableModel.getZoomWindowEnd()
-                - viewableModel.getZoomWindowStart())
-            * timescaleModel.getEffectiveWidth() / end;
+                - viewableModel.getZoomWindowStart()) * getWidth() / end;
         zoomIndicatorWidth = Math.min(Math.max(zoomIndicatorWidth,
-                    minimumZoomIndicatorWidth),
-                timescaleModel.getEffectiveWidth());
+                    minimumZoomIndicatorWidth), getWidth());
 
         float zoomWindowIndicatorX = (float)
-            ((double) viewableModel.getZoomWindowStart()
-                * timescaleModel.getEffectiveWidth() / end);
+            ((double) viewableModel.getZoomWindowStart() * getWidth() / end);
 
-        if ((zoomWindowIndicatorX + zoomIndicatorWidth)
-                >= timescaleModel.getEffectiveWidth()) {
-            zoomWindowIndicatorX = timescaleModel.getEffectiveWidth()
-                - zoomIndicatorWidth;
+        if ((zoomWindowIndicatorX + zoomIndicatorWidth) >= getWidth()) {
+            zoomWindowIndicatorX = getWidth() - zoomIndicatorWidth;
             zoomWindowIndicatorX = Math.max(zoomWindowIndicatorX, 0);
             assert zoomWindowIndicatorX >= 0;
         }
@@ -104,11 +98,9 @@ public class TimescalePainter extends JComponent {
         final Color backgroundColor =
             timescaleModel.getTimescaleBackgroundColor();
         g2d.setColor(backgroundColor);
-        g2d.fillRect(0, 0, timescaleModel.getEffectiveWidth(),
-            transitionAreaTop);
+        g2d.fillRect(0, 0, getWidth(), transitionAreaTop);
 
-        g2d.fillRect(0, zoomWindowIndicatorTop,
-            timescaleModel.getEffectiveWidth(),
+        g2d.fillRect(0, zoomWindowIndicatorTop, getWidth(),
             timescaleModel.getZoomWindowIndicatorHeight());
 
         // draw the current zoom indicator window
@@ -276,8 +268,7 @@ public class TimescalePainter extends JComponent {
         final long time = Math.min(Math.max(timeInMilliseconds,
                     viewableModel.getZoomWindowStart()),
                 viewableModel.getZoomWindowEnd());
-        final double pixelsPerMillisecond =
-            (double) timescaleModel.getEffectiveWidth()
+        final double pixelsPerMillisecond = (double) getWidth()
             / (viewableModel.getZoomWindowEnd()
                 - viewableModel.getZoomWindowStart() + 1);
 //        final double pixelsPerMillisecond = viewableModel.getIntervalWidth() / viewableModel.getIntervalTime();

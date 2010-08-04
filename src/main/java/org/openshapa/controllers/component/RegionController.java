@@ -5,6 +5,9 @@ import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
@@ -22,7 +25,7 @@ import org.openshapa.views.component.RegionPainter;
 /**
  * RegionController is responsible for managing a RegionPainter.
  */
-public final class RegionController {
+public final class RegionController implements PropertyChangeListener {
 
     /** View */
     private final RegionPainter view;
@@ -118,6 +121,10 @@ public final class RegionController {
     public void setViewableModel(final ViewableModel viewableModel) {
         this.viewableModel.copyFrom(viewableModel);
         view.setViewableModel(this.viewableModel);
+    }
+
+    @Override public void propertyChange(final PropertyChangeEvent evt) {
+        setViewableModel((ViewableModel) evt.getSource());
     }
 
     /**
@@ -252,4 +259,5 @@ public final class RegionController {
             source.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
     }
+
 }

@@ -120,7 +120,7 @@ public final class TrackController implements ViewerStateListener {
         isMoveable = true;
 
         view = new JPanel();
-        view.setLayout(new MigLayout("ins 0", "[]0[]"));
+        view.setLayout(new MigLayout("fillx, ins 0", "[100!]0[]"));
         view.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
 
         this.trackPainter = trackPainter;
@@ -222,7 +222,7 @@ public final class TrackController implements ViewerStateListener {
         view.add(header, "w 100!, h 75!");
 
         // Create the Carriage panel
-        view.add(trackPainter, "w 653!, h 75!");
+        view.add(trackPainter, "w 654::, growx, h 75!");
     }
 
     private void updateButtonIcons() {

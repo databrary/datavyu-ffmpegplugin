@@ -15,9 +15,6 @@ public final class TimescaleModel {
     /** Height of the transition between the zoom window indicator and the track in pixels */
     private int zoomWindowToTrackTransitionHeight;
 
-    /** This is the effective width of the scale, i.e. after padding applied */
-    private int effectiveWidth;
-
     /** This is the height of the scale */
     private int height;
 
@@ -46,7 +43,6 @@ public final class TimescaleModel {
         zoomWindowIndicatorHeight = other.zoomWindowIndicatorHeight;
         zoomWindowToTrackTransitionHeight =
             other.zoomWindowToTrackTransitionHeight;
-        effectiveWidth = other.effectiveWidth;
         height = other.height;
         zoomWindowIndicatorColor = other.zoomWindowIndicatorColor;
         timescaleBackgroundColor = other.timescaleBackgroundColor;
@@ -54,22 +50,6 @@ public final class TimescaleModel {
         minutesMarkerColor = other.minutesMarkerColor;
         secondsMarkerColor = other.secondsMarkerColor;
         millisecondsMarkerColor = other.millisecondsMarkerColor;
-    }
-
-    /**
-     * @return The effective width of the scale, i.e. after padding applied
-     */
-    public int getEffectiveWidth() {
-        return effectiveWidth;
-    }
-
-    /**
-     * Sets the effective width of the scale, i.e. after padding applied
-     *
-     * @param effectiveWidth
-     */
-    public void setEffectiveWidth(final int effectiveWidth) {
-        this.effectiveWidth = effectiveWidth;
     }
 
     /**
@@ -188,9 +168,6 @@ public final class TimescaleModel {
 
         TimescaleModel other = (TimescaleModel) obj;
 
-        if (effectiveWidth != other.effectiveWidth)
-            return false;
-
         if (height != other.height)
             return false;
 
@@ -256,7 +233,6 @@ public final class TimescaleModel {
     @Override public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = (prime * result) + effectiveWidth;
         result = (prime * result) + height;
         result = (prime * result)
             + ((hoursMarkerColor == null) ? 0 : hoursMarkerColor.hashCode());

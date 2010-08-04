@@ -3,6 +3,9 @@ package org.openshapa.controllers.component;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -25,7 +28,7 @@ import org.openshapa.views.component.NeedlePainter;
 /**
  * NeedleController is responsible for managing a NeedlePainter
  */
-public final class NeedleController {
+public final class NeedleController implements PropertyChangeListener {
 
     /** View */
     private final NeedlePainter view;
@@ -160,6 +163,10 @@ public final class NeedleController {
         view.setViewableModel(this.viewableModel);
     }
 
+    @Override public void propertyChange(final PropertyChangeEvent evt) {
+        setViewableModel((ViewableModel) evt.getSource());
+    }
+
     /**
      * @return View used by the controller
      */
@@ -218,5 +225,6 @@ public final class NeedleController {
             fireNeedleEvent(Math.round(newTime));
         }
     }
+
 
 }

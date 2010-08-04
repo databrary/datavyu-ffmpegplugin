@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -48,6 +49,7 @@ import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
 import org.openshapa.models.PlaybackModel;
+import org.openshapa.models.component.MixerConstants;
 import org.openshapa.models.component.TimescaleConstants;
 
 import org.openshapa.plugins.PluginManager;
@@ -297,9 +299,6 @@ public final class DataControllerV extends OpenSHAPADialog
     private javax.swing.JLabel timestampLabel;
 
     /** */
-    private javax.swing.JPanel topPanel;
-
-    /** */
     private javax.swing.JPanel tracksPanel;
 
     /** Model containing playback information. */
@@ -328,6 +327,7 @@ public final class DataControllerV extends OpenSHAPADialog
             initComponents();
         }
 
+        setResizable(false);
         setName(this.getClass().getSimpleName());
         viewers = new LinkedHashSet<DataViewer>();
 
@@ -336,14 +336,13 @@ public final class DataControllerV extends OpenSHAPADialog
         playbackModel.setLastSync(0);
         playbackModel.setMaxDuration(0);
 
-        final int defaultEndTime = 60000;
+        final int defaultEndTime = (int) MixerConstants.DEFAULT_DURATION;
 
-        // TODO This should really come from the region controller.
         playbackModel.setWindowPlayStart(0);
         playbackModel.setWindowPlayEnd(defaultEndTime);
 
         mixerControllerV = new MixerController();
-        tracksPanel.add(mixerControllerV.getTracksPanel());
+        tracksPanel.add(mixerControllerV.getTracksPanel(), "growx");
         mixerControllerV.addTracksControllerListener(this);
 
         showTracksPanel(false);
@@ -437,7 +436,6 @@ public final class DataControllerV extends OpenSHAPADialog
 
     /**
      * @param time
-     * \
      *            Current clock time in milliseconds.
      */
     public void clockTick(final long time) {
@@ -756,18 +754,16 @@ public final class DataControllerV extends OpenSHAPADialog
         syncVideoButton = new javax.swing.JButton();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
-        topPanel = new javax.swing.JPanel();
         lblSpeed = new javax.swing.JLabel();
         createNewCell = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
         showTracksButton = new javax.swing.JButton();
-        tracksPanel = new javax.swing.JPanel();
+        tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
 
         final int fontSize = 11;
 
-        setLayout(new MigLayout("hidemode 3"));
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         org.jdesktop.application.ResourceMap resourceMap =
@@ -775,8 +771,6 @@ public final class DataControllerV extends OpenSHAPADialog
                 org.openshapa.OpenSHAPA.class).getContext().getResourceMap(
                 DataControllerV.class);
         setTitle(resourceMap.getString("title"));
-        setName("");
-        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override public void windowClosing(
                     final java.awt.event.WindowEvent evt) {
@@ -1053,11 +1047,14 @@ public final class DataControllerV extends OpenSHAPADialog
             });
         gridButtonPanel.add(showTracksButton, "w 80!, h 45!");
 
-        getContentPane().add(gridButtonPanel, "west");
+        getContentPane().setLayout(new MigLayout("hidemode 3, fillx",
+                "[growprio 0]0[]", ""));
+        getContentPane().add(gridButtonPanel, "");
+        getContentPane().setBackground(Color.WHITE);
 
         tracksPanel.setBackground(Color.WHITE);
         tracksPanel.setVisible(false);
-        getContentPane().add(tracksPanel, "east, w 800!");
+        getContentPane().add(tracksPanel, "growx");
 
         pack();
     }
@@ -1089,18 +1086,16 @@ public final class DataControllerV extends OpenSHAPADialog
         syncVideoButton = new javax.swing.JButton();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
-        topPanel = new javax.swing.JPanel();
         lblSpeed = new javax.swing.JLabel();
         createNewCell = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
         showTracksButton = new javax.swing.JButton();
-        tracksPanel = new javax.swing.JPanel();
+        tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
 
         final int fontSize = 11;
 
-        setLayout(new MigLayout("hidemode 3"));
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         org.jdesktop.application.ResourceMap resourceMap =
@@ -1108,8 +1103,6 @@ public final class DataControllerV extends OpenSHAPADialog
                 org.openshapa.OpenSHAPA.class).getContext().getResourceMap(
                 DataControllerV.class);
         setTitle(resourceMap.getString("title"));
-        setName("");
-        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override public void windowClosing(
                     final java.awt.event.WindowEvent evt) {
@@ -1386,11 +1379,14 @@ public final class DataControllerV extends OpenSHAPADialog
             });
         gridButtonPanel.add(showTracksButton, "w 80!, h 45!");
 
-        getContentPane().add(gridButtonPanel, "west");
+        getContentPane().setLayout(new MigLayout("ins 0, hidemode 3, fillx",
+                "[growprio 0]0[]", ""));
+        getContentPane().add(gridButtonPanel, "");
+        getContentPane().setBackground(Color.WHITE);
 
         tracksPanel.setBackground(Color.WHITE);
         tracksPanel.setVisible(false);
-        getContentPane().add(tracksPanel, "east, w 800!");
+        getContentPane().add(tracksPanel, "growx");
 
         pack();
     }
