@@ -18,9 +18,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.MINUTES;
 
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
@@ -47,6 +45,13 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
     private static final List<String> EXCLUDED_PROPS = ImmutableList.of(
             "locked", "trackId", "erroneous", "bookmark", "trackName",
             "selected", "state");
+
+    /**
+     * Number of samples to pick when displaying amplitude data. 5000 was picked
+     * because we want around 7 to 8 points per pixel. Number of pixels is the
+     * pixel width of the track.
+     */
+    private static final int NUM_SAMPLES = 5000;
 
     /** Contains the amplitude data to visualize. */
     private StereoAmplitudeData data;
@@ -288,39 +293,16 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             return;
         }
 
-        // 1. Find the resolution of a single pixel, ms/pixel.
-        double resolution = viewableModel.getIntervalTime()
-            / (double) viewableModel.getIntervalWidth();
-
-        // TODO refactor magic constants.
-        resolution = Math.min(resolution, 200); // Min resample = 500Hz
-        resolution = Math.max(1, resolution); // Max resample = 100000Hz
-
-        // 2. Calculate the resampling rate.
-        int rate = (int) (1000000 / resolution);
-        rate = Math.max(5, rate);
-        rate = Math.min(rate, 1000000);
-
-        // 3. Calculate the times to sample.
+        // 1. Calculate the times to sample.
         long start = Math.max(viewableModel.getZoomWindowStart(),
                 trackModel.getOffset()) - trackModel.getOffset();
         long end = Math.min(trackModel.getOffset() + trackModel.getDuration(),
                 viewableModel.getZoomWindowEnd()) - trackModel.getOffset();
 
-        // 4. Make the worker thread.
+        // 2. Make the worker thread.
         processor = new AmplitudeProcessor(mediaFile, this, channels);
         processor.setDataTimeSegment(start, end, MILLISECONDS);
-        processor.setSampleRate(4000);
-
-        // if (MINUTES.convert(end - start, MILLISECONDS) > THRESHOLD) {
-        processor.setStrategy(Strategy.FIXED_HIGH_LOW, 5000);
-        // } else {
-        // processor.setStrategy(Strategy.HIGH_LOW, -1);
-        // }
-
-        // System.out.println("Start=" + start + ", End=" + end +
-        // ", Resolution="
-        // + resolution);
+        processor.setStrategy(Strategy.FIXED_HIGH_LOW, NUM_SAMPLES);
 
         processor.execute();
     }
@@ -437,15 +419,7 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             AmplitudeProcessor p = new AmplitudeProcessor(mediaFile, this,
                     channels);
             p.setDataTimeSegment(0, trackModel.getDuration(), MILLISECONDS);
-            p.setSampleRate(4000);
-
-            // if (MINUTES.convert(trackModel.getDuration(), MILLISECONDS)
-            // > THRESHOLD) {
-            p.setStrategy(Strategy.FIXED_HIGH_LOW, 5000);
-            // } else {
-            // p.setStrategy(Strategy.HIGH_LOW, -1);
-            // }
-
+            p.setStrategy(Strategy.FIXED_HIGH_LOW, NUM_SAMPLES);
             p.execute();
         }
 
@@ -552,6 +526,7 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
                 repaint();
             } catch (Exception e) {
+                // Do nothing.
             }
         }
     }

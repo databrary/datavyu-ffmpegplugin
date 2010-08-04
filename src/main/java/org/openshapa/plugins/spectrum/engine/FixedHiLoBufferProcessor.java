@@ -118,9 +118,6 @@ public class FixedHiLoBufferProcessor implements NEW_BUFFER {
 
         ShortBuffer sb = buf.getByteBuffer().asShortBuffer();
 
-        // System.out.println("New buffer time=" +
-        // buf.getTimestamp().toNanos());
-
         // 1. Calculate the time interval between each magnitude value.
         double bufInterval = ((buf.getTimestamp().toNanos() - prevBufTime)
                 / ((double) size / mediaChannels));
@@ -136,21 +133,11 @@ public class FixedHiLoBufferProcessor implements NEW_BUFFER {
             }
 
             // 2. Update the high and low values for the current interval.
-            if (left > curHighL) {
-                curHighL = left;
-            }
+            curHighL = Math.max(curHighL, left);
+            curLowL = Math.min(curLowL, left);
 
-            if (left < curLowL) {
-                curLowL = left;
-            }
-
-            if (right > curHighR) {
-                curHighR = right;
-            }
-
-            if (right < curLowR) {
-                curLowR = right;
-            }
+            curHighR = Math.max(curHighR, right);
+            curLowR = Math.min(curLowR, right);
 
             // 3. Update cur to be the next data time in the buffer
             cur += bufInterval;
@@ -181,8 +168,6 @@ public class FixedHiLoBufferProcessor implements NEW_BUFFER {
         }
 
         prevBufTime = buf.getTimestamp().toNanos();
-
-        // System.out.println("Buffer done");
 
     }
 

@@ -50,7 +50,9 @@ public final class AmplitudeProcessor
             AmplitudeProcessor.class);
 
     public enum Strategy {
-        FIXED, HIGH_LOW, FIXED_HIGH_LOW
+
+        // Options to this strategy is the number of points to pick per channel.
+        FIXED_HIGH_LOW
     }
 
     /** Media file to process. */
@@ -68,6 +70,7 @@ public final class AmplitudeProcessor
     /** The processing strategy to use. */
     private Strategy strat;
 
+    /** Options to the procesing strategy. */
     private int opts;
 
     /**
@@ -112,18 +115,13 @@ public final class AmplitudeProcessor
     }
 
     /**
-     * @param sampleRate
-     *            the sample rate to set.
+     * Set the processing strategy to use.
+     *
+     * @param strategy
+     *            Strategy to use.
+     * @param options
+     *            Options to the strategy.
      */
-    public void setSampleRate(final int sampleRate) {
-
-        if (sampleRate < 1) {
-            throw new IllegalArgumentException("Invalid sample rate.");
-        }
-
-        data.setSampleRate(sampleRate);
-    }
-
     public void setStrategy(final Strategy strategy, final int options) {
         strat = strategy;
         opts = options;
@@ -169,18 +167,6 @@ public final class AmplitudeProcessor
 
         switch (strat) {
 
-        case FIXED:
-            appSink.connect(new FixedBufferProcessor(appSink, numChannels, data,
-                    opts));
-
-            break;
-
-        case HIGH_LOW:
-            appSink.connect(new HiLoBufferProcessor(appSink, numChannels,
-                    data));
-
-            break;
-
         case FIXED_HIGH_LOW:
             appSink.connect(new FixedHiLoBufferProcessor(appSink, numChannels,
                     data, opts));
@@ -199,9 +185,7 @@ public final class AmplitudeProcessor
         }
 
         Caps caps = Caps.fromString(
-                "audio/x-raw-int, width=16, depth=16, signed=true"
-                // + ", rate=" + data.getSampleRate()
-                );
+                "audio/x-raw-int, width=16, depth=16, signed=true");
 
         if (!linkPadsFiltered(audioResample, null, audioOutput, null, caps)) {
             LOGGER.error("Link failed: audioresample -> appsink");

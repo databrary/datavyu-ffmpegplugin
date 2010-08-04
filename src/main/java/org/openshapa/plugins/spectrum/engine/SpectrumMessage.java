@@ -1,7 +1,5 @@
 package org.openshapa.plugins.spectrum.engine;
 
-import static org.fest.reflect.core.Reflection.method;
-
 import static org.openshapa.plugins.spectrum.SpectrumUtils.findIndices;
 
 import org.gstreamer.Bus;
@@ -10,9 +8,6 @@ import org.gstreamer.Structure;
 import org.gstreamer.ValueList;
 
 import org.gstreamer.Bus.MESSAGE;
-
-import org.gstreamer.lowlevel.GValueAPI;
-import org.gstreamer.lowlevel.GValueAPI.GValue;
 
 import org.openshapa.plugins.spectrum.SpectrumConstants;
 import org.openshapa.plugins.spectrum.swing.SpectrumView;

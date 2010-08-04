@@ -46,8 +46,6 @@ public final class Spectrum extends JComponent implements SpectrumView {
     /** String values for the frequency axis. */
     private String[] xAxisVals;
 
-    private int[] indices;
-
     public void setMagnitudelVals(final double[] dbVals) {
 
         if (isEventDispatchThread()) {
