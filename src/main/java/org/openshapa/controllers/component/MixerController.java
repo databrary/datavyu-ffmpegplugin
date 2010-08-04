@@ -305,7 +305,6 @@ public final class MixerController implements NeedleEventListener,
             layeredPane.add(timescaleView, sub.replace(template), 5);
 
             timescaleController.setViewableModel(masterVM);
-            timescaleController.setConstraints(minStart, maxEnd);
         }
 
         // Set up the scroll pane's layout.
@@ -625,8 +624,8 @@ public final class MixerController implements NeedleEventListener,
             displayedAreaEnd = maxEnd;
         }
 
-        timescaleController.setConstraints(displayedAreaStart,
-            displayedAreaEnd);
+        masterVM.setIntervalTime(displayedAreaEnd - displayedAreaStart + 1);
+
         updateZoomSlide(displayedAreaStart, displayedAreaEnd);
         needleController.setCurrentTime(regionController.getRegionModel()
             .getRegionStart());
@@ -869,8 +868,7 @@ public final class MixerController implements NeedleEventListener,
         long newEnd = newStart + newZoomWindowTimeRange - 1;
         assert (minStart <= newEnd) && (newEnd <= maxEnd);
 
-        timescaleController.setConstraints(newStart, newEnd);
-
+        masterVM.setIntervalTime(newEnd - newStart + 1);
         masterVM.setZoomWindowStart(newStart);
         masterVM.setZoomWindowEnd(newEnd);
     }
@@ -904,6 +902,7 @@ public final class MixerController implements NeedleEventListener,
 
             updateZoomSlide(masterVM.getZoomWindowStart(),
                 masterVM.getZoomWindowEnd());
+
         } finally {
             isUpdatingTracksScrollBar = false;
             tracksPanel.validate();

@@ -80,6 +80,21 @@ public final class RegionModel {
 
     /*
      * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("RegionModel [regionEnd=");
+        builder.append(regionEnd);
+        builder.append(", regionStart=");
+        builder.append(regionStart);
+        builder.append("]");
+
+        return builder.toString();
+    }
+
+    /*
+     * (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override public int hashCode() {

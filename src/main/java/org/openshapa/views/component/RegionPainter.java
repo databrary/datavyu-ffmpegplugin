@@ -152,6 +152,7 @@ public class RegionPainter extends JComponent {
                 && (regionEnd <= viewableModel.getZoomWindowEnd())) {
             final double xPos = Math.floor(getXForTime(
                         regionModel.getRegionEnd()));
+
             endMarkerPolygon = new GeneralPath();
             endMarkerPolygon.moveTo((float) (xPos + needleWidth),
                 RMARKER_HEAD_HEIGHT);

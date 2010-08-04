@@ -61,24 +61,9 @@ public final class TimescaleController implements PropertyChangeListener {
         view.addMouseListener(listener);
         view.addMouseMotionListener(listener);
 
-        listenerList = new EventListenerList();
-    }
-
-    /**
-     * @param start
-     *            The start time, in milliseconds, of the scale to display
-     * @param end
-     *            The end time, in milliseconds, of the scale to display
-     */
-    public void setConstraints(final long start, final long end) {
-        viewableModel.setZoomWindowStart(start);
-        viewableModel.setZoomWindowEnd(end);
-
-        viewableModel.setIntervalTime(end - start + 1);
-        viewableModel.setIntervalWidth(view.getWidth());
-
-        view.setViewableModel(viewableModel);
         view.setTimescaleModel(timescaleModel);
+
+        listenerList = new EventListenerList();
     }
 
     public void setViewableModel(final ViewableModel viewableModel) {
