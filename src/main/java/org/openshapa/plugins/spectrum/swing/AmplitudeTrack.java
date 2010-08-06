@@ -21,7 +21,6 @@ import javax.swing.SwingWorker;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.openshapa.models.component.TrackModel;
-import org.openshapa.models.component.ViewableModel;
 import org.openshapa.models.component.Viewport;
 
 import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor;
@@ -115,6 +114,8 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
         leftAmp = null;
         rightAmp = null;
+
+        super.propertyChange(evt);
     }
 
     /**
@@ -196,6 +197,8 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             Graphics2D imgG = (Graphics2D) localAmps.getGraphics();
             imgG.setColor(DATA_COLOR);
             imgG.draw(leftAmp);
+
+            imgG.dispose();
         } else if (cachedAmps != null) {
             BufferedImage image2 = new BufferedImage(getWidth(), getHeight(),
                     BufferedImage.TYPE_4BYTE_ABGR);
@@ -223,6 +226,8 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             g3.drawImage(localAmps, x1, y1, x2, y2, 0, 0, localAmps.getWidth(),
                 localAmps.getHeight(), null);
 
+            g3.dispose();
+
             g2d.drawImage(image2, 0, 0, getWidth(), getHeight(), 0, 0,
                 image2.getWidth(), image2.getHeight(), null);
         } else {
@@ -238,6 +243,7 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             Graphics2D imgG = (Graphics2D) localAmps.getGraphics();
             imgG.setColor(DATA_COLOR);
             imgG.draw(rightAmp);
+            // imgG.dispose();
 
             g2d.drawImage(localAmps, 0, 0, null);
         } else if (cachedAmps != null) {
@@ -518,6 +524,8 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
                 g2d.draw(right);
             }
+
+            g2d.dispose();
 
             return img;
         }
