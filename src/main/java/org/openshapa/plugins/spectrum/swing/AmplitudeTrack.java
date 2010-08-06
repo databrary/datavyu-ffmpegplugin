@@ -1,5 +1,6 @@
 package org.openshapa.plugins.spectrum.swing;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -14,6 +15,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -36,7 +39,7 @@ import com.google.common.collect.ImmutableList;
  * Used to plot amplitude data over the time domain.
  */
 public final class AmplitudeTrack extends TrackPainter implements Amplitude,
-    PropertyChangeListener {
+    Progress, PropertyChangeListener {
 
     /** Color used to paint the amplitude data. */
     private static final Color DATA_COLOR = new Color(0, 0, 0, 200);
@@ -52,6 +55,18 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
      * pixel width of the track.
      */
     private static final int NUM_SAMPLES = 5000;
+
+    private static final int PROG_OUTER_PAD = 7;
+
+    private static final int PROG_INNER_PAD = 2;
+
+    private static final float PROG_OUTLINE_WIDTH = 1.5F;
+
+    private static final int PROG_WIDTH = 150;
+
+    private static final int PROG_HEIGHT = 20;
+
+    private static final Color PROG_COLOR = Color.WHITE;
 
     /** Contains the amplitude data to visualize. */
     private StereoAmplitudeData data;
@@ -90,8 +105,14 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
     private CacheHandler cacheHandler;
 
+    private double progress;
+
+    private final Executor executor;
+
     public AmplitudeTrack() {
+        super();
         registered = false;
+        executor = Executors.newCachedThreadPool();
     }
 
     @Override public void deregister() {
@@ -133,16 +154,15 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             worker.cancel(true);
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
+        // Make a worker thread to compute paths.
+        worker = new PathWorker(new Dimension(getSize()), mixer.getViewport(),
+                data);
 
-                @Override public void run() {
+        executor.execute(worker);
 
-                    // Make a worker thread to compute paths.
-                    worker = new PathWorker(new Dimension(getSize()),
-                            mixer.getViewport(), data);
-                    worker.execute();
-                }
-            });
+        if (cacheHandler == null) {
+            cacheHandler = new CacheHandler();
+        }
     }
 
     @Override protected void paintCustom(final Graphics g) {
@@ -180,11 +200,6 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             execProcessor();
         }
 
-        if (cacheHandler == null) {
-            cacheHandler = new CacheHandler();
-        }
-
-
         // Draw left channel data.
         if (leftAmp != null) {
             localTM = trackModel.copy();
@@ -197,7 +212,6 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             Graphics2D imgG = (Graphics2D) localAmps.getGraphics();
             imgG.setColor(DATA_COLOR);
             imgG.draw(leftAmp);
-
             imgG.dispose();
         } else if (cachedAmps != null) {
             BufferedImage image2 = new BufferedImage(getWidth(), getHeight(),
@@ -243,7 +257,7 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             Graphics2D imgG = (Graphics2D) localAmps.getGraphics();
             imgG.setColor(DATA_COLOR);
             imgG.draw(rightAmp);
-            // imgG.dispose();
+            imgG.dispose();
 
             g2d.drawImage(localAmps, 0, 0, null);
         } else if (cachedAmps != null) {
@@ -256,7 +270,44 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             g2d.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
         }
 
+        // Draw progress bar.
+        if (progress < 1F) {
+            g2d.setColor(PROG_COLOR);
 
+            // set line width to 6, use bevel for line joins
+            BasicStroke bs = new BasicStroke(PROG_OUTLINE_WIDTH,
+                    BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
+
+            // Bottom right hand corner coords
+            int x2 = getWidth() - PROG_OUTER_PAD;
+            int y2 = carriageYOffset + carriageHeight - PROG_OUTER_PAD;
+
+            // Top left corner.
+            int x1 = x2 - PROG_WIDTH;
+            int y1 = y2 - PROG_HEIGHT;
+
+            // The outline
+            Path2D progOutline = new Path2D.Double();
+            progOutline.moveTo(x2, y2);
+            progOutline.lineTo(x2, y1);
+            progOutline.lineTo(x1, y1);
+            progOutline.lineTo(x1, y2);
+            progOutline.closePath();
+
+            g2d.fill(bs.createStrokedShape(progOutline));
+
+            // The progress bar.
+            double progWidth = (PROG_WIDTH - (2 * PROG_INNER_PAD)) * progress;
+
+            Path2D progBar = new Path2D.Double();
+            progBar.moveTo(x1 + PROG_INNER_PAD, y1 + PROG_INNER_PAD);
+            progBar.lineTo(x1 + progWidth, y1 + PROG_INNER_PAD);
+            progBar.lineTo(x1 + progWidth, y2 - PROG_INNER_PAD);
+            progBar.lineTo(x1 + PROG_INNER_PAD, y2 - PROG_INNER_PAD);
+            progBar.closePath();
+
+            g2d.fill(progBar);
+        }
     }
 
     /**
@@ -307,14 +358,29 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
         processor = new AmplitudeProcessor(mediaFile, this, channels);
         processor.setDataTimeSegment(start, end, MILLISECONDS);
         processor.setStrategy(Strategy.FIXED_HIGH_LOW, NUM_SAMPLES);
+        processor.setProgressHandler(this);
 
-        processor.execute();
+        executor.execute(processor);
+    }
+
+    @Override public void setProgress(final double p) {
+        progress = p;
+
+        if (progress < 0) {
+            progress = 0;
+        }
+
+        if (progress > 1) {
+            progress = 1;
+        }
+
+        repaint();
     }
 
     /**
      * Inner worker for calculating paths.
      */
-    private final class PathWorker extends SwingWorker<Path2D[], Void> {
+    private final class PathWorker extends SwingWorker<Path2D[], Double> {
         private Dimension dim;
         private StereoAmplitudeData data;
         private Viewport viewport;
@@ -379,6 +445,8 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
                 offsetCounter++;
 
                 amps[0].lineTo(offset, midYLeftPos + (-amp * ampHeight));
+
+                publish(offsetCounter / (double) (data.sizeL() + data.sizeR()));
             }
 
             // Calculate right amplitude data.
@@ -399,12 +467,19 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
                 amps[1].lineTo(offset, midYRightPos + (-amp * ampHeight));
 
+                publish((offsetCounter + data.sizeL())
+                    / (double) (data.sizeL() + data.sizeR()));
             }
 
             return amps;
         }
 
+        @Override protected void process(final List<Double> dbls) {
+            AmplitudeTrack.this.setProgress(dbls.get(dbls.size() - 1));
+        }
+
         @Override protected void done() {
+            AmplitudeTrack.this.setProgress(1F);
 
             try {
                 Path2D[] result = get();
@@ -414,9 +489,11 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
                     rightAmp = result[1];
                 }
 
+                worker = null;
+
                 repaint();
             } catch (Exception e) {
-                // Do nothing.
+                e.printStackTrace();
             }
         }
     }
@@ -433,14 +510,15 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
                     channels);
             p.setDataTimeSegment(0, trackModel.getDuration(), MILLISECONDS);
             p.setStrategy(Strategy.FIXED_HIGH_LOW, NUM_SAMPLES);
-            p.execute();
+
+            executor.execute(p);
         }
 
         @Override public void setData(final StereoAmplitudeData data) {
             cache = data;
 
             // Generate cached data.
-            new CacheWorker(cache, new Dimension(getSize())).execute();
+            executor.execute(new CacheWorker(cache, new Dimension(getSize())));
         }
     }
 

@@ -2,6 +2,7 @@ package org.openshapa.plugins.spectrum.engine;
 
 import java.io.File;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -30,9 +31,13 @@ import org.gstreamer.Structure;
 
 import org.gstreamer.elements.AppSink;
 import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.AppSink.NEW_BUFFER;
 
 import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
 import org.openshapa.plugins.spectrum.swing.Amplitude;
+import org.openshapa.plugins.spectrum.swing.Progress;
+
+import com.sun.jna.Pointer;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
@@ -43,7 +48,7 @@ import com.usermetrix.jclient.UserMetrix;
  * channels one and two. Assumes 16-bit audio.
  */
 public final class AmplitudeProcessor
-    extends SwingWorker<StereoAmplitudeData, Void> {
+    extends SwingWorker<StereoAmplitudeData, Integer> {
 
     /** Logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(
@@ -72,6 +77,8 @@ public final class AmplitudeProcessor
 
     /** Options to the procesing strategy. */
     private int opts;
+
+    private Progress progHandler;
 
     /**
      * Creates a new worker thread.
@@ -127,6 +134,10 @@ public final class AmplitudeProcessor
         opts = options;
     }
 
+    public void setProgressHandler(final Progress handler) {
+        progHandler = handler;
+    }
+
     /**
      * Process amplitude data.
      *
@@ -164,6 +175,15 @@ public final class AmplitudeProcessor
         final AppSink appSink = (AppSink) audioOutput;
         appSink.set("emit-signals", true);
         appSink.setSync(false);
+
+        if (progHandler != null) {
+            appSink.connect(new NEW_BUFFER() {
+                    @Override public void newBuffer(final Element elem,
+                        final Pointer userData) {
+                        publish(data.sizeL());
+                    }
+                });
+        }
 
         switch (strat) {
 
@@ -271,11 +291,12 @@ public final class AmplitudeProcessor
         double interval = ((end - start) / (double) data.sizeL());
         data.setTimeInterval(interval, MILLISECONDS);
 
-        System.out.println("Data size=" + data.sizeL() + ", Opts=" + opts);
-
         return data;
     }
 
+    @Override protected void process(final List<Integer> ints) {
+        progHandler.setProgress(ints.get(ints.size() - 1) / (double) opts);
+    }
 
     /**
      * Update the track data.
@@ -285,11 +306,17 @@ public final class AmplitudeProcessor
     @Override protected void done() {
 
         try {
+
+            if (progHandler != null) {
+                progHandler.setProgress(1);
+            }
+
             StereoAmplitudeData result = get();
 
             if (result != null) {
                 dataHandler.setData(result);
             }
+
         } catch (Exception e) {
             /*
              * Do not log; the exception that is generated is normal

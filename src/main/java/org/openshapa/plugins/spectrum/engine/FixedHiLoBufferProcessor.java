@@ -87,12 +87,11 @@ public class FixedHiLoBufferProcessor implements NEW_BUFFER {
         cur = prevBufTime = NANOSECONDS.convert(data.getDataTimeStart(),
                     data.getDataTimeUnit());
 
-        // prevBufTime = 0;
-
         long length = NANOSECONDS.convert(data.getDataTimeEnd()
                 - data.getDataTimeStart(), data.getDataTimeUnit());
 
-        interval = (long) (length / (double) numSamples);
+        // Divide by 2 because we are picking 5000 low and high points.
+        interval = (long) (length / (double) (numSamples / 2));
         next = cur + interval;
 
         curHighL = Double.MIN_VALUE;
