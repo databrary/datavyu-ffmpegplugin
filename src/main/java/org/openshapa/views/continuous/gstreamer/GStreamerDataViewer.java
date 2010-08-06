@@ -292,6 +292,9 @@ public class GStreamerDataViewer implements DataViewer {
         if (playBin != null && position != getCurrentTime()) {
         	final boolean isTrickModePlayback = playbackRate >= 2.0;
         	if (isPlaying && !isTrickModePlayback) {
+        		if (isPlaying) {
+        			return ;
+        		}
         		// limit the frequency of seeks performed to prevent skipping during normal playback
         		final long currentTimeMillis = System.currentTimeMillis();
         		if (lastPlayingSeekTime + minimumIntervalBetweenPlayingSeeks > currentTimeMillis) {
@@ -352,7 +355,7 @@ public class GStreamerDataViewer implements DataViewer {
 
         case osxRenderer: {
             OSXVideoSink osxvideosink = new OSXVideoSink("osxvideosink");
-            osxvideosink.setMaximumLateness(5000, TimeUnit.MILLISECONDS);
+            osxvideosink.setMaximumLateness(50, TimeUnit.MILLISECONDS);
             playBin.setVideoSink(osxvideosink);
             osxvideosink.listenForNewViews(playBin.getBus());
 
@@ -363,6 +366,8 @@ public class GStreamerDataViewer implements DataViewer {
                             BorderLayout.CENTER);
                         osxVideoComponent.setPreferredSize(
                             playBin.getVideoSize());
+                        osxVideoComponent.setEnabled(false);
+                        osxVideoComponent.setFocusable(false);
                         videoDialog.pack();
                     }
                 });

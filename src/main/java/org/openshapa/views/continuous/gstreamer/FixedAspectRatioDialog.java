@@ -2,6 +2,7 @@ package org.openshapa.views.continuous.gstreamer;
 
 import java.awt.Cursor;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.Point;
@@ -11,8 +12,16 @@ import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
+import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JRootPane;
 import javax.swing.event.MouseInputListener;
+
+import com.apple.eawt.event.GestureAdapter;
+import com.apple.eawt.event.GesturePhaseEvent;
+import com.apple.eawt.event.GestureUtilities;
+import com.apple.eawt.event.MagnificationEvent;
+import com.sun.jna.Platform;
 
 public class FixedAspectRatioDialog extends JDialog implements MouseInputListener, MouseMotionListener, ComponentListener {
 	public FixedAspectRatioDialog() {
@@ -101,13 +110,15 @@ public class FixedAspectRatioDialog extends JDialog implements MouseInputListene
 	private void init() {
 		setResizable(false);
 		setUndecorated(true);
+        getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
 		getGlassPane().addMouseListener(this);
 		getGlassPane().addMouseMotionListener(this);
 		getGlassPane().setVisible(true);
+		if (Platform.isMac()) {
+			GestureUtilities.addGestureListenerTo((JComponent) getGlassPane(), osxGestureListener);
+		}
 	}
-	
-	private boolean isResizing = false;
-	
+		
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		System.out.println(e.getSource().getClass().getSimpleName() + " mouseClicked(" + e + "), dialog width=" + getGlassPane().getWidth() + ", height=" + getGlassPane().getHeight());
@@ -145,7 +156,8 @@ public class FixedAspectRatioDialog extends JDialog implements MouseInputListene
 		updateResizeCursor(e);
 		System.out.println("" + (e.getXOnScreen() - mousePressedPoint.getX()));
 		System.out.println("" + (int) (dialogLocation.getX() - mousePressedPoint.getX() + e.getXOnScreen()));
-		setLocation((int) (dialogLocation.getX() - mousePressedPoint.getX() + e.getXOnScreen()), (int) (dialogLocation.getY() - mousePressedPoint.getY() + e.getYOnScreen()));
+		
+			setLocation((int) (dialogLocation.getX() - mousePressedPoint.getX() + e.getXOnScreen()), (int) (dialogLocation.getY() - mousePressedPoint.getY() + e.getYOnScreen()));
 	}
 
 	@Override
@@ -158,22 +170,13 @@ public class FixedAspectRatioDialog extends JDialog implements MouseInputListene
 	private final Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 	
 	private void updateResizeCursor(MouseEvent e) {
-		if (!isResizing) {
 			final int resizeControlAreaSize = 30;
 			final boolean cursorIsInResizeControlArea = (e.getX() >= getGlassPane().getWidth() - resizeControlAreaSize) && (e.getX() < getGlassPane().getWidth()) && (e.getY() >= getGlassPane().getHeight() - resizeControlAreaSize) && (e.getY() < getGlassPane().getHeight()); 
 			getGlassPane().setCursor(cursorIsInResizeControlArea ? resizeCursor : defaultCursor);
-		}
 	}
 
 	@Override
 	public void componentResized(ComponentEvent e) {
-
-		try {
-			isResizing = true;
-			setSize(getWidth(), getWidth() * 3 / 4);
-		} finally {
-			isResizing = false;
-		}
 	}
 
 	@Override
@@ -193,4 +196,24 @@ public class FixedAspectRatioDialog extends JDialog implements MouseInputListene
 		// TODO Auto-generated method stub
 		
 	}
+	
+	private final GestureAdapter osxGestureListener = new GestureAdapter() {
+    	public void magnify(MagnificationEvent e) {
+    		magnifySum += e.getMagnification();
+    		
+    		double zoomFactor = Math.min(Math.max(1 + magnifySum / 1.0, 0.25), 4.0);
+    		setSize((int) Math.round(startDimension.getWidth() * zoomFactor), (int) Math.round(startDimension.getHeight() * zoomFactor));
+    	}
+
+    	Dimension startDimension;
+    	double magnifySum;
+    	
+    	public void gestureBegan(GesturePhaseEvent e) {
+    		startDimension = getSize();
+    		magnifySum = 0;
+    	}
+
+    	public void gestureEnded(GesturePhaseEvent e) {
+    	}    	
+	};
 }
