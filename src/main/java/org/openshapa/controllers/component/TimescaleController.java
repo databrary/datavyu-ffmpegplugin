@@ -13,13 +13,12 @@ import javax.swing.event.MouseInputAdapter;
 import org.openshapa.event.component.TimescaleEvent;
 import org.openshapa.event.component.TimescaleListener;
 
+import org.openshapa.models.component.MixerView;
 import org.openshapa.models.component.TimescaleConstants;
 import org.openshapa.models.component.TimescaleModel;
-import org.openshapa.models.component.ViewableModel;
+import org.openshapa.models.component.Viewport;
 
 import org.openshapa.views.component.TimescalePainter;
-
-import bsh.This;
 
 
 /**
@@ -32,12 +31,12 @@ public final class TimescaleController implements PropertyChangeListener {
 
     /** Models */
     private final TimescaleModel timescaleModel;
-    private final ViewableModel viewableModel;
+    private final MixerView mixer;
 
     /** Listeners interested in needle painter events */
     private final EventListenerList listenerList;
 
-    public TimescaleController() {
+    public TimescaleController(final MixerView mixer) {
         view = new TimescalePainter();
 
         timescaleModel = new TimescaleModel();
@@ -55,34 +54,18 @@ public final class TimescaleController implements PropertyChangeListener {
         timescaleModel.setMillisecondsMarkerColor(
             TimescaleConstants.MILLISECONDS_COLOR);
 
-        viewableModel = new ViewableModel();
-
         final TimescaleEventListener listener = new TimescaleEventListener();
         view.addMouseListener(listener);
         view.addMouseMotionListener(listener);
 
+        this.mixer = mixer;
+
+        view.setMixerView(mixer);
         view.setTimescaleModel(timescaleModel);
 
+        mixer.addPropertyChangeListener(this);
+
         listenerList = new EventListenerList();
-    }
-
-    public void setViewableModel(final ViewableModel viewableModel) {
-
-        /*
-         * Just copy the values, do not spread references all over the place to
-         * avoid model tainting.
-         */
-        this.viewableModel.copyFrom(viewableModel);
-        view.setViewableModel(this.viewableModel);
-    }
-
-    /**
-     * @return a copy of the viewable model in use
-     */
-    public ViewableModel getViewableModel() {
-
-        // return a clone to avoid model tainting
-        return viewableModel.copy();
     }
 
     public TimescaleModel getTimescaleModel() {
@@ -97,7 +80,10 @@ public final class TimescaleController implements PropertyChangeListener {
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-        setViewableModel((ViewableModel) evt.getSource());
+
+        if (Viewport.NAME.equals(evt.getPropertyName())) {
+            view.repaint();
+        }
     }
 
     public void addTimescaleEventListener(final TimescaleListener listener) {
@@ -144,7 +130,10 @@ public final class TimescaleController implements PropertyChangeListener {
      * Inner class used to handle intercepted events.
      */
     private class TimescaleEventListener extends MouseInputAdapter {
+        private Viewport viewport;
+
         @Override public void mousePressed(final MouseEvent e) {
+            viewport = mixer.getViewport();
 
             if (e.getButton() == MouseEvent.BUTTON1) {
 
@@ -181,14 +170,12 @@ public final class TimescaleController implements PropertyChangeListener {
                     view.getSize().width - 1);
 
             // Calculate the time represented by the new location
-            double ratio = viewableModel.getIntervalWidth()
-                / viewableModel.getIntervalTime();
-            double newTime = (dx
-                    + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
-            newTime = Math.min(Math.max(newTime, 0),
-                    viewableModel.getZoomWindowEnd());
+            long newTime = viewport.computeTimeFromXOffset(dx)
+                + viewport.getViewStart();
+            newTime = Math.min(Math.max(newTime, viewport.getViewStart()),
+                    viewport.getViewEnd());
 
-            return Math.round(newTime);
+            return newTime;
         }
     }
 

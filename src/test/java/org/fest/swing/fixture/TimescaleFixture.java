@@ -7,7 +7,11 @@ import org.fest.swing.core.Robot;
 
 import org.openshapa.controllers.component.TimescaleController;
 
+import org.openshapa.models.component.MixerView;
+
 import org.openshapa.util.UIUtils;
+
+import static org.fest.reflect.core.Reflection.*;
 
 
 /**
@@ -18,6 +22,8 @@ public class TimescaleFixture extends ComponentFixture {
     /** The underlying timescale controller. */
     private TimescaleController timescaleC;
 
+    private MixerView mixerView;
+
     /**
      * Constructor.
      * @param robot mainframe robot
@@ -27,13 +33,15 @@ public class TimescaleFixture extends ComponentFixture {
         final TimescaleController target) {
         super(robot, target.getView());
         timescaleC = target;
+
+        mixerView = field("mixer").ofType(MixerView.class).in(timescaleC).get();
     }
 
     /**
      * @return End time represented as a long.
      */
     public final long getEndTimeAsLong() {
-        return timescaleC.getViewableModel().getEnd();
+        return mixerView.getViewport().getMaxEnd();
     }
 
     /**
@@ -47,7 +55,7 @@ public class TimescaleFixture extends ComponentFixture {
      * @return Zoom end time represented as a long.
      */
     public final long getZoomEndTimeAsLong() {
-        return timescaleC.getViewableModel().getZoomWindowEnd();
+        return mixerView.getViewport().getViewEnd();
     }
 
     /**
@@ -61,7 +69,7 @@ public class TimescaleFixture extends ComponentFixture {
      * @return Zoom end time represented as a long.
      */
     public final long getZoomStartTimeAsLong() {
-        return timescaleC.getViewableModel().getZoomWindowStart();
+        return mixerView.getViewport().getViewStart();
     }
 
     /**

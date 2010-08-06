@@ -9,6 +9,9 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import java.util.EventObject;
 import java.util.Map;
 
@@ -49,10 +52,11 @@ import org.openshapa.event.component.TracksControllerEvent.TracksEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
 import org.openshapa.models.component.MixerConstants;
+import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.TimescaleConstants;
 import org.openshapa.models.component.TrackModel;
-import org.openshapa.models.component.ViewableModel;
+import org.openshapa.models.component.Viewport;
 
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.CustomActionListener;
@@ -65,9 +69,9 @@ import org.apache.commons.lang.text.StrSubstitutor;
 /**
  * This class manages the tracks information interface.
  */
-public final class MixerController implements NeedleEventListener,
-    MarkerEventListener, CarriageEventListener, AdjustmentListener,
-    TimescaleListener {
+public final class MixerController implements PropertyChangeListener,
+    NeedleEventListener, MarkerEventListener, CarriageEventListener,
+    AdjustmentListener, TimescaleListener {
 
     /** Root interface panel. */
     private JPanel tracksPanel;
@@ -118,13 +122,16 @@ public final class MixerController implements NeedleEventListener,
     private final ImageIcon zoomIcon = new ImageIcon(getClass().getResource(
                 "/icons/magnifier.png"));
 
-    /** Master VM to listen to. */
-    private ViewableModel masterVM;
+    /** Master mixer to listen to. */
+    private final MixerModel masterMixer;
 
     /**
      * Create a new MixerController.
      */
     public MixerController() {
+        masterMixer = new MixerModel();
+        masterMixer.addPropertyChangeListener(this);
+
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
                     initView();
@@ -201,7 +208,6 @@ public final class MixerController implements NeedleEventListener,
         zoomRegionButton.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     zoomToRegion(e);
-                    zoomTracks(e);
                 }
             });
         zoomRegionButton.setName("zoomRegionButton");
@@ -213,27 +219,11 @@ public final class MixerController implements NeedleEventListener,
         tracksPanel.add(zoomRegionButton);
         tracksPanel.add(zoomSlide, "wrap");
 
-        timescaleController = new TimescaleController();
+        timescaleController = new TimescaleController(masterMixer);
         timescaleController.addTimescaleEventListener(this);
-        needleController = new NeedleController();
-        regionController = new RegionController();
-        tracksEditorController = new TracksEditorController();
-
-        {
-            masterVM = new ViewableModel();
-            masterVM.setEnd(MixerConstants.DEFAULT_DURATION);
-            masterVM.setZoomWindow(minStart, MixerConstants.DEFAULT_DURATION);
-
-            // TODO review API for removal
-            masterVM.setIntervalTime(MixerConstants.DEFAULT_DURATION - minStart
-                + 1);
-
-            masterVM.addPropertyChangeListener(needleController);
-            masterVM.addPropertyChangeListener(timescaleController);
-            masterVM.addPropertyChangeListener(regionController);
-            masterVM.addPropertyChangeListener(tracksEditorController);
-        }
-
+        needleController = new NeedleController(masterMixer);
+        regionController = new RegionController(masterMixer);
+        tracksEditorController = new TracksEditorController(masterMixer);
 
         // Set up the layered pane
         layeredPane = new JLayeredPane();
@@ -301,14 +291,10 @@ public final class MixerController implements NeedleEventListener,
             // Must call setLayer first.
             layeredPane.setLayer(timescaleView, 5);
             layeredPane.add(timescaleView, sub.replace(template), 5);
-
-            timescaleController.setViewableModel(masterVM);
         }
 
         // Set up the scroll pane's layout.
         {
-            tracksEditorController.setViewableModel(masterVM);
-
             tracksScrollPane = new JScrollPane(
                     tracksEditorController.getView());
             tracksScrollPane.setVerticalScrollBarPolicy(
@@ -353,7 +339,6 @@ public final class MixerController implements NeedleEventListener,
             String template = "pos ${x} ${y} ${x2} n, h ${height}::";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
-            regionController.setViewableModel(masterVM);
             regionController.setPlaybackRegion(minStart,
                 MixerConstants.DEFAULT_DURATION);
             regionController.addMarkerEventListener(this);
@@ -381,7 +366,6 @@ public final class MixerController implements NeedleEventListener,
             String template = "pos ${x} ${y} ${x2} n, h ${height}::";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
-            needleController.setViewableModel(masterVM);
             needleController.addNeedleEventListener(this);
 
             layeredPane.setLayer(needleView, 30);
@@ -470,10 +454,12 @@ public final class MixerController implements NeedleEventListener,
      *
      * @param newMaxEnd
      *            duration in milliseconds
+     * @return the new maximum end time in milliseconds
      */
-    public void setMaxEnd(final long newMaxEnd) {
-        masterVM.setEnd(newMaxEnd);
-        updateTracksScrollBar();
+    public long setMaxEnd(final long newMaxEnd) {
+        masterMixer.setViewportMaxEnd(newMaxEnd);
+
+        return masterMixer.getViewport().getMaxEnd();
     }
 
     /**
@@ -491,15 +477,13 @@ public final class MixerController implements NeedleEventListener,
         final TrackPainter trackPainter) {
 
         // Check if the scale needs to be updated.
-        if (((duration + offset) > masterVM.getEnd())
+        if (((duration + offset) > masterMixer.getViewport().getMaxEnd())
                 || ((tracksEditorController.numberOfTracks() == 0)
                     && ((duration + offset) > 0))) {
 
             long newMaxEnd = duration + offset;
             regionController.setPlaybackRegion(0, newMaxEnd);
-            masterVM.setEnd(newMaxEnd);
-            rescale();
-            updateTracksScrollBar();
+            masterMixer.setViewportMaxEnd(newMaxEnd);
         }
 
         tracksEditorController.addNewTrack(icon, mediaPath, trackName, duration,
@@ -618,18 +602,17 @@ public final class MixerController implements NeedleEventListener,
         displayedAreaEnd += regionWidth * percentOfRegionToPadOutsideMarkers
             / 100;
 
-        if (displayedAreaEnd > masterVM.getEnd()) {
-            displayedAreaEnd = masterVM.getEnd();
+
+        Viewport viewport = masterMixer.getViewport();
+
+        if (displayedAreaEnd > viewport.getMaxEnd()) {
+            displayedAreaEnd = viewport.getMaxEnd();
         }
 
-        masterVM.setIntervalTime(displayedAreaEnd - displayedAreaStart + 1);
+        masterMixer.setViewportWindow(displayedAreaStart, displayedAreaEnd);
 
-        updateZoomSlide(displayedAreaStart, displayedAreaEnd);
         needleController.setCurrentTime(regionController.getRegionModel()
             .getRegionStart());
-
-        rescale((displayedAreaStart + displayedAreaEnd) / 2, false);
-        updateTracksScrollBar();
     }
 
     /**
@@ -639,19 +622,15 @@ public final class MixerController implements NeedleEventListener,
     * @param evt
     */
     public void zoomScale(final ChangeEvent evt) {
-        zoomSetting = (double) (zoomSlide.getValue() - zoomSlide.getMinimum())
-            / (zoomSlide.getMaximum() - zoomSlide.getMinimum() + 1);
-        rescale();
-        updateTracksScrollBar();
-    }
 
-    /**
-     * Update the track display after a zoom.
-     *
-     * @param evt The event to handle.
-     */
-    public void zoomTracks(final ActionEvent evt) {
-        updateTracksScrollBar();
+        if (!isUpdatingZoomSlide) {
+            zoomSetting =
+                (double) (zoomSlide.getValue() - zoomSlide.getMinimum())
+                / (zoomSlide.getMaximum() - zoomSlide.getMinimum() + 1);
+
+            masterMixer.setViewportZoom(zoomSetting,
+                needleController.getCurrentTime());
+        }
     }
 
     /**
@@ -666,20 +645,6 @@ public final class MixerController implements NeedleEventListener,
 
         tracksEditorController.removeTrack(mediaPath, this);
 
-        // If there are no more tracks, reset.
-        if (masterVM.getEnd() == 0) {
-            masterVM.setEnd(MixerConstants.DEFAULT_DURATION);
-            zoomSetting = MixerConstants.DEFAULT_ZOOM;
-        }
-
-        // Update zoom window scale
-        rescale();
-
-        // Update zoomed tracks
-        zoomTracks(null);
-
-        updateTracksScrollBar();
-
         // Update tracks panel display
         tracksScrollPane.validate();
     }
@@ -690,23 +655,16 @@ public final class MixerController implements NeedleEventListener,
     public void removeAll() {
         tracksEditorController.removeAllTracks();
 
-        masterVM.setEnd(MixerConstants.DEFAULT_DURATION);
-        zoomSetting = MixerConstants.DEFAULT_ZOOM;
-        rescale();
-        zoomTracks(null);
+        masterMixer.resetViewport();
 
-
-        masterVM.setZoomWindow(0, MixerConstants.DEFAULT_DURATION);
-
-        regionController.setPlaybackRegion(0, MixerConstants.DEFAULT_DURATION);
+        regionController.setPlaybackRegion(0,
+            masterMixer.getViewport().getMaxEnd());
         needleController.setCurrentTime(0);
 
         tracksScrollPane.validate();
 
         tracksPanel.validate();
         tracksPanel.repaint();
-
-        updateTracksScrollBar();
     }
 
     /**
@@ -744,17 +702,14 @@ public final class MixerController implements NeedleEventListener,
         return tracksEditorController;
     }
 
-    private void updateZoomSlide(final long startTime, final long endTime) {
+    private void updateZoomSlide(final Viewport viewport) {
+        assert SwingUtilities.isEventDispatchThread();
 
         try {
             isUpdatingZoomSlide = true;
 
-            final long displayedAreaWidth = endTime - startTime + 1;
-            final double millisecondsPerPixel = (double) displayedAreaWidth
-                / masterVM.getIntervalWidth();
-            zoomSetting = getZoomSettingFor(millisecondsPerPixel);
             zoomSlide.setValue((int) Math.round(
-                    (zoomSetting
+                    (viewport.getZoomLevel()
                         * (zoomSlide.getMaximum() - zoomSlide.getMinimum()
                             + 1)) + zoomSlide.getMinimum()));
         } finally {
@@ -762,120 +717,11 @@ public final class MixerController implements NeedleEventListener,
         }
     }
 
-    private double getZoomSettingFor(final double millisecondsPerPixel) {
-
-        if (millisecondsPerPixel
-                >= ((double) masterVM.getEnd()
-                    / (masterVM.getIntervalWidth() + 1))) {
-            return 0;
-        }
-
-        final double value = 1
-            - (Math.log(
-                    millisecondsPerPixel / lowerMillisecondsPerPixelBounds())
-                / Math.log(
-                    upperMillisecondsPerPixelBounds()
-                    / lowerMillisecondsPerPixelBounds()));
-
-        return Math.min(Math.max(value, 0), 1.0);
-    }
-
-    private double getMillisecondsPerPixelFor(final double zoomSettingValue) {
-        double value = (lowerMillisecondsPerPixelBounds()
-                * Math.exp(
-                    Math.log(
-                        upperMillisecondsPerPixelBounds()
-                        / lowerMillisecondsPerPixelBounds())
-                    * (1.0 - zoomSettingValue)));
-
-        return Math.min(Math.max(value, lowerMillisecondsPerPixelBounds()),
-                upperMillisecondsPerPixelBounds());
-    }
-
-    private double lowerMillisecondsPerPixelBounds() {
-        return 1.0;
-    }
-
-    private double upperMillisecondsPerPixelBounds() {
-        final long maxTimeMilliseconds = (masterVM.getEnd() > 0)
-            ? masterVM.getEnd() : (24 * 60 * 60 * 1000);
-
-        return Math.ceil((double) maxTimeMilliseconds
-                / masterVM.getIntervalWidth());
-    }
-
-    /**
-     * Recalculates timing scale and needle constraints based on the minimum
-     * track start time, longest track time, and current zoom setting.
-     */
-    private void rescale() {
-        rescale(needleController.getCurrentTime(), false);
-    }
-
-    private void rescale(final long centerTime, final boolean center) {
-        final double millisecondsPerPixel = getMillisecondsPerPixelFor(
-                zoomSetting);
-
-        // preserve the needle position
-        long centerPositionTime = Math.min(Math.max(centerTime, minStart),
-                masterVM.getEnd());
-
-        long zoomCenterTime = 0;
-        double dxZoomCenterRatio = 0.5;
-
-        if ((centerTime >= masterVM.getZoomWindowStart())
-                && (centerTime <= masterVM.getZoomWindowEnd())) {
-            long zoomWindowRange = masterVM.getZoomWindowEnd()
-                - masterVM.getZoomWindowStart();
-            long zoomWindowStart = masterVM.getZoomWindowStart();
-
-            if (!center) {
-                dxZoomCenterRatio =
-                    (double) (centerPositionTime - zoomWindowStart)
-                    / zoomWindowRange;
-            }
-
-            zoomCenterTime = centerPositionTime;
-        } else {
-            zoomCenterTime = (masterVM.getZoomWindowStart()
-                    + masterVM.getZoomWindowEnd()) / 2;
-        }
-
-        dxZoomCenterRatio = Math.min(Math.max(dxZoomCenterRatio, 0.0), 1.0);
-
-        long newZoomWindowTimeRange = Math.round(millisecondsPerPixel
-                * masterVM.getIntervalWidth());
-        newZoomWindowTimeRange = Math.max(newZoomWindowTimeRange, 1);
-        newZoomWindowTimeRange = Math.min(newZoomWindowTimeRange,
-                masterVM.getEnd() + 1);
-
-        assert (newZoomWindowTimeRange >= 1)
-            && (newZoomWindowTimeRange <= (masterVM.getEnd() + 1));
-
-        long newStart = Math.round(zoomCenterTime
-                - (dxZoomCenterRatio * newZoomWindowTimeRange));
-
-        if ((newStart + newZoomWindowTimeRange) > masterVM.getEnd()) {
-            newStart = masterVM.getEnd() - newZoomWindowTimeRange + 1;
-        }
-
-        if (newStart < 0) {
-            newStart = 0;
-        }
-
-        assert (minStart <= newStart) && (newStart <= masterVM.getEnd());
-
-        long newEnd = newStart + newZoomWindowTimeRange - 1;
-        assert (minStart <= newEnd) && (newEnd <= masterVM.getEnd());
-
-        masterVM.setIntervalTime(newEnd - newStart + 1);
-        masterVM.setZoomWindow(newStart, newEnd);
-    }
-
     /**
      * Update scroll bar values.
      */
-    private void updateTracksScrollBar() {
+    private void updateTracksScrollBar(final Viewport viewport) {
+        assert SwingUtilities.isEventDispatchThread();
 
         if (isUpdatingTracksScrollBar) {
             return;
@@ -885,23 +731,18 @@ public final class MixerController implements NeedleEventListener,
             isUpdatingTracksScrollBar = true;
 
             final int startValue = (int) Math.round(
-                    (double) masterVM.getZoomWindowStart()
-                    * TRACKS_SCROLL_BAR_RANGE / masterVM.getEnd());
+                    (double) viewport.getViewStart() * TRACKS_SCROLL_BAR_RANGE
+                    / viewport.getMaxEnd());
             final int extentValue = (int) Math.round(
-                    (double) (masterVM.getZoomWindowEnd()
-                        - masterVM.getZoomWindowStart() + 1)
-                    * TRACKS_SCROLL_BAR_RANGE / masterVM.getEnd());
+                    (double) (viewport.getViewDuration())
+                    * TRACKS_SCROLL_BAR_RANGE / viewport.getMaxEnd());
 
             tracksScrollBar.setValues(startValue, extentValue, 0,
                 TRACKS_SCROLL_BAR_RANGE);
             tracksScrollBar.setUnitIncrement(extentValue / 20);
             tracksScrollBar.setBlockIncrement(extentValue / 2);
-            tracksScrollBar.setVisible((masterVM.getZoomWindowEnd()
-                    - masterVM.getZoomWindowStart() + 1) < masterVM.getEnd());
-
-            updateZoomSlide(masterVM.getZoomWindowStart(),
-                masterVM.getZoomWindowEnd());
-
+            tracksScrollBar.setVisible((viewport.getViewDuration())
+                < viewport.getMaxEnd());
         } finally {
             isUpdatingTracksScrollBar = false;
             tracksPanel.validate();
@@ -940,12 +781,14 @@ public final class MixerController implements NeedleEventListener,
      * Clears the region of interest.
      */
     public void clearRegionOfInterest() {
+        Viewport viewport = masterMixer.getViewport();
+
         setPlayRegionStart(minStart);
-        setPlayRegionEnd(masterVM.getEnd());
+        setPlayRegionEnd(viewport.getMaxEnd());
         fireTracksControllerEvent(TracksEvent.MARKER_EVENT,
             new MarkerEvent(this, Marker.START_MARKER, minStart));
         fireTracksControllerEvent(TracksEvent.MARKER_EVENT,
-            new MarkerEvent(this, Marker.END_MARKER, masterVM.getEnd()));
+            new MarkerEvent(this, Marker.END_MARKER, viewport.getMaxEnd()));
     }
 
     /**
@@ -969,17 +812,19 @@ public final class MixerController implements NeedleEventListener,
             return;
         }
 
+        Viewport viewport = masterMixer.getViewport();
+
         final int startValue = tracksScrollBar.getValue();
         final int endValue = startValue + tracksScrollBar.getVisibleAmount();
 
         assert tracksScrollBar.getMinimum() == 0;
 
         final long newWindowStart = (long) Math.floor((double) startValue
-                / tracksScrollBar.getMaximum() * masterVM.getEnd());
+                / tracksScrollBar.getMaximum() * viewport.getMaxEnd());
         final long newWindowEnd = (long) Math.ceil((double) endValue
-                / tracksScrollBar.getMaximum() * masterVM.getEnd());
+                / tracksScrollBar.getMaximum() * viewport.getMaxEnd());
 
-        masterVM.setZoomWindow(newWindowStart, newWindowEnd);
+        masterMixer.setViewportWindow(newWindowStart, newWindowEnd);
 
         tracksPanel.repaint();
     }
@@ -1119,10 +964,39 @@ public final class MixerController implements NeedleEventListener,
         }
     }
 
+    private void handleViewportChanged() {
+        Viewport viewport = masterMixer.getViewport();
+        updateZoomSlide(viewport);
+        updateTracksScrollBar(viewport);
+        tracksScrollPane.repaint();
+    }
+
+    @Override public void propertyChange(final PropertyChangeEvent evt) {
+
+        if (Viewport.NAME.equals(evt.getPropertyName())) {
+            handleViewportChanged();
+        }
+    }
+
+    private void handleResize() {
+        Viewport viewport = masterMixer.getViewport();
+
+        if (Double.isNaN(viewport.getResolution())) {
+            masterMixer.setViewport(viewport.getViewStart(),
+                viewport.getViewEnd(), viewport.getMaxEnd(),
+                timescaleController.getView().getWidth());
+
+        } else {
+            masterMixer.resizeViewport(masterMixer.getViewport().getViewStart(),
+                timescaleController.getView().getWidth());
+        }
+
+    }
+
     /** Handles component resizing. */
     private final class SizeHandler extends ComponentAdapter {
         @Override public void componentResized(final ComponentEvent e) {
-            masterVM.setIntervalWidth(timescaleController.getView().getWidth());
+            handleResize();
         }
     }
 }

@@ -16,8 +16,9 @@ import org.openshapa.event.component.MarkerEvent;
 import org.openshapa.event.component.MarkerEventListener;
 import org.openshapa.event.component.MarkerEvent.Marker;
 
+import org.openshapa.models.component.MixerView;
 import org.openshapa.models.component.RegionModel;
-import org.openshapa.models.component.ViewableModel;
+import org.openshapa.models.component.Viewport;
 
 import org.openshapa.views.component.RegionPainter;
 
@@ -32,20 +33,22 @@ public final class RegionController implements PropertyChangeListener {
 
     /** Models */
     private final RegionModel regionModel;
-    private final ViewableModel viewableModel;
+    private final MixerView mixer;
 
     /** Listeners interested in changes to the playback region */
     private final EventListenerList listenerList;
 
-    public RegionController() {
+    public RegionController(final MixerView mixer) {
         view = new RegionPainter();
 
         regionModel = new RegionModel();
 
-        viewableModel = new ViewableModel();
+        this.mixer = mixer;
 
-        view.setViewableModel(viewableModel);
+        view.setMixerView(mixer);
         view.setRegionModel(regionModel);
+
+        mixer.addPropertyChangeListener(this);
 
         final RegionMarkerListener markerListener = new RegionMarkerListener();
         view.addMouseListener(markerListener);
@@ -96,15 +99,6 @@ public final class RegionController implements PropertyChangeListener {
     }
 
     /**
-     * @return returns a copy of the viewable model
-     */
-    public ViewableModel getViewableModel() {
-
-        // return a clone to avoid model tainting
-        return viewableModel.copy();
-    }
-
-    /**
      * @return returns a clone of the region model
      */
     public RegionModel getRegionModel() {
@@ -113,18 +107,12 @@ public final class RegionController implements PropertyChangeListener {
         return regionModel.copy();
     }
 
-    /**
-     * Copies the given viewable model
-     *
-     * @param viewableModel
-     */
-    public void setViewableModel(final ViewableModel viewableModel) {
-        this.viewableModel.copyFrom(viewableModel);
-        view.setViewableModel(this.viewableModel);
-    }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-        setViewableModel((ViewableModel) evt.getSource());
+
+        if (Viewport.NAME.equals(evt.getPropertyName())) {
+            view.repaint();
+        }
     }
 
     /**
@@ -183,6 +171,8 @@ public final class RegionController implements PropertyChangeListener {
         private boolean onStartMarker;
         private boolean onEndMarker;
 
+        private Viewport viewport;
+
         private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(
                 Cursor.E_RESIZE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
@@ -216,6 +206,8 @@ public final class RegionController implements PropertyChangeListener {
             final GeneralPath startMarker = view.getStartMarkerPolygon();
             final GeneralPath endMarker = view.getEndMarkerPolygon();
 
+            viewport = mixer.getViewport();
+
             if (startMarker.contains(e.getPoint())) {
 
                 // Mouse is pressed on the needle.
@@ -236,13 +228,11 @@ public final class RegionController implements PropertyChangeListener {
             if (onStartMarker || onEndMarker) {
                 final int x = Math.min(Math.max(e.getX(), 0),
                         view.getSize().width);
-                final double ratio = viewableModel.getIntervalWidth()
-                    / viewableModel.getIntervalTime();
-                double newTime =
-                    (x + (viewableModel.getZoomWindowStart() * ratio)) / ratio;
-                newTime = Math.min(Math.max(newTime,
-                            viewableModel.getZoomWindowStart()),
-                        viewableModel.getZoomWindowEnd());
+
+                double newTime = viewport.computeTimeFromXOffset(x)
+                    + viewport.getViewStart();
+                newTime = Math.min(Math.max(newTime, viewport.getViewStart()),
+                        viewport.getViewEnd());
 
                 assert !(onStartMarker && onEndMarker);
                 fireMarkerEvent(onStartMarker ? Marker.START_MARKER

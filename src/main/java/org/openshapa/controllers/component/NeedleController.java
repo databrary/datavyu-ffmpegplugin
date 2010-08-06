@@ -19,8 +19,9 @@ import javax.swing.event.MouseInputAdapter;
 import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.NeedleEventListener;
 
+import org.openshapa.models.component.MixerView;
 import org.openshapa.models.component.NeedleModel;
-import org.openshapa.models.component.ViewableModel;
+import org.openshapa.models.component.Viewport;
 
 import org.openshapa.views.component.NeedlePainter;
 
@@ -35,12 +36,12 @@ public final class NeedleController implements PropertyChangeListener {
 
     /** Models */
     private final NeedleModel needleModel;
-    private final ViewableModel viewableModel;
+    private final MixerView mixer;
 
     /** Listeners interested in needle painter events */
     private final EventListenerList listenerList;
 
-    public NeedleController() {
+    public NeedleController(final MixerView mixer) {
         view = new NeedlePainter();
 
         needleModel = new NeedleModel();
@@ -48,10 +49,12 @@ public final class NeedleController implements PropertyChangeListener {
         needleModel.setNeedleHeadWidth(9);
         needleModel.setNeedleHeadHeight(17);
 
-        viewableModel = new ViewableModel();
+        this.mixer = mixer;
 
-        view.setViewableModel(viewableModel);
+        view.setMixerView(mixer);
         view.setNeedleModel(needleModel);
+
+        mixer.addPropertyChangeListener(this);
 
         final NeedleListener needleListener = new NeedleListener();
         view.addMouseListener(needleListener);
@@ -139,32 +142,11 @@ public final class NeedleController implements PropertyChangeListener {
         return needleModel.copy();
     }
 
-    /**
-     * @return a copy of the viewable model
-     */
-    public ViewableModel getViewableModel() {
-
-        // return a clone to avoid model tainting
-        return viewableModel.copy();
-    }
-
-    /**
-     * Copies the given viewable model
-     *
-     * @param viewableModel
-     */
-    public void setViewableModel(final ViewableModel viewableModel) {
-
-        /*
-         * Just copy the values, do not spread references all over the place to
-         * avoid model tainting.
-         */
-        this.viewableModel.copyFrom(viewableModel);
-        view.setViewableModel(this.viewableModel);
-    }
-
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-        setViewableModel((ViewableModel) evt.getSource());
+
+        if (Viewport.NAME.equals(evt.getPropertyName())) {
+            view.repaint();
+        }
     }
 
     /**
@@ -208,21 +190,21 @@ public final class NeedleController implements PropertyChangeListener {
                 x = view.getSize().width;
             }
 
+            Viewport viewport = mixer.getViewport();
+
             // Calculate the time represented by the new location
-            float ratio = viewableModel.getIntervalWidth()
-                / viewableModel.getIntervalTime();
-            float newTime = (x + (viewableModel.getZoomWindowStart() * ratio))
-                / ratio;
+            long newTime = viewport.computeTimeFromXOffset(x)
+                + viewport.getViewStart();
 
             if (newTime < 0) {
                 newTime = 0;
             }
 
-            if (newTime > viewableModel.getZoomWindowEnd()) {
-                newTime = viewableModel.getZoomWindowEnd();
+            if (newTime > viewport.getViewEnd()) {
+                newTime = viewport.getViewEnd();
             }
 
-            fireNeedleEvent(Math.round(newTime));
+            fireNeedleEvent(newTime);
         }
     }
 

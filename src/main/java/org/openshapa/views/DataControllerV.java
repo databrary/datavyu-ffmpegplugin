@@ -665,7 +665,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         playbackModel.setMaxDuration(maxDuration);
 
-        mixerControllerV.setMaxEnd(maxDuration);
+        maxDuration = mixerControllerV.setMaxEnd(maxDuration);
 
         // Reset visualisation of playback regions.
         if (playbackModel.getWindowPlayEnd() > maxDuration) {

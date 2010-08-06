@@ -11,6 +11,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -32,8 +35,9 @@ import org.openshapa.event.component.CarriageEventListener;
 import org.openshapa.event.component.TrackMouseEventListener;
 import org.openshapa.event.component.CarriageEvent.EventType;
 
+import org.openshapa.models.component.MixerView;
 import org.openshapa.models.component.TrackModel;
-import org.openshapa.models.component.ViewableModel;
+import org.openshapa.models.component.Viewport;
 import org.openshapa.models.component.TrackModel.TrackState;
 
 import org.openshapa.views.component.TrackPainter;
@@ -44,7 +48,8 @@ import org.openshapa.views.continuous.ViewerStateListener;
 /**
  * TrackPainterController is responsible for managing a TrackPainter.
  */
-public final class TrackController implements ViewerStateListener {
+public final class TrackController implements ViewerStateListener,
+    PropertyChangeListener {
 
     /** Track panel border color. */
     private static final Color BORDER_COLOR = new Color(73, 73, 73);
@@ -53,6 +58,7 @@ public final class TrackController implements ViewerStateListener {
     private static final Logger LOGGER = UserMetrix.getLogger(
             TrackController.class);
 
+    // TODO Add as part of layout construction.
     private static final int CARRIAGE_WIDTH = 653;
     private static final int CARRIAGE_HEIGHT = 75;
     private static final int HEADER_WIDTH = 100;
@@ -92,7 +98,7 @@ public final class TrackController implements ViewerStateListener {
     private final JButton actionButton3;
 
     /** Viewable model. */
-    private final ViewableModel viewableModel;
+    private final MixerView mixer;
 
     /** Track model. */
     private final TrackModel trackModel;
@@ -116,7 +122,8 @@ public final class TrackController implements ViewerStateListener {
      *
      * @param trackPainter the track painter for this controller to manage.
      */
-    public TrackController(final TrackPainter trackPainter) {
+    public TrackController(final MixerView mixer,
+        final TrackPainter trackPainter) {
         isMoveable = true;
 
         view = new JPanel();
@@ -125,14 +132,16 @@ public final class TrackController implements ViewerStateListener {
 
         this.trackPainter = trackPainter;
 
-        viewableModel = new ViewableModel();
+        this.mixer = mixer;
         trackModel = new TrackModel();
         trackModel.setState(TrackState.NORMAL);
         trackModel.setBookmark(-1);
         trackModel.setLocked(false);
 
-        trackPainter.setViewableModel(viewableModel);
+        trackPainter.setMixerView(mixer);
         trackPainter.setTrackModel(trackModel);
+
+        mixer.addPropertyChangeListener(this);
 
         listenerList = new EventListenerList();
 
@@ -368,31 +377,6 @@ public final class TrackController implements ViewerStateListener {
      */
     public JComponent getView() {
         return view;
-    }
-
-    /**
-     * @return a copy of the viewable model used by the controller
-     */
-    public ViewableModel getViewableModel() {
-
-        // return a clone to avoid model tainting
-        return viewableModel.copy();
-    }
-
-    /**
-     * Copies the given viewable model.
-     *
-     * @param newModel the viewable model to copy settings from.
-     */
-    public void setViewableModel(final ViewableModel newModel) {
-
-        /*
-         * Just copy the values, do not spread references all over the place to
-         * avoid model tainting.
-         */
-        this.viewableModel.copyFrom(newModel);
-        trackPainter.setViewableModel(this.viewableModel);
-        view.repaint();
     }
 
     /**
@@ -886,6 +870,13 @@ public final class TrackController implements ViewerStateListener {
         }
     }
 
+    @Override public void propertyChange(final PropertyChangeEvent evt) {
+
+        if (Viewport.NAME.equals(evt.getPropertyName())) {
+            view.repaint();
+        }
+    }
+
     /**
      * Inner listener used to handle mouse events.
      */
@@ -910,6 +901,8 @@ public final class TrackController implements ViewerStateListener {
         /** Default mouse cursor. */
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
+        private Viewport viewport;
+
         @Override public void mouseClicked(final MouseEvent e) {
 
             if (trackPainter.getCarriagePolygon().contains(e.getPoint())) {
@@ -920,6 +913,7 @@ public final class TrackController implements ViewerStateListener {
         }
 
         @Override public void mousePressed(final MouseEvent e) {
+            viewport = mixer.getViewport();
 
             if (trackPainter.getCarriagePolygon().contains(e.getPoint())) {
                 inCarriage = true;
@@ -947,20 +941,17 @@ public final class TrackController implements ViewerStateListener {
                 final int xNet = e.getX() - xInit;
 
                 // Calculate the total amount of time we offset by
-                final float newOffset = ((xNet * 1F)
-                        / viewableModel.getIntervalWidth()
-                        * viewableModel.getIntervalTime()) + offsetInit;
-                final float temporalPosition = (e.getX() * 1F)
-                    / viewableModel.getIntervalWidth()
-                    * viewableModel.getIntervalTime();
+                final float newOffset = viewport.computeTimeFromXOffset(xNet)
+                    + offsetInit;
+                final long temporalPosition = viewport.computeTimeFromXOffset(
+                        e.getX()) + viewport.getViewStart();
 
                 if (isMoveable) {
                     fireCarriageOffsetChangeEvent((long) newOffset,
-                        (long) temporalPosition, hasModifiers);
+                        temporalPosition, hasModifiers);
                 } else {
                     final long threshold = (long) (0.05F
-                            * (viewableModel.getZoomWindowEnd()
-                                - viewableModel.getZoomWindowStart()));
+                            * viewport.getViewDuration());
 
                     if (Math.abs(newOffset - offsetInit) >= threshold) {
                         isMoveable = true;

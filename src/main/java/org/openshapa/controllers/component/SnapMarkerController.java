@@ -1,9 +1,13 @@
 package org.openshapa.controllers.component;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.JComponent;
 
+import org.openshapa.models.component.MixerView;
 import org.openshapa.models.component.SnapMarkerModel;
-import org.openshapa.models.component.ViewableModel;
+import org.openshapa.models.component.Viewport;
 
 import org.openshapa.views.component.SnapMarkerPainter;
 
@@ -11,25 +15,27 @@ import org.openshapa.views.component.SnapMarkerPainter;
 /**
  * SnapMarkerController is responsible for managing a SnapMarkerPainter
  */
-public final class SnapMarkerController {
+public final class SnapMarkerController implements PropertyChangeListener {
 
     /** View */
     private final SnapMarkerPainter view;
 
     /** Models */
     private final SnapMarkerModel snapMarkerModel;
-    private final ViewableModel viewableModel;
+    private final MixerView mixer;
 
-    public SnapMarkerController() {
+    public SnapMarkerController(final MixerView mixer) {
         view = new SnapMarkerPainter();
 
         snapMarkerModel = new SnapMarkerModel();
         snapMarkerModel.setMarkerTime(-1);
 
-        viewableModel = new ViewableModel();
+        this.mixer = mixer;
 
-        view.setViewableModel(viewableModel);
+        view.setMixerView(mixer);
         view.setSnapMarkerModel(snapMarkerModel);
+
+        mixer.addPropertyChangeListener(this);
     }
 
     /**
@@ -50,34 +56,17 @@ public final class SnapMarkerController {
     }
 
     /**
-     * @return a copy of the viewable model
-     */
-    public ViewableModel getViewableModel() {
-
-        // return a clone to avoid model tainting
-        return viewableModel.copy();
-    }
-
-    /**
-     * Copies the given viewable model
-     *
-     * @param viewableModel
-     */
-    public void setViewableModel(final ViewableModel viewableModel) {
-
-        /*
-         * Just copy the values, do not spread references all over the place to
-         * avoid model tainting.
-         */
-        this.viewableModel.copyFrom(viewableModel);
-        view.setViewableModel(this.viewableModel);
-    }
-
-    /**
      * @return View used by the controller
      */
     public JComponent getView() {
         return view;
+    }
+
+    @Override public void propertyChange(final PropertyChangeEvent evt) {
+
+        if (Viewport.NAME.equals(evt.getPropertyName())) {
+            view.repaint();
+        }
     }
 
 }

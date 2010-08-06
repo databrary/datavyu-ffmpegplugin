@@ -20,9 +20,10 @@ import org.openshapa.event.component.CarriageEventAdapter;
 import org.openshapa.event.component.CarriageEventListener;
 import org.openshapa.event.component.TrackMouseEventListener;
 
+import org.openshapa.models.component.MixerView;
 import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.TrackModel;
-import org.openshapa.models.component.ViewableModel;
+import org.openshapa.models.component.Viewport;
 
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.component.TracksEditorPainter;
@@ -35,8 +36,7 @@ import org.openshapa.views.continuous.CustomActionListener;
  *
  * @author dteoh
  */
-public final class TracksEditorController implements TrackMouseEventListener,
-    PropertyChangeListener {
+public final class TracksEditorController implements TrackMouseEventListener {
 
     /** Main UI panel. */
     private JPanel editingPanel;
@@ -47,8 +47,7 @@ public final class TracksEditorController implements TrackMouseEventListener,
     /** List of track controllers. */
     private final List<Track> tracks;
 
-    /** Viewable model. */
-    private final ViewableModel viewableModel;
+    private final MixerView mixer;
 
     /** Handles the selection model for tracks. */
     private final CarriageSelection selectionHandler;
@@ -56,10 +55,10 @@ public final class TracksEditorController implements TrackMouseEventListener,
     /**
      * Create a new tracks editor controller.
      */
-    public TracksEditorController() {
+    public TracksEditorController(final MixerView mixer) {
         tracks = new LinkedList<Track>();
-        viewableModel = new ViewableModel();
-        snapMarkerController = new SnapMarkerController();
+        this.mixer = mixer;
+        snapMarkerController = new SnapMarkerController(mixer);
         selectionHandler = new CarriageSelection();
         initView();
     }
@@ -86,30 +85,6 @@ public final class TracksEditorController implements TrackMouseEventListener,
     }
 
     /**
-     * Copies the given viewable model.
-     *
-     * @param newModel The viewable model to copy from.
-     */
-    public void setViewableModel(final ViewableModel newModel) {
-
-        /*
-         * Just copy the values, do not spread references all over the place to
-         * avoid model tainting.
-         */
-        this.viewableModel.copyFrom(newModel);
-
-        for (Track track : tracks) {
-            track.trackController.setViewableModel(newModel);
-        }
-
-        snapMarkerController.setViewableModel(newModel);
-    }
-
-    @Override public void propertyChange(final PropertyChangeEvent evt) {
-        setViewableModel((ViewableModel) evt.getSource());
-    }
-
-    /**
      * Adds a new track to the interface.
      *
      * @param icon Icon associated with the track.
@@ -126,9 +101,8 @@ public final class TracksEditorController implements TrackMouseEventListener,
         final CarriageEventListener listener, final TrackPainter trackPainter) {
 
         // TrackController
-        final TrackController trackController = new TrackController(
+        final TrackController trackController = new TrackController(mixer,
                 trackPainter);
-        trackController.setViewableModel(viewableModel);
         trackController.setTrackInformation(icon, trackName, mediaPath,
             duration, offset);
         trackController.addBookmark(-1);
@@ -358,10 +332,10 @@ public final class TracksEditorController implements TrackMouseEventListener,
             return null;
         }
 
+        Viewport viewport = mixer.getViewport();
+
         // Calculate the snap threshold as a % of the longest track duration
-        final long threshold = (long) (0.01F
-                * (viewableModel.getZoomWindowEnd()
-                    - viewableModel.getZoomWindowStart()));
+        final long threshold = (long) (0.01F * viewport.getViewDuration());
 
         // Sort the candidate snap points
         Collections.sort(snapCandidates);

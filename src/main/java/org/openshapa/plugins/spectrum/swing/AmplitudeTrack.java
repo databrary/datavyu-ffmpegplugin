@@ -22,6 +22,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewableModel;
+import org.openshapa.models.component.Viewport;
 
 import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor;
 import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor.Strategy;
@@ -66,7 +67,7 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
     private BufferedImage localAmps;
 
     /** Viewable model associated with the last zoomed segment. */
-    private ViewableModel localVM;
+    private Viewport localVM;
 
     private TrackModel localTM;
 
@@ -94,9 +95,9 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
         registered = false;
     }
 
-    public void deregister() {
-        viewableModel.removePropertyChangeListener(this);
+    @Override public void deregister() {
         trackModel.removePropertyChangeListener(this);
+        super.deregister();
     }
 
     public void setMedia(final File mediaFile, final int channels) {
@@ -136,7 +137,8 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
                 @Override public void run() {
 
                     // Make a worker thread to compute paths.
-                    worker = new PathWorker(new Dimension(getSize()), data);
+                    worker = new PathWorker(new Dimension(getSize()),
+                            mixer.getViewport(), data);
                     worker.execute();
                 }
             });
@@ -146,18 +148,20 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
         if (!registered) {
             trackModel.addPropertyChangeListener(this);
-            viewableModel.addPropertyChangeListener(this);
             registered = true;
         }
+
+        Viewport viewport = mixer.getViewport();
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Calculate carriage start and end pixel positions.
-        final int startXPos = computePixelXCoord(trackModel.getOffset());
-        final int endXPos = computePixelXCoord(trackModel.getDuration()
-                + trackModel.getOffset());
+        final int startXPos = (int) viewport.computePixelXOffset(
+                trackModel.getOffset());
+        final int endXPos = (int) viewport.computePixelXOffset(
+                trackModel.getDuration() + trackModel.getOffset());
 
         // Carriage height.
         final int carriageHeight = (int) (getHeight() * 7D / 10D);
@@ -183,7 +187,7 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
         // Draw left channel data.
         if (leftAmp != null) {
             localTM = trackModel.copy();
-            localVM = viewableModel.copy();
+            localVM = viewport;
 
             // Buffer the drawn data.
             localAmps = new BufferedImage(getWidth(), getHeight(),
@@ -205,11 +209,13 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             g3.drawImage(cachedAmps, startXPos, 0, endXPos, getHeight(), 0, 0,
                 cachedAmps.getWidth(), cachedAmps.getHeight(), null);
 
-            final int x1 = computePixelXCoord(localVM.getZoomWindowStart()
-                    + trackModel.getOffset() - localTM.getOffset());
+            final int x1 = (int) viewport.computePixelXOffset(
+                    localVM.getViewStart() + trackModel.getOffset()
+                    - localTM.getOffset());
             final int y1 = 0;
-            final int x2 = computePixelXCoord(localVM.getZoomWindowEnd()
-                    + trackModel.getOffset() - localTM.getOffset());
+            final int x2 = (int) viewport.computePixelXOffset(
+                    localVM.getViewEnd() + trackModel.getOffset()
+                    - localTM.getOffset());
             final int y2 = getHeight();
 
             g3.clearRect(x1, y1, x2 - x1, y2 - y1);
@@ -248,20 +254,6 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
     }
 
     /**
-     * Used to compute pixel x-coordinates based on a time value.
-     *
-     * @param time
-     *            Time in milliseconds.
-     * @return Pixel coordinate.
-     */
-    private double computeXCoord(final double time) {
-        final double ratio = viewableModel.getIntervalWidth()
-            / viewableModel.getIntervalTime();
-
-        return (time * ratio) - (viewableModel.getZoomWindowStart() * ratio);
-    }
-
-    /**
      * Helper function to process amplitude data.
      */
     private void execProcessor() {
@@ -282,22 +274,28 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             processor.cancel(true);
         }
 
+        Viewport viewport = mixer.getViewport();
+
+        if (viewport == null) {
+            return;
+        }
+
         // Track is past the end window, so it is not visible.
-        if (viewableModel.getZoomWindowEnd() < trackModel.getOffset()) {
+        if (viewport.getViewEnd() < trackModel.getOffset()) {
             return;
         }
 
         // Track is before the start window, so it is not visible.
         if ((trackModel.getDuration() + trackModel.getOffset())
-                < viewableModel.getZoomWindowStart()) {
+                < viewport.getViewStart()) {
             return;
         }
 
         // 1. Calculate the times to sample.
-        long start = Math.max(viewableModel.getZoomWindowStart(),
-                trackModel.getOffset()) - trackModel.getOffset();
+        long start = Math.max(viewport.getViewStart(), trackModel.getOffset())
+            - trackModel.getOffset();
         long end = Math.min(trackModel.getOffset() + trackModel.getDuration(),
-                viewableModel.getZoomWindowEnd()) - trackModel.getOffset();
+                viewport.getViewEnd()) - trackModel.getOffset();
 
         // 2. Make the worker thread.
         processor = new AmplitudeProcessor(mediaFile, this, channels);
@@ -313,15 +311,22 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
     private final class PathWorker extends SwingWorker<Path2D[], Void> {
         private Dimension dim;
         private StereoAmplitudeData data;
+        private Viewport viewport;
 
-        public PathWorker(final Dimension d, final StereoAmplitudeData data) {
+        public PathWorker(final Dimension d, final Viewport viewport,
+            final StereoAmplitudeData data) {
             dim = d;
+            this.viewport = viewport;
             this.data = data;
         }
 
         @Override protected Path2D[] doInBackground() throws Exception {
 
             if (data == null) {
+                return null;
+            }
+
+            if (viewport == null) {
                 return null;
             }
 
@@ -333,8 +338,8 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             final int carriageHeight = (int) (dim.getHeight() * 7D / 10D);
 
             // Calculate carriage start pixel position.
-            final double startXPos = computeXCoord(MILLISECONDS.convert(
-                        data.getDataTimeStart(), data.getDataTimeUnit())
+            final double startXPos = viewport.computePixelXOffset(MILLISECONDS
+                    .convert(data.getDataTimeStart(), data.getDataTimeUnit())
                     + trackModel.getOffset());
 
             // Carriage offset from top of panel.
@@ -361,8 +366,9 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
                 }
 
                 double interval = data.getTimeInterval() * offsetCounter;
-                double offset = computeXCoord(interval + data
-                        .getDataTimeStart() + trackModel.getOffset());
+                double offset = viewport.computePixelXOffset((long) (interval
+                            + data.getDataTimeStart()
+                            + trackModel.getOffset()));
 
                 offsetCounter++;
 
@@ -380,8 +386,9 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
                 }
 
                 double interval = data.getTimeInterval() * offsetCounter;
-                double offset = computeXCoord(interval + data
-                        .getDataTimeStart() + trackModel.getOffset());
+                double offset = viewport.computePixelXOffset((long) (interval
+                            + data.getDataTimeStart()
+                            + trackModel.getOffset()));
                 offsetCounter++;
 
                 amps[1].lineTo(offset, midYRightPos + (-amp * ampHeight));
