@@ -109,6 +109,9 @@ public class GStreamerDataViewer implements DataViewer {
     /** Duration of time (seconds) to wait for before aborting an attempt to load a video. */
     private final long VIDEO_LOADING_TIMEOUT_SECONDS = 30;
 
+    private long lastPlayingSeekTime = System.currentTimeMillis();
+    private final long minimumIntervalBetweenPlayingSeeks = 5000;
+
     public GStreamerDataViewer(final Frame parent, final boolean modal) {
 
         System.out.println("GStreamerDataViewer.GStreamerDataViewer()");
@@ -237,7 +240,7 @@ public class GStreamerDataViewer implements DataViewer {
 
         if ((playBin != null) && !isPlaying) {
             final int seekFlags = SeekFlags.FLUSH | SeekFlags.ACCURATE
-            /* | SeekFlags.SKIP -- doesn't work very well in gstreamer */;
+            /* | SeekFlags.SKIP -- doesn't work very well in gstreamer */ ;
             playBin.seek(playbackRate, Format.TIME, seekFlags, SeekType.NONE, 0,
                 SeekType.NONE, 0);
             playBin.setVolume(volume);
@@ -257,11 +260,13 @@ public class GStreamerDataViewer implements DataViewer {
                 ? volume : MUTE_VOLUME);
     }
 
-    private void gstreamerSeek(long positionNanoseconds) {
-    	assert playBin != null;
-    	
-        final double seekPlaybackRate = playbackRate != 0.0 ? playbackRate : 1.0;
-        final int seekFlags = SeekFlags.FLUSH | SeekFlags.ACCURATE /* | SeekFlags.SKIP -- doesn't work very well in gstreamer */;
+    private void gstreamerSeek(final long positionNanoseconds) {
+        assert playBin != null;
+
+        final double seekPlaybackRate = (playbackRate != 0.0) ? playbackRate
+                                                              : 1.0;
+        final int seekFlags = SeekFlags.FLUSH
+            | SeekFlags.ACCURATE /* | SeekFlags.SKIP -- doesn't work very well in gstreamer */;
         final SeekType startSeekType;
         final long startSeekTime;
         final SeekType endSeekType;
@@ -283,34 +288,45 @@ public class GStreamerDataViewer implements DataViewer {
             startSeekTime, endSeekType, endSeekTime);
     }
 
-    private long lastPlayingSeekTime = System.currentTimeMillis();
-    private final long minimumIntervalBetweenPlayingSeeks = 5000;
-    
-    @Override
-    public synchronized void seekTo(long position) {
-        System.out.println("GStreamerDataViewer.seekTo(" + position + "), currentTime=" + getCurrentTime() + ", difference=" + (position - getCurrentTime()) + ", playbackSpeed=" + playbackRate + ", isPlaying=" + isPlaying);
-        if (playBin != null && position != getCurrentTime()) {
-        	final boolean isTrickModePlayback = playbackRate >= 2.0;
-        	if (isPlaying && !isTrickModePlayback) {
-        		if (isPlaying) {
-        			return ;
-        		}
-        		// limit the frequency of seeks performed to prevent skipping during normal playback
-        		final long currentTimeMillis = System.currentTimeMillis();
-        		if (lastPlayingSeekTime + minimumIntervalBetweenPlayingSeeks > currentTimeMillis) {
-        			// ignore this playing seek request
-        			System.err.println("ignoring seek request");
-        			return;
-        		} else if (position - getCurrentTime() < 250) {
-        			//TODO temporary HACK - adjust seek latencies by compensating for the seek call 
-        			System.err.println("patching seeks by " + ((position - getCurrentTime()) / 2) + " ms");
-        			position += (position - getCurrentTime()) / 2;
-        		}
-        		lastPlayingSeekTime = currentTimeMillis;
-        	}
-        	
-        	updatePlaybackVolume();
-        	gstreamerSeek(TimeUnit.NANOSECONDS.convert(position, TimeUnit.MILLISECONDS));
+    @Override public synchronized void seekTo(long position) {
+        System.out.println("GStreamerDataViewer.seekTo(" + position
+            + "), currentTime=" + getCurrentTime() + ", difference="
+            + (position - getCurrentTime()) + ", playbackSpeed=" + playbackRate
+            + ", isPlaying=" + isPlaying);
+
+        if ((playBin != null) && (position != getCurrentTime())) {
+            final boolean isTrickModePlayback = playbackRate >= 2.0;
+
+            if (isPlaying && !isTrickModePlayback) {
+
+                if (isPlaying) {
+                    return;
+                }
+
+                // limit the frequency of seeks performed to prevent skipping during normal playback
+                final long currentTimeMillis = System.currentTimeMillis();
+
+                if ((lastPlayingSeekTime + minimumIntervalBetweenPlayingSeeks)
+                        > currentTimeMillis) {
+
+                    // ignore this playing seek request
+                    System.err.println("ignoring seek request");
+
+                    return;
+                } else if ((position - getCurrentTime()) < 250) {
+
+                    //TODO temporary HACK - adjust seek latencies by compensating for the seek call
+                    System.err.println("patching seeks by "
+                        + ((position - getCurrentTime()) / 2) + " ms");
+                    position += (position - getCurrentTime()) / 2;
+                }
+
+                lastPlayingSeekTime = currentTimeMillis;
+            }
+
+            updatePlaybackVolume();
+            gstreamerSeek(TimeUnit.NANOSECONDS.convert(position,
+                    TimeUnit.MILLISECONDS));
 //            waitForPlaybinStateChange();
         }
     }
@@ -342,6 +358,7 @@ public class GStreamerDataViewer implements DataViewer {
             ((RGBDataSink) videoComponent.getElement()).getSinkElement()
                 .setMaximumLateness(-1, TimeUnit.MILLISECONDS); //TODO ugly hack!
             playBin.setVideoSink(videoComponent.getElement());
+
             break;
         }
 
@@ -350,6 +367,7 @@ public class GStreamerDataViewer implements DataViewer {
                     "ximagesink");
             ximagesink.set("force-aspect-ratio", true);
             playBin.setVideoSink(ximagesink);
+
             break;
         }
 
@@ -362,7 +380,7 @@ public class GStreamerDataViewer implements DataViewer {
             osxvideosink.addListener(new OSXVideoSink.Listener() {
                     @Override public void newVideoComponent(final Object source,
                         final OSXVideoComponent osxVideoComponent) {
-                    	videoDialog.getContentPane().add(osxVideoComponent,
+                        videoDialog.getContentPane().add(osxVideoComponent,
                             BorderLayout.CENTER);
                         osxVideoComponent.setPreferredSize(
                             playBin.getVideoSize());
@@ -378,6 +396,7 @@ public class GStreamerDataViewer implements DataViewer {
                         videoDialog.setVisible(true);
                     }
                 });
+
             break;
         }
         }
@@ -395,7 +414,8 @@ public class GStreamerDataViewer implements DataViewer {
 
         isPlaying = false;
         playBin.seek(1.0, Format.TIME,
-            SeekFlags.FLUSH | SeekFlags.ACCURATE /* | SeekFlags.SKIP -- doesn't work very well in gstreamer */,
+            SeekFlags.FLUSH
+            | SeekFlags.ACCURATE /* | SeekFlags.SKIP -- doesn't work very well in gstreamer */,
             SeekType.SET, 0, SeekType.END, 0);
         waitForPlaybinStateChange();
 
@@ -498,20 +518,20 @@ public class GStreamerDataViewer implements DataViewer {
 
             String property = settings.getProperty("offset");
 
-            if ((property != null) & !property.equals("")) {
+            if ((property != null) && !property.equals("")) {
                 setOffset(Long.parseLong(property));
             }
 
             property = settings.getProperty("volume");
 
-            if ((property != null) & !property.equals("")) {
+            if ((property != null) && !property.equals("")) {
                 volume = Float.parseFloat(property);
                 volumeSlider.setValue((int) Math.round(volume * 100));
             }
 
             property = settings.getProperty("visible");
 
-            if ((property != null) & !property.equals("")) {
+            if ((property != null) && !property.equals("")) {
                 isVisible = Boolean.parseBoolean(property);
 
                 // BugzID:2032 - Need to update when visbility is back again.
@@ -521,7 +541,7 @@ public class GStreamerDataViewer implements DataViewer {
 
             property = settings.getProperty("height");
 
-            if ((property != null) & !property.equals("")) {
+            if ((property != null) && !property.equals("")) {
                 // BugzID:2057 - Need to update when resize is back again.
                 //setVideoHeight(Integer.parseInt(property));
             }
