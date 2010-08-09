@@ -29,6 +29,7 @@ public final class FileUtils {
      */
     public static File getRelativeFile(final Project proj,
         final File dataFile) {
+
         String origPath = proj.getOriginalProjectDirectory();
         String filePath = dataFile.getAbsolutePath();
         String relPath = proj.getProjectDirectory();
