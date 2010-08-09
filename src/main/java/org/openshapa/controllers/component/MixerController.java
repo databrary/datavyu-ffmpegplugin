@@ -65,6 +65,7 @@ import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.CustomActionListener;
 
 import com.google.common.collect.Maps;
+
 import org.apache.commons.lang.text.StrSubstitutor;
 
 import com.apple.eawt.event.GestureAdapter;
@@ -75,6 +76,7 @@ import com.apple.eawt.event.MagnificationEvent;
 import com.apple.eawt.event.MagnificationListener;
 import com.apple.eawt.event.SwipeEvent;
 import com.apple.eawt.event.SwipeListener;
+
 import com.sun.jna.Platform;
 
 
@@ -137,6 +139,10 @@ public final class MixerController implements PropertyChangeListener,
     /** Master mixer to listen to. */
     private final MixerModel masterMixer;
 
+    /** Listens and processes gestures on Mac OS X. */
+    private final OSXGestureListener osxGestureListener = Platform.isMac()
+        ? new OSXGestureListener() : null;
+
     /**
      * Create a new MixerController.
      */
@@ -164,16 +170,14 @@ public final class MixerController implements PropertyChangeListener,
 
         listenerList = new EventListenerList();
 
-        // Not using MigLayout with JLayeredPane because of layout issues
-        layeredPane = new JLayeredPane();
-        
         // Set up the root panel
         tracksPanel = new JPanel();
         tracksPanel.setLayout(new MigLayout("ins 0",
                 "[left|left|left|left]rel push[right|right]", ""));
         tracksPanel.setBackground(Color.WHITE);
-		if (Platform.isMac()) {
-			osxGestureListener.register(tracksPanel);
+
+        if (Platform.isMac()) {
+            osxGestureListener.register(tracksPanel);
         }
 
         // Menu buttons
@@ -982,14 +986,14 @@ public final class MixerController implements PropertyChangeListener,
         }
     }
 
-	private void handleViewportChanged() {
+    private void handleViewportChanged() {
         Viewport viewport = masterMixer.getViewport();
         updateZoomSlide(viewport);
         updateTracksScrollBar(viewport);
         tracksScrollPane.repaint();
     }
 
-	@Override public void propertyChange(final PropertyChangeEvent evt) {
+    @Override public void propertyChange(final PropertyChangeEvent evt) {
 
         if (Viewport.NAME.equals(evt.getPropertyName())) {
             handleViewportChanged();
@@ -1018,82 +1022,92 @@ public final class MixerController implements PropertyChangeListener,
         }
     }
 
-    /** Listens and processes gestures on Mac OS X. */
-    private final OSXGestureListener osxGestureListener = Platform.isMac() ? new OSXGestureListener() : null;
-    
-    private class OSXGestureListener implements MagnificationListener, GesturePhaseListener, SwipeListener {
-    	public void register(JComponent component) {
-        	GestureUtilities.addGestureListenerTo(tracksPanel, osxGestureListener);
-    	}
-    	
+    private class OSXGestureListener implements MagnificationListener,
+        GesturePhaseListener, SwipeListener {
+
+
+        /**
+         * Cumulative sum of the current zoom gesture, where positive values
+         * indicate zooming in (enlarging) and negative values indicate zooming
+         * out (shrinking). On a 2009 MacBook Pro, pinch-and-zooming from
+         * corner-to-corner of the trackpad will result in a total sum of
+         * approximately +3.0 (zooming in) or -3.0 (zooming out).
+         */
+        private double osxMagnificationGestureSum = 0;
+
+        /** Relative zoom when the magnification gesture began. */
+        private double osxMagnificationGestureInitialZoomSetting;
+
+        public void register(final JComponent component) {
+            GestureUtilities.addGestureListenerTo(tracksPanel,
+                osxGestureListener);
+        }
+
         /**
          * Invoked when a magnification gesture ("pinch and squeeze") is performed by the user on Mac OS X.
-         * 
+         *
          * @param e contains the scale of the magnification
          */
-    	@Override
-    	public void magnify(MagnificationEvent e) {
-    		osxMagnificationGestureSum += e.getMagnification();
-    		System.out.println("magnify(" + e.getMagnification() + "), sum=" + osxMagnificationGestureSum);
+        @Override public void magnify(final MagnificationEvent e) {
+            osxMagnificationGestureSum += e.getMagnification();
+            System.out.println("magnify(" + e.getMagnification() + "), sum="
+                + osxMagnificationGestureSum);
 
-    		/** Amount of the pinch-and-squeeze gesture required to perform a full zoom in the mixer. */
-    		final double fullZoomMotion = 2.0;
-    		final double newZoomSetting = Math.min(Math.max(osxMagnificationGestureInitialZoomSetting + osxMagnificationGestureSum / fullZoomMotion, 0.0), 1.0);
-    		
-    		masterMixer.setViewportZoom(newZoomSetting, needleController.getCurrentTime());
-    	}
+            /** Amount of the pinch-and-squeeze gesture required to perform a full zoom in the mixer. */
+            final double fullZoomMotion = 2.0;
+            final double newZoomSetting = Math.min(Math.max(
+                        osxMagnificationGestureInitialZoomSetting
+                        + (osxMagnificationGestureSum / fullZoomMotion), 0.0),
+                    1.0);
 
-    	
-    	/** 
-    	 * Cumulative sum of the current zoom gesture, where positive values 
-    	 * indicate zooming in (enlarging) and negative values indicate zooming 
-    	 * out (shrinking). On a 2009 MacBook Pro, pinch-and-zooming from 
-    	 * corner-to-corner of the trackpad will result in a total sum of 
-    	 * approximately +3.0 (zooming in) or -3.0 (zooming out).
-    	 */
-    	private double osxMagnificationGestureSum = 0;
-    	
-    	/** Relative zoom when the magnification gesture began. */
-    	private double osxMagnificationGestureInitialZoomSetting;
-    	
-    	/**
-    	 * Indicates that the user has started performing a gesture on Mac OS X.
-    	 */
-    	@Override
-    	public void gestureBegan(GesturePhaseEvent e) {
-    		System.out.println("gestureBegan(" + e.toString() + ")");
-    		osxMagnificationGestureSum = 0;
-    		osxMagnificationGestureInitialZoomSetting = zoomSetting;
-    	}
+            masterMixer.setViewportZoom(newZoomSetting,
+                needleController.getCurrentTime());
+        }
 
-    	/**
-    	 * Indicates that the user has finished performing a gesture on Mac OS X.
-    	 */
-    	@Override
-    	public void gestureEnded(GesturePhaseEvent e) {
-    		System.out.println("gestureEnded(" + e.toString() + ")");
-    	}
+        /**
+         * Indicates that the user has started performing a gesture on Mac OS X.
+         */
+        @Override public void gestureBegan(final GesturePhaseEvent e) {
+            System.out.println("gestureBegan(" + e.toString() + ")");
+            osxMagnificationGestureSum = 0;
+            osxMagnificationGestureInitialZoomSetting = zoomSetting;
+        }
 
-    	@Override
-    	public void swipedDown(SwipeEvent e) {
-    		System.out.println("swipedDown()");
-    	}
+        /**
+         * Indicates that the user has finished performing a gesture on Mac OS X.
+         */
+        @Override public void gestureEnded(final GesturePhaseEvent e) {
+            System.out.println("gestureEnded(" + e.toString() + ")");
+        }
 
-    	@Override
-    	public void swipedLeft(SwipeEvent e) {
-    		System.out.println("swipedLeft()");
-    		tracksScrollBar.setValue(Math.max(Math.min(tracksScrollBar.getValue() - tracksScrollBar.getBlockIncrement(), tracksScrollBar.getMaximum() - tracksScrollBar.getVisibleAmount()), tracksScrollBar.getMinimum()));
-    	}
+        @Override public void swipedDown(final SwipeEvent e) {
+            System.out.println("swipedDown()");
+        }
 
-    	@Override
-    	public void swipedRight(SwipeEvent e) {
-    		System.out.println("swipedRight()");
-    		tracksScrollBar.setValue(Math.max(Math.min(tracksScrollBar.getValue() + tracksScrollBar.getBlockIncrement(), tracksScrollBar.getMaximum() - tracksScrollBar.getVisibleAmount()), tracksScrollBar.getMinimum()));
-    	}
+        @Override public void swipedLeft(final SwipeEvent e) {
+            System.out.println("swipedLeft()");
+            tracksScrollBar.setValue(Math.max(
+                    Math.min(
+                        tracksScrollBar.getValue()
+                        - tracksScrollBar.getBlockIncrement(),
+                        tracksScrollBar.getMaximum()
+                        - tracksScrollBar.getVisibleAmount()),
+                    tracksScrollBar.getMinimum()));
+        }
 
-    	@Override
-    	public void swipedUp(SwipeEvent e) {
-    		System.out.println("swipedUp()");
-    	}
-    };
+        @Override public void swipedRight(final SwipeEvent e) {
+            System.out.println("swipedRight()");
+            tracksScrollBar.setValue(Math.max(
+                    Math.min(
+                        tracksScrollBar.getValue()
+                        + tracksScrollBar.getBlockIncrement(),
+                        tracksScrollBar.getMaximum()
+                        - tracksScrollBar.getVisibleAmount()),
+                    tracksScrollBar.getMinimum()));
+        }
+
+        @Override public void swipedUp(final SwipeEvent e) {
+            System.out.println("swipedUp()");
+        }
+    }
 }
