@@ -244,6 +244,21 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
             g2d.drawImage(image2, 0, 0, getWidth(), getHeight(), 0, 0,
                 image2.getWidth(), image2.getHeight(), null);
+        } else if (localAmps != null) {
+            // If we don't yet have a global cached image, make sure the local
+            // cache is painted.
+
+            final int x1 = (int) viewport.computePixelXOffset(
+                    localVM.getViewStart() + trackModel.getOffset()
+                    - localTM.getOffset());
+            final int y1 = 0;
+            final int x2 = (int) viewport.computePixelXOffset(
+                    localVM.getViewEnd() + trackModel.getOffset()
+                    - localTM.getOffset());
+            final int y2 = getHeight();
+
+            g2d.drawImage(localAmps, x1, y1, x2, y2, 0, 0, localAmps.getWidth(),
+                localAmps.getHeight(), null);
         } else {
 
             // Baseline zero amplitude.
@@ -261,6 +276,9 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
             g2d.drawImage(localAmps, 0, 0, null);
         } else if (cachedAmps != null) {
+            // Do nothing, already drawn. Do not remove this conditional or
+            // the baseline will be drawn.
+        } else if (localAmps != null) {
             // Do nothing, already drawn. Do not remove this conditional or
             // the baseline will be drawn.
         } else {
