@@ -2,6 +2,8 @@ package org.openshapa.util;
 
 import java.io.File;
 
+import org.apache.commons.io.FilenameUtils;
+
 import org.openshapa.models.project.Project;
 
 
@@ -12,21 +14,7 @@ public final class FileUtils {
 
     public static String getFilenameNoExtension(final String filename) {
 
-        if (filename.equals(".")) {
-            return filename;
-        }
-
-        if (filename.equals("..")) {
-            return filename;
-        }
-
-        int match = filename.lastIndexOf(".");
-
-        if (match == -1) {
-            return filename;
-        }
-
-        return filename.substring(0, match);
+        return FilenameUtils.removeExtension(filename);
     }
 
     /**
