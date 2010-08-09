@@ -2,12 +2,18 @@ package org.openshapa.views.discrete.layouts;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+
 import org.openshapa.models.db.SystemErrorException;
+
 import org.openshapa.util.Constants;
+
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
+
 import java.util.Vector;
+
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
+
 
 /**
  * SheetLayoutStrongTemporal implements the strong temporal style layout of
@@ -21,15 +27,19 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
 
     /** Minimum time range in seconds for scale factor calculation. */
     private static final int MIN_RANGE_SECONDS = 600;
+
     /** Maximum time range in seconds for scale factor calculation. */
     private static final int MAX_RANGE_SECONDS = 10000;
+
     /** Minimum pixels to scale to. */
     private static final int MIN_SCROLL_PIXELS = 2000;
+
     /** Maximum pixels to scale to. */
     private static final int MAX_SCROLL_PIXELS = 10000;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SheetLayoutStrongTemporal.class);
+    private Logger logger = UserMetrix.getLogger(
+            SheetLayoutStrongTemporal.class);
 
     /**
      * SheetLayoutStrongTemporal constructor.
@@ -37,6 +47,7 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
      */
     public SheetLayoutStrongTemporal(final Vector<SpreadsheetColumn> cols) {
         setColumns(cols);
+
         for (SpreadsheetColumn col : cols) {
             col.resetLayoutManager(SheetLayoutType.StrongTemporal);
         }
@@ -46,12 +57,16 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
      * Recalculate positions of all the cells in the spreadsheet.
      */
     public final void relayoutCells() {
+
         try {
-            long[] minmax = {Long.MAX_VALUE, Long.valueOf(0)};
+            long[] minmax = { Long.MAX_VALUE, Long.valueOf(0) };
+
             for (SpreadsheetColumn col : getColumns()) {
                 CalculateMaxMins(col, minmax);
             }
+
             double pixPerTick = calcPixPerTick(minmax[0], minmax[1]);
+
             for (SpreadsheetColumn col : getColumns()) {
                 layoutColumnCells(col, minmax[0], pixPerTick);
             }
@@ -67,17 +82,22 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
      * @throws SystemErrorException if a problem occurs.
      */
     private void CalculateMaxMins(final SpreadsheetColumn col,
-                             final long[] minmax) throws SystemErrorException {
+        final long[] minmax) throws SystemErrorException {
+
         for (SpreadsheetCell cell : col.getCells()) {
+
             if (minmax[0] > cell.getOnsetTicks()) {
                 minmax[0] = cell.getOnsetTicks();
             }
+
             if (minmax[0] > cell.getOffsetTicks()) {
                 minmax[0] = cell.getOffsetTicks();
             }
+
             if (minmax[1] < cell.getOnsetTicks()) {
                 minmax[1] = cell.getOnsetTicks();
             }
+
             if (minmax[1] < cell.getOffsetTicks()) {
                 minmax[1] = cell.getOffsetTicks();
             }
@@ -94,18 +114,23 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
      */
     private double calcPixPerTick(final long minOnset, final long maxOffset) {
         double pixPerTick;
-        long seconds = Math.round((maxOffset - minOnset) /
-                                  Constants.TICKS_PER_SECOND);
+        long seconds = Math.round((maxOffset - minOnset)
+                / (double) Constants.TICKS_PER_SECOND);
+
         if (seconds < MIN_RANGE_SECONDS) {
+
             // small range - scale to fit in a fixed min number of pixels
             pixPerTick = 1.0 * MIN_SCROLL_PIXELS / (maxOffset - minOnset);
         } else if (seconds < MAX_RANGE_SECONDS) {
+
             // medium sized range - scale to 1 second per 10 pixels
             pixPerTick = 10.0 / Constants.TICKS_PER_SECOND;
         } else {
+
             // large range - scale to fit in a fixed max number of pixels
             pixPerTick = 1.0 * MAX_SCROLL_PIXELS / (maxOffset - minOnset);
         }
+
         return pixPerTick;
     }
 
@@ -116,7 +141,8 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
      * @throws SystemErrorException if a problem occurs.
      */
     private void layoutColumnCells(final SpreadsheetColumn col,
-           final long minOnset, double pixPerTick) throws SystemErrorException {
+        final long minOnset, final double pixPerTick)
+        throws SystemErrorException {
 
         Long vPos = Long.valueOf(0);
         Long vHeight = Long.valueOf(0);
@@ -129,20 +155,25 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
         // layout the cells.
         for (SpreadsheetCell cell : col.getCells()) {
             vPos = Math.round((cell.getOnsetTicks() - minOnset) * pixPerTick);
-            vHeight = Math.round((cell.getOffsetTicks() - minOnset)
-                                                          * pixPerTick) - vPos;
+            vHeight =
+                Math.round((cell.getOffsetTicks() - minOnset) * pixPerTick)
+                - vPos;
             intvPos = vPos.intValue();
             intvHeight = vHeight.intValue();
+
             if (prevCell != null) {
-                if (intvPos < prevvPos + prevvHeight) {
+
+                if (intvPos < (prevvPos + prevvHeight)) {
+
                     // we have overlap - modify size and border
                     prevCell.setBounds(0, prevvPos, col.getWidth() - 1,
-                                                       intvPos - prevvPos + 1);
+                        intvPos - prevvPos + 1);
                     prevCell.setOverlapBorder(true);
                 } else {
                     prevCell.setOverlapBorder(false);
                 }
             }
+
             // add a border to the top of the cell
             cell.setOnsetvGap(1);
             cell.setBounds(0, intvPos, col.getWidth() - 1, intvHeight + 1);
@@ -150,7 +181,8 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
             prevvPos = intvPos;
             prevvHeight = intvHeight;
         }
+
         col.setBottomBound(vPos.intValue() + vHeight.intValue()
-                           + Constants.BOTTOM_MARGIN);
+            + Constants.BOTTOM_MARGIN);
     }
 }
