@@ -235,9 +235,12 @@ public final class TrackController implements ViewerStateListener,
     }
 
     private void updateButtonIcons() {
-        actionButton1.setIcon(buttonListener.getActionButtonIcon1());
-        actionButton2.setIcon(buttonListener.getActionButtonIcon2());
-        actionButton3.setIcon(buttonListener.getActionButtonIcon3());
+
+        synchronized (this) {
+            actionButton1.setIcon(buttonListener.getActionButtonIcon1());
+            actionButton2.setIcon(buttonListener.getActionButtonIcon2());
+            actionButton3.setIcon(buttonListener.getActionButtonIcon3());
+        }
     }
 
     /**
