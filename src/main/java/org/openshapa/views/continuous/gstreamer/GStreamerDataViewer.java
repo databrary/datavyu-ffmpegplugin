@@ -518,20 +518,20 @@ public class GStreamerDataViewer implements DataViewer {
 
             String property = settings.getProperty("offset");
 
-            if ((property != null) && !property.equals("")) {
+            if (!"".equals(property)) {
                 setOffset(Long.parseLong(property));
             }
 
             property = settings.getProperty("volume");
 
-            if ((property != null) && !property.equals("")) {
+            if (!"".equals(property)) {
                 volume = Float.parseFloat(property);
                 volumeSlider.setValue((int) Math.round(volume * 100));
             }
 
             property = settings.getProperty("visible");
 
-            if ((property != null) && !property.equals("")) {
+            if (!"".equals(property)) {
                 isVisible = Boolean.parseBoolean(property);
 
                 // BugzID:2032 - Need to update when visbility is back again.
@@ -541,7 +541,7 @@ public class GStreamerDataViewer implements DataViewer {
 
             property = settings.getProperty("height");
 
-            if ((property != null) && !property.equals("")) {
+            if (!"".equals(property)) {
                 // BugzID:2057 - Need to update when resize is back again.
                 //setVideoHeight(Integer.parseInt(property));
             }
