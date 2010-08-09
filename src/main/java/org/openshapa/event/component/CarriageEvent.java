@@ -2,6 +2,8 @@ package org.openshapa.event.component;
 
 import java.util.EventObject;
 
+import org.openshapa.models.id.Identifier;
+
 
 /**
  * Event object for a track carriage event.
@@ -36,7 +38,7 @@ public final class CarriageEvent extends EventObject {
     }
 
     /** Track identifier. */
-    private final String trackId;
+    private final Identifier trackId;
 
     /** New time offset, in milliseconds, for the given track. */
     private final long offset;
@@ -69,7 +71,7 @@ public final class CarriageEvent extends EventObject {
      * @param eventType
      * @param hasModifiers;
      */
-    public CarriageEvent(final Object source, final String trackId,
+    public CarriageEvent(final Object source, final Identifier trackId,
         final long offset, final long bookmark, final long duration,
         final long temporalPosition, final EventType eventType,
         final boolean hasModifiers) {
@@ -100,7 +102,7 @@ public final class CarriageEvent extends EventObject {
     /**
      * @return Track identifier
      */
-    public String getTrackId() {
+    public Identifier getTrackId() {
         return trackId;
     }
 

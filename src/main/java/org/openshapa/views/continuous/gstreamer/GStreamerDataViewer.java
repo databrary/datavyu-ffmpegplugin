@@ -50,6 +50,8 @@ import org.gstreamer.elements.RGBDataSink;
 import org.gstreamer.swing.OSXVideoComponent;
 import org.gstreamer.swing.VideoComponent;
 
+import org.openshapa.models.id.Identifier;
+
 import org.openshapa.views.component.DefaultTrackPainter;
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.DataController;
@@ -62,6 +64,9 @@ public class GStreamerDataViewer implements DataViewer {
     private enum VideoSinkType {
         swingRenderer, osxRenderer, xWindowsRenderer,
     }
+
+    /** ID of this data viewer. */
+    private Identifier id;
 
     /** Icon for displaying volume slider. */
     private final ImageIcon volumeIcon = new ImageIcon(getClass().getResource(
@@ -626,5 +631,13 @@ public class GStreamerDataViewer implements DataViewer {
     @Override public void handleActionButtonEvent3(final ActionEvent event) {
         System.out.println("GStreamerDataViewer.handleActionButtonEvent3()");
         // TODO Auto-generated method stub
+    }
+
+    @Override public Identifier getIdentifier() {
+        return id;
+    }
+
+    @Override public void setIdentifier(final Identifier id) {
+        this.id = id;
     }
 }

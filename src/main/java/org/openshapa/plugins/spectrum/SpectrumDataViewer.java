@@ -14,6 +14,8 @@ import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.openshapa.models.id.Identifier;
+
 import org.openshapa.plugins.spectrum.engine.PlaybackEngine;
 import org.openshapa.plugins.spectrum.swing.AmplitudeTrack;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
@@ -28,6 +30,9 @@ import org.openshapa.views.continuous.ViewerStateListener;
  * Data viewer for audio spectrum.
  */
 public class SpectrumDataViewer implements DataViewer {
+
+    /** ID of the data viewer. */
+    private Identifier id;
 
     /** Dialog. */
     private SpectrumDialog dialog;
@@ -244,6 +249,14 @@ public class SpectrumDataViewer implements DataViewer {
     }
 
     @Override public void handleActionButtonEvent3(final ActionEvent arg0) {
+    }
+
+    @Override public Identifier getIdentifier() {
+        return id;
+    }
+
+    @Override public void setIdentifier(final Identifier id) {
+        this.id = id;
     }
 
 }

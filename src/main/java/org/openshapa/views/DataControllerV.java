@@ -40,6 +40,7 @@ import org.openshapa.controllers.SetNewCellStopTimeC;
 import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
 import org.openshapa.controllers.component.MixerController;
+import org.openshapa.controllers.id.IDController;
 
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.MarkerEvent;
@@ -51,6 +52,7 @@ import org.openshapa.event.component.TracksControllerListener;
 import org.openshapa.models.PlaybackModel;
 import org.openshapa.models.component.MixerConstants;
 import org.openshapa.models.component.TimescaleConstants;
+import org.openshapa.models.id.Identifier;
 
 import org.openshapa.plugins.PluginManager;
 
@@ -368,14 +370,16 @@ public final class DataControllerV extends OpenSHAPADialog
         if (plugin != null) {
             DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
                     .getApplication().getMainFrame(), false);
+            dataViewer.setIdentifier(IDController.generateIdentifier());
             dataViewer.setDataFeed(f);
             dataViewer.seekTo(clock.getTime());
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                 dataViewer.getTrackPainter());
-            mixerControllerV.bindTrackActions(f.getAbsolutePath(), dataViewer,
-                plugin.isActionSupported1(), dataViewer.getActionButtonIcon1(),
-                plugin.isActionSupported2(), dataViewer.getActionButtonIcon2(),
-                plugin.isActionSupported3(), dataViewer.getActionButtonIcon3());
+            mixerControllerV.bindTrackActions(dataViewer.getIdentifier(),
+                dataViewer, plugin.isActionSupported1(),
+                dataViewer.getActionButtonIcon1(), plugin.isActionSupported2(),
+                dataViewer.getActionButtonIcon2(), plugin.isActionSupported3(),
+                dataViewer.getActionButtonIcon3());
         }
     }
 
@@ -719,8 +723,7 @@ public final class DataControllerV extends OpenSHAPADialog
             OpenSHAPA.getProjectController().projectChanged();
 
             // Remove the data viewer from the tracks panel.
-            mixerControllerV.deregisterTrack(viewer.getDataFeed()
-                .getAbsolutePath(), viewer);
+            mixerControllerV.deregisterTrack(viewer.getIdentifier(), viewer);
             OpenSHAPA.getApplication().updateTitle();
         }
 
@@ -1468,14 +1471,15 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void addDataViewer(final ImageIcon icon, final DataViewer viewer,
         final File f, final TrackPainter trackPainter) {
+        assert viewer.getIdentifier() != null;
+
         addViewer(viewer, 0);
 
-        addDataViewerToProject(viewer.getClass().getName(),
-            f.getAbsolutePath());
-
         // Add the file to the tracks information panel
-        addTrack(icon, f.getAbsolutePath(), f.getName(), viewer.getDuration(),
-            viewer.getOffset(), trackPainter);
+        addTrack(viewer.getIdentifier(), icon, f.getAbsolutePath(), f.getName(),
+            viewer.getDuration(), viewer.getOffset(), trackPainter);
+
+        OpenSHAPA.getProjectController().projectChanged();
     }
 
     /**
@@ -1497,25 +1501,11 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param offset The time offset of the data feed in milliseconds.
      * @param trackPainter Track painter to use.
      */
-    public void addTrack(final ImageIcon icon, final String mediaPath,
-        final String name, final long duration, final long offset,
-        final TrackPainter trackPainter) {
-        mixerControllerV.addNewTrack(icon, mediaPath, name, duration, offset,
-            trackPainter);
-    }
-
-    /**
-     * Add the data viewer to the current project.
-     *
-     * @param pluginName
-     *            Fully qualified plugin class name.
-     * @param filePath
-     *            Absolute file path to the data feed.
-     */
-    public void addDataViewerToProject(final String pluginName,
-        final String filePath) {
-        OpenSHAPA.getProjectController().projectChanged();
-        OpenSHAPA.getApplication().updateTitle();
+    public void addTrack(final Identifier id, final ImageIcon icon,
+        final String mediaPath, final String name, final long duration,
+        final long offset, final TrackPainter trackPainter) {
+        mixerControllerV.addNewTrack(id, icon, mediaPath, name, duration,
+            offset, trackPainter);
     }
 
     /**
@@ -1792,13 +1782,12 @@ public final class DataControllerV extends OpenSHAPADialog
 
         // Look through our data viewers and update the offset
         for (DataViewer viewer : viewers) {
-            File feed = viewer.getDataFeed();
 
             /*
              * Found our data viewer, update the DV offset and the settings
              * in the project file.
              */
-            if (feed.getAbsolutePath().equals(e.getTrackId())) {
+            if (viewer.getIdentifier().equals(e.getTrackId())) {
                 viewer.setOffset(e.getOffset());
             }
         }

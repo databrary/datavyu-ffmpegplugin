@@ -143,7 +143,7 @@ public final class Project implements Cloneable {
         return viewerSettings;
     }
 
-    public Iterable<TrackSettings> getTrackSettings() {
+    @Deprecated public Iterable<TrackSettings> getTrackSettings() {
         return interfaceSettings;
     }
 

@@ -2,15 +2,12 @@ package org.openshapa.controllers.component;
 
 import java.awt.Adjustable;
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -60,6 +57,7 @@ import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.TimescaleConstants;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.Viewport;
+import org.openshapa.models.id.Identifier;
 
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.CustomActionListener;
@@ -487,16 +485,24 @@ public final class MixerController implements PropertyChangeListener,
     /**
      * Add a new track to the interface.
      *
-     * @param icon Icon associated with the track.
-     * @param mediaPath Absolute path to the media file.
-     * @param trackName Name of the track.
-     * @param duration The total duration of the track in milliseconds.
-     * @param offset The amount of playback offset in milliseconds.
-     * @param trackPainter The track painter to use.
+     * @param id
+     *            Identifier of the track.
+     * @param icon
+     *            Icon associated with the track.
+     * @param mediaPath
+     *            Absolute path to the media file.
+     * @param trackName
+     *            Name of the track.
+     * @param duration
+     *            The total duration of the track in milliseconds.
+     * @param offset
+     *            The amount of playback offset in milliseconds.
+     * @param trackPainter
+     *            The track painter to use.
      */
-    public void addNewTrack(final ImageIcon icon, final String mediaPath,
-        final String trackName, final long duration, final long offset,
-        final TrackPainter trackPainter) {
+    public void addNewTrack(final Identifier id, final ImageIcon icon,
+        final String mediaPath, final String trackName, final long duration,
+        final long offset, final TrackPainter trackPainter) {
 
         // Check if the scale needs to be updated.
         if (((duration + offset) > masterMixer.getViewport().getMaxEnd())
@@ -508,8 +514,8 @@ public final class MixerController implements PropertyChangeListener,
             masterMixer.setViewportMaxEnd(newMaxEnd);
         }
 
-        tracksEditorController.addNewTrack(icon, mediaPath, trackName, duration,
-            offset, this, trackPainter);
+        tracksEditorController.addNewTrack(id, icon, trackName, mediaPath,
+            duration, offset, this, trackPainter);
 
         tracksScrollPane.validate();
     }
@@ -523,21 +529,29 @@ public final class MixerController implements PropertyChangeListener,
     /**
      * Bind track actions to a data viewer.
      *
-     * @param mediaPath Absolute path to the media file
-     * @param dataViewer Viewer to bind
-     * @param actionSupported1 is the first custom action supported
-     * @param actionIcon1 icon associated with the first custom action
-     * @param actionSupported2 is the second custom action supported
-     * @param actionIcon2 icon associated with the second custom action
-     * @param actionSupported3 is the third custom action supported
-     * @param actionIcon3 icon associated with the third custom action
+     * @param trackId
+     *            Identifier of the track
+     * @param dataViewer
+     *            Viewer to bind
+     * @param actionSupported1
+     *            is the first custom action supported
+     * @param actionIcon1
+     *            icon associated with the first custom action
+     * @param actionSupported2
+     *            is the second custom action supported
+     * @param actionIcon2
+     *            icon associated with the second custom action
+     * @param actionSupported3
+     *            is the third custom action supported
+     * @param actionIcon3
+     *            icon associated with the third custom action
      */
-    public void bindTrackActions(final String mediaPath,
+    public void bindTrackActions(final Identifier trackId,
         final CustomActionListener dataViewer, final boolean actionSupported1,
         final ImageIcon actionIcon1, final boolean actionSupported2,
         final ImageIcon actionIcon2, final boolean actionSupported3,
         final ImageIcon actionIcon3) {
-        tracksEditorController.bindTrackActions(mediaPath, dataViewer,
+        tracksEditorController.bindTrackActions(trackId, dataViewer,
             actionSupported1, actionIcon1, actionSupported2, actionIcon2,
             actionSupported3, actionIcon3);
     }
@@ -545,12 +559,32 @@ public final class MixerController implements PropertyChangeListener,
     /**
      * Used to set up the track interface.
      *
-     * @param mediaPath Absolute path to the media file the track is
-     * representing.
-     * @param bookmark Bookmark position in milliseconds.
-     * @param lock True if track movement is locked, false otherwise.
+     * @param trackId
+     *            Track identifier.
+     * @param bookmark
+     *            Bookmark position in milliseconds.
+     * @param lock
+     *            True if track movement is locked, false otherwise.
      */
-    public void setTrackInterfaceSettings(final String mediaPath,
+    public void setTrackInterfaceSettings(final Identifier trackId,
+        final long bookmark, final boolean lock) {
+        tracksEditorController.setBookmarkPosition(trackId, bookmark);
+        tracksEditorController.setMovementLock(trackId, lock);
+    }
+
+    /**
+     * For backwards compatibility; used the set up the track interface. If
+     * there are multiple tracks identified by the same media path, only the
+     * first track found is used.
+     *
+     * @param mediaPath
+     *            Absolute path to the media file.
+     * @param bookmark
+     *            Bookmark position in milliseconds.
+     * @param lock
+     *            True if track movement is locked, false otherwise.
+     */
+    @Deprecated public void setTrackInterfaceSettings(final String mediaPath,
         final long bookmark, final boolean lock) {
         tracksEditorController.setBookmarkPosition(mediaPath, bookmark);
         tracksEditorController.setMovementLock(mediaPath, lock);
@@ -661,11 +695,10 @@ public final class MixerController implements PropertyChangeListener,
      * @param mediaPath
      * @param dataViewer
      */
-    public void deregisterTrack(final String mediaPath,
+    public void deregisterTrack(final Identifier trackId,
         final CustomActionListener dataViewer) {
-        tracksEditorController.unbindTrackActions(mediaPath, dataViewer);
-
-        tracksEditorController.removeTrack(mediaPath, this);
+        tracksEditorController.unbindTrackActions(trackId, dataViewer);
+        tracksEditorController.removeTrack(trackId, this);
 
         // Update tracks panel display
         tracksScrollPane.validate();
@@ -694,6 +727,10 @@ public final class MixerController implements PropertyChangeListener,
      */
     public Iterable<TrackModel> getAllTrackModels() {
         return tracksEditorController.getAllTrackModels();
+    }
+
+    public TrackModel getTrackModel(final Identifier id) {
+        return tracksEditorController.getTrackModel(id);
     }
 
     /**
