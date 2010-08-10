@@ -514,19 +514,14 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
         colChanges.reset();
     }
 
-    class VListTableModel extends DefaultTableModel {
+    private class VListTableModel extends DefaultTableModel {
 
         @Override
-        public Class getColumnClass(int column) {
-            try {
-                if (column == VCOLUMN) {
-                    return Class.forName("java.lang.Boolean");
-                }
-                return Class.forName("java.lang.Object");
-            } catch (ClassNotFoundException ex) {
-                ex.printStackTrace();
-                return null;
+        public Class<?> getColumnClass(int column) {
+            if (column == VCOLUMN) {
+                return Boolean.class;
             }
+            return Object.class;
         }
 
         @Override
