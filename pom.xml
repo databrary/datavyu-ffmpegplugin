@@ -550,6 +550,7 @@
                 <preCp>appframework-1.0.3.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
                 <preCp>openshapa-lib-0.0.36.jar</preCp>
+                <preCp>openshapa-gst-1.4.0.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.5.jar</preCp>
                 <preCp>miglayout-3.7.3.1-swing.jar</preCp>
@@ -557,9 +558,6 @@
                 <preCp>fest-reflect-1.2.jar</preCp>
                 <preCp>google-collections-1.0.jar</preCp>
                 <preCp>commons-lang-2.5.jar</preCp>
-<!--  TODO temporarily disabled as it has been integrated into openshapa-lib                
-                <preCp>gstreamer-java-1.4.jar</preCp>
--->                
             </classPath>
         </configuration>
       </plugin>
@@ -617,7 +615,7 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.36</version>
+      <version>0.0.40</version>
     </dependency>
 
     <dependency>
@@ -676,15 +674,12 @@
       <version>1.0</version>
     </dependency>
 
-    <!-- g-streamer dependencies -->
-
-<!-- TODO temporarily disabled as it has been integrated into openshapa-lib 
     <dependency>
-      <groupId>com.googlecode.gstreamer-java</groupId>
-      <artifactId>gstreamer-java</artifactId>
-      <version>1.4</version>
+      <groupId>org.openshapa</groupId>
+      <artifactId>openshapa-gst</artifactId>
+      <version>1.4.0</version>
     </dependency>
--->    
+
     <dependency>
     	<groupId>commons-lang</groupId>
     	<artifactId>commons-lang</artifactId>
