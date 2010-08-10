@@ -331,7 +331,7 @@ public final class MixerController implements PropertyChangeListener,
                 "(filler.w-" + MixerConstants.R_EDGE_PAD + ")");
             constraints.put("height", Integer.toString(tracksScrollPaneHeight));
 
-            String template = "pos ${x} ${y} ${x2} n, h ${height}::";
+            String template = "pos ${x} ${y} ${x2} n, h ${height}!";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
             layeredPane.setLayer(tracksScrollPane, 10);
