@@ -55,15 +55,7 @@ public final class PluginManager {
     private static final Class<?> PLUGIN_CLASS;
 
     static {
-
-        try {
-            PLUGIN_CLASS = Class.forName(
-                    "org.openshapa.views.continuous.Plugin");
-        } catch (ClassNotFoundException ex) {
-            UserMetrix.getLogger(PluginManager.class).error(
-                "Unable to init plugin class");
-            throw new RuntimeException(ex);
-        }
+        PLUGIN_CLASS = Plugin.class;
     }
 
     //
@@ -227,6 +219,7 @@ public final class PluginManager {
 
                     while (entries.hasMoreElements()) {
                         String name = entries.nextElement().getName();
+
 
                         // Found a class file - attempt to add it as a plugin.
                         if (name.endsWith(".class")) {
