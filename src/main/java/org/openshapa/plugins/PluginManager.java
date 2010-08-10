@@ -279,8 +279,7 @@ public final class PluginManager {
 
             // Ignore UI tests - when they load they mess everything up (the
             // uispec4j interceptor kicks in and the UI stops working.
-            if (!cName.contains("org.uispec4j")
-                    && !cName.contains("org.openshapa.uitests")
+            if (!cName.contains("org.openshapa.uitests")
                     && !cName.contains("org.gstreamer")) {
 
                 Class<?> testClass = Class.forName(cName);
