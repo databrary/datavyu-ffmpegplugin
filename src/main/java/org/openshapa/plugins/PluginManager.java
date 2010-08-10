@@ -1,6 +1,10 @@
 package org.openshapa.plugins;
 
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+
 import com.usermetrix.jclient.Logger;
 
 import java.io.File;
@@ -15,7 +19,6 @@ import java.net.URLClassLoader;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -43,10 +46,6 @@ import org.openshapa.views.continuous.gstreamer.GStreamerDataViewer;
  */
 public final class PluginManager {
 
-    // --------------------------------------------------------------------------
-    //
-    //
-
     /** The default plugin to present to the user when loading data. */
     private static final String DEFAULT_VIEW = GStreamerDataViewer.class
         .getName();
@@ -68,21 +67,23 @@ public final class PluginManager {
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(PluginManager.class);
 
-    // --------------------------------------------------------------------------
-    //
-    //
-
     /** The list of plugins associated with file filter. */
-    private Map<FileFilter, Plugin> plugins = new HashMap<FileFilter, Plugin>();
+    private Map<FileFilter, Plugin> plugins;
 
     /** The list of plugins associated with data viewer class name. */
-    private Map<String, Plugin> pluginLookup = new HashMap<String, Plugin>();
+    private Map<String, Plugin> pluginLookup;
+
+    /** Mapping between plugin classifiers and plugins. */
+    private Multimap<String, Plugin> pluginClassifiers;
 
     /**
      * Default constructor. Searches for valid plugins ... currently scans the
      * classpath looking for classes that implement the plugin interface.
      */
     private PluginManager() {
+        plugins = Maps.newHashMap();
+        pluginLookup = Maps.newHashMap();
+        pluginClassifiers = HashMultimap.create();
         initialize();
     }
 
@@ -288,6 +289,9 @@ public final class PluginManager {
                     Plugin p = (Plugin) testClass.newInstance();
                     plugins.put(p.getFileFilter(), p);
 
+                    // BugzID:2110
+                    pluginClassifiers.put(p.getClassifier(), p);
+
                     // We call this with no parent frame because asking
                     // OpenSHAPA for its mainframe before it is created ruins
                     // all the dialogs (and menus).
@@ -327,6 +331,29 @@ public final class PluginManager {
         }
 
         return result;
+    }
+
+    /**
+     * Searches for and returns a plugin compatible with the given classifier
+     * and data file.
+     *
+     * @param classifier
+     *            Plugin classifier string.
+     * @param file
+     *            The data file to open.
+     * @return The first compatible plugin that is found, null otherwise.
+     */
+    public Plugin getCompatiblePlugin(final String classifier,
+        final File file) {
+
+        for (Plugin candidate : pluginClassifiers.get(classifier)) {
+
+            if (candidate.getFileFilter().accept(file)) {
+                return candidate;
+            }
+        }
+
+        return null;
     }
 
     /**
