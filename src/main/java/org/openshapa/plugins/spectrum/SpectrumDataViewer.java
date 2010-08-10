@@ -6,8 +6,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import java.util.Properties;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -25,11 +28,17 @@ import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.ViewerStateListener;
 
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
+
 
 /**
  * Data viewer for audio spectrum.
  */
-public class SpectrumDataViewer implements DataViewer {
+public final class SpectrumDataViewer implements DataViewer {
+
+    private static final Logger LOGGER = UserMetrix.getLogger(
+            SpectrumDataViewer.class);
 
     /** ID of the data viewer. */
     private Identifier id;
@@ -223,11 +232,32 @@ public class SpectrumDataViewer implements DataViewer {
     }
 
     @Override public void loadSettings(final InputStream is) {
-        // Do nothing.
+        Properties settings = new Properties();
+
+        try {
+            settings.load(is);
+
+            String property = settings.getProperty("offset");
+
+            if (!"".equals(property)) {
+                setOffset(Long.parseLong(property));
+            }
+
+        } catch (IOException e) {
+            LOGGER.error("Error loading settings", e);
+        }
+
     }
 
     @Override public void storeSettings(final OutputStream os) {
-        // Do nothing.
+        Properties settings = new Properties();
+        settings.setProperty("offset", Long.toString(getOffset()));
+
+        try {
+            settings.store(os, null);
+        } catch (IOException e) {
+            LOGGER.error("Error saving settings", e);
+        }
     }
 
     @Override public ImageIcon getActionButtonIcon1() {
