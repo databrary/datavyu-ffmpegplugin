@@ -6,6 +6,7 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.awt.BorderLayout;
+import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -35,20 +36,27 @@ import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.gstreamer.BusSyncReply;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Format;
 import org.gstreamer.Gst;
+import org.gstreamer.Message;
 import org.gstreamer.SeekFlags;
 import org.gstreamer.SeekType;
 import org.gstreamer.State;
+import org.gstreamer.Structure;
 
 import org.gstreamer.elements.OSXVideoSink;
 import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.RGBDataSink;
+import org.gstreamer.event.BusSyncHandler;
+import org.gstreamer.interfaces.XOverlay;
 
 import org.gstreamer.swing.OSXVideoComponent;
 import org.gstreamer.swing.VideoComponent;
+
+import org.openshapa.models.id.Identifier;
 
 import org.openshapa.views.component.DefaultTrackPainter;
 import org.openshapa.views.component.TrackPainter;
@@ -62,6 +70,9 @@ public class GStreamerDataViewer implements DataViewer {
     private enum VideoSinkType {
         swingRenderer, osxRenderer, xWindowsRenderer,
     }
+
+    /** ID of this data viewer. */
+    private Identifier id;
 
     /** Icon for displaying volume slider. */
     private final ImageIcon volumeIcon = new ImageIcon(getClass().getResource(
@@ -346,9 +357,10 @@ public class GStreamerDataViewer implements DataViewer {
 
         if (Platform.isMac()) {
             renderer = VideoSinkType.osxRenderer;
+        } else if (Platform.isLinux()) {
+        	renderer = VideoSinkType.xWindowsRenderer;
         } else {
             renderer = VideoSinkType.swingRenderer;
-//              renderer = VideoSinkType.xWindowsRenderer;
         }
 
         switch (renderer) {
@@ -363,11 +375,23 @@ public class GStreamerDataViewer implements DataViewer {
         }
 
         case xWindowsRenderer: {
-            Element ximagesink = ElementFactory.make("ximagesink",
-                    "ximagesink");
-            ximagesink.set("force-aspect-ratio", true);
-            playBin.setVideoSink(ximagesink);
-
+            final Canvas canvas = new Canvas();
+            videoDialog.add(canvas);
+        	
+            final Element xvimagesink = ElementFactory.make("xvimagesink", "xvimagesink");
+            xvimagesink.set("force-aspect-ratio", true);
+            playBin.setVideoSink(xvimagesink);
+                        
+            playBin.getBus().setSyncHandler(new BusSyncHandler() {
+                public BusSyncReply syncMessage(Message msg) {
+                    Structure s = msg.getStructure();
+                    if (s == null || !s.hasName("prepare-xwindow-id")) {
+                        return BusSyncReply.PASS;
+                    }
+                    XOverlay.wrap(xvimagesink).setWindowID(canvas);
+                    return BusSyncReply.DROP;
+                }
+            });
             break;
         }
 
@@ -626,5 +650,13 @@ public class GStreamerDataViewer implements DataViewer {
     @Override public void handleActionButtonEvent3(final ActionEvent event) {
         System.out.println("GStreamerDataViewer.handleActionButtonEvent3()");
         // TODO Auto-generated method stub
+    }
+
+    @Override public Identifier getIdentifier() {
+        return id;
+    }
+
+    @Override public void setIdentifier(final Identifier id) {
+        this.id = id;
     }
 }

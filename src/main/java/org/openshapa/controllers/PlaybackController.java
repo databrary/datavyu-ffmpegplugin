@@ -29,6 +29,8 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.controllers.component.MixerController;
+import org.openshapa.controllers.id.IDController;
+
 import org.openshapa.event.PlaybackEvent;
 import org.openshapa.event.PlaybackListener;
 import org.openshapa.event.component.CarriageEvent;
@@ -40,6 +42,8 @@ import org.openshapa.event.component.TracksControllerListener;
 import org.openshapa.logging.PlaybackLogging;
 
 import org.openshapa.models.PlaybackModel;
+import org.openshapa.models.id.Identifier;
+
 import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.ClockTimer;
@@ -1048,13 +1052,13 @@ public final class PlaybackController implements PlaybackListener,
                         clock.setTime(tracksTime);
                         clockStep(tracksTime);
 
+                        // Remove the data viewer from the tracks panel.
+                        mixerControllerV.deregisterTrack(viewer.getIdentifier(),
+                            viewer);
+
                         // Data viewer removed, mark project as changed.
                         OpenSHAPA.getProjectController().projectChanged();
 
-                        // Remove the data viewer from the tracks panel.
-                        mixerControllerV.deregisterTrack(viewer.getDataFeed()
-                            .getAbsolutePath(), viewer);
-                        OpenSHAPA.getApplication().updateTitle();
                     }
 
                 }
@@ -1095,50 +1099,33 @@ public final class PlaybackController implements PlaybackListener,
     /**
      * Adds a track to the tracks panel.
      *
-     * @param icon Icon associated with the track
-     * @param mediaPath Absolute file path to the media file.
-     * @param name The name of the track to add.
-     * @param duration The duration of the data feed in milliseconds.
-     * @param offset The time offset of the data feed in milliseconds.
-     * @param trackPainter Track painter to use.
+     * @param id
+     *            Track identifier.
+     * @param icon
+     *            Icon associated with the track
+     * @param mediaPath
+     *            Absolute file path to the media file.
+     * @param name
+     *            The name of the track to add.
+     * @param duration
+     *            The duration of the data feed in milliseconds.
+     * @param offset
+     *            The time offset of the data feed in milliseconds.
+     * @param trackPainter
+     *            Track painter to use.
      */
-    public void addTrack(final ImageIcon icon, final String mediaPath,
-        final String name, final long duration, final long offset,
-        final TrackPainter trackPainter) {
+    public void addTrack(final Identifier id, final ImageIcon icon,
+        final String mediaPath, final String name, final long duration,
+        final long offset, final TrackPainter trackPainter) {
 
         Runnable edtTask = new Runnable() {
                 public void run() {
-                    mixerControllerV.addNewTrack(icon, mediaPath, name,
+                    mixerControllerV.addNewTrack(id, icon, mediaPath, name,
                         duration, offset, trackPainter);
                 }
             };
 
         SwingUtilities.invokeLater(edtTask);
-    }
-
-    /**
-     * Add the data viewer to the current project.
-     *
-     * @param pluginName
-     *            Fully qualified plugin class name.
-     * @param filePath
-     *            Absolute file path to the data feed.
-     */
-    public void addDataViewerToProject(final String pluginName,
-        final String filePath) {
-
-        Runnable task = new Runnable() {
-                public void run() {
-                    OpenSHAPA.getProjectController().projectChanged();
-                    OpenSHAPA.getApplication().updateTitle();
-                }
-            };
-
-        if (!SwingUtilities.isEventDispatchThread()) {
-            task.run();
-        } else {
-            executor.submit(task);
-        }
     }
 
     /**
@@ -1157,8 +1144,10 @@ public final class PlaybackController implements PlaybackListener,
                     viewers.add(viewer);
                     viewer.setParentController(PlaybackController.this);
                     viewer.setOffset(offset);
+
                     boolean visible = viewer.getParentJDialog().isVisible();
                     OpenSHAPA.getApplication().show(viewer.getParentJDialog());
+
                     if (!visible) {
                         viewer.getParentJDialog().setVisible(false);
                     }
@@ -1484,16 +1473,18 @@ public final class PlaybackController implements PlaybackListener,
         Plugin plugin = pm.getAssociatedPlugin(ff);
 
         if (plugin != null) {
-            DataViewer dataViewer = plugin.getNewDataViewer(
-                    OpenSHAPA.getApplication().getMainFrame(), false);
+            DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
+                    .getApplication().getMainFrame(), false);
+            dataViewer.setIdentifier(IDController.generateIdentifier());
             dataViewer.setDataFeed(f);
             dataViewer.seekTo(clock.getTime());
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                 dataViewer.getTrackPainter());
-            mixerControllerV.bindTrackActions(f.getAbsolutePath(), dataViewer,
-                plugin.isActionSupported1(), dataViewer.getActionButtonIcon1(),
-                plugin.isActionSupported2(), dataViewer.getActionButtonIcon2(),
-                plugin.isActionSupported3(), dataViewer.getActionButtonIcon3());
+            mixerControllerV.bindTrackActions(dataViewer.getIdentifier(),
+                dataViewer, plugin.isActionSupported1(),
+                dataViewer.getActionButtonIcon1(), plugin.isActionSupported2(),
+                dataViewer.getActionButtonIcon2(), plugin.isActionSupported3(),
+                dataViewer.getActionButtonIcon3());
         }
     }
 
@@ -1547,15 +1538,15 @@ public final class PlaybackController implements PlaybackListener,
     private void addDataViewer(final ImageIcon icon, final DataViewer viewer,
         final File f, final TrackPainter trackPainter) {
         assert !SwingUtilities.isEventDispatchThread();
+        assert viewer.getIdentifier() != null;
 
         addViewer(viewer, 0);
 
-        addDataViewerToProject(viewer.getClass().getName(),
-            f.getAbsolutePath());
+        OpenSHAPA.getProjectController().projectChanged();
 
         // Add the file to the tracks information panel
-        addTrack(icon, f.getAbsolutePath(), f.getName(), viewer.getDuration(),
-            viewer.getOffset(), trackPainter);
+        addTrack(viewer.getIdentifier(), icon, f.getAbsolutePath(), f.getName(),
+            viewer.getDuration(), viewer.getOffset(), trackPainter);
     }
 
     /**

@@ -74,4 +74,8 @@ public class GStreamerPlugin implements Plugin {
         // TODO Auto-generated method stub
         return false;
     }
+
+    @Override public String getClassifier() {
+        return "openshapa.video";
+    }
 }

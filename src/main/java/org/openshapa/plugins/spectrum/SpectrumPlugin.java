@@ -48,4 +48,8 @@ public class SpectrumPlugin implements Plugin {
         return false;
     }
 
+    @Override public String getClassifier() {
+        return "openshapa.audio";
+    }
+
 }
