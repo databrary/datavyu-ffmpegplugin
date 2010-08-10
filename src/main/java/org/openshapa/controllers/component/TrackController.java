@@ -30,6 +30,8 @@ import net.miginfocom.swing.MigLayout;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.controllers.id.IDController;
+
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.CarriageEventListener;
 import org.openshapa.event.component.TrackMouseEventListener;
@@ -39,6 +41,7 @@ import org.openshapa.models.component.MixerView;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.Viewport;
 import org.openshapa.models.component.TrackModel.TrackState;
+import org.openshapa.models.id.Identifier;
 
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.CustomActionListener;
@@ -235,34 +238,41 @@ public final class TrackController implements ViewerStateListener,
     }
 
     private void updateButtonIcons() {
-        actionButton1.setIcon(buttonListener.getActionButtonIcon1());
-        actionButton2.setIcon(buttonListener.getActionButtonIcon2());
-        actionButton3.setIcon(buttonListener.getActionButtonIcon3());
+
+        synchronized (this) {
+            actionButton1.setIcon(buttonListener.getActionButtonIcon1());
+            actionButton2.setIcon(buttonListener.getActionButtonIcon2());
+            actionButton3.setIcon(buttonListener.getActionButtonIcon3());
+        }
     }
 
     /**
      * Sets the track information to use.
+     *
+     *@param id
+     *            Identifier to use.
      * @param icon
      *            Icon to use with this track. {@code null} if no icon.
      * @param trackName
      *            Name of this track
-     * @param trackId
+     * @param trackPath
      *            Absolute path to the track's data feed
      * @param duration
      *            Duration of the data feed in milliseconds
      * @param offset
      *            Offset of the data feed in milliseconds
      */
-    public void setTrackInformation(final ImageIcon icon,
-        final String trackName, final String trackId, final long duration,
+    public void setTrackInformation(final Identifier id, final ImageIcon icon,
+        final String trackName, final String trackPath, final long duration,
         final long offset) {
 
         if (icon != null) {
             iconLabel.setIcon(icon);
         }
 
+        trackModel.setId(id);
         trackModel.setTrackName(trackName);
-        trackModel.setTrackId(trackId);
+        trackModel.setMediaPath(trackPath);
         trackModel.setDuration(duration);
         trackModel.setOffset(offset);
         trackModel.setErroneous(false);
@@ -720,10 +730,10 @@ public final class TrackController implements ViewerStateListener,
         final long temporalPosition, final boolean hasModifiers) {
 
         synchronized (this) {
-            final CarriageEvent e = new CarriageEvent(this,
-                    trackModel.getTrackId(), newOffset,
-                    trackModel.getBookmark(), trackModel.getDuration(),
-                    temporalPosition, EventType.OFFSET_CHANGE, hasModifiers);
+            final CarriageEvent e = new CarriageEvent(this, trackModel.getId(),
+                    newOffset, trackModel.getBookmark(),
+                    trackModel.getDuration(), temporalPosition,
+                    EventType.OFFSET_CHANGE, hasModifiers);
             final Object[] listeners = listenerList.getListenerList();
 
             /*
@@ -745,10 +755,10 @@ public final class TrackController implements ViewerStateListener,
     private void fireCarriageBookmarkRequestEvent() {
 
         synchronized (this) {
-            final CarriageEvent e = new CarriageEvent(this,
-                    trackModel.getTrackId(), trackModel.getOffset(),
-                    trackModel.getBookmark(), trackModel.getDuration(), 0,
-                    EventType.BOOKMARK_REQUEST, false);
+            final CarriageEvent e = new CarriageEvent(this, trackModel.getId(),
+                    trackModel.getOffset(), trackModel.getBookmark(),
+                    trackModel.getDuration(), 0, EventType.BOOKMARK_REQUEST,
+                    false);
             final Object[] listeners = listenerList.getListenerList();
 
             /*
@@ -771,10 +781,10 @@ public final class TrackController implements ViewerStateListener,
     private void fireCarriageBookmarkSaveEvent() {
 
         synchronized (this) {
-            final CarriageEvent e = new CarriageEvent(this,
-                    trackModel.getTrackId(), trackModel.getOffset(),
-                    trackModel.getBookmark(), trackModel.getDuration(), 0,
-                    EventType.BOOKMARK_SAVE, false);
+            final CarriageEvent e = new CarriageEvent(this, trackModel.getId(),
+                    trackModel.getOffset(), trackModel.getBookmark(),
+                    trackModel.getDuration(), 0, EventType.BOOKMARK_SAVE,
+                    false);
             final Object[] listeners = listenerList.getListenerList();
 
             /*
@@ -798,10 +808,10 @@ public final class TrackController implements ViewerStateListener,
     private void fireCarriageSelectionChangeEvent(final boolean hasModifiers) {
 
         synchronized (this) {
-            final CarriageEvent e = new CarriageEvent(this,
-                    trackModel.getTrackId(), trackModel.getOffset(),
-                    trackModel.getBookmark(), trackModel.getDuration(), 0,
-                    EventType.CARRIAGE_SELECTION, hasModifiers);
+            final CarriageEvent e = new CarriageEvent(this, trackModel.getId(),
+                    trackModel.getOffset(), trackModel.getBookmark(),
+                    trackModel.getDuration(), 0, EventType.CARRIAGE_SELECTION,
+                    hasModifiers);
             final Object[] listeners = listenerList.getListenerList();
 
             /*
@@ -824,10 +834,10 @@ public final class TrackController implements ViewerStateListener,
     private void fireLockStateChangedEvent() {
 
         synchronized (this) {
-            final CarriageEvent e = new CarriageEvent(this,
-                    trackModel.getTrackId(), trackModel.getOffset(),
-                    trackModel.getBookmark(), trackModel.getDuration(), 0,
-                    EventType.CARRIAGE_LOCK, false);
+            final CarriageEvent e = new CarriageEvent(this, trackModel.getId(),
+                    trackModel.getOffset(), trackModel.getBookmark(),
+                    trackModel.getDuration(), 0, EventType.CARRIAGE_LOCK,
+                    false);
 
             final Object[] listeners = listenerList.getListenerList();
 

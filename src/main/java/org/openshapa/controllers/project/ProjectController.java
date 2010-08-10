@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import org.jdesktop.application.Application;
@@ -15,11 +16,14 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.controllers.component.MixerController;
+import org.openshapa.controllers.id.IDController;
+
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.TrackSettings;
 import org.openshapa.models.project.ViewerSetting;
+
 import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.FileUtils;
@@ -259,11 +263,10 @@ public final class ProjectController {
         // Load the plugins required for each media file
         boolean showController = false;
 
-        boolean missingFiles = false;
-
         List<String> missingFilesList = new LinkedList<String>();
 
-        MixerController mixerController = dataController.getMixerController();
+        final MixerController mixerController =
+            dataController.getMixerController();
 
         // Load the viewer settings.
         for (ViewerSetting setting : project.getViewerSettings()) {
@@ -275,6 +278,7 @@ public final class ProjectController {
 
             // If that doesn't work - try generating & using a relative path.
             if (!file.exists()) {
+
                 // BugzID:1804 - If absolute path does not find the file, look
                 // in the relative path (as long as we are dealing with a newer
                 // project file type).
@@ -287,8 +291,7 @@ public final class ProjectController {
             // last folder in the file's absolute path.
             if (!file.exists()) {
                 file = new File(projDir + File.separator
-                                + file.getParentFile().getName(),
-                                file.getName());
+                        + file.getParentFile().getName(), file.getName());
             }
 
             // 2. The project directory.
@@ -298,20 +301,21 @@ public final class ProjectController {
 
             // Give up - couldn't find it.
             if (!file.exists()) {
-                missingFiles = true;
                 missingFilesList.add(setting.getFilePath());
 
                 continue;
             }
 
-            Plugin plugin = pm.getAssociatedPlugin(setting.getPluginName());
+            final Plugin plugin = pm.getAssociatedPlugin(
+                    setting.getPluginName());
 
             if (plugin == null) {
                 continue;
             }
 
-            DataViewer viewer = plugin.getNewDataViewer(OpenSHAPA
+            final DataViewer viewer = plugin.getNewDataViewer(OpenSHAPA
                     .getApplication().getMainFrame(), false);
+            viewer.setIdentifier(IDController.generateIdentifier());
             viewer.setDataFeed(file);
 
             if (setting.getSettingsId() != null) {
@@ -326,16 +330,24 @@ public final class ProjectController {
 
             dataController.addViewer(viewer, viewer.getOffset());
 
-            dataController.addTrack(plugin.getTypeIcon(),
-                file.getAbsolutePath(), file.getName(), viewer.getDuration(),
-                viewer.getOffset(), viewer.getTrackPainter());
+            dataController.addTrack(viewer.getIdentifier(),
+                plugin.getTypeIcon(), file.getAbsolutePath(), file.getName(),
+                viewer.getDuration(), viewer.getOffset(),
+                viewer.getTrackPainter());
 
-            mixerController.bindTrackActions(file.getAbsolutePath(), viewer,
+            if (setting.getTrackSettings() != null) {
+                final TrackSettings ts = setting.getTrackSettings();
+                mixerController.setTrackInterfaceSettings(viewer
+                    .getIdentifier(), ts.getBookmarkPosition(), ts.isLocked());
+            }
+
+            mixerController.bindTrackActions(viewer.getIdentifier(), viewer,
                 plugin.isActionSupported1(), viewer.getActionButtonIcon1(),
                 plugin.isActionSupported2(), viewer.getActionButtonIcon2(),
                 plugin.isActionSupported3(), viewer.getActionButtonIcon3());
         }
 
+        // Do not remove; this is here for backwards compatibility.
         for (TrackSettings setting : project.getTrackSettings()) {
             File file = new File(setting.getFilePath());
 
@@ -357,7 +369,7 @@ public final class ProjectController {
                 setting.getBookmarkPosition(), setting.isLocked());
         }
 
-        if (missingFiles) {
+        if (!missingFilesList.isEmpty()) {
             JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                 .getContext().getResourceMap(OpenSHAPA.class);
@@ -401,30 +413,27 @@ public final class ProjectController {
             vs.setFilePath(viewer.getDataFeed().getAbsolutePath());
             vs.setPluginName(viewer.getClass().getName());
 
+            // BugzID:2108
+            vs.setPluginClassifier(PluginManager.getInstance()
+                .getAssociatedPlugin(vs.getPluginName()).getClassifier());
+
             // BugzID:1806
-            vs.setSettingsId(Integer.toString(settingsId));
-            settingsId++;
+            vs.setSettingsId(Integer.toString(settingsId++));
             viewer.storeSettings(vs.getSettingsOutputStream());
+
+            // BugzID:2107
+            TrackModel tm = dataController.getMixerController().getTrackModel(
+                    viewer.getIdentifier());
+            TrackSettings ts = new TrackSettings();
+            ts.setBookmarkPosition(tm.getBookmark());
+            ts.setLocked(tm.isLocked());
+
+            vs.setTrackSettings(ts);
 
             viewerSettings.add(vs);
         }
 
         project.setViewerSettings(viewerSettings);
-
-        // Gather the user interface settings
-        List<TrackSettings> trackSettings = new LinkedList<TrackSettings>();
-
-        for (TrackModel model
-            : dataController.getMixerController().getAllTrackModels()) {
-            TrackSettings ts = new TrackSettings();
-            ts.setFilePath(model.getTrackId());
-            ts.setBookmarkPosition(model.getBookmark());
-            ts.setLocked(model.isLocked());
-
-            trackSettings.add(ts);
-        }
-
-        project.setTrackSettings(trackSettings);
     }
 
     /**
@@ -441,6 +450,8 @@ public final class ProjectController {
      */
     public void projectChanged() {
         changed = true;
+
+        OpenSHAPA.getApplication().updateTitle();
     }
 
     /**

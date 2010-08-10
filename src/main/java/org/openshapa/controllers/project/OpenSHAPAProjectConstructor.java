@@ -49,6 +49,9 @@ public class OpenSHAPAProjectConstructor extends Constructor {
 
             if (projectVersion >= 3) {
                 project.setViewerSettings((List) values.get("viewerSettings"));
+            }
+
+            if ((3 <= projectVersion) && (projectVersion <= 4)) {
                 project.setTrackSettings((List) values.get("trackSettings"));
             }
 
@@ -81,14 +84,22 @@ public class OpenSHAPAProjectConstructor extends Constructor {
                 vs.setOffset(Long.parseLong(offset));
             }
 
-
             // BugzID:1806
-            Object version = values.get("version");
+            Object versionObj = values.get("version");
 
-            if (version == null) {
+            if (versionObj == null) {
                 vs.setSettingsId(null);
             } else {
+                int version = (Integer) versionObj;
+
                 vs.setSettingsId((String) values.get("settingsId"));
+
+                if (version >= 3) {
+                    vs.setTrackSettings((TrackSettings) values.get(
+                            "trackSettings"));
+                    vs.setPluginClassifier((String) values.get("classifier"));
+                }
+
             }
 
             return vs;
@@ -103,13 +114,25 @@ public class OpenSHAPAProjectConstructor extends Constructor {
         public Object construct(final Node node) {
             MappingNode mnode = (MappingNode) node;
             Map values = constructMapping(mnode);
-            TrackSettings is = new TrackSettings();
-            is.setFilePath((String) values.get("feed"));
-            is.setLocked((Boolean) values.get("locked"));
-            is.setBookmarkPosition(Long.parseLong(
+
+            int version = 0;
+            Object versionObj = values.get("version");
+
+            if (versionObj != null) {
+                version = (Integer) versionObj;
+            }
+
+            TrackSettings ts = new TrackSettings();
+
+            if (version == 1) {
+                ts.setFilePath((String) values.get("feed"));
+            }
+
+            ts.setLocked((Boolean) values.get("locked"));
+            ts.setBookmarkPosition(Long.parseLong(
                     (String) values.get("bookmark")));
 
-            return is;
+            return ts;
         }
     }
 

@@ -787,16 +787,13 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         track.drag(-100);
         Assert.assertEquals(track.getOffsetTimeAsLong(), offset);
 
-        /* BugzID: 1734
-         * zoomSlider.slideToMaximum();
-         * dcf.getTrackMixerController().getHorizontalScrollBar()
-         * .scrollToMaximum();
-         *
-         * // 6. Try to drag track, shouldn't be able to. track.drag(150);
-         * Assert.assertEquals(track.getOffsetTimeAsLong(), offset);
-         * track.drag(-100); Assert.assertEquals(track.getOffsetTimeAsLong(),
-         * offset);
-         */
+        zoomSlider.slideToMaximum();
+        dcf.getTrackMixerController().getHorizontalScrollBar()
+                .scrollToMaximum();
+        // 6. Try to drag track, shouldn't be able to. track.drag(150);
+        Assert.assertEquals(track.getOffsetTimeAsLong(), offset);
+        track.drag(-100); Assert.assertEquals(track.getOffsetTimeAsLong(),
+                offset);
     }
 
     /**
@@ -850,22 +847,20 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         }
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), timeAtRightEndOfTrack);
 
-        /*BugzID:1734
-         * dcf.getTrackMixerController().getHorizontalScrollBar().scrollToMaximum();
-         *
-         * Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
-         * "00:00:30:000");
-         *
-         * while (needle.getCurrentTimeAsLong() <= 0) { needle.drag(widthOfTrack);
-         * }
-         *
-         * Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
-         * "00:01:00:000");
-         *
-         * // 5. Move needle beyond start time needle.drag(-1 * widthOfTrack);
-         * Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
-         * "00:00:30:000");
-         */
+        dcf.getTrackMixerController().getHorizontalScrollBar().scrollToMaximum();
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+                "00:00:30:000");
+        while (needle.getCurrentTimeAsLong() <= 0) {
+            needle.drag(widthOfTrack);
+        }
+
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+                "00:01:00:000");
+
+        // 5. Move needle beyond start time needle.drag(-1 * widthOfTrack);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+                "00:00:30:000");
+
     }
 
     /**

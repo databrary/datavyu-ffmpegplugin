@@ -850,7 +850,7 @@ public final class OpenDatabaseFileC {
             return parsePredicateVariable(csvFile, dc);
         }
 
-        throw null;
+        throw new IllegalStateException("Unknown variable type.");
     }
 
     /**

@@ -2,15 +2,12 @@ package org.openshapa.controllers.component;
 
 import java.awt.Adjustable;
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -60,11 +57,13 @@ import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.TimescaleConstants;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.Viewport;
+import org.openshapa.models.id.Identifier;
 
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.CustomActionListener;
 
 import com.google.common.collect.Maps;
+
 import org.apache.commons.lang.text.StrSubstitutor;
 
 import com.apple.eawt.event.GestureAdapter;
@@ -75,6 +74,7 @@ import com.apple.eawt.event.MagnificationEvent;
 import com.apple.eawt.event.MagnificationListener;
 import com.apple.eawt.event.SwipeEvent;
 import com.apple.eawt.event.SwipeListener;
+
 import com.sun.jna.Platform;
 
 
@@ -137,6 +137,10 @@ public final class MixerController implements PropertyChangeListener,
     /** Master mixer to listen to. */
     private final MixerModel masterMixer;
 
+    /** Listens and processes gestures on Mac OS X. */
+    private final OSXGestureListener osxGestureListener = Platform.isMac()
+        ? new OSXGestureListener() : null;
+
     /**
      * Create a new MixerController.
      */
@@ -164,16 +168,14 @@ public final class MixerController implements PropertyChangeListener,
 
         listenerList = new EventListenerList();
 
-        // Not using MigLayout with JLayeredPane because of layout issues
-        layeredPane = new JLayeredPane();
-        
         // Set up the root panel
         tracksPanel = new JPanel();
         tracksPanel.setLayout(new MigLayout("ins 0",
                 "[left|left|left|left]rel push[right|right]", ""));
         tracksPanel.setBackground(Color.WHITE);
-		if (Platform.isMac()) {
-			osxGestureListener.register(tracksPanel);
+
+        if (Platform.isMac()) {
+            osxGestureListener.register(tracksPanel);
         }
 
         // Menu buttons
@@ -329,7 +331,7 @@ public final class MixerController implements PropertyChangeListener,
                 "(filler.w-" + MixerConstants.R_EDGE_PAD + ")");
             constraints.put("height", Integer.toString(tracksScrollPaneHeight));
 
-            String template = "pos ${x} ${y} ${x2} n, h ${height}::";
+            String template = "pos ${x} ${y} ${x2} n, h ${height}!";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
             layeredPane.setLayer(tracksScrollPane, 10);
@@ -483,16 +485,24 @@ public final class MixerController implements PropertyChangeListener,
     /**
      * Add a new track to the interface.
      *
-     * @param icon Icon associated with the track.
-     * @param mediaPath Absolute path to the media file.
-     * @param trackName Name of the track.
-     * @param duration The total duration of the track in milliseconds.
-     * @param offset The amount of playback offset in milliseconds.
-     * @param trackPainter The track painter to use.
+     * @param id
+     *            Identifier of the track.
+     * @param icon
+     *            Icon associated with the track.
+     * @param mediaPath
+     *            Absolute path to the media file.
+     * @param trackName
+     *            Name of the track.
+     * @param duration
+     *            The total duration of the track in milliseconds.
+     * @param offset
+     *            The amount of playback offset in milliseconds.
+     * @param trackPainter
+     *            The track painter to use.
      */
-    public void addNewTrack(final ImageIcon icon, final String mediaPath,
-        final String trackName, final long duration, final long offset,
-        final TrackPainter trackPainter) {
+    public void addNewTrack(final Identifier id, final ImageIcon icon,
+        final String mediaPath, final String trackName, final long duration,
+        final long offset, final TrackPainter trackPainter) {
 
         // Check if the scale needs to be updated.
         if (((duration + offset) > masterMixer.getViewport().getMaxEnd())
@@ -504,8 +514,8 @@ public final class MixerController implements PropertyChangeListener,
             masterMixer.setViewportMaxEnd(newMaxEnd);
         }
 
-        tracksEditorController.addNewTrack(icon, mediaPath, trackName, duration,
-            offset, this, trackPainter);
+        tracksEditorController.addNewTrack(id, icon, trackName, mediaPath,
+            duration, offset, this, trackPainter);
 
         tracksScrollPane.validate();
     }
@@ -519,37 +529,99 @@ public final class MixerController implements PropertyChangeListener,
     /**
      * Bind track actions to a data viewer.
      *
-     * @param mediaPath Absolute path to the media file
-     * @param dataViewer Viewer to bind
-     * @param actionSupported1 is the first custom action supported
-     * @param actionIcon1 icon associated with the first custom action
-     * @param actionSupported2 is the second custom action supported
-     * @param actionIcon2 icon associated with the second custom action
-     * @param actionSupported3 is the third custom action supported
-     * @param actionIcon3 icon associated with the third custom action
+     * @param trackId
+     *            Identifier of the track
+     * @param dataViewer
+     *            Viewer to bind
+     * @param actionSupported1
+     *            is the first custom action supported
+     * @param actionIcon1
+     *            icon associated with the first custom action
+     * @param actionSupported2
+     *            is the second custom action supported
+     * @param actionIcon2
+     *            icon associated with the second custom action
+     * @param actionSupported3
+     *            is the third custom action supported
+     * @param actionIcon3
+     *            icon associated with the third custom action
      */
-    public void bindTrackActions(final String mediaPath,
+    public void bindTrackActions(final Identifier trackId,
         final CustomActionListener dataViewer, final boolean actionSupported1,
         final ImageIcon actionIcon1, final boolean actionSupported2,
         final ImageIcon actionIcon2, final boolean actionSupported3,
         final ImageIcon actionIcon3) {
-        tracksEditorController.bindTrackActions(mediaPath, dataViewer,
-            actionSupported1, actionIcon1, actionSupported2, actionIcon2,
-            actionSupported3, actionIcon3);
+        Runnable edtTask = new Runnable() {
+                @Override public void run() {
+                    tracksEditorController.bindTrackActions(trackId, dataViewer,
+                        actionSupported1, actionIcon1, actionSupported2,
+                        actionIcon2, actionSupported3, actionIcon3);
+                }
+            };
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            edtTask.run();
+        } else {
+            SwingUtilities.invokeLater(edtTask);
+        }
+
     }
 
     /**
      * Used to set up the track interface.
      *
-     * @param mediaPath Absolute path to the media file the track is
-     * representing.
-     * @param bookmark Bookmark position in milliseconds.
-     * @param lock True if track movement is locked, false otherwise.
+     * @param trackId
+     *            Track identifier.
+     * @param bookmark
+     *            Bookmark position in milliseconds.
+     * @param lock
+     *            True if track movement is locked, false otherwise.
      */
-    public void setTrackInterfaceSettings(final String mediaPath,
+    public void setTrackInterfaceSettings(final Identifier trackId,
         final long bookmark, final boolean lock) {
-        tracksEditorController.setBookmarkPosition(mediaPath, bookmark);
-        tracksEditorController.setMovementLock(mediaPath, lock);
+        Runnable edtTask = new Runnable() {
+                @Override public void run() {
+                    tracksEditorController.setBookmarkPosition(trackId,
+                        bookmark);
+                    tracksEditorController.setMovementLock(trackId, lock);
+                }
+            };
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            edtTask.run();
+        } else {
+            SwingUtilities.invokeLater(edtTask);
+        }
+    }
+
+    /**
+     * For backwards compatibility; used the set up the track interface. If
+     * there are multiple tracks identified by the same media path, only the
+     * first track found is used.
+     *
+     * @param mediaPath
+     *            Absolute path to the media file.
+     * @param bookmark
+     *            Bookmark position in milliseconds.
+     * @param lock
+     *            True if track movement is locked, false otherwise.
+     */
+    @Deprecated public void setTrackInterfaceSettings(final String mediaPath,
+        final long bookmark, final boolean lock) {
+        Runnable edtTask = new Runnable() {
+                @Override public void run() {
+                    tracksEditorController.setBookmarkPosition(mediaPath,
+                        bookmark);
+                    tracksEditorController.setMovementLock(mediaPath, lock);
+                }
+            };
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            edtTask.run();
+        } else {
+            SwingUtilities.invokeLater(edtTask);
+        }
+
     }
 
     /**
@@ -657,11 +729,10 @@ public final class MixerController implements PropertyChangeListener,
      * @param mediaPath
      * @param dataViewer
      */
-    public void deregisterTrack(final String mediaPath,
+    public void deregisterTrack(final Identifier trackId,
         final CustomActionListener dataViewer) {
-        tracksEditorController.unbindTrackActions(mediaPath, dataViewer);
-
-        tracksEditorController.removeTrack(mediaPath, this);
+        tracksEditorController.unbindTrackActions(trackId, dataViewer);
+        tracksEditorController.removeTrack(trackId, this);
 
         // Update tracks panel display
         tracksScrollPane.validate();
@@ -690,6 +761,10 @@ public final class MixerController implements PropertyChangeListener,
      */
     public Iterable<TrackModel> getAllTrackModels() {
         return tracksEditorController.getAllTrackModels();
+    }
+
+    public TrackModel getTrackModel(final Identifier id) {
+        return tracksEditorController.getTrackModel(id);
     }
 
     /**
@@ -982,14 +1057,14 @@ public final class MixerController implements PropertyChangeListener,
         }
     }
 
-	private void handleViewportChanged() {
+    private void handleViewportChanged() {
         Viewport viewport = masterMixer.getViewport();
         updateZoomSlide(viewport);
         updateTracksScrollBar(viewport);
         tracksScrollPane.repaint();
     }
 
-	@Override public void propertyChange(final PropertyChangeEvent evt) {
+    @Override public void propertyChange(final PropertyChangeEvent evt) {
 
         if (Viewport.NAME.equals(evt.getPropertyName())) {
             handleViewportChanged();
@@ -1018,82 +1093,92 @@ public final class MixerController implements PropertyChangeListener,
         }
     }
 
-    /** Listens and processes gestures on Mac OS X. */
-    private final OSXGestureListener osxGestureListener = Platform.isMac() ? new OSXGestureListener() : null;
-    
-    private class OSXGestureListener implements MagnificationListener, GesturePhaseListener, SwipeListener {
-    	public void register(JComponent component) {
-        	GestureUtilities.addGestureListenerTo(tracksPanel, osxGestureListener);
-    	}
-    	
+    private class OSXGestureListener implements MagnificationListener,
+        GesturePhaseListener, SwipeListener {
+
+
+        /**
+         * Cumulative sum of the current zoom gesture, where positive values
+         * indicate zooming in (enlarging) and negative values indicate zooming
+         * out (shrinking). On a 2009 MacBook Pro, pinch-and-zooming from
+         * corner-to-corner of the trackpad will result in a total sum of
+         * approximately +3.0 (zooming in) or -3.0 (zooming out).
+         */
+        private double osxMagnificationGestureSum = 0;
+
+        /** Relative zoom when the magnification gesture began. */
+        private double osxMagnificationGestureInitialZoomSetting;
+
+        public void register(final JComponent component) {
+            GestureUtilities.addGestureListenerTo(tracksPanel,
+                osxGestureListener);
+        }
+
         /**
          * Invoked when a magnification gesture ("pinch and squeeze") is performed by the user on Mac OS X.
-         * 
+         *
          * @param e contains the scale of the magnification
          */
-    	@Override
-    	public void magnify(MagnificationEvent e) {
-    		osxMagnificationGestureSum += e.getMagnification();
-    		System.out.println("magnify(" + e.getMagnification() + "), sum=" + osxMagnificationGestureSum);
+        @Override public void magnify(final MagnificationEvent e) {
+            osxMagnificationGestureSum += e.getMagnification();
+            System.out.println("magnify(" + e.getMagnification() + "), sum="
+                + osxMagnificationGestureSum);
 
-    		/** Amount of the pinch-and-squeeze gesture required to perform a full zoom in the mixer. */
-    		final double fullZoomMotion = 2.0;
-    		final double newZoomSetting = Math.min(Math.max(osxMagnificationGestureInitialZoomSetting + osxMagnificationGestureSum / fullZoomMotion, 0.0), 1.0);
-    		
-    		masterMixer.setViewportZoom(newZoomSetting, needleController.getCurrentTime());
-    	}
+            /** Amount of the pinch-and-squeeze gesture required to perform a full zoom in the mixer. */
+            final double fullZoomMotion = 2.0;
+            final double newZoomSetting = Math.min(Math.max(
+                        osxMagnificationGestureInitialZoomSetting
+                        + (osxMagnificationGestureSum / fullZoomMotion), 0.0),
+                    1.0);
 
-    	
-    	/** 
-    	 * Cumulative sum of the current zoom gesture, where positive values 
-    	 * indicate zooming in (enlarging) and negative values indicate zooming 
-    	 * out (shrinking). On a 2009 MacBook Pro, pinch-and-zooming from 
-    	 * corner-to-corner of the trackpad will result in a total sum of 
-    	 * approximately +3.0 (zooming in) or -3.0 (zooming out).
-    	 */
-    	private double osxMagnificationGestureSum = 0;
-    	
-    	/** Relative zoom when the magnification gesture began. */
-    	private double osxMagnificationGestureInitialZoomSetting;
-    	
-    	/**
-    	 * Indicates that the user has started performing a gesture on Mac OS X.
-    	 */
-    	@Override
-    	public void gestureBegan(GesturePhaseEvent e) {
-    		System.out.println("gestureBegan(" + e.toString() + ")");
-    		osxMagnificationGestureSum = 0;
-    		osxMagnificationGestureInitialZoomSetting = zoomSetting;
-    	}
+            masterMixer.setViewportZoom(newZoomSetting,
+                needleController.getCurrentTime());
+        }
 
-    	/**
-    	 * Indicates that the user has finished performing a gesture on Mac OS X.
-    	 */
-    	@Override
-    	public void gestureEnded(GesturePhaseEvent e) {
-    		System.out.println("gestureEnded(" + e.toString() + ")");
-    	}
+        /**
+         * Indicates that the user has started performing a gesture on Mac OS X.
+         */
+        @Override public void gestureBegan(final GesturePhaseEvent e) {
+            System.out.println("gestureBegan(" + e.toString() + ")");
+            osxMagnificationGestureSum = 0;
+            osxMagnificationGestureInitialZoomSetting = zoomSetting;
+        }
 
-    	@Override
-    	public void swipedDown(SwipeEvent e) {
-    		System.out.println("swipedDown()");
-    	}
+        /**
+         * Indicates that the user has finished performing a gesture on Mac OS X.
+         */
+        @Override public void gestureEnded(final GesturePhaseEvent e) {
+            System.out.println("gestureEnded(" + e.toString() + ")");
+        }
 
-    	@Override
-    	public void swipedLeft(SwipeEvent e) {
-    		System.out.println("swipedLeft()");
-    		tracksScrollBar.setValue(Math.max(Math.min(tracksScrollBar.getValue() - tracksScrollBar.getBlockIncrement(), tracksScrollBar.getMaximum() - tracksScrollBar.getVisibleAmount()), tracksScrollBar.getMinimum()));
-    	}
+        @Override public void swipedDown(final SwipeEvent e) {
+            System.out.println("swipedDown()");
+        }
 
-    	@Override
-    	public void swipedRight(SwipeEvent e) {
-    		System.out.println("swipedRight()");
-    		tracksScrollBar.setValue(Math.max(Math.min(tracksScrollBar.getValue() + tracksScrollBar.getBlockIncrement(), tracksScrollBar.getMaximum() - tracksScrollBar.getVisibleAmount()), tracksScrollBar.getMinimum()));
-    	}
+        @Override public void swipedLeft(final SwipeEvent e) {
+            System.out.println("swipedLeft()");
+            tracksScrollBar.setValue(Math.max(
+                    Math.min(
+                        tracksScrollBar.getValue()
+                        - tracksScrollBar.getBlockIncrement(),
+                        tracksScrollBar.getMaximum()
+                        - tracksScrollBar.getVisibleAmount()),
+                    tracksScrollBar.getMinimum()));
+        }
 
-    	@Override
-    	public void swipedUp(SwipeEvent e) {
-    		System.out.println("swipedUp()");
-    	}
-    };
+        @Override public void swipedRight(final SwipeEvent e) {
+            System.out.println("swipedRight()");
+            tracksScrollBar.setValue(Math.max(
+                    Math.min(
+                        tracksScrollBar.getValue()
+                        + tracksScrollBar.getBlockIncrement(),
+                        tracksScrollBar.getMaximum()
+                        - tracksScrollBar.getVisibleAmount()),
+                    tracksScrollBar.getMinimum()));
+        }
+
+        @Override public void swipedUp(final SwipeEvent e) {
+            System.out.println("swipedUp()");
+        }
+    }
 }

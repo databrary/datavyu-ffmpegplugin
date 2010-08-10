@@ -18,6 +18,7 @@ import javax.script.ScriptEngineManager;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -33,6 +34,7 @@ import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.project.Project;
+
 import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.Constants;
@@ -45,12 +47,11 @@ import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
-import com.usermetrix.jclient.Logger;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+
 import java.util.LinkedList;
-import org.gstreamer.Gst;
-import org.gstreamer.Pipeline;
 
 
 /**
@@ -80,6 +81,7 @@ public final class OpenSHAPA extends SingleFrameApplication
 
     /** All the supported platforms that OpenSHAPA runs on. */
     public enum Platform {
+
         /** Generic Mac platform. I.e. Tiger, Leopard, Snow Leopard. */
         MAC,
 
@@ -163,6 +165,7 @@ public final class OpenSHAPA extends SingleFrameApplication
             case 'l':
             case 'r':
                 evt.consume();
+
                 return true;
 
             default:
@@ -321,6 +324,7 @@ public final class OpenSHAPA extends SingleFrameApplication
             break;
 
         case KeyEvent.VK_SUBTRACT:
+
             if (modifiers == InputEvent.CTRL_MASK) {
                 dataController.clearRegionOfInterestAction();
             } else {
@@ -655,6 +659,7 @@ public final class OpenSHAPA extends SingleFrameApplication
     public void addProjectFile(final File file) {
 
         if (!lastFilesOpened.contains(file)) {
+
             if (lastFilesOpened.size() == MAX_RECENT_FILE_SIZE) {
                 lastFilesOpened.remove(MAX_RECENT_FILE_SIZE - 1);
             }
@@ -667,10 +672,16 @@ public final class OpenSHAPA extends SingleFrameApplication
      * Asks the main frame to update its title.
      */
     public void updateTitle() {
+        SwingUtilities.invokeLater(new Runnable() {
 
-        if (VIEW != null) {
-            VIEW.updateTitle();
-        }
+                @Override public void run() {
+
+                    if (VIEW != null) {
+                        VIEW.updateTitle();
+                    }
+                }
+            });
+
     }
 
     /** @return canSetUnsaved */
@@ -775,8 +786,6 @@ public final class OpenSHAPA extends SingleFrameApplication
         return Platform.UNKNOWN;
     }
 
-    private static Pipeline pipe;
-
     /**
      * Main method launching the application.
      *
@@ -784,6 +793,7 @@ public final class OpenSHAPA extends SingleFrameApplication
      *            The command line arguments passed to OpenSHAPA.
      */
     public static void main(final String[] args) {
+
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
 

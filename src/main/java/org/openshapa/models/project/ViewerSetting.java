@@ -15,10 +15,16 @@ import org.apache.commons.io.IOUtils;
 public final class ViewerSetting {
 
     /** ViewerSetting specification version. */
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
+
+    /** Track settings associated with this data viewer. */
+    private TrackSettings trackSettings;
 
     /** Fully qualified name of the plugin */
     private String pluginName;
+
+    /** Plugin classifier. */
+    private String pluginClassifier;
 
     /** Absolute file path to the data source */
     private String filePath;
@@ -42,16 +48,40 @@ public final class ViewerSetting {
      * @param other
      */
     private ViewerSetting(final ViewerSetting other) {
+        trackSettings = other.trackSettings.copy();
         pluginName = other.pluginName;
+        pluginClassifier = other.pluginClassifier;
         filePath = other.filePath;
         offset = other.offset;
         settingsId = other.settingsId;
     }
 
+    /**
+     * @return track settings associated with this data viewer.
+     */
+    public TrackSettings getTrackSettings() {
+        return trackSettings;
+    }
+
+    /**
+     * @param trackSettings
+     *            track settings used by this data viewer.
+     */
+    public void setTrackSettings(final TrackSettings trackSettings) {
+        this.trackSettings = trackSettings;
+    }
+
+    /**
+     * @return Absolute file path to the data source.
+     */
     public String getFilePath() {
         return filePath;
     }
 
+    /**
+     * @param filePath
+     *            Absolute file path to the data source.
+     */
     public void setFilePath(final String filePath) {
         this.filePath = filePath;
     }
@@ -78,6 +108,21 @@ public final class ViewerSetting {
 
     public void setPluginName(final String pluginName) {
         this.pluginName = pluginName;
+    }
+
+    /**
+     * @return the pluginClassifier
+     */
+    public String getPluginClassifier() {
+        return pluginClassifier;
+    }
+
+    /**
+     * @param pluginClassifier
+     *            the pluginClassifier to set
+     */
+    public void setPluginClassifier(final String pluginClassifier) {
+        this.pluginClassifier = pluginClassifier;
     }
 
     /**
