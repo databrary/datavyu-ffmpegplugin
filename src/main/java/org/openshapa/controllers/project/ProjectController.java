@@ -335,17 +335,16 @@ public final class ProjectController {
                 viewer.getDuration(), viewer.getOffset(),
                 viewer.getTrackPainter());
 
-            SwingUtilities.invokeLater(new Runnable() {
-                    @Override public void run() {
-                        mixerController.bindTrackActions(viewer.getIdentifier(),
-                            viewer, plugin.isActionSupported1(),
-                            viewer.getActionButtonIcon1(),
-                            plugin.isActionSupported2(),
-                            viewer.getActionButtonIcon2(),
-                            plugin.isActionSupported3(),
-                            viewer.getActionButtonIcon3());
-                    }
-                });
+            if (setting.getTrackSettings() != null) {
+                final TrackSettings ts = setting.getTrackSettings();
+                mixerController.setTrackInterfaceSettings(viewer
+                    .getIdentifier(), ts.getBookmarkPosition(), ts.isLocked());
+            }
+
+            mixerController.bindTrackActions(viewer.getIdentifier(), viewer,
+                plugin.isActionSupported1(), viewer.getActionButtonIcon1(),
+                plugin.isActionSupported2(), viewer.getActionButtonIcon2(),
+                plugin.isActionSupported3(), viewer.getActionButtonIcon3());
         }
 
         // Do not remove; this is here for backwards compatibility.
@@ -415,29 +414,22 @@ public final class ProjectController {
             vs.setPluginName(viewer.getClass().getName());
 
             // BugzID:1806
-            vs.setSettingsId(Integer.toString(settingsId));
-            settingsId++;
+            vs.setSettingsId(Integer.toString(settingsId++));
             viewer.storeSettings(vs.getSettingsOutputStream());
+
+            // BugzID:2107
+            TrackModel tm = dataController.getMixerController().getTrackModel(
+                    viewer.getIdentifier());
+            TrackSettings ts = new TrackSettings();
+            ts.setBookmarkPosition(tm.getBookmark());
+            ts.setLocked(tm.isLocked());
+
+            vs.setTrackSettings(ts);
 
             viewerSettings.add(vs);
         }
 
         project.setViewerSettings(viewerSettings);
-
-        // Gather the user interface settings
-        List<TrackSettings> trackSettings = new LinkedList<TrackSettings>();
-
-        // for (TrackModel model
-        // : dataController.getMixerController().getAllTrackModels()) {
-        // TrackSettings ts = new TrackSettings();
-        // ts.setFilePath(model.getTrackId());
-        // ts.setBookmarkPosition(model.getBookmark());
-        // ts.setLocked(model.isLocked());
-        //
-        // trackSettings.add(ts);
-        // }
-
-        project.setTrackSettings(trackSettings);
     }
 
     /**

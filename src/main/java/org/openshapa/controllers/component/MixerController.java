@@ -551,9 +551,20 @@ public final class MixerController implements PropertyChangeListener,
         final ImageIcon actionIcon1, final boolean actionSupported2,
         final ImageIcon actionIcon2, final boolean actionSupported3,
         final ImageIcon actionIcon3) {
-        tracksEditorController.bindTrackActions(trackId, dataViewer,
-            actionSupported1, actionIcon1, actionSupported2, actionIcon2,
-            actionSupported3, actionIcon3);
+        Runnable edtTask = new Runnable() {
+                @Override public void run() {
+                    tracksEditorController.bindTrackActions(trackId, dataViewer,
+                        actionSupported1, actionIcon1, actionSupported2,
+                        actionIcon2, actionSupported3, actionIcon3);
+                }
+            };
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            edtTask.run();
+        } else {
+            SwingUtilities.invokeLater(edtTask);
+        }
+
     }
 
     /**
@@ -568,8 +579,19 @@ public final class MixerController implements PropertyChangeListener,
      */
     public void setTrackInterfaceSettings(final Identifier trackId,
         final long bookmark, final boolean lock) {
-        tracksEditorController.setBookmarkPosition(trackId, bookmark);
-        tracksEditorController.setMovementLock(trackId, lock);
+        Runnable edtTask = new Runnable() {
+                @Override public void run() {
+                    tracksEditorController.setBookmarkPosition(trackId,
+                        bookmark);
+                    tracksEditorController.setMovementLock(trackId, lock);
+                }
+            };
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            edtTask.run();
+        } else {
+            SwingUtilities.invokeLater(edtTask);
+        }
     }
 
     /**
@@ -586,8 +608,20 @@ public final class MixerController implements PropertyChangeListener,
      */
     @Deprecated public void setTrackInterfaceSettings(final String mediaPath,
         final long bookmark, final boolean lock) {
-        tracksEditorController.setBookmarkPosition(mediaPath, bookmark);
-        tracksEditorController.setMovementLock(mediaPath, lock);
+        Runnable edtTask = new Runnable() {
+                @Override public void run() {
+                    tracksEditorController.setBookmarkPosition(mediaPath,
+                        bookmark);
+                    tracksEditorController.setMovementLock(mediaPath, lock);
+                }
+            };
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            edtTask.run();
+        } else {
+            SwingUtilities.invokeLater(edtTask);
+        }
+
     }
 
     /**

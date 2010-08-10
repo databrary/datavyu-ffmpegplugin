@@ -3,15 +3,17 @@ package org.openshapa.models.project;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
 
 /**
  * This class represents a project in OpenSHAPA. A project manages the different
  * files used by OpenSHAPA, such as database files and media files.
  */
-public final class Project implements Cloneable {
+public final class Project {
 
     /** Project specification version. */
-    public static final int VERSION = 4;
+    public static final int VERSION = 5;
 
     /** Name of this project. */
     private String projectName;
@@ -29,7 +31,7 @@ public final class Project implements Cloneable {
 
     private List<ViewerSetting> viewerSettings;
 
-    private List<TrackSettings> interfaceSettings;
+    @Deprecated private List<TrackSettings> interfaceSettings;
 
     /**
      * Constructor.
@@ -97,14 +99,10 @@ public final class Project implements Cloneable {
         assert (newProjectName != null);
 
         // Set the name of the project.
-        String name = newProjectName;
-        int match = name.lastIndexOf(".");
+        String name = FilenameUtils.removeExtension(FilenameUtils.getName(
+                    newProjectName));
 
-        if (match != -1) {
-            name = name.substring(0, match);
-        }
-
-        if (name.equals("")) {
+        if ("".equals(name)) {
             name = "Project1";
         }
 
@@ -123,7 +121,7 @@ public final class Project implements Cloneable {
         }
     }
 
-    public void setTrackSettings(
+    @Deprecated public void setTrackSettings(
         final Iterable<TrackSettings> interfaceSettings) {
 
         if (interfaceSettings != null) {
@@ -175,7 +173,7 @@ public final class Project implements Cloneable {
         this.originalProjectDirectory = originalProjectDirectory;
     }
 
-    @Override public Project clone() {
+    public Project copy() {
         return new Project(this);
     }
 

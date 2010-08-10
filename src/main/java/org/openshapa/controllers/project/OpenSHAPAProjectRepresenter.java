@@ -38,7 +38,6 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             map.put("origpath", project.getOriginalProjectDirectory());
             map.put("dbFile", project.getDatabaseFileName());
             map.put("viewerSettings", project.getViewerSettings());
-            map.put("trackSettings", project.getTrackSettings());
 
             return representMapping("!project", map, Boolean.FALSE);
         }
@@ -58,6 +57,9 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             map.put("settingsId", viewerSetting.getSettingsId());
             map.put("version", ViewerSetting.VERSION);
 
+            // BugzID:2107
+            map.put("trackSettings", viewerSetting.getTrackSettings());
+
             return representMapping("!vs", map, Boolean.FALSE);
         }
     }
@@ -69,7 +71,6 @@ public class OpenSHAPAProjectRepresenter extends Representer {
         public Node representData(final Object obj) {
             TrackSettings interfaceSettings = (TrackSettings) obj;
             Map<String, Object> map = new TreeMap<String, Object>();
-            map.put("feed", interfaceSettings.getFilePath());
             map.put("locked", interfaceSettings.isLocked());
             map.put("bookmark",
                 Long.toString(interfaceSettings.getBookmarkPosition()));

@@ -9,10 +9,10 @@ package org.openshapa.models.project;
 public final class TrackSettings {
 
     /** TrackSettings specification version. */
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
 
     /** Absolute file path to the data source */
-    private String filePath;
+    @Deprecated private String filePath;
 
     /** Is the track's movement locked on the interface */
     private boolean isLocked;
@@ -68,7 +68,7 @@ public final class TrackSettings {
     /**
      * @return the filePath
      */
-    public String getFilePath() {
+    @Deprecated public String getFilePath() {
         return filePath;
     }
 
@@ -76,7 +76,7 @@ public final class TrackSettings {
      * @param filePath
      *            the filePath to set
      */
-    public void setFilePath(final String filePath) {
+    @Deprecated public void setFilePath(final String filePath) {
         this.filePath = filePath;
     }
 
