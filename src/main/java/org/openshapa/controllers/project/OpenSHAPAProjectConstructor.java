@@ -97,7 +97,9 @@ public class OpenSHAPAProjectConstructor extends Constructor {
                 if (version >= 3) {
                     vs.setTrackSettings((TrackSettings) values.get(
                             "trackSettings"));
+                    vs.setPluginClassifier((String) values.get("classifier"));
                 }
+
             }
 
             return vs;

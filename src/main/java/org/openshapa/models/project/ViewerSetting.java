@@ -23,6 +23,9 @@ public final class ViewerSetting {
     /** Fully qualified name of the plugin */
     private String pluginName;
 
+    /** Plugin classifier. */
+    private String pluginClassifier;
+
     /** Absolute file path to the data source */
     private String filePath;
 
@@ -47,6 +50,7 @@ public final class ViewerSetting {
     private ViewerSetting(final ViewerSetting other) {
         trackSettings = other.trackSettings.copy();
         pluginName = other.pluginName;
+        pluginClassifier = other.pluginClassifier;
         filePath = other.filePath;
         offset = other.offset;
         settingsId = other.settingsId;
@@ -104,6 +108,21 @@ public final class ViewerSetting {
 
     public void setPluginName(final String pluginName) {
         this.pluginName = pluginName;
+    }
+
+    /**
+     * @return the pluginClassifier
+     */
+    public String getPluginClassifier() {
+        return pluginClassifier;
+    }
+
+    /**
+     * @param pluginClassifier
+     *            the pluginClassifier to set
+     */
+    public void setPluginClassifier(final String pluginClassifier) {
+        this.pluginClassifier = pluginClassifier;
     }
 
     /**

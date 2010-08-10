@@ -413,6 +413,10 @@ public final class ProjectController {
             vs.setFilePath(viewer.getDataFeed().getAbsolutePath());
             vs.setPluginName(viewer.getClass().getName());
 
+            // BugzID:2108
+            vs.setPluginClassifier(PluginManager.getInstance()
+                .getAssociatedPlugin(vs.getPluginName()).getClassifier());
+
             // BugzID:1806
             vs.setSettingsId(Integer.toString(settingsId++));
             viewer.storeSettings(vs.getSettingsOutputStream());
