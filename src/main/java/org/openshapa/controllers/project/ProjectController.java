@@ -32,6 +32,8 @@ import org.openshapa.views.DataControllerV;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 
+import com.google.common.collect.Lists;
+
 
 /**
  * This class is responsible for managing a project.
@@ -263,7 +265,8 @@ public final class ProjectController {
         // Load the plugins required for each media file
         boolean showController = false;
 
-        List<String> missingFilesList = new LinkedList<String>();
+        List<String> missingFilesList = Lists.newLinkedList();
+        List<String> missingPluginList = Lists.newLinkedList();
 
         final MixerController mixerController =
             dataController.getMixerController();
@@ -306,10 +309,19 @@ public final class ProjectController {
                 continue;
             }
 
-            final Plugin plugin = pm.getAssociatedPlugin(
-                    setting.getPluginName());
+            Plugin plugin = pm.getAssociatedPlugin(setting.getPluginName());
+
+            // BugzID:2110
+            if ((plugin == null) && (setting.getPluginClassifier() != null)) {
+                plugin = pm.getCompatiblePlugin(setting.getPluginClassifier(),
+                        file);
+            }
 
             if (plugin == null) {
+
+                // Record missing plugin.
+                missingPluginList.add(setting.getPluginName());
+
                 continue;
             }
 
@@ -369,21 +381,38 @@ public final class ProjectController {
                 setting.getBookmarkPosition(), setting.isLocked());
         }
 
-        if (!missingFilesList.isEmpty()) {
+        if (!missingFilesList.isEmpty() || !missingPluginList.isEmpty()) {
             JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                 .getContext().getResourceMap(OpenSHAPA.class);
 
             StringBuilder sb = new StringBuilder();
-            sb.append("The following files are missing:\n\n");
 
-            for (String filePath : missingFilesList) {
-                sb.append(filePath);
-                sb.append('\n');
+            if (!missingFilesList.isEmpty()) {
+                sb.append("The following files are missing:\n\n");
+
+                for (String filePath : missingFilesList) {
+                    sb.append(filePath);
+                    sb.append('\n');
+                }
+            }
+
+            if (!missingPluginList.isEmpty()) {
+
+                if (sb.length() != 0) {
+                    sb.append('\n');
+                }
+
+                sb.append("The following plugins are missing:\n\n");
+
+                for (String pluginName : missingPluginList) {
+                    sb.append(pluginName);
+                    sb.append('\n');
+                }
             }
 
             JOptionPane.showMessageDialog(mainFrame, sb.toString(),
-                rMap.getString("FileNotFound.title"),
+                rMap.getString("ProjectLoadError.title"),
                 JOptionPane.WARNING_MESSAGE);
 
             showController = true;
@@ -414,8 +443,12 @@ public final class ProjectController {
             vs.setPluginName(viewer.getClass().getName());
 
             // BugzID:2108
-            vs.setPluginClassifier(PluginManager.getInstance()
-                .getAssociatedPlugin(vs.getPluginName()).getClassifier());
+            Plugin p = PluginManager.getInstance().getAssociatedPlugin(
+                    vs.getPluginName());
+            assert p.getClassifier() != null;
+            assert !"".equals(p.getClassifier());
+
+            vs.setPluginClassifier(p.getClassifier());
 
             // BugzID:1806
             vs.setSettingsId(Integer.toString(settingsId++));
