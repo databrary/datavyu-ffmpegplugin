@@ -50,7 +50,9 @@ import org.gstreamer.Structure;
 import org.gstreamer.elements.OSXVideoSink;
 import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.RGBDataSink;
+
 import org.gstreamer.event.BusSyncHandler;
+
 import org.gstreamer.interfaces.XOverlay;
 
 import org.gstreamer.swing.OSXVideoComponent;
@@ -358,7 +360,7 @@ public class GStreamerDataViewer implements DataViewer {
         if (Platform.isMac()) {
             renderer = VideoSinkType.osxRenderer;
         } else if (Platform.isLinux()) {
-        	renderer = VideoSinkType.xWindowsRenderer;
+            renderer = VideoSinkType.xWindowsRenderer;
         } else {
             renderer = VideoSinkType.swingRenderer;
         }
@@ -377,21 +379,26 @@ public class GStreamerDataViewer implements DataViewer {
         case xWindowsRenderer: {
             final Canvas canvas = new Canvas();
             videoDialog.add(canvas);
-        	
-            final Element xvimagesink = ElementFactory.make("xvimagesink", "xvimagesink");
+
+            final Element xvimagesink = ElementFactory.make("xvimagesink",
+                    "xvimagesink");
             xvimagesink.set("force-aspect-ratio", true);
             playBin.setVideoSink(xvimagesink);
-                        
+
             playBin.getBus().setSyncHandler(new BusSyncHandler() {
-                public BusSyncReply syncMessage(Message msg) {
-                    Structure s = msg.getStructure();
-                    if (s == null || !s.hasName("prepare-xwindow-id")) {
-                        return BusSyncReply.PASS;
+                    public BusSyncReply syncMessage(final Message msg) {
+                        Structure s = msg.getStructure();
+
+                        if ((s == null) || !s.hasName("prepare-xwindow-id")) {
+                            return BusSyncReply.PASS;
+                        }
+
+                        XOverlay.wrap(xvimagesink).setWindowID(canvas);
+
+                        return BusSyncReply.DROP;
                     }
-                    XOverlay.wrap(xvimagesink).setWindowID(canvas);
-                    return BusSyncReply.DROP;
-                }
-            });
+                });
+
             break;
         }
 
@@ -542,20 +549,20 @@ public class GStreamerDataViewer implements DataViewer {
 
             String property = settings.getProperty("offset");
 
-            if (!"".equals(property)) {
+            if ((property != null) && !"".equals(property)) {
                 setOffset(Long.parseLong(property));
             }
 
             property = settings.getProperty("volume");
 
-            if (!"".equals(property)) {
+            if ((property != null) && !"".equals(property)) {
                 volume = Float.parseFloat(property);
                 volumeSlider.setValue((int) Math.round(volume * 100));
             }
 
             property = settings.getProperty("visible");
 
-            if (!"".equals(property)) {
+            if ((property != null) && !"".equals(property)) {
                 isVisible = Boolean.parseBoolean(property);
 
                 // BugzID:2032 - Need to update when visbility is back again.
@@ -565,7 +572,7 @@ public class GStreamerDataViewer implements DataViewer {
 
             property = settings.getProperty("height");
 
-            if (!"".equals(property)) {
+            if ((property != null) && !"".equals(property)) {
                 // BugzID:2057 - Need to update when resize is back again.
                 //setVideoHeight(Integer.parseInt(property));
             }
