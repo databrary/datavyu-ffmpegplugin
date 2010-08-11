@@ -63,6 +63,8 @@ public final class SpectrumUtils {
         playBin.setState(State.NULL);
         playBin.dispose();
 
+        Gst.deinit();
+
         return result;
     }
 
@@ -175,6 +177,8 @@ public final class SpectrumUtils {
         pipeline.stop();
         pipeline.setState(State.NULL);
         pipeline.dispose();
+
+        Gst.deinit();
 
         return result.number;
     }

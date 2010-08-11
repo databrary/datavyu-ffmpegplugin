@@ -291,6 +291,8 @@ public final class AmplitudeProcessor
         double interval = ((end - start) / (double) data.sizeL());
         data.setTimeInterval(interval, MILLISECONDS);
 
+        Gst.deinit();
+
         return data;
     }
 

@@ -508,6 +508,8 @@ public final class PlaybackEngine extends Thread {
     public void shutdown() {
         pipeline.stop();
         pipeline.dispose();
+
+        Gst.deinit();
     }
 
 }
