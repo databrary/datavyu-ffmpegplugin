@@ -31,13 +31,13 @@ public class SpectrumPlugin implements Plugin {
 
     @Override public ImageIcon getTypeIcon() {
         URL typeIconURL = getClass().getResource(
-                "/icons/spectrumplugin-icon.png");
+                "/icons/spectrum/spectrumplugin-icon.png");
 
         return new ImageIcon(typeIconURL);
     }
 
     @Override public boolean isActionSupported1() {
-        return false;
+        return true;
     }
 
     @Override public boolean isActionSupported2() {

@@ -1,7 +1,11 @@
 package org.openshapa.plugins.spectrum;
 
+import java.awt.Container;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -10,12 +14,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import java.net.URL;
+
 import java.util.Properties;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.openshapa.models.id.Identifier;
 
@@ -40,11 +53,20 @@ public final class SpectrumDataViewer implements DataViewer {
     private static final Logger LOGGER = UserMetrix.getLogger(
             SpectrumDataViewer.class);
 
+    private static final int MIN_VOLUME = 0;
+    private static final int MAX_VOLUME = 100;
+
     /** ID of the data viewer. */
     private Identifier id;
 
-    /** Dialog. */
+    /** Main data viewer dialog. */
     private SpectrumDialog dialog;
+
+    /** Volume dialog. */
+    private JDialog volDialog;
+
+    /** Volume slider. */
+    private JSlider volSlider;
 
     /** Track. */
     private AmplitudeTrack track;
@@ -78,6 +100,74 @@ public final class SpectrumDataViewer implements DataViewer {
                                 dialogClosing(evt);
                             }
                         });
+
+                    volDialog = new JDialog(parent, false);
+                    volDialog.setUndecorated(true);
+                    volDialog.setVisible(false);
+                    volDialog.addMouseListener(new MouseAdapter() {
+                            @Override public void mouseClicked(
+                                final MouseEvent e) {
+                                volDialog.setVisible(false);
+                            }
+                        });
+                    volDialog.addWindowFocusListener(new WindowAdapter() {
+                            @Override public void windowLostFocus(
+                                final WindowEvent e) {
+                                volDialog.setVisible(false);
+                            }
+                        });
+
+                    Container c = volDialog.getContentPane();
+                    c.setLayout(new MigLayout("wrap 1", "[center]", ""));
+                    c.add(new JLabel("Volume"));
+
+                    JButton maxVol = new JButton();
+                    maxVol.addActionListener(new ActionListener() {
+                            @Override public void actionPerformed(
+                                final ActionEvent e) {
+                                handleMaxVol(e);
+                            }
+                        });
+
+                    {
+                        URL iconURL = getClass().getResource(
+                                "/icons/spectrum/volume-high.png");
+                        maxVol.setIcon(new ImageIcon(iconURL));
+
+                    }
+
+                    c.add(maxVol, "w 48!, h 48!");
+
+                    volSlider = new JSlider(JSlider.VERTICAL, MIN_VOLUME,
+                            MAX_VOLUME, MAX_VOLUME);
+                    volSlider.setMajorTickSpacing(10);
+                    volSlider.setPaintTicks(true);
+                    volSlider.setName("SpectrumVolumeSlider");
+                    volSlider.addChangeListener(new ChangeListener() {
+                            public void stateChanged(final ChangeEvent e) {
+                                handleVolumeSliderEvent(e);
+                            }
+                        });
+                    c.add(volSlider, "h 125!, w 48!");
+
+                    JButton muteVol = new JButton();
+                    muteVol.addActionListener(new ActionListener() {
+                            @Override public void actionPerformed(
+                                final ActionEvent e) {
+                                handleMuteVol(e);
+                            }
+                        });
+
+                    {
+                        URL iconURL = getClass().getResource(
+                                "/icons/spectrum/volume-muted.png");
+                        muteVol.setIcon(new ImageIcon(iconURL));
+                    }
+
+                    c.add(muteVol, "w 48!, h 48!");
+
+                    volDialog.pack();
+                    volDialog.setResizable(false);
                 }
             };
 
@@ -206,6 +296,18 @@ public final class SpectrumDataViewer implements DataViewer {
         }
     }
 
+    private void handleMaxVol(final ActionEvent e) {
+        volSlider.setValue(MAX_VOLUME);
+    }
+
+    private void handleMuteVol(final ActionEvent e) {
+        volSlider.setValue(MIN_VOLUME);
+    }
+
+    private void handleVolumeSliderEvent(final ChangeEvent e) {
+        engine.setVolume(volSlider.getValue());
+    }
+
     /**
      * Handles dialog window closing event.
      *
@@ -239,7 +341,7 @@ public final class SpectrumDataViewer implements DataViewer {
 
             String property = settings.getProperty("offset");
 
-            if (!"".equals(property)) {
+            if ((property != null) && !"".equals(property)) {
                 setOffset(Long.parseLong(property));
             }
 
@@ -261,7 +363,9 @@ public final class SpectrumDataViewer implements DataViewer {
     }
 
     @Override public ImageIcon getActionButtonIcon1() {
-        return null;
+        URL iconURL = getClass().getResource("/icons/audio-volume.png");
+
+        return new ImageIcon(iconURL);
     }
 
     @Override public ImageIcon getActionButtonIcon2() {
@@ -272,7 +376,12 @@ public final class SpectrumDataViewer implements DataViewer {
         return null;
     }
 
-    @Override public void handleActionButtonEvent1(final ActionEvent arg0) {
+    @Override public void handleActionButtonEvent1(final ActionEvent event) {
+        JButton button = (JButton) event.getSource();
+
+        // Show the volume frame.
+        volDialog.setLocation(button.getLocationOnScreen());
+        volDialog.setVisible(true);
     }
 
     @Override public void handleActionButtonEvent2(final ActionEvent arg0) {

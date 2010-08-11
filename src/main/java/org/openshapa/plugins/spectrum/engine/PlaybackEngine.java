@@ -74,9 +74,17 @@ public final class PlaybackEngine extends Thread {
     /** Output pipeline. */
     private Pipeline pipeline;
 
+    /** Current time in the stream; reported by the pipeline. */
     private long currentTime;
 
+    /** Length of the media file in milliseconds. */
     private long mediaLength;
+
+    /** Current volume level. */
+    private double volume;
+
+    /** The volume element. */
+    private Element volumeElement;
 
     /**
      * Creates a new engine thread.
@@ -95,6 +103,8 @@ public final class PlaybackEngine extends Thread {
         setName("AudioEngine-" + getName());
 
         this.dialog = dialog;
+
+        volume = 1;
     }
 
     /**
@@ -193,6 +203,9 @@ public final class PlaybackEngine extends Thread {
 
         Element tee = ElementFactory.make("tee", "tee");
 
+        volumeElement = ElementFactory.make("volume", "audiovolume");
+        volumeElement.set("volume", volume);
+
         Element audioConvert = ElementFactory.make("audioconvert",
                 "audioconvert1");
         Element audioResample = ElementFactory.make("audioresample",
@@ -231,9 +244,9 @@ public final class PlaybackEngine extends Thread {
         Caps spectrumCaps = Caps.fromString("audio/x-raw-int, rate="
                 + SpectrumConstants.SAMPLE_RATE);
 
-        audioBin.addMany(tee, audioConvert, audioResample, queue, audioOutput,
-            audioConvert2, audioResample2, queue2, spectrum, spectrumSink,
-            queue3, appSink);
+        audioBin.addMany(tee, volumeElement, audioConvert, audioResample, queue,
+            audioOutput, audioConvert2, audioResample2, queue2, spectrum,
+            spectrumSink, queue3, appSink);
 
         audioBin.addPad(new GhostPad("sink", tee.getStaticPad("sink")));
 
@@ -244,11 +257,13 @@ public final class PlaybackEngine extends Thread {
         }
 
         Pad pad1 = tee.getRequestPad("src%d");
-        pad1.link(audioConvert.getStaticPad("sink"));
+        pad1.link(volumeElement.getStaticPad("sink"));
 
-        if (!linkMany(audioConvert, audioResample, queue, audioOutput)) {
+        if (
+            !linkMany(volumeElement, audioConvert, audioResample, queue,
+                    audioOutput)) {
             LOGGER.error(
-                "Link failed: tee ! audioconvert ! audioresample ! queue ! autoaudiosink");
+                "Link failed: tee ! volume ! audioconvert ! audioresample ! queue ! autoaudiosink");
         }
 
         Pad pad2 = tee.getRequestPad("src%d");
@@ -459,6 +474,32 @@ public final class PlaybackEngine extends Thread {
      */
     public void setMediaLength(final long mediaLength) {
         this.mediaLength = mediaLength;
+    }
+
+    /**
+     * @return the current volume level. 0 = mute, 100% = max.
+     */
+    public double getVolume() {
+        return volume * 100D;
+    }
+
+    /**
+     * @param volume
+     *            The volume to set. Must be between 0 and 100%.
+     */
+    public void setVolume(final double volume) {
+        assert (0 <= volume) && (volume <= 100);
+
+        if ((volume < 0) || (volume > 100)) {
+            throw new IllegalArgumentException(
+                "Volume must be: 0 <= volume <= 100");
+        }
+
+        this.volume = volume / 100D;
+
+        if (volumeElement != null) {
+            volumeElement.set("volume", this.volume);
+        }
     }
 
     /**
