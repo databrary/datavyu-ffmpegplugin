@@ -36,18 +36,6 @@ public class SpectrumPlugin implements Plugin {
         return new ImageIcon(typeIconURL);
     }
 
-    @Override public boolean isActionSupported1() {
-        return true;
-    }
-
-    @Override public boolean isActionSupported2() {
-        return false;
-    }
-
-    @Override public boolean isActionSupported3() {
-        return false;
-    }
-
     @Override public String getClassifier() {
         return "openshapa.audio";
     }
