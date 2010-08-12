@@ -23,14 +23,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputAdapter;
 
 import net.miginfocom.swing.MigLayout;
 
 import org.openshapa.OpenSHAPA;
-
-import org.openshapa.controllers.id.IDController;
 
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.CarriageEventListener;
@@ -44,7 +43,7 @@ import org.openshapa.models.component.TrackModel.TrackState;
 import org.openshapa.models.id.Identifier;
 
 import org.openshapa.views.component.TrackPainter;
-import org.openshapa.views.continuous.CustomActionListener;
+import org.openshapa.views.continuous.CustomActions;
 import org.openshapa.views.continuous.ViewerStateListener;
 
 
@@ -71,6 +70,9 @@ public final class TrackController implements ViewerStateListener,
     /** Main panel holding the track UI. */
     private final JPanel view;
 
+    /** Header block. */
+    private final JPanel header;
+
     /** Track label. */
     private final JLabel trackLabel;
 
@@ -94,12 +96,6 @@ public final class TrackController implements ViewerStateListener,
     private final ImageIcon lockIcon = new ImageIcon(getClass().getResource(
                 "/icons/track-lock.png"));
 
-    private final JButton actionButton1;
-
-    private final JButton actionButton2;
-
-    private final JButton actionButton3;
-
     /** Viewable model. */
     private final MixerView mixer;
 
@@ -111,9 +107,6 @@ public final class TrackController implements ViewerStateListener,
      * the track.
      */
     private final EventListenerList listenerList;
-
-    /** Listener interested in custom action button events. */
-    private CustomActionListener buttonListener;
 
     /** States. */
     // can the carriage be moved using the mouse when snap is switched on
@@ -180,7 +173,7 @@ public final class TrackController implements ViewerStateListener,
 
         trackLabel.setName("trackLabel");
 
-        final JPanel header = new JPanel(new MigLayout("ins 0, wrap 4"));
+        header = new JPanel(new MigLayout("ins 0, wrap 4"));
         header.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 0, 1, BORDER_COLOR),
                 BorderFactory.createEmptyBorder(2, 2, 2, 2)));
@@ -200,50 +193,10 @@ public final class TrackController implements ViewerStateListener,
         header.add(lockUnlockButton, "w 20!, h 20!");
         lockUnlockButton.setName("lockUnlockButton");
 
-        // Set up the custom actions buttons
-        actionButton1 = new JButton();
-        actionButton1.setName("actionButton1");
-        actionButton1.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    buttonListener.handleActionButtonEvent1(e);
-                    updateButtonIcons();
-                }
-            });
-        header.add(actionButton1, "w 20!, h 20!");
-
-        actionButton2 = new JButton();
-        actionButton2.setName("actionButton2");
-        actionButton2.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    buttonListener.handleActionButtonEvent2(e);
-                    updateButtonIcons();
-                }
-            });
-        header.add(actionButton2, "w 20!, h 20!");
-
-        actionButton3 = new JButton();
-        actionButton3.setName("actionButton3");
-        actionButton3.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    buttonListener.handleActionButtonEvent3(e);
-                    updateButtonIcons();
-                }
-            });
-        header.add(actionButton3, "w 20!, h 20!");
-
         view.add(header, "w 100!, h 75!");
 
         // Create the Carriage panel
         view.add(trackPainter, "w 654::, growx, h 75!");
-    }
-
-    private void updateButtonIcons() {
-
-        synchronized (this) {
-            actionButton1.setIcon(buttonListener.getActionButtonIcon1());
-            actionButton2.setIcon(buttonListener.getActionButtonIcon2());
-            actionButton3.setIcon(buttonListener.getActionButtonIcon3());
-        }
     }
 
     /**
@@ -435,9 +388,7 @@ public final class TrackController implements ViewerStateListener,
 
     /**
      * When the viewer tells us that the state of the project should change,
-     * tell OpenSHAPA to update the projectChanged state (along with the title),
-     * and update the button icons too.
-     *
+     * tell OpenSHAPA to update the projectChanged state.
      */
     @Override public void notifyStateChanged(final String propertyChanged,
         final String newValue) {
@@ -452,6 +403,8 @@ public final class TrackController implements ViewerStateListener,
                 handled = true;
             }
 
+            // TODO review this: its hackish and it couples the plugins directly
+            // to this. Maybe a new data controller interface method is needed.
             if (property.equals("duration")) {
                 handled = true;
 
@@ -481,86 +434,37 @@ public final class TrackController implements ViewerStateListener,
             }
         }
 
-        updateButtonIcons();
+        // TODO move interface method into project controller?
         OpenSHAPA.getProjectController().projectChanged();
-        OpenSHAPA.getApplication().updateTitle();
     }
 
-    /**
-     * Set up the UI for the first custom action button.
-     *
-     * @param show true if the button should be shown.
-     * @param icon icon to use for the button.
-     */
-    public void setActionButtonUI1(final boolean show, final ImageIcon icon) {
+    public void bindTrackActions(final CustomActions actions) {
+        Runnable edtTask = new Runnable() {
+                @Override public void run() {
 
-        if (show) {
-            actionButton1.setVisible(true);
-            actionButton1.setEnabled(true);
+                    if (actions.getActionButton1() != null) {
+                        header.add(actions.getActionButton1(),
+                            "w 20!, h 20!, cell 1 2");
+                    }
 
-            if (icon != null) {
-                actionButton1.setIcon(icon);
-                actionButton1.setContentAreaFilled(false);
-                actionButton1.setBorderPainted(false);
-            } else {
-                actionButton1.setContentAreaFilled(true);
-                actionButton1.setBorderPainted(true);
-            }
+                    if (actions.getActionButton2() != null) {
+                        header.add(actions.getActionButton2(),
+                            "w 20!, h 20!, cell 2 2");
+                    }
+
+                    if (actions.getActionButton3() != null) {
+                        header.add(actions.getActionButton3(),
+                            "w 20!, h 20!, cell 3 2");
+                    }
+
+                    header.validate();
+                }
+            };
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            edtTask.run();
         } else {
-            actionButton1.setVisible(false);
-            actionButton1.setEnabled(false);
-        }
-    }
-
-    /**
-     * Set up the UI for the second custom action button.
-     *
-     * @param show true if the button should be shown.
-     * @param icon icon to use for the button.
-     */
-    public void setActionButtonUI2(final boolean show, final ImageIcon icon) {
-
-        if (show) {
-            actionButton2.setVisible(true);
-            actionButton2.setEnabled(true);
-
-            if (icon != null) {
-                actionButton2.setIcon(icon);
-                actionButton2.setContentAreaFilled(false);
-                actionButton2.setBorderPainted(false);
-            } else {
-                actionButton2.setContentAreaFilled(true);
-                actionButton2.setBorderPainted(true);
-            }
-        } else {
-            actionButton2.setVisible(false);
-            actionButton2.setEnabled(false);
-        }
-    }
-
-    /**
-     * Set up the UI for the third custom action button.
-     *
-     * @param show true if the button should be shown.
-     * @param icon icon to use for the button.
-     */
-    public void setActionButtonUI3(final boolean show, final ImageIcon icon) {
-
-        if (show) {
-            actionButton3.setVisible(true);
-            actionButton3.setEnabled(true);
-
-            if (icon != null) {
-                actionButton3.setIcon(icon);
-                actionButton3.setContentAreaFilled(false);
-                actionButton3.setBorderPainted(false);
-            } else {
-                actionButton3.setContentAreaFilled(true);
-                actionButton3.setBorderPainted(true);
-            }
-        } else {
-            actionButton3.setVisible(false);
-            actionButton3.setEnabled(false);
+            SwingUtilities.invokeLater(edtTask);
         }
     }
 
@@ -613,32 +517,6 @@ public final class TrackController implements ViewerStateListener,
         }
 
         fireLockStateChangedEvent();
-    }
-
-    /**
-     * Register a custom action button listener.
-     *
-     * @param listener listener to register.
-     */
-    public void addCustomActionListener(final CustomActionListener listener) {
-
-        synchronized (this) {
-            buttonListener = listener;
-            buttonListener.addViewerStateListener(this);
-        }
-    }
-
-    /**
-     * Remove a custom action button listener.
-     *
-     * @param listener listener to remove.
-     */
-    public void removeCustomActionListener(
-        final CustomActionListener listener) {
-
-        synchronized (this) {
-            buttonListener = null;
-        }
     }
 
     /**

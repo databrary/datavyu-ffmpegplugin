@@ -181,7 +181,7 @@ public final class PlaybackController implements PlaybackListener,
     private boolean tracksPanelEnabled = false;
 
     /** The controller for manipulating tracks. */
-    private final MixerController mixerControllerV;
+    private final MixerController mixerController;
 
     /** Model containing playback information. */
     private final PlaybackModel playbackModel;
@@ -215,11 +215,11 @@ public final class PlaybackController implements PlaybackListener,
         playbackModel.setWindowPlayEnd(defaultEndTime);
 
 
-        mixerControllerV = new MixerController();
-        mixerControllerV.addTracksControllerListener(this);
+        mixerController = new MixerController();
+        mixerController.addTracksControllerListener(this);
 
         playbackView = new PlaybackV(OpenSHAPA.getApplication().getMainFrame(),
-                false, mixerControllerV.getTracksPanel());
+                false, mixerController.getTracksPanel());
         playbackView.addPlaybackListener(this);
         playbackView.addPlaybackListener(new PlaybackLogging());
         playbackView.showTracksPanel(false);
@@ -703,23 +703,23 @@ public final class PlaybackController implements PlaybackListener,
                         playbackView.getFindOffsetTime();
 
                     playbackModel.setWindowPlayStart(newWindowPlayStart);
-                    mixerControllerV.setPlayRegionStart(newWindowPlayStart);
+                    mixerController.setPlayRegionStart(newWindowPlayStart);
 
                     if (newWindowPlayStart < newWindowPlayEnd) {
                         playbackModel.setWindowPlayEnd(newWindowPlayEnd);
-                        mixerControllerV.setPlayRegionEnd(newWindowPlayEnd);
+                        mixerController.setPlayRegionEnd(newWindowPlayEnd);
                     } else {
                         playbackModel.setWindowPlayEnd(newWindowPlayStart);
-                        mixerControllerV.setPlayRegionEnd(newWindowPlayStart);
+                        mixerController.setPlayRegionEnd(newWindowPlayStart);
                     }
 
-                    final long currentTime = mixerControllerV.getCurrentTime();
+                    final long currentTime = mixerController.getCurrentTime();
 
                     if (currentTime > newWindowPlayEnd) {
-                        mixerControllerV.setCurrentTime(newWindowPlayEnd);
+                        mixerController.setCurrentTime(newWindowPlayEnd);
                         clock.setTime(newWindowPlayEnd);
                     } else if (currentTime < newWindowPlayStart) {
-                        mixerControllerV.setCurrentTime(newWindowPlayStart);
+                        mixerController.setCurrentTime(newWindowPlayStart);
                         clock.setTime(newWindowPlayStart);
                     }
                 }
@@ -954,14 +954,14 @@ public final class PlaybackController implements PlaybackListener,
 
     public void dispose() {
         executor.shutdown();
-        mixerControllerV.removeAll();
+        mixerController.removeAll();
     }
 
     /**
      * @return the mixer controller.
      */
     public MixerController getMixerController() {
-        return mixerControllerV;
+        return mixerController;
     }
 
     /**
@@ -979,7 +979,7 @@ public final class PlaybackController implements PlaybackListener,
                 public void run() {
                     playbackView.setTimestampLabelText(CLOCK_FORMAT.format(
                             milliseconds));
-                    mixerControllerV.setCurrentTime(milliseconds);
+                    mixerController.setCurrentTime(milliseconds);
                 }
             };
 
@@ -1005,6 +1005,12 @@ public final class PlaybackController implements PlaybackListener,
 
                     if (removed) {
 
+                        // BugzID:2000
+                        viewer.removeViewerStateListener(
+                            mixerController.getTracksEditorController()
+                                .getViewerStateListener(
+                                    viewer.getIdentifier()));
+
                         // Recalculate the maximum playback duration.
                         long maxDuration = 0;
                         Iterator<DataViewer> it = viewers.iterator();
@@ -1020,23 +1026,23 @@ public final class PlaybackController implements PlaybackListener,
 
                         playbackModel.setMaxDuration(maxDuration);
 
-                        mixerControllerV.setMaxEnd(maxDuration);
+                        mixerController.setMaxEnd(maxDuration);
 
                         // Reset visualisation of playback regions.
                         if (playbackModel.getWindowPlayEnd() > maxDuration) {
                             playbackModel.setWindowPlayEnd(maxDuration);
-                            mixerControllerV.setPlayRegionEnd(maxDuration);
+                            mixerController.setPlayRegionEnd(maxDuration);
                         }
 
                         if (playbackModel.getWindowPlayStart()
                                 > playbackModel.getWindowPlayEnd()) {
                             playbackModel.setWindowPlayStart(0);
-                            mixerControllerV.setPlayRegionStart(
+                            mixerController.setPlayRegionStart(
                                 playbackModel.getWindowPlayStart());
                         }
 
                         // Reset visualisation of current playback time.
-                        long tracksTime = mixerControllerV.getCurrentTime();
+                        long tracksTime = mixerController.getCurrentTime();
 
                         if (tracksTime < playbackModel.getWindowPlayStart()) {
                             tracksTime = playbackModel.getWindowPlayStart();
@@ -1046,21 +1052,19 @@ public final class PlaybackController implements PlaybackListener,
                             tracksTime = playbackModel.getWindowPlayEnd();
                         }
 
-                        mixerControllerV.setCurrentTime(tracksTime);
+                        mixerController.setCurrentTime(tracksTime);
 
                         // Reset the clock.
                         clock.setTime(tracksTime);
                         clockStep(tracksTime);
 
                         // Remove the data viewer from the tracks panel.
-                        mixerControllerV.deregisterTrack(viewer.getIdentifier(),
-                            viewer);
+                        mixerController.deregisterTrack(viewer.getIdentifier());
 
                         // Data viewer removed, mark project as changed.
                         OpenSHAPA.getProjectController().projectChanged();
 
                     }
-
                 }
             };
 
@@ -1120,7 +1124,7 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable edtTask = new Runnable() {
                 public void run() {
-                    mixerControllerV.addNewTrack(id, icon, mediaPath, name,
+                    mixerController.addNewTrack(id, icon, mediaPath, name,
                         duration, offset, trackPainter);
                 }
             };
@@ -1171,7 +1175,7 @@ public final class PlaybackController implements PlaybackListener,
 
                     if (playbackModel.getWindowPlayEnd() < maxDuration) {
                         playbackModel.setWindowPlayEnd(maxDuration);
-                        mixerControllerV.setPlayRegionEnd(maxDuration);
+                        mixerController.setPlayRegionEnd(maxDuration);
                     }
                 }
             };
@@ -1480,11 +1484,11 @@ public final class PlaybackController implements PlaybackListener,
             dataViewer.seekTo(clock.getTime());
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                 dataViewer.getTrackPainter());
-            mixerControllerV.bindTrackActions(dataViewer.getIdentifier(),
-                dataViewer, plugin.isActionSupported1(),
-                dataViewer.getActionButtonIcon1(), plugin.isActionSupported2(),
-                dataViewer.getActionButtonIcon2(), plugin.isActionSupported3(),
-                dataViewer.getActionButtonIcon3());
+            mixerController.bindTrackActions(dataViewer.getIdentifier(),
+                dataViewer.getCustomActions());
+            dataViewer.addViewerStateListener(
+                mixerController.getTracksEditorController()
+                    .getViewerStateListener(dataViewer.getIdentifier()));
         }
     }
 
@@ -1617,7 +1621,7 @@ public final class PlaybackController implements PlaybackListener,
         assert !SwingUtilities.isEventDispatchThread();
 
         final long newWindowTime = e.getTime();
-        final long tracksTime = mixerControllerV.getCurrentTime();
+        final long tracksTime = mixerController.getCurrentTime();
 
         switch (e.getMarker()) {
 
@@ -1660,10 +1664,10 @@ public final class PlaybackController implements PlaybackListener,
 
         playbackModel.setWindowPlayEnd(windowPlayEnd);
 
-        mixerControllerV.setPlayRegionEnd(windowPlayEnd);
+        mixerController.setPlayRegionEnd(windowPlayEnd);
 
         if (tracksTime > windowPlayEnd) {
-            mixerControllerV.setCurrentTime(windowPlayEnd);
+            mixerController.setCurrentTime(windowPlayEnd);
             clock.setTime(windowPlayEnd);
             clockStep(windowPlayEnd);
         }
@@ -1693,10 +1697,10 @@ public final class PlaybackController implements PlaybackListener,
 
         playbackModel.setWindowPlayStart(windowPlayStart);
 
-        mixerControllerV.setPlayRegionStart(windowPlayStart);
+        mixerController.setPlayRegionStart(windowPlayStart);
 
         if (tracksTime < windowPlayStart) {
-            mixerControllerV.setCurrentTime(windowPlayStart);
+            mixerController.setCurrentTime(windowPlayStart);
             clock.setTime(windowPlayStart);
             clockStep(windowPlayStart);
         }
@@ -1766,24 +1770,24 @@ public final class PlaybackController implements PlaybackListener,
 
         playbackModel.setMaxDuration(maxDuration);
 
-        mixerControllerV.setMaxEnd(maxDuration);
+        mixerController.setMaxEnd(maxDuration);
 
         // Reset our playback windows
         if (playbackModel.getWindowPlayEnd() > maxDuration) {
             playbackModel.setWindowPlayEnd(maxDuration);
-            mixerControllerV.setPlayRegionEnd(maxDuration);
+            mixerController.setPlayRegionEnd(maxDuration);
         }
 
 
         if (playbackModel.getWindowPlayStart()
                 > playbackModel.getWindowPlayEnd()) {
             playbackModel.setWindowPlayStart(0);
-            mixerControllerV.setPlayRegionStart(
+            mixerController.setPlayRegionStart(
                 playbackModel.getWindowPlayStart());
         }
 
         // Reset the time if needed
-        long tracksTime = mixerControllerV.getCurrentTime();
+        long tracksTime = mixerController.getCurrentTime();
 
         if (tracksTime < playbackModel.getWindowPlayStart()) {
             tracksTime = playbackModel.getWindowPlayStart();
@@ -1793,7 +1797,7 @@ public final class PlaybackController implements PlaybackListener,
             tracksTime = playbackModel.getWindowPlayEnd();
         }
 
-        mixerControllerV.setCurrentTime(tracksTime);
+        mixerController.setCurrentTime(tracksTime);
 
         clock.setTime(tracksTime);
         clockStep(tracksTime);

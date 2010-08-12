@@ -60,7 +60,7 @@ import org.openshapa.models.component.Viewport;
 import org.openshapa.models.id.Identifier;
 
 import org.openshapa.views.component.TrackPainter;
-import org.openshapa.views.continuous.CustomActionListener;
+import org.openshapa.views.continuous.CustomActions;
 
 import com.google.common.collect.Maps;
 
@@ -531,31 +531,14 @@ public final class MixerController implements PropertyChangeListener,
      *
      * @param trackId
      *            Identifier of the track
-     * @param dataViewer
-     *            Viewer to bind
-     * @param actionSupported1
-     *            is the first custom action supported
-     * @param actionIcon1
-     *            icon associated with the first custom action
-     * @param actionSupported2
-     *            is the second custom action supported
-     * @param actionIcon2
-     *            icon associated with the second custom action
-     * @param actionSupported3
-     *            is the third custom action supported
-     * @param actionIcon3
-     *            icon associated with the third custom action
+     * @param actions
+     *            Actions to bind with
      */
     public void bindTrackActions(final Identifier trackId,
-        final CustomActionListener dataViewer, final boolean actionSupported1,
-        final ImageIcon actionIcon1, final boolean actionSupported2,
-        final ImageIcon actionIcon2, final boolean actionSupported3,
-        final ImageIcon actionIcon3) {
+        final CustomActions actions) {
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
-                    tracksEditorController.bindTrackActions(trackId, dataViewer,
-                        actionSupported1, actionIcon1, actionSupported2,
-                        actionIcon2, actionSupported3, actionIcon3);
+                    tracksEditorController.bindTrackActions(trackId, actions);
                 }
             };
 
@@ -724,14 +707,12 @@ public final class MixerController implements PropertyChangeListener,
     }
 
     /**
-     * Deregister track and its viewer from track panel.
+     * Remove from track panel.
      *
-     * @param mediaPath
-     * @param dataViewer
+     * @param trackId
+     *            identifier of the track to remove.
      */
-    public void deregisterTrack(final Identifier trackId,
-        final CustomActionListener dataViewer) {
-        tracksEditorController.unbindTrackActions(trackId, dataViewer);
+    public void deregisterTrack(final Identifier trackId) {
         tracksEditorController.removeTrack(trackId, this);
 
         // Update tracks panel display

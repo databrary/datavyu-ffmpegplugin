@@ -10,6 +10,7 @@ import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -20,11 +21,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import java.net.URL;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -62,6 +66,8 @@ import org.openshapa.models.id.Identifier;
 
 import org.openshapa.views.component.DefaultTrackPainter;
 import org.openshapa.views.component.TrackPainter;
+import org.openshapa.views.continuous.CustomActions;
+import org.openshapa.views.continuous.CustomActionsAdapter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.ViewerStateListener;
@@ -90,6 +96,9 @@ public class GStreamerDataViewer implements DataViewer {
     /** Dialog containing volume slider. */
     private JDialog volumeDialog;
 
+    /** Volume button. */
+    private JButton volumeButton;
+
     /** Stores the desired volume the plugin should play at. */
     private float volume = 1f;
 
@@ -102,6 +111,13 @@ public class GStreamerDataViewer implements DataViewer {
     /** The list of listeners interested in changes made to the project. */
     private final List<ViewerStateListener> viewerListeners =
         new LinkedList<ViewerStateListener>();
+
+    /** Custom actions handler. */
+    private CustomActions actions = new CustomActionsAdapter() {
+            @Override public AbstractButton getActionButton1() {
+                return volumeButton;
+            }
+        };
 
     private JDialog videoDialog;
     private long offset;
@@ -133,6 +149,19 @@ public class GStreamerDataViewer implements DataViewer {
 
         trackPainter = new DefaultTrackPainter();
         setOffset(0);
+
+        volumeButton = new JButton();
+
+        {
+            volumeButton.setIcon(getActionButtonIcon1());
+            volumeButton.setBorderPainted(false);
+            volumeButton.setContentAreaFilled(false);
+            volumeButton.addActionListener(new ActionListener() {
+                    @Override public void actionPerformed(final ActionEvent e) {
+                        handleActionButtonEvent1(e);
+                    }
+                });
+        }
 
         volumeSlider = new JSlider(JSlider.VERTICAL, 0, 100, 70);
         volumeSlider.setMajorTickSpacing(10);
@@ -204,6 +233,7 @@ public class GStreamerDataViewer implements DataViewer {
      */
     private void setVolume() {
         playBin.setVolume(isVisible ? volume : MUTE_VOLUME);
+        volumeButton.setIcon(getActionButtonIcon1());
     }
 
     @Override public long getCurrentTime() {
@@ -598,10 +628,6 @@ public class GStreamerDataViewer implements DataViewer {
         }
     }
 
-    @Override public void addViewerStateListener(
-        final ViewerStateListener vsl) {
-        viewerListeners.add(vsl);
-    }
 
     /** Notifies listeners that a change to the project has occurred. */
     private void notifyChange() {
@@ -611,7 +637,7 @@ public class GStreamerDataViewer implements DataViewer {
         }
     }
 
-    @Override public ImageIcon getActionButtonIcon1() {
+    private ImageIcon getActionButtonIcon1() {
 
         if (isVisible && (volume > 0)) {
             return volumeIcon;
@@ -620,21 +646,7 @@ public class GStreamerDataViewer implements DataViewer {
         }
     }
 
-    @Override public ImageIcon getActionButtonIcon2() {
-        System.out.println("GStreamerDataViewer.getActionButtonIcon2()");
-
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override public ImageIcon getActionButtonIcon3() {
-        System.out.println("GStreamerDataViewer.getActionButtonIcon3()");
-
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override public void handleActionButtonEvent1(final ActionEvent event) {
+    private void handleActionButtonEvent1(final ActionEvent event) {
         JButton button = (JButton) event.getSource();
 
         // BugzID:1400 - We don't allow volume changes while the track is
@@ -647,23 +659,25 @@ public class GStreamerDataViewer implements DataViewer {
         }
     }
 
-    @Override public void handleActionButtonEvent2(final ActionEvent event) {
-        //isVisible = !isVisible;
-        //this.setVisible(isVisible);
-        //setVolume();
-        //notifyChange();
-    }
-
-    @Override public void handleActionButtonEvent3(final ActionEvent event) {
-        System.out.println("GStreamerDataViewer.handleActionButtonEvent3()");
-        // TODO Auto-generated method stub
-    }
-
     @Override public Identifier getIdentifier() {
         return id;
     }
 
     @Override public void setIdentifier(final Identifier id) {
         this.id = id;
+    }
+
+    @Override public CustomActions getCustomActions() {
+        return actions;
+    }
+
+    @Override public void addViewerStateListener(
+        final ViewerStateListener vsl) {
+        viewerListeners.add(vsl);
+    }
+
+    @Override public void removeViewerStateListener(
+        final ViewerStateListener vsl) {
+        viewerListeners.remove(vsl);
     }
 }

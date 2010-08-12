@@ -18,6 +18,7 @@ import java.net.URL;
 
 import java.util.Properties;
 
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -37,6 +38,8 @@ import org.openshapa.plugins.spectrum.swing.AmplitudeTrack;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
 
 import org.openshapa.views.component.TrackPainter;
+import org.openshapa.views.continuous.CustomActions;
+import org.openshapa.views.continuous.CustomActionsAdapter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.ViewerStateListener;
@@ -68,6 +71,9 @@ public final class SpectrumDataViewer implements DataViewer {
     /** Volume slider. */
     private JSlider volSlider;
 
+    /** Volume button. */
+    private JButton volButton;
+
     /** Track. */
     private AmplitudeTrack track;
 
@@ -86,6 +92,13 @@ public final class SpectrumDataViewer implements DataViewer {
     /** Playback engine. */
     private PlaybackEngine engine;
 
+    /** Custom actions handler. */
+    private CustomActions actions = new CustomActionsAdapter() {
+            @Override public AbstractButton getActionButton1() {
+                return volButton;
+            }
+        };
+
     public SpectrumDataViewer(final Frame parent, final boolean modal) {
 
         Runnable edtTask = new Runnable() {
@@ -100,6 +113,22 @@ public final class SpectrumDataViewer implements DataViewer {
                                 dialogClosing(evt);
                             }
                         });
+
+                    volButton = new JButton();
+
+                    {
+                        URL iconURL = getClass().getResource(
+                                "/icons/audio-volume.png");
+                        volButton.setIcon(new ImageIcon(iconURL));
+                        volButton.setBorderPainted(false);
+                        volButton.setContentAreaFilled(false);
+                        volButton.addActionListener(new ActionListener() {
+                                @Override public void actionPerformed(
+                                    final ActionEvent e) {
+                                    handleActionButtonEvent1(e);
+                                }
+                            });
+                    }
 
                     volDialog = new JDialog(parent, false);
                     volDialog.setUndecorated(true);
@@ -296,40 +325,13 @@ public final class SpectrumDataViewer implements DataViewer {
         }
     }
 
-    private void handleMaxVol(final ActionEvent e) {
-        volSlider.setValue(MAX_VOLUME);
-    }
-
-    private void handleMuteVol(final ActionEvent e) {
-        volSlider.setValue(MIN_VOLUME);
-    }
-
-    private void handleVolumeSliderEvent(final ChangeEvent e) {
-        engine.setVolume(volSlider.getValue());
-    }
-
-    /**
-     * Handles dialog window closing event.
-     *
-     * @param evt
-     *            Event to handle.
-     */
-    private void dialogClosing(final WindowEvent evt) {
-        track.deregister();
-
-        // Shutdown the engine
-        engine.shutdown();
-
-        // Stop the engine thread.
-        engine.interrupt();
-
-        if (dataC != null) {
-            dataC.shutdown(this);
-        }
-    }
-
     @Override public void addViewerStateListener(
         final ViewerStateListener listener) {
+        // Do nothing; no events to report.
+    }
+
+    @Override public void removeViewerStateListener(
+        final ViewerStateListener vsl) {
         // Do nothing; no events to report.
     }
 
@@ -362,40 +364,55 @@ public final class SpectrumDataViewer implements DataViewer {
         }
     }
 
-    @Override public ImageIcon getActionButtonIcon1() {
-        URL iconURL = getClass().getResource("/icons/audio-volume.png");
-
-        return new ImageIcon(iconURL);
-    }
-
-    @Override public ImageIcon getActionButtonIcon2() {
-        return null;
-    }
-
-    @Override public ImageIcon getActionButtonIcon3() {
-        return null;
-    }
-
-    @Override public void handleActionButtonEvent1(final ActionEvent event) {
-        JButton button = (JButton) event.getSource();
-
-        // Show the volume frame.
-        volDialog.setLocation(button.getLocationOnScreen());
-        volDialog.setVisible(true);
-    }
-
-    @Override public void handleActionButtonEvent2(final ActionEvent arg0) {
-    }
-
-    @Override public void handleActionButtonEvent3(final ActionEvent arg0) {
-    }
-
     @Override public Identifier getIdentifier() {
         return id;
     }
 
     @Override public void setIdentifier(final Identifier id) {
         this.id = id;
+    }
+
+    @Override public CustomActions getCustomActions() {
+        return actions;
+    }
+
+    private void handleActionButtonEvent1(final ActionEvent event) {
+
+        // Show the volume frame.
+        volDialog.setLocation(volButton.getLocationOnScreen());
+        volDialog.setVisible(true);
+    }
+
+    private void handleMaxVol(final ActionEvent e) {
+        volSlider.setValue(MAX_VOLUME);
+    }
+
+    private void handleMuteVol(final ActionEvent e) {
+        volSlider.setValue(MIN_VOLUME);
+    }
+
+    private void handleVolumeSliderEvent(final ChangeEvent e) {
+        engine.setVolume(volSlider.getValue());
+    }
+
+    /**
+     * Handles dialog window closing event.
+     *
+     * @param evt
+     *            Event to handle.
+     */
+    private void dialogClosing(final WindowEvent evt) {
+        track.deregister();
+
+        // Shutdown the engine
+        engine.shutdown();
+
+        // Stop the engine thread.
+        engine.interrupt();
+
+        if (dataC != null) {
+            dataC.shutdown(this);
+        }
     }
 
 }

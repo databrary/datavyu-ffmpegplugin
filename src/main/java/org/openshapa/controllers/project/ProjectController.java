@@ -353,10 +353,11 @@ public final class ProjectController {
                     .getIdentifier(), ts.getBookmarkPosition(), ts.isLocked());
             }
 
-            mixerController.bindTrackActions(viewer.getIdentifier(), viewer,
-                plugin.isActionSupported1(), viewer.getActionButtonIcon1(),
-                plugin.isActionSupported2(), viewer.getActionButtonIcon2(),
-                plugin.isActionSupported3(), viewer.getActionButtonIcon3());
+            mixerController.bindTrackActions(viewer.getIdentifier(),
+                viewer.getCustomActions());
+            viewer.addViewerStateListener(
+                mixerController.getTracksEditorController()
+                    .getViewerStateListener(viewer.getIdentifier()));
         }
 
         // Do not remove; this is here for backwards compatibility.

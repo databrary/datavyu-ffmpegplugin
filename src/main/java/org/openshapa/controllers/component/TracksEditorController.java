@@ -25,7 +25,8 @@ import org.openshapa.models.id.Identifier;
 
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.component.TracksEditorPainter;
-import org.openshapa.views.continuous.CustomActionListener;
+import org.openshapa.views.continuous.CustomActions;
+import org.openshapa.views.continuous.ViewerStateListener;
 
 
 /**
@@ -137,51 +138,36 @@ public final class TracksEditorController implements TrackMouseEventListener {
     /**
      * Bind track actions to a data viewer.
      *
-     * @param mediaPath Absolute path to the media file
-     * @param dataViewer Viewer to bind
-     * @param actionSupported1 is the first custom action supported
-     * @param actionIcon1 icon associated with the first custom action
-     * @param actionSupported2 is the second custom action supported
-     * @param actionIcon2 icon associated with the second custom action
-     * @param actionSupported3 is the third custom action supported
-     * @param actionIcon3 icon associated with the third custom action
+     * @param trackId
+     *            Track identifier.
+     * @param actions
+     *            Actions to bind with.
      */
     public void bindTrackActions(final Identifier trackId,
-        final CustomActionListener dataViewer, final boolean actionSupported1,
-        final ImageIcon actionIcon1, final boolean actionSupported2,
-        final ImageIcon actionIcon2, final boolean actionSupported3,
-        final ImageIcon actionIcon3) {
+        final CustomActions actions) {
 
         for (Track track : tracks) {
 
             if (track.trackId.equals(trackId)) {
                 TrackController tc = track.trackController;
-                tc.addCustomActionListener(dataViewer);
-                tc.setActionButtonUI1(actionSupported1, actionIcon1);
-                tc.setActionButtonUI2(actionSupported2, actionIcon2);
-                tc.setActionButtonUI3(actionSupported3, actionIcon3);
+                tc.bindTrackActions(actions);
             }
         }
     }
 
-    /**
-     * Unbind track actions from a dataviewer.
-     *
-     * @param trackId
-     *            Track identifier
-     * @param dataViewer
-     *            Viewer to unbind
-     */
-    public void unbindTrackActions(final Identifier trackId,
-        final CustomActionListener dataViewer) {
+    public ViewerStateListener getViewerStateListener(
+        final Identifier trackId) {
 
         for (Track track : tracks) {
 
             if (track.trackId.equals(trackId)) {
                 TrackController tc = track.trackController;
-                tc.removeCustomActionListener(dataViewer);
+
+                return tc;
             }
         }
+
+        return null;
     }
 
     /**

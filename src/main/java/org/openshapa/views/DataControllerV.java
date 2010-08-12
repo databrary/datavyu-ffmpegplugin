@@ -211,7 +211,7 @@ public final class DataControllerV extends OpenSHAPADialog
     private boolean tracksPanelEnabled = false;
 
     /** The controller for manipulating tracks. */
-    private MixerController mixerControllerV;
+    private MixerController mixerController;
 
     /** */
     private javax.swing.JButton createNewCell;
@@ -343,9 +343,9 @@ public final class DataControllerV extends OpenSHAPADialog
         playbackModel.setWindowPlayStart(0);
         playbackModel.setWindowPlayEnd(defaultEndTime);
 
-        mixerControllerV = new MixerController();
-        tracksPanel.add(mixerControllerV.getTracksPanel(), "growx");
-        mixerControllerV.addTracksControllerListener(this);
+        mixerController = new MixerController();
+        tracksPanel.add(mixerController.getTracksPanel(), "growx");
+        mixerController.addTracksControllerListener(this);
 
         showTracksPanel(false);
     }
@@ -375,11 +375,11 @@ public final class DataControllerV extends OpenSHAPADialog
             dataViewer.seekTo(clock.getTime());
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                 dataViewer.getTrackPainter());
-            mixerControllerV.bindTrackActions(dataViewer.getIdentifier(),
-                dataViewer, plugin.isActionSupported1(),
-                dataViewer.getActionButtonIcon1(), plugin.isActionSupported2(),
-                dataViewer.getActionButtonIcon2(), plugin.isActionSupported3(),
-                dataViewer.getActionButtonIcon3());
+            mixerController.bindTrackActions(dataViewer.getIdentifier(),
+                dataViewer.getCustomActions());
+            dataViewer.addViewerStateListener(
+                mixerController.getTracksEditorController()
+                    .getViewerStateListener(dataViewer.getIdentifier()));
         }
     }
 
@@ -614,7 +614,7 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     @Override public void dispose() {
-        mixerControllerV.removeAll();
+        mixerController.removeAll();
         super.dispose();
     }
 
@@ -622,7 +622,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * @return the mixer controller.
      */
     public MixerController getMixerController() {
-        return mixerControllerV;
+        return mixerController;
     }
 
     /**
@@ -636,7 +636,7 @@ public final class DataControllerV extends OpenSHAPADialog
         timestampLabel.setText(tracksPanelEnabled
                 ? CLOCK_FORMAT_HTML.format(milliseconds)
                 : CLOCK_FORMAT.format(milliseconds));
-        mixerControllerV.setCurrentTime(milliseconds);
+        mixerController.setCurrentTime(milliseconds);
     }
 
     private void updateCurrentTimeLabel() {
@@ -669,23 +669,23 @@ public final class DataControllerV extends OpenSHAPADialog
 
         playbackModel.setMaxDuration(maxDuration);
 
-        maxDuration = mixerControllerV.setMaxEnd(maxDuration);
+        maxDuration = mixerController.setMaxEnd(maxDuration);
 
         // Reset visualisation of playback regions.
         if (playbackModel.getWindowPlayEnd() > maxDuration) {
             playbackModel.setWindowPlayEnd(maxDuration);
-            mixerControllerV.setPlayRegionEnd(maxDuration);
+            mixerController.setPlayRegionEnd(maxDuration);
         }
 
         if (playbackModel.getWindowPlayStart()
                 > playbackModel.getWindowPlayEnd()) {
             playbackModel.setWindowPlayStart(0);
-            mixerControllerV.setPlayRegionStart(
+            mixerController.setPlayRegionStart(
                 playbackModel.getWindowPlayStart());
         }
 
         // Reset visualisation of current playback time.
-        long tracksTime = mixerControllerV.getCurrentTime();
+        long tracksTime = mixerController.getCurrentTime();
 
         if (tracksTime < playbackModel.getWindowPlayStart()) {
             tracksTime = playbackModel.getWindowPlayStart();
@@ -695,7 +695,7 @@ public final class DataControllerV extends OpenSHAPADialog
             tracksTime = playbackModel.getWindowPlayEnd();
         }
 
-        mixerControllerV.setCurrentTime(tracksTime);
+        mixerController.setCurrentTime(tracksTime);
 
         // Reset the clock.
         clock.setTime(tracksTime);
@@ -716,15 +716,20 @@ public final class DataControllerV extends OpenSHAPADialog
 
         if (removed) {
 
+            // BugzID:2000
+            viewer.removeViewerStateListener(
+                mixerController.getTracksEditorController()
+                    .getViewerStateListener(viewer.getIdentifier()));
+
             // Recalculate the maximum playback duration.
             updateMaxViewerDuration();
 
+            // Remove the data viewer from the tracks panel.
+            mixerController.deregisterTrack(viewer.getIdentifier());
+
+
             // Data viewer removed, mark project as changed.
             OpenSHAPA.getProjectController().projectChanged();
-
-            // Remove the data viewer from the tracks panel.
-            mixerControllerV.deregisterTrack(viewer.getIdentifier(), viewer);
-            OpenSHAPA.getApplication().updateTitle();
         }
 
         return removed;
@@ -1504,8 +1509,8 @@ public final class DataControllerV extends OpenSHAPADialog
     public void addTrack(final Identifier id, final ImageIcon icon,
         final String mediaPath, final String name, final long duration,
         final long offset, final TrackPainter trackPainter) {
-        mixerControllerV.addNewTrack(id, icon, mediaPath, name, duration,
-            offset, trackPainter);
+        mixerController.addNewTrack(id, icon, mediaPath, name, duration, offset,
+            trackPainter);
     }
 
     /**
@@ -1546,7 +1551,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         if (playbackModel.getWindowPlayEnd() < maxDuration) {
             playbackModel.setWindowPlayEnd(maxDuration);
-            mixerControllerV.setPlayRegionEnd(maxDuration);
+            mixerController.setPlayRegionEnd(maxDuration);
         }
     }
 
@@ -1664,7 +1669,7 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void handleMarkerEvent(final MarkerEvent e) {
         final long newWindowTime = e.getTime();
-        final long tracksTime = mixerControllerV.getCurrentTime();
+        final long tracksTime = mixerController.getCurrentTime();
 
         switch (e.getMarker()) {
 
@@ -1706,10 +1711,10 @@ public final class DataControllerV extends OpenSHAPADialog
 
         playbackModel.setWindowPlayEnd(windowPlayEnd);
 
-        mixerControllerV.setPlayRegionEnd(windowPlayEnd);
+        mixerController.setPlayRegionEnd(windowPlayEnd);
 
         if (tracksTime > windowPlayEnd) {
-            mixerControllerV.setCurrentTime(windowPlayEnd);
+            mixerController.setCurrentTime(windowPlayEnd);
             clock.setTime(windowPlayEnd);
             clockStep(windowPlayEnd);
         }
@@ -1737,10 +1742,10 @@ public final class DataControllerV extends OpenSHAPADialog
 
         playbackModel.setWindowPlayStart(windowPlayStart);
 
-        mixerControllerV.setPlayRegionStart(windowPlayStart);
+        mixerController.setPlayRegionStart(windowPlayStart);
 
         if (tracksTime < windowPlayStart) {
-            mixerControllerV.setCurrentTime(windowPlayStart);
+            mixerController.setCurrentTime(windowPlayStart);
             clock.setTime(windowPlayStart);
             clockStep(windowPlayStart);
         }
@@ -1766,7 +1771,6 @@ public final class DataControllerV extends OpenSHAPADialog
         case BOOKMARK_CHANGED:
         case BOOKMARK_SAVE:
             OpenSHAPA.getProjectController().projectChanged();
-            OpenSHAPA.getApplication().updateTitle();
 
             break;
 
@@ -1793,11 +1797,10 @@ public final class DataControllerV extends OpenSHAPADialog
         }
 
         OpenSHAPA.getProjectController().projectChanged();
-        OpenSHAPA.getApplication().updateTitle();
 
         // Recalculate the maximum playback duration.
         boolean updateEndRegionMarker = playbackModel.getMaxDuration()
-            == mixerControllerV.getRegionController().getRegionModel()
+            == mixerController.getRegionController().getRegionModel()
             .getRegionEnd();
         long maxDuration = 0;
 
@@ -1810,25 +1813,25 @@ public final class DataControllerV extends OpenSHAPADialog
 
         playbackModel.setMaxDuration(maxDuration);
 
-        mixerControllerV.setMaxEnd(maxDuration);
+        mixerController.setMaxEnd(maxDuration);
 
         // Reset our playback windows
         if ((playbackModel.getWindowPlayEnd() > maxDuration)
                 || updateEndRegionMarker) {
             playbackModel.setWindowPlayEnd(maxDuration);
-            mixerControllerV.setPlayRegionEnd(maxDuration);
+            mixerController.setPlayRegionEnd(maxDuration);
         }
 
 
         if (playbackModel.getWindowPlayStart()
                 > playbackModel.getWindowPlayEnd()) {
             playbackModel.setWindowPlayStart(0);
-            mixerControllerV.setPlayRegionStart(
+            mixerController.setPlayRegionStart(
                 playbackModel.getWindowPlayStart());
         }
 
         // Reset the time if needed
-        long tracksTime = mixerControllerV.getCurrentTime();
+        long tracksTime = mixerController.getCurrentTime();
 
         if (tracksTime < playbackModel.getWindowPlayStart()) {
             tracksTime = playbackModel.getWindowPlayStart();
@@ -1838,7 +1841,7 @@ public final class DataControllerV extends OpenSHAPADialog
             tracksTime = playbackModel.getWindowPlayEnd();
         }
 
-        mixerControllerV.setCurrentTime(tracksTime);
+        mixerController.setCurrentTime(tracksTime);
 
         clock.setTime(tracksTime);
         clockStep(tracksTime);
@@ -2136,7 +2139,7 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     public void clearRegionOfInterestAction() {
-        mixerControllerV.clearRegionOfInterest();
+        mixerController.clearRegionOfInterest();
     }
 
     /**
@@ -2152,23 +2155,23 @@ public final class DataControllerV extends OpenSHAPADialog
                     findOffsetField.getText()).getTime();
 
             playbackModel.setWindowPlayStart(newWindowPlayStart);
-            mixerControllerV.setPlayRegionStart(newWindowPlayStart);
+            mixerController.setPlayRegionStart(newWindowPlayStart);
 
             if (newWindowPlayStart < newWindowPlayEnd) {
                 playbackModel.setWindowPlayEnd(newWindowPlayEnd);
-                mixerControllerV.setPlayRegionEnd(newWindowPlayEnd);
+                mixerController.setPlayRegionEnd(newWindowPlayEnd);
             } else {
                 playbackModel.setWindowPlayEnd(newWindowPlayStart);
-                mixerControllerV.setPlayRegionEnd(newWindowPlayStart);
+                mixerController.setPlayRegionEnd(newWindowPlayStart);
             }
 
-            final long currentTime = mixerControllerV.getCurrentTime();
+            final long currentTime = mixerController.getCurrentTime();
 
             if (currentTime > newWindowPlayEnd) {
-                mixerControllerV.setCurrentTime(newWindowPlayEnd);
+                mixerController.setCurrentTime(newWindowPlayEnd);
                 clock.setTime(newWindowPlayEnd);
             } else if (currentTime < newWindowPlayStart) {
-                mixerControllerV.setCurrentTime(newWindowPlayStart);
+                mixerController.setCurrentTime(newWindowPlayStart);
                 clock.setTime(newWindowPlayStart);
             }
         } catch (ParseException e) {
