@@ -26,7 +26,7 @@ public class Launcher {
      */
     public static void main(final String[] args) {
         int returnStatus = 0;
-        final boolean dumpOutputStreams = false /* added for easier debugging */ | "true".equals(System.getProperty("openshapa.debug"));
+        final boolean dumpOutputStreams = true /* added for easier debugging */ | "true".equals(System.getProperty("openshapa.debug"));
         File splashScreenImage = null;
         
         try {
