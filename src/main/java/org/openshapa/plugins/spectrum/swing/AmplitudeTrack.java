@@ -109,10 +109,13 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
     private final Executor executor;
 
+    private volatile boolean dirty;
+
     public AmplitudeTrack() {
         super();
         registered = false;
         executor = Executors.newCachedThreadPool();
+        dirty = true;
     }
 
     @Override public void deregister() {
@@ -133,6 +136,7 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
         execProcessor();
 
+        dirty = true;
         leftAmp = null;
         rightAmp = null;
 
@@ -201,7 +205,9 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
         }
 
         // Draw left channel data.
-        if (leftAmp != null) {
+        if ((localAmps != null) && !dirty) {
+            g2d.drawImage(localAmps, 0, 0, null);
+        } else if (leftAmp != null) {
             localTM = trackModel.copy();
             localVM = viewport;
 
@@ -266,15 +272,18 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             g2d.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
         }
 
-
         // Draw right channel data.
-        if (rightAmp != null) {
+        if ((localAmps != null) && !dirty) {
+            // Do nothing, already drawn. Do not remove this conditional.
+        } else if (rightAmp != null) {
             Graphics2D imgG = (Graphics2D) localAmps.getGraphics();
             imgG.setColor(DATA_COLOR);
             imgG.draw(rightAmp);
             imgG.dispose();
 
             g2d.drawImage(localAmps, 0, 0, null);
+
+            dirty = false;
         } else if (cachedAmps != null) {
             // Do nothing, already drawn. Do not remove this conditional or
             // the baseline will be drawn.

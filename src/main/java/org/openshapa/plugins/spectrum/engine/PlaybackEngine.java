@@ -115,7 +115,6 @@ public final class PlaybackEngine extends Thread {
     @Override public void run() {
 
         while (true) {
-            // System.out.println("Command queue: " + commandQueue);
 
             try {
 
