@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.Properties;
 
 import javax.swing.AbstractButton;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -58,6 +59,11 @@ public final class SpectrumDataViewer implements DataViewer {
 
     private static final int MIN_VOLUME = 0;
     private static final int MAX_VOLUME = 100;
+
+    private static final Icon VOL_NORMAL = new ImageIcon(
+            SpectrumDataViewer.class.getResource("/icons/audio-volume.png"));
+    private static final Icon VOL_MUTED = new ImageIcon(SpectrumDataViewer.class
+            .getResource("/icons/volume-muted.png"));
 
     /** ID of the data viewer. */
     private Identifier id;
@@ -115,20 +121,15 @@ public final class SpectrumDataViewer implements DataViewer {
                         });
 
                     volButton = new JButton();
-
-                    {
-                        URL iconURL = getClass().getResource(
-                                "/icons/audio-volume.png");
-                        volButton.setIcon(new ImageIcon(iconURL));
-                        volButton.setBorderPainted(false);
-                        volButton.setContentAreaFilled(false);
-                        volButton.addActionListener(new ActionListener() {
-                                @Override public void actionPerformed(
-                                    final ActionEvent e) {
-                                    handleActionButtonEvent1(e);
-                                }
-                            });
-                    }
+                    volButton.setIcon(VOL_NORMAL);
+                    volButton.setBorderPainted(false);
+                    volButton.setContentAreaFilled(false);
+                    volButton.addActionListener(new ActionListener() {
+                            @Override public void actionPerformed(
+                                final ActionEvent e) {
+                                handleActionButtonEvent1(e);
+                            }
+                        });
 
                     volDialog = new JDialog(parent, false);
                     volDialog.setUndecorated(true);
@@ -162,7 +163,6 @@ public final class SpectrumDataViewer implements DataViewer {
                         URL iconURL = getClass().getResource(
                                 "/icons/spectrum/volume-high.png");
                         maxVol.setIcon(new ImageIcon(iconURL));
-
                     }
 
                     c.add(maxVol, "w 48!, h 48!");
@@ -392,7 +392,14 @@ public final class SpectrumDataViewer implements DataViewer {
     }
 
     private void handleVolumeSliderEvent(final ChangeEvent e) {
-        engine.setVolume(volSlider.getValue());
+        int vol = volSlider.getValue();
+        engine.setVolume(vol);
+
+        if (vol == 0) {
+            volButton.setIcon(VOL_MUTED);
+        } else {
+            volButton.setIcon(VOL_NORMAL);
+        }
     }
 
     /**
