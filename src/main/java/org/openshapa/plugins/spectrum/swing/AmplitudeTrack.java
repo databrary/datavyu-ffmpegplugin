@@ -103,12 +103,16 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
     /** Handles amplitude processing. */
     private AmplitudeProcessor processor;
 
+    /** Handles processing the background cache. */
     private CacheHandler cacheHandler;
 
+    /** Current progress level [0,1]. */
     private double progress;
 
+    /** Handles task execution. */
     private final Executor executor;
 
+    /** Has the local cache been invalidated. */
     private volatile boolean dirty;
 
     public AmplitudeTrack() {
