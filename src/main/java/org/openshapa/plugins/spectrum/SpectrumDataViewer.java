@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.net.URL;
 
 import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -44,6 +45,8 @@ import org.openshapa.views.continuous.CustomActionsAdapter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.ViewerStateListener;
+
+import org.testng.v6.Sets;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
@@ -105,7 +108,10 @@ public final class SpectrumDataViewer implements DataViewer {
             }
         };
 
+    private Set<ViewerStateListener> viewerListeners;
+
     public SpectrumDataViewer(final Frame parent, final boolean modal) {
+        viewerListeners = Sets.newHashSet();
 
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
@@ -289,6 +295,7 @@ public final class SpectrumDataViewer implements DataViewer {
         // Show the dialog, set up the track.
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
+                    engine.setVolume(volSlider.getValue());
 
                     if (dialog != null) {
                         dialog.setVisible(true);
@@ -327,12 +334,18 @@ public final class SpectrumDataViewer implements DataViewer {
 
     @Override public void addViewerStateListener(
         final ViewerStateListener listener) {
-        // Do nothing; no events to report.
+
+        synchronized (this) {
+            viewerListeners.add(listener);
+        }
     }
 
     @Override public void removeViewerStateListener(
         final ViewerStateListener vsl) {
-        // Do nothing; no events to report.
+
+        synchronized (this) {
+            viewerListeners.remove(vsl);
+        }
     }
 
     @Override public void loadSettings(final InputStream is) {
@@ -347,6 +360,24 @@ public final class SpectrumDataViewer implements DataViewer {
                 setOffset(Long.parseLong(property));
             }
 
+            property = settings.getProperty("volume");
+
+            if ((property != null) && !"".equals(property)) {
+                final String volProp = property;
+
+                Runnable edtTask = new Runnable() {
+                        @Override public void run() {
+                            volSlider.setValue(Integer.parseInt(volProp));
+                        }
+                    };
+
+                if (SwingUtilities.isEventDispatchThread()) {
+                    edtTask.run();
+                } else {
+                    SwingUtilities.invokeLater(edtTask);
+                }
+            }
+
         } catch (IOException e) {
             LOGGER.error("Error loading settings", e);
         }
@@ -356,6 +387,7 @@ public final class SpectrumDataViewer implements DataViewer {
     @Override public void storeSettings(final OutputStream os) {
         Properties settings = new Properties();
         settings.setProperty("offset", Long.toString(getOffset()));
+        settings.setProperty("volume", Integer.toString(volSlider.getValue()));
 
         try {
             settings.store(os, null);
@@ -393,12 +425,19 @@ public final class SpectrumDataViewer implements DataViewer {
 
     private void handleVolumeSliderEvent(final ChangeEvent e) {
         int vol = volSlider.getValue();
-        engine.setVolume(vol);
 
         if (vol == 0) {
             volButton.setIcon(VOL_MUTED);
         } else {
             volButton.setIcon(VOL_NORMAL);
+        }
+
+        if (engine != null) {
+            engine.setVolume(vol);
+
+            for (ViewerStateListener listener : viewerListeners) {
+                listener.notifyStateChanged(null, null);
+            }
         }
     }
 
