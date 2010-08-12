@@ -36,8 +36,6 @@ public class SpectrumMessage implements MESSAGE {
         String name = msgStruct.getName();
 
         if ("spectrum".equals(name)) {
-            System.out.println("Blah");
-
             ValueList mags = msgStruct.getValueList("magnitude");
 
             if (indices == null) {
