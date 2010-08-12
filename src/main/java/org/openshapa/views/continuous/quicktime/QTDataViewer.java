@@ -659,15 +659,13 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
      */
     private void handleActionButtonEvent1(final ActionEvent event) {
 
-        JButton button = (JButton) event.getSource();
-
         // BugzID:1400 - We don't allow volume changes while the track is
         // hidden from view.
         if (isVisible) {
 
             // Show the volume frame.
             volumeDialog.setVisible(true);
-            volumeDialog.setLocation(button.getLocationOnScreen());
+            volumeDialog.setLocation(volumeButton.getLocationOnScreen());
         }
     }
 
@@ -705,20 +703,20 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
 
             String property = settings.getProperty("offset");
 
-            if ((property != null) & !property.equals("")) {
+            if ((property != null) && !property.equals("")) {
                 setOffset(Long.parseLong(property));
             }
 
             property = settings.getProperty("volume");
 
-            if ((property != null) & !property.equals("")) {
+            if ((property != null) && !property.equals("")) {
                 volume = Float.parseFloat(property);
                 volumeSlider.setValue((int) (volume * 100));
             }
 
             property = settings.getProperty("visible");
 
-            if ((property != null) & !property.equals("")) {
+            if ((property != null) && !property.equals("")) {
                 isVisible = Boolean.parseBoolean(property);
                 this.setVisible(isVisible);
                 setVolume();
@@ -726,7 +724,7 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
 
             property = settings.getProperty("height");
 
-            if ((property != null) & !property.equals("")) {
+            if ((property != null) && !property.equals("")) {
                 setVideoHeight(Integer.parseInt(property));
             }
 
@@ -776,10 +774,6 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
         } else {
             return hiddenIcon;
         }
-    }
-
-    private ImageIcon getActionButtonIcon3() {
-        return resizeIcon;
     }
 
     // ------------------------------------------------------------------------

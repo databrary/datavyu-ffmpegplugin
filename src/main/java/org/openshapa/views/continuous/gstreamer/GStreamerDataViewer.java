@@ -645,14 +645,13 @@ public class GStreamerDataViewer implements DataViewer {
     }
 
     private void handleActionButtonEvent1(final ActionEvent event) {
-        JButton button = (JButton) event.getSource();
 
         // BugzID:1400 - We don't allow volume changes while the track is
         // hidden from view.
         if (isVisible) {
 
             // Show the volume frame.
-            volumeDialog.setLocation(button.getLocationOnScreen());
+            volumeDialog.setLocation(volumeButton.getLocationOnScreen());
             volumeDialog.setVisible(true);
         }
     }
