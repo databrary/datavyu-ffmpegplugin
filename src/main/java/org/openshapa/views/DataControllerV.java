@@ -360,12 +360,10 @@ public final class DataControllerV extends OpenSHAPADialog
      *
      * @param jd The file chooser used to open the data source.
      */
-    private void openVideo(final OpenSHAPAFileChooser jd) {
-        PluginManager pm = PluginManager.getInstance();
-
-        File f = jd.getSelectedFile();
-        FileFilter ff = jd.getFileFilter();
-        Plugin plugin = pm.getAssociatedPlugin(ff);
+    private void openVideo(final PluginChooser chooser) {
+        Plugin plugin = chooser.getSelectedPlugin();
+        File f = chooser.getSelectedFile();
+        // Plugin plugin = pm.getAssociatedPlugin(ff);
 
         if (plugin != null) {
             DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
@@ -1419,16 +1417,22 @@ public final class DataControllerV extends OpenSHAPADialog
         final java.awt.event.ActionEvent evt) {
         logger.usage("Add data");
 
-        OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
-        PluginManager pm = PluginManager.getInstance();
+        PluginChooser chooser = null;
 
-        // Add file filters for each of the supported plugins.
-        for (FileFilter f : pm.getPluginFileFilters()) {
-            jd.addChoosableFileFilter(f);
+        // TODO finish this
+        if (OpenSHAPA.getPlatform() == Platform.WINDOWS) {
+            chooser = new WindowsJFC();
         }
 
-        if (JFileChooser.APPROVE_OPTION == jd.showOpenDialog(this)) {
-            openVideo(jd);
+        PluginManager pm = PluginManager.getInstance();
+        chooser.addPlugin(pm.getPlugins());
+
+        for (FileFilter ff : pm.getFileFilters()) {
+            chooser.addChoosableFileFilter(ff);
+        }
+
+        if (JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(this)) {
+            openVideo(chooser);
         }
     }
 

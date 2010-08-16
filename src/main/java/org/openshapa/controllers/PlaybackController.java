@@ -28,6 +28,8 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.OpenSHAPA.Platform;
+
 import org.openshapa.controllers.component.MixerController;
 import org.openshapa.controllers.id.IDController;
 
@@ -52,6 +54,8 @@ import org.openshapa.util.ClockTimer.ClockListener;
 
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.PlaybackV;
+import org.openshapa.views.PluginChooser;
+import org.openshapa.views.WindowsJFC;
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
@@ -234,25 +238,32 @@ public final class PlaybackController implements PlaybackListener,
         Runnable task = new Runnable() {
 
                 public void run() {
-                    OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
-                    PluginManager pm = PluginManager.getInstance();
+                    PluginChooser chooser = null;
 
-                    // Add file filters for each of the supported plugins.
-                    for (FileFilter f : pm.getPluginFileFilters()) {
-                        jd.addChoosableFileFilter(f);
+                    // TODO finish this
+                    if (OpenSHAPA.getPlatform() == Platform.WINDOWS) {
+                        chooser = new WindowsJFC();
+                    }
+
+                    PluginManager pm = PluginManager.getInstance();
+                    chooser.addPlugin(pm.getPlugins());
+
+                    for (FileFilter ff : pm.getFileFilters()) {
+                        chooser.addChoosableFileFilter(ff);
                     }
 
                     if (JFileChooser.APPROVE_OPTION
-                            == jd.showOpenDialog(playbackView)) {
-                        openVideo(jd);
+                            == chooser.showOpenDialog(playbackView)) {
+                        openVideo(chooser);
                     }
                 }
             };
 
-        if (!SwingUtilities.isEventDispatchThread()) {
+        if (SwingUtilities.isEventDispatchThread()) {
             task.run();
         } else {
-            executor.submit(task);
+            SwingUtilities.invokeLater(task);
+            // executor.submit(task);
         }
     }
 
@@ -1467,28 +1478,31 @@ public final class PlaybackController implements PlaybackListener,
      *
      * @param jd The file chooser used to open the data source.
      */
-    private void openVideo(final OpenSHAPAFileChooser jd) {
-        assert !SwingUtilities.isEventDispatchThread();
-
-        PluginManager pm = PluginManager.getInstance();
-
-        File f = jd.getSelectedFile();
-        FileFilter ff = jd.getFileFilter();
-        Plugin plugin = pm.getAssociatedPlugin(ff);
+    private void openVideo(final PluginChooser chooser) {
+        final Plugin plugin = chooser.getSelectedPlugin();
+        final File f = chooser.getSelectedFile();
 
         if (plugin != null) {
-            DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
-                    .getApplication().getMainFrame(), false);
-            dataViewer.setIdentifier(IDController.generateIdentifier());
-            dataViewer.setDataFeed(f);
-            dataViewer.seekTo(clock.getTime());
-            addDataViewer(plugin.getTypeIcon(), dataViewer, f,
-                dataViewer.getTrackPainter());
-            mixerController.bindTrackActions(dataViewer.getIdentifier(),
-                dataViewer.getCustomActions());
-            dataViewer.addViewerStateListener(
-                mixerController.getTracksEditorController()
-                    .getViewerStateListener(dataViewer.getIdentifier()));
+            executor.submit(new Runnable() {
+                    @Override public void run() {
+                        DataViewer dataViewer = plugin.getNewDataViewer(
+                                OpenSHAPA.getApplication().getMainFrame(),
+                                false);
+                        dataViewer.setIdentifier(
+                            IDController.generateIdentifier());
+                        dataViewer.setDataFeed(f);
+                        dataViewer.seekTo(clock.getTime());
+                        addDataViewer(plugin.getTypeIcon(), dataViewer, f,
+                            dataViewer.getTrackPainter());
+                        mixerController.bindTrackActions(
+                            dataViewer.getIdentifier(),
+                            dataViewer.getCustomActions());
+                        dataViewer.addViewerStateListener(
+                            mixerController.getTracksEditorController()
+                                .getViewerStateListener(
+                                    dataViewer.getIdentifier()));
+                    }
+                });
         }
     }
 
