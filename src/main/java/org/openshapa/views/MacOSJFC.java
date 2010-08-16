@@ -1,7 +1,9 @@
 package org.openshapa.views;
 
 import java.awt.Component;
+
 import java.io.File;
+
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -15,13 +17,13 @@ import org.openshapa.views.continuous.Plugin;
 
 import com.google.common.collect.Lists;
 
+
 public class MacOSJFC extends PluginChooser {
 
     private JComboBox pluginsBox;
     private List<PluginCallback> plugins = Lists.newArrayList();
 
-    @Override
-    protected JDialog createDialog(final Component parent) {
+    @Override protected JDialog createDialog(final Component parent) {
 
         JDialog dialog = super.createDialog(parent);
 
@@ -62,27 +64,26 @@ public class MacOSJFC extends PluginChooser {
 
         if (!approved) {
             JOptionPane.showMessageDialog(this, "Select a different plugin.",
-                    "Unsupported File", JOptionPane.ERROR_MESSAGE);
+                "Unsupported File", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    @Override
-    public void addPlugin(Plugin plugin) {
+    @Override public void addPlugin(final Plugin plugin) {
         PluginCallback pc = new PluginCallback(plugin);
         plugins.add(pc);
     }
 
-    @Override
-    public void addPlugin(Iterable<Plugin> plugins) {
+    @Override public void addPlugin(final Iterable<Plugin> plugins) {
+
         for (Plugin plugin : plugins) {
             PluginCallback pc = new PluginCallback(plugin);
             this.plugins.add(pc);
         }
     }
 
-    @Override
-    public Plugin getSelectedPlugin() {
+    @Override public Plugin getSelectedPlugin() {
         Object selected = pluginsBox.getSelectedItem();
+
         return ((PluginCallback) selected).plugin;
     }
 

@@ -1,8 +1,10 @@
 package org.openshapa.views;
+
 import java.awt.Component;
 import java.awt.FlowLayout;
 
 import java.io.File;
+
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -33,18 +35,18 @@ public class LinuxJFC extends PluginChooser {
         pluginsBox = new JComboBox(plugins.toArray());
         pluginsBox.setEditable(false);
         pluginsBox.setLightWeightPopupEnabled(true);
-        
+
         // Got these values from Swing Explorer
         JPanel interior = (JPanel) getComponent(1);
-        
+
         JPanel labelPanel = new JPanel();
         labelPanel.setBorder(BorderFactory.createEmptyBorder());
         labelPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         labelPanel.add(pluginSelect);
-        
+
         interior.add(labelPanel);
         interior.add(pluginsBox);
-        
+
         dialog.pack();
 
         return dialog;
@@ -68,29 +70,27 @@ public class LinuxJFC extends PluginChooser {
                 "Unsupported File", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-	@Override
-	public void addPlugin(Plugin plugin) {
-		PluginCallback pc = new PluginCallback(plugin);
+
+    @Override public void addPlugin(final Plugin plugin) {
+        PluginCallback pc = new PluginCallback(plugin);
         plugins.add(pc);
-	}
+    }
 
-	@Override
-	public void addPlugin(Iterable<Plugin> plugins) {
-		 for (Plugin plugin : plugins) {
-	            PluginCallback pc = new PluginCallback(plugin);
-	            this.plugins.add(pc);
-	        }
-	}
+    @Override public void addPlugin(final Iterable<Plugin> plugins) {
 
-	@Override
-	public Plugin getSelectedPlugin() {
-		 Object selected = pluginsBox.getSelectedItem();
+        for (Plugin plugin : plugins) {
+            PluginCallback pc = new PluginCallback(plugin);
+            this.plugins.add(pc);
+        }
+    }
 
-	        return ((PluginCallback) selected).plugin;
-	}
+    @Override public Plugin getSelectedPlugin() {
+        Object selected = pluginsBox.getSelectedItem();
 
-    
+        return ((PluginCallback) selected).plugin;
+    }
+
+
     private static final class PluginCallback {
         final Plugin plugin;
 
