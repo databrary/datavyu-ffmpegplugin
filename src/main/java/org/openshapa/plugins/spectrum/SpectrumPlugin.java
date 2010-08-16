@@ -95,8 +95,4 @@ public class SpectrumPlugin implements Plugin {
         return "Audio Spectrum";
     }
 
-    @Override public String getClassifier() {
-        return "openshapa.audio";
-    }
-
 }

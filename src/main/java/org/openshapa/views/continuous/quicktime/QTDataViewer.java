@@ -19,6 +19,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
+import org.openshapa.models.db.SimpleDatabase;
 
 import org.openshapa.models.id.Identifier;
 
@@ -833,6 +834,11 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
 
     @Override public Identifier getIdentifier() {
         return id;
+    }
+
+    @Override
+    public void setSimpleDatabase(SimpleDatabase sDB) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
