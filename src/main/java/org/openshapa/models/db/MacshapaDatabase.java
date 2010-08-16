@@ -8,6 +8,9 @@
  */
 package org.openshapa.models.db;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class MacshapaDatabase
  *
@@ -683,14 +686,14 @@ public class MacshapaDatabase extends Database {
     private long definePVE(String name,
                            String arg1,
                            boolean vLen,
-                           boolean system) 
+                           boolean system)
         throws SystemErrorException
     {
         long pve_id = DBIndex.INVALID_ID;
         PredicateVocabElement pve = null;
 
         pve = constructPVE(name, arg1);
-        
+
         pve.setVarLen(vLen);
 
         if ( system )
@@ -711,7 +714,7 @@ public class MacshapaDatabase extends Database {
                            String arg1,
                            String arg2,
                            boolean vLen,
-                           boolean system) 
+                           boolean system)
         throws SystemErrorException
     {
         long pve_id = DBIndex.INVALID_ID;
@@ -740,7 +743,7 @@ public class MacshapaDatabase extends Database {
                            String arg2,
                            String arg3,
                            boolean vLen,
-                           boolean system) 
+                           boolean system)
         throws SystemErrorException
     {
         long pve_id = DBIndex.INVALID_ID;
@@ -770,7 +773,7 @@ public class MacshapaDatabase extends Database {
                            String arg3,
                            String arg4,
                            boolean vLen,
-                           boolean system) 
+                           boolean system)
         throws SystemErrorException
     {
         long pve_id = DBIndex.INVALID_ID;
@@ -801,7 +804,7 @@ public class MacshapaDatabase extends Database {
                            String arg4,
                            String arg5,
                            boolean vLen,
-                           boolean system) 
+                           boolean system)
         throws SystemErrorException
     {
         long pve_id = DBIndex.INVALID_ID;
@@ -834,7 +837,7 @@ public class MacshapaDatabase extends Database {
                            String arg5,
                            String arg6,
                            boolean vLen,
-                           boolean system) 
+                           boolean system)
         throws SystemErrorException
     {
         long pve_id = DBIndex.INVALID_ID;
@@ -868,7 +871,7 @@ public class MacshapaDatabase extends Database {
                            String arg6,
                            String arg7,
                            boolean vLen,
-                           boolean system) 
+                           boolean system)
         throws SystemErrorException
     {
         long pve_id = DBIndex.INVALID_ID;
@@ -1783,4 +1786,5 @@ public class MacshapaDatabase extends Database {
         return;
 
     } /* MacshapaDatabase::toMODBFile_userSection() */
+
 }

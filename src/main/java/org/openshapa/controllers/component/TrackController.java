@@ -31,6 +31,8 @@ import net.miginfocom.swing.MigLayout;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.controllers.id.IDController;
+
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.CarriageEventListener;
 import org.openshapa.event.component.TrackMouseEventListener;

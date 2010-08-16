@@ -52,6 +52,7 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.util.LinkedList;
+import org.openshapa.controllers.database.MacshapaDatabaseAdapter;
 
 
 /**
@@ -526,69 +527,60 @@ public final class OpenSHAPA extends SingleFrameApplication
     @Override protected void startup() {
         windows = new Stack<Window>();
 
-        try {
+        // Initalise the logger (UserMetrix).
+        LocalStorage ls = OpenSHAPA.getApplication().getContext()
+            .getLocalStorage();
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
+            .getContext().getResourceMap(OpenSHAPA.class);
 
-            // Initalise the logger (UserMetrix).
-            LocalStorage ls = OpenSHAPA.getApplication().getContext()
-                .getLocalStorage();
-            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                .getContext().getResourceMap(OpenSHAPA.class);
+        com.usermetrix.jclient.Configuration config =
+            new com.usermetrix.jclient.Configuration(2);
+        config.setTmpDirectory(ls.getDirectory().toString()
+            + File.separator);
+        config.addMetaData("build",
+            rMap.getString("Application.version") + ":"
+            + rMap.getString("Application.build"));
+        UserMetrix.initalise(config);
+        logger = UserMetrix.getLogger(OpenSHAPA.class);
 
-            com.usermetrix.jclient.Configuration config =
-                new com.usermetrix.jclient.Configuration(2);
-            config.setTmpDirectory(ls.getDirectory().toString()
-                + File.separator);
-            config.addMetaData("build",
-                rMap.getString("Application.version") + ":"
-                + rMap.getString("Application.build"));
-            UserMetrix.initalise(config);
-            logger = UserMetrix.getLogger(OpenSHAPA.class);
-
-            // If the user hasn't specified, we don't send error logs.
-            if (Configuration.getInstance().getCanSendLogs() == null) {
-                UserMetrix.setCanSendLogs(false);
-            } else {
-                UserMetrix.setCanSendLogs(Configuration.getInstance()
-                    .getCanSendLogs());
-            }
-
-            // Initalise scripting engine
-            rubyEngine = null;
-
-            // we need to avoid using the
-            // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
-            // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
-            m = new JRubyScriptEngineManager();
-
-            // Whoops - JRubyScriptEngineManager may have failed, if that does
-            // not construct engines for jruby correctly, switch to
-            // javax.script.ScriptEngineManager
-            if (m.getEngineFactories().size() == 0) {
-                m2 = new ScriptEngineManager();
-                rubyEngine = m2.getEngineByName("jruby");
-            } else {
-                rubyEngine = m.getEngineByName("jruby");
-            }
-
-            // Make a new project
-            projectController = new ProjectController();
-            lastScriptsExecuted = new LinkedList<File>();
-            lastFilesOpened = new LinkedList<File>();
-
-            // Initalise DB
-            MacshapaDatabase db = new MacshapaDatabase(
-                    Constants.TICKS_PER_SECOND);
-
-            // BugzID:449 - Set default database name.
-            db.setName("Database1");
-            projectController.setDatabase(db);
-
-            // Initialize plugin manager
-            PluginManager.getInstance();
-
-        } catch (SystemErrorException e) {
-            logger.error("Unable to create MacSHAPADatabase", e);
+        // If the user hasn't specified, we don't send error logs.
+        if (Configuration.getInstance().getCanSendLogs() == null) {
+            UserMetrix.setCanSendLogs(false);
+        } else {
+            UserMetrix.setCanSendLogs(Configuration.getInstance()
+                .getCanSendLogs());
         }
+
+        // Initalise scripting engine
+        rubyEngine = null;
+
+        // we need to avoid using the
+        // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
+        // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
+        m = new JRubyScriptEngineManager();
+
+        // Whoops - JRubyScriptEngineManager may have failed, if that does
+        // not construct engines for jruby correctly, switch to
+        // javax.script.ScriptEngineManager
+        if (m.getEngineFactories().size() == 0) {
+            m2 = new ScriptEngineManager();
+            rubyEngine = m2.getEngineByName("jruby");
+        } else {
+            rubyEngine = m.getEngineByName("jruby");
+        }
+
+        // Make a new project
+        projectController = new ProjectController();
+        lastScriptsExecuted = new LinkedList<File>();
+        lastFilesOpened = new LinkedList<File>();
+
+        // Initalise DB Adapter
+        MacshapaDatabaseAdapter dbAdapt = new MacshapaDatabaseAdapter();
+
+        projectController.setDatabaseAdapter(dbAdapt);
+
+        // Initialize plugin manager
+        PluginManager.getInstance();
 
         // Make view the new view so we can keep track of it for hotkeys.
         VIEW = new OpenSHAPAView(this);
