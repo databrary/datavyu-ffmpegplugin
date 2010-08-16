@@ -89,6 +89,9 @@ public final class OpenSHAPA extends SingleFrameApplication
         /** Generic windows platform. I.e. XP, vista, etc. */
         WINDOWS,
 
+        /** Generic Linux platform. */
+        LINUX,
+
         /** Unknown platform. */
         UNKNOWN
     }
@@ -773,6 +776,10 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         if (os.contains("Win")) {
             return Platform.WINDOWS;
+        }
+
+        if (os.contains("Linux")) {
+            return Platform.LINUX;
         }
 
         return Platform.UNKNOWN;

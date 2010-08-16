@@ -1,9 +1,12 @@
 package org.openshapa.controllers;
 
 import java.awt.event.InputEvent;
+
 import java.io.File;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -21,11 +24,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.lang.NotImplementedException;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+
 import org.openshapa.OpenSHAPA;
+
 import org.openshapa.controllers.component.MixerController;
 import org.openshapa.controllers.id.IDController;
+
 import org.openshapa.event.PlaybackEvent;
 import org.openshapa.event.PlaybackListener;
 import org.openshapa.event.component.CarriageEvent;
@@ -33,13 +40,19 @@ import org.openshapa.event.component.MarkerEvent;
 import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
+
 import org.openshapa.logging.PlaybackLogging;
+
 import org.openshapa.models.PlaybackModel;
 import org.openshapa.models.id.Identifier;
+
 import org.openshapa.plugins.PluginManager;
+
 import org.openshapa.util.ClockTimer;
 import org.openshapa.util.ClockTimer.ClockListener;
 import org.openshapa.util.FloatUtils;
+
+import org.openshapa.views.LinuxJFC;
 import org.openshapa.views.MacOSJFC;
 import org.openshapa.views.PlaybackV;
 import org.openshapa.views.PluginChooser;
@@ -52,11 +65,12 @@ import org.openshapa.views.continuous.Plugin;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
+
 /**
  * Quicktime video controller.
  */
 public final class PlaybackController implements PlaybackListener,
-        ClockListener, TracksControllerListener, DataController {
+    ClockListener, TracksControllerListener, DataController {
 
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
@@ -136,7 +150,7 @@ public final class PlaybackController implements PlaybackListener,
 
         /**
          * Sets the shuttle direction.
-         * 
+         *
          * @param p
          *            The new shuttle direction.
          */
@@ -223,35 +237,45 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable task = new Runnable() {
 
-            public void run() {
-                PluginChooser chooser = null;
+                public void run() {
+                    PluginChooser chooser = null;
 
-                // TODO finish this
-                switch (OpenSHAPA.getPlatform()) {
-                case WINDOWS:
-                    chooser = new WindowsJFC();
-                    break;
-                case MAC:
-                    chooser = new MacOSJFC();
-                    break;
-                default:
-                    throw new NotImplementedException(
+                    // TODO finish this
+                    switch (OpenSHAPA.getPlatform()) {
+
+                    case WINDOWS:
+                        chooser = new WindowsJFC();
+
+                        break;
+
+                    case MAC:
+                        chooser = new MacOSJFC();
+
+                        break;
+
+                    case LINUX:
+                        chooser = new LinuxJFC();
+
+                        break;
+
+                    default:
+                        throw new NotImplementedException(
                             "Plugin chooser unimplemented.");
-                }
+                    }
 
-                PluginManager pm = PluginManager.getInstance();
-                chooser.addPlugin(pm.getPlugins());
+                    PluginManager pm = PluginManager.getInstance();
+                    chooser.addPlugin(pm.getPlugins());
 
-                for (FileFilter ff : pm.getFileFilters()) {
-                    chooser.addChoosableFileFilter(ff);
-                }
+                    for (FileFilter ff : pm.getFileFilters()) {
+                        chooser.addChoosableFileFilter(ff);
+                    }
 
-                if (JFileChooser.APPROVE_OPTION == chooser
-                        .showOpenDialog(playbackView)) {
-                    openVideo(chooser);
+                    if (JFileChooser.APPROVE_OPTION
+                            == chooser.showOpenDialog(playbackView)) {
+                        openVideo(chooser);
+                    }
                 }
-            }
-        };
+            };
 
         if (SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -264,30 +288,32 @@ public final class PlaybackController implements PlaybackListener,
     public void findEvent(final PlaybackEvent evt) {
 
         Runnable task = new Runnable() {
-            public void run() {
-                final int modifiers = evt.getModifiers();
+                public void run() {
+                    final int modifiers = evt.getModifiers();
 
-                // BugzID:1312
-                if (!clock.isStopped()) {
-                    clock.stop();
-                    clock.setRate(0);
-                }
+                    // BugzID:1312
+                    if (!clock.isStopped()) {
+                        clock.stop();
+                        clock.setRate(0);
+                    }
 
-                if ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) {
-                    clock.stop();
-                    clock.setTime(evt.getOffsetTime());
-                    jumpTo(evt.getOffsetTime());
-                } else if ((modifiers & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK) {
-                    clock.stop();
-                    clock.setTime(evt.getOnsetTime());
-                    setRegionOfInterestAction();
-                } else {
-                    clock.stop();
-                    clock.setTime(evt.getOnsetTime());
-                    jumpTo(evt.getOnsetTime());
+                    if ((modifiers & InputEvent.SHIFT_MASK)
+                            == InputEvent.SHIFT_MASK) {
+                        clock.stop();
+                        clock.setTime(evt.getOffsetTime());
+                        jumpTo(evt.getOffsetTime());
+                    } else if ((modifiers & InputEvent.CTRL_MASK)
+                            == InputEvent.CTRL_MASK) {
+                        clock.stop();
+                        clock.setTime(evt.getOnsetTime());
+                        setRegionOfInterestAction();
+                    } else {
+                        clock.stop();
+                        clock.setTime(evt.getOnsetTime());
+                        jumpTo(evt.getOnsetTime());
+                    }
                 }
-            }
-        };
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -299,10 +325,10 @@ public final class PlaybackController implements PlaybackListener,
     public void forwardEvent(final PlaybackEvent evt) {
 
         Runnable task = new Runnable() {
-            public void run() {
-                playAt(FFORWARD_RATE);
-            }
-        };
+                public void run() {
+                    playAt(FFORWARD_RATE);
+                }
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -313,13 +339,13 @@ public final class PlaybackController implements PlaybackListener,
 
     public void goBackEvent(final PlaybackEvent evt) {
         Runnable task = new Runnable() {
-            public void run() {
-                jump(-evt.getGoTime());
+                public void run() {
+                    jump(-evt.getGoTime());
 
-                // BugzID:721 - After going back - start playing again.
-                playAt(PLAY_RATE);
-            }
-        };
+                    // BugzID:721 - After going back - start playing again.
+                    playAt(PLAY_RATE);
+                }
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -332,35 +358,37 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable task = new Runnable() {
 
-            public void run() {
-                int mul = 1;
+                public void run() {
+                    int mul = 1;
 
-                // BugzID:1720
-                final int modifiers = evt.getModifiers()
+                    // BugzID:1720
+                    final int modifiers = evt.getModifiers()
                         & ~InputEvent.BUTTON1_MASK;
 
-                if ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) {
-                    mul = SHIFTJOG;
+                    if ((modifiers & InputEvent.SHIFT_MASK)
+                            == InputEvent.SHIFT_MASK) {
+                        mul = SHIFTJOG;
+                    }
+
+                    final int ctrlShiftJogMask = (InputEvent.SHIFT_MASK
+                            | InputEvent.CTRL_MASK);
+
+                    if ((modifiers & ctrlShiftJogMask) == ctrlShiftJogMask) {
+                        mul = CTRLSHIFTJOG;
+                    }
+
+                    /* Bug1361: Do not allow jog to skip past the region boundaries. */
+                    long nextTime = (long) (mul * (-ONE_SECOND)
+                            / playbackModel.getCurrentFPS());
+
+                    if ((clock.getTime() + nextTime)
+                            > playbackModel.getWindowPlayStart()) {
+                        jump(nextTime);
+                    } else {
+                        jumpTo(playbackModel.getWindowPlayStart());
+                    }
                 }
-
-                final int ctrlShiftJogMask = (InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK);
-
-                if ((modifiers & ctrlShiftJogMask) == ctrlShiftJogMask) {
-                    mul = CTRLSHIFTJOG;
-                }
-
-                /* Bug1361: Do not allow jog to skip past the region boundaries. */
-                long nextTime = (long) (mul * (-ONE_SECOND) / playbackModel
-                        .getCurrentFPS());
-
-                if ((clock.getTime() + nextTime) > playbackModel
-                        .getWindowPlayStart()) {
-                    jump(nextTime);
-                } else {
-                    jumpTo(playbackModel.getWindowPlayStart());
-                }
-            }
-        };
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -372,35 +400,37 @@ public final class PlaybackController implements PlaybackListener,
     public void jogForwardEvent(final PlaybackEvent evt) {
 
         Runnable task = new Runnable() {
-            public void run() {
-                int mul = 1;
+                public void run() {
+                    int mul = 1;
 
-                // BugzID:1720
-                final int modifiers = evt.getModifiers()
+                    // BugzID:1720
+                    final int modifiers = evt.getModifiers()
                         & ~InputEvent.BUTTON1_MASK;
 
-                if ((modifiers & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK) {
-                    mul = SHIFTJOG;
+                    if ((modifiers & InputEvent.SHIFT_MASK)
+                            == InputEvent.SHIFT_MASK) {
+                        mul = SHIFTJOG;
+                    }
+
+                    final int ctrlShiftJogMask = (InputEvent.SHIFT_MASK
+                            | InputEvent.CTRL_MASK);
+
+                    if ((modifiers & ctrlShiftJogMask) == ctrlShiftJogMask) {
+                        mul = CTRLSHIFTJOG;
+                    }
+
+                    /* Bug1361: Do not allow jog to skip past the region boundaries. */
+                    long nextTime = (long) (mul * (ONE_SECOND)
+                            / playbackModel.getCurrentFPS());
+
+                    if ((clock.getTime() + nextTime)
+                            < playbackModel.getWindowPlayEnd()) {
+                        jump(nextTime);
+                    } else {
+                        jumpTo(playbackModel.getWindowPlayEnd());
+                    }
                 }
-
-                final int ctrlShiftJogMask = (InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK);
-
-                if ((modifiers & ctrlShiftJogMask) == ctrlShiftJogMask) {
-                    mul = CTRLSHIFTJOG;
-                }
-
-                /* Bug1361: Do not allow jog to skip past the region boundaries. */
-                long nextTime = (long) (mul * (ONE_SECOND) / playbackModel
-                        .getCurrentFPS());
-
-                if ((clock.getTime() + nextTime) < playbackModel
-                        .getWindowPlayEnd()) {
-                    jump(nextTime);
-                } else {
-                    jumpTo(playbackModel.getWindowPlayEnd());
-                }
-            }
-        };
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -416,11 +446,11 @@ public final class PlaybackController implements PlaybackListener,
 
     public void setNewCellOffsetEvent(final PlaybackEvent evt) {
         Runnable task = new Runnable() {
-            public void run() {
-                new SetNewCellStopTimeC(getCurrentTime());
-                setFindOffsetField(getCurrentTime());
-            }
-        };
+                public void run() {
+                    new SetNewCellStopTimeC(getCurrentTime());
+                    setFindOffsetField(getCurrentTime());
+                }
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -443,35 +473,35 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable task = new Runnable() {
 
-            public void run() {
+                public void run() {
 
-                // Resume from pause at playback rate prior to pause.
-                if (clock.isStopped()) {
-                    shuttleAt(playbackModel.getPauseRate());
+                    // Resume from pause at playback rate prior to pause.
+                    if (clock.isStopped()) {
+                        shuttleAt(playbackModel.getPauseRate());
 
-                    // Pause views - store current playback rate.
-                } else {
-                    playbackModel.setPauseRate(clock.getRate());
-                    clock.stop();
+                        // Pause views - store current playback rate.
+                    } else {
+                        playbackModel.setPauseRate(clock.getRate());
+                        clock.stop();
 
-                    final StringBuilder sb = new StringBuilder();
-                    sb.append("[");
-                    sb.append(FloatUtils.doubleToFractionStr(Double
-                            .valueOf(playbackModel.getPauseRate())));
-                    sb.append("]");
+                        final StringBuilder sb = new StringBuilder();
+                        sb.append("[");
+                        sb.append(FloatUtils.doubleToFractionStr(
+                                Double.valueOf(playbackModel.getPauseRate())));
+                        sb.append("]");
 
-                    Runnable edtTask = new Runnable() {
+                        Runnable edtTask = new Runnable() {
 
-                        public void run() {
-                            playbackView.setSpeedLabel(sb.toString());
-                        }
-                    };
+                                public void run() {
+                                    playbackView.setSpeedLabel(sb.toString());
+                                }
+                            };
 
-                    SwingUtilities.invokeLater(edtTask);
+                        SwingUtilities.invokeLater(edtTask);
 
+                    }
                 }
-            }
-        };
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -489,16 +519,16 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable task = new Runnable() {
 
-            public void run() {
+                public void run() {
 
-                if ((getCurrentTime() >= playbackModel.getWindowPlayEnd())
-                        && clock.isStopped()) {
-                    jumpTo(playbackModel.getWindowPlayStart());
+                    if ((getCurrentTime() >= playbackModel.getWindowPlayEnd())
+                            && clock.isStopped()) {
+                        jumpTo(playbackModel.getWindowPlayStart());
+                    }
+
+                    playAt(PLAY_RATE);
                 }
-
-                playAt(PLAY_RATE);
-            }
-        };
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -509,10 +539,10 @@ public final class PlaybackController implements PlaybackListener,
 
     public void rewindEvent(final PlaybackEvent evt) {
         Runnable task = new Runnable() {
-            public void run() {
-                playAt(REWIND_RATE);
-            }
-        };
+                public void run() {
+                    playAt(REWIND_RATE);
+                }
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -524,11 +554,11 @@ public final class PlaybackController implements PlaybackListener,
     public void setCellOffsetEvent(final PlaybackEvent evt) {
 
         Runnable task = new Runnable() {
-            public void run() {
-                new SetSelectedCellStopTimeC(getCurrentTime());
-                setFindOffsetField(getCurrentTime());
-            }
-        };
+                public void run() {
+                    new SetSelectedCellStopTimeC(getCurrentTime());
+                    setFindOffsetField(getCurrentTime());
+                }
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -540,10 +570,10 @@ public final class PlaybackController implements PlaybackListener,
     public void setCellOnsetEvent(final PlaybackEvent evt) {
 
         Runnable task = new Runnable() {
-            public void run() {
-                new SetSelectedCellStartTimeC(getCurrentTime());
-            }
-        };
+                public void run() {
+                    new SetSelectedCellStartTimeC(getCurrentTime());
+                }
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -556,36 +586,38 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable task = new Runnable() {
 
-            public void run() {
-                final Icon buttonIcon;
+                public void run() {
+                    final Icon buttonIcon;
 
-                ResourceMap resourceMap = Application
-                        .getInstance(org.openshapa.OpenSHAPA.class)
-                        .getContext().getResourceMap(PlaybackV.class);
+                    ResourceMap resourceMap = Application.getInstance(
+                            org.openshapa.OpenSHAPA.class).getContext()
+                        .getResourceMap(PlaybackV.class);
 
-                if (tracksPanelEnabled) {
+                    if (tracksPanelEnabled) {
 
-                    // Panel is being displayed, hide it
-                    buttonIcon = resourceMap
-                            .getIcon("showTracksButton.show.icon");
-                } else {
+                        // Panel is being displayed, hide it
+                        buttonIcon = resourceMap.getIcon(
+                                "showTracksButton.show.icon");
+                    } else {
 
-                    // Panel is hidden, show it
-                    buttonIcon = resourceMap
-                            .getIcon("showTracksButton.hide.icon");
-                }
-
-                tracksPanelEnabled ^= true;
-
-                Runnable edtTask = new Runnable() {
-                    public void run() {
-                        playbackView.showTracksPanel(tracksPanelEnabled);
-                        playbackView.setShowTracksButtonIcon(buttonIcon);
+                        // Panel is hidden, show it
+                        buttonIcon = resourceMap.getIcon(
+                                "showTracksButton.hide.icon");
                     }
-                };
-                SwingUtilities.invokeLater(edtTask);
-            }
-        };
+
+                    tracksPanelEnabled ^= true;
+
+                    Runnable edtTask = new Runnable() {
+                            public void run() {
+                                playbackView.showTracksPanel(
+                                    tracksPanelEnabled);
+                                playbackView.setShowTracksButtonIcon(
+                                    buttonIcon);
+                            }
+                        };
+                    SwingUtilities.invokeLater(edtTask);
+                }
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -598,30 +630,31 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable task = new Runnable() {
 
-            public void run() {
+                public void run() {
 
-                if ((clock.getTime() <= 0)
-                        && ((playbackModel.getShuttleRate() != 0) || (shuttleDirection != ShuttleDirection.UNDEFINED))) {
-                    playbackModel.setShuttleRate(0);
-                    playbackModel.setPauseRate(0);
-                    shuttleDirection = ShuttleDirection.UNDEFINED;
-                } else {
-
-                    // BugzID:794 - Previously ignored pauseRate if paused
-                    if (clock.isStopped()) {
-                        playbackModel
-                                .setShuttleRate(findShuttleIndex(playbackModel
-                                        .getPauseRate()));
-                        shuttle(ShuttleDirection.BACKWARDS);
-                        // shuttle(ShuttleDirection.FORWARDS);
-                        // This makes current tests fail, but may be the desired
-                        // functionality.
+                    if ((clock.getTime() <= 0)
+                            && ((playbackModel.getShuttleRate() != 0)
+                                || (shuttleDirection
+                                    != ShuttleDirection.UNDEFINED))) {
+                        playbackModel.setShuttleRate(0);
+                        playbackModel.setPauseRate(0);
+                        shuttleDirection = ShuttleDirection.UNDEFINED;
                     } else {
-                        shuttle(ShuttleDirection.BACKWARDS);
+
+                        // BugzID:794 - Previously ignored pauseRate if paused
+                        if (clock.isStopped()) {
+                            playbackModel.setShuttleRate(findShuttleIndex(
+                                    playbackModel.getPauseRate()));
+                            shuttle(ShuttleDirection.BACKWARDS);
+                            // shuttle(ShuttleDirection.FORWARDS);
+                            // This makes current tests fail, but may be the desired
+                            // functionality.
+                        } else {
+                            shuttle(ShuttleDirection.BACKWARDS);
+                        }
                     }
                 }
-            }
-        };
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -633,31 +666,32 @@ public final class PlaybackController implements PlaybackListener,
     public void shuttleForwardEvent(final PlaybackEvent evt) {
 
         Runnable task = new Runnable() {
-            public void run() {
+                public void run() {
 
-                if ((clock.getTime() <= 0)
-                        && ((playbackModel.getShuttleRate() != 0) || (shuttleDirection != ShuttleDirection.UNDEFINED))) {
-                    playbackModel.setShuttleRate(0);
-                    playbackModel.setPauseRate(0);
-                    shuttleDirection = ShuttleDirection.UNDEFINED;
-                    shuttle(ShuttleDirection.FORWARDS);
-                } else {
-
-                    // BugzID:794 - Previously ignored pauseRate if paused
-                    if (clock.isStopped()) {
-                        playbackModel
-                                .setShuttleRate(findShuttleIndex(playbackModel
-                                        .getPauseRate()));
+                    if ((clock.getTime() <= 0)
+                            && ((playbackModel.getShuttleRate() != 0)
+                                || (shuttleDirection
+                                    != ShuttleDirection.UNDEFINED))) {
+                        playbackModel.setShuttleRate(0);
+                        playbackModel.setPauseRate(0);
+                        shuttleDirection = ShuttleDirection.UNDEFINED;
                         shuttle(ShuttleDirection.FORWARDS);
-                        // shuttle(ShuttleDirection.BACKWARDS);
-                        // This makes current tests fail, but may be the desired
-                        // functionality.
                     } else {
-                        shuttle(ShuttleDirection.FORWARDS);
+
+                        // BugzID:794 - Previously ignored pauseRate if paused
+                        if (clock.isStopped()) {
+                            playbackModel.setShuttleRate(findShuttleIndex(
+                                    playbackModel.getPauseRate()));
+                            shuttle(ShuttleDirection.FORWARDS);
+                            // shuttle(ShuttleDirection.BACKWARDS);
+                            // This makes current tests fail, but may be the desired
+                            // functionality.
+                        } else {
+                            shuttle(ShuttleDirection.FORWARDS);
+                        }
                     }
                 }
-            }
-        };
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -670,14 +704,14 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable task = new Runnable() {
 
-            public void run() {
-                clock.stop();
-                clock.setRate(0);
-                playbackModel.setShuttleRate(0);
-                playbackModel.setPauseRate(0);
-                shuttleDirection = ShuttleDirection.UNDEFINED;
-            }
-        };
+                public void run() {
+                    clock.stop();
+                    clock.setRate(0);
+                    playbackModel.setShuttleRate(0);
+                    playbackModel.setPauseRate(0);
+                    shuttleDirection = ShuttleDirection.UNDEFINED;
+                }
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -692,32 +726,33 @@ public final class PlaybackController implements PlaybackListener,
      */
     public void setRegionOfInterestAction() {
         Runnable task = new Runnable() {
-            public void run() {
-                final long newWindowPlayStart = playbackView.getFindTime();
-                final long newWindowPlayEnd = playbackView.getFindOffsetTime();
+                public void run() {
+                    final long newWindowPlayStart = playbackView.getFindTime();
+                    final long newWindowPlayEnd =
+                        playbackView.getFindOffsetTime();
 
-                playbackModel.setWindowPlayStart(newWindowPlayStart);
-                mixerController.setPlayRegionStart(newWindowPlayStart);
+                    playbackModel.setWindowPlayStart(newWindowPlayStart);
+                    mixerController.setPlayRegionStart(newWindowPlayStart);
 
-                if (newWindowPlayStart < newWindowPlayEnd) {
-                    playbackModel.setWindowPlayEnd(newWindowPlayEnd);
-                    mixerController.setPlayRegionEnd(newWindowPlayEnd);
-                } else {
-                    playbackModel.setWindowPlayEnd(newWindowPlayStart);
-                    mixerController.setPlayRegionEnd(newWindowPlayStart);
+                    if (newWindowPlayStart < newWindowPlayEnd) {
+                        playbackModel.setWindowPlayEnd(newWindowPlayEnd);
+                        mixerController.setPlayRegionEnd(newWindowPlayEnd);
+                    } else {
+                        playbackModel.setWindowPlayEnd(newWindowPlayStart);
+                        mixerController.setPlayRegionEnd(newWindowPlayStart);
+                    }
+
+                    final long currentTime = mixerController.getCurrentTime();
+
+                    if (currentTime > newWindowPlayEnd) {
+                        mixerController.setCurrentTime(newWindowPlayEnd);
+                        clock.setTime(newWindowPlayEnd);
+                    } else if (currentTime < newWindowPlayStart) {
+                        mixerController.setCurrentTime(newWindowPlayStart);
+                        clock.setTime(newWindowPlayStart);
+                    }
                 }
-
-                final long currentTime = mixerController.getCurrentTime();
-
-                if (currentTime > newWindowPlayEnd) {
-                    mixerController.setCurrentTime(newWindowPlayEnd);
-                    clock.setTime(newWindowPlayEnd);
-                } else if (currentTime < newWindowPlayStart) {
-                    mixerController.setCurrentTime(newWindowPlayStart);
-                    clock.setTime(newWindowPlayStart);
-                }
-            }
-        };
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -781,10 +816,10 @@ public final class PlaybackController implements PlaybackListener,
             } else {
 
                 // Synchronise viewers only if we have exceded our pulse time.
-                if ((time - playbackModel.getLastSync()) > (SYNC_PULSE * clock
-                        .getRate())) {
-                    long thresh = (long) (SYNC_THRESH * Math.abs(clock
-                            .getRate()));
+                if ((time - playbackModel.getLastSync())
+                        > (SYNC_PULSE * clock.getRate())) {
+                    long thresh = (long) (SYNC_THRESH
+                            * Math.abs(clock.getRate()));
                     playbackModel.setLastSync(time);
 
                     for (DataViewer v : viewers) {
@@ -810,7 +845,8 @@ public final class PlaybackController implements PlaybackListener,
                          * noticable drift.
                          */
                         if (v.isPlaying()
-                                && (Math.abs(v.getCurrentTime()
+                                && (Math.abs(
+                                        v.getCurrentTime()
                                         - (time - v.getOffset())) > thresh)) {
                             v.seekTo(time - v.getOffset());
                         }
@@ -847,7 +883,7 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Determines whether a DataViewer has data for the desired time.
-     * 
+     *
      * @param time
      *            The time we wish to play at or seek to.
      * @param view
@@ -856,7 +892,7 @@ public final class PlaybackController implements PlaybackListener,
      */
     private boolean isWithinPlayRange(final long time, final DataViewer view) {
         return (time >= view.getOffset())
-                && (time < (view.getOffset() + view.getDuration()));
+            && (time < (view.getOffset() + view.getDuration()));
     }
 
     /**
@@ -888,11 +924,11 @@ public final class PlaybackController implements PlaybackListener,
         resetSync();
 
         Runnable edtTask = new Runnable() {
-            public void run() {
-                playbackView.setSpeedLabel(FloatUtils
-                        .doubleToFractionStr(Double.valueOf(rate)));
-            }
-        };
+                public void run() {
+                    playbackView.setSpeedLabel(FloatUtils.doubleToFractionStr(
+                            Double.valueOf(rate)));
+                }
+            };
 
         SwingUtilities.invokeLater(edtTask);
 
@@ -960,7 +996,7 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Set time location for data streams.
-     * 
+     *
      * @param milliseconds
      *            The millisecond time.
      */
@@ -970,12 +1006,12 @@ public final class PlaybackController implements PlaybackListener,
         resetSync();
 
         Runnable edtTask = new Runnable() {
-            public void run() {
-                playbackView.setTimestampLabelText(CLOCK_FORMAT
-                        .format(milliseconds));
-                mixerController.setCurrentTime(milliseconds);
-            }
-        };
+                public void run() {
+                    playbackView.setTimestampLabelText(CLOCK_FORMAT.format(
+                            milliseconds));
+                    mixerController.setCurrentTime(milliseconds);
+                }
+            };
 
         SwingUtilities.invokeLater(edtTask);
 
@@ -983,7 +1019,7 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Remove the specifed viewer from the controller.
-     * 
+     *
      * @param viewer
      *            The viewer to shutdown.
      * @return True if the controller contained this viewer.
@@ -995,70 +1031,72 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable task = new Runnable() {
 
-            public void run() {
+                public void run() {
 
-                if (removed) {
+                    if (removed) {
 
-                    // BugzID:2000
-                    viewer.removeViewerStateListener(mixerController
-                            .getTracksEditorController()
-                            .getViewerStateListener(viewer.getIdentifier()));
+                        // BugzID:2000
+                        viewer.removeViewerStateListener(
+                            mixerController.getTracksEditorController()
+                                .getViewerStateListener(
+                                    viewer.getIdentifier()));
 
-                    // Recalculate the maximum playback duration.
-                    long maxDuration = 0;
-                    Iterator<DataViewer> it = viewers.iterator();
+                        // Recalculate the maximum playback duration.
+                        long maxDuration = 0;
+                        Iterator<DataViewer> it = viewers.iterator();
 
-                    while (it.hasNext()) {
-                        DataViewer dv = it.next();
+                        while (it.hasNext()) {
+                            DataViewer dv = it.next();
 
-                        if ((dv.getDuration() + dv.getOffset()) > maxDuration) {
-                            maxDuration = dv.getDuration() + dv.getOffset();
+                            if ((dv.getDuration() + dv.getOffset())
+                                    > maxDuration) {
+                                maxDuration = dv.getDuration() + dv.getOffset();
+                            }
                         }
+
+                        playbackModel.setMaxDuration(maxDuration);
+
+                        mixerController.setMaxEnd(maxDuration);
+
+                        // Reset visualisation of playback regions.
+                        if (playbackModel.getWindowPlayEnd() > maxDuration) {
+                            playbackModel.setWindowPlayEnd(maxDuration);
+                            mixerController.setPlayRegionEnd(maxDuration);
+                        }
+
+                        if (playbackModel.getWindowPlayStart()
+                                > playbackModel.getWindowPlayEnd()) {
+                            playbackModel.setWindowPlayStart(0);
+                            mixerController.setPlayRegionStart(
+                                playbackModel.getWindowPlayStart());
+                        }
+
+                        // Reset visualisation of current playback time.
+                        long tracksTime = mixerController.getCurrentTime();
+
+                        if (tracksTime < playbackModel.getWindowPlayStart()) {
+                            tracksTime = playbackModel.getWindowPlayStart();
+                        }
+
+                        if (tracksTime > playbackModel.getWindowPlayEnd()) {
+                            tracksTime = playbackModel.getWindowPlayEnd();
+                        }
+
+                        mixerController.setCurrentTime(tracksTime);
+
+                        // Reset the clock.
+                        clock.setTime(tracksTime);
+                        clockStep(tracksTime);
+
+                        // Remove the data viewer from the tracks panel.
+                        mixerController.deregisterTrack(viewer.getIdentifier());
+
+                        // Data viewer removed, mark project as changed.
+                        OpenSHAPA.getProjectController().projectChanged();
+
                     }
-
-                    playbackModel.setMaxDuration(maxDuration);
-
-                    mixerController.setMaxEnd(maxDuration);
-
-                    // Reset visualisation of playback regions.
-                    if (playbackModel.getWindowPlayEnd() > maxDuration) {
-                        playbackModel.setWindowPlayEnd(maxDuration);
-                        mixerController.setPlayRegionEnd(maxDuration);
-                    }
-
-                    if (playbackModel.getWindowPlayStart() > playbackModel
-                            .getWindowPlayEnd()) {
-                        playbackModel.setWindowPlayStart(0);
-                        mixerController.setPlayRegionStart(playbackModel
-                                .getWindowPlayStart());
-                    }
-
-                    // Reset visualisation of current playback time.
-                    long tracksTime = mixerController.getCurrentTime();
-
-                    if (tracksTime < playbackModel.getWindowPlayStart()) {
-                        tracksTime = playbackModel.getWindowPlayStart();
-                    }
-
-                    if (tracksTime > playbackModel.getWindowPlayEnd()) {
-                        tracksTime = playbackModel.getWindowPlayEnd();
-                    }
-
-                    mixerController.setCurrentTime(tracksTime);
-
-                    // Reset the clock.
-                    clock.setTime(tracksTime);
-                    clockStep(tracksTime);
-
-                    // Remove the data viewer from the tracks panel.
-                    mixerController.deregisterTrack(viewer.getIdentifier());
-
-                    // Data viewer removed, mark project as changed.
-                    OpenSHAPA.getProjectController().projectChanged();
-
                 }
-            }
-        };
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -1071,17 +1109,17 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Returns set of dataviewers.
-     * 
+     *
      * @return set of dataviewers.
      */
     public Set<DataViewer> getDataViewers() {
 
         try {
             return executor.submit(new Callable<Set<DataViewer>>() {
-                public Set<DataViewer> call() throws Exception {
-                    return viewers;
-                }
-            }).get();
+                        public Set<DataViewer> call() throws Exception {
+                            return viewers;
+                        }
+                    }).get();
         } catch (InterruptedException e) {
             logger.error("Executor thread interrupted", e);
         } catch (ExecutionException e) {
@@ -1093,7 +1131,7 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Adds a track to the tracks panel.
-     * 
+     *
      * @param id
      *            Track identifier.
      * @param icon
@@ -1110,22 +1148,22 @@ public final class PlaybackController implements PlaybackListener,
      *            Track painter to use.
      */
     public void addTrack(final Identifier id, final ImageIcon icon,
-            final String mediaPath, final String name, final long duration,
-            final long offset, final TrackPainter trackPainter) {
+        final String mediaPath, final String name, final long duration,
+        final long offset, final TrackPainter trackPainter) {
 
         Runnable edtTask = new Runnable() {
-            public void run() {
-                mixerController.addNewTrack(id, icon, mediaPath, name,
+                public void run() {
+                    mixerController.addNewTrack(id, icon, mediaPath, name,
                         duration, offset, trackPainter);
-            }
-        };
+                }
+            };
 
         SwingUtilities.invokeLater(edtTask);
     }
 
     /**
      * Add a viewer to the data controller with the given offset.
-     * 
+     *
      * @param viewer
      *            The data viewer to add.
      * @param offset
@@ -1135,43 +1173,44 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable task = new Runnable() {
 
-            public void run() {
+                public void run() {
 
-                // Add the QTDataViewer to the list of viewers we are
-                // controlling.
-                viewers.add(viewer);
-                viewer.setParentController(PlaybackController.this);
-                viewer.setOffset(offset);
+                    // Add the QTDataViewer to the list of viewers we are
+                    // controlling.
+                    viewers.add(viewer);
+                    viewer.setParentController(PlaybackController.this);
+                    viewer.setOffset(offset);
 
-                boolean visible = viewer.getParentJDialog().isVisible();
-                OpenSHAPA.getApplication().show(viewer.getParentJDialog());
+                    boolean visible = viewer.getParentJDialog().isVisible();
+                    OpenSHAPA.getApplication().show(viewer.getParentJDialog());
 
-                if (!visible) {
-                    viewer.getParentJDialog().setVisible(false);
+                    if (!visible) {
+                        viewer.getParentJDialog().setVisible(false);
+                    }
+
+                    // adjust the overall frame rate.
+                    float fps = viewer.getFrameRate();
+
+                    if (fps > playbackModel.getCurrentFPS()) {
+                        playbackModel.setCurrentFPS(fps);
+                    }
+
+                    // Update track viewer.
+                    long maxDuration = playbackModel.getMaxDuration();
+
+                    if ((viewer.getOffset() + viewer.getDuration())
+                            > maxDuration) {
+                        maxDuration = viewer.getOffset() + viewer.getDuration();
+                    }
+
+                    playbackModel.setMaxDuration(maxDuration);
+
+                    if (playbackModel.getWindowPlayEnd() < maxDuration) {
+                        playbackModel.setWindowPlayEnd(maxDuration);
+                        mixerController.setPlayRegionEnd(maxDuration);
+                    }
                 }
-
-                // adjust the overall frame rate.
-                float fps = viewer.getFrameRate();
-
-                if (fps > playbackModel.getCurrentFPS()) {
-                    playbackModel.setCurrentFPS(fps);
-                }
-
-                // Update track viewer.
-                long maxDuration = playbackModel.getMaxDuration();
-
-                if ((viewer.getOffset() + viewer.getDuration()) > maxDuration) {
-                    maxDuration = viewer.getOffset() + viewer.getDuration();
-                }
-
-                playbackModel.setMaxDuration(maxDuration);
-
-                if (playbackModel.getWindowPlayEnd() < maxDuration) {
-                    playbackModel.setWindowPlayEnd(maxDuration);
-                    mixerController.setPlayRegionEnd(maxDuration);
-                }
-            }
-        };
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -1182,7 +1221,7 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Handler for a TracksControllerEvent.
-     * 
+     *
      * @param e
      *            event
      */
@@ -1190,30 +1229,30 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable task = new Runnable() {
 
-            public void run() {
+                public void run() {
 
-                switch (e.getTracksEvent()) {
+                    switch (e.getTracksEvent()) {
 
-                case NEEDLE_EVENT:
-                    handleNeedleEvent((NeedleEvent) e.getEventObject());
+                    case NEEDLE_EVENT:
+                        handleNeedleEvent((NeedleEvent) e.getEventObject());
 
-                    break;
+                        break;
 
-                case MARKER_EVENT:
-                    handleMarkerEvent((MarkerEvent) e.getEventObject());
+                    case MARKER_EVENT:
+                        handleMarkerEvent((MarkerEvent) e.getEventObject());
 
-                    break;
+                        break;
 
-                case CARRIAGE_EVENT:
-                    handleCarriageEvent((CarriageEvent) e.getEventObject());
+                    case CARRIAGE_EVENT:
+                        handleCarriageEvent((CarriageEvent) e.getEventObject());
 
-                    break;
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
+                    }
                 }
-            }
-        };
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -1309,7 +1348,7 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Populates the find time in the controller.
-     * 
+     *
      * @param milliseconds
      *            The time to use when populating the find field.
      */
@@ -1317,17 +1356,17 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable edtTask = new Runnable() {
 
-            public void run() {
-                playbackView.setFindTime(milliseconds);
-            }
-        };
+                public void run() {
+                    playbackView.setFindTime(milliseconds);
+                }
+            };
 
         SwingUtilities.invokeLater(edtTask);
     }
 
     /**
      * Populates the find offset time in the controller.
-     * 
+     *
      * @param milliseconds
      *            The time to use when populating the find field.
      */
@@ -1335,10 +1374,10 @@ public final class PlaybackController implements PlaybackListener,
 
         Runnable edtTask = new Runnable() {
 
-            public void run() {
-                playbackView.setFindOffsetField(milliseconds);
-            }
-        };
+                public void run() {
+                    playbackView.setFindOffsetField(milliseconds);
+                }
+            };
 
         SwingUtilities.invokeLater(edtTask);
     }
@@ -1349,10 +1388,10 @@ public final class PlaybackController implements PlaybackListener,
     public void findOffsetAction() {
 
         Runnable task = new Runnable() {
-            public void run() {
-                jumpTo(playbackView.getFindOffsetTime());
-            }
-        };
+                public void run() {
+                    jumpTo(playbackView.getFindOffsetTime());
+                }
+            };
 
         if (!SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -1456,7 +1495,7 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Handles opening a data source.
-     * 
+     *
      * @param jd
      *            The file chooser used to open the data source.
      */
@@ -1466,23 +1505,25 @@ public final class PlaybackController implements PlaybackListener,
 
         if (plugin != null) {
             executor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
-                            .getApplication().getMainFrame(), false);
-                    dataViewer.setIdentifier(IDController.generateIdentifier());
-                    dataViewer.setDataFeed(f);
-                    dataViewer.seekTo(clock.getTime());
-                    addDataViewer(plugin.getTypeIcon(), dataViewer, f,
+                    @Override public void run() {
+                        DataViewer dataViewer = plugin.getNewDataViewer(
+                                OpenSHAPA.getApplication().getMainFrame(),
+                                false);
+                        dataViewer.setIdentifier(
+                            IDController.generateIdentifier());
+                        dataViewer.setDataFeed(f);
+                        dataViewer.seekTo(clock.getTime());
+                        addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                             dataViewer.getTrackPainter());
-                    mixerController.bindTrackActions(
+                        mixerController.bindTrackActions(
                             dataViewer.getIdentifier(),
                             dataViewer.getCustomActions());
-                    dataViewer.addViewerStateListener(mixerController
-                            .getTracksEditorController()
-                            .getViewerStateListener(dataViewer.getIdentifier()));
-                }
-            });
+                        dataViewer.addViewerStateListener(
+                            mixerController.getTracksEditorController()
+                                .getViewerStateListener(
+                                    dataViewer.getIdentifier()));
+                    }
+                });
         }
     }
 
@@ -1497,7 +1538,7 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Get the current master clock time for the controller.
-     * 
+     *
      * @return Time in milliseconds.
      */
     private long getCurrentTime() {
@@ -1510,10 +1551,10 @@ public final class PlaybackController implements PlaybackListener,
 
         try {
             return executor.submit(new Callable<Long>() {
-                public Long call() throws Exception {
-                    return clock.getTime();
-                }
-            }).get();
+                        public Long call() throws Exception {
+                            return clock.getTime();
+                        }
+                    }).get();
         } catch (InterruptedException e) {
             logger.error("Executor thread interrupted", e);
         } catch (ExecutionException e) {
@@ -1525,7 +1566,7 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Adds a data viewer to this data controller.
-     * 
+     *
      * @param icon
      *            The icon associated with the data viewer.
      * @param viewer
@@ -1534,7 +1575,7 @@ public final class PlaybackController implements PlaybackListener,
      *            The parent file that the viewer represents.
      */
     private void addDataViewer(final ImageIcon icon, final DataViewer viewer,
-            final File f, final TrackPainter trackPainter) {
+        final File f, final TrackPainter trackPainter) {
         assert !SwingUtilities.isEventDispatchThread();
         assert viewer.getIdentifier() != null;
 
@@ -1543,15 +1584,14 @@ public final class PlaybackController implements PlaybackListener,
         OpenSHAPA.getProjectController().projectChanged();
 
         // Add the file to the tracks information panel
-        addTrack(viewer.getIdentifier(), icon, f.getAbsolutePath(),
-                f.getName(), viewer.getDuration(), viewer.getOffset(),
-                trackPainter);
+        addTrack(viewer.getIdentifier(), icon, f.getAbsolutePath(), f.getName(),
+            viewer.getDuration(), viewer.getOffset(), trackPainter);
     }
 
     /**
      * Searches the shuttle rates array for the given rate, and returns the
      * index.
-     * 
+     *
      * @param pRate
      *            The rate to search for.
      * @return The index of the rate, or -1 if not found.
@@ -1577,7 +1617,7 @@ public final class PlaybackController implements PlaybackListener,
     /**
      * Handles a NeedleEvent (when the timing needle changes due to user
      * interaction).
-     * 
+     *
      * @param e
      *            The Needle event that triggered this action.
      */
@@ -1608,7 +1648,7 @@ public final class PlaybackController implements PlaybackListener,
     /**
      * Handles a MarkerEvent (when one of the region marker changes due to user
      * interaction).
-     * 
+     *
      * @param e
      *            The Marker Event that triggered this action.
      */
@@ -1637,14 +1677,14 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Helper method for handling the end region marker event.
-     * 
+     *
      * @param newWindowTime
      *            New region marker time.
      * @param tracksTime
      *            Current time.
      */
     private void handleEndMarkerEvent(final long newWindowTime,
-            final long tracksTime) {
+        final long tracksTime) {
         assert !SwingUtilities.isEventDispatchThread();
 
         final long maxDuration = playbackModel.getMaxDuration();
@@ -1672,14 +1712,14 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Helper method for handling the start region marker event.
-     * 
+     *
      * @param newWindowTime
      *            New region marker time.
      * @param tracksTime
      *            Current time.
      */
     private void handleStartMarkerEvent(final long newWindowTime,
-            final long tracksTime) {
+        final long tracksTime) {
         assert !SwingUtilities.isEventDispatchThread();
 
         final long windowPlayEnd = playbackModel.getWindowPlayEnd();
@@ -1708,7 +1748,7 @@ public final class PlaybackController implements PlaybackListener,
     /**
      * Handles a CarriageEvent (when the carriage moves due to user
      * interaction).
-     * 
+     *
      * @param e
      *            The carriage event that triggered this action.
      */
@@ -1777,11 +1817,11 @@ public final class PlaybackController implements PlaybackListener,
             mixerController.setPlayRegionEnd(maxDuration);
         }
 
-        if (playbackModel.getWindowPlayStart() > playbackModel
-                .getWindowPlayEnd()) {
+        if (playbackModel.getWindowPlayStart()
+                > playbackModel.getWindowPlayEnd()) {
             playbackModel.setWindowPlayStart(0);
-            mixerController.setPlayRegionStart(playbackModel
-                    .getWindowPlayStart());
+            mixerController.setPlayRegionStart(
+                playbackModel.getWindowPlayStart());
         }
 
         // Reset the time if needed

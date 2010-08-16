@@ -1,11 +1,13 @@
 package org.openshapa.views;
 
 import java.awt.Component;
+import java.awt.FlowLayout;
 
 import java.io.File;
 
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -18,7 +20,7 @@ import org.openshapa.views.continuous.Plugin;
 import com.google.common.collect.Lists;
 
 
-public class MacOSJFC extends PluginChooser {
+public class LinuxJFC extends PluginChooser {
 
     private JComboBox pluginsBox;
     private List<PluginCallback> plugins = Lists.newArrayList();
@@ -33,18 +35,19 @@ public class MacOSJFC extends PluginChooser {
         pluginsBox = new JComboBox(plugins.toArray());
         pluginsBox.setEditable(false);
         pluginsBox.setLightWeightPopupEnabled(true);
-        pluginsBox.setSize(220, 27);
 
-        JPanel bottomPanel = (JPanel) getComponent(4);
-        JPanel inputPanel = (JPanel) bottomPanel.getComponent(0);
+        // Got these values from Swing Explorer
+        JPanel interior = (JPanel) getComponent(1);
 
-        Component[] origs = inputPanel.getComponents();
-        inputPanel.add(pluginSelect);
-        inputPanel.add(pluginsBox);
-        inputPanel.add(origs[0]);
-        inputPanel.add(origs[1]);
+        JPanel labelPanel = new JPanel();
+        labelPanel.setBorder(BorderFactory.createEmptyBorder());
+        labelPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        labelPanel.add(pluginSelect);
 
-        dialog.setSize(getWidth() + 100, getHeight() + 50);
+        interior.add(labelPanel);
+        interior.add(pluginsBox);
+
+        dialog.pack();
 
         return dialog;
     }
@@ -87,6 +90,7 @@ public class MacOSJFC extends PluginChooser {
         return ((PluginCallback) selected).plugin;
     }
 
+
     private static final class PluginCallback {
         final Plugin plugin;
 
@@ -98,5 +102,6 @@ public class MacOSJFC extends PluginChooser {
             return plugin.getPluginName();
         }
     }
+
 
 }
