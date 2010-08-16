@@ -1512,6 +1512,8 @@ public final class PlaybackController implements PlaybackListener,
                         dataViewer.setIdentifier(
                             IDController.generateIdentifier());
                         dataViewer.setDataFeed(f);
+                        dataViewer.setSimpleDatabase(
+                            OpenSHAPA.getProjectController().getSimpleDB());
                         dataViewer.seekTo(clock.getTime());
                         addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                             dataViewer.getTrackPainter());

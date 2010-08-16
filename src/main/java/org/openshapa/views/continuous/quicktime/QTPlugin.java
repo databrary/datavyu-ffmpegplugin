@@ -43,6 +43,7 @@ public final class QTPlugin implements Plugin {
             }
         };
 
+    @Override
     public DataViewer getNewDataViewer(final java.awt.Frame parent,
         final boolean modal) {
         return new QTDataViewer(parent, modal);
@@ -51,6 +52,7 @@ public final class QTPlugin implements Plugin {
     /**
      * @return icon representing this plugin.
      */
+    @Override
     public ImageIcon getTypeIcon() {
         URL typeIconURL = getClass().getResource(
                 "/icons/gstreamerplugin-icon.png");

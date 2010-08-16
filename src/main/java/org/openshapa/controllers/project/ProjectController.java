@@ -350,6 +350,7 @@ public final class ProjectController {
                     .getApplication().getMainFrame(), false);
             viewer.setIdentifier(IDController.generateIdentifier());
             viewer.setDataFeed(file);
+            viewer.setSimpleDatabase(dbAdapt);
 
             if (setting.getSettingsId() != null) {
 
