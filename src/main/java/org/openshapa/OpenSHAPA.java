@@ -87,6 +87,9 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         /** Generic windows platform. I.e. XP, vista, etc. */
         WINDOWS,
+        
+        /** Generic Linux platform. */ 
+        LINUX,
 
         /** Unknown platform. */
         UNKNOWN
@@ -774,13 +777,17 @@ public final class OpenSHAPA extends SingleFrameApplication
      */
     public static Platform getPlatform() {
         String os = System.getProperty("os.name");
-
+        
         if (os.contains("Mac")) {
             return Platform.MAC;
         }
 
         if (os.contains("Win")) {
             return Platform.WINDOWS;
+        }
+        
+        if (os.contains("Linux")) {
+        	return Platform.LINUX;
         }
 
         return Platform.UNKNOWN;

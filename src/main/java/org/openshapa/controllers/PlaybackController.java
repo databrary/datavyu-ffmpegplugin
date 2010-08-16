@@ -40,6 +40,7 @@ import org.openshapa.plugins.PluginManager;
 import org.openshapa.util.ClockTimer;
 import org.openshapa.util.ClockTimer.ClockListener;
 import org.openshapa.util.FloatUtils;
+import org.openshapa.views.LinuxJFC;
 import org.openshapa.views.MacOSJFC;
 import org.openshapa.views.PlaybackV;
 import org.openshapa.views.PluginChooser;
@@ -234,6 +235,9 @@ public final class PlaybackController implements PlaybackListener,
                 case MAC:
                     chooser = new MacOSJFC();
                     break;
+                case LINUX:
+                	chooser = new LinuxJFC();
+                	break;
                 default:
                     throw new NotImplementedException(
                             "Plugin chooser unimplemented.");

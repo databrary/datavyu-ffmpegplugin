@@ -1442,6 +1442,9 @@ public final class DataControllerV extends OpenSHAPADialog implements
         case MAC:
             chooser = new MacOSJFC();
             break;
+        case LINUX:
+        	chooser = new LinuxJFC();
+        	break;
         default:
             throw new NotImplementedException("Plugin chooser unimplemented.");
         }
