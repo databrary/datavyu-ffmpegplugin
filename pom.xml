@@ -670,18 +670,6 @@
     </dependency>
 
     <dependency>
-    	<groupId>org.easytesting</groupId>
-    	<artifactId>fest-reflect</artifactId>
-    	<version>1.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.collections</groupId>
-      <artifactId>google-collections</artifactId>
-      <version>1.0</version>
-    </dependency>
-
-    <dependency>
       <groupId>apple.java</groupId>
       <artifactId>applejavaextensions</artifactId>
       <version>1.4</version>
@@ -698,6 +686,11 @@
       <artifactId>QTJava</artifactId>
       <version>7</version>
     </dependency>
-    
+
+    <dependency>
+        <groupId>com.google.collections</groupId>
+        <artifactId>google-collections</artifactId>
+      <version>1.0</version>
+    </dependency>
   </dependencies>
 </project>

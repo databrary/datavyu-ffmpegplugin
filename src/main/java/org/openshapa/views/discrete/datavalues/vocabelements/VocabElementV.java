@@ -10,6 +10,10 @@ import org.openshapa.views.VocabEditorV;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -72,6 +76,9 @@ public class VocabElementV extends JPanel {
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(VocabElementV.class);
 
+    /** the light blue colour used for backgrounds */
+    private static Color lightBlue = new Color(224,248,255,255);
+
     public VocabElementV(VocabElement vocabElement, VocabEditorV vev) {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
@@ -113,12 +120,26 @@ public class VocabElementV extends JPanel {
         veRootView = new VocabElementRootView(vocabElement, this);
 
         JPanel leftPanel = new JPanel();
-        FlowLayout flayout = new FlowLayout(FlowLayout.LEFT, 0, 0);
+        FlowLayout flayout = new FlowLayout(FlowLayout.LEFT, 5, 0);
         leftPanel.setLayout(flayout);
         leftPanel.add(deltaIcon);
         leftPanel.add(deleteIcon);
         leftPanel.add(typeIcon);
-        leftPanel.setBackground(Color.WHITE);
+        veRootView.setOpaque(false);
+        veRootView.setBackground(Color.WHITE);
+        leftPanel.setOpaque(false);
+
+        veRootView.addFocusListener(new FocusAdapter(){
+            @Override
+            public void focusGained(FocusEvent fe){
+                setBG(lightBlue);
+                //veRootView.selectAll();
+            }
+            @Override
+            public void focusLost(FocusEvent fe){
+                setBG(Color.WHITE);
+            }
+        });
 
         BorderLayout layout = new BorderLayout();
         this.setLayout(layout);
@@ -306,5 +327,14 @@ public class VocabElementV extends JPanel {
      */
     public final JLabel getTypeIcon() {
         return typeIcon;
+    }
+
+    public final void setBG(Color col){
+        this.setBackground(col);
+    }
+
+    public final void requestFocus(){
+        veRootView.requestFocus();
+        veRootView.highlightName();
     }
 }
