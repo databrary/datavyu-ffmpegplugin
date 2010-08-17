@@ -2,13 +2,23 @@ package org.openshapa.plugins.spectrum;
 
 import java.awt.Frame;
 
+import java.io.FileFilter;
+
 import java.net.URL;
 
+import java.util.List;
+
 import javax.swing.ImageIcon;
-import javax.swing.filechooser.FileFilter;
+
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 
 import org.openshapa.views.continuous.DataViewer;
+import org.openshapa.views.continuous.Filter;
+import org.openshapa.views.continuous.FilterNames;
 import org.openshapa.views.continuous.Plugin;
+
+import com.google.common.collect.Lists;
 
 
 /**
@@ -16,17 +26,54 @@ import org.openshapa.views.continuous.Plugin;
  */
 public class SpectrumPlugin implements Plugin {
 
-    /** Filter for supported files. */
-    private static final FileFilter SUPPORTED_FILES = new SpectrumFileFilter();
+    private static final Filter AUDIO_FILTER = new Filter() {
+            final SuffixFileFilter ff;
+            final List<String> ext;
+
+            {
+                ext = Lists.newArrayList(".wav", ".mp3");
+                ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
+            }
+
+            @Override public FileFilter getFileFilter() {
+                return ff;
+            }
+
+            @Override public String getName() {
+                return FilterNames.AUDIO.getFilterName();
+            }
+
+            @Override public Iterable<String> getExtensions() {
+                return ext;
+            }
+        };
+
+    private static final Filter VIDEO_FILTER = new Filter() {
+            final SuffixFileFilter ff;
+            final List<String> ext;
+
+            {
+                ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mp4");
+                ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
+            }
+
+            @Override public FileFilter getFileFilter() {
+                return ff;
+            }
+
+            @Override public String getName() {
+                return FilterNames.VIDEO.getFilterName();
+            }
+
+            @Override public Iterable<String> getExtensions() {
+                return ext;
+            }
+        };
 
     @Override public DataViewer getNewDataViewer(final Frame parent,
         final boolean modal) {
 
         return new SpectrumDataViewer(parent, modal);
-    }
-
-    @Override public FileFilter getFileFilter() {
-        return SUPPORTED_FILES;
     }
 
     @Override public ImageIcon getTypeIcon() {
@@ -38,6 +85,14 @@ public class SpectrumPlugin implements Plugin {
 
     @Override public String getClassifier() {
         return "openshapa.audio";
+    }
+
+    @Override public Filter[] getFilters() {
+        return new Filter[] { AUDIO_FILTER, VIDEO_FILTER };
+    }
+
+    @Override public String getPluginName() {
+        return "Audio Spectrum";
     }
 
 }

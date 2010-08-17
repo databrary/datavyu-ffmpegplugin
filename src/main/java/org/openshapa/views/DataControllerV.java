@@ -1,7 +1,5 @@
 package org.openshapa.views;
 
-import com.usermetrix.jclient.Logger;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -14,10 +12,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -26,6 +24,8 @@ import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 
 import net.miginfocom.swing.MigLayout;
+
+import org.apache.commons.lang.NotImplementedException;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -57,17 +57,16 @@ import org.openshapa.models.id.Identifier;
 import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.ClockTimer;
-import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer.ClockListener;
+import org.openshapa.util.FloatUtils;
 
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-
-import java.util.LinkedHashSet;
 
 
 /**
@@ -320,7 +319,6 @@ public final class DataControllerV extends OpenSHAPADialog
     public DataControllerV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
 
-
         clock.registerListener(this);
 
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
@@ -358,14 +356,13 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Handles opening a data source.
      *
-     * @param jd The file chooser used to open the data source.
+     * @param jd
+     *            The file chooser used to open the data source.
      */
-    private void openVideo(final OpenSHAPAFileChooser jd) {
-        PluginManager pm = PluginManager.getInstance();
-
-        File f = jd.getSelectedFile();
-        FileFilter ff = jd.getFileFilter();
-        Plugin plugin = pm.getAssociatedPlugin(ff);
+    private void openVideo(final PluginChooser chooser) {
+        Plugin plugin = chooser.getSelectedPlugin();
+        File f = chooser.getSelectedFile();
+        // Plugin plugin = pm.getAssociatedPlugin(ff);
 
         if (plugin != null) {
             DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
@@ -373,6 +370,8 @@ public final class DataControllerV extends OpenSHAPADialog
             dataViewer.setIdentifier(IDController.generateIdentifier());
             dataViewer.setDataFeed(f);
             dataViewer.seekTo(clock.getTime());
+            dataViewer.setSimpleDatabase(
+                    OpenSHAPA.getProjectController().getSimpleDB());
             addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                 dataViewer.getTrackPainter());
             mixerController.bindTrackActions(dataViewer.getIdentifier(),
@@ -487,7 +486,6 @@ public final class DataControllerV extends OpenSHAPADialog
                             v.stop();
                         }
 
-
                         /*
                          * Only synchronise the data viewers if we have a
                          * noticable drift.
@@ -531,8 +529,11 @@ public final class DataControllerV extends OpenSHAPADialog
 
     /**
      * Determines whether a DataViewer has data for the desired time.
-     * @param time The time we wish to play at or seek to.
-     * @param view The DataViewer to check.
+     *
+     * @param time
+     *            The time we wish to play at or seek to.
+     * @param view
+     *            The DataViewer to check.
      * @return True if data exists at this time, and false otherwise.
      */
     private boolean isWithinPlayRange(final long time, final DataViewer view) {
@@ -726,7 +727,6 @@ public final class DataControllerV extends OpenSHAPADialog
 
             // Remove the data viewer from the tracks panel.
             mixerController.deregisterTrack(viewer.getIdentifier());
-
 
             // Data viewer removed, mark project as changed.
             OpenSHAPA.getProjectController().projectChanged();
@@ -1419,16 +1419,39 @@ public final class DataControllerV extends OpenSHAPADialog
         final java.awt.event.ActionEvent evt) {
         logger.usage("Add data");
 
-        OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
-        PluginManager pm = PluginManager.getInstance();
+        PluginChooser chooser = null;
 
-        // Add file filters for each of the supported plugins.
-        for (FileFilter f : pm.getPluginFileFilters()) {
-            jd.addChoosableFileFilter(f);
+        // TODO finish this
+        switch (OpenSHAPA.getPlatform()) {
+
+        case WINDOWS:
+            chooser = new WindowsJFC();
+
+            break;
+
+        case MAC:
+            chooser = new MacOSJFC();
+
+            break;
+
+        case LINUX:
+            chooser = new LinuxJFC();
+
+            break;
+
+        default:
+            throw new NotImplementedException("Plugin chooser unimplemented.");
         }
 
-        if (JFileChooser.APPROVE_OPTION == jd.showOpenDialog(this)) {
-            openVideo(jd);
+        PluginManager pm = PluginManager.getInstance();
+        chooser.addPlugin(pm.getPlugins());
+
+        for (FileFilter ff : pm.getFileFilters()) {
+            chooser.addChoosableFileFilter(ff);
+        }
+
+        if (JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(this)) {
+            openVideo(chooser);
         }
     }
 
@@ -1499,12 +1522,18 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Adds a track to the tracks panel.
      *
-     * @param icon Icon associated with the track
-     * @param mediaPath Absolute file path to the media file.
-     * @param name The name of the track to add.
-     * @param duration The duration of the data feed in milliseconds.
-     * @param offset The time offset of the data feed in milliseconds.
-     * @param trackPainter Track painter to use.
+     * @param icon
+     *            Icon associated with the track
+     * @param mediaPath
+     *            Absolute file path to the media file.
+     * @param name
+     *            The name of the track to add.
+     * @param duration
+     *            The duration of the data feed in milliseconds.
+     * @param offset
+     *            The time offset of the data feed in milliseconds.
+     * @param trackPainter
+     *            Track painter to use.
      */
     public void addTrack(final Identifier id, final ImageIcon icon,
         final String mediaPath, final String name, final long duration,
@@ -1516,8 +1545,10 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Add a viewer to the data controller with the given offset.
      *
-     * @param viewer The data viewer to add.
-     * @param offset The offset value in milliseconds.
+     * @param viewer
+     *            The data viewer to add.
+     * @param offset
+     *            The offset value in milliseconds.
      */
     public void addViewer(final DataViewer viewer, final long offset) {
 
@@ -1586,7 +1617,8 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Handler for a TracksControllerEvent.
      *
-     * @param e event
+     * @param e
+     *            event
      */
     public void tracksControllerChanged(final TracksControllerEvent e) {
 
@@ -1630,7 +1662,9 @@ public final class DataControllerV extends OpenSHAPADialog
 
     /**
      * Handles a TimescaleEvent.
-     * @param e The timescale event that triggered this action.
+     *
+     * @param e
+     *            The timescale event that triggered this action.
      */
     private void handleTimescaleEvent(final TimescaleEvent e) {
         final boolean wasClockRunning = !clock.isStopped();
@@ -1691,8 +1725,10 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Helper method for handling the end region marker event.
      *
-     * @param newWindowTime New region marker time.
-     * @param tracksTime Current time.
+     * @param newWindowTime
+     *            New region marker time.
+     * @param tracksTime
+     *            Current time.
      */
     private void handleEndMarkerEvent(final long newWindowTime,
         final long tracksTime) {
@@ -1723,8 +1759,10 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Helper method for handling the start region marker event.
      *
-     * @param newWindowTime New region marker time.
-     * @param tracksTime Current time.
+     * @param newWindowTime
+     *            New region marker time.
+     * @param tracksTime
+     *            Current time.
      */
     private void handleStartMarkerEvent(final long newWindowTime,
         final long tracksTime) {
@@ -1788,8 +1826,8 @@ public final class DataControllerV extends OpenSHAPADialog
         for (DataViewer viewer : viewers) {
 
             /*
-             * Found our data viewer, update the DV offset and the settings
-             * in the project file.
+             * Found our data viewer, update the DV offset and the settings in
+             * the project file.
              */
             if (viewer.getIdentifier().equals(e.getTrackId())) {
                 viewer.setOffset(e.getOffset());
@@ -1821,7 +1859,6 @@ public final class DataControllerV extends OpenSHAPADialog
             playbackModel.setWindowPlayEnd(maxDuration);
             mixerController.setPlayRegionEnd(maxDuration);
         }
-
 
         if (playbackModel.getWindowPlayStart()
                 > playbackModel.getWindowPlayEnd()) {

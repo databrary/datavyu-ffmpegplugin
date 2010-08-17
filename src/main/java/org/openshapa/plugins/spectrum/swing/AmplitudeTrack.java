@@ -215,6 +215,11 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             localTM = trackModel.copy();
             localVM = viewport;
 
+            if (localAmps != null) {
+                localAmps.flush();
+                localAmps = null;
+            }
+
             // Buffer the drawn data.
             localAmps = new BufferedImage(getWidth(), getHeight(),
                     BufferedImage.TYPE_4BYTE_ABGR);
@@ -254,6 +259,8 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
 
             g2d.drawImage(image2, 0, 0, getWidth(), getHeight(), 0, 0,
                 image2.getWidth(), image2.getHeight(), null);
+
+            image2.flush();
         } else if (localAmps != null) {
             // If we don't yet have a global cached image, make sure the local
             // cache is painted.

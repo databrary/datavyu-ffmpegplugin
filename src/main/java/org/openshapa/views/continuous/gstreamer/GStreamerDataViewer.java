@@ -59,6 +59,7 @@ import org.gstreamer.interfaces.XOverlay;
 
 import org.gstreamer.swing.OSXVideoComponent;
 import org.gstreamer.swing.VideoComponent;
+import org.openshapa.models.db.SimpleDatabase;
 
 import org.openshapa.models.id.Identifier;
 
@@ -72,6 +73,11 @@ import org.openshapa.views.continuous.ViewerStateListener;
 
 
 public class GStreamerDataViewer implements DataViewer {
+
+    @Override
+    public void setSimpleDatabase(SimpleDatabase sDB) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
     private enum VideoSinkType {
         swingRenderer, osxRenderer, xWindowsRenderer,
@@ -645,14 +651,13 @@ public class GStreamerDataViewer implements DataViewer {
     }
 
     private void handleActionButtonEvent1(final ActionEvent event) {
-        JButton button = (JButton) event.getSource();
 
         // BugzID:1400 - We don't allow volume changes while the track is
         // hidden from view.
         if (isVisible) {
 
             // Show the volume frame.
-            volumeDialog.setLocation(button.getLocationOnScreen());
+            volumeDialog.setLocation(volumeButton.getLocationOnScreen());
             volumeDialog.setVisible(true);
         }
     }

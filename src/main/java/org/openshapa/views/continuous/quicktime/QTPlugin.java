@@ -1,42 +1,58 @@
 package org.openshapa.views.continuous.quicktime;
 
+import java.io.FileFilter;
+
 import java.net.URL;
 
+import java.util.List;
+
 import javax.swing.ImageIcon;
-import javax.swing.filechooser.FileFilter;
+
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 
 import org.openshapa.views.continuous.DataViewer;
+import org.openshapa.views.continuous.Filter;
+import org.openshapa.views.continuous.FilterNames;
 import org.openshapa.views.continuous.Plugin;
+
+import com.google.common.collect.Lists;
 
 
 public final class QTPlugin implements Plugin {
 
-    /** The filter to use when looking for files that this plugin supports. */
-    private QTFilter filter;
+    private static final Filter VIDEO_FILTER = new Filter() {
+            final SuffixFileFilter ff;
+            final List<String> ext;
 
-    /**
-     * Default Constructor.
-     */
-    public QTPlugin() {
-        filter = new QTFilter();
-    }
+            {
+                ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mp4");
+                ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
+            }
 
+            @Override public FileFilter getFileFilter() {
+                return ff;
+            }
+
+            @Override public String getName() {
+                return FilterNames.VIDEO.getFilterName();
+            }
+
+            @Override public Iterable<String> getExtensions() {
+                return ext;
+            }
+        };
+
+    @Override
     public DataViewer getNewDataViewer(final java.awt.Frame parent,
         final boolean modal) {
         return new QTDataViewer(parent, modal);
     }
 
     /**
-     * @return The file filter to use when looking for files that the Quicktime
-     *         plugin supports.
-     */
-    public FileFilter getFileFilter() {
-        return filter;
-    }
-
-    /**
      * @return icon representing this plugin.
      */
+    @Override
     public ImageIcon getTypeIcon() {
         URL typeIconURL = getClass().getResource(
                 "/icons/gstreamerplugin-icon.png");
@@ -46,6 +62,14 @@ public final class QTPlugin implements Plugin {
 
     @Override public String getClassifier() {
         return "openshapa.video";
+    }
+
+    @Override public Filter[] getFilters() {
+        return new Filter[] { VIDEO_FILTER };
+    }
+
+    @Override public String getPluginName() {
+        return "QuickTime Video";
     }
 
 }

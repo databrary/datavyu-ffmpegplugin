@@ -3,14 +3,17 @@ package org.openshapa.views;
 import java.awt.Component;
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 import org.openshapa.Configuration;
 
+import org.openshapa.views.continuous.Plugin;
+
 
 /**
- * A file chooser to use within OpenSHAPA - overides the general JFileChooser.
+ * Custom file chooser with plugin selection.
  */
-public final class OpenSHAPAFileChooser extends JFileChooser {
+public abstract class PluginChooser extends JFileChooser {
 
     /**
      * Pops up an "Open File" file chooser dialog. Note that the text that
@@ -53,4 +56,10 @@ public final class OpenSHAPAFileChooser extends JFileChooser {
 
         return result;
     }
+
+    public abstract void addPlugin(final Plugin plugin);
+
+    public abstract void addPlugin(final Iterable<Plugin> plugins);
+
+    public abstract Plugin getSelectedPlugin();
 }

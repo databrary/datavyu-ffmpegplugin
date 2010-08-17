@@ -31,6 +31,8 @@ import net.miginfocom.swing.MigLayout;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.controllers.id.IDController;
+
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.CarriageEventListener;
 import org.openshapa.event.component.TrackMouseEventListener;
@@ -399,12 +401,17 @@ public final class TrackController implements ViewerStateListener,
             boolean handled = false;
             String property = propertyChanged.toLowerCase();
 
+            // FIXME empty property names are not allowed because we can't
+            // create nameless variables. null properties are allowed but used
+            // to represent multiple property changes.
             if (property.equals("")) {
                 handled = true;
             }
 
-            // TODO review this: its hackish and it couples the plugins directly
-            // to this. Maybe a new data controller interface method is needed.
+            // FIXME this is hackish and it couples the plugins directly to
+            // how this method works. Maybe a new data controller interface
+            // method is needed. No other plugin developers are aware that
+            // we can change the duration of a media file.
             if (property.equals("duration")) {
                 handled = true;
 
@@ -426,6 +433,8 @@ public final class TrackController implements ViewerStateListener,
                 }
             }
 
+            // FIXME this is not an error, property change listeners should just
+            // ignore properties they are not interested in.
             if (!handled) {
 
                 // We couldn't find a way to handle the change- report this.
@@ -434,7 +443,7 @@ public final class TrackController implements ViewerStateListener,
             }
         }
 
-        // TODO move interface method into project controller?
+        // FIXME move interface method into project controller?
         OpenSHAPA.getProjectController().projectChanged();
     }
 

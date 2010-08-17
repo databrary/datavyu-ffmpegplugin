@@ -9,6 +9,9 @@ package org.openshapa.models.database;
 public interface DeprecatedDatabase<T> extends Database {
 
     @Deprecated
-    public T getDatabase();
+    T getDatabase();
+
+    @Deprecated
+    void setDatabase(T newDB);
 
 }

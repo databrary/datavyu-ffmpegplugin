@@ -549,7 +549,7 @@
                 <preCp>jruby-complete-1.4.0.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
-                <preCp>openshapa-lib-0.0.42.jar</preCp>
+                <preCp>openshapa-lib-0.0.44.jar</preCp>
                 <preCp>openshapa-gstreamer-java-1.4.1.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.5.jar</preCp>
@@ -616,7 +616,7 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.42</version>
+      <version>0.0.44</version>
     </dependency>
 
     <dependency>

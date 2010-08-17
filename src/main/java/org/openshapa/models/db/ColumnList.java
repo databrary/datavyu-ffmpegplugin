@@ -9,10 +9,12 @@
 
 package org.openshapa.models.db;
 
+import java.util.ArrayList;
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
 import java.util.HashMap;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 import org.openshapa.util.OpenHashtable;
 
@@ -842,9 +844,11 @@ public class ColumnList
 
 
     // getDataColumns()
+
     /**
      * Construct and return a vector containing copies of all DataColumns
      * in the column list.  If the column list is empty, return null.
+     * Note that the ItsCells field will be null for each column!
      *
      *                                                   -- 8/31/07
      *
@@ -877,7 +881,8 @@ public class ColumnList
 
         return cols;
 
-    } /* ColumnList::getDataColumns() */
+    }
+    /* ColumnList::getDataColumns() */
 
 
     // getReferenceColumns()
