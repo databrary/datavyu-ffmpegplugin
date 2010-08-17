@@ -40,6 +40,7 @@ import org.openshapa.views.continuous.Plugin;
 import com.usermetrix.jclient.UserMetrix;
 
 import org.openshapa.views.continuous.gstreamer.GStreamerDataViewer;
+import org.openshapa.views.continuous.quicktime.QTKitDataViewer;
 
 
 /**
@@ -51,7 +52,7 @@ import org.openshapa.views.continuous.gstreamer.GStreamerDataViewer;
 public final class PluginManager {
 
     /** The default plugin to present to the user when loading data. */
-    private static final String DEFAULT_VIEW = GStreamerDataViewer.class
+    private static final String DEFAULT_VIEW = QTKitDataViewer.class
         .getName();
 
     /** A reference to the interface that plugins must override. */
@@ -311,8 +312,11 @@ public final class PluginManager {
                     // We call this with no parent frame because asking
                     // OpenSHAPA for its mainframe before it is created ruins
                     // all the dialogs (and menus).
-                    pluginLookup.put(p.getNewDataViewer(null, false).getClass()
-                        .getName(), p);
+                    final DataViewer newDataViewer = p.getNewDataViewer(null, false);
+                    if (newDataViewer != null) {
+	                    pluginLookup.put(newDataViewer.getClass()
+	                        .getName(), p);
+                    }
                 }
             }
         } catch (InstantiationException e) {

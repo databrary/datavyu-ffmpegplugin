@@ -16,8 +16,9 @@ import java.io.OutputStream;
 
 import java.net.URL;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -46,8 +47,6 @@ import org.openshapa.views.continuous.CustomActionsAdapter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.ViewerStateListener;
-
-import org.testng.v6.Sets;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
@@ -109,10 +108,10 @@ public final class SpectrumDataViewer implements DataViewer {
             }
         };
 
-    private Set<ViewerStateListener> viewerListeners;
+    private List<ViewerStateListener> viewerListeners;
 
     public SpectrumDataViewer(final Frame parent, final boolean modal) {
-        viewerListeners = Sets.newHashSet();
+        viewerListeners = new ArrayList<ViewerStateListener> ();
 
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
@@ -436,8 +435,10 @@ public final class SpectrumDataViewer implements DataViewer {
         if (engine != null) {
             engine.setVolume(vol);
 
-            for (ViewerStateListener listener : viewerListeners) {
-                listener.notifyStateChanged(null, null);
+            synchronized(this) {
+	            for (ViewerStateListener listener : viewerListeners) {
+	                listener.notifyStateChanged(null, null);
+	            }
             }
         }
     }
