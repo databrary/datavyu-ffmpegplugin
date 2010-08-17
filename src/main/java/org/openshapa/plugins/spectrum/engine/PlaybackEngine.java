@@ -378,8 +378,6 @@ public final class PlaybackEngine extends Thread {
                     SeekType.SET, start, SeekType.SET,
                     NANOSECONDS.convert(newTime, MILLISECONDS));
             }
-
-            pipeline.play();
         }
     }
 

@@ -2,54 +2,53 @@ package org.openshapa.views.continuous.gstreamer;
 
 import java.awt.Frame;
 
-import java.io.File;
+import java.io.FileFilter;
 
 import java.net.URL;
 
+import java.util.List;
+
 import javax.swing.ImageIcon;
-import javax.swing.filechooser.FileFilter;
+
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 
 import org.openshapa.views.continuous.DataViewer;
+import org.openshapa.views.continuous.Filter;
+import org.openshapa.views.continuous.FilterNames;
 import org.openshapa.views.continuous.Plugin;
+
+import com.google.common.collect.Lists;
 
 
 public class GStreamerPlugin implements Plugin {
 
-    private final FileFilter filter = new FileFilter() {
+    private static final Filter VIDEO_FILTER = new Filter() {
+            final SuffixFileFilter ff;
+            final List<String> ext;
 
-            /**
-             * @return The description of the file filter.
-             */
-            public String getDescription() {
-                return "Movie files";
+            {
+                ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mpeg",
+                        ".mp4");
+                ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
             }
 
-            /**
-             * Determines if the file filter will accept the supplied file.
-             *
-             * @param file The file to check if this file will accept.
-             *
-             * @return true if the file is to be accepted, false otherwise.
-             */
-            @Override public boolean accept(final File file) {
-                return (file.getName().endsWith(".mov")
-                        || file.getName().endsWith(".avi")
-                        || file.getName().endsWith(".mpg")
-                        || file.getName().endsWith(".mpeg")
-                        || file.getName().endsWith(".mp4")
-                        || file.isDirectory());
+            @Override public FileFilter getFileFilter() {
+                return ff;
+            }
+
+            @Override public String getName() {
+                return FilterNames.VIDEO.getFilterName();
+            }
+
+            @Override public Iterable<String> getExtensions() {
+                return ext;
             }
         };
 
     @Override public DataViewer getNewDataViewer(final Frame parent,
         final boolean modal) {
-
-        // TODO Auto-generated method stub
         return new GStreamerDataViewer(parent, modal);
-    }
-
-    @Override public FileFilter getFileFilter() {
-        return filter;
     }
 
     @Override public ImageIcon getTypeIcon() {
@@ -62,4 +61,13 @@ public class GStreamerPlugin implements Plugin {
     @Override public String getClassifier() {
         return "openshapa.video";
     }
+
+    @Override public Filter[] getFilters() {
+        return new Filter[] { VIDEO_FILTER };
+    }
+
+    @Override public String getPluginName() {
+        return "GStreamer Video";
+    }
+
 }

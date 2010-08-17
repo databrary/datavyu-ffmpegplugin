@@ -23,6 +23,8 @@ import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
@@ -47,11 +49,14 @@ import org.openshapa.models.id.Identifier;
 import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.ClockTimer;
-import org.openshapa.util.FloatUtils;
 import org.openshapa.util.ClockTimer.ClockListener;
+import org.openshapa.util.FloatUtils;
 
-import org.openshapa.views.OpenSHAPAFileChooser;
+import org.openshapa.views.LinuxJFC;
+import org.openshapa.views.MacOSJFC;
 import org.openshapa.views.PlaybackV;
+import org.openshapa.views.PluginChooser;
+import org.openshapa.views.WindowsJFC;
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
@@ -214,7 +219,6 @@ public final class PlaybackController implements PlaybackListener,
         playbackModel.setWindowPlayStart(0);
         playbackModel.setWindowPlayEnd(defaultEndTime);
 
-
         mixerController = new MixerController();
         mixerController.addTracksControllerListener(this);
 
@@ -234,25 +238,50 @@ public final class PlaybackController implements PlaybackListener,
         Runnable task = new Runnable() {
 
                 public void run() {
-                    OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
-                    PluginManager pm = PluginManager.getInstance();
+                    PluginChooser chooser = null;
 
-                    // Add file filters for each of the supported plugins.
-                    for (FileFilter f : pm.getPluginFileFilters()) {
-                        jd.addChoosableFileFilter(f);
+                    // TODO finish this
+                    switch (OpenSHAPA.getPlatform()) {
+
+                    case WINDOWS:
+                        chooser = new WindowsJFC();
+
+                        break;
+
+                    case MAC:
+                        chooser = new MacOSJFC();
+
+                        break;
+
+                    case LINUX:
+                        chooser = new LinuxJFC();
+
+                        break;
+
+                    default:
+                        throw new NotImplementedException(
+                            "Plugin chooser unimplemented.");
+                    }
+
+                    PluginManager pm = PluginManager.getInstance();
+                    chooser.addPlugin(pm.getPlugins());
+
+                    for (FileFilter ff : pm.getFileFilters()) {
+                        chooser.addChoosableFileFilter(ff);
                     }
 
                     if (JFileChooser.APPROVE_OPTION
-                            == jd.showOpenDialog(playbackView)) {
-                        openVideo(jd);
+                            == chooser.showOpenDialog(playbackView)) {
+                        openVideo(chooser);
                     }
                 }
             };
 
-        if (!SwingUtilities.isEventDispatchThread()) {
+        if (SwingUtilities.isEventDispatchThread()) {
             task.run();
         } else {
-            executor.submit(task);
+            SwingUtilities.invokeLater(task);
+            // executor.submit(task);
         }
     }
 
@@ -412,7 +441,7 @@ public final class PlaybackController implements PlaybackListener,
 
     public void newCellEvent(final PlaybackEvent evt) {
         // TODO: Uncomment in the EDT branch.
-//        executor.submit(new CreateNewCellC());
+        // executor.submit(new CreateNewCellC());
     }
 
     public void setNewCellOffsetEvent(final PlaybackEvent evt) {
@@ -436,7 +465,7 @@ public final class PlaybackController implements PlaybackListener,
             new CreateNewCellC(getCurrentTime());
         } else {
             // TODO: Uncomment in the EDT branch.
-//            executor.submit(new CreateNewCellC(getCurrentTimeEDT()));
+            // executor.submit(new CreateNewCellC(getCurrentTimeEDT()));
         }
     }
 
@@ -761,7 +790,6 @@ public final class PlaybackController implements PlaybackListener,
         setCurrentTime(playTime);
     }
 
-
     /**
      * @param time
      *            Current clock time in milliseconds.
@@ -812,7 +840,6 @@ public final class PlaybackController implements PlaybackListener,
                             v.stop();
                         }
 
-
                         /*
                          * Only synchronise the data viewers if we have a
                          * noticable drift.
@@ -856,8 +883,11 @@ public final class PlaybackController implements PlaybackListener,
 
     /**
      * Determines whether a DataViewer has data for the desired time.
-     * @param time The time we wish to play at or seek to.
-     * @param view The DataViewer to check.
+     *
+     * @param time
+     *            The time we wish to play at or seek to.
+     * @param view
+     *            The DataViewer to check.
      * @return True if data exists at this time, and false otherwise.
      */
     private boolean isWithinPlayRange(final long time, final DataViewer view) {
@@ -1077,7 +1107,6 @@ public final class PlaybackController implements PlaybackListener,
         return removed;
     }
 
-
     /**
      * Returns set of dataviewers.
      *
@@ -1135,8 +1164,10 @@ public final class PlaybackController implements PlaybackListener,
     /**
      * Add a viewer to the data controller with the given offset.
      *
-     * @param viewer The data viewer to add.
-     * @param offset The offset value in milliseconds.
+     * @param viewer
+     *            The data viewer to add.
+     * @param offset
+     *            The offset value in milliseconds.
      */
     public void addViewer(final DataViewer viewer, final long offset) {
 
@@ -1144,7 +1175,8 @@ public final class PlaybackController implements PlaybackListener,
 
                 public void run() {
 
-                    // Add the QTDataViewer to the list of viewers we are controlling.
+                    // Add the QTDataViewer to the list of viewers we are
+                    // controlling.
                     viewers.add(viewer);
                     viewer.setParentController(PlaybackController.this);
                     viewer.setOffset(offset);
@@ -1190,7 +1222,8 @@ public final class PlaybackController implements PlaybackListener,
     /**
      * Handler for a TracksControllerEvent.
      *
-     * @param e event
+     * @param e
+     *            event
      */
     public void tracksControllerChanged(final TracksControllerEvent e) {
 
@@ -1237,7 +1270,6 @@ public final class PlaybackController implements PlaybackListener,
     public void pressForward() {
         playbackView.pressForward();
     }
-
 
     /** Simulates rewind button clicked. */
     public void pressRewind() {
@@ -1349,7 +1381,6 @@ public final class PlaybackController implements PlaybackListener,
 
         SwingUtilities.invokeLater(edtTask);
     }
-
 
     /**
      * Action to invoke when the user holds shift down.
@@ -1465,30 +1496,36 @@ public final class PlaybackController implements PlaybackListener,
     /**
      * Handles opening a data source.
      *
-     * @param jd The file chooser used to open the data source.
+     * @param jd
+     *            The file chooser used to open the data source.
      */
-    private void openVideo(final OpenSHAPAFileChooser jd) {
-        assert !SwingUtilities.isEventDispatchThread();
-
-        PluginManager pm = PluginManager.getInstance();
-
-        File f = jd.getSelectedFile();
-        FileFilter ff = jd.getFileFilter();
-        Plugin plugin = pm.getAssociatedPlugin(ff);
+    private void openVideo(final PluginChooser chooser) {
+        final Plugin plugin = chooser.getSelectedPlugin();
+        final File f = chooser.getSelectedFile();
 
         if (plugin != null) {
-            DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
-                    .getApplication().getMainFrame(), false);
-            dataViewer.setIdentifier(IDController.generateIdentifier());
-            dataViewer.setDataFeed(f);
-            dataViewer.seekTo(clock.getTime());
-            addDataViewer(plugin.getTypeIcon(), dataViewer, f,
-                dataViewer.getTrackPainter());
-            mixerController.bindTrackActions(dataViewer.getIdentifier(),
-                dataViewer.getCustomActions());
-            dataViewer.addViewerStateListener(
-                mixerController.getTracksEditorController()
-                    .getViewerStateListener(dataViewer.getIdentifier()));
+            executor.submit(new Runnable() {
+                    @Override public void run() {
+                        DataViewer dataViewer = plugin.getNewDataViewer(
+                                OpenSHAPA.getApplication().getMainFrame(),
+                                false);
+                        dataViewer.setIdentifier(
+                            IDController.generateIdentifier());
+                        dataViewer.setDataFeed(f);
+                        dataViewer.setSimpleDatabase(
+                            OpenSHAPA.getProjectController().getSimpleDB());
+                        dataViewer.seekTo(clock.getTime());
+                        addDataViewer(plugin.getTypeIcon(), dataViewer, f,
+                            dataViewer.getTrackPainter());
+                        mixerController.bindTrackActions(
+                            dataViewer.getIdentifier(),
+                            dataViewer.getCustomActions());
+                        dataViewer.addViewerStateListener(
+                            mixerController.getTracksEditorController()
+                                .getViewerStateListener(
+                                    dataViewer.getIdentifier()));
+                    }
+                });
         }
     }
 
@@ -1643,8 +1680,10 @@ public final class PlaybackController implements PlaybackListener,
     /**
      * Helper method for handling the end region marker event.
      *
-     * @param newWindowTime New region marker time.
-     * @param tracksTime Current time.
+     * @param newWindowTime
+     *            New region marker time.
+     * @param tracksTime
+     *            Current time.
      */
     private void handleEndMarkerEvent(final long newWindowTime,
         final long tracksTime) {
@@ -1676,8 +1715,10 @@ public final class PlaybackController implements PlaybackListener,
     /**
      * Helper method for handling the start region marker event.
      *
-     * @param newWindowTime New region marker time.
-     * @param tracksTime Current time.
+     * @param newWindowTime
+     *            New region marker time.
+     * @param tracksTime
+     *            Current time.
      */
     private void handleStartMarkerEvent(final long newWindowTime,
         final long tracksTime) {
@@ -1747,8 +1788,8 @@ public final class PlaybackController implements PlaybackListener,
             File feed = viewer.getDataFeed();
 
             /*
-             * Found our data viewer, update the DV offset and the settings
-             * in the project file.
+             * Found our data viewer, update the DV offset and the settings in
+             * the project file.
              */
             if (feed.getAbsolutePath().equals(e.getTrackId())) {
                 viewer.setOffset(e.getOffset());
@@ -1777,7 +1818,6 @@ public final class PlaybackController implements PlaybackListener,
             playbackModel.setWindowPlayEnd(maxDuration);
             mixerController.setPlayRegionEnd(maxDuration);
         }
-
 
         if (playbackModel.getWindowPlayStart()
                 > playbackModel.getWindowPlayEnd()) {

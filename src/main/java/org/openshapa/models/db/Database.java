@@ -7,6 +7,7 @@
 
 package org.openshapa.models.db;
 
+import java.util.List;
 import org.openshapa.OpenSHAPA;
 
 /**
@@ -1879,7 +1880,10 @@ public abstract class Database
 
         return this.cl.getDataColumns();
 
-    } /* Database::getDataColumns() */
+    }
+
+
+    /* Database::getDataColumns() */
 
 
     // getReferenceColumns()

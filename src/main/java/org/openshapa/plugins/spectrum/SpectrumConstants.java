@@ -33,11 +33,9 @@ public class SpectrumConstants {
     /**
      * Number of spectrum updates to display in a second. Must divide 1000
      * evenly. Only used for the jog functionality. This value was chosen
-     * through trial-and-error. Larger values will not necessarily result
-     * in an update. This is because the FFT cannot produce anything meaningful
-     * from a very small buffer of values.
+     * through trial-and-error.
      */
-    public static final int FPS = 4;
+    public static final int FPS = 8;
 
     /**
      * GStreamer spectrum plugin message interval. This is only used for the

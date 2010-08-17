@@ -33,7 +33,8 @@ import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Plugin;
 
 import com.google.common.collect.Lists;
-
+import org.openshapa.controllers.database.MacshapaDatabaseAdapter;
+import org.openshapa.models.db.SimpleDatabase;
 
 /**
  * This class is responsible for managing a project.
@@ -44,7 +45,7 @@ public final class ProjectController {
     private Project project;
 
     /** The current database we are working on. */
-    private MacshapaDatabase db;
+    private MacshapaDatabaseAdapter dbAdapt;
 
     /** The id of the last datacell that was created. */
     private long lastCreatedCellID;
@@ -116,22 +117,41 @@ public final class ProjectController {
     }
 
     /**
-     * Sets the database associated with this project.
+     * Sets the database adapter associated with this project. Should eventually
+     * be replaced by a SimpleDatabase.
      *
-     * @param newDB
-     *            The new database to use with this project.
+     * @param newDBAdapt The new database to use with this project.
      */
-    public void setDatabase(final MacshapaDatabase newDB) {
-        db = newDB;
+    public void setDatabaseAdapter(final MacshapaDatabaseAdapter newDBAdapt) {
+        dbAdapt = newDBAdapt;
     }
 
     /**
-     * Gets the database associated with this project.
+     * Gets the MacshapaDatabase associated with this project. Should eventually
+     * be replaced with a SimpleDatabase.
      *
      * @return The single database to use with this project.
      */
+    @Deprecated
     public MacshapaDatabase getDB() {
-        return db;
+        return dbAdapt.getDatabase();
+    }
+
+    /**
+     * Sets the MacshapaDatabase to use with this project. This is used when
+     * loading a Database from file.
+     * @param newDB The new MacshapaDatabase to use.
+     */
+    @Deprecated
+    public void setDatabase(MacshapaDatabase newDB) {
+        dbAdapt.setDatabase(newDB);
+    }
+
+    /**
+     * @return The underlying adapter as a SimpleDatabase.
+     */
+    public SimpleDatabase getSimpleDB() {
+        return dbAdapt;
     }
 
     /**
@@ -161,8 +181,7 @@ public final class ProjectController {
     /**
      * Sets the id of the last selected cell to the specified parameter.
      *
-     * @param newId
-     *            The id of hte newly selected cell.
+     * @param newId The id of the newly selected cell.
      */
     public void setLastSelectedCellId(final long newId) {
         lastSelectedCellID = newId;
@@ -189,6 +208,8 @@ public final class ProjectController {
      * @return the changed
      */
     public boolean isChanged() {
+
+        MacshapaDatabase db = dbAdapt.getDatabase();
 
         if (OpenSHAPA.getApplication().getCanSetUnsaved()) {
             return (changed || ((db != null) && db.isChanged()));
@@ -329,6 +350,7 @@ public final class ProjectController {
                     .getApplication().getMainFrame(), false);
             viewer.setIdentifier(IDController.generateIdentifier());
             viewer.setDataFeed(file);
+            viewer.setSimpleDatabase(dbAdapt);
 
             if (setting.getSettingsId() != null) {
 

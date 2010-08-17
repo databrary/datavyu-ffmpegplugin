@@ -2,8 +2,10 @@ package org.openshapa.plugins;
 
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 import com.usermetrix.jclient.Logger;
 
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -31,6 +34,7 @@ import org.jdesktop.application.LocalStorage;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.views.continuous.Filter;
 import org.openshapa.views.continuous.Plugin;
 
 import com.usermetrix.jclient.UserMetrix;
@@ -67,23 +71,27 @@ public final class PluginManager {
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(PluginManager.class);
 
-    /** The list of plugins associated with file filter. */
-    private Map<FileFilter, Plugin> plugins;
+    /** Set of plugins. */
+    private Set<Plugin> plugins;
+
+    /** Mapping between plugin classifiers and plugins. */
+    private Multimap<String, Plugin> pluginClassifiers;
 
     /** The list of plugins associated with data viewer class name. */
     private Map<String, Plugin> pluginLookup;
 
-    /** Mapping between plugin classifiers and plugins. */
-    private Multimap<String, Plugin> pluginClassifiers;
+    /** Merged file filters for plugins of the same name. */
+    private Map<String, GroupFileFilter> filters;
 
     /**
      * Default constructor. Searches for valid plugins ... currently scans the
      * classpath looking for classes that implement the plugin interface.
      */
     private PluginManager() {
-        plugins = Maps.newHashMap();
+        plugins = Sets.newLinkedHashSet();
         pluginLookup = Maps.newHashMap();
         pluginClassifiers = HashMultimap.create();
+        filters = Maps.newLinkedHashMap();
         initialize();
     }
 
@@ -287,7 +295,15 @@ public final class PluginManager {
 
                 if (PLUGIN_CLASS.isAssignableFrom(testClass)) {
                     Plugin p = (Plugin) testClass.newInstance();
-                    plugins.put(p.getFileFilter(), p);
+
+                    buildGroupFilter(p);
+
+                    // Just make sure that we have at least one file filter.
+                    assert p.getFilters() != null;
+                    assert p.getFilters().length > 0;
+                    assert p.getFilters()[0] != null;
+
+                    plugins.add(p);
 
                     // BugzID:2110
                     pluginClassifiers.put(p.getClassifier(), p);
@@ -310,27 +326,28 @@ public final class PluginManager {
         }
     }
 
-    /**
-     * @return A list of all the filefilters representing viewer plugins.
-     */
-    public Iterable<FileFilter> getPluginFileFilters() {
+    private void buildGroupFilter(final Plugin p) {
 
-        // Sort the file filters to create a default filter.
-        List<FileFilter> result = new ArrayList<FileFilter>();
-        FileFilter defaultFilter = pluginLookup.get(DEFAULT_VIEW)
-            .getFileFilter();
+        for (Filter f : p.getFilters()) {
+            GroupFileFilter g;
 
-        for (FileFilter f : plugins.keySet()) {
-
-            // BugzID:749 - force movie filter to be default filter.
-            if (f.equals(defaultFilter)) {
-                result.add(f);
+            if (filters.containsKey(f.getName())) {
+                g = filters.get(f.getName());
             } else {
-                result.add(0, f);
+                g = new GroupFileFilter(f.getName());
+                filters.put(f.getName(), g);
             }
-        }
 
-        return result;
+            g.addFileFilter(f);
+        }
+    }
+
+    public Iterable<? extends FileFilter> getFileFilters() {
+        return filters.values();
+    }
+
+    public Iterable<Plugin> getPlugins() {
+        return ImmutableSet.copyOf(plugins);
     }
 
     /**
@@ -348,8 +365,11 @@ public final class PluginManager {
 
         for (Plugin candidate : pluginClassifiers.get(classifier)) {
 
-            if (candidate.getFileFilter().accept(file)) {
-                return candidate;
+            for (Filter filter : candidate.getFilters()) {
+
+                if (filter.getFileFilter().accept(file)) {
+                    return candidate;
+                }
             }
         }
 
@@ -367,13 +387,4 @@ public final class PluginManager {
         return pluginLookup.get(dataViewer);
     }
 
-    /**
-     * @param ff
-     *            file filter used to identify plugin type
-     * @return A {@link Plugin} if the given file filter is associated with a
-     *         registered plugin, {@code null} otherwise.
-     */
-    public Plugin getAssociatedPlugin(final FileFilter ff) {
-        return plugins.get(ff);
-    }
 }
