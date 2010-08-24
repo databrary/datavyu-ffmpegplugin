@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
+import java.awt.KeyEventDispatcher;
 import java.util.ArrayList;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -37,24 +38,19 @@ import org.openshapa.views.discrete.datavalues.vocabelements.FormalArgEditor;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.event.InputEvent;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
+import java.util.Stack;
 import org.openshapa.models.db.ExternalColumnListListener;
-import org.openshapa.models.db.ExternalDataColumnListener;
-import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementRootView;
+import org.openshapa.views.discrete.datavalues.vocabelements.VENameEditor;
 
 /**
  * A view for editing the database vocab.
  */
 public final class VocabEditorV extends OpenSHAPADialog implements
-        ExternalColumnListListener, ExternalDataColumnListener{
+        ExternalColumnListListener{
 
     /** The database that this vocab editor is manipulating. */
     private Database db;
@@ -68,8 +64,6 @@ public final class VocabEditorV extends OpenSHAPADialog implements
     private int selectedArgumentI;
     /** The collection of vocab element views in the current vocab listing. */
     private Vector<VocabElementV> veViews;
-    /** Collection of vocab element views that are to be deleted completely. */
-    private Vector<VocabElementV> veViewsToDeleteCompletely;
     /** Vertical frame for holding the current listing of Vocab elements. */
     private JPanel verticalFrame;
     /** Counter used to increment the new predicate name. */
@@ -77,9 +71,11 @@ public final class VocabEditorV extends OpenSHAPADialog implements
     /** Counter used to increment the new matrix name. */
     private int numNewMats;
     /** Array of veViews used to track changes for the undo function */
-    private Vector<Vector<VocabElementV>> changes;
-    /** the current location within the changes array */
-    private int changeIndex;
+    private Stack<Vector<VocabElementV>> undoStack;
+    private Stack<Vector<VocabElementV>> redoStack;
+
+    /** The handler for all keyboard shortcuts */
+    private KeyEventDispatcher ked;
 
    // private static Color lightBlue = new Color(224,248,255,255);
 
@@ -105,18 +101,68 @@ public final class VocabEditorV extends OpenSHAPADialog implements
         selectedArgumentI = -1;
         numNewPreds = 1;
         numNewMats = 1;
+        undoStack = new Stack();
+        redoStack = new Stack();
 
-        changes = new Vector<Vector<VocabElementV>>();
-        changeIndex = -1;
+        KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        kfm.addKeyEventDispatcher(
+        ked = new KeyEventDispatcher(){
+            @Override
+            public boolean dispatchKeyEvent(final KeyEvent ke){
+
+                boolean result = false;
+                //determine what key was pressed
+                if(ke.getID()== KeyEvent.KEY_RELEASED){
+                    switch (ke.getKeyCode()){
+                        case KeyEvent.VK_ENTER:
+                            ok();
+                            break;
+                        case KeyEvent.VK_ESCAPE:
+                            closeWindow();
+                            break;
+                    }
+                }
+                if(ke.isControlDown() && (ke.getID()== KeyEvent.KEY_RELEASED)){
+                    switch(ke.getKeyCode()){
+                        case KeyEvent.VK_M:
+                            addMatrix();
+                            break;
+                        case KeyEvent.VK_P:
+                            addPredicate();
+                            break;
+                        case KeyEvent.VK_A:
+                            if(selectedVocabElement!=null){addArgument();}
+                            break;
+                        case KeyEvent.VK_Z:
+                            //undoChange();
+                            break;
+                        case KeyEvent.VK_Y:
+                            //redoChange();
+                            break;
+                        case KeyEvent.VK_S:
+                            applyChanges();
+                            break;
+                        case KeyEvent.VK_DELETE:
+                            delete();
+                            break;
+                        default:
+                            result = false;
+                    }
+                }
+
+                if(result)
+                    ke.consume();
+
+                return result;
+            }
+        });
+
 
         // Populate current vocab list with vocab data from the database.
         veViews = new Vector<VocabElementV>();
-        veViewsToDeleteCompletely = new Vector<VocabElementV>();
         verticalFrame = new JPanel();
         verticalFrame.setName("verticalFrame");
         verticalFrame.setLayout(new BoxLayout(verticalFrame, BoxLayout.Y_AXIS));
-        
-        saveState();
 
         try {
             Vector<MatrixVocabElement> matVEs = db.getMatrixVEs();
@@ -151,6 +197,8 @@ public final class VocabEditorV extends OpenSHAPADialog implements
 
         // Hide all the broken stuff.
         varyArgCheckBox.setVisible(false);
+        undoButton.setVisible(false);
+        redoButton.setVisible(false);
     }
 
     /**
@@ -168,7 +216,6 @@ public final class VocabEditorV extends OpenSHAPADialog implements
         } catch (SystemErrorException e) {
             logger.error("Unable to create predicate vocab element", e);
         }
-
         updateDialogState();
     }
 
@@ -187,8 +234,13 @@ public final class VocabEditorV extends OpenSHAPADialog implements
         } catch (SystemErrorException e) {
             logger.error("Unable to create matrix vocab element", e);
         }
-
         updateDialogState();
+    }
+
+    public void disposeAll() {
+        KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        kfm.removeKeyEventDispatcher(ked);
+        dispose();
     }
 
     /**
@@ -203,7 +255,7 @@ public final class VocabEditorV extends OpenSHAPADialog implements
             throws SystemErrorException {
         // The database dictates that vocab elements must have a single argument
         // add a default to get started.
-        
+        saveState();
         ve.appendFormalArg(new NominalFormalArg(db, "<arg0>"));
 
         VocabElementV vev = new VocabElementV(ve, this);
@@ -216,11 +268,13 @@ public final class VocabEditorV extends OpenSHAPADialog implements
             @Override
             public void keyReleased(KeyEvent ke){
                 if(ke.isShiftDown()){
-                    if(ke.getKeyCode()==KeyEvent.VK_GREATER|| ke.getKeyCode()==KeyEvent.VK_LESS){
+                    if(ke.getKeyCode()==KeyEvent.VK_COMMA|| ke.getKeyCode()==KeyEvent.VK_PERIOD){
                         addArgument();
                     }
                 }
-                else if(ke.getKeyCode()==KeyEvent.VK_COMMA){
+                else if(ke.getKeyCode()==KeyEvent.VK_COMMA || 
+                        ke.getKeyCode()==KeyEvent.VK_LEFT_PARENTHESIS ||
+                        ke.getKeyCode()==KeyEvent.VK_RIGHT_PARENTHESIS){
                     addArgument();
                 }
                 if(ke.getKeyCode()== KeyEvent.VK_LEFT){
@@ -236,11 +290,12 @@ public final class VocabEditorV extends OpenSHAPADialog implements
             }
         });
 
-        saveState();
+        
 
         // add the current vocab list state to an array of states for undo/redo
-        
-        vev.requestFocus();
+        VENameEditor veNEd = vev.getNameComponent();
+        vev.requestFocus(veNEd);
+
     }
 
     /**
@@ -249,6 +304,7 @@ public final class VocabEditorV extends OpenSHAPADialog implements
     @Action
     public void moveArgumentLeft() {
         try {
+            saveState();
             logger.error("vocEd - move argument left");
             VocabElement ve = selectedVocabElement.getModel();
             ve.deleteFormalArg(selectedArgumentI);
@@ -257,7 +313,10 @@ public final class VocabEditorV extends OpenSHAPADialog implements
             selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
 
-            saveState();
+            selectedVocabElement.requestFocus();
+            FormalArgument fa = ve.getFormalArgCopy(selectedArgumentI-1);
+            selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(fa));
+
             updateDialogState();
         } catch (SystemErrorException e) {
             logger.error("Unable to move formal argument left", e);
@@ -270,6 +329,7 @@ public final class VocabEditorV extends OpenSHAPADialog implements
     @Action
     public void moveArgumentRight() {
         try {
+            saveState();
             logger.error("vocEd - move argument right");
             VocabElement ve = selectedVocabElement.getModel();
             ve.deleteFormalArg(selectedArgumentI);
@@ -278,7 +338,10 @@ public final class VocabEditorV extends OpenSHAPADialog implements
             selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
 
-            saveState();
+            selectedVocabElement.requestFocus();
+            FormalArgument fa = ve.getFormalArgCopy(selectedArgumentI+1);
+            selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(fa));
+
             updateDialogState();
         } catch (SystemErrorException e) {
             logger.error("Unable to move formal argument right", e);
@@ -291,7 +354,7 @@ public final class VocabEditorV extends OpenSHAPADialog implements
     @Action
     public void addArgument() {
         try {
-            
+            saveState();
             VocabElement ve = selectedVocabElement.getModel();
             String type = (String) argTypeComboBox.getSelectedItem();
             logger.usage("vocEd - add argument:" + type);
@@ -312,12 +375,10 @@ public final class VocabEditorV extends OpenSHAPADialog implements
             selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
 
-            saveState();
-
             // Select the contents of the newly created formal argument.
-
-            //FormalArgEditor faV = selectedVocabElement.getArgumentView(fa);
-            //faV.requestFocus();
+            selectedVocabElement.requestFocus();
+            FormalArgEditor faV = selectedVocabElement.getArgumentView(fa);
+            selectedVocabElement.requestArgFocus(faV);
             updateDialogState();
             
         } catch (SystemErrorException e) {
@@ -347,17 +408,24 @@ public final class VocabEditorV extends OpenSHAPADialog implements
      */
     @Action
     public void delete() {
-        // User has vocab element selected - mark it for deletion.
+        // User has vocab element selected - delete it from the editor.
         if (selectedVocabElement != null && selectedArgument == null) {
-            logger.usage("vocEd - delete element");
-            veViewsToDeleteCompletely.add(selectedVocabElement);
-            selectedVocabElement.setDeleted(true);
-
-            // User has argument selected - delete it from the vocab element.
+                saveState();
+                logger.usage("vocEd - delete element");
+                try{
+                    db.removeVocabElement(selectedVocabElement.getModel().getID());
+                }
+                catch(Exception e){}
+                verticalFrame.remove(selectedVocabElement);
+                veViews.remove(selectedVocabElement);
+                veViews.get(0).requestFocus();
+                verticalFrame.revalidate();
+                // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
             logger.usage("vocEd - delete argument");
             VocabElement ve = selectedVocabElement.getModel();
             try {
+                saveState();
                 ve.deleteFormalArg(selectedArgumentI);
                 selectedVocabElement.setHasChanged(true);
                 selectedVocabElement.rebuildContents();
@@ -365,7 +433,7 @@ public final class VocabEditorV extends OpenSHAPADialog implements
                 logger.error("Unable to selected argument", e);
             }
         }
-        saveState();
+
         updateDialogState();
     }
 
@@ -457,6 +525,7 @@ public final class VocabEditorV extends OpenSHAPADialog implements
                                 mve.appendFormalArg(ve.getFormalArgCopy(i));
                             }
                             db.replaceVocabElement(mve);
+                            mve = db.getMatrixVE(mve.getID());
                             vev.setModel(mve);
 
                             // Otherwise just a predicate - add the new vocab
@@ -468,29 +537,21 @@ public final class VocabEditorV extends OpenSHAPADialog implements
 
                     } else {
                         db.replaceVocabElement(ve);
+                        ve = db.getMatrixVE(ve.getID());
+                        vev.setModel(ve);
                     }
                     vev.setHasChanged(false);
                 }
             }
-            /** trying to delete an unapplied ve results in errors
-             *  as it cant be found in db
-             */
-            for (VocabElementV view : veViewsToDeleteCompletely) {
-                db.removeVocabElement(view.getModel().getID());
-                verticalFrame.remove(view);
-                veViews.remove(view);
-            }
 
-            veViewsToDeleteCompletely.clear();
+            redoStack.clear();
+            undoStack.clear();
+
             updateDialogState();
             ((OpenSHAPAView) OpenSHAPA.getApplication().getMainView())
                     .showSpreadsheet();
 
-            changeIndex =-1;
-            for(Vector<VocabElementV> veView : changes){
-                veView.clear();
-                veView = null;
-            }
+
 
         } catch (SystemErrorException e) {
             logger.error("Unable to apply vocab changes", e);
@@ -507,7 +568,7 @@ public final class VocabEditorV extends OpenSHAPADialog implements
         logger.usage("vocEd - ok");
         applyChanges();
         try {
-            dispose();
+            disposeAll();
             finalize();
         } catch (Throwable e) {
             logger.error("Unable to destroy vocab editor view.", e);
@@ -521,8 +582,9 @@ public final class VocabEditorV extends OpenSHAPADialog implements
     public void closeWindow() {
         logger.usage("vocEd - close");
         try {
-            dispose();
+            disposeAll();
             finalize();
+
         } catch (Throwable e) {
             logger.error("Unable to destroy vocab editor view.", e);
         }
@@ -547,7 +609,7 @@ public final class VocabEditorV extends OpenSHAPADialog implements
                         .getResourceMap(VocabEditorV.class);
 
         boolean containsC = false;
-        //selectedVocabElement = null;
+        selectedVocabElement = null;
         selectedArgument = null;
 
         for (VocabElementV vev : veViews) {
@@ -564,22 +626,20 @@ public final class VocabEditorV extends OpenSHAPADialog implements
         }
 
         // Determine if undo/redo buttons are enabled
-        if(changeIndex >= 0){
-            undoButton.setEnabled(true);
-        }else{
+        if(undoStack.empty()){
             undoButton.setEnabled(false);
-        }
-        if(changeIndex<changes.size()-1){
-            redoButton.setEnabled(true);
         }else{
+            undoButton.setEnabled(true);
+        }
+        if(redoStack.empty()){
             redoButton.setEnabled(false);
+        }else{
+            redoButton.setEnabled(true);
         }
 
         if (containsC) {
             closeButton.setText(rMap.getString("closeButton.cancelText"));
             closeButton.setToolTipText(rMap.getString("closeButton.cancelTip"));
-
-
 
             revertButton.setEnabled(true);
             applyButton.setEnabled(true);
@@ -589,8 +649,6 @@ public final class VocabEditorV extends OpenSHAPADialog implements
             closeButton.setText(rMap.getString("closeButton.cancelText"));
             closeButton.setToolTipText(rMap.getString("closeButton.cancelTip"));
             
-            undoButton.setEnabled(false);
-            redoButton.setEnabled(false);
             revertButton.setEnabled(false);
             applyButton.setEnabled(false);
             okButton.setEnabled(false);
@@ -608,7 +666,6 @@ public final class VocabEditorV extends OpenSHAPADialog implements
         } else {
             addArgButton.setEnabled(false);
             argTypeComboBox.setEnabled(false);
-            varyArgCheckBox.setEnabled(false);
             deleteButton.setEnabled(false);
         }
 
@@ -998,7 +1055,6 @@ public final class VocabEditorV extends OpenSHAPADialog implements
             long veID = newdb.getDataColumn(colID).getItsMveID();
             if(db.vocabElementExists(veID)){
                 VocabElement ve = db.getVocabElement(veID);
-                //db.removeVocabElement(veID);
                 for(int i=ve.getNumFormalArgs()-1; i>= 0; i--){
                     ve.deleteFormalArg(i);
                 }
@@ -1007,7 +1063,7 @@ public final class VocabEditorV extends OpenSHAPADialog implements
                     long vID = view.getModel().getID();
                     if(vID == veID){
                         verticalFrame.remove(delIndex);
-                        verticalFrame.validate();
+                        verticalFrame.revalidate();
                         veViews.remove(delIndex);
                         break;  // only ever delete one element & avoid breaking loop
                     }
@@ -1038,7 +1094,7 @@ public final class VocabEditorV extends OpenSHAPADialog implements
                 ve.appendFormalArg(new NominalFormalArg(db,"<arg0>"));
                 VocabElementV vev = new VocabElementV(ve, this);
                 verticalFrame.add(vev);
-                verticalFrame.validate();
+                verticalFrame.revalidate();
                 veViews.add(vev);
             }
         } catch (SystemErrorException ex) {
@@ -1061,136 +1117,48 @@ public final class VocabEditorV extends OpenSHAPADialog implements
                     statusBar.setText("Cancel all changes and close the editor");
                 }
                 else if(component.equals("addPredicateButton")){
-                    statusBar.setText("Add a new predicate variable. Hotkey: ctrl + p");
+                    statusBar.setText("Add a new predicate variable. Hotkey: ctrl + P");
                 }
                 else if(component.equals("addMatrixButton")){
-                    statusBar.setText("Add a new matrix variable. Hotkey: ctrl + m");
+                    statusBar.setText("Add a new matrix variable. Hotkey: ctrl + M");
                 }
                 else if(component.equals("undoButton")){
-                    statusBar.setText("Undo a series of changes. Hotkey: ctrl + z");
+                    statusBar.setText("Undo a series of changes. Hotkey: ctrl + Z");
                 }
                 else if(component.equals("redoButton")){
-                    statusBar.setText("Redo any undone changes. Hotkey: ctrl + y");
+                    statusBar.setText("Redo any undone changes. Hotkey: ctrl + Y");
                 }
                 else if(component.equals("addArgButton")){
-                    statusBar.setText("Add a new argument to a variable. Hotkey: ctrl + a");
+                    statusBar.setText("Add a new argument to a variable. Hotkey: ctrl + A");
                 }
                 else if(component.equals("deleteButton")){
-                    statusBar.setText("Delete an argument or variable. Hotkey: delete");
+                    statusBar.setText("Delete an argument or variable. Hotkey: ctrl + delete");
                 }
                 else if(component.equals("moveArgLeftButton")){
-                    statusBar.setText("Move an argument left within a variable. Hotkey: something");
+                    statusBar.setText("Move an argument left within a variable. Hotkey: ctrl + <-");
                 }
                 else if(component.equals("applyButton")){
-                    statusBar.setText("Apply changes to the vocab elements. Hotkey: ctrl + s");
-                }
-                else if(component.equals("revertButton")){
-                    statusBar.setText("Remove all unsaved changes. Hotkey: ctrl + d");
+                    statusBar.setText("Apply changes to the vocab elements. Hotkey: ctrl + S");
                 }
                 else if(component.equals("varyArgCheckBox")){
-                    statusBar.setText("Make the variable varying args.");
+                    statusBar.setText("Let the variable have a varying number of arguments.");
                 }
                 else if(component.equals("moveArgRightButton")){
-                    statusBar.setText("Move an argument right within a variable. Hotkey: something");
+                    statusBar.setText("Move an argument right within a variable. Hotkey: ctrl + ->");
                 }
                 else if(component.equals("okButton")){
                     statusBar.setText("Save changes and close the window.");
                 }
                 else if(component.equals("argTypeComboBox")){
                     statusBar.setText("Select the argument type.");
-                }
-                
+                }       
             }
             @Override
             public void mouseExited(MouseEvent me){
                 statusBar.setText(" ");
-                //String component = me.getComponent().getName();
-                //if(component.equals("currentVocabList")){
-                //   veViews.get(0).setBackground(Color.white);
-                //}
             }
-            /*@Override
-            public void mouseClicked(MouseEvent me){
-                if(me.getComponent().getName().equals("currentVocabList")){
-                    int a = (int) currentVocabList.getViewport().getViewPosition().getY();
-                    int x = me.getY() + a;
-                    int y = x/29;
-                    int z = (int)Math.floor(y);
-                    
-                    boolean veBlue = veViews.get(z).getBackground().equals(lightBlue);
-                    veViews.get(z).requestFocus();
-                    for(VocabElementV vev: veViews){
-                        vev.setBackground(Color.WHITE);
-                    }
-                    if(!veBlue){
-                        veViews.get(z).setBackground(lightBlue);
-                    }
-                }
-                updateDialogState();
-            }*/
         };
         
-        KeyAdapter ka = new KeyAdapter(){
-
-            @Override
-            public void keyReleased(KeyEvent ke){
-                
-                int code = ke.getKeyCode();
-                if(code==KeyEvent.VK_M){
-                    if(ke.isControlDown()){
-                        addMatrix();
-                    }
-                }
-
-                if(code==KeyEvent.VK_P){
-                    if(ke.isControlDown()){
-                        addPredicate();
-                    }
-                }
-
-                if(code==KeyEvent.VK_A){
-                    if(addArgButton.isEnabled()){
-                        if(ke.isControlDown()){
-                            addArgument();
-                        }
-                    }
-                }
-
-                if(code==KeyEvent.VK_S){
-                    if(ke.isControlDown()){
-                        applyChanges();
-                    }
-                }
-                if(code==KeyEvent.VK_D){
-                    if(ke.isControlDown()){
-                        revertChanges();
-                    }
-                }
-                if(code==KeyEvent.VK_Z){
-                    if(ke.isControlDown()){
-                        undoChange();
-                    }
-                }
-                if(code==KeyEvent.VK_Y){
-                    if(ke.isControlDown()){
-                        redoChange();
-                    }
-                }
-                if(code==KeyEvent.VK_DELETE){
-                    delete();
-                }
-
-                ke.setKeyChar(' ');
-            }
-        };
-
-        addPredicateButton.addKeyListener(ka);
-        addMatrixButton.addKeyListener(ka);
-        closeButton.addKeyListener(ka);
-        okButton.addKeyListener(ka);
-        applyButton.addKeyListener(ka);
-        addArgButton.addKeyListener(ka);
-
         argTypeComboBox.addMouseListener(ma);
         currentVocabList.addMouseListener(ma);
         addMatrixButton.addMouseListener(ma);
@@ -1209,59 +1177,35 @@ public final class VocabEditorV extends OpenSHAPADialog implements
 
     }
 
-    @Override
-    public void DColCellDeletion(Database db, long colID, long cellID) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void DColCellInsertion(Database newdb, long colID, long cellID) {
-        db = newdb;
-        verticalFrame.validate();
-        updateDialogState();
-    }
-
-    @Override
-    public void DColConfigChanged(Database db, long colID, boolean nameChanged, String oldName, String newName, boolean hiddenChanged, boolean oldHidden, boolean newHidden, boolean readOnlyChanged, boolean oldReadOnly, boolean newReadOnly, boolean varLenChanged, boolean oldVarLen, boolean newVarLen, boolean selectedChanged, boolean oldSelected, boolean newSelected) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void DColDeleted(Database db, long colID) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     @Action
     public void undoChange() {
-        veViews = (Vector<VocabElementV>) changes.get(--changeIndex).clone();
+        redoStack.push((Vector<VocabElementV>) veViews.clone());
+        veViews = undoStack.pop();
         verticalFrame.removeAll();
         for(VocabElementV vev: veViews){
             verticalFrame.add(vev);
-            verticalFrame.validate();
         }
+        verticalFrame.revalidate();
         updateDialogState();
     }
 
     @Action
     public void redoChange() {
-        veViews = (Vector<VocabElementV>) changes.get(++changeIndex).clone();
+        undoStack.push((Vector<VocabElementV>) veViews.clone());
+        veViews = redoStack.pop();
         verticalFrame.removeAll();
         for(VocabElementV vev: veViews){
             verticalFrame.add(vev);
-            verticalFrame.validate();
         }
+        verticalFrame.revalidate();
         updateDialogState();
     }
 
     private void saveState(){
-        
-        int index = changeIndex+1;
         //remove all elements after current insertion so that it is most recent
-        for(;index<changes.size();index++){
-            changes.remove(index);
-        }
-        changes.add((Vector<VocabElementV>) veViews.clone());
-        changeIndex++;
+        redoStack.clear();
+        // add the most recent view state
+        undoStack.push((Vector<VocabElementV>) veViews.clone());
     }
 
 }

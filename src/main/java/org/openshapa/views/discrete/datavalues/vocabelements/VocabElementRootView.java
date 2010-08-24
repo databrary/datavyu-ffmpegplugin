@@ -111,8 +111,4 @@ public final class VocabElementRootView extends JTextArea  {
         return editors;
     }
 
-    public void highlightName(){
-        // select the text from the text area, and highlight the name.
-    }
-
 }

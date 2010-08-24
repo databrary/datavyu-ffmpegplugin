@@ -133,7 +133,6 @@ public class VocabElementV extends JPanel {
             @Override
             public void focusGained(FocusEvent fe){
                 setBG(lightBlue);
-                //veRootView.selectAll();
             }
             @Override
             public void focusLost(FocusEvent fe){
@@ -332,9 +331,12 @@ public class VocabElementV extends JPanel {
     public final void setBG(Color col){
         this.setBackground(col);
     }
-
     public final void requestFocus(){
         veRootView.requestFocus();
-        veRootView.highlightName();
+    }
+
+    public final void requestFocus(VENameEditor veNEd){
+        veRootView.requestFocus();
+        veRootView.getEdTracker().setEditor(veNEd);
     }
 }

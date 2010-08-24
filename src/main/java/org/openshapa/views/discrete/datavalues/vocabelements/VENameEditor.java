@@ -8,6 +8,7 @@ import javax.swing.text.JTextComponent;
 import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.models.db.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
+import org.openshapa.util.SequentialNumberGenerator;
 
 /**
  * This class is the character editor of a NominalDataValue.
@@ -102,8 +103,11 @@ public final class VENameEditor extends EditorComponent {
             case KeyEvent.VK_BACK_SPACE:
                 try {
                     removeBehindCaret();
-                    model.setName(getText());
-
+                    if(!getText().equals("")){
+                        model.setName(getText());
+                    }else{
+                        model.setName("unnamed"+ Integer.toString(SequentialNumberGenerator.getNextSeqNum()));
+                    }
                     parentView.setHasChanged(true);
                     parentView.getParentDialog().updateDialogState();
                 } catch (SystemErrorException se) {
@@ -114,8 +118,11 @@ public final class VENameEditor extends EditorComponent {
             case KeyEvent.VK_DELETE:
                 try {
                     removeAheadOfCaret();
-                    model.setName(getText());
-
+                    if(!getText().equals("")){
+                        model.setName(getText());
+                    }else{
+                        model.setName("unnamed"+ Integer.toString(SequentialNumberGenerator.getNextSeqNum()));
+                    }
                     parentView.setHasChanged(true);
                     parentView.getParentDialog().updateDialogState();
                 } catch (SystemErrorException se) {
