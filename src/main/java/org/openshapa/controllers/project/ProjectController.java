@@ -45,7 +45,7 @@ public final class ProjectController {
     private Project project;
 
     /** The current database we are working on. */
-    private MacshapaDatabaseAdapter dbAdapt;
+    private MacshapaDatabaseAdapter dbAdapt = new MacshapaDatabaseAdapter();
 
     /** The id of the last datacell that was created. */
     private long lastCreatedCellID;
@@ -114,16 +114,6 @@ public final class ProjectController {
      */
     public void setProjectName(final String newProjectName) {
         project.setProjectName(newProjectName);
-    }
-
-    /**
-     * Sets the database adapter associated with this project. Should eventually
-     * be replaced by a SimpleDatabase.
-     *
-     * @param newDBAdapt The new database to use with this project.
-     */
-    public void setDatabaseAdapter(final MacshapaDatabaseAdapter newDBAdapt) {
-        dbAdapt = newDBAdapt;
     }
 
     /**
