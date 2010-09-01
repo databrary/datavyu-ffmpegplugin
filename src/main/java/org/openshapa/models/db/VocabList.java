@@ -1907,6 +1907,7 @@ public class VocabList {
         ve.noteChange(old_ve, ve);
         ve.notifyListenersOfChange();
 
+        this.listeners.notifyListenersOfVEReplace(ve.getID());
         this.db.cascadeEnd();
 
         return;

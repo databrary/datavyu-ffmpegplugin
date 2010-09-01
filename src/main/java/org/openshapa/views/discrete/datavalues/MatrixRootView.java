@@ -66,7 +66,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
         edTracker = new EditorTracker(this, allEditors);
         ve = null;
         numPredArgs = -1;
-
+        
         setMatrix(matrix);
 
         addFocusListener(this);

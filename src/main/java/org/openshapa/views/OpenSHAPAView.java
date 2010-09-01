@@ -59,10 +59,12 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.Rectangle;
 import java.util.Vector;
 import java.util.logging.Level;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
 
@@ -682,6 +684,7 @@ public final class OpenSHAPAView extends FrameView
         weakTemporalOrderMenuItem.setSelected(false);
         strongTemporalOrderMenuItem.setSelected(false);
 
+        // need to add changes to maintain spreadsheet view after change
         // Create a fresh spreadsheet component and redraw the component.
         if (panel != null) {
             this.clearSpreadsheet();
@@ -690,6 +693,7 @@ public final class OpenSHAPAView extends FrameView
         panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
         panel.registerListeners();
         panel.addFileDropEventListener(this);
+        
         setComponent(panel);
         getComponent().revalidate();
         getComponent().resetKeyboardActions();

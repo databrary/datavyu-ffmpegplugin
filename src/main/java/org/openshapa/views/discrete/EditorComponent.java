@@ -327,7 +327,6 @@ public abstract class EditorComponent implements ClipboardOwner {
 
             int end = Math.max(startPos, endClick);
             end = Math.min(startPos + editorText.length(), end);
-            
             parentComp.select(start, end);
         }
     }
