@@ -44,6 +44,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.util.Stack;
+import javax.swing.JOptionPane;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.UndoManager;
 import org.openshapa.models.db.ExternalColumnListListener;
@@ -69,6 +70,8 @@ ExternalVocabListListener{
     private int selectedArgumentI;
     /** The collection of vocab element views in the current vocab listing. */
     private Vector<VocabElementV> veViews;
+
+    private Vector<VocabElementV> veToDelete;
     /** Vertical frame for holding the current listing of Vocab elements. */
     private JPanel verticalFrame;
     /** Array of veViews used to track changes for the undo function */
@@ -77,8 +80,6 @@ ExternalVocabListListener{
     private UndoManager undoM;
     /** The handler for all keyboard shortcuts */
     private KeyEventDispatcher ked;
-
-    private VocabEditorV thisVocabEditor;
 
    // private static Color lightBlue = new Color(224,248,255,255);
 
@@ -163,6 +164,7 @@ ExternalVocabListListener{
 
         // Populate current vocab list with vocab data from the database.
         veViews = new Vector<VocabElementV>();
+        veToDelete = new Vector<VocabElementV>();
         verticalFrame = new JPanel();
         verticalFrame.setName("verticalFrame");
         verticalFrame.setLayout(new BoxLayout(verticalFrame, BoxLayout.Y_AXIS));
@@ -236,7 +238,7 @@ ExternalVocabListListener{
         updateDialogState();
     }
 
-    public void disposeAll() {
+    public void disposeAll() {        
         KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         kfm.removeKeyEventDispatcher(ked);
         dispose();
@@ -414,14 +416,14 @@ ExternalVocabListListener{
                 saveState();
 
                 logger.usage("vocEd - delete element");
-                try{
+                /*try{
                     db.removeVocabElement(selectedVocabElement.getModel().getID());
                 }
                 catch(Exception e){
                     logger.error("Selected element doesn't exist in db.", e);
-                }
-                verticalFrame.remove(selectedVocabElement);
-                veViews.remove(selectedVocabElement);
+                }*/
+                selectedVocabElement.setDeleted(true);
+                veToDelete.add(selectedVocabElement);
                 try{
                     veViews.lastElement().requestFocus();
                 }catch(Exception e){
@@ -452,6 +454,7 @@ ExternalVocabListListener{
     public void revertChanges() {
         try {
             logger.usage("vocEd - revert");
+
             ArrayList<VocabElementV> toDelete = new ArrayList<VocabElementV>();
 
             for (VocabElementV view : veViews) {
@@ -475,6 +478,9 @@ ExternalVocabListListener{
                     view.setHasChanged(false);
                 }
             }
+            for(VocabElementV vev : veViews){
+                vev.setDeleted(false);
+            }
 
             // Perform the removal of the vocab elements.
             for (VocabElementV view : toDelete) {
@@ -492,8 +498,9 @@ ExternalVocabListListener{
      * The action to invoke when the user presses the apply button.
      */
     @Action
-    public void applyChanges() {
+    public int applyChanges() {
         logger.usage("vocEd - apply");
+        int errors = 0;
         try {
 
             for (VocabElementV vev : veViews) {
@@ -503,11 +510,8 @@ ExternalVocabListListener{
                     if (ve.getID() == DBIndex.INVALID_ID) {
                         if ((db.colNameInUse(ve.getName()) || (db
                                 .predNameInUse(ve.getName())))) {
-
-                            // the string passed to the exception probably
-                            // should be modified to allow localization.
-                            throw new LogicErrorException("ve name in use");
-                        }
+                            errors = 1;
+                        }else
 
                         // If the new vocab element is a matrix vocab element,
                         // we actually need to create a column.
@@ -537,20 +541,21 @@ ExternalVocabListListener{
                             db.replaceVocabElement(mve);
                             mve = db.getMatrixVE(mve.getID());
                             vev.setModel(mve);
-
+                            vev.setHasChanged(false);
                             // Otherwise just a predicate - add the new vocab
                             // element to the database.
                         } else {
                             long id = db.addVocabElement(ve);
                             vev.setModel(db.getVocabElement(id));
+                            vev.setHasChanged(false);
                         }
 
                     } else {
                         db.replaceVocabElement(ve);
                         ve = db.getVocabElement(ve.getID());
                         vev.setModel(ve);
+                        vev.setHasChanged(false);
                     }
-                    vev.setHasChanged(false);
                 }
             }
 
@@ -561,13 +566,22 @@ ExternalVocabListListener{
             ((OpenSHAPAView) OpenSHAPA.getApplication().getMainView())
                     .showSpreadsheet();
 
-
-
         } catch (SystemErrorException e) {
             logger.error("Unable to apply vocab changes", e);
         } catch (LogicErrorException le) {
             OpenSHAPA.getApplication().showWarningDialog(le);
         }
+        try{
+        for(VocabElementV vev : veToDelete){
+            db.removeVocabElement(vev.getModel().getID());
+        }
+        }catch(Exception e){
+            logger.error("Unable to delete ve");
+        }
+        if(errors==1){
+            JOptionPane.showMessageDialog(this, "Vocab Element name in use.","Error adding vocab", 2);
+        }
+        return errors;
     }
 
     /**
@@ -576,12 +590,13 @@ ExternalVocabListListener{
     @Action
     public void ok() {
         logger.usage("vocEd - ok");
-        applyChanges();
-        try {
-            disposeAll();
-            finalize();
-        } catch (Throwable e) {
-            logger.error("Unable to destroy vocab editor view.", e);
+        if(applyChanges()==0){
+            try {
+                disposeAll();
+                finalize();
+            } catch (Throwable e) {
+                logger.error("Unable to destroy vocab editor view.", e);
+            }
         }
     }
 

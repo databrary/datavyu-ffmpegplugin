@@ -52,6 +52,9 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.Point;
+import java.awt.Rectangle;
+import javax.swing.JViewport;
 
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
@@ -989,5 +992,13 @@ implements ExternalColumnListListener, ComponentListener,
 
             dtde.rejectDrop();
         }
+    }
+
+    public void scrollToTop(Point p){
+        scrollPane.getViewport().setViewPosition(new Point(0,0));
+    }
+
+    public Point getView(){
+        return scrollPane.getViewport().getViewPosition();
     }
 }

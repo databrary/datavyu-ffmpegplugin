@@ -59,12 +59,11 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.Rectangle;
+import java.awt.Point;
 import java.util.Vector;
 import java.util.logging.Level;
 import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.MacshapaDatabase;
-import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
 
@@ -693,11 +692,12 @@ public final class OpenSHAPAView extends FrameView
         panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
         panel.registerListeners();
         panel.addFileDropEventListener(this);
-        
+        Point p = panel.getView();
         setComponent(panel);
         getComponent().revalidate();
         getComponent().resetKeyboardActions();
         getComponent().requestFocus();
+        panel.scrollToTop(p);
     }
 
     /**

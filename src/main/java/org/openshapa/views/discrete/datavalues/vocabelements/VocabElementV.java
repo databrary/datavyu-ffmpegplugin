@@ -78,6 +78,7 @@ public class VocabElementV extends JPanel {
 
     /** the light blue colour used for backgrounds */
     private static Color lightBlue = new Color(224,248,255,255);
+    private static Color lightRed = new Color(255,200,200,255);
 
     public VocabElementV(VocabElement vocabElement, VocabEditorV vev) {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
@@ -132,11 +133,15 @@ public class VocabElementV extends JPanel {
         veRootView.addFocusListener(new FocusAdapter(){
             @Override
             public void focusGained(FocusEvent fe){
-                setBG(lightBlue);
+                if(!deleteVE){
+                    setBG(lightBlue);
+                }
             }
             @Override
             public void focusLost(FocusEvent fe){
-                setBG(Color.WHITE);
+                if(!deleteVE){
+                    setBG(Color.WHITE);
+                }
             }
         });
 
@@ -283,9 +288,9 @@ public class VocabElementV extends JPanel {
      */
     public final void setDeleted(final boolean delete) {
         if (delete) {
-            deleteIcon.setText("D");
+            setBG(lightRed);
         } else {
-            deleteIcon.setText(null);
+            setBG(Color.WHITE);
         }
         deleteVE = delete;
 
