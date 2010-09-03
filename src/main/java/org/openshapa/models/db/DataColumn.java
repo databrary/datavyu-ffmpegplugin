@@ -2686,6 +2686,10 @@ public class DataColumn extends Column
 
     } /* DataColumn::VEDeleted() */
 
+    public void setVarlen(boolean varyingArgs) {
+        varLen = varyingArgs;
+    }
+
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/

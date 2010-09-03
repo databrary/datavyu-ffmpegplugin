@@ -577,11 +577,6 @@ public final class OpenSHAPA extends SingleFrameApplication
         lastScriptsExecuted = new LinkedList<File>();
         lastFilesOpened = new LinkedList<File>();
 
-        // Initalise DB Adapter
-        MacshapaDatabaseAdapter dbAdapt = new MacshapaDatabaseAdapter();
-
-        projectController.setDatabaseAdapter(dbAdapt);
-
         // Initialize plugin manager
         PluginManager.getInstance();
 

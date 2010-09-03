@@ -2144,7 +2144,7 @@ public class MatrixVocabElement extends VocabElement
 
         if ( ! this.getDB().typedColPredFormalArgsSupported() )
         {
-            if ( ! ( newArg.getFargType() != FormalArgument.FArgType.UNTYPED ) )
+            if (  ( newArg.getFargType() != FormalArgument.FArgType.UNTYPED ) )
             {
                 throw new SystemErrorException(mName + "typed column " +
                         "predicate formal args not permitted in this database.");

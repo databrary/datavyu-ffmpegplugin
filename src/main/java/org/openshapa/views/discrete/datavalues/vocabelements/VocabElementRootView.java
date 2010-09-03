@@ -2,6 +2,9 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.logging.Level;
 import org.openshapa.models.db.SystemErrorException;
 import java.util.Vector;
 import javax.swing.BorderFactory;
@@ -107,4 +110,5 @@ public final class VocabElementRootView extends JTextArea  {
     public Vector<EditorComponent> getEditors() {
         return editors;
     }
+
 }

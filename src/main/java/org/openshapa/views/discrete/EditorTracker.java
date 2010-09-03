@@ -34,7 +34,7 @@ implements FocusListener, KeyListener, MouseListener {
     /** Track the key up and down to avoid problem with key repeat. */
     private boolean gotKeyUp = true;
     /** How many clicks make up a triple click. */
-    private static final int TRIPLE_CLICK_COUNT = 3;
+    private static final int TRIPLE_CLICK_COUNT = 2;
 
     /**
      * Constructor.
@@ -77,8 +77,9 @@ implements FocusListener, KeyListener, MouseListener {
         calculatePrePostCounts();
 
         currentEditor.focusGained(null);
-
+       
         currentEditor.select(start, end);
+        
     }
 
     /**
@@ -222,7 +223,7 @@ implements FocusListener, KeyListener, MouseListener {
         if (currentEditor.equals(NO_EDITOR)) {
             setEditor(findEditor(0), 0, 0);
         } else {
-            setEditor(findEditor(getCurrentEditor().getCaretPosition()), getCurrentEditor().getSelectionStart(), getCurrentEditor().getSelectionEnd());
+            setEditor(findEditor(textArea.getCaretPosition()));
         }
     }
 
@@ -340,11 +341,13 @@ implements FocusListener, KeyListener, MouseListener {
                         if (currentEditor == NO_EDITOR) {
                             setEditor(lastEditor());
                         }
+                        setEditor(currentEditor); // required for selection issue
                     } else {
                         setEditor(nextEditor());
                         if (currentEditor == NO_EDITOR) {
                             setEditor(firstEditor());
                         }
+                        setEditor(currentEditor); // required for selection issue
                     }
                 }
                 e.consume();

@@ -536,6 +536,9 @@ public final class MixerController implements PropertyChangeListener,
      */
     public void bindTrackActions(final Identifier trackId,
         final CustomActions actions) {
+        if (actions == null) {
+            return;
+        }
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
                     tracksEditorController.bindTrackActions(trackId, actions);

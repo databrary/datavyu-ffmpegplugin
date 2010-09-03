@@ -139,6 +139,35 @@ public class VocabListListeners extends Listeners
 
     }
 
+    protected void notifyListenersOfVEReplace(long VEID)
+            throws SystemErrorException
+    {
+        final String mName = "VLChangeListeners::notifyListenersOfReplace()";
+        ExternalVocabListListener el;
+
+        // The database has been modified!
+        db.markAsChanged();
+
+        // No internal listeners for now.
+
+
+        // Notify the external listeners.
+        for ( Object o : this.els )
+        {
+            if ( ! ( o instanceof ExternalVocabListListener ) )
+            {
+                throw new SystemErrorException(mName +
+                        ": o not a ExternalVLReplaceListener.");
+            }
+
+            el = (ExternalVocabListListener)o;
+
+            el.VLReplace(this.db, VEID);
+        }
+
+        return;
+    }
+
     /**
      * Deregister an external listener.
      *

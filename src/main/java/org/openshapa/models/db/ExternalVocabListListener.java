@@ -68,5 +68,8 @@ public interface ExternalVocabListListener
     void VLInsertion(Database db,
                      long VEID);
 
+    void VLReplace(Database db,
+                   long VEID);
+
 } /* interface ExternalVocabListListener */
 
