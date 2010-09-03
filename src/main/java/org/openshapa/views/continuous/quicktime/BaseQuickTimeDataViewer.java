@@ -1,99 +1,49 @@
 package org.openshapa.views.continuous.quicktime;
 
-import com.usermetrix.jclient.Logger;
-
-import java.awt.Toolkit;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
+
 import org.openshapa.models.db.SimpleDatabase;
-
 import org.openshapa.models.id.Identifier;
-
-import org.openshapa.util.Constants;
-
+import org.openshapa.views.OpenSHAPADialog;
 import org.openshapa.views.component.DefaultTrackPainter;
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.continuous.CustomActions;
 import org.openshapa.views.continuous.CustomActionsAdapter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
-
-import quicktime.QTException;
-import quicktime.QTSession;
-
-import quicktime.app.view.QTFactory;
-
-import quicktime.io.OpenMovieFile;
-import quicktime.io.QTFile;
-
-import quicktime.qd.QDDimension;
-
-import quicktime.std.StdQTConstants;
-import quicktime.std.StdQTException;
-
-import quicktime.std.clocks.TimeRecord;
-
-import quicktime.std.movies.Movie;
-import quicktime.std.movies.TimeInfo;
-import quicktime.std.movies.Track;
-import quicktime.std.movies.media.Media;
-
-import com.usermetrix.jclient.UserMetrix;
-
-import java.awt.event.ActionListener;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
-import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
-import org.openshapa.views.OpenSHAPADialog;
 import org.openshapa.views.continuous.ViewerStateListener;
 
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
 
-/**
- * The viewer for a quicktime video file.
- */
-public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
-
-    /** How many milliseconds in a second? */
-    private static final int MILLI = 1000;
-
-    /** How many frames to check when correcting the FPS. */
-    private static final int CORRECTIONFRAMES = 5;
-
+public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements DataViewer {
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(QTDataViewer.class);
-
-    /** The quicktime movie this viewer is displaying. */
-    private Movie movie;
-
-    /** The visual track for the above quicktime movie. */
-    private Track visualTrack;
-
-    /** The visual media for the above visual track. */
-    private Media visualMedia;
+    private Logger logger = UserMetrix.getLogger(getClass());
 
     /** Rate for playback. */
     private float playRate;
@@ -112,9 +62,6 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
 
     /** The current video file that this viewer is representing. */
     private File videoFile;
-
-    /** The aspect ratio of the opened video. */
-    private double aspectRatio;
 
     /** Volume slider. */
     private JSlider volumeSlider;
@@ -137,8 +84,8 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     /** Is the plugin visible? */
     private boolean isVisible = true;
 
-    /** The default height of the movie when first loaded. */
-    private int fullHeight;
+    /** The original size of the movie when first loaded. */
+    private Dimension nativeVideoSize;
 
     /** A context menu for resizing the video. */
     private JPopupMenu menuContext = new JPopupMenu();
@@ -205,23 +152,13 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     /**
      * Constructor - creates new video viewer.
      */
-    public QTDataViewer(final java.awt.Frame parent, final boolean modal) {
+    public BaseQuickTimeDataViewer(final java.awt.Frame parent, final boolean modal) {
 
         super(parent, modal);
 
-        try {
-            movie = null;
-            offset = 0;
-            playing = false;
-            aspectRatio = 0.0f;
-
-            // Initalise QTJava.
-            QTSession.open();
-
-        } catch (Throwable e) {
-            logger.error("Unable to create QTVideoViewer", e);
-        }
-
+        offset = 0;
+        playing = false;
+        
         volumeButton = new JButton();
         volumeButton.setIcon(getActionButtonIcon1());
         volumeButton.setBorderPainted(false);
@@ -314,13 +251,9 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     }
 
     private void handleVolumeSliderEvent(final ChangeEvent e) {
-
-        if (movie != null) {
-            volume = volumeSlider.getValue() / 100F;
-            setVolume();
-            notifyChange();
-        }
-
+        volume = volumeSlider.getValue() / 100F;
+        setVolume();
+        notifyChange();
     }
 
     /**
@@ -329,21 +262,11 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
      * the volume).
      */
     private void setVolume() {
-
-        try {
-
-            if (isVisible) {
-                movie.setVolume(volume);
-            } else {
-                movie.setVolume(0F);
-            }
-
-            volumeButton.setIcon(getActionButtonIcon1());
-        } catch (StdQTException ex) {
-            logger.error("Unable to set volume", ex);
-        }
+    	setQTVolume(isVisible ? volume : 0F);
     }
 
+    protected abstract void setQTVolume(float volume);
+    
     // ------------------------------------------------------------------------
     // [interface] org.openshapa.views.continuous.DataViewer
     //
@@ -352,26 +275,17 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
      * @return The duration of the movie in milliseconds. If -1 is returned, the
      *         movie's duration cannot be determined.
      */
-    public long getDuration() {
-
-        try {
-
-            if (movie != null) {
-                return (long) Constants.TICKS_PER_SECOND
-                    * (long) movie.getDuration() / movie.getTimeScale();
-            }
-        } catch (StdQTException ex) {
-            logger.error("Unable to determine QT movie duration", ex);
-        }
-
-        return -1;
+    public abstract long getDuration();
+    
+    private double getAspectRatio() {
+    	return nativeVideoSize != null ? (nativeVideoSize.getWidth() / nativeVideoSize.getHeight()) : 1;
     }
-
+    
     @Override public void validate() {
 
         // BugzID:753 - Locks the window to the videos aspect ratio.
         int newHeight = getHeight();
-        int newWidth = (int) (getVideoHeight() * aspectRatio) + getInsets().left
+        int newWidth = (int) (getVideoHeight() * getAspectRatio()) + getInsets().left
             + getInsets().right;
         setSize(newWidth, newHeight);
 
@@ -379,22 +293,20 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     }
 
     /**
-     * Scales the video to the desired percentage.
-     * @param scale The new % to scale to, as a float.
+     * Scales the video to the desired ratio.
+     * @param scale The new ratio to scale to, where 1.0 = original size, 2.0 = 200% zoom, etc.
      */
     private void scaleVideo(final float scale) {
+        int scaleHeight = (int) (nativeVideoSize.getHeight() * scale);
 
-        int scaleHeight = (int) (fullHeight * scale);
-
-        // BugzID:753 - Locks the window to the videos aspect ratio.
-        if ((aspectRatio > 0.0)) {
-            int newWidth = (int) (scaleHeight * aspectRatio) + getInsets().left
+        // lock the aspect ratio
+        if (getAspectRatio() > 0.0) {
+            int newWidth = (int) (scaleHeight * getAspectRatio()) + getInsets().left
                 + getInsets().right;
-
             int newHeight = scaleHeight + getInsets().bottom + getInsets().top;
 
             setSize(newWidth, newHeight);
-            this.validate();
+            validate();
         }
 
         notifyChange();
@@ -409,16 +321,15 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     }
 
     private void setVideoHeight(final int height) {
+    	if (!(getAspectRatio() > 0)) {
+    		return;
+    	}
+    	
+        int newWidth = (int) (height * getAspectRatio()) + getInsets().left + getInsets().right;
+        int newHeight = height + getInsets().bottom + getInsets().top;
 
-        if ((aspectRatio > 0.0)) {
-            int newWidth = (int) (height * aspectRatio) + getInsets().left
-                + getInsets().right;
-
-            int newHeight = height + getInsets().bottom + getInsets().top;
-
-            setSize(newWidth, newHeight);
-            this.validate();
-        }
+        setSize(newWidth, newHeight);
+        validate();
     }
 
     /**
@@ -452,106 +363,26 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
      */
     public void setDataFeed(final File videoFile) {
         this.videoFile = videoFile;
-
-        try {
-            setTitle(videoFile.getName());
-
-            OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
-            movie = Movie.fromFile(omf);
-            movie.setVolume(0.7F);
-
-            // Set the time scale for our movie to milliseconds (i.e. 1000 ticks
-            // per second.
-            movie.setTimeScale(Constants.TICKS_PER_SECOND);
-
-            visualTrack = movie.getIndTrackType(1,
-                    StdQTConstants.visualMediaCharacteristic,
-                    StdQTConstants.movieTrackCharacteristic);
-
-            // BugzID:1910 - % size calculations should be based on the original
-            // movie's size, rather than the quarter-screen restricted size.
-            fullHeight = Math.max(movie.getBox().getHeight(),
-                    movie.getBounds().getHeight());
-
-            // Initialise the video to be no bigger than a quarter of the screen
-            int hScrnWidth = Toolkit.getDefaultToolkit().getScreenSize().width
-                / 2;
-            aspectRatio = ((double) movie.getBounds().getWidthF())
-                / ((double) movie.getBounds().getHeightF());
-
-            if (movie.getBounds().getWidth() > hScrnWidth) {
-                visualTrack.setSize(new QDDimension(hScrnWidth,
-                        (int) (hScrnWidth / aspectRatio)));
-            }
-
-            visualMedia = visualTrack.getMedia();
-            this.add(QTFactory.makeQTComponent(movie).asComponent());
-
-            setName(getClass().getSimpleName() + "-" + videoFile.getName());
-            pack();
-
-            // Prevent initial white frame for video on OSX.
-            setVisible(true);
-
-
-            // Set the size of the window to be the same as the incoming video.
-            this.setBounds(getX(), getY(), movie.getBox().getWidth(),
-                movie.getBox().getHeight());
-
-            // BugzID:928 - FPS calculations will fail when using H264.
-            // Apparently the Quicktime for Java API does not support a whole
-            // bunch of methods with H264.
-            fps = (float) visualMedia.getSampleCount()
-                / visualMedia.getDuration() * visualMedia.getTimeScale();
-
-            if ((visualMedia.getSampleCount() == 1.0)
-                    || (visualMedia.getSampleCount() == 1)) {
-                fps = correctFPS();
-            }
-        } catch (QTException e) {
-            logger.error("Unable to setVideoFile", e);
-        }
+        setQTDataFeed(videoFile);
+        nativeVideoSize = getQTVideoSize();
+        fps = getQTFPS();
+        
+        setTitle(videoFile.getName());
+        setName(getClass().getSimpleName() + "-" + videoFile.getName());
+        pack();
+        setVisible(true);
+        setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(), (int) nativeVideoSize.getHeight());
     }
+    
+    protected abstract void setQTDataFeed(final File videoFile);
+    protected abstract Dimension getQTVideoSize();
+    protected abstract float getQTFPS();
 
     /**
      * @return The file used to display this data feed.
      */
     public File getDataFeed() {
         return videoFile;
-    }
-
-    /**
-     * If there was a problem getting the fps, we use this method to fix it. The
-     * first few frames (number of which is specified by CORRECTIONFRAMES) are
-     * inspected, with the delay between each measured; the two frames with the
-     * smallest delay between them are assumed to represent the fps of the
-     * entire movie.
-     *
-     * @return The best fps found in the first few frames.
-     */
-    private float correctFPS() {
-        float minFrameLength = MILLI; // Set this to one second, as the "worst"
-        float curFrameLen = 0;
-        int curTime = 0;
-
-        for (int i = 0; i < CORRECTIONFRAMES; i++) {
-
-            try {
-                TimeInfo timeObj = visualTrack.getNextInterestingTime(
-                        StdQTConstants.nextTimeStep, curTime, 1);
-                float candidateFrameLen = timeObj.time - curFrameLen;
-                curFrameLen = timeObj.time;
-                curTime += curFrameLen;
-
-                if (candidateFrameLen < minFrameLength) {
-                    minFrameLength = candidateFrameLen;
-                }
-            } catch (QTException e) {
-                logger.error("Error getting time", e);
-            }
-        }
-
-        return MILLI / minFrameLength;
     }
 
     /**
@@ -572,81 +403,49 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     }
 
     /**
-     * @param rate
-     *            The playback rate.
+     * {@inheritDoc}
      */
     public void setPlaybackSpeed(final float rate) {
         playRate = rate;
     }
 
+    public float getPlaybackSpeed() {
+    	return playRate;
+    }
+    
     /**
-     * Plays the continous data stream at the current playback rate..
+     * {@inheritDoc}
      */
     public void play() {
-
-        try {
-
-            if (movie != null) {
-                movie.setRate(playRate);
-                playing = true;
-            }
-        } catch (QTException e) {
-            logger.error("Unable to play", e);
-        }
+        playing = true;
     }
 
     /**
-     * Stops the playback of the continous data stream.
+     * {@inheritDoc}
      */
     public void stop() {
-
-        try {
-
-            if (movie != null) {
-                movie.stop();
-                playing = false;
-            }
-        } catch (QTException e) {
-            logger.error("Unable to stop", e);
-        }
+    	playing = false;
     }
-
+    
     /**
-     * @return Is this dataviewer playing the data feed.
+     * {@inheritDoc}
      */
     public boolean isPlaying() {
         return playing;
     }
 
     /**
-     * @param position
-     *            Millisecond absolute position for track.
+     * {@inheritDoc}
      */
-    public void seekTo(final long position) {
-
-        try {
-
-            if (movie != null) {
-                TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
-                        position);
-                movie.setTime(time);
-            }
-        } catch (QTException e) {
-            logger.error("Unable to find", e);
-        }
-    }
+    public abstract void seekTo(final long position);    
 
     /**
-     * @return Current time in milliseconds.
-     * @throws QTException
-     *             If error occurs accessing underlying implementation.
+     * {@inheritDoc}
      */
-    public long getCurrentTime() throws QTException {
-        return movie.getTime();
-    }
+    public abstract long getCurrentTime();
 
     /**
-     * Get track painter.
+     * {@inheritDoc}
      */
     public TrackPainter getTrackPainter() {
         return new DefaultTrackPainter();
@@ -760,7 +559,6 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     }
 
     private ImageIcon getActionButtonIcon1() {
-
         if (isVisible && (volume > 0)) {
             return volumeIcon;
         } else {
@@ -769,7 +567,6 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     }
 
     private ImageIcon getActionButtonIcon2() {
-
         if (isVisible) {
             return eyeIcon;
         } else {
@@ -791,7 +588,6 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
     private void initComponents() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setName("QTDataViewerDialog"); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
                 public void windowClosing(
                     final java.awt.event.WindowEvent evt) {
@@ -810,20 +606,14 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
      *            The event that triggered this action.
      */
     private void formWindowClosing(final java.awt.event.WindowEvent evt) { // GEN-FIRST:event_formWindowClosing
-
-        scaleVideo(1);
-
-        try {
-            movie.stop();
-        } catch (QTException e) {
-            logger.error("Couldn't kill", e);
-        }
-
+        stop();
+        cleanUp();
         volumeDialog.setVisible(false);
-
         parent.shutdown(this);
     }
 
+    protected abstract void cleanUp();
+    
     @Override public CustomActions getCustomActions() {
         return actions;
     }
@@ -843,4 +633,5 @@ public final class QTDataViewer extends OpenSHAPADialog implements DataViewer {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+
 }

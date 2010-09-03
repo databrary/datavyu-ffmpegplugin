@@ -17,6 +17,7 @@ import org.openshapa.views.continuous.FilterNames;
 import org.openshapa.views.continuous.Plugin;
 
 import com.google.common.collect.Lists;
+import com.sun.jna.Platform;
 
 
 public final class QTPlugin implements Plugin {
@@ -46,7 +47,13 @@ public final class QTPlugin implements Plugin {
     @Override
     public DataViewer getNewDataViewer(final java.awt.Frame parent,
         final boolean modal) {
-        return new QTDataViewer(parent, modal);
+    	if (Platform.isMac()) {
+    		return new QTKitDataViewer(parent, modal);
+    	} else if (Platform.isWindows()) {
+    		return new QTJavaDataViewer(parent, modal);
+    	} else {
+    		return null;
+    	}
     }
 
     /**

@@ -93,7 +93,7 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * The threshold to use while synchronising viewers (augmented by rate).
      */
-    private static final long SYNC_THRESH = 50;
+    private static final long SYNC_THRESH = 200;
 
     /**
      * How often to synchronise the viewers with the master clock.

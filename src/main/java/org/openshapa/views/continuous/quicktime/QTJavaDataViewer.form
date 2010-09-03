@@ -3,7 +3,7 @@
 <Form version="1.2" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
-    <Property name="name" type="java.lang.String" value="QTDataViewerDialog" noResource="true"/>
+    <Property name="name" type="java.lang.String" value="QTJavaDataViewerDialog" noResource="true"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>

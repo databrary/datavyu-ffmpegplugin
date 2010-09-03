@@ -701,6 +701,12 @@
     
     <dependency>
     	<groupId>org.rococoa</groupId>
+    	<artifactId>rococoa-core</artifactId>
+    	<version>0.5.1x</version>
+    </dependency>
+ 
+    <dependency>
+    	<groupId>org.rococoa</groupId>
     	<artifactId>rococoa-cocoa</artifactId>
     	<version>0.5.1x</version>
     </dependency>

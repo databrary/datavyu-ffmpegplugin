@@ -1,6 +1,5 @@
 package org.openshapa.plugins;
 
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -19,9 +18,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -34,14 +31,11 @@ import org.jdesktop.application.LocalStorage;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Filter;
 import org.openshapa.views.continuous.Plugin;
 
 import com.usermetrix.jclient.UserMetrix;
-
-import org.openshapa.views.continuous.gstreamer.GStreamerDataViewer;
-import org.openshapa.views.continuous.quicktime.QTKitDataViewer;
-
 
 /**
  * This class manages and wrangles all the viewer plugins currently availble to
@@ -50,11 +44,6 @@ import org.openshapa.views.continuous.quicktime.QTKitDataViewer;
  * plugins that implement the Plugin interface.
  */
 public final class PluginManager {
-
-    /** The default plugin to present to the user when loading data. */
-    private static final String DEFAULT_VIEW = QTKitDataViewer.class
-        .getName();
-
     /** A reference to the interface that plugins must override. */
     private static final Class<?> PLUGIN_CLASS;
 
@@ -312,10 +301,15 @@ public final class PluginManager {
                     // We call this with no parent frame because asking
                     // OpenSHAPA for its mainframe before it is created ruins
                     // all the dialogs (and menus).
-                    final DataViewer newDataViewer = p.getNewDataViewer(null, false);
-                    if (newDataViewer != null) {
-	                    pluginLookup.put(newDataViewer.getClass()
-	                        .getName(), p);
+                    final DataViewer newDataViewer;
+                    try {
+                    	newDataViewer = p.getNewDataViewer(null, false);
+                        if (newDataViewer != null) {
+    	                    pluginLookup.put(newDataViewer.getClass().getName(), p);
+                        }
+                    } catch (Throwable e) {
+                    	e.printStackTrace();
+                    	logger.error("Unable to load plugin " + p.getClass().getName(), e);
                     }
                 }
             }

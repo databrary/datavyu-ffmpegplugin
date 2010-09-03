@@ -48,6 +48,8 @@
         <string>$JAVAROOT/repo/net/java/dev/jna/jna/jna-3.2.7.jar</string>
         <string>$JAVAROOT/repo/apple/java/applejavaextensions/1.4/applejavaextensions-1.4.jar</string>
         <string>$JAVAROOT/repo/com/googlecode/gstreamer-osx64/1.4B/gstreamer-osx64-1.4B.jar</string>
+        <string>$JAVAROOT/repo/org/rococoa/rococoa-cocoa/0.5.1x/rococoa-cocoa-0.5.1x.jar</string>
+        <string>$JAVAROOT/repo/org/rococoa/rococoa-core/0.5.1x/rococoa-core-0.5.1x.jar</string>
         <string>$JAVAROOT/repo/quicktime/QTJava/7/QTJava-7.jar</string>
       </array>
     </dict>
