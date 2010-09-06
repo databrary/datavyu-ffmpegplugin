@@ -38,23 +38,27 @@ public class Launcher {
 
             // Unpack and install applications necessary for OpenSHAPA to
             // function correctly.
-            String gstreamer = NativeLoader.unpackNativeApp("gstreamer-osx64-1.4B");
+            final String gstreamerLibraryPath = NativeLoader.unpackNativeApp("gstreamer-osx64-1.4B") + "gstreamer-osx64-1.4B";
 
-            final String splashFileLocation = gstreamer + "/splash.png";
-            splashScreenImage = extractResource(gstreamer, "icons/splash.png", splashFileLocation);
+            final String openshapaNativeLibraryPath = NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.1");
+            
+            final String splashFileLocation = gstreamerLibraryPath + "/splash.png";
+            splashScreenImage = extractResource(gstreamerLibraryPath, "icons/splash.png", splashFileLocation);
             
             ProcessBuilder builder = new ProcessBuilder("java",
                     "-splash:" + splashFileLocation,
                     "-cp", classPath,
+                    "-Djna.library.path=" + openshapaNativeLibraryPath,
                     "org.openshapa.OpenSHAPA");
 
             if (dumpLaunchCommandForDebugging) {
-            	final StringBuilder launchString = new StringBuilder("OpenSHAPA launch command: ");
+            	final StringBuilder sb = new StringBuilder();
             	for (String s : builder.command()) {
-            		launchString.append(s);
-            		launchString.append(' ');
+            		sb.append(s);
+            		sb.append(' ');
             	}
-            	System.err.println(launchString.toString());
+            	final String launchString = sb.toString();
+            	System.err.println("OpenSHAPA launch command (" + launchString.length() + " characters): " + launchString);
             }
             
             // Build up environment variables required to execute OpenSHAPA
@@ -62,11 +66,11 @@ public class Launcher {
             // applications to function correctly (i.e. gstreamer).
             Map<String, String> env = builder.environment();
 
-            String path = env.get("PATH") + ":" + gstreamer;
+            String path = env.get("PATH") + ":" + gstreamerLibraryPath;
             env.put("PATH", path);
-            env.put("GST_PLUGIN_SCANNER", gstreamer);
-            env.put("GST_PLUGIN_PATH", gstreamer + "/gstreamer-0.10");
-            env.put("DYLD_LIBRARY_PATH", gstreamer);
+            env.put("GST_PLUGIN_SCANNER", gstreamerLibraryPath);
+            env.put("GST_PLUGIN_PATH", gstreamerLibraryPath + "/gstreamer-0.10");
+            env.put("DYLD_LIBRARY_PATH", gstreamerLibraryPath);
 
             // Start the OpenSHAPA process.
             Process p = builder.start();

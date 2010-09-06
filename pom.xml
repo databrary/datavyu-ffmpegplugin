@@ -262,7 +262,13 @@
         <dependency>
           <groupId>com.googlecode</groupId>
           <artifactId>gstreamer-osx64</artifactId>
-          <version>1.4B</version>
+          <version>1.4B</version> <!--  NB: You'll need to update org.openshapa.Launcher when this changes. -->
+        </dependency>
+        
+        <dependency>
+          <groupId>org.openshapa</groupId>
+          <artifactId>openshapa-nativelibs-osx64</artifactId>
+          <version>0.1</version> <!--  NB: You'll need to update org.openshapa.Launcher when this changes. -->
         </dependency>
       </dependencies>
     </profile>
@@ -690,13 +696,13 @@
     <dependency>
     	<groupId>org.rococoa</groupId>
     	<artifactId>rococoa-core</artifactId>
-    	<version>0.5.1x</version>
+    	<version>0.5.1x2</version>
     </dependency>
  
     <dependency>
     	<groupId>org.rococoa</groupId>
     	<artifactId>rococoa-cocoa</artifactId>
-    	<version>0.5.1x</version>
+    	<version>0.5.1x2</version>
     </dependency>
 
     <dependency>

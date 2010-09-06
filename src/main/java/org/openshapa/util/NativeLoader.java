@@ -10,8 +10,6 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.swing.JOptionPane;
-
 public class NativeLoader {
 
     /** The size of the buffer to use when un zipping native libraries. */
@@ -87,7 +85,7 @@ public class NativeLoader {
             throw new Exception("Unable to find '" + appJar + "' for unpacking.");
         }
 
-        return System.getProperty("java.io.tmpdir") + appJar;
+        return System.getProperty("java.io.tmpdir");
     }
 
     /**
