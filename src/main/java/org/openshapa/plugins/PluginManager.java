@@ -313,14 +313,12 @@ public final class PluginManager {
                     }
                 }
             }
-        } catch (InstantiationException e) {
-            logger.error("Unable to instantiate plugin", e);
-        } catch (IllegalAccessException e) {
-            logger.error("Unable to instantiate plugin", e);
         } catch (ClassNotFoundException e) {
             logger.error("Unable to find plugin.", e);
         } catch (ClassFormatError e) {
             logger.error("Plugin with bad class format.", e);
+        } catch (Throwable e) {
+        	logger.error("Unable to instantiate plugin", e);
         }
     }
 
