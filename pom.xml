@@ -260,9 +260,9 @@
 
       <dependencies>
         <dependency>
-          <groupId>com.googlecode</groupId>
-          <artifactId>gstreamer-osx64</artifactId>
-          <version>1.4B</version> <!--  NB: You'll need to update org.openshapa.Launcher when this changes. -->
+          <groupId>org.openshapa</groupId>
+          <artifactId>openshapa-nativelibs-gstreamer-osx64</artifactId>
+          <version>0.10.29.a</version> <!--  NB: You'll need to update org.openshapa.Launcher when this changes. -->
         </dependency>
         
         <dependency>

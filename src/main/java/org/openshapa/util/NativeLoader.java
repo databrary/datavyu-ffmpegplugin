@@ -13,7 +13,7 @@ import java.util.jar.JarFile;
 public class NativeLoader {
 
     /** The size of the buffer to use when un zipping native libraries. */
-    private static final int BUFFER = 2048;
+    private static final int BUFFER = 16384;
 
     /** The list of all the native loaded odds and ends that need unpacking. */
     private static final ArrayList<File> loadedLibs = new ArrayList<File>();
@@ -29,8 +29,11 @@ public class NativeLoader {
      * location.
      */
     static public String unpackNativeApp(final String appJar) throws Exception {
-        int count;
-        byte[] data = new byte[BUFFER];
+    	final String nativeLibraryPath = System.getProperty("java.io.tmpdir") + "nativelibs";
+    	final File nativeLibraryFolder = new File(nativeLibraryPath);
+    	if (!nativeLibraryFolder.exists()) {
+    		nativeLibraryFolder.mkdir();
+    	}
 
         // Search the class path for the application jar.
         JarFile jar = null;
@@ -49,8 +52,7 @@ public class NativeLoader {
             while (entries.hasMoreElements()) {
                 JarEntry inFile = entries.nextElement();
 
-                File outFile = new File(System.getProperty("java.io.tmpdir")
-                                  + File.separator + inFile.getName());
+                File outFile = new File(nativeLibraryPath + File.separator + inFile.getName());
 
                 // If the file from the jar is a directory, create it.
                 if (inFile.isDirectory()) {
@@ -64,6 +66,8 @@ public class NativeLoader {
                     FileOutputStream out = new FileOutputStream(outFile);
                     BufferedOutputStream dest = new BufferedOutputStream(out,
                                                                          BUFFER);
+                    int count;
+                    byte[] data = new byte[BUFFER];
                     while ((count = in.read(data, 0, BUFFER)) != -1) {
                         dest.write(data, 0, count);
                     }
@@ -85,7 +89,7 @@ public class NativeLoader {
             throw new Exception("Unable to find '" + appJar + "' for unpacking.");
         }
 
-        return System.getProperty("java.io.tmpdir");
+        return nativeLibraryPath;
     }
 
     /**

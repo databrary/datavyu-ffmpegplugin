@@ -20,7 +20,7 @@ public class Launcher {
 
     /**
      * The main entry point for the OpenSHAPA Launcher on OSX platform - this
-     * essentially unpacks and installs the required native gstreamer libs.
+     * essentially unpacks and installs the required native libraries.
      *
      * @params args The arguments passed to the application.
      */
@@ -38,8 +38,7 @@ public class Launcher {
 
             // Unpack and install applications necessary for OpenSHAPA to
             // function correctly.
-            final String gstreamerLibraryPath = NativeLoader.unpackNativeApp("gstreamer-osx64-1.4B") + "gstreamer-osx64-1.4B";
-
+            final String gstreamerLibraryPath = NativeLoader.unpackNativeApp("openshapa-nativelibs-gstreamer-osx64-0.10.29.a");
             final String openshapaNativeLibraryPath = NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.1");
             
             final String splashFileLocation = gstreamerLibraryPath + "/splash.png";
