@@ -65,7 +65,7 @@ public class Launcher {
             // applications to function correctly (i.e. gstreamer).
             Map<String, String> env = builder.environment();
 
-            String path = env.get("PATH") + ":" + gstreamerLibraryPath;
+            String path = gstreamerLibraryPath + ":" + env.get("PATH");
             env.put("PATH", path);
             env.put("GST_PLUGIN_SCANNER", gstreamerLibraryPath);
             env.put("GST_PLUGIN_PATH", gstreamerLibraryPath + "/gstreamer-0.10");
