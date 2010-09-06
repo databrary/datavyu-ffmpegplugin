@@ -27,6 +27,7 @@ public class Launcher {
     public static void main(final String[] args) {
         int returnStatus = 0;
         final boolean dumpOutputStreams = true /* added for easier debugging */ | "true".equals(System.getProperty("openshapa.debug"));
+        final boolean dumpLaunchCommandForDebugging = true;
         File splashScreenImage = null;
         
         try {
@@ -47,6 +48,15 @@ public class Launcher {
                     "-cp", classPath,
                     "org.openshapa.OpenSHAPA");
 
+            if (dumpLaunchCommandForDebugging) {
+            	final StringBuilder launchString = new StringBuilder("OpenSHAPA launch command: ");
+            	for (String s : builder.command()) {
+            		launchString.append(s);
+            		launchString.append(' ');
+            	}
+            	System.err.println(launchString.toString());
+            }
+            
             // Build up environment variables required to execute OpenSHAPA
             // correctly, this includes variables required for our native
             // applications to function correctly (i.e. gstreamer).
@@ -65,7 +75,7 @@ public class Launcher {
             	connect(p.getErrorStream(), System.err);
             }
             if (SplashScreen.getSplashScreen() != null) {
-            	// wait until for the OpenSHAPA splash screen to be visible (overlaid on top of the Launcher's splash screen)
+            	// wait for the OpenSHAPA splash screen to be visible (overlaid on top of the Launcher's splash screen)
             	Thread.sleep(3000);
             	// remove the Launcher's splash screen (while the OpenSHAPA splash screen is visible)
             	SplashScreen.getSplashScreen().close();
