@@ -628,7 +628,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
 
     @Override
     public void setSimpleDatabase(SimpleDatabase sDB) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    	// not currently needed
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

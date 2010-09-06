@@ -465,7 +465,7 @@ public final class SpectrumDataViewer implements DataViewer {
 
     @Override
     public void setSimpleDatabase(SimpleDatabase sDB) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    	// not currently needed
     }
 
 }
