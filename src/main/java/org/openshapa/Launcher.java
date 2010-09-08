@@ -39,7 +39,7 @@ public class Launcher {
             // Unpack and install applications necessary for OpenSHAPA to
             // function correctly.
             final String gstreamerLibraryPath = NativeLoader.unpackNativeApp("openshapa-nativelibs-gstreamer-osx64-0.10.29.a");
-            final String openshapaNativeLibraryPath = NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.1");
+            final String openshapaNativeLibraryPath = NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.2");
             
             final String splashFileLocation = gstreamerLibraryPath + "/splash.png";
             splashScreenImage = extractResource(gstreamerLibraryPath, "icons/splash.png", splashFileLocation);

@@ -374,7 +374,7 @@ public class GStreamerDataViewer implements DataViewer {
             updatePlaybackVolume();
             gstreamerSeek(TimeUnit.NANOSECONDS.convert(position,
                     TimeUnit.MILLISECONDS));
-//            waitForPlaybinStateChange();
+            waitForPlaybinStateChange();
         }
     }
 

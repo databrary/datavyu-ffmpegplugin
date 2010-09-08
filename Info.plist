@@ -48,10 +48,10 @@
         <string>$JAVAROOT/repo/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar</string>
         <string>$JAVAROOT/repo/apple/java/applejavaextensions/1.4/applejavaextensions-1.4.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openshapa-nativelibs-gstreamer-osx64/0.10.29.a/openshapa-nativelibs-gstreamer-osx64-0.10.29.a.jar</string>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa-nativelibs-osx64/0.1/openshapa-nativelibs-osx64-0.1.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa-nativelibs-osx64/0.1/openshapa-nativelibs-osx64-0.2.jar</string>
         <!-- start of rococoa dependencies -->
-        <string>$JAVAROOT/repo/org/rococoa/rococoa-cocoa/0.5.1x2/rococoa-cocoa-0.5.1x2.jar</string>
-        <string>$JAVAROOT/repo/org/rococoa/rococoa-core/0.5.1x2/rococoa-core-0.5.1x2.jar</string>
+        <string>$JAVAROOT/repo/org/rococoa/rococoa-cocoa/0.5.1x3/rococoa-cocoa-0.5.1x3.jar</string>
+        <string>$JAVAROOT/repo/org/rococoa/rococoa-core/0.5.1x3/rococoa-core-0.5.1x3.jar</string>
         <string>$JAVAROOT/repo/cglib/cglib/2.2/cglib-2.2.jar</string>
         <string>$JAVAROOT/repo/org/slf4j/slf4j-api/1.5.8/slf4j-api-1.5.8.jar</string>
         <string>$JAVAROOT/repo/org/slf4j/slf4j-jdk14/1.5.8/slf4j-jdk14-1.5.8.jar</string>

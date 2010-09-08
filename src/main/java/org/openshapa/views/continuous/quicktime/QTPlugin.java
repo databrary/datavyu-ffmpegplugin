@@ -48,7 +48,7 @@ public final class QTPlugin implements Plugin {
     public DataViewer getNewDataViewer(final java.awt.Frame parent,
         final boolean modal) {
     	if (Platform.isMac()) {
-    		return new QTKitDataViewer(parent, modal);
+    		return new QTKitVer7DataViewer(parent, modal);
     	} else if (Platform.isWindows()) {
     		return new QTJavaDataViewer(parent, modal);
     	} else {
