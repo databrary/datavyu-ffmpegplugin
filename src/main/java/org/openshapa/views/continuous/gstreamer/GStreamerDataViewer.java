@@ -218,7 +218,7 @@ public class GStreamerDataViewer implements DataViewer {
 
         videoDialog.setVisible(false);
         videoDialog.setName("videoDialog");
-        videoDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        videoDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         videoDialog.addWindowListener(new WindowAdapter() {
                 public void windowClosing(final WindowEvent evt) {
                     GStreamerDataViewer.this.windowClosing(evt);

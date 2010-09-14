@@ -67,8 +67,8 @@ import org.openshapa.views.continuous.Plugin;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.event.WindowListener;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 
@@ -782,6 +782,49 @@ public final class DataControllerV extends OpenSHAPADialog
         OpenSHAPA.getProjectController().projectChanged();
 
     }
+
+    /**
+     * Binds a window event listener to a data viewer.
+     *
+     * @param id The identifier of the viewer to bind to.
+     */
+    public void bindWindowListenerToDataViewer(final Identifier id,
+            final WindowListener wl) {
+
+        DataViewer viewer = null;
+        for (DataViewer v: viewers) {
+            if (v.getIdentifier().equals(id)) {
+                viewer = v;
+                break;
+            }
+        }
+
+        if (viewer != null) {
+            viewer.getParentJDialog().addWindowListener(wl);
+        }
+    }
+
+    /**
+     * Binds a window event listener to a data viewer.
+     *
+     * @param id The identifier of the viewer to bind to.
+     */
+    public void setDataViewerVisibility(final Identifier id,
+            final boolean visible) {
+
+        DataViewer viewer = null;
+        for (DataViewer v: viewers) {
+            if (v.getIdentifier().equals(id)) {
+                viewer = v;
+                break;
+            }
+        }
+
+        if (viewer != null) {
+            viewer.getParentJDialog().setVisible(visible);
+        }
+    }
+
 
     /**
      * Presents a confirmation dialog when removing a plugin from the project.

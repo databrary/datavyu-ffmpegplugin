@@ -282,8 +282,9 @@ public final class MixerController implements PropertyChangeListener,
 
             // TODO Could probably use this same component to handle vertical
             // resizing...
+            // TODO replace this x value with a constant!
             String template =
-                "id filler, h 0!, grow 120 0, wmin ${wmin}, cell 0 0 ";
+                "id filler, h 0!, grow 140 0, wmin ${wmin}, cell 0 0 ";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
             layeredPane.setLayer(filler, 0);
@@ -346,7 +347,7 @@ public final class MixerController implements PropertyChangeListener,
 
             Map<String, String> constraints = Maps.newHashMap();
             // TODO replace this x value with a constant!
-            constraints.put("x", "110");
+            constraints.put("x", "130");
             constraints.put("y", "0");
 
             // Padding from the right
@@ -374,7 +375,7 @@ public final class MixerController implements PropertyChangeListener,
 
             Map<String, String> constraints = Maps.newHashMap();
             // TODO replace this x value with a constant!
-            constraints.put("x", "112");
+            constraints.put("x", "132");
             constraints.put("y", "0");
 
             // Padding from the right
@@ -444,8 +445,8 @@ public final class MixerController implements PropertyChangeListener,
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
             // TODO replace this x value with a constant!
-            layeredPane.setLayer(tracksScrollBar, 120);
-            layeredPane.add(tracksScrollBar, sub.replace(template), 120);
+            layeredPane.setLayer(tracksScrollBar, 140);
+            layeredPane.add(tracksScrollBar, sub.replace(template), 140);
         }
 
         {

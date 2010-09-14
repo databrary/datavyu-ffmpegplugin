@@ -17,6 +17,6 @@ public final class TimescaleConstants {
     public static final Color MILLISECONDS_COLOR = Color.GRAY.darker();
 
     //TODO - This should be queried from TrackController
-    public static final int XPOS_ABS = 121;
+    public static final int XPOS_ABS = 141;
 
 }

@@ -136,11 +136,13 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
             }
 
             @Override public AbstractButton getActionButton2() {
-                return visibleButton;
+//                return visibleButton;
+                return resizeButton;
             }
 
             @Override public AbstractButton getActionButton3() {
-                return resizeButton;
+//                return resizeButton;
+                return null;
             }
         };
 
@@ -158,7 +160,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
 
         offset = 0;
         playing = false;
-        
+
         volumeButton = new JButton();
         volumeButton.setIcon(getActionButtonIcon1());
         volumeButton.setBorderPainted(false);
@@ -578,6 +580,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
     // [generated]
     //
 
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -587,7 +590,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
                 public void windowClosing(
                     final java.awt.event.WindowEvent evt) {

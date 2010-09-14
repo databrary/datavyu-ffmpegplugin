@@ -119,7 +119,7 @@ public final class SpectrumDataViewer implements DataViewer {
 
                     dialog = new SpectrumDialog(parent, modal);
                     dialog.setDefaultCloseOperation(
-                        WindowConstants.DISPOSE_ON_CLOSE);
+                        WindowConstants.HIDE_ON_CLOSE);
                     dialog.addWindowListener(new WindowAdapter() {
                             public void windowClosing(final WindowEvent evt) {
                                 dialogClosing(evt);

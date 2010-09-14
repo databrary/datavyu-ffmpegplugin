@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -65,7 +67,7 @@ public final class TrackController implements ViewerStateListener,
     // TODO Add as part of layout construction.
     private static final int CARRIAGE_WIDTH = 653;
     private static final int CARRIAGE_HEIGHT = 75;
-    private static final int HEADER_WIDTH = 120;
+    private static final int HEADER_WIDTH = 140;
     private static final int ACTION_BUTTON_WIDTH = 20;
     private static final int ACTION_BUTTON_HEIGHT = 20;
 
@@ -92,6 +94,17 @@ public final class TrackController implements ViewerStateListener,
 
     /** Button for unloading the track (and its associated plugin). */
     private final JButton rubbishButton;
+
+    /** Button for hiding or showing the data viewer. */
+    private final JButton visibleButton;
+
+    /** Icon for hiding the video. */
+    private final ImageIcon eyeIcon = new ImageIcon(getClass().getResource(
+                "/icons/eye.png"));
+
+    /** Icon for showing the video. */
+    private final ImageIcon hiddenIcon = new ImageIcon(getClass().getResource(
+                "/icons/eye-shut.png"));
 
     /** Unlock icon. */
     private final ImageIcon unlockIcon = new ImageIcon(getClass().getResource(
@@ -121,6 +134,8 @@ public final class TrackController implements ViewerStateListener,
     // can the carriage be moved using the mouse when snap is switched on
     private boolean isMoveable;
 
+    private boolean isViewerVisible = true;
+
 
     /**
      * Creates a new TrackController.
@@ -132,7 +147,7 @@ public final class TrackController implements ViewerStateListener,
         isMoveable = true;
 
         view = new JPanel();
-        view.setLayout(new MigLayout("fillx, ins 0", "[120!]0[]"));
+        view.setLayout(new MigLayout("fillx, ins 0", "[140!]0[]"));
         view.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
 
         this.trackPainter = trackPainter;
@@ -182,13 +197,13 @@ public final class TrackController implements ViewerStateListener,
 
         trackLabel.setName("trackLabel");
 
-        header = new JPanel(new MigLayout("ins 0, wrap 5"));
+        header = new JPanel(new MigLayout("ins 0, wrap 6"));
         header.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 0, 1, BORDER_COLOR),
                 BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         header.setBackground(Color.LIGHT_GRAY);
-        header.add(trackLabel, "w 116!, span 5");
-        header.add(iconLabel, "span 5, w 116!, h 32!");
+        header.add(trackLabel, "w 136!, span 6");
+        header.add(iconLabel, "span 6, w 136!, h 32!");
 
         // Set up the button used for locking/unlocking track movement
         lockUnlockButton = new JButton(unlockIcon);
@@ -203,6 +218,19 @@ public final class TrackController implements ViewerStateListener,
         header.add(lockUnlockButton, "w 20!, h 20!");
         lockUnlockButton.setName("lockUnlockButton");
 
+        // Set up the button used for hiding/showing a track's data viewer
+        visibleButton = new JButton(eyeIcon);
+        visibleButton.setContentAreaFilled(false);
+        visibleButton.setBorderPainted(false);
+        visibleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleVisibleButtonEvent(e);
+            }
+        });
+        header.add(visibleButton, "w 20!, h 20!");
+        visibleButton.setName("visibleButton");
+
         // Set up the button used for removing a track and its plugin
         rubbishButton = new JButton(rubbishIcon);
         rubbishButton.setContentAreaFilled(false);
@@ -213,9 +241,9 @@ public final class TrackController implements ViewerStateListener,
                 handleRubbishButtonEvent(e);
             }
         });
-        header.add(rubbishButton, "w 20!, h 20!, cell 4 2");
+//        header.add(rubbishButton, "w 20!, h 20!, cell 5 2");
 
-        view.add(header, "w 120!, h 75!");
+        view.add(header, "w 140!, h 75!");
 
         // Create the Carriage panel
         view.add(trackPainter, "w 654::, growx, h 75!");
@@ -265,6 +293,14 @@ public final class TrackController implements ViewerStateListener,
     public void setTrackOffset(final long offset) {
         trackModel.setOffset(offset);
         trackPainter.setTrackModel(trackModel);
+    }
+
+    private ImageIcon getVisibleButtonIcon() {
+        if (isViewerVisible) {
+            return eyeIcon;
+        } else {
+            return hiddenIcon;
+        }
     }
 
     /**
@@ -474,20 +510,20 @@ public final class TrackController implements ViewerStateListener,
 
                     if (actions.getActionButton1() != null) {
                         header.add(actions.getActionButton1(),
-                            "w 20!, h 20!, cell 1 2");
+                            "w 20!, h 20!, cell 2 2");
                     }
 
                     if (actions.getActionButton2() != null) {
                         header.add(actions.getActionButton2(),
-                            "w 20!, h 20!, cell 2 2");
+                            "w 20!, h 20!, cell 3 2");
                     }
 
                     if (actions.getActionButton3() != null) {
                         header.add(actions.getActionButton3(),
-                            "w 20!, h 20!, cell 3 2");
+                            "w 20!, h 20!, cell 4 2");
                     }
 
-                    header.add(rubbishButton, "w 20!, h 20!, cell 4 2");
+                    header.add(rubbishButton, "w 20!, h 20!, cell 5 2");
 
                     header.validate();
                 }
@@ -557,6 +593,19 @@ public final class TrackController implements ViewerStateListener,
      */
     private void handleRubbishButtonEvent(final ActionEvent e) {
         OpenSHAPA.getDataController().shutdown(trackModel.getId());
+    }
+
+    /**
+     * Handles the event for hiding/showing a data viewer with the eye button.
+     * @param e The event to handle.
+     */
+    private void handleVisibleButtonEvent(final ActionEvent e) {
+        isViewerVisible = !isViewerVisible;
+
+        OpenSHAPA.getDataController().setDataViewerVisibility(trackModel.getId(),
+                isViewerVisible);
+
+        visibleButton.setIcon(getVisibleButtonIcon());
     }
 
     /**
@@ -803,6 +852,20 @@ public final class TrackController implements ViewerStateListener,
         if (Viewport.NAME.equals(evt.getPropertyName())) {
             view.repaint();
         }
+    }
+
+    public void attachAsWindowListener() {
+        OpenSHAPA.getDataController().bindWindowListenerToDataViewer(
+                trackModel.getId(), new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                isViewerVisible = false;
+                visibleButton.setIcon(getVisibleButtonIcon());
+            }
+
+        });
+
     }
 
     /**
