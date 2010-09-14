@@ -609,7 +609,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
         stop();
         cleanUp();
         volumeDialog.setVisible(false);
-        parent.shutdown(this);
+//        parent.shutdown(this);
     }
 
     protected abstract void cleanUp();
@@ -629,6 +629,11 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
     @Override
     public void setSimpleDatabase(SimpleDatabase sDB) {
     	// not currently needed
+    }
+
+    @Override
+    public void clearDataFeed() {
+        cleanUp();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
