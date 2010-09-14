@@ -458,14 +458,27 @@ public final class SpectrumDataViewer implements DataViewer {
         // Stop the engine thread.
         engine.interrupt();
 
+        /*
         if (dataC != null) {
             dataC.shutdown(this);
         }
+         */
     }
 
     @Override
     public void setSimpleDatabase(SimpleDatabase sDB) {
-    	// not currently needed
+
+    }
+
+    @Override
+    public void clearDataFeed() {
+        track.deregister();
+
+        // Shutdown the engine
+        engine.shutdown();
+
+        // Stop the engine thread.
+        engine.interrupt();
     }
 
 }

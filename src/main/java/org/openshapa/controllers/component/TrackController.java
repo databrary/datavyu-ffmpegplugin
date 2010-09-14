@@ -65,7 +65,7 @@ public final class TrackController implements ViewerStateListener,
     // TODO Add as part of layout construction.
     private static final int CARRIAGE_WIDTH = 653;
     private static final int CARRIAGE_HEIGHT = 75;
-    private static final int HEADER_WIDTH = 100;
+    private static final int HEADER_WIDTH = 120;
     private static final int ACTION_BUTTON_WIDTH = 20;
     private static final int ACTION_BUTTON_HEIGHT = 20;
 
@@ -90,6 +90,9 @@ public final class TrackController implements ViewerStateListener,
     /** Button for (un)locking the track. */
     private final JButton lockUnlockButton;
 
+    /** Button for unloading the track (and its associated plugin). */
+    private final JButton rubbishButton;
+
     /** Unlock icon. */
     private final ImageIcon unlockIcon = new ImageIcon(getClass().getResource(
                 "/icons/track-unlock.png"));
@@ -97,6 +100,10 @@ public final class TrackController implements ViewerStateListener,
     /** Lock icon. */
     private final ImageIcon lockIcon = new ImageIcon(getClass().getResource(
                 "/icons/track-lock.png"));
+
+    /** Lock icon. */
+    private final ImageIcon rubbishIcon = new ImageIcon(getClass().getResource(
+                "/icons/rubbish.png"));
 
     /** Viewable model. */
     private final MixerView mixer;
@@ -125,7 +132,7 @@ public final class TrackController implements ViewerStateListener,
         isMoveable = true;
 
         view = new JPanel();
-        view.setLayout(new MigLayout("fillx, ins 0", "[100!]0[]"));
+        view.setLayout(new MigLayout("fillx, ins 0", "[120!]0[]"));
         view.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
 
         this.trackPainter = trackPainter;
@@ -175,27 +182,40 @@ public final class TrackController implements ViewerStateListener,
 
         trackLabel.setName("trackLabel");
 
-        header = new JPanel(new MigLayout("ins 0, wrap 4"));
+        header = new JPanel(new MigLayout("ins 0, wrap 5"));
         header.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 0, 1, BORDER_COLOR),
                 BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         header.setBackground(Color.LIGHT_GRAY);
-        header.add(trackLabel, "w 96!, span 4");
-        header.add(iconLabel, "span 4, w 96!, h 32!");
+        header.add(trackLabel, "w 116!, span 5");
+        header.add(iconLabel, "span 5, w 116!, h 32!");
 
         // Set up the button used for locking/unlocking track movement
         lockUnlockButton = new JButton(unlockIcon);
         lockUnlockButton.setContentAreaFilled(false);
         lockUnlockButton.setBorderPainted(false);
         lockUnlockButton.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    handleLockUnlockButtonEvent(e);
-                }
-            });
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                handleLockUnlockButtonEvent(e);
+            }
+        });
         header.add(lockUnlockButton, "w 20!, h 20!");
         lockUnlockButton.setName("lockUnlockButton");
 
-        view.add(header, "w 100!, h 75!");
+        // Set up the button used for removing a track and its plugin
+        rubbishButton = new JButton(rubbishIcon);
+        rubbishButton.setContentAreaFilled(false);
+        rubbishButton.setBorderPainted(false);
+        rubbishButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleRubbishButtonEvent(e);
+            }
+        });
+        header.add(rubbishButton, "w 20!, h 20!, cell 4 2");
+
+        view.add(header, "w 120!, h 75!");
 
         // Create the Carriage panel
         view.add(trackPainter, "w 654::, growx, h 75!");
@@ -425,6 +445,7 @@ public final class TrackController implements ViewerStateListener,
                 }
 
                 if (val != null) {
+
                     trackModel.setDuration(val);
                     view.repaint();
                     OpenSHAPA.getDataController().updateMaxViewerDuration();
@@ -465,6 +486,8 @@ public final class TrackController implements ViewerStateListener,
                         header.add(actions.getActionButton3(),
                             "w 20!, h 20!, cell 3 2");
                     }
+
+                    header.add(rubbishButton, "w 20!, h 20!, cell 4 2");
 
                     header.validate();
                 }
@@ -526,6 +549,14 @@ public final class TrackController implements ViewerStateListener,
         }
 
         fireLockStateChangedEvent();
+    }
+
+    /**
+     * Handles the event for removing a track with the rubbish bin button.
+     * @param e The event to handle.
+     */
+    private void handleRubbishButtonEvent(final ActionEvent e) {
+        OpenSHAPA.getDataController().shutdown(trackModel.getId());
     }
 
     /**

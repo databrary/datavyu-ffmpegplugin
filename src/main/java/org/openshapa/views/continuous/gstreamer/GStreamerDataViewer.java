@@ -76,7 +76,19 @@ public class GStreamerDataViewer implements DataViewer {
 
     @Override
     public void setSimpleDatabase(SimpleDatabase sDB) {
-        // not currently needed
+
+    }
+
+    @Override
+    public void clearDataFeed() {
+        if (playBin != null) {
+            playBin.setVolume(MUTE_VOLUME);
+            playBin.setState(State.NULL);
+            playBin = null;
+            videoComponent = null;
+        }
+
+        Gst.deinit();
     }
 
     private enum VideoSinkType {
@@ -526,9 +538,11 @@ public class GStreamerDataViewer implements DataViewer {
 
         Gst.deinit();
 
+        /*
         if (parentDataController != null) {
             parentDataController.shutdown(this);
         }
+         */
     }
 
     @Override public void setOffset(final long offset) {
