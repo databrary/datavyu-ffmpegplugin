@@ -19,6 +19,7 @@ import java.util.SimpleTimeZone;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
@@ -365,20 +366,25 @@ public final class DataControllerV extends OpenSHAPADialog
         // Plugin plugin = pm.getAssociatedPlugin(ff);
 
         if (plugin != null) {
-            DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
-                    .getApplication().getMainFrame(), false);
-            dataViewer.setIdentifier(IDController.generateIdentifier());
-            dataViewer.setDataFeed(f);
-            dataViewer.seekTo(clock.getTime());
-            dataViewer.setSimpleDatabase(
-                    OpenSHAPA.getProjectController().getSimpleDB());
-            addDataViewer(plugin.getTypeIcon(), dataViewer, f,
-                dataViewer.getTrackPainter());
-            mixerController.bindTrackActions(dataViewer.getIdentifier(),
-                dataViewer.getCustomActions());
-            dataViewer.addViewerStateListener(
-                mixerController.getTracksEditorController()
-                    .getViewerStateListener(dataViewer.getIdentifier()));
+        	try {
+	            DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
+	                    .getApplication().getMainFrame(), false);
+	            dataViewer.setIdentifier(IDController.generateIdentifier());
+	            dataViewer.setDataFeed(f);
+	            dataViewer.seekTo(clock.getTime());
+	            dataViewer.setSimpleDatabase(
+	                    OpenSHAPA.getProjectController().getSimpleDB());
+	            addDataViewer(plugin.getTypeIcon(), dataViewer, f,
+	                dataViewer.getTrackPainter());
+	            mixerController.bindTrackActions(dataViewer.getIdentifier(),
+	                dataViewer.getCustomActions());
+	            dataViewer.addViewerStateListener(
+	                mixerController.getTracksEditorController()
+	                    .getViewerStateListener(dataViewer.getIdentifier()));
+        	} catch (Throwable t) {
+        		logger.error(t);
+        		JOptionPane.showMessageDialog(null, "Could not open data source: " + t.getMessage());
+        	}
         }
     }
 

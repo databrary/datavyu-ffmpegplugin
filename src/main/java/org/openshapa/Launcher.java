@@ -38,6 +38,7 @@ public class Launcher {
 
             // Unpack and install applications necessary for OpenSHAPA to
             // function correctly.
+                        
             final String gstreamerLibraryPath = NativeLoader.unpackNativeApp("openshapa-nativelibs-gstreamer-osx64-0.10.29.a");
             final String openshapaNativeLibraryPath = NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.2");
             
@@ -47,7 +48,7 @@ public class Launcher {
             ProcessBuilder builder = new ProcessBuilder("java",
                     "-splash:" + splashFileLocation,
                     "-cp", classPath,
-                    "-Djna.library.path=" + openshapaNativeLibraryPath,
+                    "-Djava.library.path=" + openshapaNativeLibraryPath,
                     "org.openshapa.OpenSHAPA");
 
             if (dumpLaunchCommandForDebugging) {
@@ -64,13 +65,16 @@ public class Launcher {
             // correctly, this includes variables required for our native
             // applications to function correctly (i.e. gstreamer).
             Map<String, String> env = builder.environment();
-
+/*
             String path = gstreamerLibraryPath + ":" + env.get("PATH");
             env.put("PATH", path);
             env.put("GST_PLUGIN_SCANNER", gstreamerLibraryPath);
             env.put("GST_PLUGIN_PATH", gstreamerLibraryPath + "/gstreamer-0.10");
             env.put("DYLD_LIBRARY_PATH", gstreamerLibraryPath);
-
+*/
+  
+            OpenSHAPA.main(args);
+/*            
             // Start the OpenSHAPA process.
             Process p = builder.start();
             if (dumpOutputStreams) {
@@ -84,6 +88,7 @@ public class Launcher {
             	SplashScreen.getSplashScreen().close();
             }
             p.waitFor();
+*/            
         } catch (Exception e) {
             System.err.println("Unable to start OpenSHAPA: ");
         	JOptionPane.showMessageDialog(null, "Unable to start OpenSHAPA: " + e.getMessage());

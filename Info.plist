@@ -23,11 +23,16 @@
     <key>Java</key>
     <dict>
       <key>MainClass</key>
-      <string>org.openshapa.Launcher</string>
+      <string>org.openshapa.OpenSHAPA</string>
       <key>JVMVersion</key>
       <string>1.6+</string>
       <key>SplashFile</key>
       <string>$JAVAROOT/../splash.png</string>
+      <key>Properties</key>
+      <dict>
+      	<key>jna.library.path</key>
+      	<string>/System/Library/Frameworks/GStreamer.framework/Versions/Current/Library/</string>
+      </dict>
       <key>ClassPath</key>
       <array>
         <string>$JAVAROOT/repo/org/openshapa/openshapa/1.08/openshapa-1.08.jar</string>
@@ -48,7 +53,7 @@
         <string>$JAVAROOT/repo/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar</string>
         <string>$JAVAROOT/repo/apple/java/applejavaextensions/1.4/applejavaextensions-1.4.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openshapa-nativelibs-gstreamer-osx64/0.10.29.a/openshapa-nativelibs-gstreamer-osx64-0.10.29.a.jar</string>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa-nativelibs-osx64/0.1/openshapa-nativelibs-osx64-0.2.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa-nativelibs-osx64/0.2/openshapa-nativelibs-osx64-0.2.jar</string>
         <!-- start of rococoa dependencies -->
         <string>$JAVAROOT/repo/org/rococoa/rococoa-cocoa/0.5.1x3/rococoa-cocoa-0.5.1x3.jar</string>
         <string>$JAVAROOT/repo/org/rococoa/rococoa-core/0.5.1x3/rococoa-core-0.5.1x3.jar</string>

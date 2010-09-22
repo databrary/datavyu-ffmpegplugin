@@ -39,6 +39,7 @@ import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.MacHandler;
+import org.openshapa.util.NativeLoader;
 
 import org.openshapa.views.AboutV;
 import org.openshapa.views.DataControllerV;
@@ -46,6 +47,7 @@ import org.openshapa.views.VariableListV;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
 
+import com.sun.jna.NativeLibrary;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 
 import com.usermetrix.jclient.Logger;
@@ -808,6 +810,27 @@ public final class OpenSHAPA extends SingleFrameApplication
                 System.err.println("Unable to access OpenSHAPA");
             } catch (UnsupportedLookAndFeelException ulafe) {
                 System.err.println("Unsupporter look and feel exception");
+            }
+            
+            System.err.println("jna.library.path=" + System.getProperty("jna.library.path"));
+            
+            try {
+            	NativeLibrary.addSearchPath("gstreamer-0.10", "/System/Library/Frameworks/GStreamer.framework/Versions/Current/Library/");
+//            	System.load("/System/Library/Frameworks/GStreamer.framework/Versions/Current/Library/libgstreamer-0.10.dylib");
+            } catch (UnsatisfiedLinkError e) {
+            	// GStreamer is not installed
+            	System.err.println("GStreamer does not appear to be installed:");
+            	e.printStackTrace();
+            }
+
+            try {
+                final String openshapaNativeLibraryPath = NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.2");
+                System.out.println("openshapaNativeLibraryPath=" + openshapaNativeLibraryPath);
+            	NativeLibrary.addSearchPath("rococoa", openshapaNativeLibraryPath);
+            	System.load(openshapaNativeLibraryPath + "/librococoa.dylib");
+            } catch (Exception e) {
+            	System.err.println("Could not load rococoa:");
+            	e.printStackTrace();
             }
         }
 

@@ -140,7 +140,7 @@ public class GStreamerDataViewer implements DataViewer {
     private final double MUTE_VOLUME = 0.0;
 
     /** Duration of time (seconds) to wait for before aborting an attempt to load a video. */
-    private final long VIDEO_LOADING_TIMEOUT_SECONDS = 30;
+    private final long VIDEO_LOADING_TIMEOUT_SECONDS = 60;
 
     private long lastPlayingSeekTime = System.currentTimeMillis();
     private final long minimumIntervalBetweenPlayingSeeks = 5000;

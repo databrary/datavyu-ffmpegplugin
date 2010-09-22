@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.gstreamer.Gst;
 
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Filter;
@@ -70,4 +71,10 @@ public class GStreamerPlugin implements Plugin {
         return "GStreamer Video";
     }
 
+    static {
+    	Gst.init();
+  
+//TODO need to do this somewhere to balance out the init/deinit calls    	
+//    	Gst.deinit();
+    }
 }

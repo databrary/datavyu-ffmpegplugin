@@ -20,7 +20,7 @@ import org.rococoa.cocoa.qtkit.QTTrack;
 
 
 /**
- * Data viewer for QuickTime 7 using the Cocoa QTKit API. 
+ * Data viewer for QuickTime using the Cocoa QTKit API. 
  */
 public abstract class BaseQTKitDataViewer extends BaseQuickTimeDataViewer {
 	protected QTMovieView movieView;
@@ -109,10 +109,8 @@ public abstract class BaseQTKitDataViewer extends BaseQuickTimeDataViewer {
     public void seekTo(final long position) {
         if (movie != null) {
         	System.out.println("seekTo(" + position + "), drift=" + (position - getCurrentTime()));
-        	if (!isPlaying()) {
-	        	QTTime time = new QTTime(position, Constants.TICKS_PER_SECOND);
-	            movie.setCurrentTime(time);
-        	}
+        	QTTime time = new QTTime(position, Constants.TICKS_PER_SECOND);
+            movie.setCurrentTime(time);
         }
     }
 
