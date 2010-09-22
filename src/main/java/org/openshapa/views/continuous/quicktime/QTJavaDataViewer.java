@@ -16,6 +16,7 @@ import quicktime.app.view.QTFactory;
 import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
 
+import quicktime.qd.QDDimension;
 import quicktime.qd.QDRect;
 
 import quicktime.std.StdQTConstants;
@@ -32,10 +33,12 @@ import com.usermetrix.jclient.UserMetrix;
 
 import java.util.concurrent.TimeUnit;
 
+
 /**
  * The viewer for a quicktime video file.
  */
 public final class QTJavaDataViewer extends BaseQuickTimeDataViewer {
+
     /** The quicktime movie this viewer is displaying. */
     private Movie movie;
 
@@ -47,37 +50,41 @@ public final class QTJavaDataViewer extends BaseQuickTimeDataViewer {
 
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(getClass());
-	
-    public QTJavaDataViewer(final java.awt.Frame parent, final boolean modal) {
-    	super(parent, modal);
 
-    	movie = null;
-    	
+    public QTJavaDataViewer(final java.awt.Frame parent, final boolean modal) {
+        super(parent, modal);
+
+        movie = null;
+
         try {
+
             // Initalise QTJava.
             QTSession.open();
         } catch (Throwable e) {
             logger.error("Unable to create " + this.getClass().getName(), e);
         }
     }
-    
-    protected void setQTVolume(float volume) {
-    	if (movie == null) {
-    		return;
-    	}
-    	
+
+    protected void setQTVolume(final float volume) {
+
+        if (movie == null) {
+            return;
+        }
+
         try {
-        	movie.setVolume(volume);
+            movie.setVolume(volume);
         } catch (StdQTException ex) {
             logger.error("Unable to set volume", ex);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public long getDuration() {
+
         try {
+
             if (movie != null) {
                 return (long) Constants.TICKS_PER_SECOND
                     * (long) movie.getDuration() / movie.getTimeScale();
@@ -85,10 +92,12 @@ public final class QTJavaDataViewer extends BaseQuickTimeDataViewer {
         } catch (StdQTException ex) {
             logger.error("Unable to determine QT movie duration", ex);
         }
+
         return -1;
     }
-    
+
     protected void setQTDataFeed(final File videoFile) {
+
         try {
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
@@ -109,37 +118,42 @@ public final class QTJavaDataViewer extends BaseQuickTimeDataViewer {
             logger.error("Unable to setVideoFile", e);
         }
     }
-    
+
     protected Dimension getQTVideoSize() {
-    	try {
-	    	QDRect bounds = (movie.getBox().getHeight() > movie.getBounds().getHeight()) ? movie.getBox() : movie.getBounds();
-	    	return new Dimension(bounds.getWidth(), bounds.getHeight());
-    	} catch (QTException e) {
+
+        try {
+            QDDimension vtDim = visualTrack.getSize();
+
+            return new Dimension(vtDim.getWidth(), vtDim.getHeight());
+        } catch (QTException e) {
             logger.error("Unable to getQTNativeVideoSize", e);
-    	}
-    	return new Dimension(1, 1);
+        }
+
+        return new Dimension(1, 1);
     }
-    
+
     protected float getQTFPS() {
-    	float fps = 0;
-    	try {
-	        // BugzID:928 - FPS calculations will fail when using H264.
-	        // Apparently the Quicktime for Java API does not support a whole
-	        // bunch of methods with H264.
-	        fps = (float) visualMedia.getSampleCount()
-	            / visualMedia.getDuration() * visualMedia.getTimeScale();
-	
-	        if ((visualMedia.getSampleCount() == 1.0)
-	                || (visualMedia.getSampleCount() == 1)) {
-	            fps = correctFPS();
-	        }
-    	} catch (QTException e) {
-    		logger.error("Unable to calculate FPS", e);
-    	}
-        
+        float fps = 0;
+
+        try {
+
+            // BugzID:928 - FPS calculations will fail when using H264.
+            // Apparently the Quicktime for Java API does not support a whole
+            // bunch of methods with H264.
+            fps = (float) visualMedia.getSampleCount()
+                / visualMedia.getDuration() * visualMedia.getTimeScale();
+
+            if ((visualMedia.getSampleCount() == 1.0)
+                    || (visualMedia.getSampleCount() == 1)) {
+                fps = correctFPS();
+            }
+        } catch (QTException e) {
+            logger.error("Unable to calculate FPS", e);
+        }
+
         return fps;
     }
-    
+
     /**
      * If there was a problem getting the fps, we use this method to fix it. The
      * first few frames (number of which is specified by CORRECTIONFRAMES) are
@@ -150,9 +164,11 @@ public final class QTJavaDataViewer extends BaseQuickTimeDataViewer {
      * @return The best fps found in the first few frames.
      */
     private float correctFPS() {
+
         /** How many frames to check when correcting the FPS. */
         final int CORRECTIONFRAMES = 5;
-        float minFrameLength = TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS); // Set this to one second, as the "worst"
+        float minFrameLength = TimeUnit.MILLISECONDS.convert(1,
+                TimeUnit.SECONDS); // Set this to one second, as the "worst"
         float curFrameLen = 0;
         int curTime = 0;
 
@@ -173,15 +189,18 @@ public final class QTJavaDataViewer extends BaseQuickTimeDataViewer {
             }
         }
 
-        return TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS) / minFrameLength;
+        return TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS)
+            / minFrameLength;
     }
 
     /**
      * {@inheritDoc}
      */
     public void play() {
-    	super.play();
+        super.play();
+
         try {
+
             if (movie != null) {
                 movie.setRate(getPlaybackSpeed());
             }
@@ -189,13 +208,15 @@ public final class QTJavaDataViewer extends BaseQuickTimeDataViewer {
             logger.error("Unable to play", e);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void stop() {
-    	super.stop();
+        super.stop();
+
         try {
+
             if (movie != null) {
                 movie.stop();
             }
@@ -203,12 +224,14 @@ public final class QTJavaDataViewer extends BaseQuickTimeDataViewer {
             logger.error("Unable to stop", e);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void seekTo(final long position) {
+
         try {
+
             if (movie != null) {
                 TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
                         position);
@@ -218,21 +241,23 @@ public final class QTJavaDataViewer extends BaseQuickTimeDataViewer {
             logger.error("Unable to find", e);
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public long getCurrentTime() {
-    	try {
-    		return movie.getTime();
-    	} catch (QTException e) {
-    		logger.error("Unable to get time", e);
-    	}
-    	return 0;
+
+        try {
+            return movie.getTime();
+        } catch (QTException e) {
+            logger.error("Unable to get time", e);
+        }
+
+        return 0;
     }
-    
+
     protected void cleanUp() {
-    	//TODO
+        //TODO
     }
 
 
