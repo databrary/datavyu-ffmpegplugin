@@ -119,7 +119,7 @@ public final class SpectrumDataViewer implements DataViewer {
 
                     dialog = new SpectrumDialog(parent, modal);
                     dialog.setDefaultCloseOperation(
-                        WindowConstants.DISPOSE_ON_CLOSE);
+                        WindowConstants.HIDE_ON_CLOSE);
                     dialog.addWindowListener(new WindowAdapter() {
                             public void windowClosing(final WindowEvent evt) {
                                 dialogClosing(evt);
@@ -458,14 +458,27 @@ public final class SpectrumDataViewer implements DataViewer {
         // Stop the engine thread.
         engine.interrupt();
 
+        /*
         if (dataC != null) {
             dataC.shutdown(this);
         }
+         */
     }
 
     @Override
     public void setSimpleDatabase(SimpleDatabase sDB) {
-    	// not currently needed
+
+    }
+
+    @Override
+    public void clearDataFeed() {
+        track.deregister();
+
+        // Shutdown the engine
+        engine.shutdown();
+
+        // Stop the engine thread.
+        engine.interrupt();
     }
 
 }

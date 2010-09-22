@@ -68,6 +68,9 @@ import org.openshapa.views.continuous.Plugin;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.event.WindowListener;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -710,7 +713,7 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     /**
-     * Remove the specifed viewer from the controller.
+     * Remove the specified viewer from the controller.
      *
      * @param viewer
      *            The viewer to shutdown.
@@ -739,6 +742,127 @@ public final class DataControllerV extends OpenSHAPADialog
         }
 
         return removed;
+    }
+
+    /**
+     * Remove the specified viewer from the controller.
+     *
+     * @param id
+     *            The identifier of the viewer to shutdown.
+     */
+    public void shutdown(final Identifier id) {
+
+        DataViewer viewer = null;
+        for (DataViewer v: viewers) {
+            if (v.getIdentifier().equals(id)) {
+                viewer = v;
+                break;
+            }
+        }
+
+        if (viewer == null || !shouldRemove()) {
+            return;
+        }
+
+        viewers.remove(viewer);
+
+        viewer.stop();
+        viewer.clearDataFeed();
+        JDialog viewDialog = viewer.getParentJDialog();
+        if (viewDialog != null) {
+            viewDialog.dispose();
+        }
+
+        // BugzID:2000
+        viewer.removeViewerStateListener(
+            mixerController.getTracksEditorController()
+                .getViewerStateListener(viewer.getIdentifier()));
+
+        // Recalculate the maximum playback duration.
+        updateMaxViewerDuration();
+
+        // Remove the data viewer from the tracks panel.
+        mixerController.deregisterTrack(viewer.getIdentifier());
+
+        // Data viewer removed, mark project as changed.
+        OpenSHAPA.getProjectController().projectChanged();
+
+    }
+
+    /**
+     * Binds a window event listener to a data viewer.
+     *
+     * @param id The identifier of the viewer to bind to.
+     */
+    public void bindWindowListenerToDataViewer(final Identifier id,
+            final WindowListener wl) {
+
+        DataViewer viewer = null;
+        for (DataViewer v: viewers) {
+            if (v.getIdentifier().equals(id)) {
+                viewer = v;
+                break;
+            }
+        }
+
+        if (viewer != null) {
+            viewer.getParentJDialog().addWindowListener(wl);
+        }
+    }
+
+    /**
+     * Binds a window event listener to a data viewer.
+     *
+     * @param id The identifier of the viewer to bind to.
+     */
+    public void setDataViewerVisibility(final Identifier id,
+            final boolean visible) {
+
+        DataViewer viewer = null;
+        for (DataViewer v: viewers) {
+            if (v.getIdentifier().equals(id)) {
+                viewer = v;
+                break;
+            }
+        }
+
+        if (viewer != null) {
+            viewer.getParentJDialog().setVisible(visible);
+        }
+    }
+
+
+    /**
+     * Presents a confirmation dialog when removing a plugin from the project.
+     * @return True if the plugin should be removed, false otherwise.
+     */
+    private boolean shouldRemove() {
+//        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).
+                getContext().getResourceMap(OpenSHAPA.class);
+
+        String cancel = "Cancel";
+        String ok = "OK";
+
+        String[] options = new String[2];
+
+        if (OpenSHAPA.getPlatform() == Platform.MAC) {
+            options[0] = cancel;
+            options[1] = ok;
+        } else {
+            options[0] = ok;
+            options[1] = cancel;
+        }
+
+        int selection = JOptionPane.showOptionDialog(this,
+                rMap.getString("ClosePluginDialog.message"),
+                rMap.getString("ClosePluginDialog.title"),
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, cancel);
+
+        // Button behaviour is platform dependent.
+        return (OpenSHAPA.getPlatform() == Platform.MAC) ? (selection == 1)
+                : (selection == 0);
     }
 
     /**
