@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -15,8 +16,14 @@ public class NativeLoader {
     /** The size of the buffer to use when un zipping native libraries. */
     private static final int BUFFER = 16384;
 
+    /** The length of the random string we are using for a folder name. */
+    private static final int RAN_LEN = 32;
+
     /** The list of all the native loaded odds and ends that need unpacking. */
     private static final ArrayList<File> loadedLibs = new ArrayList<File>();
+
+    /** The folder that we stash all our native libs within. */
+    private static File nativeLibFolder;
 
     /**
      * Unpacks a native application to a temporary location so that it can be
@@ -29,11 +36,16 @@ public class NativeLoader {
      * location.
      */
     static public String unpackNativeApp(final String appJar) throws Exception {
-    	final String nativeLibraryPath = System.getProperty("java.io.tmpdir") + "nativelibs";
-    	final File nativeLibraryFolder = new File(nativeLibraryPath);
-    	if (!nativeLibraryFolder.exists()) {
-    		nativeLibraryFolder.mkdir();
-    	}
+    	final String nativeLibraryPath;
+
+        if (nativeLibFolder == null) {
+            nativeLibraryPath = System.getProperty("java.io.tmpdir")
+                                  + UUID.randomUUID().toString() + "nativelibs";
+            nativeLibFolder = new File(nativeLibraryPath);
+            if (!nativeLibFolder.exists()) {
+    		nativeLibFolder.mkdir();
+            }
+        }
 
         // Search the class path for the application jar.
         JarFile jar = null;
@@ -52,7 +64,7 @@ public class NativeLoader {
             while (entries.hasMoreElements()) {
                 JarEntry inFile = entries.nextElement();
 
-                File outFile = new File(nativeLibraryPath + File.separator + inFile.getName());
+                File outFile = new File(nativeLibFolder, inFile.getName());
 
                 // If the file from the jar is a directory, create it.
                 if (inFile.isDirectory()) {
@@ -89,17 +101,23 @@ public class NativeLoader {
             throw new Exception("Unable to find '" + appJar + "' for unpacking.");
         }
 
-        return nativeLibraryPath;
+        return nativeLibFolder.getAbsolutePath();
     }
 
     /**
      * Cleans all the temporary files created by the native loader.
      */
     static public void cleanAllTmpFiles() {
+        System.err.println("cleaning temp files");
+
         for (File loadedLib : Iterables.reverse(loadedLibs)) {
             if (!loadedLib.delete()) {
                 System.err.println("Unable to delete temp file: " + loadedLib);
             }
+        }
+
+        if (!nativeLibFolder.delete()) {
+            System.err.println("Unable to delete temp folder: + " + nativeLibFolder);
         }
     }
 
