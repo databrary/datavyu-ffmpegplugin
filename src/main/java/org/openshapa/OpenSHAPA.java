@@ -617,6 +617,13 @@ public final class OpenSHAPA extends SingleFrameApplication
     }
 
     /**
+     * Clean up after ourselves.
+     */
+    @Override protected void shutdown() {
+        NativeLoader.cleanAllTmpFiles();
+    }
+
+    /**
      * This method is to initialize the specified window by injecting resources.
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
