@@ -1,4 +1,4 @@
-package org.openshapa.views.continuous.quicktime;
+package org.openshapa.plugins.quicktime;
 
 import com.sun.jna.Platform;
 

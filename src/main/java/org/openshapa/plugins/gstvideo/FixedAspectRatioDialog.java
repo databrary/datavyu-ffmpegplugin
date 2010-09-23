@@ -1,4 +1,4 @@
-package org.openshapa.views.continuous.gstreamer;
+package org.openshapa.plugins.gstvideo;
 
 import java.awt.Cursor;
 import java.awt.Dialog;
