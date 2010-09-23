@@ -346,6 +346,7 @@ public final class MixerController implements PropertyChangeListener,
             JComponent regionView = regionController.getView();
 
             Map<String, String> constraints = Maps.newHashMap();
+
             // TODO replace this x value with a constant!
             constraints.put("x", "130");
             constraints.put("y", "0");
@@ -374,6 +375,7 @@ public final class MixerController implements PropertyChangeListener,
             JComponent needleView = needleController.getView();
 
             Map<String, String> constraints = Maps.newHashMap();
+
             // TODO replace this x value with a constant!
             constraints.put("x", "132");
             constraints.put("y", "0");
@@ -540,9 +542,11 @@ public final class MixerController implements PropertyChangeListener,
      */
     public void bindTrackActions(final Identifier trackId,
         final CustomActions actions) {
+
         if (actions == null) {
             return;
         }
+
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
                     tracksEditorController.bindTrackActions(trackId, actions);
@@ -1046,10 +1050,21 @@ public final class MixerController implements PropertyChangeListener,
     }
 
     private void handleViewportChanged() {
-        Viewport viewport = masterMixer.getViewport();
-        updateZoomSlide(viewport);
-        updateTracksScrollBar(viewport);
-        tracksScrollPane.repaint();
+        final Viewport viewport = masterMixer.getViewport();
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            updateZoomSlide(viewport);
+            updateTracksScrollBar(viewport);
+            tracksScrollPane.repaint();
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                    @Override public void run() {
+                        updateZoomSlide(viewport);
+                        updateTracksScrollBar(viewport);
+                        tracksScrollPane.repaint();
+                    }
+                });
+        }
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
@@ -1126,7 +1141,8 @@ public final class MixerController implements PropertyChangeListener,
          */
         @Override public void gestureBegan(final GesturePhaseEvent e) {
             osxMagnificationGestureSum = 0;
-            osxMagnificationGestureInitialZoomSetting = masterMixer.getViewport().getZoomLevel();
+            osxMagnificationGestureInitialZoomSetting =
+                masterMixer.getViewport().getZoomLevel();
         }
 
         /**
@@ -1139,24 +1155,27 @@ public final class MixerController implements PropertyChangeListener,
         }
 
         @Override public void swipedLeft(final SwipeEvent e) {
-        	swipeHorizontal(true);
+            swipeHorizontal(true);
         }
 
         @Override public void swipedRight(final SwipeEvent e) {
-        	swipeHorizontal(false);
+            swipeHorizontal(false);
         }
 
-        private void swipeHorizontal(boolean swipeLeft) {
-        	/** The number of horizontal swipe actions needed to move the scroll bar along by the visible amount (i.e. a page left/right action) */
-        	final int swipesPerVisibleAmount = 5;
-        	final int newValue = tracksScrollBar.getValue() + (swipeLeft ? -1 : 1) * tracksScrollBar.getVisibleAmount() / swipesPerVisibleAmount;
+        private void swipeHorizontal(final boolean swipeLeft) {
+
+            /** The number of horizontal swipe actions needed to move the scroll bar along by the visible amount (i.e. a page left/right action) */
+            final int swipesPerVisibleAmount = 5;
+            final int newValue = tracksScrollBar.getValue()
+                + ((swipeLeft ? -1 : 1) * tracksScrollBar.getVisibleAmount()
+                    / swipesPerVisibleAmount);
             tracksScrollBar.setValue(Math.max(
                     Math.min(newValue,
                         tracksScrollBar.getMaximum()
                         - tracksScrollBar.getVisibleAmount()),
                     tracksScrollBar.getMinimum()));
         }
-        
+
         @Override public void swipedUp(final SwipeEvent e) {
         }
     }
