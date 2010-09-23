@@ -2,6 +2,7 @@ package org.openshapa.plugins;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -18,7 +19,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -31,11 +35,14 @@ import org.jdesktop.application.LocalStorage;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.plugins.quicktime.QTPlugin;
+
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Filter;
 import org.openshapa.views.continuous.Plugin;
 
 import com.usermetrix.jclient.UserMetrix;
+
 
 /**
  * This class manages and wrangles all the viewer plugins currently availble to
@@ -44,6 +51,7 @@ import com.usermetrix.jclient.UserMetrix;
  * plugins that implement the Plugin interface.
  */
 public final class PluginManager {
+
     /** A reference to the interface that plugins must override. */
     private static final Class<?> PLUGIN_CLASS;
 
@@ -302,14 +310,18 @@ public final class PluginManager {
                     // OpenSHAPA for its mainframe before it is created ruins
                     // all the dialogs (and menus).
                     final DataViewer newDataViewer;
+
                     try {
-                    	newDataViewer = p.getNewDataViewer(null, false);
+                        newDataViewer = p.getNewDataViewer(null, false);
+
                         if (newDataViewer != null) {
-    	                    pluginLookup.put(newDataViewer.getClass().getName(), p);
+                            pluginLookup.put(newDataViewer.getClass().getName(),
+                                p);
                         }
                     } catch (Throwable e) {
-                    	e.printStackTrace();
-                    	logger.error("Unable to load plugin " + p.getClass().getName(), e);
+                        e.printStackTrace();
+                        logger.error("Unable to load plugin "
+                            + p.getClass().getName(), e);
                     }
                 }
             }
@@ -318,7 +330,7 @@ public final class PluginManager {
         } catch (ClassFormatError e) {
             logger.error("Plugin with bad class format.", e);
         } catch (Throwable e) {
-        	logger.error("Unable to instantiate plugin", e);
+            logger.error("Unable to instantiate plugin", e);
         }
     }
 
@@ -343,7 +355,24 @@ public final class PluginManager {
     }
 
     public Iterable<Plugin> getPlugins() {
-        return ImmutableSet.copyOf(plugins);
+        List<Plugin> p = Lists.newArrayList(plugins);
+        Collections.sort(p, new Comparator<Plugin>() {
+                @Override public int compare(final Plugin o1, final Plugin o2) {
+
+                    // Want the QuickTime video plugin to always be first.
+                    if ("QuickTime Video".equals(o1.getPluginName())) {
+                        return -1;
+                    }
+
+                    if ("QuickTime Video".equals(o2.getPluginName())) {
+                        return 1;
+                    }
+
+                    return o1.getPluginName().compareTo(o2.getPluginName());
+                }
+            });
+
+        return p;
     }
 
     /**
