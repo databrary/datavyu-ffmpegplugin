@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+
 import org.gstreamer.Gst;
 
 import org.openshapa.views.continuous.DataViewer;
@@ -71,6 +72,13 @@ public class SpectrumPlugin implements Plugin {
             }
         };
 
+    static {
+        Gst.init();
+
+//TODO need to do this somewhere to balance out the init/deinit calls
+//      Gst.deinit();
+    }
+
     @Override public DataViewer getNewDataViewer(final Frame parent,
         final boolean modal) {
 
@@ -93,13 +101,6 @@ public class SpectrumPlugin implements Plugin {
     }
 
     @Override public String getPluginName() {
-        return "Audio Spectrum";
-    }
-
-    static {
-    	Gst.init();
-  
-//TODO need to do this somewhere to balance out the init/deinit calls    	
-//    	Gst.deinit();
+        return "Audio Spectrum ( UNSTABLE )";
     }
 }
