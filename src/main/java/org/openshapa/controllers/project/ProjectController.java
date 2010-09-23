@@ -120,6 +120,10 @@ public final class ProjectController {
      * Gets the MacshapaDatabase associated with this project. Should eventually
      * be replaced with a SimpleDatabase.
      *
+     * ***
+     * getDB should be refactored to return a SimpleDatabase.
+     * ***
+     *
      * @return The single database to use with this project.
      */
     @Deprecated
@@ -130,6 +134,11 @@ public final class ProjectController {
     /**
      * Sets the MacshapaDatabase to use with this project. This is used when
      * loading a Database from file.
+     *
+     * ***
+     * setDB should be refactored to return a SimpleDatabase.
+     * ***
+     *
      * @param newDB The new MacshapaDatabase to use.
      */
     @Deprecated

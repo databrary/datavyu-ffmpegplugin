@@ -1,7 +1,0 @@
-
-      ERROR  8 (Line 7:2): Left parenthesis expected.  Unable to recover from error by examining context.
-        A database file must start with "( setf macshapa-db '( ... ".
-
-
-Unable to continue parse -- Will continue lexer scan.
-

@@ -1,1 +1,0 @@
-; MacSHAPA Open Database;; This is one of a series of test databases intended to test the partially; constructed parser.  Neither this nor any of its bretheren are a valid; macshapa databases.;( setf macshapa-db '(                       (HEADER> )                       (USER> 1)                       (QUERY> 2)                      (SYSTEM> 3)                   ) )

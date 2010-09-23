@@ -485,7 +485,6 @@ public final class OpenSHAPAView extends FrameView
         if (OpenSHAPA.getApplication().safeQuit()) {
             OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
 
-            jd.addChoosableFileFilter(new MODBFilter());
             jd.addChoosableFileFilter(new CSVFilter());
             jd.addChoosableFileFilter(new SHAPAFilter());
             jd.addChoosableFileFilter(new OPFFilter());

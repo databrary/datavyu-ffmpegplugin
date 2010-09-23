@@ -1,8 +1,0 @@
-
-      WARNING  25 (Line 9:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
-
-
-      ERROR  4 (Line 460:0): Encountered end of file unexpectedly.
-        EOF encountered in an arbitrary list that was being discarded.
-
-Unable to continue parse -- Aborting...
