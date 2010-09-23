@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+
 import org.gstreamer.Gst;
 
 import org.openshapa.views.continuous.DataViewer;
@@ -47,6 +48,13 @@ public class GStreamerPlugin implements Plugin {
             }
         };
 
+    static {
+        Gst.init();
+
+//TODO need to do this somewhere to balance out the init/deinit calls
+//      Gst.deinit();
+    }
+
     @Override public DataViewer getNewDataViewer(final Frame parent,
         final boolean modal) {
         return new GStreamerDataViewer(parent, modal);
@@ -68,13 +76,6 @@ public class GStreamerPlugin implements Plugin {
     }
 
     @Override public String getPluginName() {
-        return "GStreamer Video";
-    }
-
-    static {
-    	Gst.init();
-  
-//TODO need to do this somewhere to balance out the init/deinit calls    	
-//    	Gst.deinit();
+        return "GStreamer Video ( UNSTABLE )";
     }
 }
