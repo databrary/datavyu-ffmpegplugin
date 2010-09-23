@@ -1,6 +1,4 @@
-package org.openshapa.plugins.spectrum;
-
-import java.awt.Frame;
+package org.openshapa.plugins.quicktime.java;
 
 import java.io.FileFilter;
 
@@ -13,8 +11,6 @@ import javax.swing.ImageIcon;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 
-import org.gstreamer.Gst;
-
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Filter;
 import org.openshapa.views.continuous.FilterNames;
@@ -22,33 +18,10 @@ import org.openshapa.views.continuous.Plugin;
 
 import com.google.common.collect.Lists;
 
+import com.sun.jna.Platform;
 
-/**
- * Plugin for viewing power spectrum density.
- */
-public class SpectrumPlugin implements Plugin {
 
-    private static final Filter AUDIO_FILTER = new Filter() {
-            final SuffixFileFilter ff;
-            final List<String> ext;
-
-            {
-                ext = Lists.newArrayList(".wav", ".mp3");
-                ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
-            }
-
-            @Override public FileFilter getFileFilter() {
-                return ff;
-            }
-
-            @Override public String getName() {
-                return FilterNames.AUDIO.getFilterName();
-            }
-
-            @Override public Iterable<String> getExtensions() {
-                return ext;
-            }
-        };
+public final class QTPlugin implements Plugin {
 
     private static final Filter VIDEO_FILTER = new Filter() {
             final SuffixFileFilter ff;
@@ -72,35 +45,36 @@ public class SpectrumPlugin implements Plugin {
             }
         };
 
-    static {
-        Gst.init();
-
-//TODO need to do this somewhere to balance out the init/deinit calls
-//      Gst.deinit();
-    }
-
-    @Override public DataViewer getNewDataViewer(final Frame parent,
+    @Override public DataViewer getNewDataViewer(final java.awt.Frame parent,
         final boolean modal) {
 
-        return new SpectrumDataViewer(parent, modal);
+        if (Platform.isMac() || Platform.isWindows()) {
+            return new QTJavaDataViewer(parent, modal);
+        } else {
+            return null;
+        }
     }
 
+    /**
+     * @return icon representing this plugin.
+     */
     @Override public ImageIcon getTypeIcon() {
         URL typeIconURL = getClass().getResource(
-                "/icons/spectrum/spectrumplugin-icon.png");
+                "/icons/gstreamerplugin-icon.png");
 
         return new ImageIcon(typeIconURL);
     }
 
     @Override public String getClassifier() {
-        return "openshapa.audio";
+        return "openshapa.video";
     }
 
     @Override public Filter[] getFilters() {
-        return new Filter[] { AUDIO_FILTER, VIDEO_FILTER };
+        return new Filter[] { VIDEO_FILTER };
     }
 
     @Override public String getPluginName() {
-        return "UNSTABLE: Audio Spectrum";
+        return "QuickTime Video";
     }
+
 }

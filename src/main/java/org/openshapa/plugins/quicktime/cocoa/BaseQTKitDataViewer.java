@@ -1,10 +1,11 @@
-package org.openshapa.views.continuous.quicktime;
+package org.openshapa.plugins.quicktime.cocoa;
 
 import com.sun.jna.Platform;
 
 import java.awt.Dimension;
 import java.io.File;
 
+import org.openshapa.plugins.quicktime.BaseQuickTimeDataViewer;
 import org.openshapa.util.Constants;
 
 import org.rococoa.Rococoa;

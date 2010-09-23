@@ -33,8 +33,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
-import org.openshapa.models.db.SimpleDatabase;
 
+import org.openshapa.models.db.SimpleDatabase;
 import org.openshapa.models.id.Identifier;
 
 import org.openshapa.plugins.spectrum.engine.PlaybackEngine;
@@ -111,7 +111,7 @@ public final class SpectrumDataViewer implements DataViewer {
     private List<ViewerStateListener> viewerListeners;
 
     public SpectrumDataViewer(final Frame parent, final boolean modal) {
-        viewerListeners = new ArrayList<ViewerStateListener> ();
+        viewerListeners = new ArrayList<ViewerStateListener>();
 
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
@@ -120,11 +120,13 @@ public final class SpectrumDataViewer implements DataViewer {
                     dialog = new SpectrumDialog(parent, modal);
                     dialog.setDefaultCloseOperation(
                         WindowConstants.HIDE_ON_CLOSE);
-                    dialog.addWindowListener(new WindowAdapter() {
-                            public void windowClosing(final WindowEvent evt) {
-                                dialogClosing(evt);
-                            }
-                        });
+
+                    // BugzID:2304 - Rubbish action handles this.
+                    // dialog.addWindowListener(new WindowAdapter() {
+                    // public void windowClosing(final WindowEvent evt) {
+                    // dialogClosing(evt);
+                    // }
+                    // });
 
                     volButton = new JButton();
                     volButton.setIcon(VOL_NORMAL);
@@ -435,10 +437,11 @@ public final class SpectrumDataViewer implements DataViewer {
         if (engine != null) {
             engine.setVolume(vol);
 
-            synchronized(this) {
-	            for (ViewerStateListener listener : viewerListeners) {
-	                listener.notifyStateChanged(null, null);
-	            }
+            synchronized (this) {
+
+                for (ViewerStateListener listener : viewerListeners) {
+                    listener.notifyStateChanged(null, null);
+                }
             }
         }
     }
@@ -465,13 +468,10 @@ public final class SpectrumDataViewer implements DataViewer {
          */
     }
 
-    @Override
-    public void setSimpleDatabase(SimpleDatabase sDB) {
-
+    @Override public void setSimpleDatabase(final SimpleDatabase sDB) {
     }
 
-    @Override
-    public void clearDataFeed() {
+    @Override public void clearDataFeed() {
         track.deregister();
 
         // Shutdown the engine

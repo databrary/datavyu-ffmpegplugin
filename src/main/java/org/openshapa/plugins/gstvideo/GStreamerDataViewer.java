@@ -1,4 +1,4 @@
-package org.openshapa.views.continuous.gstreamer;
+package org.openshapa.plugins.gstvideo;
 
 import com.sun.jna.Platform;
 

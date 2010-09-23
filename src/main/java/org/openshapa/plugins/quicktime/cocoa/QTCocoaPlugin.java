@@ -1,6 +1,4 @@
-package org.openshapa.views.continuous.gstreamer;
-
-import java.awt.Frame;
+package org.openshapa.plugins.quicktime.cocoa;
 
 import java.io.FileFilter;
 
@@ -12,7 +10,7 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.gstreamer.Gst;
+
 
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Filter;
@@ -21,16 +19,17 @@ import org.openshapa.views.continuous.Plugin;
 
 import com.google.common.collect.Lists;
 
+import com.sun.jna.Platform;
 
-public class GStreamerPlugin implements Plugin {
+
+public final class QTCocoaPlugin implements Plugin {
 
     private static final Filter VIDEO_FILTER = new Filter() {
             final SuffixFileFilter ff;
             final List<String> ext;
 
             {
-                ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mpeg",
-                        ".mp4");
+                ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mp4");
                 ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
             }
 
@@ -47,11 +46,19 @@ public class GStreamerPlugin implements Plugin {
             }
         };
 
-    @Override public DataViewer getNewDataViewer(final Frame parent,
+    @Override public DataViewer getNewDataViewer(final java.awt.Frame parent,
         final boolean modal) {
-        return new GStreamerDataViewer(parent, modal);
+
+        if (Platform.isMac()) {
+            return new QTKitVer7DataViewer(parent, modal);
+        } else {
+            return null;
+        }
     }
 
+    /**
+     * @return icon representing this plugin.
+     */
     @Override public ImageIcon getTypeIcon() {
         URL typeIconURL = getClass().getResource(
                 "/icons/gstreamerplugin-icon.png");
@@ -68,13 +75,7 @@ public class GStreamerPlugin implements Plugin {
     }
 
     @Override public String getPluginName() {
-        return "GStreamer Video";
+        return "UNSTABLE: QTCocoa Video";
     }
 
-    static {
-    	Gst.init();
-  
-//TODO need to do this somewhere to balance out the init/deinit calls    	
-//    	Gst.deinit();
-    }
 }
