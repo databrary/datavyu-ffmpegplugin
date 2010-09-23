@@ -822,33 +822,16 @@ public final class OpenSHAPA extends SingleFrameApplication
                 System.err.println("Unsupporter look and feel exception");
             }
 
-            System.err.println("jna.library.path="
-                + System.getProperty("jna.library.path"));
-
+            final String jnaLibraryPath = System.getProperty("jna.library.path");
+            final StringBuilder newJnaLibraryPath = new StringBuilder(jnaLibraryPath != null ? (jnaLibraryPath + ":") : "");
+            newJnaLibraryPath.append("/System/Library/Frameworks/GStreamer.framework/Versions/0.10-" + (com.sun.jna.Platform.is64Bit() ? "x64" : "i386") + "/lib:");
             try {
-                NativeLibrary.addSearchPath("gstreamer-0.10",
-                    "/System/Library/Frameworks/GStreamer.framework/Versions/Current/Library/");
-//              System.load("/System/Library/Frameworks/GStreamer.framework/Versions/Current/Library/libgstreamer-0.10.dylib");
-            } catch (UnsatisfiedLinkError e) {
-
-                // GStreamer is not installed
-                System.err.println(
-                    "GStreamer does not appear to be installed:");
-                e.printStackTrace();
-            }
-
-            try {
-                final String openshapaNativeLibraryPath = NativeLoader
-                    .unpackNativeApp("openshapa-nativelibs-osx64-0.2");
-                System.out.println("openshapaNativeLibraryPath="
-                    + openshapaNativeLibraryPath);
-                NativeLibrary.addSearchPath("rococoa",
-                    openshapaNativeLibraryPath);
-                System.load(openshapaNativeLibraryPath + "/librococoa.dylib");
+            	newJnaLibraryPath.append(NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.2") + ":");
             } catch (Exception e) {
-                System.err.println("Could not load rococoa:");
+                System.err.println("Could not unpack native libraries:");
                 e.printStackTrace();
             }
+            System.setProperty("jna.library.path", newJnaLibraryPath.toString());
         }
 
         launch(OpenSHAPA.class, args);

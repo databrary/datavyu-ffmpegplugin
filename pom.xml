@@ -262,7 +262,7 @@
         <dependency>
           <groupId>org.openshapa</groupId>
           <artifactId>openshapa-nativelibs-osx64</artifactId>
-          <version>0.2</version> <!--  NB: You'll need to update org.openshapa.Launcher when this changes. -->
+          <version>0.2</version> <!--  NB: You'll need to update org.openshapa.OpenSHAPA when this changes. -->
         </dependency>
       </dependencies>
     </profile>
