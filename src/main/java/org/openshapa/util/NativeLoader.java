@@ -19,9 +19,6 @@ public class NativeLoader {
     /** The size of the buffer to use when un zipping native libraries. */
     private static final int BUFFER = 16384;
 
-    /** The length of the random string we are using for a folder name. */
-    private static final int RAN_LEN = 32;
-
     /** The list of all the native loaded odds and ends that need unpacking. */
     private static final ArrayList<File> loadedLibs = new ArrayList<File>();
 
