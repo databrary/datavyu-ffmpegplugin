@@ -114,9 +114,9 @@ public final class TrackController implements ViewerStateListener,
     private final ImageIcon lockIcon = new ImageIcon(getClass().getResource(
                 "/icons/track-lock.png"));
 
-    /** Lock icon. */
-    private final ImageIcon rubbishIcon = new ImageIcon(getClass().getResource(
-                "/icons/rubbish.png"));
+    /** Delete icon. */
+    private final ImageIcon deleteIcon = new ImageIcon(getClass().getResource(
+                "/icons/emblem-unreadable.png"));
 
     /** Viewable model. */
     private final MixerView mixer;
@@ -210,11 +210,10 @@ public final class TrackController implements ViewerStateListener,
         lockUnlockButton.setContentAreaFilled(false);
         lockUnlockButton.setBorderPainted(false);
         lockUnlockButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                handleLockUnlockButtonEvent(e);
-            }
-        });
+                @Override public void actionPerformed(final ActionEvent e) {
+                    handleLockUnlockButtonEvent(e);
+                }
+            });
         header.add(lockUnlockButton, "w 20!, h 20!");
         lockUnlockButton.setName("lockUnlockButton");
 
@@ -223,25 +222,23 @@ public final class TrackController implements ViewerStateListener,
         visibleButton.setContentAreaFilled(false);
         visibleButton.setBorderPainted(false);
         visibleButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                handleVisibleButtonEvent(e);
-            }
-        });
+                @Override public void actionPerformed(final ActionEvent e) {
+                    handleVisibleButtonEvent(e);
+                }
+            });
         header.add(visibleButton, "w 20!, h 20!");
         visibleButton.setName("visibleButton");
 
         // Set up the button used for removing a track and its plugin
-        rubbishButton = new JButton(rubbishIcon);
+        rubbishButton = new JButton(deleteIcon);
         rubbishButton.setContentAreaFilled(false);
         rubbishButton.setBorderPainted(false);
         rubbishButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                handleRubbishButtonEvent(e);
-            }
-        });
-//        header.add(rubbishButton, "w 20!, h 20!, cell 5 2");
+                @Override public void actionPerformed(final ActionEvent e) {
+                    handleDeleteButtonEvent(e);
+                }
+            });
+        header.add(rubbishButton, "w 20!, h 20!, cell 5 2");
 
         view.add(header, "w 140!, h 75!");
 
@@ -296,6 +293,7 @@ public final class TrackController implements ViewerStateListener,
     }
 
     private ImageIcon getVisibleButtonIcon() {
+
         if (isViewerVisible) {
             return eyeIcon;
         } else {
@@ -523,8 +521,6 @@ public final class TrackController implements ViewerStateListener,
                             "w 20!, h 20!, cell 4 2");
                     }
 
-                    header.add(rubbishButton, "w 20!, h 20!, cell 5 2");
-
                     header.validate();
                 }
             };
@@ -591,7 +587,7 @@ public final class TrackController implements ViewerStateListener,
      * Handles the event for removing a track with the rubbish bin button.
      * @param e The event to handle.
      */
-    private void handleRubbishButtonEvent(final ActionEvent e) {
+    private void handleDeleteButtonEvent(final ActionEvent e) {
         OpenSHAPA.getDataController().shutdown(trackModel.getId());
     }
 
@@ -602,8 +598,8 @@ public final class TrackController implements ViewerStateListener,
     private void handleVisibleButtonEvent(final ActionEvent e) {
         isViewerVisible = !isViewerVisible;
 
-        OpenSHAPA.getDataController().setDataViewerVisibility(trackModel.getId(),
-                isViewerVisible);
+        OpenSHAPA.getDataController().setDataViewerVisibility(trackModel
+            .getId(), isViewerVisible);
 
         visibleButton.setIcon(getVisibleButtonIcon());
     }
@@ -856,15 +852,14 @@ public final class TrackController implements ViewerStateListener,
 
     public void attachAsWindowListener() {
         OpenSHAPA.getDataController().bindWindowListenerToDataViewer(
-                trackModel.getId(), new WindowAdapter() {
+            trackModel.getId(), new WindowAdapter() {
 
-            @Override
-            public void windowClosing(WindowEvent e) {
-                isViewerVisible = false;
-                visibleButton.setIcon(getVisibleButtonIcon());
-            }
+                @Override public void windowClosing(final WindowEvent e) {
+                    isViewerVisible = false;
+                    visibleButton.setIcon(getVisibleButtonIcon());
+                }
 
-        });
+            });
 
     }
 
