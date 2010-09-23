@@ -1,4 +1,4 @@
-package org.openshapa.plugins.quicktime;
+package org.openshapa.plugins.quicktime.java;
 
 import java.io.FileFilter;
 
@@ -17,6 +17,7 @@ import org.openshapa.views.continuous.FilterNames;
 import org.openshapa.views.continuous.Plugin;
 
 import com.google.common.collect.Lists;
+
 import com.sun.jna.Platform;
 
 
@@ -44,23 +45,20 @@ public final class QTPlugin implements Plugin {
             }
         };
 
-    @Override
-    public DataViewer getNewDataViewer(final java.awt.Frame parent,
+    @Override public DataViewer getNewDataViewer(final java.awt.Frame parent,
         final boolean modal) {
-    	if (Platform.isMac()) {
-    		return new QTKitVer7DataViewer(parent, modal);
-    	} else if (Platform.isWindows()) {
-    		return new QTJavaDataViewer(parent, modal);
-    	} else {
-    		return null;
-    	}
+
+        if (Platform.isMac() || Platform.isWindows()) {
+            return new QTJavaDataViewer(parent, modal);
+        } else {
+            return null;
+        }
     }
 
     /**
      * @return icon representing this plugin.
      */
-    @Override
-    public ImageIcon getTypeIcon() {
+    @Override public ImageIcon getTypeIcon() {
         URL typeIconURL = getClass().getResource(
                 "/icons/gstreamerplugin-icon.png");
 

@@ -1,4 +1,4 @@
-package org.openshapa.plugins.quicktime;
+package org.openshapa.plugins.quicktime.java;
 
 import com.usermetrix.jclient.Logger;
 
@@ -6,6 +6,7 @@ import java.awt.Dimension;
 
 import java.io.File;
 
+import org.openshapa.plugins.quicktime.BaseQuickTimeDataViewer;
 import org.openshapa.util.Constants;
 
 import quicktime.QTException;
