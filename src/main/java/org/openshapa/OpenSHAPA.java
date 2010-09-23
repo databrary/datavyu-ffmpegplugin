@@ -48,12 +48,14 @@ import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
 
 import com.sun.jna.NativeLibrary;
+
 import com.sun.script.jruby.JRubyScriptEngineManager;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.util.LinkedList;
+
 import org.openshapa.controllers.database.MacshapaDatabaseAdapter;
 
 
@@ -535,13 +537,12 @@ public final class OpenSHAPA extends SingleFrameApplication
         // Initalise the logger (UserMetrix).
         LocalStorage ls = OpenSHAPA.getApplication().getContext()
             .getLocalStorage();
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-            .getContext().getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
 
         com.usermetrix.jclient.Configuration config =
             new com.usermetrix.jclient.Configuration(2);
-        config.setTmpDirectory(ls.getDirectory().toString()
-            + File.separator);
+        config.setTmpDirectory(ls.getDirectory().toString() + File.separator);
         config.addMetaData("build",
             rMap.getString("Application.version") + ":"
             + rMap.getString("Application.build"));
@@ -613,6 +614,8 @@ public final class OpenSHAPA extends SingleFrameApplication
         // Create video controller.
         dataController = new DataControllerV(OpenSHAPA.getApplication()
                 .getMainFrame(), false);
+
+        show(dataController);
 
     }
 
@@ -811,26 +814,33 @@ public final class OpenSHAPA extends SingleFrameApplication
             } catch (UnsupportedLookAndFeelException ulafe) {
                 System.err.println("Unsupporter look and feel exception");
             }
-            
-            System.err.println("jna.library.path=" + System.getProperty("jna.library.path"));
-            
+
+            System.err.println("jna.library.path="
+                + System.getProperty("jna.library.path"));
+
             try {
-            	NativeLibrary.addSearchPath("gstreamer-0.10", "/System/Library/Frameworks/GStreamer.framework/Versions/Current/Library/");
-//            	System.load("/System/Library/Frameworks/GStreamer.framework/Versions/Current/Library/libgstreamer-0.10.dylib");
+                NativeLibrary.addSearchPath("gstreamer-0.10",
+                    "/System/Library/Frameworks/GStreamer.framework/Versions/Current/Library/");
+//              System.load("/System/Library/Frameworks/GStreamer.framework/Versions/Current/Library/libgstreamer-0.10.dylib");
             } catch (UnsatisfiedLinkError e) {
-            	// GStreamer is not installed
-            	System.err.println("GStreamer does not appear to be installed:");
-            	e.printStackTrace();
+
+                // GStreamer is not installed
+                System.err.println(
+                    "GStreamer does not appear to be installed:");
+                e.printStackTrace();
             }
 
             try {
-                final String openshapaNativeLibraryPath = NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.2");
-                System.out.println("openshapaNativeLibraryPath=" + openshapaNativeLibraryPath);
-            	NativeLibrary.addSearchPath("rococoa", openshapaNativeLibraryPath);
-            	System.load(openshapaNativeLibraryPath + "/librococoa.dylib");
+                final String openshapaNativeLibraryPath = NativeLoader
+                    .unpackNativeApp("openshapa-nativelibs-osx64-0.2");
+                System.out.println("openshapaNativeLibraryPath="
+                    + openshapaNativeLibraryPath);
+                NativeLibrary.addSearchPath("rococoa",
+                    openshapaNativeLibraryPath);
+                System.load(openshapaNativeLibraryPath + "/librococoa.dylib");
             } catch (Exception e) {
-            	System.err.println("Could not load rococoa:");
-            	e.printStackTrace();
+                System.err.println("Could not load rococoa:");
+                e.printStackTrace();
             }
         }
 

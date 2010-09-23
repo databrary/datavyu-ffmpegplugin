@@ -68,7 +68,9 @@ import org.openshapa.views.continuous.Plugin;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+
 import java.awt.event.WindowListener;
+
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
@@ -211,7 +213,7 @@ public final class DataControllerV extends OpenSHAPADialog
     private ClockTimer clock = new ClockTimer();
 
     /** Is the tracks panel currently shown? */
-    private boolean tracksPanelEnabled = false;
+    private boolean tracksPanelEnabled = true;
 
     /** The controller for manipulating tracks. */
     private MixerController mixerController;
@@ -349,7 +351,8 @@ public final class DataControllerV extends OpenSHAPADialog
         tracksPanel.add(mixerController.getTracksPanel(), "growx");
         mixerController.addTracksControllerListener(this);
 
-        showTracksPanel(false);
+        tracksPanelEnabled = true;
+        showTracksPanel(tracksPanelEnabled);
     }
 
     private static String toRGBString(final Color color) {
@@ -369,25 +372,27 @@ public final class DataControllerV extends OpenSHAPADialog
         // Plugin plugin = pm.getAssociatedPlugin(ff);
 
         if (plugin != null) {
-        	try {
-	            DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
-	                    .getApplication().getMainFrame(), false);
-	            dataViewer.setIdentifier(IDController.generateIdentifier());
-	            dataViewer.setDataFeed(f);
-	            dataViewer.seekTo(clock.getTime());
-	            dataViewer.setSimpleDatabase(
-	                    OpenSHAPA.getProjectController().getSimpleDB());
-	            addDataViewer(plugin.getTypeIcon(), dataViewer, f,
-	                dataViewer.getTrackPainter());
-	            mixerController.bindTrackActions(dataViewer.getIdentifier(),
-	                dataViewer.getCustomActions());
-	            dataViewer.addViewerStateListener(
-	                mixerController.getTracksEditorController()
-	                    .getViewerStateListener(dataViewer.getIdentifier()));
-        	} catch (Throwable t) {
-        		logger.error(t);
-        		JOptionPane.showMessageDialog(null, "Could not open data source: " + t.getMessage());
-        	}
+
+            try {
+                DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
+                        .getApplication().getMainFrame(), false);
+                dataViewer.setIdentifier(IDController.generateIdentifier());
+                dataViewer.setDataFeed(f);
+                dataViewer.seekTo(clock.getTime());
+                dataViewer.setSimpleDatabase(OpenSHAPA.getProjectController()
+                    .getSimpleDB());
+                addDataViewer(plugin.getTypeIcon(), dataViewer, f,
+                    dataViewer.getTrackPainter());
+                mixerController.bindTrackActions(dataViewer.getIdentifier(),
+                    dataViewer.getCustomActions());
+                dataViewer.addViewerStateListener(
+                    mixerController.getTracksEditorController()
+                        .getViewerStateListener(dataViewer.getIdentifier()));
+            } catch (Throwable t) {
+                logger.error(t);
+                JOptionPane.showMessageDialog(null,
+                    "Could not open data source: " + t.getMessage());
+            }
         }
     }
 
@@ -753,14 +758,17 @@ public final class DataControllerV extends OpenSHAPADialog
     public void shutdown(final Identifier id) {
 
         DataViewer viewer = null;
-        for (DataViewer v: viewers) {
+
+        for (DataViewer v : viewers) {
+
             if (v.getIdentifier().equals(id)) {
                 viewer = v;
+
                 break;
             }
         }
 
-        if (viewer == null || !shouldRemove()) {
+        if ((viewer == null) || !shouldRemove()) {
             return;
         }
 
@@ -768,15 +776,17 @@ public final class DataControllerV extends OpenSHAPADialog
 
         viewer.stop();
         viewer.clearDataFeed();
+
         JDialog viewDialog = viewer.getParentJDialog();
+
         if (viewDialog != null) {
             viewDialog.dispose();
         }
 
         // BugzID:2000
         viewer.removeViewerStateListener(
-            mixerController.getTracksEditorController()
-                .getViewerStateListener(viewer.getIdentifier()));
+            mixerController.getTracksEditorController().getViewerStateListener(
+                viewer.getIdentifier()));
 
         // Recalculate the maximum playback duration.
         updateMaxViewerDuration();
@@ -795,12 +805,15 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param id The identifier of the viewer to bind to.
      */
     public void bindWindowListenerToDataViewer(final Identifier id,
-            final WindowListener wl) {
+        final WindowListener wl) {
 
         DataViewer viewer = null;
-        for (DataViewer v: viewers) {
+
+        for (DataViewer v : viewers) {
+
             if (v.getIdentifier().equals(id)) {
                 viewer = v;
+
                 break;
             }
         }
@@ -816,12 +829,15 @@ public final class DataControllerV extends OpenSHAPADialog
      * @param id The identifier of the viewer to bind to.
      */
     public void setDataViewerVisibility(final Identifier id,
-            final boolean visible) {
+        final boolean visible) {
 
         DataViewer viewer = null;
-        for (DataViewer v: viewers) {
+
+        for (DataViewer v : viewers) {
+
             if (v.getIdentifier().equals(id)) {
                 viewer = v;
+
                 break;
             }
         }
@@ -838,8 +854,8 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private boolean shouldRemove() {
 //        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).
-                getContext().getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
 
         String cancel = "Cancel";
         String ok = "OK";
@@ -862,7 +878,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         // Button behaviour is platform dependent.
         return (OpenSHAPA.getPlatform() == Platform.MAC) ? (selection == 1)
-                : (selection == 0);
+                                                         : (selection == 0);
     }
 
     /**
@@ -1174,7 +1190,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         // Show tracks button
         showTracksButton.setIcon(resourceMap.getIcon(
-                "showTracksButton.show.icon"));
+                "showTracksButton.hide.icon"));
         showTracksButton.setName("showTracksButton");
         showTracksButton.getAccessibleContext().setAccessibleName(
             "Show Tracks");
@@ -1506,7 +1522,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         // Show tracks button
         showTracksButton.setIcon(resourceMap.getIcon(
-                "showTracksButton.show.icon"));
+                "showTracksButton.hide.icon"));
         showTracksButton.setName("showTracksButton");
         showTracksButton.getAccessibleContext().setAccessibleName(
             "Show Tracks");
