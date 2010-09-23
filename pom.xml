@@ -261,12 +261,6 @@
       <dependencies>
         <dependency>
           <groupId>org.openshapa</groupId>
-          <artifactId>openshapa-nativelibs-gstreamer-osx64</artifactId>
-          <version>0.10.29.a</version> <!--  NB: You'll need to update org.openshapa.Launcher when this changes. -->
-        </dependency>
-        
-        <dependency>
-          <groupId>org.openshapa</groupId>
           <artifactId>openshapa-nativelibs-osx64</artifactId>
           <version>0.2</version> <!--  NB: You'll need to update org.openshapa.Launcher when this changes. -->
         </dependency>
