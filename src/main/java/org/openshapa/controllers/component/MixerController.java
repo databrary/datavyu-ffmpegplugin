@@ -1109,8 +1109,6 @@ public final class MixerController implements PropertyChangeListener,
          */
         @Override public void magnify(final MagnificationEvent e) {
             osxMagnificationGestureSum += e.getMagnification();
-            System.out.println("magnify(" + e.getMagnification() + "), sum="
-                + osxMagnificationGestureSum);
 
             /** Amount of the pinch-and-squeeze gesture required to perform a full zoom in the mixer. */
             final double fullZoomMotion = 2.0;
@@ -1127,46 +1125,39 @@ public final class MixerController implements PropertyChangeListener,
          * Indicates that the user has started performing a gesture on Mac OS X.
          */
         @Override public void gestureBegan(final GesturePhaseEvent e) {
-            System.out.println("gestureBegan(" + e.toString() + ")");
             osxMagnificationGestureSum = 0;
-            osxMagnificationGestureInitialZoomSetting = zoomSetting;
+            osxMagnificationGestureInitialZoomSetting = masterMixer.getViewport().getZoomLevel();
         }
 
         /**
          * Indicates that the user has finished performing a gesture on Mac OS X.
          */
         @Override public void gestureEnded(final GesturePhaseEvent e) {
-            System.out.println("gestureEnded(" + e.toString() + ")");
         }
 
         @Override public void swipedDown(final SwipeEvent e) {
-            System.out.println("swipedDown()");
         }
 
         @Override public void swipedLeft(final SwipeEvent e) {
-            System.out.println("swipedLeft()");
-            tracksScrollBar.setValue(Math.max(
-                    Math.min(
-                        tracksScrollBar.getValue()
-                        - tracksScrollBar.getBlockIncrement(),
-                        tracksScrollBar.getMaximum()
-                        - tracksScrollBar.getVisibleAmount()),
-                    tracksScrollBar.getMinimum()));
+        	swipeHorizontal(true);
         }
 
         @Override public void swipedRight(final SwipeEvent e) {
-            System.out.println("swipedRight()");
+        	swipeHorizontal(false);
+        }
+
+        private void swipeHorizontal(boolean swipeLeft) {
+        	/** The number of horizontal swipe actions needed to move the scroll bar along by the visible amount (i.e. a page left/right action) */
+        	final int swipesPerVisibleAmount = 5;
+        	final int newValue = tracksScrollBar.getValue() + (swipeLeft ? -1 : 1) * tracksScrollBar.getVisibleAmount() / swipesPerVisibleAmount;
             tracksScrollBar.setValue(Math.max(
-                    Math.min(
-                        tracksScrollBar.getValue()
-                        + tracksScrollBar.getBlockIncrement(),
+                    Math.min(newValue,
                         tracksScrollBar.getMaximum()
                         - tracksScrollBar.getVisibleAmount()),
                     tracksScrollBar.getMinimum()));
         }
-
+        
         @Override public void swipedUp(final SwipeEvent e) {
-            System.out.println("swipedUp()");
         }
     }
 }
