@@ -7,10 +7,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -29,6 +31,7 @@ import net.miginfocom.swing.MigLayout;
 
 import org.openshapa.models.db.SimpleDatabase;
 import org.openshapa.models.id.Identifier;
+
 import org.openshapa.views.OpenSHAPADialog;
 import org.openshapa.views.component.DefaultTrackPainter;
 import org.openshapa.views.component.TrackPainter;
@@ -41,7 +44,10 @@ import org.openshapa.views.continuous.ViewerStateListener;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
-public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements DataViewer {
+
+public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
+    implements DataViewer {
+
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(getClass());
 
@@ -154,7 +160,8 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
     /**
      * Constructor - creates new video viewer.
      */
-    public BaseQuickTimeDataViewer(final java.awt.Frame parent, final boolean modal) {
+    public BaseQuickTimeDataViewer(final java.awt.Frame parent,
+        final boolean modal) {
 
         super(parent, modal);
 
@@ -264,11 +271,12 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
      * the volume).
      */
     private void setVolume() {
-    	setQTVolume(isVisible ? volume : 0F);
+        setQTVolume(isVisible ? volume : 0F);
+        volumeButton.setIcon(getActionButtonIcon1());
     }
 
     protected abstract void setQTVolume(float volume);
-    
+
     // ------------------------------------------------------------------------
     // [interface] org.openshapa.views.continuous.DataViewer
     //
@@ -278,17 +286,18 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
      *         movie's duration cannot be determined.
      */
     public abstract long getDuration();
-    
+
     private double getAspectRatio() {
-    	return nativeVideoSize != null ? (nativeVideoSize.getWidth() / nativeVideoSize.getHeight()) : 1;
+        return (nativeVideoSize != null)
+            ? (nativeVideoSize.getWidth() / nativeVideoSize.getHeight()) : 1;
     }
-    
+
     @Override public void validate() {
 
         // BugzID:753 - Locks the window to the videos aspect ratio.
         int newHeight = getHeight();
-        int newWidth = (int) (getVideoHeight() * getAspectRatio()) + getInsets().left
-            + getInsets().right;
+        int newWidth = (int) (getVideoHeight() * getAspectRatio())
+            + getInsets().left + getInsets().right;
         setSize(newWidth, newHeight);
 
         super.validate();
@@ -303,8 +312,8 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
 
         // lock the aspect ratio
         if (getAspectRatio() > 0.0) {
-            int newWidth = (int) (scaleHeight * getAspectRatio()) + getInsets().left
-                + getInsets().right;
+            int newWidth = (int) (scaleHeight * getAspectRatio())
+                + getInsets().left + getInsets().right;
             int newHeight = scaleHeight + getInsets().bottom + getInsets().top;
 
             setSize(newWidth, newHeight);
@@ -323,11 +332,13 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
     }
 
     private void setVideoHeight(final int height) {
-    	if (!(getAspectRatio() > 0)) {
-    		return;
-    	}
-    	
-        int newWidth = (int) (height * getAspectRatio()) + getInsets().left + getInsets().right;
+
+        if (!(getAspectRatio() > 0)) {
+            return;
+        }
+
+        int newWidth = (int) (height * getAspectRatio()) + getInsets().left
+            + getInsets().right;
         int newHeight = height + getInsets().bottom + getInsets().top;
 
         setSize(newWidth, newHeight);
@@ -368,16 +379,19 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
         setQTDataFeed(videoFile);
         nativeVideoSize = getQTVideoSize();
         fps = getQTFPS();
-        
+
         setTitle(videoFile.getName());
         setName(getClass().getSimpleName() + "-" + videoFile.getName());
         pack();
         setVisible(true);
-        setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(), (int) nativeVideoSize.getHeight());
+        setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(),
+            (int) nativeVideoSize.getHeight());
     }
-    
+
     protected abstract void setQTDataFeed(final File videoFile);
+
     protected abstract Dimension getQTVideoSize();
+
     protected abstract float getQTFPS();
 
     /**
@@ -412,9 +426,9 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
     }
 
     public float getPlaybackSpeed() {
-    	return playRate;
+        return playRate;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -426,9 +440,9 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
      * {@inheritDoc}
      */
     public void stop() {
-    	playing = false;
+        playing = false;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -439,7 +453,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
     /**
      * {@inheritDoc}
      */
-    public abstract void seekTo(final long position);    
+    public abstract void seekTo(final long position);
 
     /**
      * {@inheritDoc}
@@ -561,6 +575,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
     }
 
     private ImageIcon getActionButtonIcon1() {
+
         if (isVisible && (volume > 0)) {
             return volumeIcon;
         } else {
@@ -569,6 +584,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
     }
 
     private ImageIcon getActionButtonIcon2() {
+
         if (isVisible) {
             return eyeIcon;
         } else {
@@ -616,7 +632,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
     }
 
     protected abstract void cleanUp();
-    
+
     @Override public CustomActions getCustomActions() {
         return actions;
     }
@@ -629,13 +645,11 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog implements
         return id;
     }
 
-    @Override
-    public void setSimpleDatabase(SimpleDatabase sDB) {
-    	// not currently needed
+    @Override public void setSimpleDatabase(final SimpleDatabase sDB) {
+        // not currently needed
     }
 
-    @Override
-    public void clearDataFeed() {
+    @Override public void clearDataFeed() {
         cleanUp();
     }
 
