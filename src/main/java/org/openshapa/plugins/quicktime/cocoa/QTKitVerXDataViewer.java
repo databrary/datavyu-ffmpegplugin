@@ -1,4 +1,4 @@
-package org.openshapa.plugins.quicktime;
+package org.openshapa.plugins.quicktime.cocoa;
 
 import java.io.File;
 

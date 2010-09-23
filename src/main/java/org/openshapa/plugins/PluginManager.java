@@ -35,7 +35,7 @@ import org.jdesktop.application.LocalStorage;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.plugins.quicktime.QTPlugin;
+import org.openshapa.plugins.quicktime.java.QTPlugin;
 
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Filter;

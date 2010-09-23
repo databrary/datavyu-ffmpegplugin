@@ -2,7 +2,7 @@ package org.openshapa.views.continuous.quicktime;
 
 import javax.swing.ImageIcon;
 
-import org.openshapa.plugins.quicktime.QTPlugin;
+import org.openshapa.plugins.quicktime.java.QTPlugin;
 import org.openshapa.views.continuous.Plugin;
 import org.testng.Assert;
 import org.testng.annotations.Test;
