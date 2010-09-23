@@ -101,6 +101,6 @@ public class SpectrumPlugin implements Plugin {
     }
 
     @Override public String getPluginName() {
-        return "Audio Spectrum ( UNSTABLE )";
+        return "UNSTABLE: Audio Spectrum";
     }
 }

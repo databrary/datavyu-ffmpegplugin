@@ -75,7 +75,7 @@ public final class QTCocoaPlugin implements Plugin {
     }
 
     @Override public String getPluginName() {
-        return "QuickTime Cocoa Video ( UNSTABLE )";
+        return "UNSTABLE: QTCocoa Video";
     }
 
 }

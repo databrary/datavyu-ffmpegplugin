@@ -76,6 +76,6 @@ public class GStreamerPlugin implements Plugin {
     }
 
     @Override public String getPluginName() {
-        return "GStreamer Video ( UNSTABLE )";
+        return "UNSTABLE: GStreamer Video";
     }
 }

@@ -17,7 +17,7 @@ public final class ClockTimer {
     //
 
     /** Clock clockTick period. */
-    private static final long CLOCK_TICK = 100L;
+    private static final long CLOCK_TICK = 10L;
 
     /** Clock initial delay. */
     private static final long CLOCK_DELAY = 0L;
