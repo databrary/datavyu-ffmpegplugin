@@ -50,7 +50,7 @@ public final class QTCocoaPlugin implements Plugin {
         final boolean modal) {
 
         if (Platform.isMac()) {
-            return new QTKitVer7DataViewer(parent, modal);
+            return new QTKitVerXDataViewer(parent, modal);
         } else {
             return null;
         }
@@ -75,7 +75,7 @@ public final class QTCocoaPlugin implements Plugin {
     }
 
     @Override public String getPluginName() {
-        return "UNSTABLE: QTCocoa Video";
+        return "UNSTABLE: QTKit Cocoa Video";
     }
 
 }
