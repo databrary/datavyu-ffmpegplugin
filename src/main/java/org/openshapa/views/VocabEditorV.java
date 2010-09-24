@@ -9,11 +9,9 @@ import java.awt.event.MouseEvent;
 import java.awt.KeyEventDispatcher;
 import java.util.ArrayList;
 import java.util.Vector;
-import java.util.logging.Level;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.event.UndoableEditEvent;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -45,11 +43,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.util.Stack;
 import javax.swing.JOptionPane;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.undo.UndoManager;
-import org.openshapa.models.db.ExternalColumnListListener;
-import org.openshapa.models.db.ExternalVocabElementListener;
 import org.openshapa.models.db.ExternalVocabListListener;
+import org.openshapa.util.VEList;
 import org.openshapa.views.discrete.datavalues.vocabelements.VENameEditor;
 
 /**
@@ -69,19 +64,14 @@ ExternalVocabListListener{
     /** Index of the currently selected formal argument within the element. */
     private int selectedArgumentI;
     /** The collection of vocab element views in the current vocab listing. */
-    private Vector<VocabElementV> veViews;
-
-    private Vector<VocabElementV> veToDelete;
+    private VEList veViews;
     /** Vertical frame for holding the current listing of Vocab elements. */
     private JPanel verticalFrame;
     /** Array of veViews used to track changes for the undo function */
-    private Stack<Vector<VocabElementV>> undoStack;
-    private Stack<Vector<VocabElementV>> redoStack;
-    private UndoManager undoM;
+    private Stack<VEList> undoStack;
+    private Stack<VEList> redoStack;
     /** The handler for all keyboard shortcuts */
     private KeyEventDispatcher ked;
-
-   // private static Color lightBlue = new Color(224,248,255,255);
 
     /**
      * Constructor.
@@ -106,8 +96,8 @@ ExternalVocabListListener{
         selectedArgumentI = -1;
         undoStack = new Stack();
         redoStack = new Stack();
-        undoM = new UndoManager();
-       
+
+        // manage keyboard inputs
         KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         kfm.addKeyEventDispatcher(
         ked = new KeyEventDispatcher(){
@@ -138,10 +128,10 @@ ExternalVocabListListener{
                             if(selectedVocabElement!=null){addArgument();}
                             break;
                         case KeyEvent.VK_Z:
-                            //undoChange();
+                            undoChange();
                             break;
                         case KeyEvent.VK_Y:
-                            //redoChange();
+                            redoChange();
                             break;
                         case KeyEvent.VK_S:
                             applyChanges();
@@ -163,8 +153,7 @@ ExternalVocabListListener{
 
 
         // Populate current vocab list with vocab data from the database.
-        veViews = new Vector<VocabElementV>();
-        veToDelete = new Vector<VocabElementV>();
+        veViews = new VEList();
         verticalFrame = new JPanel();
         verticalFrame.setName("verticalFrame");
         verticalFrame.setLayout(new BoxLayout(verticalFrame, BoxLayout.Y_AXIS));
@@ -199,9 +188,8 @@ ExternalVocabListListener{
         getRootPane().setDefaultButton(okButton);
 
         // Hide all the broken stuff.
-        varyArgCheckBox.setVisible(true);
-        undoButton.setVisible(false);
-        redoButton.setVisible(false);
+        varyArgCheckBox.setVisible(false);
+        revertButton.setVisible(false);
     }
 
     /**
@@ -290,8 +278,6 @@ ExternalVocabListListener{
                 }
             }
         });
-
-        
 
         // add the current vocab list state to an array of states for undo/redo
         VENameEditor veNEd = vev.getNameComponent();
@@ -412,20 +398,12 @@ ExternalVocabListListener{
     @Action
     public void delete() {
         // User has vocab element selected - delete it from the editor.
+        saveState();
         if (selectedVocabElement != null && selectedArgument == null) {
-                saveState();
-
                 logger.usage("vocEd - delete element");
-                /*try{
-                    db.removeVocabElement(selectedVocabElement.getModel().getID());
-                }
-                catch(Exception e){
-                    logger.error("Selected element doesn't exist in db.", e);
-                }*/
                 selectedVocabElement.setDeleted(true);
-                veToDelete.add(selectedVocabElement);
                 try{
-                    veViews.lastElement().requestFocus();
+                    selectedVocabElement.getDataView().getEditors().get(0).selectAll();
                 }catch(Exception e){
                     logger.error("veViews is empty.", e);
                 }
@@ -435,7 +413,6 @@ ExternalVocabListListener{
             logger.usage("vocEd - delete argument");
             VocabElement ve = selectedVocabElement.getModel();
             try {
-                saveState();
                 ve.deleteFormalArg(selectedArgumentI);
                 selectedVocabElement.setHasChanged(true);
                 selectedVocabElement.rebuildContents();
@@ -503,16 +480,20 @@ ExternalVocabListListener{
         int errors = 0;
         try {
 
-            for (VocabElementV vev : veViews) {
+            for (int index=0; index<veViews.size();index++) {
+                VocabElementV vev = veViews.get(index);
                 if (vev.hasChanged()) {
 
                     VocabElement ve = vev.getModel();
+                    // identify if any of the arguments have the same name
+                    if(vev.getModel().hasDuplicateArgNames()){
+                        errors = 2;
+                    }else
                     if (ve.getID() == DBIndex.INVALID_ID) {
                         if ((db.colNameInUse(ve.getName()) || (db
                                 .predNameInUse(ve.getName())))) {
                             errors = 1;
-                        }else
-
+                        }else                      
                         // If the new vocab element is a matrix vocab element,
                         // we actually need to create a column.
                         if (ve.getClass() == MatrixVocabElement.class) {
@@ -572,14 +553,25 @@ ExternalVocabListListener{
             OpenSHAPA.getApplication().showWarningDialog(le);
         }
         try{
-        for(VocabElementV vev : veToDelete){
-            db.removeVocabElement(vev.getModel().getID());
+        for(int i = veViews.size()-1; i>= 0; i--){
+            VocabElementV vev = veViews.get(i);
+            if(vev.isDeletable()){
+                db.removeVocabElement(vev.getModel().getID());
+            }
         }
         }catch(Exception e){
             logger.error("Unable to delete ve");
         }
-        if(errors==1){
-            JOptionPane.showMessageDialog(this, "Vocab Element name in use.","Error adding vocab", 2);
+        if(errors!=0){
+            switch(errors){
+                case 1:
+                    JOptionPane.showMessageDialog(this, "Vocab Element name in use.","Error adding vocab", 2);
+                    break;
+                case 2:
+                    JOptionPane.showMessageDialog(this, "Argument name in use.","Duplicate argument name", 2);
+                    break;
+            }
+            
         }
         return errors;
     }
@@ -768,6 +760,7 @@ ExternalVocabListListener{
         statusSeperator = new javax.swing.JSeparator();
         undoButton = new javax.swing.JButton();
         redoButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
@@ -804,8 +797,11 @@ ExternalVocabListListener{
         getContentPane().add(addMatrixButton, gridBagConstraints);
 
         moveArgLeftButton.setAction(actionMap.get("moveArgumentLeft")); // NOI18N
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(VocabEditorV.class);
+        moveArgLeftButton.setIcon(resourceMap.getIcon("moveArgLeftButton.icon")); // NOI18N
         moveArgLeftButton.setText(bundle.getString("moveArgLeftButton.text")); // NOI18N
         moveArgLeftButton.setToolTipText(bundle.getString("moveArgLeftButton.tip")); // NOI18N
+        moveArgLeftButton.setIconTextGap(6);
         moveArgLeftButton.setMaximumSize(new java.awt.Dimension(120, 23));
         moveArgLeftButton.setMinimumSize(new java.awt.Dimension(120, 23));
         moveArgLeftButton.setName("moveArgLeftButton"); // NOI18N
@@ -818,8 +814,11 @@ ExternalVocabListListener{
         getContentPane().add(moveArgLeftButton, gridBagConstraints);
 
         moveArgRightButton.setAction(actionMap.get("moveArgumentRight")); // NOI18N
+        moveArgRightButton.setIcon(resourceMap.getIcon("moveArgRightButton.icon")); // NOI18N
         moveArgRightButton.setText(bundle.getString("moveArgRightButton.text")); // NOI18N
         moveArgRightButton.setToolTipText(bundle.getString("moveArgRightButton.tip")); // NOI18N
+        moveArgRightButton.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        moveArgRightButton.setIconTextGap(6);
         moveArgRightButton.setMaximumSize(new java.awt.Dimension(120, 23));
         moveArgRightButton.setMinimumSize(new java.awt.Dimension(120, 23));
         moveArgRightButton.setName("moveArgRightButton"); // NOI18N
@@ -871,8 +870,8 @@ ExternalVocabListListener{
         deleteButton.setAction(actionMap.get("delete")); // NOI18N
         deleteButton.setText(bundle.getString("deleteButton.text")); // NOI18N
         deleteButton.setToolTipText(bundle.getString("deleteButton.tip")); // NOI18N
-        deleteButton.setMaximumSize(new java.awt.Dimension(120, 25));
-        deleteButton.setMinimumSize(new java.awt.Dimension(120, 25));
+        deleteButton.setMaximumSize(new java.awt.Dimension(110, 23));
+        deleteButton.setMinimumSize(new java.awt.Dimension(110, 23));
         deleteButton.setName("deleteButton"); // NOI18N
         deleteButton.setPreferredSize(new java.awt.Dimension(110, 23));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -902,21 +901,24 @@ ExternalVocabListListener{
         revertButton.setToolTipText(bundle.getString("revertButton.tip")); // NOI18N
         revertButton.setName("revertButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
         getContentPane().add(revertButton, gridBagConstraints);
 
         applyButton.setAction(actionMap.get("applyChanges")); // NOI18N
         applyButton.setText(bundle.getString("applyButton.text")); // NOI18N
         applyButton.setToolTipText(bundle.getString("applyButton.tip")); // NOI18N
+        applyButton.setMaximumSize(new java.awt.Dimension(65, 23));
+        applyButton.setMinimumSize(new java.awt.Dimension(65, 23));
         applyButton.setName("applyButton"); // NOI18N
+        applyButton.setPreferredSize(new java.awt.Dimension(65, 23));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 0);
         getContentPane().add(applyButton, gridBagConstraints);
 
         okButton.setAction(actionMap.get("ok")); // NOI18N
@@ -942,7 +944,6 @@ ExternalVocabListListener{
         getContentPane().add(closeButton, gridBagConstraints);
 
         statusBar.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(VocabEditorV.class);
         statusBar.setText(resourceMap.getString("statusBar.text")); // NOI18N
         statusBar.setDoubleBuffered(true);
         statusBar.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
@@ -970,9 +971,11 @@ ExternalVocabListListener{
         getContentPane().add(statusSeperator, gridBagConstraints);
 
         undoButton.setAction(actionMap.get("undoChange")); // NOI18N
+        undoButton.setIcon(resourceMap.getIcon("undoButton.icon")); // NOI18N
         undoButton.setText(resourceMap.getString("undoButton.text")); // NOI18N
-        undoButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        undoButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        undoButton.setToolTipText(resourceMap.getString("undoButton.toolTipText")); // NOI18N
+        undoButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        undoButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
         undoButton.setMaximumSize(new java.awt.Dimension(60, 23));
         undoButton.setMinimumSize(new java.awt.Dimension(60, 23));
         undoButton.setName("undoButton"); // NOI18N
@@ -984,7 +987,13 @@ ExternalVocabListListener{
         getContentPane().add(undoButton, gridBagConstraints);
 
         redoButton.setAction(actionMap.get("redoChange")); // NOI18N
+        redoButton.setIcon(resourceMap.getIcon("redoButton.icon")); // NOI18N
         redoButton.setText(resourceMap.getString("redoButton.text")); // NOI18N
+        redoButton.setToolTipText(resourceMap.getString("redoButton.toolTipText")); // NOI18N
+        redoButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        redoButton.setMargin(new java.awt.Insets(2, 0, 2, 0));
+        redoButton.setMaximumSize(new java.awt.Dimension(60, 23));
+        redoButton.setMinimumSize(new java.awt.Dimension(60, 23));
         redoButton.setName("redoButton"); // NOI18N
         redoButton.setPreferredSize(new java.awt.Dimension(60, 23));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -992,6 +1001,16 @@ ExternalVocabListListener{
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         getContentPane().add(redoButton, gridBagConstraints);
+
+        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+        jLabel1.setMaximumSize(new java.awt.Dimension(85, 5));
+        jLabel1.setMinimumSize(new java.awt.Dimension(80, 5));
+        jLabel1.setName("jLabel1"); // NOI18N
+        jLabel1.setPreferredSize(new java.awt.Dimension(85, 5));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        getContentPane().add(jLabel1, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -1004,6 +1023,7 @@ ExternalVocabListListener{
      */
     private void argTypeComboBoxItemStateChanged(
             final java.awt.event.ItemEvent evt) {// GEN-FIRST:event_argTypeComboBoxItemStateChanged
+        
         if (selectedVocabElement != null && selectedArgument != null
                 && evt.getStateChange() == ItemEvent.SELECTED) {
 
@@ -1039,6 +1059,7 @@ ExternalVocabListListener{
                 temp.rebuildContents();
 
                 // Select the contents of the newly created formal argument.
+                temp.requestFocus();
                 FormalArgEditor faV = temp.getArgumentView(newArg);
                 temp.requestArgFocus(faV);
 
@@ -1059,6 +1080,7 @@ ExternalVocabListListener{
     private javax.swing.JButton closeButton;
     private javax.swing.JScrollPane currentVocabList;
     private javax.swing.JButton deleteButton;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JButton moveArgLeftButton;
@@ -1074,7 +1096,7 @@ ExternalVocabListListener{
 
 
     /**
-     * Initialisation of mouse listeners on swing elements
+     * Initialization of mouse listeners on swing elements
      */
     private void componentListnersInit() {
 
@@ -1144,14 +1166,6 @@ ExternalVocabListListener{
         moveArgRightButton.addMouseListener(ma);
         varyArgCheckBox.addMouseListener(ma);
 
-        UndoableEditListener UEL = new UndoableEditListener() {
-            @Override
-            public void undoableEditHappened(UndoableEditEvent uEE) {
-                undoM.addEdit(uEE.getEdit());
-            }
-        };
-
-        //addMatrixButton.add(UEL);
     }
 
     /**
@@ -1159,13 +1173,21 @@ ExternalVocabListListener{
      */
     @Action
     public void undoChange() {
-        redoStack.push((Vector<VocabElementV>) veViews.clone());
+        // push the most recent state into the redo stack
+        redoStack.push((VEList) veViews.getClone());
+        // get the staet before the change
         veViews = undoStack.pop();
+        // set all the correct values for hte vocab elements
+        veViews.setClone();
+        // rebuild the vocab list
         verticalFrame.removeAll();
         for(VocabElementV vev: veViews){
             verticalFrame.add(vev);
         }
         verticalFrame.revalidate();
+        try{
+            veViews.lastElement().requestFocus();
+        }catch(Exception e){}
         updateDialogState();
     }
 
@@ -1174,13 +1196,22 @@ ExternalVocabListListener{
      */
     @Action
     public void redoChange() {
-        undoStack.push((Vector<VocabElementV>) veViews.clone());
+        // push the current veViews state into the stack
+        undoStack.push((VEList) veViews.getClone());
+        //get the most recent change to redo
         veViews = redoStack.pop();
+        //get allt the correct values for the vocab elements
+        veViews.setClone();
+
+        // rebuild the vocab list
         verticalFrame.removeAll();
         for(VocabElementV vev: veViews){
             verticalFrame.add(vev);
         }
         verticalFrame.revalidate();
+        if(veViews.lastElement() != null){
+            veViews.lastElement().requestFocus();
+        }
         updateDialogState();
     }
 
@@ -1191,7 +1222,7 @@ ExternalVocabListListener{
         //remove all elements after current insertion so that it is most recent
         redoStack.clear();
         // add the most recent view state
-        undoStack.push((Vector<VocabElementV>) veViews.clone());
+        undoStack.push((VEList) veViews.getClone());
     }
 
     /**

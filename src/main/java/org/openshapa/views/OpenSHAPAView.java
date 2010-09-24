@@ -692,12 +692,10 @@ public final class OpenSHAPAView extends FrameView
         panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
         panel.registerListeners();
         panel.addFileDropEventListener(this);
-        Point p = panel.getView();
         setComponent(panel);
         getComponent().revalidate();
         getComponent().resetKeyboardActions();
         getComponent().requestFocus();
-        panel.scrollToTop(p);
     }
 
     /**

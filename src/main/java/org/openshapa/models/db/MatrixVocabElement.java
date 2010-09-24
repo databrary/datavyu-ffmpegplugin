@@ -1280,6 +1280,10 @@ public class MatrixVocabElement extends VocabElement
                     "may not appear in MATRIX mve's.");
         }
 
+        /* removed for argument name input. bugz-id:2266
+         * moved to vocab editor
+         * 
+         */
         for ( FormalArgument t : this.fArgList )
         {
             if ( ( oldArg != t ) &&
@@ -1340,6 +1344,10 @@ public class MatrixVocabElement extends VocabElement
             }
         }
 
+        /* removed for argument name input. bugz-id:2266
+         * moved to vocab editor
+         * 
+         */
         for ( FormalArgument t : this.cpfArgList )
         {
             if ( ( oldCPArg != t ) &&

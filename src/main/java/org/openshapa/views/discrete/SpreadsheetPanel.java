@@ -14,6 +14,7 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.AdjustmentEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
@@ -54,6 +55,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.AdjustmentListener;
 import javax.swing.JViewport;
 
 /**
@@ -994,11 +996,4 @@ implements ExternalColumnListListener, ComponentListener,
         }
     }
 
-    public void scrollToTop(Point p){
-        scrollPane.getViewport().setViewPosition(new Point(0,0));
-    }
-
-    public Point getView(){
-        return scrollPane.getViewport().getViewPosition();
-    }
 }

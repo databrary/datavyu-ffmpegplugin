@@ -4,6 +4,7 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.util.logging.Level;
 import javax.swing.text.JTextComponent;
 import org.openshapa.models.db.FormalArgument;
 import org.openshapa.models.db.SystemErrorException;

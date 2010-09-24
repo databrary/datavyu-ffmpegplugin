@@ -751,6 +751,25 @@ public abstract class VocabElement extends DBElement {
     }
 
     /**
+     * Returns whether or not the vocab element has any duplicate names
+     */
+    public boolean hasDuplicateArgNames(){
+        boolean duplicates = false;
+
+        int numArgs = fArgList.size();
+        for(int i = 0; i< numArgs; i++){
+            for(int j = 0; j< numArgs; j++){
+                if((fArgList.get(i).getFargName().equals(fArgList.get(j).getFargName()))
+                        && (i!=j)){
+                    duplicates = true;
+                }
+            }
+        }
+
+        return duplicates;
+    }
+
+    /**
      * Returns a copy of the n-th formal argument, or null if there
      * is no such argument.
      *

@@ -318,7 +318,8 @@ public class VocabElementListeners extends Listeners {
                                            ": oldVE or newVE has bad ID.");
         }
 
-        if ( ( this.changeNoted ) ||
+        // removed as undo to vocab element can force same note to be made
+        /*if ( ( this.changeNoted ) ||
              ( this.nameChanged ) ||
              ( this.oldName != null ) ||
              ( this.newName != null ) ||
@@ -335,7 +336,7 @@ public class VocabElementListeners extends Listeners {
              ( this.fargInserted != null ) )
         {
             throw new SystemErrorException(mName + ": change already noted?!?");
-        }
+        }*/
 
 
         /*** test to see if the name has changed ***/
