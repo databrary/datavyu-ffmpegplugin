@@ -684,7 +684,6 @@ public final class DataControllerV extends OpenSHAPADialog
         }
 
         playbackModel.setMaxDuration(maxDuration);
-
         maxDuration = mixerController.setMaxEnd(maxDuration);
 
         // Reset visualisation of playback regions.
@@ -702,6 +701,12 @@ public final class DataControllerV extends OpenSHAPADialog
 
         // Reset visualisation of current playback time.
         long tracksTime = mixerController.getCurrentTime();
+
+        // If there are no more viewers, move the needle back to the initial
+        // position.
+        if (viewers.isEmpty()) {
+            tracksTime = 0;
+        }
 
         if (tracksTime < playbackModel.getWindowPlayStart()) {
             tracksTime = playbackModel.getWindowPlayStart();
@@ -1725,9 +1730,19 @@ public final class DataControllerV extends OpenSHAPADialog
             maxDuration = viewer.getOffset() + viewer.getDuration();
         }
 
-        playbackModel.setMaxDuration(maxDuration);
+        // BugzID:2114 - If this is the first viewer we are adding, always reset
+        // max duration.
+        if (viewers.size() == 1) {
+            maxDuration = viewer.getOffset() + viewer.getDuration();
+        }
 
-        if (playbackModel.getWindowPlayEnd() < maxDuration) {
+        playbackModel.setMaxDuration(maxDuration);
+        mixerController.setMaxEnd(maxDuration);
+
+        // BugzID:2114 - Always set the model constraints if this is the first
+        // viewer we are adding in addition to when the max duration changes.
+        if ((playbackModel.getWindowPlayEnd() < maxDuration)
+                || (viewers.size() == 1)) {
             playbackModel.setWindowPlayEnd(maxDuration);
             mixerController.setPlayRegionEnd(maxDuration);
         }
