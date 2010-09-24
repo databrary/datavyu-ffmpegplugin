@@ -353,6 +353,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         tracksPanelEnabled = true;
         showTracksPanel(tracksPanelEnabled);
+        updateCurrentTimeLabel();
     }
 
     private static String toRGBString(final Color color) {
