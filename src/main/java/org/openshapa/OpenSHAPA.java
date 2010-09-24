@@ -39,6 +39,7 @@ import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.MacHandler;
+import org.openshapa.util.NativeLoader;
 
 import org.openshapa.views.AboutV;
 import org.openshapa.views.DataControllerV;
@@ -46,12 +47,15 @@ import org.openshapa.views.VariableListV;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
 
+import com.sun.jna.NativeLibrary;
+
 import com.sun.script.jruby.JRubyScriptEngineManager;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.util.LinkedList;
+
 import org.openshapa.controllers.database.MacshapaDatabaseAdapter;
 
 
@@ -533,13 +537,12 @@ public final class OpenSHAPA extends SingleFrameApplication
         // Initalise the logger (UserMetrix).
         LocalStorage ls = OpenSHAPA.getApplication().getContext()
             .getLocalStorage();
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-            .getContext().getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
 
         com.usermetrix.jclient.Configuration config =
             new com.usermetrix.jclient.Configuration(2);
-        config.setTmpDirectory(ls.getDirectory().toString()
-            + File.separator);
+        config.setTmpDirectory(ls.getDirectory().toString() + File.separator);
         config.addMetaData("build",
             rMap.getString("Application.version") + ":"
             + rMap.getString("Application.build"));
@@ -612,6 +615,15 @@ public final class OpenSHAPA extends SingleFrameApplication
         dataController = new DataControllerV(OpenSHAPA.getApplication()
                 .getMainFrame(), false);
 
+        show(dataController);
+
+    }
+
+    /**
+     * Clean up after ourselves.
+     */
+    @Override protected void shutdown() {
+        NativeLoader.cleanAllTmpFiles();
     }
 
     /**
@@ -809,6 +821,17 @@ public final class OpenSHAPA extends SingleFrameApplication
             } catch (UnsupportedLookAndFeelException ulafe) {
                 System.err.println("Unsupporter look and feel exception");
             }
+
+            final String jnaLibraryPath = System.getProperty("jna.library.path");
+            final StringBuilder newJnaLibraryPath = new StringBuilder(jnaLibraryPath != null ? (jnaLibraryPath + ":") : "");
+            newJnaLibraryPath.append("/System/Library/Frameworks/GStreamer.framework/Versions/0.10-" + (com.sun.jna.Platform.is64Bit() ? "x64" : "i386") + "/lib:");
+            try {
+            	newJnaLibraryPath.append(NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.2") + ":");
+            } catch (Exception e) {
+                System.err.println("Could not unpack native libraries:");
+                e.printStackTrace();
+            }
+            System.setProperty("jna.library.path", newJnaLibraryPath.toString());
         }
 
         launch(OpenSHAPA.class, args);

@@ -19,6 +19,7 @@ import java.util.SimpleTimeZone;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
@@ -68,6 +69,11 @@ import org.openshapa.views.continuous.Plugin;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
+import java.awt.event.WindowListener;
+
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
 
 /**
  * Quicktime video controller.
@@ -93,7 +99,7 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * The threshold to use while synchronising viewers (augmented by rate).
      */
-    private static final long SYNC_THRESH = 50;
+    private static final long SYNC_THRESH = 200;
 
     /**
      * How often to synchronise the viewers with the master clock.
@@ -207,7 +213,7 @@ public final class DataControllerV extends OpenSHAPADialog
     private ClockTimer clock = new ClockTimer();
 
     /** Is the tracks panel currently shown? */
-    private boolean tracksPanelEnabled = false;
+    private boolean tracksPanelEnabled = true;
 
     /** The controller for manipulating tracks. */
     private MixerController mixerController;
@@ -345,7 +351,9 @@ public final class DataControllerV extends OpenSHAPADialog
         tracksPanel.add(mixerController.getTracksPanel(), "growx");
         mixerController.addTracksControllerListener(this);
 
-        showTracksPanel(false);
+        tracksPanelEnabled = true;
+        showTracksPanel(tracksPanelEnabled);
+        updateCurrentTimeLabel();
     }
 
     private static String toRGBString(final Color color) {
@@ -365,20 +373,27 @@ public final class DataControllerV extends OpenSHAPADialog
         // Plugin plugin = pm.getAssociatedPlugin(ff);
 
         if (plugin != null) {
-            DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
-                    .getApplication().getMainFrame(), false);
-            dataViewer.setIdentifier(IDController.generateIdentifier());
-            dataViewer.setDataFeed(f);
-            dataViewer.seekTo(clock.getTime());
-            dataViewer.setSimpleDatabase(
-                    OpenSHAPA.getProjectController().getSimpleDB());
-            addDataViewer(plugin.getTypeIcon(), dataViewer, f,
-                dataViewer.getTrackPainter());
-            mixerController.bindTrackActions(dataViewer.getIdentifier(),
-                dataViewer.getCustomActions());
-            dataViewer.addViewerStateListener(
-                mixerController.getTracksEditorController()
-                    .getViewerStateListener(dataViewer.getIdentifier()));
+
+            try {
+                DataViewer dataViewer = plugin.getNewDataViewer(OpenSHAPA
+                        .getApplication().getMainFrame(), false);
+                dataViewer.setIdentifier(IDController.generateIdentifier());
+                dataViewer.setDataFeed(f);
+                dataViewer.seekTo(clock.getTime());
+                dataViewer.setSimpleDatabase(OpenSHAPA.getProjectController()
+                    .getSimpleDB());
+                addDataViewer(plugin.getTypeIcon(), dataViewer, f,
+                    dataViewer.getTrackPainter());
+                mixerController.bindTrackActions(dataViewer.getIdentifier(),
+                    dataViewer.getCustomActions());
+                dataViewer.addViewerStateListener(
+                    mixerController.getTracksEditorController()
+                        .getViewerStateListener(dataViewer.getIdentifier()));
+            } catch (Throwable t) {
+                logger.error(t);
+                JOptionPane.showMessageDialog(null,
+                    "Could not open data source: " + t.getMessage());
+            }
         }
     }
 
@@ -669,17 +684,18 @@ public final class DataControllerV extends OpenSHAPADialog
         }
 
         playbackModel.setMaxDuration(maxDuration);
-
         maxDuration = mixerController.setMaxEnd(maxDuration);
 
         // Reset visualisation of playback regions.
-        if (playbackModel.getWindowPlayEnd() > maxDuration) {
+        // Always reset if there are not more viewers.
+        if ((playbackModel.getWindowPlayEnd() > maxDuration)
+                || viewers.isEmpty()) {
             playbackModel.setWindowPlayEnd(maxDuration);
             mixerController.setPlayRegionEnd(maxDuration);
         }
 
-        if (playbackModel.getWindowPlayStart()
-                > playbackModel.getWindowPlayEnd()) {
+        if ((playbackModel.getWindowPlayStart()
+                    > playbackModel.getWindowPlayEnd()) || viewers.isEmpty()) {
             playbackModel.setWindowPlayStart(0);
             mixerController.setPlayRegionStart(
                 playbackModel.getWindowPlayStart());
@@ -687,6 +703,12 @@ public final class DataControllerV extends OpenSHAPADialog
 
         // Reset visualisation of current playback time.
         long tracksTime = mixerController.getCurrentTime();
+
+        // If there are no more viewers, move the needle back to the initial
+        // position.
+        if (viewers.isEmpty()) {
+            tracksTime = 0;
+        }
 
         if (tracksTime < playbackModel.getWindowPlayStart()) {
             tracksTime = playbackModel.getWindowPlayStart();
@@ -704,7 +726,7 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     /**
-     * Remove the specifed viewer from the controller.
+     * Remove the specified viewer from the controller.
      *
      * @param viewer
      *            The viewer to shutdown.
@@ -733,6 +755,138 @@ public final class DataControllerV extends OpenSHAPADialog
         }
 
         return removed;
+    }
+
+    /**
+     * Remove the specified viewer from the controller.
+     *
+     * @param id
+     *            The identifier of the viewer to shutdown.
+     */
+    public void shutdown(final Identifier id) {
+
+        DataViewer viewer = null;
+
+        for (DataViewer v : viewers) {
+
+            if (v.getIdentifier().equals(id)) {
+                viewer = v;
+
+                break;
+            }
+        }
+
+        if ((viewer == null) || !shouldRemove()) {
+            return;
+        }
+
+        viewers.remove(viewer);
+
+        viewer.stop();
+        viewer.clearDataFeed();
+
+        JDialog viewDialog = viewer.getParentJDialog();
+
+        if (viewDialog != null) {
+            viewDialog.dispose();
+        }
+
+        // BugzID:2000
+        viewer.removeViewerStateListener(
+            mixerController.getTracksEditorController().getViewerStateListener(
+                viewer.getIdentifier()));
+
+        // Recalculate the maximum playback duration.
+        updateMaxViewerDuration();
+
+        // Remove the data viewer from the tracks panel.
+        mixerController.deregisterTrack(viewer.getIdentifier());
+
+        // Data viewer removed, mark project as changed.
+        OpenSHAPA.getProjectController().projectChanged();
+
+    }
+
+    /**
+     * Binds a window event listener to a data viewer.
+     *
+     * @param id The identifier of the viewer to bind to.
+     */
+    public void bindWindowListenerToDataViewer(final Identifier id,
+        final WindowListener wl) {
+
+        DataViewer viewer = null;
+
+        for (DataViewer v : viewers) {
+
+            if (v.getIdentifier().equals(id)) {
+                viewer = v;
+
+                break;
+            }
+        }
+
+        if (viewer != null) {
+            viewer.getParentJDialog().addWindowListener(wl);
+        }
+    }
+
+    /**
+     * Binds a window event listener to a data viewer.
+     *
+     * @param id The identifier of the viewer to bind to.
+     */
+    public void setDataViewerVisibility(final Identifier id,
+        final boolean visible) {
+
+        DataViewer viewer = null;
+
+        for (DataViewer v : viewers) {
+
+            if (v.getIdentifier().equals(id)) {
+                viewer = v;
+
+                break;
+            }
+        }
+
+        if (viewer != null) {
+            viewer.getParentJDialog().setVisible(visible);
+        }
+    }
+
+
+    /**
+     * Presents a confirmation dialog when removing a plugin from the project.
+     * @return True if the plugin should be removed, false otherwise.
+     */
+    private boolean shouldRemove() {
+//        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
+
+        String cancel = "Cancel";
+        String ok = "OK";
+
+        String[] options = new String[2];
+
+        if (OpenSHAPA.getPlatform() == Platform.MAC) {
+            options[0] = cancel;
+            options[1] = ok;
+        } else {
+            options[0] = ok;
+            options[1] = cancel;
+        }
+
+        int selection = JOptionPane.showOptionDialog(this,
+                rMap.getString("ClosePluginDialog.message"),
+                rMap.getString("ClosePluginDialog.title"),
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, cancel);
+
+        // Button behaviour is platform dependent.
+        return (OpenSHAPA.getPlatform() == Platform.MAC) ? (selection == 1)
+                                                         : (selection == 0);
     }
 
     /**
@@ -1044,7 +1198,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         // Show tracks button
         showTracksButton.setIcon(resourceMap.getIcon(
-                "showTracksButton.show.icon"));
+                "showTracksButton.hide.icon"));
         showTracksButton.setName("showTracksButton");
         showTracksButton.getAccessibleContext().setAccessibleName(
             "Show Tracks");
@@ -1376,7 +1530,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         // Show tracks button
         showTracksButton.setIcon(resourceMap.getIcon(
-                "showTracksButton.show.icon"));
+                "showTracksButton.hide.icon"));
         showTracksButton.setName("showTracksButton");
         showTracksButton.getAccessibleContext().setAccessibleName(
             "Show Tracks");
@@ -1578,9 +1732,19 @@ public final class DataControllerV extends OpenSHAPADialog
             maxDuration = viewer.getOffset() + viewer.getDuration();
         }
 
-        playbackModel.setMaxDuration(maxDuration);
+        // BugzID:2114 - If this is the first viewer we are adding, always reset
+        // max duration.
+        if (viewers.size() == 1) {
+            maxDuration = viewer.getOffset() + viewer.getDuration();
+        }
 
-        if (playbackModel.getWindowPlayEnd() < maxDuration) {
+        playbackModel.setMaxDuration(maxDuration);
+        mixerController.setMaxEnd(maxDuration);
+
+        // BugzID:2114 - Always set the model constraints if this is the first
+        // viewer we are adding in addition to when the max duration changes.
+        if ((playbackModel.getWindowPlayEnd() < maxDuration)
+                || (viewers.size() == 1)) {
             playbackModel.setWindowPlayEnd(maxDuration);
             mixerController.setPlayRegionEnd(maxDuration);
         }

@@ -1,9 +1,0 @@
-
-      WARNING  25 (Line 14:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
-
-
-      ERROR 13 (Line 26:11): Encountered a-list entry prior to one or more of its required predicessors in its a-list.
-        PREDICATE-DEFINITIONS> a-list entry missing from the USER> a-list?
-
-Unable to continue parse -- Will continue lexer scan.
-

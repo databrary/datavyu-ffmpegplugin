@@ -124,6 +124,9 @@ public final class TracksEditorController implements TrackMouseEventListener {
 
         trackController.addTrackMouseEventListener(this);
 
+        trackController.attachAsWindowListener();
+
+
         final Track track = new Track();
         track.trackId = trackId;
         track.trackController = trackController;

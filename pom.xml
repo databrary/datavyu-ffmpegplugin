@@ -260,9 +260,9 @@
 
       <dependencies>
         <dependency>
-          <groupId>com.googlecode</groupId>
-          <artifactId>gstreamer-osx64</artifactId>
-          <version>1.4B</version>
+          <groupId>org.openshapa</groupId>
+          <artifactId>openshapa-nativelibs-osx64</artifactId>
+          <version>0.2</version> <!--  NB: You'll need to update org.openshapa.OpenSHAPA when this changes. -->
         </dependency>
       </dependencies>
     </profile>
@@ -352,7 +352,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>osxappbundle-maven-plugin</artifactId>
         <!--  BugzID:306 - This version has been custom built for support of the new "resources" tag. Don't update this to the mainstream version until after the tag has been added to the SVN repository... see http://jira.codehaus.org/browse/MOJO-1527 -->
-        <version>1.0-alpha-2a</version>
+        <version>1.0-alpha-2b</version>
         <configuration>
           <bundleName>OpenSHAPA</bundleName>
           <mainClass>org.openshapa.Launcher</mainClass>
@@ -549,7 +549,7 @@
                 <preCp>jruby-complete-1.4.0.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
-                <preCp>openshapa-lib-0.0.44.jar</preCp>
+                <preCp>openshapa-lib-0.0.45.jar</preCp>
                 <preCp>openshapa-gstreamer-java-1.4.1.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.5.jar</preCp>
@@ -577,6 +577,8 @@
 
   -->
   <dependencies>
+    <!-- We must specifiy this JNA version first so that all our dependencies
+         are happy. -->
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
@@ -616,7 +618,7 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.44</version>
+      <version>0.0.45</version>
     </dependency>
 
     <dependency>
@@ -685,6 +687,18 @@
       <groupId>quicktime</groupId>
       <artifactId>QTJava</artifactId>
       <version>7</version>
+    </dependency>
+    
+    <dependency>
+    	<groupId>org.rococoa</groupId>
+    	<artifactId>rococoa-core</artifactId>
+    	<version>0.5.1x3</version>
+    </dependency>
+ 
+    <dependency>
+    	<groupId>org.rococoa</groupId>
+    	<artifactId>rococoa-cocoa</artifactId>
+    	<version>0.5.1x3</version>
     </dependency>
 
     <dependency>

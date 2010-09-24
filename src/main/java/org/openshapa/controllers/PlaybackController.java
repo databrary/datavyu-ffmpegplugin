@@ -90,7 +90,7 @@ public final class PlaybackController implements PlaybackListener,
     /**
      * The threshold to use while synchronising viewers (augmented by rate).
      */
-    private static final long SYNC_THRESH = 50;
+    private static final long SYNC_THRESH = 200;
 
     /**
      * How often to synchronise the viewers with the master clock.
@@ -1074,6 +1074,12 @@ public final class PlaybackController implements PlaybackListener,
                         // Reset visualisation of current playback time.
                         long tracksTime = mixerController.getCurrentTime();
 
+                        // If there are no more viewers, move the needle back to
+                        // the initial position.
+                        if (viewers.isEmpty()) {
+                            tracksTime = 0;
+                        }
+
                         if (tracksTime < playbackModel.getWindowPlayStart()) {
                             tracksTime = playbackModel.getWindowPlayStart();
                         }
@@ -1203,9 +1209,19 @@ public final class PlaybackController implements PlaybackListener,
                         maxDuration = viewer.getOffset() + viewer.getDuration();
                     }
 
+                    // BugzID:2114 - If this is the first viewer we are adding,
+                    // always reset max duration.
+                    if (viewers.size() == 1) {
+                        maxDuration = viewer.getOffset() + viewer.getDuration();
+                    }
+
                     playbackModel.setMaxDuration(maxDuration);
 
-                    if (playbackModel.getWindowPlayEnd() < maxDuration) {
+                    // BugzID:2114 - Always set the model constraints if this is
+                    // the first viewer we are adding in addition to when the max
+                    // duration changes.
+                    if ((playbackModel.getWindowPlayEnd() < maxDuration)
+                            || (viewers.size() == 1)) {
                         playbackModel.setWindowPlayEnd(maxDuration);
                         mixerController.setPlayRegionEnd(maxDuration);
                     }

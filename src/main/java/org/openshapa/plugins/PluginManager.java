@@ -1,8 +1,8 @@
 package org.openshapa.plugins;
 
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -19,7 +19,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -34,12 +35,13 @@ import org.jdesktop.application.LocalStorage;
 
 import org.openshapa.OpenSHAPA;
 
+import org.openshapa.plugins.quicktime.java.QTJavaDataViewer;
+
+import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.Filter;
 import org.openshapa.views.continuous.Plugin;
 
 import com.usermetrix.jclient.UserMetrix;
-
-import org.openshapa.views.continuous.gstreamer.GStreamerDataViewer;
 
 
 /**
@@ -49,10 +51,6 @@ import org.openshapa.views.continuous.gstreamer.GStreamerDataViewer;
  * plugins that implement the Plugin interface.
  */
 public final class PluginManager {
-
-    /** The default plugin to present to the user when loading data. */
-    private static final String DEFAULT_VIEW = GStreamerDataViewer.class
-        .getName();
 
     /** A reference to the interface that plugins must override. */
     private static final Class<?> PLUGIN_CLASS;
@@ -311,18 +309,28 @@ public final class PluginManager {
                     // We call this with no parent frame because asking
                     // OpenSHAPA for its mainframe before it is created ruins
                     // all the dialogs (and menus).
-                    pluginLookup.put(p.getNewDataViewer(null, false).getClass()
-                        .getName(), p);
+                    final DataViewer newDataViewer;
+
+                    try {
+                        newDataViewer = p.getNewDataViewer(null, false);
+
+                        if (newDataViewer != null) {
+                            pluginLookup.put(newDataViewer.getClass().getName(),
+                                p);
+                        }
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                        logger.error("Unable to load plugin "
+                            + p.getClass().getName(), e);
+                    }
                 }
             }
-        } catch (InstantiationException e) {
-            logger.error("Unable to instantiate plugin", e);
-        } catch (IllegalAccessException e) {
-            logger.error("Unable to instantiate plugin", e);
         } catch (ClassNotFoundException e) {
             logger.error("Unable to find plugin.", e);
         } catch (ClassFormatError e) {
             logger.error("Plugin with bad class format.", e);
+        } catch (Throwable e) {
+            logger.error("Unable to instantiate plugin", e);
         }
     }
 
@@ -347,7 +355,24 @@ public final class PluginManager {
     }
 
     public Iterable<Plugin> getPlugins() {
-        return ImmutableSet.copyOf(plugins);
+        List<Plugin> p = Lists.newArrayList(plugins);
+        Collections.sort(p, new Comparator<Plugin>() {
+                @Override public int compare(final Plugin o1, final Plugin o2) {
+
+                    // Want the QuickTime video plugin to always be first.
+                    if ("QuickTime Video".equals(o1.getPluginName())) {
+                        return -1;
+                    }
+
+                    if ("QuickTime Video".equals(o2.getPluginName())) {
+                        return 1;
+                    }
+
+                    return o1.getPluginName().compareTo(o2.getPluginName());
+                }
+            });
+
+        return p;
     }
 
     /**
@@ -384,6 +409,12 @@ public final class PluginManager {
      *         {@code null} otherwise.
      */
     public Plugin getAssociatedPlugin(final String dataViewer) {
+
+        if ("org.openshapa.views.continuous.quicktime.QTDataViewer".equals(
+                    dataViewer)) {
+            return pluginLookup.get(QTJavaDataViewer.class.getCanonicalName());
+        }
+
         return pluginLookup.get(dataViewer);
     }
 

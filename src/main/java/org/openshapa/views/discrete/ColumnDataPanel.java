@@ -101,10 +101,9 @@ public final class ColumnDataPanel extends JPanel
         this.add(bottomStrut, -1);
 
         final ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-        .getContext()
-        .getResourceMap(ColumnDataPanel.class);
-        final ActionMap aMap = Application.getInstance(OpenSHAPA.class).getContext()
-            .getActionMap(ColumnDataPanel.class, this);
+            .getContext().getResourceMap(ColumnDataPanel.class);
+        final ActionMap aMap = Application.getInstance(OpenSHAPA.class)
+            .getContext().getActionMap(ColumnDataPanel.class, this);
 
         newCellButton.setBorder(BorderFactory.createMatteBorder(0, 1, 1, 0,
                 new Color(175, 175, 175)));
@@ -112,7 +111,8 @@ public final class ColumnDataPanel extends JPanel
         newCellButton.setName("newCellPlusButton");
         newCellButton.setAction(aMap.get("addNewCellToColumn"));
         newCellButton.setText(" + ");
-        newCellButton.setBackground(Configuration.getInstance().getSSBackgroundColour());
+        newCellButton.setBackground(Configuration.getInstance()
+            .getSSBackgroundColour());
         newCellButton.setOpaque(true);
         newCellButton.setForeground(Configuration.getInstance()
             .getSSForegroundColour());
@@ -363,9 +363,9 @@ public final class ColumnDataPanel extends JPanel
 
         // Quick filter - if we aren't dealing with a key press or up and down
         // arrow. Forget about it - just chuck it back to Java to deal with.
-        if ((e.getID() != KeyEvent.KEY_PRESSED) &&
-                ((e.getKeyCode() != KeyEvent.VK_UP) ||
-                    (e.getKeyCode() != KeyEvent.VK_DOWN))) {
+        if ((e.getID() != KeyEvent.KEY_PRESSED)
+                && ((e.getKeyCode() != KeyEvent.VK_UP)
+                    || (e.getKeyCode() != KeyEvent.VK_DOWN))) {
             return false;
         }
 
@@ -375,9 +375,67 @@ public final class ColumnDataPanel extends JPanel
         // For each of the cells in the column - see if one has focus.
         for (int i = 0; i < numCells; i++) {
 
+            if (components[i].isFocusOwner()
+                    && components[i].getClass().equals(JButton.class)) {
+
+                if ((e.getKeyCode() == KeyEvent.VK_UP) && (i > 0)) {
+                    SpreadsheetCell sc = (SpreadsheetCell) components[i - 1];
+                    EditorTracker et = sc.getDataView().getEdTracker();
+                    EditorComponent ec = et.getCurrentEditor();
+
+                    // Get the caret position within the active editor
+                    // component.
+                    int relativePos = et.getCurrentEditor().getCaretPosition();
+                    int absolutePos = sc.getDataView().getCaretPosition();
+
+                    try {
+
+                        // Determine if we are at the top of a multi-lined cell,
+                        // if we are not on the top line - pressing up should
+                        // select the line above.
+                        JTextArea a = (JTextArea) ec.getParentComponent();
+
+                        if (a.getLineOfOffset(a.getCaretPosition()) == 0) {
+                            sc = (SpreadsheetCell) components[i - 1];
+                            et = sc.getDataView().getEdTracker();
+                            ec = et.findEditor(absolutePos);
+                            et.setEditor(ec);
+
+                            a = (JTextArea) ec.getParentComponent();
+
+                            // Determine the line start and end points.
+                            int lastLine = (a.getLineCount() - 1);
+                            int lineEnd = a.getLineEndOffset(lastLine);
+                            int lineStart = a.getLineStartOffset(lastLine);
+
+                            // We take either the position or the last element
+                            // in the line
+                            int newPos = Math.min(relativePos + lineStart,
+                                    lineEnd);
+
+                            // Set the caret position in the newly focused
+                            // editor.
+                            ec.setCaretPosition(newPos);
+                            sc.requestFocus();
+                            sc.setHighlighted(true);
+                            cellSelectionL.setHighlightedCell(sc);
+
+                            e.consume();
+
+                            return true;
+                        }
+                    } catch (BadLocationException be) {
+                        logger.error("BadLocation on arrow up", be);
+                    }
+                }
+
+                return false;
+
+            }
+
             // The current cell has focus.
-            if (components[i].isFocusOwner() &&
-                    components[i].getClass().equals(SpreadsheetCell.class)) {
+            if (components[i].isFocusOwner()
+                    && components[i].getClass().equals(SpreadsheetCell.class)) {
 
                 // Get the current editor tracker and component for the cell
                 // that has focus.
@@ -422,7 +480,7 @@ public final class ColumnDataPanel extends JPanel
                             // Set the caret position in the newly focused
                             // editor.
                             ec.setCaretPosition(newPos);
-                            components[i - 1].requestFocus();
+                            sc.requestFocus();
                             sc.setHighlighted(true);
                             cellSelectionL.setHighlightedCell(sc);
 
@@ -438,8 +496,8 @@ public final class ColumnDataPanel extends JPanel
                 // The key stroke is down - select the editor component in the
                 // cell below, setting the caret position to what we found from
                 // the current cell.
-                if ((e.getKeyCode() == KeyEvent.VK_DOWN) &&
-                        ((i + 1) < numCells)) {
+                if ((e.getKeyCode() == KeyEvent.VK_DOWN)
+                        && ((i + 1) < numCells)) {
 
                     try {
 
@@ -448,17 +506,24 @@ public final class ColumnDataPanel extends JPanel
                         // down should select the line below.
                         JTextArea a = (JTextArea) ec.getParentComponent();
 
-                        if ((a.getLineOfOffset(a.getCaretPosition()) + 1) >=
-                                a.getLineCount()) {
+                        if ((a.getLineOfOffset(a.getCaretPosition()) + 1)
+                                >= a.getLineCount()) {
                             components[i + 1].requestFocus();
-                            sc = (SpreadsheetCell) components[i + 1];
 
-                            et = sc.getDataView().getEdTracker();
-                            ec = et.findEditor(absolutePos);
-                            et.setEditor(ec);
-                            ec.setCaretPosition(relativePos);
-                            sc.setHighlighted(true);
-                            cellSelectionL.setHighlightedCell(sc);
+                            if (components[i + 1] instanceof SpreadsheetCell) {
+                                sc = (SpreadsheetCell) components[i + 1];
+
+                                et = sc.getDataView().getEdTracker();
+                                ec = et.findEditor(absolutePos);
+                                et.setEditor(ec);
+                                ec.setCaretPosition(relativePos);
+                                sc.setHighlighted(true);
+                                cellSelectionL.setHighlightedCell(sc);
+                            } else {
+                                sc = (SpreadsheetCell) components[i];
+                                sc.setHighlighted(false);
+                                cellSelectionL.clearCellSelection();
+                            }
 
                             e.consume();
 

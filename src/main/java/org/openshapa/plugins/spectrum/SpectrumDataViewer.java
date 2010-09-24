@@ -16,8 +16,9 @@ import java.io.OutputStream;
 
 import java.net.URL;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -32,8 +33,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
-import org.openshapa.models.db.SimpleDatabase;
 
+import org.openshapa.models.db.SimpleDatabase;
 import org.openshapa.models.id.Identifier;
 
 import org.openshapa.plugins.spectrum.engine.PlaybackEngine;
@@ -46,8 +47,6 @@ import org.openshapa.views.continuous.CustomActionsAdapter;
 import org.openshapa.views.continuous.DataController;
 import org.openshapa.views.continuous.DataViewer;
 import org.openshapa.views.continuous.ViewerStateListener;
-
-import org.testng.v6.Sets;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
@@ -109,10 +108,10 @@ public final class SpectrumDataViewer implements DataViewer {
             }
         };
 
-    private Set<ViewerStateListener> viewerListeners;
+    private List<ViewerStateListener> viewerListeners;
 
     public SpectrumDataViewer(final Frame parent, final boolean modal) {
-        viewerListeners = Sets.newHashSet();
+        viewerListeners = new ArrayList<ViewerStateListener>();
 
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
@@ -120,12 +119,14 @@ public final class SpectrumDataViewer implements DataViewer {
 
                     dialog = new SpectrumDialog(parent, modal);
                     dialog.setDefaultCloseOperation(
-                        WindowConstants.DISPOSE_ON_CLOSE);
-                    dialog.addWindowListener(new WindowAdapter() {
-                            public void windowClosing(final WindowEvent evt) {
-                                dialogClosing(evt);
-                            }
-                        });
+                        WindowConstants.HIDE_ON_CLOSE);
+
+                    // BugzID:2304 - Rubbish action handles this.
+                    // dialog.addWindowListener(new WindowAdapter() {
+                    // public void windowClosing(final WindowEvent evt) {
+                    // dialogClosing(evt);
+                    // }
+                    // });
 
                     volButton = new JButton();
                     volButton.setIcon(VOL_NORMAL);
@@ -436,8 +437,11 @@ public final class SpectrumDataViewer implements DataViewer {
         if (engine != null) {
             engine.setVolume(vol);
 
-            for (ViewerStateListener listener : viewerListeners) {
-                listener.notifyStateChanged(null, null);
+            synchronized (this) {
+
+                for (ViewerStateListener listener : viewerListeners) {
+                    listener.notifyStateChanged(null, null);
+                }
             }
         }
     }
@@ -457,14 +461,24 @@ public final class SpectrumDataViewer implements DataViewer {
         // Stop the engine thread.
         engine.interrupt();
 
+        /*
         if (dataC != null) {
             dataC.shutdown(this);
         }
+         */
     }
 
-    @Override
-    public void setSimpleDatabase(SimpleDatabase sDB) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    @Override public void setSimpleDatabase(final SimpleDatabase sDB) {
+    }
+
+    @Override public void clearDataFeed() {
+        track.deregister();
+
+        // Shutdown the engine
+        engine.shutdown();
+
+        // Stop the engine thread.
+        engine.interrupt();
     }
 
 }

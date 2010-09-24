@@ -1,4 +1,4 @@
-package org.openshapa.plugins.spectrum;
+package org.openshapa.plugins.gstvideo;
 
 import java.awt.Frame;
 
@@ -23,39 +23,15 @@ import org.openshapa.views.continuous.Plugin;
 import com.google.common.collect.Lists;
 
 
-/**
- * Plugin for viewing power spectrum density.
- */
-public class SpectrumPlugin implements Plugin {
-
-    private static final Filter AUDIO_FILTER = new Filter() {
-            final SuffixFileFilter ff;
-            final List<String> ext;
-
-            {
-                ext = Lists.newArrayList(".wav", ".mp3");
-                ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
-            }
-
-            @Override public FileFilter getFileFilter() {
-                return ff;
-            }
-
-            @Override public String getName() {
-                return FilterNames.AUDIO.getFilterName();
-            }
-
-            @Override public Iterable<String> getExtensions() {
-                return ext;
-            }
-        };
+public class GStreamerPlugin implements Plugin {
 
     private static final Filter VIDEO_FILTER = new Filter() {
             final SuffixFileFilter ff;
             final List<String> ext;
 
             {
-                ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mp4");
+                ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mpeg",
+                        ".mp4");
                 ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
             }
 
@@ -81,26 +57,25 @@ public class SpectrumPlugin implements Plugin {
 
     @Override public DataViewer getNewDataViewer(final Frame parent,
         final boolean modal) {
-
-        return new SpectrumDataViewer(parent, modal);
+        return new GStreamerDataViewer(parent, modal);
     }
 
     @Override public ImageIcon getTypeIcon() {
         URL typeIconURL = getClass().getResource(
-                "/icons/spectrum/spectrumplugin-icon.png");
+                "/icons/gstreamerplugin-icon.png");
 
         return new ImageIcon(typeIconURL);
     }
 
     @Override public String getClassifier() {
-        return "openshapa.audio";
+        return "openshapa.video";
     }
 
     @Override public Filter[] getFilters() {
-        return new Filter[] { AUDIO_FILTER, VIDEO_FILTER };
+        return new Filter[] { VIDEO_FILTER };
     }
 
     @Override public String getPluginName() {
-        return "UNSTABLE: Audio Spectrum";
+        return "UNSTABLE: GStreamer Video";
     }
 }

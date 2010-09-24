@@ -1,24 +1,29 @@
 package org.openshapa.util;
 
 import com.google.common.collect.Iterables;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.swing.JOptionPane;
 
 public class NativeLoader {
 
     /** The size of the buffer to use when un zipping native libraries. */
-    private static final int BUFFER = 2048;
+    private static final int BUFFER = 16384;
 
     /** The list of all the native loaded odds and ends that need unpacking. */
     private static final ArrayList<File> loadedLibs = new ArrayList<File>();
+
+    /** The folder that we stash all our native libs within. */
+    private static File nativeLibFolder;
 
     /**
      * Unpacks a native application to a temporary location so that it can be
@@ -31,12 +36,23 @@ public class NativeLoader {
      * location.
      */
     static public String unpackNativeApp(final String appJar) throws Exception {
-        int count;
-        byte[] data = new byte[BUFFER];
+        final String nativeLibraryPath;
+
+        if (nativeLibFolder == null) {
+            nativeLibraryPath = System.getProperty("java.io.tmpdir")
+                + UUID.randomUUID().toString() + "nativelibs";
+            nativeLibFolder = new File(nativeLibraryPath);
+
+            if (!nativeLibFolder.exists()) {
+                nativeLibFolder.mkdir();
+            }
+        }
 
         // Search the class path for the application jar.
         JarFile jar = null;
-        for (String s : System.getProperty("java.class.path").split(File.pathSeparator)) {
+
+        for (String s
+            : System.getProperty("java.class.path").split(File.pathSeparator)) {
 
             // Success! We found a matching jar.
             if (s.endsWith(appJar + ".jar")) {
@@ -48,27 +64,31 @@ public class NativeLoader {
         // decompress as needed.
         if (jar != null) {
             Enumeration<JarEntry> entries = jar.entries();
+
             while (entries.hasMoreElements()) {
                 JarEntry inFile = entries.nextElement();
 
-                File outFile = new File(System.getProperty("java.io.tmpdir")
-                                  + File.separator + inFile.getName());
+                File outFile = new File(nativeLibFolder, inFile.getName());
 
                 // If the file from the jar is a directory, create it.
                 if (inFile.isDirectory()) {
                     outFile.mkdir();
 
-                // The file from the jar is regular - decompress it.
+                    // The file from the jar is regular - decompress it.
                 } else {
                     InputStream in = jar.getInputStream(inFile);
 
                     // Create a temporary output location for the library.
                     FileOutputStream out = new FileOutputStream(outFile);
                     BufferedOutputStream dest = new BufferedOutputStream(out,
-                                                                         BUFFER);
+                            BUFFER);
+                    int count;
+                    byte[] data = new byte[BUFFER];
+
                     while ((count = in.read(data, 0, BUFFER)) != -1) {
                         dest.write(data, 0, count);
                     }
+
                     dest.flush();
                     dest.close();
                     out.close();
@@ -78,26 +98,40 @@ public class NativeLoader {
                 loadedLibs.add(outFile);
             }
 
-        // Unable to find jar file - abort decompression.
+            // Unable to find jar file - abort decompression.
         } else {
-        	System.err.println("Unable to find jar file for unpacking: " + appJar + ". Java classpath is:");
-            for (String s : System.getProperty("java.class.path").split(File.pathSeparator)) {
-            	System.err.println("    " + s);
+            System.err.println("Unable to find jar file for unpacking: "
+                + appJar + ". Java classpath is:");
+
+            for (String s
+                : System.getProperty("java.class.path").split(
+                    File.pathSeparator)) {
+                System.err.println("    " + s);
             }
-            throw new Exception("Unable to find '" + appJar + "' for unpacking.");
+
+            throw new Exception("Unable to find '" + appJar
+                + "' for unpacking.");
         }
 
-        return System.getProperty("java.io.tmpdir") + appJar;
+        return nativeLibFolder.getAbsolutePath();
     }
 
     /**
      * Cleans all the temporary files created by the native loader.
      */
     static public void cleanAllTmpFiles() {
+        System.err.println("cleaning temp files");
+
         for (File loadedLib : Iterables.reverse(loadedLibs)) {
+
             if (!loadedLib.delete()) {
                 System.err.println("Unable to delete temp file: " + loadedLib);
             }
+        }
+
+        if ((nativeLibFolder != null) && !nativeLibFolder.delete()) {
+            System.err.println("Unable to delete temp folder: + "
+                + nativeLibFolder);
         }
     }
 

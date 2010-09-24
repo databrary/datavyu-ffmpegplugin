@@ -25,7 +25,7 @@ import org.openshapa.models.db.IntDataValue;
 import org.openshapa.models.db.IntFormalArg;
 import org.openshapa.models.db.LogicErrorException;
 import org.openshapa.models.db.MacshapaDatabase;
-import org.openshapa.models.db.MacshapaODBReader;
+//import org.openshapa.models.db.MacshapaODBReader;
 import org.openshapa.models.db.Matrix;
 import org.openshapa.models.db.MatrixVocabElement;
 import org.openshapa.models.db.NominalDataValue;
@@ -101,45 +101,8 @@ public final class OpenDatabaseFileC {
      */
     public MacshapaDatabase openAsMacSHAPADB(final File sFile) {
 
-        try {
-            logger.usage("open ODB database");
-
-            FileReader sReader = new FileReader(sFile);
-            BufferedReader sourceStream = new BufferedReader(sReader);
-            PrintStream listStream = new PrintStream(new File("read_list.log"));
-            PrintStream errorStream = new PrintStream(new File("error.log"));
-
-            MacshapaODBReader modbr = new MacshapaODBReader(sourceStream,
-                    listStream, errorStream);
-
-            MacshapaDatabase msdb = modbr.readDB();
-
-            //Convert all untyped to nominal and Bugz1703
-            for (DataColumn dc : msdb.getDataColumns()) {
-
-                // BugzID:1703 - Ignore old macshapa query variables, we don't have a
-                // reliable mechanisim for loading their predicates. Given problems
-                // between the untyped nature of macshapa and the typed nature of
-                // OpenSHAPA.
-                if (dc.getName().equals("###QueryVar###")) {
-                    msdb = removeDataColumn(msdb, dc);
-                }
-
-                if (dc.getItsMveType() == MatrixType.UNDEFINED) {
-                    dc.setItsMveType(MatrixType.NOMINAL);
-                }
-            }
-
-            return msdb;
-        } catch (FileNotFoundException e) {
-            logger.error("Unable to load macshapa database.", e);
-        } catch (SystemErrorException e) {
-            logger.error("Unable to load macshapa database.", e);
-        } catch (IOException e) {
-            logger.error("Unable to load macshapa database.'", e);
-        } catch (LogicErrorException e) {
-            logger.error("Corrupted macshapa database", e);
-        }
+        // Currently no implementation of opening older MacSHAPA database.
+        // ... One day.
 
         // Error occured - return null.
         return null;

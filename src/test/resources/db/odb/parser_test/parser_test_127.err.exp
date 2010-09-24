@@ -1,7 +1,0 @@
-
-      WARNING  25 (Line 28:23): The error limit in the MAX-ERRORS> attribute is too large.  Error limit forced to largest legal value.
-
-
-      WARNING  14 (Line 277:5): Encountered a-list entry without a value.  A-list entries must be of the form '(' <tag> <value> ')'.
-        The SYSTEM> section appears not to have a value.
-

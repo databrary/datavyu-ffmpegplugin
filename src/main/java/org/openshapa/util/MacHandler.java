@@ -100,6 +100,7 @@ public class MacHandler {
                     if (shouldQuit) {
                         OpenSHAPA.getApplication()
                                  .getMainFrame().setVisible(false);
+                        NativeLoader.cleanAllTmpFiles();
                         UserMetrix.shutdown();
                     }
 

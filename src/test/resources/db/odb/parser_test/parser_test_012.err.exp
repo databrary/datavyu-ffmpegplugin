@@ -1,7 +1,0 @@
-
-      ERROR 11 (Line 7:8): "macshapa-db" expected.  Unable to recover from error by examining context.
-        A database file must start with "( setf macshapa-db '( ... ".
-
-
-Unable to continue parse -- Will continue lexer scan.
-

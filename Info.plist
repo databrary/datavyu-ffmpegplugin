@@ -20,10 +20,15 @@
     <string>6.0</string>
     <key>CFBundleIconFile</key>
     <string>OpenSHAPA.icns</string>
+    <key>LSArchitecturePriority</key>
+    <array>
+    <string>i386</string>
+    <string>ppc</string>
+    </array>
     <key>Java</key>
     <dict>
       <key>MainClass</key>
-      <string>org.openshapa.Launcher</string>
+      <string>org.openshapa.OpenSHAPA</string>
       <key>JVMVersion</key>
       <string>1.6+</string>
       <key>SplashFile</key>
@@ -31,11 +36,13 @@
       <key>ClassPath</key>
       <array>
         <string>$JAVAROOT/repo/org/openshapa/openshapa/1.08/openshapa-1.08.jar</string>
+        <!-- JNA 3.2.7 needs to be ahead of the other dependencies so that it is found first (instead of the older versions bundled elsewhere) -->
+        <string>$JAVAROOT/repo/net/java/dev/jna/jna/3.2.7/jna-3.2.7.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.4.0/jruby-complete-1.4.0.jar</string>
         <string>$JAVAROOT/repo/org/jdesktop/appframework/1.0.3/appframework-1.0.3.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openhashtable/0.1/openhashtable-0.1.jar</string>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.44/openshapa-lib-0.0.44.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.45/openshapa-lib-0.0.45.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openshapa-gstreamer-java/1.4.1/openshapa-gstreamer-java-1.4.1.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.5/snakeyaml-1.5.jar</string>
         <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.5/UserMetrix-jclient-0.0.5.jar</string>
@@ -45,10 +52,16 @@
         <string>$JAVAROOT/repo/org/easytesting/fest-reflect/1.2/fest-reflect-1.2.jar</string>
         <string>$JAVAROOT/repo/com/google/collections/google-collections/1.0/google-collections-1.0.jar</string>
         <string>$JAVAROOT/repo/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar</string>
-        <string>$JAVAROOT/repo/net/java/dev/jna/jna/jna-3.2.7.jar</string>
         <string>$JAVAROOT/repo/apple/java/applejavaextensions/1.4/applejavaextensions-1.4.jar</string>
-        <string>$JAVAROOT/repo/com/googlecode/gstreamer-osx64/1.4B/gstreamer-osx64-1.4B.jar</string>
-        <string>$JAVAROOT/repo/quicktime/QTJava/7/QTJava-7.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa-nativelibs-osx64/0.2/openshapa-nativelibs-osx64-0.2.jar</string>
+        <!-- start of rococoa dependencies -->
+        <string>$JAVAROOT/repo/org/rococoa/rococoa-cocoa/0.5.1x3/rococoa-cocoa-0.5.1x3.jar</string>
+        <string>$JAVAROOT/repo/org/rococoa/rococoa-core/0.5.1x3/rococoa-core-0.5.1x3.jar</string>
+        <string>$JAVAROOT/repo/cglib/cglib/2.2/cglib-2.2.jar</string>
+        <string>$JAVAROOT/repo/org/slf4j/slf4j-api/1.5.8/slf4j-api-1.5.8.jar</string>
+        <string>$JAVAROOT/repo/org/slf4j/slf4j-jdk14/1.5.8/slf4j-jdk14-1.5.8.jar</string>
+        <string>$JAVAROOT/repo/asm/asm/3.1/asm-3.1.jar</string>
+        <!-- end of rococoa dependencies -->
       </array>
     </dict>
   </dict>

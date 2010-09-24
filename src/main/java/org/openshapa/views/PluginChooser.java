@@ -3,7 +3,6 @@ package org.openshapa.views;
 import java.awt.Component;
 
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 
 import org.openshapa.Configuration;
 
@@ -29,6 +28,8 @@ public abstract class PluginChooser extends JFileChooser {
      */
     @Override public int showOpenDialog(final Component parent) {
         this.setCurrentDirectory(Configuration.getInstance().getLCDirectory());
+
+        setFileFilter(getAcceptAllFileFilter());
 
         int result = super.showOpenDialog(parent);
         Configuration.getInstance().setLCDirectory(this.getCurrentDirectory());
