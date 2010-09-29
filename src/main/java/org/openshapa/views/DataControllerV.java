@@ -22,6 +22,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 
 import net.miginfocom.swing.MigLayout;
@@ -327,6 +328,8 @@ public final class DataControllerV extends OpenSHAPADialog
 
         clock.registerListener(this);
 
+        setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
             initComponentsMac();
         } else {
@@ -370,7 +373,8 @@ public final class DataControllerV extends OpenSHAPADialog
     private void openVideo(final PluginChooser chooser) {
         Plugin plugin = chooser.getSelectedPlugin();
         File f = chooser.getSelectedFile();
-        // Plugin plugin = pm.getAssociatedPlugin(ff);
+
+        System.out.println(mixerController);
 
         if (plugin != null) {
 
@@ -629,11 +633,6 @@ public final class DataControllerV extends OpenSHAPADialog
         }
     }
 
-    @Override public void dispose() {
-        mixerController.removeAll();
-        super.dispose();
-    }
-
     /**
      * @return the mixer controller.
      */
@@ -764,7 +763,6 @@ public final class DataControllerV extends OpenSHAPADialog
      *            The identifier of the viewer to shutdown.
      */
     public void shutdown(final Identifier id) {
-
         DataViewer viewer = null;
 
         for (DataViewer v : viewers) {
@@ -925,8 +923,6 @@ public final class DataControllerV extends OpenSHAPADialog
         tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
 
         final int fontSize = 11;
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         org.jdesktop.application.ResourceMap resourceMap =
             org.jdesktop.application.Application.getInstance(
@@ -1257,8 +1253,6 @@ public final class DataControllerV extends OpenSHAPADialog
         tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
 
         final int fontSize = 11;
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         org.jdesktop.application.ResourceMap resourceMap =
             org.jdesktop.application.Application.getInstance(
