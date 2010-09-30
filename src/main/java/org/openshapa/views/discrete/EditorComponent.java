@@ -12,8 +12,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 import org.openshapa.Configuration;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.Matrix;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.Matrix;
 
 /**
  * EditorComponent - Abstract class for editing a segment of text within a

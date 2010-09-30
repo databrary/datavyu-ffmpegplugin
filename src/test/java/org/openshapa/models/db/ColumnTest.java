@@ -1,6 +1,11 @@
 package org.openshapa.models.db;
 
 
+import org.openshapa.models.db.legacy.Column;
+import org.openshapa.models.db.legacy.DBIndex;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.SystemErrorException;
 import org.testng.annotations.Test;
 
 /**

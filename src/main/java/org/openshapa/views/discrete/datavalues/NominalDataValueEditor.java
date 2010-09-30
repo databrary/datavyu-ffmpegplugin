@@ -3,14 +3,15 @@ package org.openshapa.views.discrete.datavalues;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.Matrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.openshapa.models.db.Database;
-import org.openshapa.models.db.NominalDataValue;
-import org.openshapa.models.db.PredDataValue;
-import org.openshapa.models.db.SystemErrorException;
+
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.Matrix;
+import org.openshapa.models.db.legacy.NominalDataValue;
+import org.openshapa.models.db.legacy.PredDataValue;
+import org.openshapa.models.db.legacy.SystemErrorException;
 
 /**
  * This class is the character editor of a NominalDataValue.

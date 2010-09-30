@@ -1,9 +1,10 @@
 package org.openshapa.views.discrete.datavalues;
 
 import javax.swing.text.JTextComponent;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.Matrix;
-import org.openshapa.models.db.PredDataValue;
+
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.Matrix;
+import org.openshapa.models.db.legacy.PredDataValue;
 
 /**
  * This class is the character editor of a UndefinedDataValue.

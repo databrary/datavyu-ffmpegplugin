@@ -9,7 +9,7 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.models.db.Column;
+import org.openshapa.models.db.legacy.Column;
 
 import org.testng.Assert;
 

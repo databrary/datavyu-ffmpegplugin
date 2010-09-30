@@ -4,11 +4,12 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.Matrix;
-import org.openshapa.models.db.PredDataValue;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.models.db.TextStringDataValue;
+
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.Matrix;
+import org.openshapa.models.db.legacy.PredDataValue;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TextStringDataValue;
 
 /**
  * This class is the character editor of a TextStringDataValue.

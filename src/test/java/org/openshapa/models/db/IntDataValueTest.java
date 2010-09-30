@@ -1,6 +1,16 @@
 package org.openshapa.models.db;
 
 import java.io.PrintStream;
+
+import org.openshapa.models.db.legacy.DBIndex;
+import org.openshapa.models.db.legacy.DataValue;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.IntDataValue;
+import org.openshapa.models.db.legacy.IntFormalArg;
+import org.openshapa.models.db.legacy.MatrixVocabElement;
+import org.openshapa.models.db.legacy.ODBCDatabase;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.UnTypedFormalArg;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -37,7 +47,7 @@ public class IntDataValueTest extends DataValueTest {
      * Sets up the test fixture (i.e. the data available to all tests), this is
      * performed before each test case.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @BeforeMethod
     public void setUp() throws SystemErrorException {
@@ -89,7 +99,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test 1 arg constructor, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void test1ArgConstructor() throws SystemErrorException {
@@ -106,7 +116,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test 2 argument constructor, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {
@@ -133,7 +143,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test0 of 2 arg constructor failre, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure0() throws SystemErrorException {
@@ -143,7 +153,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test1 of 2 arg constructor failre, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure1() throws SystemErrorException {
@@ -153,7 +163,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test2 of 2 arg constructor failure, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure2() throws SystemErrorException {
@@ -163,7 +173,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test of 3 arg constructor, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void test3ArgConstructor() throws SystemErrorException {
@@ -201,7 +211,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test0 of 3Arg constructor failure, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure0() throws SystemErrorException {
@@ -211,7 +221,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test1 of 3Arg constructor failure, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure1() throws SystemErrorException {
@@ -221,7 +231,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test2 of 3Arg constructor failure, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test (expectedExceptions = SystemErrorException.class)
     public void test3ArgConstructorFailure2() throws SystemErrorException {
@@ -231,7 +241,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void testCopyConstructor() throws SystemErrorException {
@@ -251,7 +261,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test of copy constructor failure, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test (expectedExceptions = SystemErrorException.class)
     public void testCopyConstructorFailure() throws SystemErrorException {
@@ -261,7 +271,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test of getItsValue method, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void testGetItsValue() throws SystemErrorException {
@@ -273,7 +283,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test of setItsValue method, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void testSetItsValue() throws SystemErrorException {
@@ -286,7 +296,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test of toString method, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void testToString() throws SystemErrorException {
@@ -297,7 +307,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test of toDBString method, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void testToDBString() throws SystemErrorException {
@@ -317,7 +327,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test of coerceToRange method, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void testCoerceToRange() throws SystemErrorException {
@@ -335,7 +345,7 @@ public class IntDataValueTest extends DataValueTest {
     /**
      * Test of Construct method, of class IntDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void testConstruct() throws SystemErrorException {

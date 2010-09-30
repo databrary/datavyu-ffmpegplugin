@@ -2,13 +2,13 @@ package org.openshapa.views;
 
 import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.Column;
-import org.openshapa.models.db.DataColumn;
-import org.openshapa.models.db.Database;
-import org.openshapa.models.db.LogicErrorException;
-import org.openshapa.models.db.MatrixVocabElement;
-import org.openshapa.models.db.NominalFormalArg;
-import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.legacy.Column;
+import org.openshapa.models.db.legacy.DataColumn;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.LogicErrorException;
+import org.openshapa.models.db.legacy.MatrixVocabElement;
+import org.openshapa.models.db.legacy.NominalFormalArg;
+import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;

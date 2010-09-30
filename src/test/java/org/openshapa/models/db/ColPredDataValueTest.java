@@ -2,6 +2,36 @@ package org.openshapa.models.db;
 
 import java.io.PrintStream;
 import java.util.Vector;
+
+import org.openshapa.models.db.legacy.ColPred;
+import org.openshapa.models.db.legacy.ColPredDataValue;
+import org.openshapa.models.db.legacy.ColPredFormalArg;
+import org.openshapa.models.db.legacy.DBIndex;
+import org.openshapa.models.db.legacy.DataValue;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.FloatDataValue;
+import org.openshapa.models.db.legacy.FloatFormalArg;
+import org.openshapa.models.db.legacy.FormalArgument;
+import org.openshapa.models.db.legacy.IntDataValue;
+import org.openshapa.models.db.legacy.IntFormalArg;
+import org.openshapa.models.db.legacy.MatrixVocabElement;
+import org.openshapa.models.db.legacy.NominalDataValue;
+import org.openshapa.models.db.legacy.NominalFormalArg;
+import org.openshapa.models.db.legacy.ODBCDatabase;
+import org.openshapa.models.db.legacy.PredDataValue;
+import org.openshapa.models.db.legacy.PredFormalArg;
+import org.openshapa.models.db.legacy.Predicate;
+import org.openshapa.models.db.legacy.PredicateVocabElement;
+import org.openshapa.models.db.legacy.QuoteStringDataValue;
+import org.openshapa.models.db.legacy.QuoteStringFormalArg;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TextStringDataValue;
+import org.openshapa.models.db.legacy.TextStringFormalArg;
+import org.openshapa.models.db.legacy.TimeStamp;
+import org.openshapa.models.db.legacy.TimeStampDataValue;
+import org.openshapa.models.db.legacy.TimeStampFormalArg;
+import org.openshapa.models.db.legacy.UnTypedFormalArg;
+import org.openshapa.models.db.legacy.UndefinedDataValue;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -37,7 +67,7 @@ public class ColPredDataValueTest extends DataValueTest {
      * Sets up the test fixture (i.e. the data available to all tests), this is
      * performed before each test case.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @BeforeMethod
     public void setUp() throws SystemErrorException {
@@ -115,7 +145,7 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test 1 arg constructor, of class ColPredDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void test1ArgConstructor() throws SystemErrorException {
@@ -136,7 +166,7 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test 2 argument constructor, of class ColPredDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void test2ArgConstructor() throws SystemErrorException {
@@ -178,7 +208,7 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test0 of 2 arg constructor failre, of class ColPredDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure0() throws SystemErrorException {
@@ -189,7 +219,7 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test1 of 2 arg constructor failre, of class ColPredDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure1() throws SystemErrorException {
@@ -199,7 +229,7 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test2 of 2 arg constructor failre, of class ColPredDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test (expectedExceptions = SystemErrorException.class)
     public void test2ArgConstructorFailure2() throws SystemErrorException {
@@ -209,7 +239,7 @@ public class ColPredDataValueTest extends DataValueTest {
     /**
      * Test3 of 2 arg constructor failre, of class ColPredDataValue.
      *
-     * @throws org.openshapa.models.db.SystemErrorException on failure.
+     * @throws org.openshapa.models.db.legacy.SystemErrorException on failure.
      */
     @Test
     public void test3ArgConstructor() throws SystemErrorException {

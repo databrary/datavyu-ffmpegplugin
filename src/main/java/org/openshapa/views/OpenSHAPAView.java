@@ -46,8 +46,6 @@ import org.openshapa.controllers.project.ProjectController;
 import org.openshapa.event.component.FileDropEvent;
 import org.openshapa.event.component.FileDropEventListener;
 
-import org.openshapa.models.db.LogicErrorException;
-import org.openshapa.models.db.SystemErrorException;
 
 import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.FileFilters.CSVFilter;
@@ -62,8 +60,11 @@ import com.usermetrix.jclient.UserMetrix;
 import java.awt.Point;
 import java.util.Vector;
 import java.util.logging.Level;
-import org.openshapa.models.db.DataColumn;
-import org.openshapa.models.db.MacshapaDatabase;
+
+import org.openshapa.models.db.legacy.DataColumn;
+import org.openshapa.models.db.legacy.LogicErrorException;
+import org.openshapa.models.db.legacy.MacshapaDatabase;
+import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
 

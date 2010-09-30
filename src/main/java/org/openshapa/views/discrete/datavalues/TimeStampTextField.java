@@ -10,8 +10,8 @@ import java.awt.event.KeyListener;
 import javax.swing.JTextField;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
 
 import com.usermetrix.jclient.UserMetrix;

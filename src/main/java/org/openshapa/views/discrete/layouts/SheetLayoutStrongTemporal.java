@@ -3,7 +3,7 @@ package org.openshapa.views.discrete.layouts;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
-import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.legacy.SystemErrorException;
 
 import org.openshapa.util.Constants;
 

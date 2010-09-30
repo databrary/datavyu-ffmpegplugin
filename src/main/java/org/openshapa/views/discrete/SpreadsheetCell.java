@@ -29,14 +29,14 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.models.db.Cell;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.Database;
-import org.openshapa.models.db.ExternalDataCellListener;
-import org.openshapa.models.db.Matrix;
-import org.openshapa.models.db.ReferenceCell;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.models.db.TimeStamp;
+import org.openshapa.models.db.legacy.Cell;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.ExternalDataCellListener;
+import org.openshapa.models.db.legacy.Matrix;
+import org.openshapa.models.db.legacy.ReferenceCell;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TimeStamp;
 
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;

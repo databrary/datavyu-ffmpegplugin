@@ -3,7 +3,7 @@ package org.openshapa.controllers;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.views.VocabEditorV;
 import javax.swing.JFrame;
 

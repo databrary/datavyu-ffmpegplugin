@@ -7,14 +7,14 @@ import java.util.Vector;
 import javax.swing.text.JTextComponent;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.DBIndex;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.Database;
-import org.openshapa.models.db.Matrix;
-import org.openshapa.models.db.PredDataValue;
-import org.openshapa.models.db.Predicate;
-import org.openshapa.models.db.PredicateVocabElement;
-import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.legacy.DBIndex;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.Matrix;
+import org.openshapa.models.db.legacy.PredDataValue;
+import org.openshapa.models.db.legacy.Predicate;
+import org.openshapa.models.db.legacy.PredicateVocabElement;
+import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 

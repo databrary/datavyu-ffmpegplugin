@@ -12,7 +12,7 @@ import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.JTextComponentFixture;
 import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.util.Platform;
-import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.legacy.Cell;
 import org.openshapa.util.KeysItem;
 import org.openshapa.util.StringItem;
 import org.openshapa.util.TextItem;

@@ -4,18 +4,18 @@ import java.util.Vector;
 
 import javax.swing.text.JTextComponent;
 
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.DataValue;
-import org.openshapa.models.db.FloatDataValue;
-import org.openshapa.models.db.IntDataValue;
-import org.openshapa.models.db.Matrix;
-import org.openshapa.models.db.NominalDataValue;
-import org.openshapa.models.db.PredDataValue;
-import org.openshapa.models.db.Predicate;
-import org.openshapa.models.db.QuoteStringDataValue;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.models.db.TextStringDataValue;
-import org.openshapa.models.db.UndefinedDataValue;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.DataValue;
+import org.openshapa.models.db.legacy.FloatDataValue;
+import org.openshapa.models.db.legacy.IntDataValue;
+import org.openshapa.models.db.legacy.Matrix;
+import org.openshapa.models.db.legacy.NominalDataValue;
+import org.openshapa.models.db.legacy.PredDataValue;
+import org.openshapa.models.db.legacy.Predicate;
+import org.openshapa.models.db.legacy.QuoteStringDataValue;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TextStringDataValue;
+import org.openshapa.models.db.legacy.UndefinedDataValue;
 
 import org.openshapa.views.discrete.EditorComponent;
 

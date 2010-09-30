@@ -9,11 +9,11 @@ import java.util.logging.Level;
 import javax.swing.text.JTextComponent;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.DataValue;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.models.db.TimeStamp;
-import org.openshapa.models.db.TimeStampDataValue;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.DataValue;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TimeStamp;
+import org.openshapa.models.db.legacy.TimeStampDataValue;
 import org.openshapa.views.discrete.EditorComponent;
 
 import com.usermetrix.jclient.UserMetrix;

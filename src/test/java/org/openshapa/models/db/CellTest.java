@@ -1,5 +1,10 @@
 package org.openshapa.models.db;
 
+import org.openshapa.models.db.legacy.Cell;
+import org.openshapa.models.db.legacy.DBIndex;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.SystemErrorException;
+
 /**
  *
  */

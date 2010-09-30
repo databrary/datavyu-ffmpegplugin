@@ -1,6 +1,6 @@
 package org.openshapa.controllers;
 
-import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.legacy.SystemErrorException;
 
 /**
  *

@@ -2,6 +2,24 @@ package org.openshapa.models.db;
 
 import java.io.PrintStream;
 import java.util.Vector;
+
+import org.openshapa.models.db.legacy.DBElement;
+import org.openshapa.models.db.legacy.DBIndex;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.FloatFormalArg;
+import org.openshapa.models.db.legacy.FormalArgument;
+import org.openshapa.models.db.legacy.IntFormalArg;
+import org.openshapa.models.db.legacy.MacshapaDatabase;
+import org.openshapa.models.db.legacy.MatrixVocabElement;
+import org.openshapa.models.db.legacy.NominalFormalArg;
+import org.openshapa.models.db.legacy.ODBCDatabase;
+import org.openshapa.models.db.legacy.PredicateVocabElement;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TextStringFormalArg;
+import org.openshapa.models.db.legacy.TimeStampFormalArg;
+import org.openshapa.models.db.legacy.UnTypedFormalArg;
+import org.openshapa.models.db.legacy.VocabElement;
+import org.openshapa.models.db.legacy.VocabList;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -122,7 +140,7 @@ public class VocabListTest {
     /**
      * Tests a single argument constructor failure for this class.
      *
-     * @throws org.openshapa.models.db.SystemErrorException
+     * @throws org.openshapa.models.db.legacy.SystemErrorException
      */
     @Test (expectedExceptions = SystemErrorException.class)
     public void Test1ArgConstructorFailure() throws SystemErrorException {
@@ -132,7 +150,7 @@ public class VocabListTest {
     /**
      * Tests a single argument constructor for this class.
      *
-     * @throws org.openshapa.models.db.SystemErrorException if unable to
+     * @throws org.openshapa.models.db.legacy.SystemErrorException if unable to
      * correctly create the vocablist.
      */
     @Test
@@ -148,7 +166,7 @@ public class VocabListTest {
      * Allocate a database, and verify that getPreds() and getMatricies() return
      * null when run on an empty vocab list.
      *
-     * @throws org.openshapa.models.db.SystemErrorException If unable to
+     * @throws org.openshapa.models.db.legacy.SystemErrorException If unable to
      * correctly get predicates or matricies.
      */
     @Test
@@ -171,7 +189,7 @@ public class VocabListTest {
      * Insert several system and/or non matrixType.MATRIX matricies, and run
      * getMatricies() & getPreds() again.  They should still return null.
      *
-     * @throws org.openshapa.models.db.SystemErrorException If unable to
+     * @throws org.openshapa.models.db.legacy.SystemErrorException If unable to
      * correctly get predicates or matricies.
      */
     @Test
@@ -228,7 +246,7 @@ public class VocabListTest {
      * Insert several system and/or non matrixType.MATRIX matricies, and run
      * getMatricies() & getPreds() again.  They should still return null.
      *
-     * @throws org.openshapa.models.db.SystemErrorException
+     * @throws org.openshapa.models.db.legacy.SystemErrorException
      */
     @Test
     public void TestGetPredsAndMatricies3()

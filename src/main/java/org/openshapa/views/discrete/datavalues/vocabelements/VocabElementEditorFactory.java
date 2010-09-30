@@ -2,8 +2,9 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import java.util.Vector;
 import javax.swing.text.JTextComponent;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.models.db.VocabElement;
+
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.datavalues.FixedText;
 

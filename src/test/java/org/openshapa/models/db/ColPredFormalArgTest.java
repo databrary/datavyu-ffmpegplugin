@@ -1,6 +1,14 @@
 package org.openshapa.models.db;
 
 import java.io.PrintStream;
+
+import org.openshapa.models.db.legacy.ColPredFormalArg;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.MatrixVocabElement;
+import org.openshapa.models.db.legacy.ODBCDatabase;
+import org.openshapa.models.db.legacy.PredicateVocabElement;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.UnTypedFormalArg;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

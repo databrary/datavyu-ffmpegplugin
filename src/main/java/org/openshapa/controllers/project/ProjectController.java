@@ -19,7 +19,6 @@ import org.openshapa.controllers.component.MixerController;
 import org.openshapa.controllers.id.IDController;
 
 import org.openshapa.models.component.TrackModel;
-import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.TrackSettings;
 import org.openshapa.models.project.ViewerSetting;
@@ -35,6 +34,7 @@ import org.openshapa.views.continuous.Plugin;
 import com.google.common.collect.Lists;
 import org.openshapa.controllers.database.MacshapaDatabaseAdapter;
 import org.openshapa.models.db.SimpleDatabase;
+import org.openshapa.models.db.legacy.MacshapaDatabase;
 
 /**
  * This class is responsible for managing a project.

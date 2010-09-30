@@ -30,9 +30,9 @@ import org.jdesktop.application.SingleFrameApplication;
 
 import org.openshapa.controllers.project.ProjectController;
 
-import org.openshapa.models.db.LogicErrorException;
-import org.openshapa.models.db.MacshapaDatabase;
-import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.legacy.LogicErrorException;
+import org.openshapa.models.db.legacy.MacshapaDatabase;
+import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.models.project.Project;
 
 import org.openshapa.plugins.PluginManager;

@@ -3,18 +3,18 @@ package org.openshapa.controllers.database;
 import com.usermetrix.jclient.Logger;
 import java.util.List;
 import org.openshapa.models.database.DeprecatedDatabase;
-import org.openshapa.models.db.MacshapaDatabase;
 import org.openshapa.models.db.SimpleVariable;
-import org.openshapa.models.db.SystemErrorException;
 import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.util.ArrayList;
-import org.openshapa.models.db.Cell;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.DataColumn;
 import org.openshapa.models.db.SimpleCell;
 import org.openshapa.models.db.SimpleDatabase;
+import org.openshapa.models.db.legacy.Cell;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.DataColumn;
+import org.openshapa.models.db.legacy.MacshapaDatabase;
+import org.openshapa.models.db.legacy.SystemErrorException;
 
 /**
  * This class is used to implement the interactions with

@@ -1,6 +1,12 @@
 package org.openshapa.models.db;
 
 import java.io.PrintStream;
+
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.ODBCDatabase;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TimeStamp;
+import org.openshapa.models.db.legacy.TimeStampFormalArg;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

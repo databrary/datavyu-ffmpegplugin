@@ -32,10 +32,10 @@ import org.openshapa.OpenSHAPA;
 
 import org.openshapa.controllers.CreateNewCellC;
 
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.DataColumn;
-import org.openshapa.models.db.Database;
-import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.DataColumn;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.SystemErrorException;
 
 import org.openshapa.util.Constants;
 

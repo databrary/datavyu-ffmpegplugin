@@ -4,8 +4,6 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.BorderLayout;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.FormalArgument;
-import org.openshapa.models.db.VocabElement;
 import org.openshapa.views.VocabEditorV;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,7 +20,9 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.models.db.MatrixVocabElement;
+import org.openshapa.models.db.legacy.FormalArgument;
+import org.openshapa.models.db.legacy.MatrixVocabElement;
+import org.openshapa.models.db.legacy.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**

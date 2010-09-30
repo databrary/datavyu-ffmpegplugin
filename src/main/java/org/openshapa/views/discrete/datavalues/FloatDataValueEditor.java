@@ -12,10 +12,10 @@ import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.FloatDataValue;
-import org.openshapa.models.db.Matrix;
-import org.openshapa.models.db.PredDataValue;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.FloatDataValue;
+import org.openshapa.models.db.legacy.Matrix;
+import org.openshapa.models.db.legacy.PredDataValue;
 
 import org.openshapa.util.Constants;
 import org.openshapa.util.FloatUtils;

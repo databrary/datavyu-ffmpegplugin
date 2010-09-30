@@ -4,10 +4,10 @@ import com.usermetrix.jclient.Logger;
 import java.util.Vector;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.Cell;
-import org.openshapa.models.db.DataColumn;
-import org.openshapa.models.db.MacshapaDatabase;
-import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.legacy.Cell;
+import org.openshapa.models.db.legacy.DataColumn;
+import org.openshapa.models.db.legacy.MacshapaDatabase;
+import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;

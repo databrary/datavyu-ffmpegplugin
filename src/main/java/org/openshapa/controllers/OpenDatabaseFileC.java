@@ -13,32 +13,7 @@ import java.io.PrintStream;
 
 import java.util.Vector;
 
-import org.openshapa.models.db.Column;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.DataColumn;
-import org.openshapa.models.db.DataValue;
-import org.openshapa.models.db.Database;
-import org.openshapa.models.db.FloatDataValue;
-import org.openshapa.models.db.FloatFormalArg;
-import org.openshapa.models.db.FormalArgument;
-import org.openshapa.models.db.IntDataValue;
-import org.openshapa.models.db.IntFormalArg;
-import org.openshapa.models.db.LogicErrorException;
-import org.openshapa.models.db.MacshapaDatabase;
 //import org.openshapa.models.db.MacshapaODBReader;
-import org.openshapa.models.db.Matrix;
-import org.openshapa.models.db.MatrixVocabElement;
-import org.openshapa.models.db.NominalDataValue;
-import org.openshapa.models.db.NominalFormalArg;
-import org.openshapa.models.db.PredDataValue;
-import org.openshapa.models.db.Predicate;
-import org.openshapa.models.db.PredicateVocabElement;
-import org.openshapa.models.db.QuoteStringDataValue;
-import org.openshapa.models.db.QuoteStringFormalArg;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.models.db.TextStringDataValue;
-import org.openshapa.models.db.TimeStamp;
-import org.openshapa.models.db.VocabElement;
 
 import org.openshapa.util.Constants;
 
@@ -46,8 +21,33 @@ import com.usermetrix.jclient.UserMetrix;
 
 import java.io.FileInputStream;
 
-import org.openshapa.models.db.Cell;
-import org.openshapa.models.db.MatrixVocabElement.MatrixType;
+import org.openshapa.models.db.legacy.Cell;
+import org.openshapa.models.db.legacy.Column;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.DataColumn;
+import org.openshapa.models.db.legacy.DataValue;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.FloatDataValue;
+import org.openshapa.models.db.legacy.FloatFormalArg;
+import org.openshapa.models.db.legacy.FormalArgument;
+import org.openshapa.models.db.legacy.IntDataValue;
+import org.openshapa.models.db.legacy.IntFormalArg;
+import org.openshapa.models.db.legacy.LogicErrorException;
+import org.openshapa.models.db.legacy.MacshapaDatabase;
+import org.openshapa.models.db.legacy.Matrix;
+import org.openshapa.models.db.legacy.MatrixVocabElement;
+import org.openshapa.models.db.legacy.NominalDataValue;
+import org.openshapa.models.db.legacy.NominalFormalArg;
+import org.openshapa.models.db.legacy.PredDataValue;
+import org.openshapa.models.db.legacy.Predicate;
+import org.openshapa.models.db.legacy.PredicateVocabElement;
+import org.openshapa.models.db.legacy.QuoteStringDataValue;
+import org.openshapa.models.db.legacy.QuoteStringFormalArg;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TextStringDataValue;
+import org.openshapa.models.db.legacy.TimeStamp;
+import org.openshapa.models.db.legacy.VocabElement;
+import org.openshapa.models.db.legacy.MatrixVocabElement.MatrixType;
 
 
 /**

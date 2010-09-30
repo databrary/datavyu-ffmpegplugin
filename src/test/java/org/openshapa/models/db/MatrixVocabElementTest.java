@@ -1,6 +1,20 @@
 package org.openshapa.models.db;
 
-import org.openshapa.models.db.MatrixVocabElement.MatrixType;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.FloatFormalArg;
+import org.openshapa.models.db.legacy.FormalArgument;
+import org.openshapa.models.db.legacy.IntFormalArg;
+import org.openshapa.models.db.legacy.MatrixVocabElement;
+import org.openshapa.models.db.legacy.NominalFormalArg;
+import org.openshapa.models.db.legacy.ODBCDatabase;
+import org.openshapa.models.db.legacy.PredFormalArg;
+import org.openshapa.models.db.legacy.QuoteStringFormalArg;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TextStringFormalArg;
+import org.openshapa.models.db.legacy.TimeStampFormalArg;
+import org.openshapa.models.db.legacy.UnTypedFormalArg;
+import org.openshapa.models.db.legacy.MatrixVocabElement.MatrixType;
+
 import java.io.PrintStream;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;

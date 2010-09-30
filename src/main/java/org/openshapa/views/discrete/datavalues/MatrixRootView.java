@@ -8,13 +8,13 @@ import java.util.Vector;
 import javax.swing.JTextArea;
 
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.Matrix;
-import org.openshapa.models.db.PredDataValue;
-import org.openshapa.models.db.Predicate;
-import org.openshapa.models.db.SystemErrorException;
-import org.openshapa.models.db.VocabElement;
-import org.openshapa.models.db.FormalArgument.FArgType;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.Matrix;
+import org.openshapa.models.db.legacy.PredDataValue;
+import org.openshapa.models.db.legacy.Predicate;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.VocabElement;
+import org.openshapa.models.db.legacy.FormalArgument.FArgType;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 

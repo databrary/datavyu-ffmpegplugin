@@ -35,14 +35,14 @@ import org.fest.swing.util.Platform;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.models.db.SystemErrorException;
 
 import org.openshapa.util.UIUtils;
 
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 
-import org.openshapa.models.db.TimeStamp;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TimeStamp;
 
 import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.util.UIImageUtils;

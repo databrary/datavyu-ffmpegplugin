@@ -1,5 +1,8 @@
 package org.openshapa.models.db;
 
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.ODBCDatabase;
+import org.openshapa.models.db.legacy.SystemErrorException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;

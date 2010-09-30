@@ -5,9 +5,9 @@ import java.util.Vector;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.MacshapaDatabase;
-import org.openshapa.models.db.SystemErrorException;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.MacshapaDatabase;
+import org.openshapa.models.db.legacy.SystemErrorException;
 
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.discrete.SpreadsheetPanel;

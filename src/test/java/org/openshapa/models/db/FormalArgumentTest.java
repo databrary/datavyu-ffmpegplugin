@@ -1,6 +1,12 @@
 package org.openshapa.models.db;
 
 
+import org.openshapa.models.db.legacy.DBIndex;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.FormalArgument;
+import org.openshapa.models.db.legacy.PredicateVocabElement;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.VocabElement;
 import org.testng.annotations.Test;
 
 /**

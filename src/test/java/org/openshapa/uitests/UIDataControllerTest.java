@@ -21,11 +21,11 @@ import org.fest.swing.fixture.SpreadsheetCellFixture;
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.util.Platform;
 
-import org.openshapa.models.db.SystemErrorException;
 
 import org.openshapa.util.UIUtils;
 
-import org.openshapa.models.db.TimeStamp;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TimeStamp;
 
 import org.openshapa.util.UIImageUtils;
 

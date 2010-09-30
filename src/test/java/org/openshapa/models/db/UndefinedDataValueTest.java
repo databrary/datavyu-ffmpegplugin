@@ -1,6 +1,12 @@
 package org.openshapa.models.db;
 
 import junitx.util.PrivateAccessor;
+
+import org.openshapa.models.db.legacy.DataValue;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.ODBCDatabase;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.UndefinedDataValue;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -119,7 +125,7 @@ public class UndefinedDataValueTest extends DataValueTest {
     /**
      * Tests the equals method of an undefined data value.
      *
-     * @throws org.openshapa.models.db.SystemErrorException If Unable to
+     * @throws org.openshapa.models.db.legacy.SystemErrorException If Unable to
      * create or manipulate undefined data values.
      * @throws java.lang.CloneNotSupportedException If the clone method is not
      * implemented for the undefined data value.

@@ -1,12 +1,13 @@
 package org.openshapa.views.discrete.datavalues;
 
 import java.awt.event.FocusEvent;
-import org.openshapa.models.db.DataCell;
-import org.openshapa.models.db.Matrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
-import org.openshapa.models.db.IntDataValue;
-import org.openshapa.models.db.PredDataValue;
+
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.IntDataValue;
+import org.openshapa.models.db.legacy.Matrix;
+import org.openshapa.models.db.legacy.PredDataValue;
 
 /**
  * This class is the character editor of a IntDataValue.

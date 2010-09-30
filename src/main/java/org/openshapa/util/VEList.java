@@ -3,7 +3,8 @@ package org.openshapa.util;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
-import org.openshapa.models.db.FormalArgument;
+
+import org.openshapa.models.db.legacy.FormalArgument;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 
 /**

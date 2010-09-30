@@ -1,6 +1,8 @@
 package org.openshapa.models.db;
 
 import junitx.util.PrivateAccessor;
+
+import org.openshapa.models.db.legacy.TimeStamp;
 import org.testng.annotations.Test;
 
 /**

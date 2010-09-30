@@ -1,6 +1,18 @@
 package org.openshapa.models.db;
 
 import java.io.PrintStream;
+
+import org.openshapa.models.db.legacy.DBIndex;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.DataColumn;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.FloatDataValue;
+import org.openshapa.models.db.legacy.MacshapaDatabase;
+import org.openshapa.models.db.legacy.Matrix;
+import org.openshapa.models.db.legacy.MatrixVocabElement;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TextStringDataValue;
+import org.openshapa.models.db.legacy.TimeStamp;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

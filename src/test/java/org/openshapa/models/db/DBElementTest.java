@@ -1,6 +1,9 @@
 package org.openshapa.models.db;
 
 import junitx.util.PrivateAccessor;
+
+import org.openshapa.models.db.legacy.DBElement;
+import org.openshapa.models.db.legacy.DBIndex;
 import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.*;

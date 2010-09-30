@@ -7,11 +7,6 @@ import java.awt.Cursor;
 import java.awt.HeadlessException;
 import java.util.logging.Level;
 
-import org.openshapa.models.db.DataColumn;
-import org.openshapa.models.db.Database;
-import org.openshapa.models.db.ExternalCascadeListener;
-import org.openshapa.models.db.ExternalDataColumnListener;
-import org.openshapa.models.db.SystemErrorException;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -28,8 +23,13 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.Column;
-import org.openshapa.models.db.LogicErrorException;
+import org.openshapa.models.db.legacy.Column;
+import org.openshapa.models.db.legacy.DataColumn;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.ExternalCascadeListener;
+import org.openshapa.models.db.legacy.ExternalDataColumnListener;
+import org.openshapa.models.db.legacy.LogicErrorException;
+import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**

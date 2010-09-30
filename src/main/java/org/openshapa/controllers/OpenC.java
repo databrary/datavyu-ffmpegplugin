@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.openshapa.models.db.MacshapaDatabase;
+import org.openshapa.models.db.legacy.MacshapaDatabase;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.ViewerSetting;
 

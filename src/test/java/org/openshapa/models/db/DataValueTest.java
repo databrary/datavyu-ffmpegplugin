@@ -1,6 +1,23 @@
 package org.openshapa.models.db;
 
-import org.openshapa.models.db.FormalArgument.FArgType;
+import org.openshapa.models.db.legacy.ColPredDataValue;
+import org.openshapa.models.db.legacy.DBIndex;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.DataColumn;
+import org.openshapa.models.db.legacy.DataValue;
+import org.openshapa.models.db.legacy.Database;
+import org.openshapa.models.db.legacy.FloatDataValue;
+import org.openshapa.models.db.legacy.FormalArgument;
+import org.openshapa.models.db.legacy.IntDataValue;
+import org.openshapa.models.db.legacy.MatrixVocabElement;
+import org.openshapa.models.db.legacy.NominalDataValue;
+import org.openshapa.models.db.legacy.PredDataValue;
+import org.openshapa.models.db.legacy.QuoteStringDataValue;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.models.db.legacy.TextStringDataValue;
+import org.openshapa.models.db.legacy.TimeStampDataValue;
+import org.openshapa.models.db.legacy.UndefinedDataValue;
+import org.openshapa.models.db.legacy.FormalArgument.FArgType;
 import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.*;
