@@ -11,7 +11,7 @@ import org.openshapa.models.db.legacy.SystemErrorException;
 
 
 /**
- * Wrapper / adapter for deprecated variable.
+ * Wrapper/adapter for deprecated data columns.
  */
 public final class DeprecatedVariable implements Variable {
 
@@ -36,8 +36,8 @@ public final class DeprecatedVariable implements Variable {
     /**
      * @return The legacy data type for portability reasons.
      *
-     * @deprecated Should use methods defined in variable rather than the
-     * db.legacy package.
+     * @deprecated Should use methods defined in variable interface rather than
+     * the db.legacy package.
      */
     @Deprecated public DataColumn getLegacyVariable() {
         try {

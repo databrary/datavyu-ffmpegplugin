@@ -10,17 +10,19 @@ import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.util.Constants;
 
 /**
- * Defines a method for retrieving the deprecated database implementation.
- * 
- * @param <T>
- *            the type of the deprecated database to retrieve.
+ * Converts legacy database calls into newer datastore calls.
  */
 public class DeprecatedDatabase implements Datastore {
 
+    /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(DeprecatedDatabase.class);
 
+    /** The legacy database that this datastore represents. */
     private MacshapaDatabase legacyDB;
 
+    /**
+     * Default constructor.
+     */
     public DeprecatedDatabase() {
         try {
             legacyDB = new MacshapaDatabase(Constants.TICKS_PER_SECOND);
@@ -31,10 +33,24 @@ public class DeprecatedDatabase implements Datastore {
         }
     }
 
+    /**
+     * @return The legacy database that this datastore represents.
+     *
+     * @deprecated Should use methods defined in datastore interface rather than
+     * the db.legacy package.
+     */
     @Deprecated public MacshapaDatabase getDatabase() {
         return legacyDB;
     }
 
+    /**
+     * Sets the legacy database that this datastore represents.
+     *
+     * @param newDB The new legacy databsae that this datastore represents.
+     *
+     * @deprecated Should use methods defined in datastore interface rather than
+     * the db.legacy package.
+     */
     @Deprecated public void setDatabase(MacshapaDatabase newDB) {
         legacyDB = newDB;
     }
