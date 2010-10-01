@@ -1,7 +1,6 @@
 package org.openshapa.plugins;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -37,9 +36,6 @@ import org.openshapa.OpenSHAPA;
 
 import org.openshapa.plugins.quicktime.java.QTJavaDataViewer;
 
-import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.continuous.Filter;
-import org.openshapa.views.continuous.Plugin;
 
 import com.usermetrix.jclient.UserMetrix;
 

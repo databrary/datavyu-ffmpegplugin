@@ -31,13 +31,11 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.openshapa.controllers.project.ProjectController;
 
 import org.openshapa.models.db.legacy.LogicErrorException;
-import org.openshapa.models.db.legacy.MacshapaDatabase;
 import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.models.project.Project;
 
 import org.openshapa.plugins.PluginManager;
 
-import org.openshapa.util.Constants;
 import org.openshapa.util.MacHandler;
 import org.openshapa.util.NativeLoader;
 
@@ -47,7 +45,6 @@ import org.openshapa.views.VariableListV;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
 
-import com.sun.jna.NativeLibrary;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
 
@@ -56,7 +53,6 @@ import com.usermetrix.jclient.UserMetrix;
 
 import java.util.LinkedList;
 
-import org.openshapa.controllers.database.MacshapaDatabaseAdapter;
 
 
 /**

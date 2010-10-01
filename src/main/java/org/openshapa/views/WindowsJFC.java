@@ -14,10 +14,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.openshapa.views.continuous.Filter;
-import org.openshapa.views.continuous.Plugin;
-
 import com.google.common.collect.Lists;
+import org.openshapa.plugins.Filter;
+import org.openshapa.plugins.Plugin;
 
 
 public class WindowsJFC extends PluginChooser {

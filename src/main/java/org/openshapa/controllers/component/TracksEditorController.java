@@ -22,11 +22,11 @@ import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.Viewport;
 import org.openshapa.models.id.Identifier;
+import org.openshapa.plugins.CustomActions;
+import org.openshapa.plugins.ViewerStateListener;
 
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.component.TracksEditorPainter;
-import org.openshapa.views.continuous.CustomActions;
-import org.openshapa.views.continuous.ViewerStateListener;
 
 
 /**

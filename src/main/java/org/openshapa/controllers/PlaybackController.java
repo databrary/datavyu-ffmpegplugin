@@ -58,12 +58,13 @@ import org.openshapa.views.PlaybackV;
 import org.openshapa.views.PluginChooser;
 import org.openshapa.views.WindowsJFC;
 import org.openshapa.views.component.TrackPainter;
-import org.openshapa.views.continuous.DataController;
-import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.continuous.Plugin;
+
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.plugins.DataViewer;
+import org.openshapa.plugins.Plugin;
+import org.openshapa.views.DataController;
 
 
 /**
@@ -1528,7 +1529,7 @@ public final class PlaybackController implements PlaybackListener,
                         dataViewer.setIdentifier(
                             IDController.generateIdentifier());
                         dataViewer.setDataFeed(f);
-                        dataViewer.setSimpleDatabase(
+                        dataViewer.setDatastore(
                             OpenSHAPA.getProjectController().getSimpleDB());
                         dataViewer.seekTo(clock.getTime());
                         addDataViewer(plugin.getTypeIcon(), dataViewer, f,

@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import org.jdesktop.application.Application;
@@ -28,13 +27,13 @@ import org.openshapa.plugins.PluginManager;
 import org.openshapa.util.FileUtils;
 
 import org.openshapa.views.DataControllerV;
-import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.continuous.Plugin;
 
 import com.google.common.collect.Lists;
-import org.openshapa.controllers.database.MacshapaDatabaseAdapter;
-import org.openshapa.models.db.SimpleDatabase;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.legacy.MacshapaDatabase;
+import org.openshapa.plugins.DataViewer;
+import org.openshapa.plugins.Plugin;
 
 /**
  * This class is responsible for managing a project.
@@ -45,7 +44,7 @@ public final class ProjectController {
     private Project project;
 
     /** The current database we are working on. */
-    private MacshapaDatabaseAdapter dbAdapt = new MacshapaDatabaseAdapter();
+    private DeprecatedDatabase dbAdapt = new DeprecatedDatabase();
 
     /** The id of the last datacell that was created. */
     private long lastCreatedCellID;
@@ -149,7 +148,7 @@ public final class ProjectController {
     /**
      * @return The underlying adapter as a SimpleDatabase.
      */
-    public SimpleDatabase getSimpleDB() {
+    public Datastore getSimpleDB() {
         return dbAdapt;
     }
 
@@ -349,7 +348,7 @@ public final class ProjectController {
                     .getApplication().getMainFrame(), false);
             viewer.setIdentifier(IDController.generateIdentifier());
             viewer.setDataFeed(file);
-            viewer.setSimpleDatabase(dbAdapt);
+            viewer.setDatastore(dbAdapt);
 
             if (setting.getSettingsId() != null) {
 

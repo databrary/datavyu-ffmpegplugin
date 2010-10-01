@@ -11,15 +11,13 @@ import javax.swing.ImageIcon;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 
-
-import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.continuous.Filter;
-import org.openshapa.views.continuous.FilterNames;
-import org.openshapa.views.continuous.Plugin;
-
 import com.google.common.collect.Lists;
 
 import com.sun.jna.Platform;
+import org.openshapa.plugins.DataViewer;
+import org.openshapa.plugins.Filter;
+import org.openshapa.plugins.FilterNames;
+import org.openshapa.plugins.Plugin;
 
 
 public final class QTCocoaPlugin implements Plugin {

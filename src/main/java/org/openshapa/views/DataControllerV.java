@@ -19,7 +19,6 @@ import java.util.SimpleTimeZone;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
@@ -63,9 +62,6 @@ import org.openshapa.util.ClockTimer.ClockListener;
 import org.openshapa.util.FloatUtils;
 
 import org.openshapa.views.component.TrackPainter;
-import org.openshapa.views.continuous.DataController;
-import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.continuous.Plugin;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
@@ -74,6 +70,8 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import org.openshapa.plugins.DataViewer;
+import org.openshapa.plugins.Plugin;
 
 
 /**
@@ -384,7 +382,7 @@ public final class DataControllerV extends OpenSHAPADialog
                 dataViewer.setIdentifier(IDController.generateIdentifier());
                 dataViewer.setDataFeed(f);
                 dataViewer.seekTo(clock.getTime());
-                dataViewer.setSimpleDatabase(OpenSHAPA.getProjectController()
+                dataViewer.setDatastore(OpenSHAPA.getProjectController()
                     .getSimpleDB());
                 addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                     dataViewer.getTrackPainter());

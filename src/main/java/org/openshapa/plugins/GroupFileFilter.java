@@ -7,8 +7,6 @@ import java.util.Set;
 
 import javax.swing.filechooser.FileFilter;
 
-import org.openshapa.views.continuous.Filter;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 

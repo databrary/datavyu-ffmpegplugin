@@ -34,7 +34,6 @@ import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.openshapa.models.db.SimpleDatabase;
 import org.openshapa.models.id.Identifier;
 
 import org.openshapa.plugins.spectrum.engine.PlaybackEngine;
@@ -42,14 +41,15 @@ import org.openshapa.plugins.spectrum.swing.AmplitudeTrack;
 import org.openshapa.plugins.spectrum.swing.SpectrumDialog;
 
 import org.openshapa.views.component.TrackPainter;
-import org.openshapa.views.continuous.CustomActions;
-import org.openshapa.views.continuous.CustomActionsAdapter;
-import org.openshapa.views.continuous.DataController;
-import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.continuous.ViewerStateListener;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.plugins.CustomActions;
+import org.openshapa.plugins.CustomActionsAdapter;
+import org.openshapa.plugins.DataViewer;
+import org.openshapa.plugins.ViewerStateListener;
+import org.openshapa.views.DataController;
 
 
 /**
@@ -468,7 +468,7 @@ public final class SpectrumDataViewer implements DataViewer {
          */
     }
 
-    @Override public void setSimpleDatabase(final SimpleDatabase sDB) {
+    @Override public void setDatastore(final Datastore sDB) {
     }
 
     @Override public void clearDataFeed() {

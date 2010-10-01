@@ -60,13 +60,11 @@ import org.openshapa.models.component.Viewport;
 import org.openshapa.models.id.Identifier;
 
 import org.openshapa.views.component.TrackPainter;
-import org.openshapa.views.continuous.CustomActions;
 
 import com.google.common.collect.Maps;
 
 import org.apache.commons.lang.text.StrSubstitutor;
 
-import com.apple.eawt.event.GestureAdapter;
 import com.apple.eawt.event.GesturePhaseEvent;
 import com.apple.eawt.event.GesturePhaseListener;
 import com.apple.eawt.event.GestureUtilities;
@@ -76,6 +74,7 @@ import com.apple.eawt.event.SwipeEvent;
 import com.apple.eawt.event.SwipeListener;
 
 import com.sun.jna.Platform;
+import org.openshapa.plugins.CustomActions;
 
 
 /**

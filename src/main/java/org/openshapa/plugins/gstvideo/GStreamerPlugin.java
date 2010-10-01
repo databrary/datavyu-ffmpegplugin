@@ -15,12 +15,11 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 
 import org.gstreamer.Gst;
 
-import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.continuous.Filter;
-import org.openshapa.views.continuous.FilterNames;
-import org.openshapa.views.continuous.Plugin;
-
 import com.google.common.collect.Lists;
+import org.openshapa.plugins.DataViewer;
+import org.openshapa.plugins.Filter;
+import org.openshapa.plugins.FilterNames;
+import org.openshapa.plugins.Plugin;
 
 
 public class GStreamerPlugin implements Plugin {

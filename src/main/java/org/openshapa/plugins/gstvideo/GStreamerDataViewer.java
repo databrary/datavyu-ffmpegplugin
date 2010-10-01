@@ -59,23 +59,23 @@ import org.gstreamer.interfaces.XOverlay;
 
 import org.gstreamer.swing.OSXVideoComponent;
 import org.gstreamer.swing.VideoComponent;
-import org.openshapa.models.db.SimpleDatabase;
+import org.openshapa.models.db.Datastore;
 
 import org.openshapa.models.id.Identifier;
+import org.openshapa.plugins.CustomActions;
+import org.openshapa.plugins.CustomActionsAdapter;
+import org.openshapa.plugins.DataViewer;
+import org.openshapa.plugins.ViewerStateListener;
+import org.openshapa.views.DataController;
 
 import org.openshapa.views.component.DefaultTrackPainter;
 import org.openshapa.views.component.TrackPainter;
-import org.openshapa.views.continuous.CustomActions;
-import org.openshapa.views.continuous.CustomActionsAdapter;
-import org.openshapa.views.continuous.DataController;
-import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.continuous.ViewerStateListener;
 
 
 public class GStreamerDataViewer implements DataViewer {
 
     @Override
-    public void setSimpleDatabase(SimpleDatabase sDB) {
+    public void setDatastore(Datastore sDB) {
 
     }
 

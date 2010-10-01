@@ -618,7 +618,7 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.45</version>
+      <version>0.0.46</version>
     </dependency>
 
     <dependency>

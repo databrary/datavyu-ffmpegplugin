@@ -5,9 +5,7 @@ import java.awt.Component;
 import javax.swing.JFileChooser;
 
 import org.openshapa.Configuration;
-
-import org.openshapa.views.continuous.Plugin;
-
+import org.openshapa.plugins.Plugin;
 
 /**
  * Custom file chooser with plugin selection.

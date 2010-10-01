@@ -29,20 +29,20 @@ import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.openshapa.models.db.SimpleDatabase;
+import org.openshapa.models.db.Datastore;
 import org.openshapa.models.id.Identifier;
 
 import org.openshapa.views.OpenSHAPADialog;
 import org.openshapa.views.component.DefaultTrackPainter;
 import org.openshapa.views.component.TrackPainter;
-import org.openshapa.views.continuous.CustomActions;
-import org.openshapa.views.continuous.CustomActionsAdapter;
-import org.openshapa.views.continuous.DataController;
-import org.openshapa.views.continuous.DataViewer;
-import org.openshapa.views.continuous.ViewerStateListener;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.plugins.CustomActions;
+import org.openshapa.plugins.CustomActionsAdapter;
+import org.openshapa.plugins.DataViewer;
+import org.openshapa.plugins.ViewerStateListener;
+import org.openshapa.views.DataController;
 
 
 public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
@@ -645,7 +645,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
         return id;
     }
 
-    @Override public void setSimpleDatabase(final SimpleDatabase sDB) {
+    @Override public void setDatastore(final Datastore sDB) {
         // not currently needed
     }
 
