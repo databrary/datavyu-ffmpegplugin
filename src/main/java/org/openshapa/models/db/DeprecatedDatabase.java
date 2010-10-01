@@ -4,7 +4,6 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.ArrayList;
 import java.util.List;
-import org.openshapa.models.db.legacy.DataCell;
 import org.openshapa.models.db.legacy.DataColumn;
 import org.openshapa.models.db.legacy.MacshapaDatabase;
 import org.openshapa.models.db.legacy.SystemErrorException;
@@ -41,31 +40,19 @@ public class DeprecatedDatabase implements Datastore {
     }
 
     @Override public List<Variable> getAllVariables() {
-        List<Variable> simpleCols = new ArrayList<Variable>();
+        List<Variable> result = new ArrayList<Variable>();
         try {
             for (DataColumn dc : legacyDB.getDataColumns()) {
                 if (dc == null) {
                     System.out.println("Datacolumn was null");
                     continue;
                 }
-                Variable sc = new DeprecatedVariable(dc);
-                int numCells = dc.getNumCells();
-                for (int i = 1; i < numCells + 1; i++) {
-                    org.openshapa.models.db.legacy.Cell cell = legacyDB.getCell(dc.getID(), i);
-                    if (cell instanceof DataCell) {                        
-                        Cell sCell = new DeprecatedCell((DataCell) cell);
-                        
-                        // probably not needed.
-                        sc.addCell(sCell);
-                    }
-                }
-                simpleCols.add(sc);
+                result.add(new DeprecatedVariable(dc));
             }
         } catch (SystemErrorException ex) {
             LOGGER.error("System prevented database access", ex);
         }
 
-        return simpleCols;
+        return result;
     }
-
 }
