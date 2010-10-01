@@ -4,8 +4,17 @@ import org.openshapa.models.db.legacy.DataCell;
 import org.openshapa.models.db.legacy.Database;
 import org.openshapa.models.db.legacy.SystemErrorException;
 
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
 
-public final class DeprecatedCell implements Cell {
+
+/**
+ * {@link DataCell} adapter.
+ */
+@Deprecated public final class DeprecatedCell implements Cell {
+
+    private static final Logger LOGGER = UserMetrix.getLogger(
+            DeprecatedCell.class);
 
     /** The legacy database we can fetch data from. */
     Database legacyDB;
@@ -13,40 +22,87 @@ public final class DeprecatedCell implements Cell {
     /** The legacy id of the cell we are fetching data from. */
     long legacyCellId;
 
-    public DeprecatedCell(DataCell newCell) {
-        this.setLegacyCell(newCell);
+    /**
+     * Construct a new Cell using the given reference DataCell.
+     *
+     * @param newCell
+     *            Reference cell. Cannot be null.
+     */
+    public DeprecatedCell(final DataCell newCell) {
+        setLegacyCell(newCell);
     }
 
-    @Override
-    public String getValue() {
-        // TODO: implement.
+    @Override public String getValue() {
+        DataCell cell = getLegacyCell();
+
+        if (cell == null) {
+            return null;
+        }
+
+        try {
+            return cell.getVal().toString();
+        } catch (SystemErrorException e) {
+            LOGGER.error("Accessing cell value failed", e);
+        }
+
         return null;
     }
 
-    @Override
-    public long getOnset() {
-        // TODO: implement.
-        return 0;
+    @Override public long getOnset() {
+        DataCell cell = getLegacyCell();
 
+        if (cell == null) {
+            return -1;
+        }
+
+        try {
+            return cell.getOnset().getTime();
+        } catch (SystemErrorException e) {
+            LOGGER.error("Accessing cell value failed", e);
+        }
+
+        return -1;
     }
 
-    @Override
-    public long getOffset() {
-        // TODO: implement.       
-        return 0;
+    @Override public long getOffset() {
+        DataCell cell = getLegacyCell();
+
+        if (cell == null) {
+            return -1;
+        }
+
+        try {
+            return cell.getOffset().getTime();
+        } catch (SystemErrorException e) {
+            LOGGER.error("Accessing cell value failed", e);
+        }
+
+        return -1;
     }
 
-    public DataCell getLegcayCell() {
+    /**
+     * Retrieve the DataCell represented by this Cell.
+     */
+    @Deprecated public DataCell getLegacyCell() {
+
         try {
             return (DataCell) legacyDB.getCell(legacyCellId);
         } catch (SystemErrorException e) {
-            // TODO: log error
-        } finally {
-            return null;
+            LOGGER.error("Retrieving cell failed", e);
         }
+
+        return null;
     }
 
-    public void setLegacyCell(DataCell newCell) {
+    /**
+     * Helper for setting the cell to use.
+     */
+    private void setLegacyCell(final DataCell newCell) {
+
+        if (newCell == null) {
+            throw new NullPointerException("Null cell disallowed.");
+        }
+
         legacyDB = newCell.getDB();
         legacyCellId = newCell.getID();
     }
