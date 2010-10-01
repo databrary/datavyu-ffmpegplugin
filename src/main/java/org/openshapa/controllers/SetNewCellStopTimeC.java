@@ -25,7 +25,7 @@ public final class SetNewCellStopTimeC {
     public SetNewCellStopTimeC(final long milliseconds) {
         try {
             logger.usage("set new cell offset");
-            Database model = OpenSHAPA.getProjectController().getDB();
+            Database model = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
 
             DataCell cell =
                     (DataCell) model.getCell(OpenSHAPA.getProjectController()

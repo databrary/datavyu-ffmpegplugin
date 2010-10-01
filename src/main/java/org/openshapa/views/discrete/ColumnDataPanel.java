@@ -191,7 +191,7 @@ public final class ColumnDataPanel extends JPanel
             for (SpreadsheetCell cell : cells) {
 
                 // Need to deregister data cell listener here.
-                OpenSHAPA.getProjectController().getDB()
+                OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
                     .deregisterDataCellListener(cell.getCellID(), cell);
                 this.remove(cell);
             }

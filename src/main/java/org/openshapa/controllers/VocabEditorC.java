@@ -21,7 +21,7 @@ public class VocabEditorC {
         VocabEditorV view = new VocabEditorV(mainFrame, false);
         
         try {
-            OpenSHAPA.getProjectController().getDB().registerVocabListListener(view);
+            OpenSHAPA.getProjectController().getLegacyDB().getDatabase().registerVocabListListener(view);
         } catch (SystemErrorException ex) {
             Logger.getLogger(VocabEditorC.class.getName()).log(Level.SEVERE, null, ex);
         }

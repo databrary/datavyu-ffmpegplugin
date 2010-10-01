@@ -33,7 +33,7 @@ public final class DeleteColumnC {
         SpreadsheetPanel view =
                 (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
                         .getComponent();
-        MacshapaDatabase model = OpenSHAPA.getProjectController().getDB();
+        MacshapaDatabase model = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
 
         try {
             // Deselect everything.
@@ -50,8 +50,8 @@ public final class DeleteColumnC {
                     if (c.getID() == OpenSHAPA.getProjectController().getLastCreatedCellId()) {
                         OpenSHAPA.getProjectController().setLastCreatedCellId(0);
                     }
-                    OpenSHAPA.getProjectController().getDB().removeCell(c.getID());
-                    dc = OpenSHAPA.getProjectController().getDB().getDataColumn(dc.getID());
+                    model.removeCell(c.getID());
+                    dc = model.getDataColumn(dc.getID());
                 }
                 // Check if the column we are deleting was the last created
                 // column... Default this back to 0 if it is.

@@ -380,10 +380,11 @@ public final class OpenSHAPA extends SingleFrameApplication
     public void showVariableList() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         listVarView = new VariableListV(mainFrame, false,
-                projectController.getDB());
+                projectController.getLegacyDB().getDatabase());
 
         try {
-            projectController.getDB().registerColumnListListener(listVarView);
+            projectController.getLegacyDB().getDatabase()
+            .registerColumnListListener(listVarView);
         } catch (SystemErrorException e) {
             logger.error("Unable register column list listener: ", e);
         }

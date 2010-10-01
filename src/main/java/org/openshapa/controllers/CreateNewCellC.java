@@ -10,7 +10,6 @@ import org.openshapa.OpenSHAPA;
 
 import org.openshapa.models.db.legacy.DataCell;
 import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.Database;
 import org.openshapa.models.db.legacy.MatrixVocabElement;
 import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.models.db.legacy.TimeStamp;
@@ -21,6 +20,7 @@ import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.legacy.Database;
 
 
 /**
@@ -45,7 +45,7 @@ public final class CreateNewCellC {
         // The spreadsheet is the view for this controller.
         view = (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
             .getComponent();
-        model = OpenSHAPA.getProjectController().getDB();
+        model = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
 
         try {
             createNewCell(-1);
@@ -96,7 +96,7 @@ public final class CreateNewCellC {
         final ArrayDirection direction) {
         view = (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
             .getComponent();
-        model = OpenSHAPA.getProjectController().getDB();
+        model = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
 
         long cellID = 0;
 
@@ -156,7 +156,7 @@ public final class CreateNewCellC {
         // The spreadsheet is the view for this controller.
         view = (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
             .getComponent();
-        model = OpenSHAPA.getProjectController().getDB();
+        model = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
 
         // BugzID:758 - Before creating a new cell and setting onset. We need
         // the last created cell and need to set the previous cells offset...

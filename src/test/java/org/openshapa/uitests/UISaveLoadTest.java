@@ -368,7 +368,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
             saveController.saveProject(savedSHAPA,
                 OpenSHAPA.getProjectController().getProject(),
-                OpenSHAPA.getProjectController().getDB());
+                OpenSHAPA.getProjectController().getLegacyDB().getDatabase());
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
             mainFrameFixture.fileChooser().component().setFileFilter(

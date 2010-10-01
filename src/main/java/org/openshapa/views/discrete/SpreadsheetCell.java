@@ -192,7 +192,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
-        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
+        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
             .getCell(
                 cellID);
 
@@ -324,7 +324,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * @throws SystemErrorException
      */
     public long getOnsetTicks() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
+        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
             .getCell(
                 cellID);
 
@@ -338,7 +338,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * @throws SystemErrorException
      */
     public long getOffsetTicks() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
+        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
             .getCell(
                 cellID);
 
@@ -349,7 +349,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
     public long getOrdinal() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getDB()
+        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
             .getCell(
                 cellID);
 

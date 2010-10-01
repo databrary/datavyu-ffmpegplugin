@@ -87,7 +87,7 @@ public final class TimeStampTextField extends JTextField implements
                 // this
                 // cell just now.
                 DataCell c =
-                        (DataCell) OpenSHAPA.getProjectController().getDB()
+                        (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
                                 .getCell(parentCell);
                 OpenSHAPA.getProjectController().setLastCreatedColId(
                         c.getItsColID());

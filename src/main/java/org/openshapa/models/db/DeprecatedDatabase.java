@@ -4,15 +4,17 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.ArrayList;
 import java.util.List;
-import org.openshapa.models.db.legacy.DataColumn;
 import org.openshapa.models.db.legacy.MacshapaDatabase;
 import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.util.Constants;
 
 /**
  * Converts legacy database calls into newer datastore calls.
+ *
+ * @deprecated Should use the datastore interface instead. This is a temporary
+ * class to allow us to incrementally migrate to the new API.
  */
-public class DeprecatedDatabase implements Datastore {
+@Deprecated public class DeprecatedDatabase implements Datastore {
 
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(DeprecatedDatabase.class);

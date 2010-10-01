@@ -382,8 +382,7 @@ public final class DataControllerV extends OpenSHAPADialog
                 dataViewer.setIdentifier(IDController.generateIdentifier());
                 dataViewer.setDataFeed(f);
                 dataViewer.seekTo(clock.getTime());
-                dataViewer.setDatastore(OpenSHAPA.getProjectController()
-                    .getSimpleDB());
+                dataViewer.setDatastore(OpenSHAPA.getProjectController().getDB());
                 addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                     dataViewer.getTrackPainter());
                 mixerController.bindTrackActions(dataViewer.getIdentifier(),

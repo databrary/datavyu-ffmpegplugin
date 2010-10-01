@@ -233,7 +233,7 @@ public final class OpenSHAPAView extends FrameView
             panel.removeFileDropEventListener(this);
         }
 
-        panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
+        panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getLegacyDB().getDatabase());
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         setComponent(panel);
@@ -327,10 +327,10 @@ public final class OpenSHAPAView extends FrameView
                     saveController.saveProject(new File(
                             projController.getProjectDirectory(),
                             projController.getProjectName() + ".opf"),
-                        projController.getProject(), projController.getDB());
+                        projController.getProject(), projController.getLegacyDB().getDatabase());
 
                     projController.markProjectAsUnchanged();
-                    projController.getDB().markAsUnchanged();
+                    projController.getLegacyDB().getDatabase().markAsUnchanged();
 
                     // Update the application title
                     updateTitle();
@@ -339,10 +339,10 @@ public final class OpenSHAPAView extends FrameView
                 } else {
                     File file = new File(projController.getProjectDirectory(),
                             projController.getDatabaseFileName());
-                    saveC.saveDatabase(file, projController.getDB());
+                    saveC.saveDatabase(file, projController.getLegacyDB().getDatabase());
 
                     projController.markProjectAsUnchanged();
-                    projController.getDB().markAsUnchanged();
+                    projController.getLegacyDB().getDatabase().markAsUnchanged();
                 }
             }
 
@@ -399,9 +399,9 @@ public final class OpenSHAPAView extends FrameView
                 }
 
                 File f = new File(fc.getSelectedFile().getParent(), dbFileName);
-                saveC.saveDatabase(f, projController.getDB());
+                saveC.saveDatabase(f, projController.getLegacyDB().getDatabase());
 
-                projController.getDB().setName(dbFileName);
+                projController.getLegacyDB().getDatabase().setName(dbFileName);
                 projController.setProjectName(dbFileName);
                 projController.setProjectDirectory(fc.getSelectedFile()
                     .getParent());
@@ -422,14 +422,14 @@ public final class OpenSHAPAView extends FrameView
                 }
 
                 File f = new File(fc.getSelectedFile().getParent(), dbFileName);
-                saveC.saveDatabase(f, projController.getDB());
+                saveC.saveDatabase(f, projController.getLegacyDB().getDatabase());
 
                 if (dbFileName.lastIndexOf('.') != -1) {
                     dbFileName = dbFileName.substring(0,
                             dbFileName.lastIndexOf('.'));
                 }
 
-                projController.getDB().setName(dbFileName);
+                projController.getLegacyDB().getDatabase().setName(dbFileName);
                 projController.setProjectDirectory(fc.getSelectedFile()
                     .getParent());
                 projController.setDatabaseFileName(dbFileName);
@@ -460,7 +460,7 @@ public final class OpenSHAPAView extends FrameView
                 projController.updateProject();
                 saveC.saveProject(new File(fc.getSelectedFile().getParent(),
                         archiveName), projController.getProject(),
-                    projController.getDB());
+                    projController.getLegacyDB().getDatabase());
                 projController.setProjectDirectory(fc.getSelectedFile()
                     .getParent());
 
@@ -468,7 +468,7 @@ public final class OpenSHAPAView extends FrameView
 
             projController.setLastSaveOption(filter);
             projController.markProjectAsUnchanged();
-            projController.getDB().markAsUnchanged();
+            projController.getLegacyDB().getDatabase().markAsUnchanged();
             updateTitle();
 
         } catch (LogicErrorException e) {
@@ -523,7 +523,7 @@ public final class OpenSHAPAView extends FrameView
         pController.setProjectName(jd.getSelectedFile().getName());
         pController.setLastSaveOption(filter);
         pController.markProjectAsUnchanged();
-        pController.getDB().markAsUnchanged();
+        pController.getLegacyDB().getDatabase().markAsUnchanged();
         updateTitle();
 
         // Display any changes to the database.
@@ -689,7 +689,7 @@ public final class OpenSHAPAView extends FrameView
             this.clearSpreadsheet();
         }
 
-        panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
+        panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getLegacyDB().getDatabase());
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         setComponent(panel);
@@ -723,7 +723,7 @@ public final class OpenSHAPAView extends FrameView
      */
     @Action public void hideColumn() {
         Vector<DataColumn> cols = panel.getSelectedCols();
-        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
+        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
 
         for (DataColumn col : cols) {
             try {
@@ -742,7 +742,7 @@ public final class OpenSHAPAView extends FrameView
      */
     @Action public void changeColumnName() {
         Vector<DataColumn> cols = panel.getSelectedCols();
-        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
+        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
 
         //Only one column should be selected, but just in case, we'll only change the first column
         DataColumn col = cols.firstElement();
@@ -758,7 +758,7 @@ public final class OpenSHAPAView extends FrameView
      * Action for showing all columns.
      */
     @Action public void showAllColumns() {
-        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
+        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
         Vector<DataColumn> cols = null;
         try {
             cols = msdb.getDataColumns();
@@ -792,15 +792,15 @@ public final class OpenSHAPAView extends FrameView
     private void setSheetLayout() {
         try {
             SheetLayoutType type = SheetLayoutType.Ordinal;
-            OpenSHAPA.getProjectController().getDB().setTemporalOrdering(false);
+            OpenSHAPA.getProjectController().getLegacyDB().getDatabase().setTemporalOrdering(false);
 
             if (weakTemporalOrderMenuItem.isSelected()) {
                 type = SheetLayoutType.WeakTemporal;
-                OpenSHAPA.getProjectController().getDB().setTemporalOrdering(
+                OpenSHAPA.getProjectController().getLegacyDB().getDatabase().setTemporalOrdering(
                     true);
             } else if (strongTemporalOrderMenuItem.isSelected()) {
                 type = SheetLayoutType.StrongTemporal;
-                OpenSHAPA.getProjectController().getDB().setTemporalOrdering(
+                OpenSHAPA.getProjectController().getLegacyDB().getDatabase().setTemporalOrdering(
                     true);
             }
 

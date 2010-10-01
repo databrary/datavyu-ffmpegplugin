@@ -285,7 +285,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                     try {
                         dc.setHidden(!(Boolean)data);
                         dc.setSelected(false);
-                        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
+                        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
                         msdb.replaceColumn(dc);
                     } catch (SystemErrorException ex) {
                         java.util.logging.Logger.getLogger(VariableListV.class.getName()).log(Level.SEVERE, null, ex);
@@ -295,7 +295,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                 if (!dc.getName().equals(data)) {
                     try {
                         if ((!dc.getName().equals((String)data)) && (dc.isValidColumnName(database, (String)data))) {
-                            MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
+                            MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
                             dc.setName((String)data);
                             msdb.replaceColumn(dc);
                         }
@@ -311,7 +311,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                 if (!dc.getComment().equals(data)) {
                     try {
                         if ((!dc.getComment().equals((String)data)) && (dc.isValidColumnComment(database, (String)data))) {
-                            MacshapaDatabase msdb = OpenSHAPA.getProjectController().getDB();
+                            MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
                             dc.setComment((String)data);
                             msdb.replaceColumn(dc);
                         }

@@ -87,7 +87,7 @@ ExternalVocabListListener{
         logger.usage("vocEd - show");
 
 
-        db = OpenSHAPA.getProjectController().getDB();
+        db = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
         initComponents();
         componentListnersInit();
         setName(this.getClass().getSimpleName());
@@ -498,7 +498,7 @@ ExternalVocabListListener{
                         // we actually need to create a column.
                         if (ve.getClass() == MatrixVocabElement.class) {
                             Column.isValidColumnName(OpenSHAPA
-                                    .getProjectController().getDB(), ve
+                                    .getProjectController().getLegacyDB().getDatabase(), ve
                                     .getName());
                             DataColumn dc =
                                     new DataColumn(

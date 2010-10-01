@@ -44,7 +44,7 @@ public final class ProjectController {
     private Project project;
 
     /** The current database we are working on. */
-    private DeprecatedDatabase dbAdapt = new DeprecatedDatabase();
+    private DeprecatedDatabase db = new DeprecatedDatabase();
 
     /** The id of the last datacell that was created. */
     private long lastCreatedCellID;
@@ -119,15 +119,20 @@ public final class ProjectController {
      * Gets the MacshapaDatabase associated with this project. Should eventually
      * be replaced with a SimpleDatabase.
      *
-     * ***
-     * getDB should be refactored to return a SimpleDatabase.
-     * ***
-     *
      * @return The single database to use with this project.
      */
-    @Deprecated
-    public MacshapaDatabase getDB() {
-        return dbAdapt.getDatabase();
+    public Datastore getDB() {
+        return db;
+    }
+
+    /**
+     * @return The deprecated database.
+     *
+     * @deprecated Should be using getDB - we are moving away from the legacy
+     * database.
+     */
+    @Deprecated public DeprecatedDatabase getLegacyDB() {
+        return db;
     }
 
     /**
@@ -142,14 +147,7 @@ public final class ProjectController {
      */
     @Deprecated
     public void setDatabase(MacshapaDatabase newDB) {
-        dbAdapt.setDatabase(newDB);
-    }
-
-    /**
-     * @return The underlying adapter as a SimpleDatabase.
-     */
-    public Datastore getSimpleDB() {
-        return dbAdapt;
+        db.setDatabase(newDB);
     }
 
     /**
@@ -207,10 +205,10 @@ public final class ProjectController {
      */
     public boolean isChanged() {
 
-        MacshapaDatabase db = dbAdapt.getDatabase();
+        MacshapaDatabase legacyDB = db.getDatabase();
 
         if (OpenSHAPA.getApplication().getCanSetUnsaved()) {
-            return (changed || ((db != null) && db.isChanged()));
+            return (changed || ((legacyDB != null) && legacyDB.isChanged()));
         } else {
             return false;
         }
@@ -348,7 +346,7 @@ public final class ProjectController {
                     .getApplication().getMainFrame(), false);
             viewer.setIdentifier(IDController.generateIdentifier());
             viewer.setDataFeed(file);
-            viewer.setDatastore(dbAdapt);
+            viewer.setDatastore(db);
 
             if (setting.getSettingsId() != null) {
 

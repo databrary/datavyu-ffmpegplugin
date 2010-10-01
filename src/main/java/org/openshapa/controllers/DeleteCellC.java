@@ -35,7 +35,7 @@ public final class DeleteCellC {
         // The spreadsheet is the view for this controller.
         SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
             .getMainView().getComponent();
-        MacshapaDatabase model = OpenSHAPA.getProjectController().getDB();
+        MacshapaDatabase model = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
         view.deselectAll();
 
         try {
