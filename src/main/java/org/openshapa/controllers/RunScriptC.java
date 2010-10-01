@@ -1,6 +1,7 @@
 package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -26,6 +27,7 @@ import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.OpenSHAPAView;
 
 import com.usermetrix.jclient.UserMetrix;
+
 import javax.swing.SwingWorker;
 
 
@@ -72,7 +74,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             init();
         } else {
             scriptFile = null;
-        }        
+        }
     }
 
     /**
@@ -116,9 +118,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             rubyEngine.getContext().setWriter(consoleWriter);
 
             // Place a reference to the database within the scripting engine.
-            rubyEngine.put("db", OpenSHAPA.getProjectController().getDB());
-            rubyEngine.put("pj", OpenSHAPA.getProjectController()
-                                          .getProject());
+            rubyEngine.put("db",
+                OpenSHAPA.getProjectController().getLegacyDB().getDatabase());
+            rubyEngine.put("pj", OpenSHAPA.getProjectController().getProject());
 
             FileReader reader = new FileReader(scriptFile);
             rubyEngine.eval(reader);
