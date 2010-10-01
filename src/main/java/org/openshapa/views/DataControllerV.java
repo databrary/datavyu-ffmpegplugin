@@ -70,6 +70,7 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Plugin;
 
@@ -372,8 +373,6 @@ public final class DataControllerV extends OpenSHAPADialog
         Plugin plugin = chooser.getSelectedPlugin();
         File f = chooser.getSelectedFile();
 
-        System.out.println(mixerController);
-
         if (plugin != null) {
 
             try {
@@ -382,7 +381,8 @@ public final class DataControllerV extends OpenSHAPADialog
                 dataViewer.setIdentifier(IDController.generateIdentifier());
                 dataViewer.setDataFeed(f);
                 dataViewer.seekTo(clock.getTime());
-                dataViewer.setDatastore(OpenSHAPA.getProjectController().getDB());
+                dataViewer.setDatastore(OpenSHAPA.getProjectController()
+                    .getDB());
                 addDataViewer(plugin.getTypeIcon(), dataViewer, f,
                     dataViewer.getTrackPainter());
                 mixerController.bindTrackActions(dataViewer.getIdentifier(),
