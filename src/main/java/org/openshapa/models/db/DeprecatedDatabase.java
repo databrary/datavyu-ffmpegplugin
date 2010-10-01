@@ -57,16 +57,13 @@ public class DeprecatedDatabase implements Datastore {
 
     @Override public List<Variable> getAllVariables() {
         List<Variable> result = new ArrayList<Variable>();
+
         try {
-            for (DataColumn dc : legacyDB.getDataColumns()) {
-                if (dc == null) {
-                    System.out.println("Datacolumn was null");
-                    continue;
-                }
-                result.add(new DeprecatedVariable(dc));
+            for (Long colId : getDatabase().getColOrderVector()) {
+                result.add(new DeprecatedVariable(getDatabase().getDataColumn(colId)));
             }
-        } catch (SystemErrorException ex) {
-            LOGGER.error("System prevented database access", ex);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to get all variables.", e);
         }
 
         return result;

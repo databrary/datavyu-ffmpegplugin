@@ -13,6 +13,7 @@ import org.openshapa.OpenSHAPA;
 /**
  * Abstract database class
  */
+@Deprecated
 public abstract class Database
 {
 

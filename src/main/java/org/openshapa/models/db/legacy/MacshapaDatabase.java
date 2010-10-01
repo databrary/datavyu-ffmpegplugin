@@ -40,6 +40,7 @@ import java.util.List;
  *
  *                                              -- 7/13/08
  */
+@Deprecated
 public class MacshapaDatabase extends Database {
 
     /*************************************************************************/
