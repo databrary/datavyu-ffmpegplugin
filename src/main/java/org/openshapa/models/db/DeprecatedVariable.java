@@ -44,7 +44,6 @@ public final class DeprecatedVariable implements Variable {
             return legacyDB.getDataColumn(legacyColumnId);
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to get legacy variable", e);
-        } finally {
             return null;
         }
     }
@@ -64,7 +63,7 @@ public final class DeprecatedVariable implements Variable {
         DataColumn variable = getLegacyVariable();
 
         if (variable == null) {
-            
+            return null;
         }
 
         return variable.getName();
@@ -90,7 +89,6 @@ public final class DeprecatedVariable implements Variable {
             return result;
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to get cells.", e);
-        } finally {
             return null;
         }
     }
