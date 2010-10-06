@@ -6,6 +6,7 @@ import org.openshapa.models.db.legacy.SystemErrorException;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.legacy.MatrixVocabElement;
 
 
 /**
@@ -32,6 +33,29 @@ import com.usermetrix.jclient.UserMetrix;
         setLegacyCell(newCell);
     }
 
+
+    @Override public String toString() {
+        DataCell cell = getLegacyCell();
+
+        if (cell == null) {
+            return null;
+        }
+
+        try {
+            if (cell.getItsMveType().equals(MatrixVocabElement.MatrixType.MATRIX)) {
+                return cell.getVal().toString();
+            } else {
+                String result = cell.getVal().toString();
+                return result.substring(1, (result.length() - 1));
+            }
+        } catch (SystemErrorException e) {
+            LOGGER.error("Accessing cell value failed", e);
+        }
+
+        return null;
+    }
+
+
     @Override public String getValue() {
         DataCell cell = getLegacyCell();
 
@@ -40,7 +64,9 @@ import com.usermetrix.jclient.UserMetrix;
         }
 
         try {
+
             return cell.getVal().toString();
+            //
         } catch (SystemErrorException e) {
             LOGGER.error("Accessing cell value failed", e);
         }

@@ -117,7 +117,7 @@ public final class ProjectController {
 
     /**
      * Gets the MacshapaDatabase associated with this project. Should eventually
-     * be replaced with a SimpleDatabase.
+     * be replaced with a Datastore.
      *
      * @return The single database to use with this project.
      */
@@ -140,7 +140,7 @@ public final class ProjectController {
      * loading a Database from file.
      *
      * ***
-     * setDB should be refactored to return a SimpleDatabase.
+     * setDB should be refactored to return a Datastore.
      * ***
      *
      * @param newDB The new MacshapaDatabase to use.
