@@ -1,4 +1,4 @@
-package org.openshapa.plugins.quicktime.java;
+package org.openshapa.views.continuous.quicktime;
 
 import com.usermetrix.jclient.Logger;
 
@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.io.File;
 
 import org.openshapa.plugins.quicktime.BaseQuickTimeDataViewer;
+
 import org.openshapa.util.Constants;
 
 import quicktime.QTException;
@@ -37,8 +38,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * The viewer for a quicktime video file.
+ * <b>Do not move this class, this is for backward compatibility with 1.07.</b>
  */
-public final class QTJavaDataViewer extends BaseQuickTimeDataViewer {
+public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
     /** The quicktime movie this viewer is displaying. */
     private Movie movie;
@@ -52,7 +54,7 @@ public final class QTJavaDataViewer extends BaseQuickTimeDataViewer {
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(getClass());
 
-    public QTJavaDataViewer(final java.awt.Frame parent, final boolean modal) {
+    public QTDataViewer(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
 
         movie = null;

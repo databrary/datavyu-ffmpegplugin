@@ -14,10 +14,13 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import com.google.common.collect.Lists;
 
 import com.sun.jna.Platform;
+
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Filter;
 import org.openshapa.plugins.FilterNames;
 import org.openshapa.plugins.Plugin;
+
+import org.openshapa.views.continuous.quicktime.QTDataViewer;
 
 
 public final class QTPlugin implements Plugin {
@@ -48,7 +51,7 @@ public final class QTPlugin implements Plugin {
         final boolean modal) {
 
         if (Platform.isMac() || Platform.isWindows()) {
-            return new QTJavaDataViewer(parent, modal);
+            return new QTDataViewer(parent, modal);
         } else {
             return null;
         }

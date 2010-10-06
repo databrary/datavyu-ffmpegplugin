@@ -34,8 +34,7 @@ import org.jdesktop.application.LocalStorage;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.plugins.quicktime.java.QTJavaDataViewer;
-
+import org.openshapa.views.continuous.quicktime.QTDataViewer;
 
 import com.usermetrix.jclient.UserMetrix;
 
@@ -406,9 +405,9 @@ public final class PluginManager {
      */
     public Plugin getAssociatedPlugin(final String dataViewer) {
 
-        if ("org.openshapa.views.continuous.quicktime.QTDataViewer".equals(
+        if ("org.openshapa.plugins.quicktime.java.QTJavaDataViewer".equals(
                     dataViewer)) {
-            return pluginLookup.get(QTJavaDataViewer.class.getCanonicalName());
+            return pluginLookup.get(QTDataViewer.class.getCanonicalName());
         }
 
         return pluginLookup.get(dataViewer);
