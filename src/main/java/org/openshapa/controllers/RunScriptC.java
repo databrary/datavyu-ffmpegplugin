@@ -117,18 +117,23 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         try {
             rubyEngine.getContext().setWriter(consoleWriter);
 
-            // Place a reference to the database within the scripting engine.
+            // Place reference to various OpenSHAPA functionality.
             rubyEngine.put("db",
                 OpenSHAPA.getProjectController().getLegacyDB().getDatabase());
             rubyEngine.put("pj", OpenSHAPA.getProjectController().getProject());
+            rubyEngine.put("mixer",
+                OpenSHAPA.getDataController().getMixerController());
+            rubyEngine.put("viewers", OpenSHAPA.getDataController());
 
             FileReader reader = new FileReader(scriptFile);
             rubyEngine.eval(reader);
             reader = null;
 
-            // Remove the reference to db
+            // Remove references.
             rubyEngine.put("db", null);
             rubyEngine.put("pj", null);
+            rubyEngine.put("mixer", null);
+            rubyEngine.put("viewers", null);
 
         } catch (ScriptException e) {
             consoleWriter.println("***** SCRIPT ERRROR *****");
