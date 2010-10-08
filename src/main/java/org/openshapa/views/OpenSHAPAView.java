@@ -790,24 +790,15 @@ public final class OpenSHAPAView extends FrameView
      * Set the SheetLayoutType for the spreadsheet.
      */
     private void setSheetLayout() {
-        try {
-            SheetLayoutType type = SheetLayoutType.Ordinal;
-            OpenSHAPA.getProjectController().getLegacyDB().getDatabase().setTemporalOrdering(false);
+        SheetLayoutType type = SheetLayoutType.Ordinal;
 
-            if (weakTemporalOrderMenuItem.isSelected()) {
-                type = SheetLayoutType.WeakTemporal;
-                OpenSHAPA.getProjectController().getLegacyDB().getDatabase().setTemporalOrdering(
-                    true);
-            } else if (strongTemporalOrderMenuItem.isSelected()) {
-                type = SheetLayoutType.StrongTemporal;
-                OpenSHAPA.getProjectController().getLegacyDB().getDatabase().setTemporalOrdering(
-                    true);
-            }
-
-            new SetSheetLayoutC(type);
-        } catch (SystemErrorException e) {
-            logger.error("Unable to perform temporal ordering", e);
+        if (weakTemporalOrderMenuItem.isSelected()) {
+            type = SheetLayoutType.WeakTemporal;
+        } else if (strongTemporalOrderMenuItem.isSelected()) {
+            type = SheetLayoutType.StrongTemporal;
         }
+
+        new SetSheetLayoutC(type);
     }
 
     /**

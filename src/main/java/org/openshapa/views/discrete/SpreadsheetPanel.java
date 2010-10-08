@@ -14,7 +14,6 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.AdjustmentEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
@@ -53,10 +52,6 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.AdjustmentListener;
-import javax.swing.JViewport;
 
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
@@ -326,14 +321,6 @@ implements ExternalColumnListListener, ComponentListener,
 
         // set the database
         database = db;
-
-        /*
-        // set Temporal Ordering on
-        try {
-            db.setTemporalOrdering(true);
-        } catch (SystemErrorException e) {
-            logger.error("setTemporalOrdering failed", e);
-        }*/
 
         // register as a columnListListener
         try {
