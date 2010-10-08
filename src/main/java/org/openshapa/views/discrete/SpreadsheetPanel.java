@@ -52,8 +52,6 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.util.ArrayList;
-import org.openshapa.models.db.Variable;
 
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
@@ -205,14 +203,11 @@ implements ExternalColumnListListener, ComponentListener,
         m.removeKeyEventDispatcher(this);
     }
 
-    private List<Variable> test = new ArrayList<Variable>();
-
     /**
      * Populate from the database.
      */
     private void buildColumns() {
         try {
-            test = OpenSHAPA.getProjectController().getDB().getAllVariables();
             Vector<Long> dbColIds = getDatabase().getColOrderVector();
 
             for (int i = 0; i < dbColIds.size(); i++) {
@@ -327,14 +322,6 @@ implements ExternalColumnListListener, ComponentListener,
         // set the database
         database = db;
 
-        /*
-        // set Temporal Ordering on
-        try {
-            db.setTemporalOrdering(true);
-        } catch (SystemErrorException e) {
-            logger.error("setTemporalOrdering failed", e);
-        }*/
-
         // register as a columnListListener
         try {
             db.registerColumnListListener(this);
@@ -386,7 +373,6 @@ implements ExternalColumnListListener, ComponentListener,
                              final Vector<Long> newCov) {
         deselectAll();
         addColumn(db, colID);
-        test = OpenSHAPA.getProjectController().getDB().getAllVariables();
     }
 
     /**

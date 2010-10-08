@@ -89,7 +89,7 @@ implements Variable, ExternalDataColumnListener, ExternalCascadeListener, Extern
 
             legacyDB = newColumn.getDB();
             legacyColumnId = newColumn.getID();
-        
+
             legacyDB.registerDataColumnListener(legacyColumnId, this);
             legacyDB.registerCascadeListener(this);
         } catch (SystemErrorException e) {
