@@ -14,7 +14,6 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.AdjustmentEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
@@ -53,10 +52,8 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.AdjustmentListener;
-import javax.swing.JViewport;
+import java.util.ArrayList;
+import org.openshapa.models.db.Variable;
 
 /**
  * Spreadsheetpanel is a custom component for viewing the contents of the
@@ -208,11 +205,14 @@ implements ExternalColumnListListener, ComponentListener,
         m.removeKeyEventDispatcher(this);
     }
 
+    private List<Variable> test = new ArrayList<Variable>();
+
     /**
      * Populate from the database.
      */
     private void buildColumns() {
         try {
+            test = OpenSHAPA.getProjectController().getDB().getAllVariables();
             Vector<Long> dbColIds = getDatabase().getColOrderVector();
 
             for (int i = 0; i < dbColIds.size(); i++) {
@@ -386,6 +386,7 @@ implements ExternalColumnListListener, ComponentListener,
                              final Vector<Long> newCov) {
         deselectAll();
         addColumn(db, colID);
+        test = OpenSHAPA.getProjectController().getDB().getAllVariables();
     }
 
     /**
