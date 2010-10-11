@@ -249,7 +249,23 @@
   <!-- Use an optimized build for releases. -->
   <profiles>
 
+    <!-- Platform specific dependencies, package gstreamer with osx64. -->
+    <profile>
+      <id>mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
 
+      <dependencies>
+        <dependency>
+          <groupId>org.openshapa</groupId>
+          <artifactId>openshapa-nativelibs-osx64</artifactId>
+          <version>0.2</version> <!--  NB: You'll need to update org.openshapa.OpenSHAPA when this changes. -->
+        </dependency>
+      </dependencies>
+    </profile>
 
     <profile>
         <id>win-package</id>
