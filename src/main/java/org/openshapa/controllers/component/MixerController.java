@@ -74,6 +74,7 @@ import com.apple.eawt.event.SwipeEvent;
 import com.apple.eawt.event.SwipeListener;
 
 import com.sun.jna.Platform;
+
 import org.openshapa.plugins.CustomActions;
 
 
@@ -281,13 +282,13 @@ public final class MixerController implements PropertyChangeListener,
 
             // TODO Could probably use this same component to handle vertical
             // resizing...
-            // TODO replace this x value with a constant!
             String template =
-                "id filler, h 0!, grow 140 0, wmin ${wmin}, cell 0 0 ";
+                "id filler, h 0!, grow 100 0, wmin ${wmin}, cell 0 0 ";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
-            layeredPane.setLayer(filler, 0);
-            layeredPane.add(filler, sub.replace(template), 0);
+            layeredPane.setLayer(filler, MixerConstants.FILLER_ZORDER);
+            layeredPane.add(filler, sub.replace(template),
+                MixerConstants.FILLER_ZORDER);
         }
 
         // Set up the timescale layout
@@ -309,8 +310,10 @@ public final class MixerController implements PropertyChangeListener,
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
             // Must call setLayer first.
-            layeredPane.setLayer(timescaleView, 5);
-            layeredPane.add(timescaleView, sub.replace(template), 5);
+            layeredPane.setLayer(timescaleView,
+                MixerConstants.TIMESCALE_ZORDER);
+            layeredPane.add(timescaleView, sub.replace(template),
+                MixerConstants.TIMESCALE_ZORDER);
         }
 
         // Set up the scroll pane's layout.
@@ -334,14 +337,14 @@ public final class MixerController implements PropertyChangeListener,
             String template = "pos ${x} ${y} ${x2} n, h ${height}!";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
-            layeredPane.setLayer(tracksScrollPane, 10);
-            layeredPane.add(tracksScrollPane, sub.replace(template), 10);
+            layeredPane.setLayer(tracksScrollPane,
+                MixerConstants.TRACKS_ZORDER);
+            layeredPane.add(tracksScrollPane, sub.replace(template),
+                MixerConstants.TRACKS_ZORDER);
         }
 
         // Create the region markers and set up the layout.
         {
-
-
             JComponent regionView = regionController.getView();
 
             Map<String, String> constraints = Maps.newHashMap();
@@ -365,8 +368,9 @@ public final class MixerController implements PropertyChangeListener,
                 MixerConstants.DEFAULT_DURATION);
             regionController.addMarkerEventListener(this);
 
-            layeredPane.setLayer(regionView, 20);
-            layeredPane.add(regionView, sub.replace(template), 20);
+            layeredPane.setLayer(regionView, MixerConstants.REGION_ZORDER);
+            layeredPane.add(regionView, sub.replace(template),
+                MixerConstants.REGION_ZORDER);
         }
 
         // Set up the timing needle's layout
@@ -392,8 +396,9 @@ public final class MixerController implements PropertyChangeListener,
 
             needleController.addNeedleEventListener(this);
 
-            layeredPane.setLayer(needleView, 30);
-            layeredPane.add(needleView, sub.replace(template), 30);
+            layeredPane.setLayer(needleView, MixerConstants.NEEDLE_ZORDER);
+            layeredPane.add(needleView, sub.replace(template),
+                MixerConstants.NEEDLE_ZORDER);
         }
 
         // Set up the snap marker's layout
@@ -416,8 +421,9 @@ public final class MixerController implements PropertyChangeListener,
             String template = "pos ${x} ${y} ${x2} n, h ${height}::";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
-            layeredPane.setLayer(markerView, 50);
-            layeredPane.add(markerView, sub.replace(template), 50);
+            layeredPane.setLayer(markerView, MixerConstants.MARKER_ZORDER);
+            layeredPane.add(markerView, sub.replace(template),
+                MixerConstants.MARKER_ZORDER);
         }
 
         // Set up the tracks horizontal scroll bar
@@ -445,9 +451,10 @@ public final class MixerController implements PropertyChangeListener,
             String template = "pos ${x} ${y} ${x2} n, h ${height}::";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
-            // TODO replace this x value with a constant!
-            layeredPane.setLayer(tracksScrollBar, 140);
-            layeredPane.add(tracksScrollBar, sub.replace(template), 140);
+            layeredPane.setLayer(tracksScrollBar,
+                MixerConstants.TRACKS_SB_ZORDER);
+            layeredPane.add(tracksScrollBar, sub.replace(template),
+                MixerConstants.TRACKS_SB_ZORDER);
         }
 
         {

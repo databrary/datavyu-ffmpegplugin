@@ -1,5 +1,7 @@
 package org.openshapa.controllers.component;
 
+import com.google.common.collect.Maps;
+
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
@@ -16,6 +18,8 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import java.util.Map;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -31,8 +35,9 @@ import javax.swing.event.MouseInputAdapter;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.openshapa.OpenSHAPA;
+import org.apache.commons.lang.text.StrSubstitutor;
 
+import org.openshapa.OpenSHAPA;
 
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.CarriageEventListener;
@@ -40,10 +45,12 @@ import org.openshapa.event.component.TrackMouseEventListener;
 import org.openshapa.event.component.CarriageEvent.EventType;
 
 import org.openshapa.models.component.MixerView;
+import org.openshapa.models.component.TrackConstants;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.Viewport;
 import org.openshapa.models.component.TrackModel.TrackState;
 import org.openshapa.models.id.Identifier;
+
 import org.openshapa.plugins.CustomActions;
 import org.openshapa.plugins.ViewerStateListener;
 
@@ -56,19 +63,9 @@ import org.openshapa.views.component.TrackPainter;
 public final class TrackController implements ViewerStateListener,
     PropertyChangeListener {
 
-    /** Track panel border color. */
-    private static final Color BORDER_COLOR = new Color(73, 73, 73);
-
     /** The UserMetrix logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(
             TrackController.class);
-
-    // TODO Add as part of layout construction.
-    private static final int CARRIAGE_WIDTH = 653;
-    private static final int CARRIAGE_HEIGHT = 75;
-    private static final int HEADER_WIDTH = 140;
-    private static final int ACTION_BUTTON_WIDTH = 20;
-    private static final int ACTION_BUTTON_HEIGHT = 20;
 
     /** Main panel holding the track UI. */
     private final JPanel view;
@@ -96,26 +93,6 @@ public final class TrackController implements ViewerStateListener,
 
     /** Button for hiding or showing the data viewer. */
     private final JButton visibleButton;
-
-    /** Icon for hiding the video. */
-    private final ImageIcon eyeIcon = new ImageIcon(getClass().getResource(
-                "/icons/eye.png"));
-
-    /** Icon for showing the video. */
-    private final ImageIcon hiddenIcon = new ImageIcon(getClass().getResource(
-                "/icons/eye-shut.png"));
-
-    /** Unlock icon. */
-    private final ImageIcon unlockIcon = new ImageIcon(getClass().getResource(
-                "/icons/track-unlock.png"));
-
-    /** Lock icon. */
-    private final ImageIcon lockIcon = new ImageIcon(getClass().getResource(
-                "/icons/track-lock.png"));
-
-    /** Delete icon. */
-    private final ImageIcon deleteIcon = new ImageIcon(getClass().getResource(
-                "/icons/emblem-unreadable.png"));
 
     /** Viewable model. */
     private final MixerView mixer;
@@ -146,8 +123,9 @@ public final class TrackController implements ViewerStateListener,
         isMoveable = true;
 
         view = new JPanel();
-        view.setLayout(new MigLayout("fillx, ins 0", "[140!]0[]"));
-        view.setBorder(BorderFactory.createLineBorder(BORDER_COLOR, 1));
+        view.setLayout(new MigLayout("fillx, ins 0", "[]0[]"));
+        view.setBorder(BorderFactory.createLineBorder(
+                TrackConstants.BORDER_COLOR, 1));
 
         this.trackPainter = trackPainter;
 
@@ -192,57 +170,127 @@ public final class TrackController implements ViewerStateListener,
 
         // Create the Header panel and its components
         trackLabel = new JLabel("", SwingConstants.CENTER);
-        iconLabel = new JLabel("", SwingConstants.CENTER);
-
         trackLabel.setName("trackLabel");
+        trackLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        trackLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+        iconLabel = new JLabel("", SwingConstants.CENTER);
+        iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        iconLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+
 
         header = new JPanel(new MigLayout("ins 0, wrap 6"));
         header.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 0, 1, BORDER_COLOR),
+                BorderFactory.createMatteBorder(0, 0, 0, 1,
+                    TrackConstants.BORDER_COLOR),
                 BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         header.setBackground(Color.LIGHT_GRAY);
-        header.add(trackLabel, "w 136!, span 6");
-        header.add(iconLabel, "span 6, w 136!, h 32!");
+
+        // Normally I would use pushx instead of defining the width, but in this
+        // case I defined the width because span combined with push makes the
+        // first action icon cell push out as well. 136 was calculated from
+        // 140 pixels minus 2 minus 2 (from the empty border defined above).
+        header.add(trackLabel, "span 6, w 136!, center, growx");
+        header.add(iconLabel, "span 6, w 136!, h 32!, center, growx");
 
         // Set up the button used for locking/unlocking track movement
-        lockUnlockButton = new JButton(unlockIcon);
-        lockUnlockButton.setContentAreaFilled(false);
-        lockUnlockButton.setBorderPainted(false);
-        lockUnlockButton.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(final ActionEvent e) {
-                    handleLockUnlockButtonEvent(e);
-                }
-            });
-        header.add(lockUnlockButton, "w 20!, h 20!");
-        lockUnlockButton.setName("lockUnlockButton");
+        {
+            lockUnlockButton = new JButton(TrackConstants.UNLOCK_ICON);
+            lockUnlockButton.setName("lockUnlockButton");
+            lockUnlockButton.setContentAreaFilled(false);
+            lockUnlockButton.setBorderPainted(false);
+            lockUnlockButton.addActionListener(new ActionListener() {
+                    @Override public void actionPerformed(final ActionEvent e) {
+                        handleLockUnlockButtonEvent(e);
+                    }
+                });
+
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("width",
+                Integer.toString(TrackConstants.ACTION_BUTTON_WIDTH));
+            constraints.put("height",
+                Integer.toString(TrackConstants.ACTION_BUTTON_HEIGHT));
+
+            String template = "cell 0 2, w ${width}!, h ${height}!";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
+
+            header.add(lockUnlockButton, sub.replace(template));
+        }
 
         // Set up the button used for hiding/showing a track's data viewer
-        visibleButton = new JButton(eyeIcon);
-        visibleButton.setContentAreaFilled(false);
-        visibleButton.setBorderPainted(false);
-        visibleButton.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(final ActionEvent e) {
-                    handleVisibleButtonEvent(e);
-                }
-            });
-        header.add(visibleButton, "w 20!, h 20!");
-        visibleButton.setName("visibleButton");
+        {
+            visibleButton = new JButton(TrackConstants.VIEWER_HIDE_ICON);
+            visibleButton.setName("visibleButton");
+            visibleButton.setContentAreaFilled(false);
+            visibleButton.setBorderPainted(false);
+            visibleButton.addActionListener(new ActionListener() {
+                    @Override public void actionPerformed(final ActionEvent e) {
+                        handleVisibleButtonEvent(e);
+                    }
+                });
+
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("width",
+                Integer.toString(TrackConstants.ACTION_BUTTON_WIDTH));
+            constraints.put("height",
+                Integer.toString(TrackConstants.ACTION_BUTTON_HEIGHT));
+
+            String template = "cell 1 2, w ${width}!, h ${height}!";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
+
+            header.add(visibleButton, sub.replace(template));
+        }
 
         // Set up the button used for removing a track and its plugin
-        rubbishButton = new JButton(deleteIcon);
-        rubbishButton.setContentAreaFilled(false);
-        rubbishButton.setBorderPainted(false);
-        rubbishButton.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(final ActionEvent e) {
-                    handleDeleteButtonEvent(e);
-                }
-            });
-        header.add(rubbishButton, "w 20!, h 20!, cell 5 2");
+        {
+            rubbishButton = new JButton(TrackConstants.DELETE_ICON);
+            rubbishButton.setName("rubbishButton");
+            rubbishButton.setContentAreaFilled(false);
+            rubbishButton.setBorderPainted(false);
+            rubbishButton.addActionListener(new ActionListener() {
+                    @Override public void actionPerformed(final ActionEvent e) {
+                        handleDeleteButtonEvent(e);
+                    }
+                });
 
-        view.add(header, "w 140!, h 75!");
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("width",
+                Integer.toString(TrackConstants.ACTION_BUTTON_WIDTH));
+            constraints.put("height",
+                Integer.toString(TrackConstants.ACTION_BUTTON_HEIGHT));
 
-        // Create the Carriage panel
-        view.add(trackPainter, "w 654::, growx, h 75!");
+            String template = "cell 5 2, w ${width}!, h ${height}!";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
+
+            header.add(rubbishButton, sub.replace(template));
+        }
+
+        // Add the header to our layout.
+        {
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("width",
+                Integer.toString(TrackConstants.HEADER_WIDTH));
+            constraints.put("height",
+                Integer.toString(TrackConstants.CARRIAGE_HEIGHT));
+
+            String template = "w ${width}!, h ${height}!";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
+
+            view.add(header, sub.replace(template));
+        }
+
+        // Add the track carriage to our layout.
+        {
+            Map<String, String> constraints = Maps.newHashMap();
+            constraints.put("height",
+                Integer.toString(TrackConstants.CARRIAGE_HEIGHT));
+
+            String template = "pushx, growx, h ${height}!";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
+
+            view.add(trackPainter, sub.replace(template));
+        }
+
+        view.validate();
     }
 
     /**
@@ -294,9 +342,9 @@ public final class TrackController implements ViewerStateListener,
     private ImageIcon getVisibleButtonIcon() {
 
         if (isViewerVisible) {
-            return eyeIcon;
+            return TrackConstants.VIEWER_HIDE_ICON;
         } else {
-            return hiddenIcon;
+            return TrackConstants.VIEWER_SHOW_ICON;
         }
     }
 
@@ -423,9 +471,9 @@ public final class TrackController implements ViewerStateListener,
         trackModel.setLocked(lock);
 
         if (lock) {
-            lockUnlockButton.setIcon(lockIcon);
+            lockUnlockButton.setIcon(TrackConstants.LOCK_ICON);
         } else {
-            lockUnlockButton.setIcon(unlockIcon);
+            lockUnlockButton.setIcon(TrackConstants.UNLOCK_ICON);
         }
     }
 
@@ -505,19 +553,29 @@ public final class TrackController implements ViewerStateListener,
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
 
+                    Map<String, String> constraints = Maps.newHashMap();
+                    constraints.put("width",
+                        Integer.toString(TrackConstants.ACTION_BUTTON_WIDTH));
+                    constraints.put("height",
+                        Integer.toString(TrackConstants.ACTION_BUTTON_HEIGHT));
+
+                    String template = "w ${width}!, h ${height}!";
+                    StrSubstitutor sub = new StrSubstitutor(constraints);
+                    String cons = sub.replace(template);
+
                     if (actions.getActionButton1() != null) {
                         header.add(actions.getActionButton1(),
-                            "w 20!, h 20!, cell 2 2");
+                            cons + ", cell 2 2");
                     }
 
                     if (actions.getActionButton2() != null) {
                         header.add(actions.getActionButton2(),
-                            "w 20!, h 20!, cell 3 2");
+                            cons + ", cell 3 2");
                     }
 
                     if (actions.getActionButton3() != null) {
                         header.add(actions.getActionButton3(),
-                            "w 20!, h 20!, cell 4 2");
+                            cons + ", cell 4 2");
                     }
 
                     header.validate();
@@ -573,11 +631,7 @@ public final class TrackController implements ViewerStateListener,
         isLocked ^= true;
         trackModel.setLocked(isLocked);
 
-        if (isLocked) {
-            lockUnlockButton.setIcon(lockIcon);
-        } else {
-            lockUnlockButton.setIcon(unlockIcon);
-        }
+        setLocked(isLocked);
 
         fireLockStateChangedEvent();
     }
