@@ -352,7 +352,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>osxappbundle-maven-plugin</artifactId>
         <!--  BugzID:306 - This version has been custom built for support of the new "resources" tag. Don't update this to the mainstream version until after the tag has been added to the SVN repository... see http://jira.codehaus.org/browse/MOJO-1527 -->
-        <version>1.0-alpha-2b</version>
+        <version>1.0-alpha-3</version>
         <configuration>
           <bundleName>OpenSHAPA</bundleName>
           <mainClass>org.openshapa.Launcher</mainClass>
