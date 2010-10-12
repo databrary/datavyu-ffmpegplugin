@@ -45,9 +45,6 @@ public final class NeedleController implements PropertyChangeListener {
         view = new NeedlePainter();
 
         needleModel = new NeedleModel();
-        needleModel.setNeedleWidth(1);
-        needleModel.setNeedleHeadWidth(9);
-        needleModel.setNeedleHeadHeight(17);
 
         this.mixer = mixer;
 
