@@ -17,6 +17,7 @@ import org.openshapa.event.component.MarkerEventListener;
 import org.openshapa.event.component.MarkerEvent.Marker;
 
 import org.openshapa.models.component.MixerView;
+import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.RegionModel;
 import org.openshapa.models.component.Viewport;
 
@@ -185,21 +186,15 @@ public final class RegionController implements PropertyChangeListener {
 
         @Override public void mouseEntered(final MouseEvent e) {
             final JComponent source = (JComponent) e.getSource();
-            final GeneralPath startMarker = view.getStartMarkerPolygon();
-            final GeneralPath endMarker = view.getEndMarkerPolygon();
 
-            if (startMarker.contains(e.getPoint())) {
+            if (view.contains(e.getPoint())) {
                 source.setCursor(eastResizeCursor);
-            } else if (endMarker.contains(e.getPoint())) {
-                source.setCursor(eastResizeCursor);
-            } else {
-                source.setCursor(defaultCursor);
             }
         }
 
-        @Override public void mouseMoved(final MouseEvent e) {
-            mouseEntered(e);
-        }
+        // @Override public void mouseMoved(final MouseEvent e) {
+        // mouseEntered(e);
+        // }
 
         @Override public void mousePressed(final MouseEvent e) {
             final Component source = (Component) e.getSource();
@@ -226,8 +221,11 @@ public final class RegionController implements PropertyChangeListener {
         @Override public void mouseDragged(final MouseEvent e) {
 
             if (onStartMarker || onEndMarker) {
-                final int x = Math.min(Math.max(e.getX(), 0),
-                        view.getSize().width);
+                int x = Math.min(Math.max(e.getX(), 0), view.getSize().width);
+
+                if (onEndMarker) {
+                    x -= RegionConstants.RMARKER_WIDTH;
+                }
 
                 double newTime = viewport.computeTimeFromXOffset(x)
                     + viewport.getViewStart();
