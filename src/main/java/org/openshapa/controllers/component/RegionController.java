@@ -192,10 +192,6 @@ public final class RegionController implements PropertyChangeListener {
             }
         }
 
-        // @Override public void mouseMoved(final MouseEvent e) {
-        // mouseEntered(e);
-        // }
-
         @Override public void mousePressed(final MouseEvent e) {
             final Component source = (Component) e.getSource();
             final GeneralPath startMarker = view.getStartMarkerPolygon();
