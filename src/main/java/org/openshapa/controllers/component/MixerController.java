@@ -358,7 +358,7 @@ public final class MixerController implements PropertyChangeListener,
 
             // Padding from the right
             int rightPad = MixerConstants.R_EDGE_PAD
-                + MixerConstants.VSCROLL_WIDTH - 1;
+                + MixerConstants.VSCROLL_WIDTH - 2;
 
             constraints.put("x2", "(filler.w-" + rightPad + ")");
             constraints.put("height",
