@@ -153,7 +153,7 @@ public final class RegionPainter extends JComponent {
         if ((viewport.getViewStart() <= regionEnd)
                 && (regionEnd <= viewport.getViewEnd())) {
             final double xPos = Math.floor(getXForTime(viewport,
-                        regionModel.getRegionEnd())) - 1;
+                        regionModel.getRegionEnd()));
 
             endMarkerPolygon = new GeneralPath();
             endMarkerPolygon.moveTo((float) (xPos + needleWidth),
