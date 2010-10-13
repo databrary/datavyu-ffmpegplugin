@@ -53,8 +53,10 @@ import org.openshapa.event.component.TracksControllerListener;
 
 import org.openshapa.models.component.MixerConstants;
 import org.openshapa.models.component.MixerModel;
+import org.openshapa.models.component.NeedleConstants;
 import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.TimescaleConstants;
+import org.openshapa.models.component.TrackConstants;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.Viewport;
 import org.openshapa.models.id.Identifier;
@@ -254,7 +256,7 @@ public final class MixerController implements PropertyChangeListener,
             .getHeight();
 
         final int needleHeadHeight = (int) Math.ceil(
-                needleController.getNeedleModel().getNeedleHeadHeight());
+                NeedleConstants.NEEDLE_HEAD_HEIGHT);
         final int tracksScrollPaneY = needleHeadHeight + 1;
         final int timescaleViewY = layeredPaneHeight
             - MixerConstants.HSCROLL_HEIGHT - timescaleViewHeight;
@@ -349,13 +351,14 @@ public final class MixerController implements PropertyChangeListener,
 
             Map<String, String> constraints = Maps.newHashMap();
 
-            // TODO replace this x value with a constant!
-            constraints.put("x", "130");
+            int x = (int) (TrackConstants.HEADER_WIDTH
+                    - RegionConstants.RMARKER_WIDTH);
+            constraints.put("x", Integer.toString(x));
             constraints.put("y", "0");
 
             // Padding from the right
             int rightPad = MixerConstants.R_EDGE_PAD
-                + MixerConstants.VSCROLL_WIDTH - 1;
+                + MixerConstants.VSCROLL_WIDTH - 2;
 
             constraints.put("x2", "(filler.w-" + rightPad + ")");
             constraints.put("height",
@@ -379,8 +382,10 @@ public final class MixerController implements PropertyChangeListener,
 
             Map<String, String> constraints = Maps.newHashMap();
 
-            // TODO replace this x value with a constant!
-            constraints.put("x", "132");
+            int x = (int) (TrackConstants.HEADER_WIDTH
+                    - NeedleConstants.NEEDLE_HEAD_WIDTH
+                    + NeedleConstants.NEEDLE_WIDTH);
+            constraints.put("x", Integer.toString(x));
             constraints.put("y", "0");
 
             // Padding from the right

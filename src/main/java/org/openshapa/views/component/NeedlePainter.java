@@ -12,6 +12,7 @@ import java.awt.geom.GeneralPath;
 import javax.swing.JComponent;
 
 import org.openshapa.models.component.MixerView;
+import org.openshapa.models.component.NeedleConstants;
 import org.openshapa.models.component.NeedleModel;
 import org.openshapa.models.component.Viewport;
 
@@ -73,11 +74,11 @@ public final class NeedlePainter extends JComponent {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
 
-        assert (needleModel.getNeedleHeadWidth() > 0)
-            && (needleModel.getNeedleHeadHeight() > 0);
+        assert (NeedleConstants.NEEDLE_HEAD_WIDTH > 0)
+            && (NeedleConstants.NEEDLE_HEAD_HEIGHT > 0);
 
-        final double needleHeadWidth = needleModel.getNeedleHeadWidth();
-        final double needleHeadHeight = needleModel.getNeedleHeadHeight();
+        final double needleHeadWidth = NeedleConstants.NEEDLE_HEAD_WIDTH;
+        final double needleHeadHeight = NeedleConstants.NEEDLE_HEAD_HEIGHT;
 
         final long currentTime = needleModel.getCurrentTime();
 
@@ -120,8 +121,8 @@ public final class NeedlePainter extends JComponent {
         line.moveTo(x1, y1);
         line.lineTo(x2, y2);
 
-        assert needleModel.getNeedleWidth() > 0;
-        g2d.setStroke(new BasicStroke((float) needleModel.getNeedleWidth()));
+        assert NeedleConstants.NEEDLE_WIDTH > 0;
+        g2d.setStroke(new BasicStroke((float) NeedleConstants.NEEDLE_WIDTH));
         g2d.draw(line);
     }
 }

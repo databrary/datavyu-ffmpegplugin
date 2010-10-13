@@ -6,17 +6,16 @@ import java.awt.Color;
 /**
  * Constants relating to the timescale.
  */
-public final class TimescaleConstants {
+public interface TimescaleConstants {
 
-    public static final Color HOURS_COLOR = Color.RED.darker();
+    static final Color HOURS_COLOR = Color.RED.darker();
 
-    public static final Color MINUTES_COLOR = Color.GREEN.darker().darker();
+    static final Color MINUTES_COLOR = Color.GREEN.darker().darker();
 
-    public static final Color SECONDS_COLOR = Color.BLUE.darker().darker();
+    static final Color SECONDS_COLOR = Color.BLUE.darker().darker();
 
-    public static final Color MILLISECONDS_COLOR = Color.GRAY.darker();
+    static final Color MILLISECONDS_COLOR = Color.GRAY.darker();
 
-    //TODO - This should be queried from TrackController
-    public static final int XPOS_ABS = 141;
+    static final int XPOS_ABS = TrackConstants.HEADER_WIDTH + 1;
 
 }
