@@ -44,11 +44,14 @@ import org.openshapa.views.component.TrackPainter;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+
 import org.openshapa.models.db.Datastore;
+
 import org.openshapa.plugins.CustomActions;
 import org.openshapa.plugins.CustomActionsAdapter;
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.ViewerStateListener;
+
 import org.openshapa.views.DataController;
 
 
@@ -85,9 +88,6 @@ public final class SpectrumDataViewer implements DataViewer {
 
     /** Track. */
     private AmplitudeTrack track;
-
-    /** Data controller. */
-    private DataController dataC;
 
     /** Media file being visualized. */
     private File mediaFile;
@@ -317,7 +317,6 @@ public final class SpectrumDataViewer implements DataViewer {
     }
 
     @Override public void setParentController(final DataController dataC) {
-        this.dataC = dataC;
     }
 
     @Override public void setPlaybackSpeed(final float speed) {
@@ -444,28 +443,6 @@ public final class SpectrumDataViewer implements DataViewer {
                 }
             }
         }
-    }
-
-    /**
-     * Handles dialog window closing event.
-     *
-     * @param evt
-     *            Event to handle.
-     */
-    private void dialogClosing(final WindowEvent evt) {
-        track.deregister();
-
-        // Shutdown the engine
-        engine.shutdown();
-
-        // Stop the engine thread.
-        engine.interrupt();
-
-        /*
-        if (dataC != null) {
-            dataC.shutdown(this);
-        }
-         */
     }
 
     @Override public void setDatastore(final Datastore sDB) {
