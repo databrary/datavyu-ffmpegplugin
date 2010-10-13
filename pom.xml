@@ -550,7 +550,7 @@
                 <preCp>appframework-1.0.3.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
                 <preCp>openshapa-lib-0.0.47.jar</preCp>
-                <preCp>openshapa-gstreamer-java-1.4.1.jar</preCp>
+                <preCp>openshapa-gstreamer-java-1.5-SNAPSHOT-a.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.5.jar</preCp>
                 <preCp>miglayout-3.7.3.1-swing.jar</preCp>
@@ -624,7 +624,7 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-gstreamer-java</artifactId>
-      <version>1.4.1</version>
+      <version>1.5-SNAPSHOT-a</version>
     </dependency>
 
     <dependency>
