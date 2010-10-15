@@ -81,14 +81,7 @@ public class GStreamerDataViewer implements DataViewer {
 
     @Override
     public void clearDataFeed() {
-        if (playBin != null) {
-            playBin.setVolume(MUTE_VOLUME);
-            playBin.setState(State.NULL);
-            playBin = null;
-            videoComponent = null;
-        }
-
-        Gst.deinit();
+    	unloadGStreamer();
     }
 
     private enum VideoSinkType {
@@ -135,6 +128,7 @@ public class GStreamerDataViewer implements DataViewer {
             }
         };
 
+    private boolean isGStreamerLoaded = false;
     private JDialog videoDialog;
     private long offset;
     private final TrackPainter trackPainter;
@@ -157,10 +151,14 @@ public class GStreamerDataViewer implements DataViewer {
     private long lastPlayingSeekTime = System.currentTimeMillis();
     private final long minimumIntervalBetweenPlayingSeeks = 5000;
 
+    /** Whether debug messages should be printed */
+    private final boolean DEBUG = false;
+    
     public GStreamerDataViewer(final Frame parent, final boolean modal) {
 
-        System.out.println("GStreamerDataViewer.GStreamerDataViewer()");
+        if (DEBUG) System.out.println("GStreamerDataViewer.GStreamerDataViewer()");
 
+        isGStreamerLoaded = true;
         Gst.init();
 
         trackPainter = new DefaultTrackPainter();
@@ -225,6 +223,22 @@ public class GStreamerDataViewer implements DataViewer {
                 }
             });
     }
+    
+    private void unloadGStreamer() {
+        if (playBin != null) {
+            playBin.setVolume(MUTE_VOLUME);
+            playBin.setState(State.NULL);
+            waitForPlaybinStateChange();
+            playBin.dispose();
+            playBin = null;
+            videoComponent = null;
+        }
+
+        if (isGStreamerLoaded) {
+        	Gst.deinit();
+        	isGStreamerLoaded = false;
+        }
+    }
 
     private void waitForPlaybinStateChange() {
         playBin.getState(TimeUnit.NANOSECONDS.convert(500,
@@ -253,13 +267,13 @@ public class GStreamerDataViewer implements DataViewer {
     }
 
     @Override public long getCurrentTime() {
-//        System.out.println("GStreamerDataViewer.getCurrentTime() = " + (playBin != null ? playBin.queryPosition(TimeUnit.MILLISECONDS) : 0));
+//      if (DEBUG) System.out.println("GStreamerDataViewer.getCurrentTime() = " + (playBin != null ? playBin.queryPosition(TimeUnit.MILLISECONDS) : 0));
         return (playBin != null) ? playBin.queryPosition(TimeUnit.MILLISECONDS)
                                  : 0;
     }
 
     @Override public File getDataFeed() {
-        System.out.println("GStreamerDataViewer.getDataFeed()");
+    	if (DEBUG) System.out.println("GStreamerDataViewer.getDataFeed()");
 
         return dataFeed;
     }
@@ -269,7 +283,7 @@ public class GStreamerDataViewer implements DataViewer {
     }
 
     @Override public float getFrameRate() {
-        System.out.println("GStreamerDataViewer.getFrameRate()");
+    	if (DEBUG) System.out.println("GStreamerDataViewer.getFrameRate()");
 
         return (float) videoFrameRate;
     }
@@ -279,13 +293,13 @@ public class GStreamerDataViewer implements DataViewer {
     }
 
     @Override public JDialog getParentJDialog() {
-        System.out.println("GStreamerDataViewer.getParentJDialog()");
+    	if (DEBUG) System.out.println("GStreamerDataViewer.getParentJDialog()");
 
         return videoDialog;
     }
 
     @Override public TrackPainter getTrackPainter() {
-        System.out.println("GStreamerDataViewer.getTrackPainter()");
+    	if (DEBUG) System.out.println("GStreamerDataViewer.getTrackPainter()");
 
         return trackPainter;
     }
@@ -295,7 +309,7 @@ public class GStreamerDataViewer implements DataViewer {
     }
 
     @Override public synchronized void play() {
-        System.out.println("GStreamerDataViewer.play()");
+    	if (DEBUG) System.out.println("GStreamerDataViewer.play()");
 
         if ((playBin != null) && !isPlaying) {
             final int seekFlags = SeekFlags.FLUSH | SeekFlags.ACCURATE
@@ -348,7 +362,7 @@ public class GStreamerDataViewer implements DataViewer {
     }
 
     @Override public synchronized void seekTo(long position) {
-        System.out.println("GStreamerDataViewer.seekTo(" + position
+    	if (DEBUG) System.out.println("GStreamerDataViewer.seekTo(" + position
             + "), currentTime=" + getCurrentTime() + ", difference="
             + (position - getCurrentTime()) + ", playbackSpeed=" + playbackRate
             + ", isPlaying=" + isPlaying);
@@ -369,13 +383,13 @@ public class GStreamerDataViewer implements DataViewer {
                         > currentTimeMillis) {
 
                     // ignore this playing seek request
-                    System.err.println("ignoring seek request");
+                	if (DEBUG) System.err.println("ignoring seek request");
 
                     return;
                 } else if ((position - getCurrentTime()) < 250) {
 
                     //TODO temporary HACK - adjust seek latencies by compensating for the seek call
-                    System.err.println("patching seeks by "
+                	if (DEBUG) System.err.println("patching seeks by "
                         + ((position - getCurrentTime()) / 2) + " ms");
                     position += (position - getCurrentTime()) / 2;
                 }
@@ -391,7 +405,6 @@ public class GStreamerDataViewer implements DataViewer {
     }
 
     @Override public synchronized void setDataFeed(final File dataFeed) {
-
         if (this.dataFeed != null) {
             return;
         }
@@ -528,36 +541,21 @@ public class GStreamerDataViewer implements DataViewer {
     }
 
     public void windowClosing(final WindowEvent evt) {
-
-        if (playBin != null) {
-            playBin.setVolume(MUTE_VOLUME);
-            playBin.setState(State.NULL);
-            playBin = null;
-            videoComponent = null;
-        }
-
-        Gst.deinit();
-
-        /*
-        if (parentDataController != null) {
-            parentDataController.shutdown(this);
-        }
-         */
     }
 
     @Override public void setOffset(final long offset) {
-        System.out.println("GStreamerDataViewer.setOffset(" + offset + ")");
+    	if (DEBUG) System.out.println("GStreamerDataViewer.setOffset(" + offset + ")");
         this.offset = offset;
     }
 
     @Override public synchronized void setParentController(
         final DataController dataController) {
-        System.out.println("GStreamerDataViewer.setParentController()");
+    	if (DEBUG) System.out.println("GStreamerDataViewer.setParentController()");
         parentDataController = dataController;
     }
 
     @Override public void setPlaybackSpeed(final float rate) {
-        System.out.println("GStreamerDataViewer.setPlaybackSpeed(" + rate
+    	if (DEBUG) System.out.println("GStreamerDataViewer.setPlaybackSpeed(" + rate
             + ")");
         this.playbackRate = rate;
 
@@ -579,7 +577,7 @@ public class GStreamerDataViewer implements DataViewer {
     }
 
     @Override public synchronized void stop() {
-        System.out.println("GStreamerDataViewer.stop()");
+    	if (DEBUG) System.out.println("GStreamerDataViewer.stop()");
 
         if ((playBin != null) && isPlaying) {
             playBin.setVolume(MUTE_VOLUME);
