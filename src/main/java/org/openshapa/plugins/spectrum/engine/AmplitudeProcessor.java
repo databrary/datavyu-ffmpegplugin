@@ -94,6 +94,14 @@ public final class AmplitudeProcessor
 
     private FixedHiLoBufferProcessor bufProc;
 
+    private Pipeline pipeline;
+
+    private Bin audioBin;
+
+    private Element fileSource;
+
+    private DecodeBin decodeBin;
+
     /**
      * Creates a new worker thread.
      *
@@ -133,21 +141,18 @@ public final class AmplitudeProcessor
         data.setDataTimeStart(start);
         data.setDataTimeEnd(end);
         data.setDataTimeUnit(unit);
+
+        setup();
     }
 
-    /**
-     * Process amplitude data.
-     *
-     * @see javax.swing.SwingWorker#doInBackground()
-     */
-    @Override protected StereoData doInBackground() throws Exception {
-        final Pipeline pipeline = new Pipeline("Processor");
+    private void setup() {
+        pipeline = new Pipeline("Processor");
 
         // Decoding bin.
-        DecodeBin decodeBin = new DecodeBin("Decode bin");
+        decodeBin = new DecodeBin("Decode bin");
 
         // Source is from a file.
-        Element fileSource = ElementFactory.make("filesrc", "Input File");
+        fileSource = ElementFactory.make("filesrc", "Input File");
         fileSource.set("location", mediaFile.getAbsolutePath());
 
         pipeline.addMany(fileSource, decodeBin);
@@ -157,7 +162,7 @@ public final class AmplitudeProcessor
         }
 
         // Audio handling bin.
-        final Bin audioBin = new Bin("Audio bin");
+        audioBin = new Bin("Audio bin");
 
         // Set up audio converter.
         Element audioConvert = ElementFactory.make("audioconvert", null);
@@ -218,7 +223,11 @@ public final class AmplitudeProcessor
                     Structure struct = caps.getStructure(0);
 
                     if (struct.getName().startsWith("audio/")) {
-                        pad.link(audioBin.getStaticPad("sink"));
+                        Bin bin = audioBin;
+
+                        if (bin != null) {
+                            pad.link(bin.getStaticPad("sink"));
+                        }
                     }
                 }
             });
@@ -233,7 +242,18 @@ public final class AmplitudeProcessor
                     }
                 }
             });
+    }
 
+    /**
+     * Process amplitude data.
+     *
+     * @see javax.swing.SwingWorker#doInBackground()
+     */
+    @Override protected StereoData doInBackground() throws Exception {
+
+        if (isCancelled()) {
+            return null;
+        }
 
         pipeline.pause();
 
@@ -255,24 +275,12 @@ public final class AmplitudeProcessor
             try {
                 data.wait();
             } catch (InterruptedException e) {
-                System.out.println("Interrupted.");
 
                 if (isCancelled()) {
-                    System.out.println("Cancelled");
-                    audioBin.setState(State.NULL);
-                    fileSource.setState(State.NULL);
-                    pipeline.stop();
-                    pipeline.getState(2, SECONDS);
-
                     return null;
                 }
             }
         }
-
-        audioBin.setState(State.NULL);
-        fileSource.setState(State.NULL);
-        pipeline.stop();
-        pipeline.getState(2, SECONDS);
 
         // Normalize any blocks that haven't been normalized.
         for (AmplitudeBlock block : data.getDataBlocks()) {
@@ -317,6 +325,11 @@ public final class AmplitudeProcessor
             // Do not log; the exception that is generated is normal
             // (thread interruptions and subsequently, task cancellation.).
         } finally {
+
+            // Dispose Gstreamer stuff.
+            audioBin.setState(State.NULL);
+            fileSource.setState(State.NULL);
+            pipeline.setState(State.NULL);
 
             // Have to explicitly delete all refs or we leak memory because
             // JVM is still holding onto these threads.
