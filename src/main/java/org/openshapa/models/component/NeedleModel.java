@@ -1,5 +1,7 @@
 package org.openshapa.models.component;
 
+import java.awt.Color;
+
 /**
  * This model provides information used to render a timing needle on the tracks
  * interface.
@@ -8,6 +10,9 @@ public final class NeedleModel {
 
     /** Current time represented by the needle */
     private long currentTime;
+
+    /** Color of the needle line to be drawn on screen */
+    private Color needleColor = new Color(250, 0, 0, 100);
 
     public NeedleModel() {
     }
@@ -32,6 +37,20 @@ public final class NeedleModel {
         this.currentTime = currentTime;
     }
 
+    /**
+     * @return color of the needle line
+     */
+    public Color getNeedleColor() {
+    	return needleColor;
+    }
+    
+    /**
+     * Sets the color of the needle line.
+     */
+    public void setNeedleColor(final Color needleColor) {
+    	this.needleColor = needleColor;
+    }
+    
     /*
      * (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)

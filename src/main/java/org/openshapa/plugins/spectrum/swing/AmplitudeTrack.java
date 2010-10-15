@@ -187,10 +187,10 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Calculate carriage start and end pixel positions.
-        final int startXPos = (int) viewport.computePixelXOffset(
-                trackModel.getOffset());
-        final int endXPos = (int) viewport.computePixelXOffset(
-                trackModel.getDuration() + trackModel.getOffset());
+        final int startXPos = (int) Math.round(viewport.computePixelXOffset(
+                trackModel.getOffset()));
+        final int endXPos = (int) Math.round(viewport.computePixelXOffset(
+                trackModel.getDuration() + trackModel.getOffset()));
 
         // Carriage height.
         final int carriageHeight = (int) (getHeight() * 7D / 10D);
@@ -448,9 +448,9 @@ public final class AmplitudeTrack extends TrackPainter implements Amplitude,
             final int carriageHeight = (int) (dim.getHeight() * 7D / 10D);
 
             // Calculate carriage start pixel position.
-            final double startXPos = viewport.computePixelXOffset(MILLISECONDS
+            final double startXPos = Math.round(viewport.computePixelXOffset(MILLISECONDS
                     .convert(data.getDataTimeStart(), data.getDataTimeUnit())
-                    + trackModel.getOffset());
+                    + trackModel.getOffset()));
 
             // Carriage offset from top of panel.
             final int carriageYOffset = (int) (dim.getHeight() * 2D / 10D);

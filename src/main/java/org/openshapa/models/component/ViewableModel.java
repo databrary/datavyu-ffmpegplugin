@@ -60,7 +60,7 @@ public final class ViewableModel implements Viewport {
     }
 
     @Override public double computePixelXOffset(final long time) {
-        return (int) Math.round((time - getViewStart()) / getResolution());
+        return (double) (time - getViewStart()) / getResolution();
     }
 
     @Override public long computeTimeFromXOffset(final double offset) {

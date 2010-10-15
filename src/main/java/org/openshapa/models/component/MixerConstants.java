@@ -21,6 +21,7 @@ public interface MixerConstants {
     static final int TRACKS_ZORDER = 10;
     static final int REGION_ZORDER = 20;
     static final int NEEDLE_ZORDER = 30;
+    static final int NEEDLE_ZOOMWINDOW_ZORDER = 31;
     static final int MARKER_ZORDER = 50;
     static final int TRACKS_SB_ZORDER = 60;
 

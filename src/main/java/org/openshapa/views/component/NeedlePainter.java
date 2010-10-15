@@ -1,7 +1,6 @@
 package org.openshapa.views.component;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -32,9 +31,6 @@ public final class NeedlePainter extends JComponent {
 
     private NeedleModel needleModel;
     private MixerView mixer;
-
-
-    private final Color needleColor = new Color(250, 0, 0, 100);
 
     public NeedlePainter() {
         super();
@@ -105,10 +101,10 @@ public final class NeedlePainter extends JComponent {
         needleMarker.lineTo((float) pos, (float) needleHeadHeight);
         needleMarker.closePath();
 
-        g2d.setColor(needleColor);
+        g2d.setColor(needleModel.getNeedleColor());
         g2d.fill(needleMarker);
 
-        g2d.setColor(needleColor.darker());
+        g2d.setColor(needleModel.getNeedleColor().darker());
         g2d.draw(needleMarker);
 
         // Draw the timing needle

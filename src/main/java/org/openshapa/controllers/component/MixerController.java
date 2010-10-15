@@ -405,6 +405,33 @@ public final class MixerController implements PropertyChangeListener,
             layeredPane.add(needleView, sub.replace(template),
                 MixerConstants.NEEDLE_ZORDER);
         }
+        
+        {
+            JComponent needlePositionView = needleController.getPositionView();
+
+            Map<String, String> constraints = Maps.newHashMap();
+
+            int x = (int) (TrackConstants.HEADER_WIDTH - NeedleConstants.NEEDLE_HEAD_WIDTH + 1);
+            constraints.put("x", Integer.toString(x));
+            constraints.put("y", Integer.toString(needleAndRegionMarkerHeight + timescaleController.getTimescaleModel().getZoomWindowToTrackTransitionHeight() - 1));
+
+            // Padding from the right
+            int rightPad = MixerConstants.R_EDGE_PAD
+                + MixerConstants.VSCROLL_WIDTH - 1;
+
+            constraints.put("x2", "(filler.w-" + rightPad + ")");
+            constraints.put("height",
+                Integer.toString(timescaleController.getTimescaleModel().getZoomWindowIndicatorHeight()));
+
+            String template = "pos ${x} ${y} ${x2} n, h ${height}::";
+            StrSubstitutor sub = new StrSubstitutor(constraints);
+
+            needleController.addNeedleEventListener(this);
+
+            layeredPane.setLayer(needlePositionView, MixerConstants.NEEDLE_ZOOMWINDOW_ZORDER);
+            layeredPane.add(needlePositionView, sub.replace(template),
+                MixerConstants.NEEDLE_ZOOMWINDOW_ZORDER);
+        }
 
         // Set up the snap marker's layout
         {
