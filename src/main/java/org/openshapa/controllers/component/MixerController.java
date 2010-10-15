@@ -247,6 +247,9 @@ public final class MixerController implements PropertyChangeListener,
         regionController = new RegionController(masterMixer);
         tracksEditorController = new TracksEditorController(masterMixer);
 
+        needleController.setTimescaleTransitionHeight(timescaleController.getTimescaleModel().getZoomWindowToTrackTransitionHeight());
+        needleController.setZoomIndicatorHeight(timescaleController.getTimescaleModel().getZoomWindowIndicatorHeight());
+        
         // Set up the layered pane
         layeredPane = new JLayeredPane();
         layeredPane.setLayout(new MigLayout("fillx, ins 0"));
@@ -394,7 +397,7 @@ public final class MixerController implements PropertyChangeListener,
 
             constraints.put("x2", "(filler.w-" + rightPad + ")");
             constraints.put("height",
-                Integer.toString(needleAndRegionMarkerHeight));
+                Integer.toString(needleAndRegionMarkerHeight + timescaleController.getTimescaleModel().getZoomWindowToTrackTransitionHeight() + timescaleController.getTimescaleModel().getZoomWindowIndicatorHeight() - 1));
 
             String template = "pos ${x} ${y} ${x2} n, h ${height}::";
             StrSubstitutor sub = new StrSubstitutor(constraints);
@@ -406,33 +409,6 @@ public final class MixerController implements PropertyChangeListener,
                 MixerConstants.NEEDLE_ZORDER);
         }
         
-        {
-            JComponent needlePositionView = needleController.getPositionView();
-
-            Map<String, String> constraints = Maps.newHashMap();
-
-            int x = (int) (TrackConstants.HEADER_WIDTH - NeedleConstants.NEEDLE_HEAD_WIDTH + 1);
-            constraints.put("x", Integer.toString(x));
-            constraints.put("y", Integer.toString(needleAndRegionMarkerHeight + timescaleController.getTimescaleModel().getZoomWindowToTrackTransitionHeight() - 1));
-
-            // Padding from the right
-            int rightPad = MixerConstants.R_EDGE_PAD
-                + MixerConstants.VSCROLL_WIDTH - 1;
-
-            constraints.put("x2", "(filler.w-" + rightPad + ")");
-            constraints.put("height",
-                Integer.toString(timescaleController.getTimescaleModel().getZoomWindowIndicatorHeight()));
-
-            String template = "pos ${x} ${y} ${x2} n, h ${height}::";
-            StrSubstitutor sub = new StrSubstitutor(constraints);
-
-            needleController.addNeedleEventListener(this);
-
-            layeredPane.setLayer(needlePositionView, MixerConstants.NEEDLE_ZOOMWINDOW_ZORDER);
-            layeredPane.add(needlePositionView, sub.replace(template),
-                MixerConstants.NEEDLE_ZOOMWINDOW_ZORDER);
-        }
-
         // Set up the snap marker's layout
         {
             JComponent markerView = tracksEditorController.getMarkerView();
@@ -1192,11 +1168,11 @@ public final class MixerController implements PropertyChangeListener,
         }
 
         @Override public void swipedLeft(final SwipeEvent e) {
-            swipeHorizontal(true);
+            swipeHorizontal(false);
         }
 
         @Override public void swipedRight(final SwipeEvent e) {
-            swipeHorizontal(false);
+            swipeHorizontal(true);
         }
 
         private void swipeHorizontal(final boolean swipeLeft) {

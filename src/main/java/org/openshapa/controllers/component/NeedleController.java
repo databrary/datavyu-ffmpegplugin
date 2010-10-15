@@ -24,7 +24,6 @@ import org.openshapa.models.component.NeedleModel;
 import org.openshapa.models.component.Viewport;
 
 import org.openshapa.views.component.NeedlePainter;
-import org.openshapa.views.component.NeedlePositionPainter;
 
 
 /**
@@ -34,7 +33,6 @@ public final class NeedleController implements PropertyChangeListener {
 
     /** View */
     private final NeedlePainter view;
-    private final NeedlePositionPainter positionView;
 
     /** Models */
     private final NeedleModel needleModel;
@@ -45,7 +43,6 @@ public final class NeedleController implements PropertyChangeListener {
 
     public NeedleController(final MixerView mixer) {
         view = new NeedlePainter();
-        positionView = new NeedlePositionPainter();
 
         needleModel = new NeedleModel();
 
@@ -54,9 +51,6 @@ public final class NeedleController implements PropertyChangeListener {
         view.setMixerView(mixer);
         view.setNeedleModel(needleModel);
 
-        positionView.setMixerView(mixer);
-        positionView.setNeedleModel(needleModel);
-        
         mixer.addPropertyChangeListener(this);
 
         final NeedleListener needleListener = new NeedleListener();
@@ -127,7 +121,6 @@ public final class NeedleController implements PropertyChangeListener {
         needleModel.setCurrentTime(currentTime);
         view.setToolTipText(df.format(new Date(currentTime)));
         view.setNeedleModel(needleModel);
-        positionView.setNeedleModel(needleModel);
     }
 
     /**
@@ -137,6 +130,22 @@ public final class NeedleController implements PropertyChangeListener {
         return needleModel.getCurrentTime();
     }
 
+    /**
+     * @see NeedleModel#setTimescaleTransitionHeight(int)
+     */
+    public void setTimescaleTransitionHeight(int newHeight) {
+    	needleModel.setTimescaleTransitionHeight(newHeight);
+    	view.repaint();
+    }
+    
+    /**
+     * @see NeedleModel#setZoomIndicatorHeight(int)
+     */
+    public void setZoomIndicatorHeight(int newHeight) {
+    	needleModel.setZoomIndicatorHeight(newHeight);
+    	view.repaint();
+    }
+    
     /**
      * @return a copy of the needle model
      */
@@ -150,7 +159,6 @@ public final class NeedleController implements PropertyChangeListener {
 
         if (Viewport.NAME.equals(evt.getPropertyName())) {
             view.repaint();
-            positionView.repaint();
         }
     }
 
@@ -161,10 +169,6 @@ public final class NeedleController implements PropertyChangeListener {
         return view;
     }
     
-    public JComponent getPositionView() {
-    	return positionView;
-    }
-
     /**
      * Inner class used to handle intercepted events.
      */
