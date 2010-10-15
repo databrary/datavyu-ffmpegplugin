@@ -522,13 +522,12 @@ public final class MixerController implements PropertyChangeListener,
         final long offset, final TrackPainter trackPainter) {
 
         // Check if the scale needs to be updated.
-        if (((duration + offset) > masterMixer.getViewport().getMaxEnd())
-                || ((tracksEditorController.numberOfTracks() == 0)
-                    && ((duration + offset) > 0))) {
-
-            long newMaxEnd = duration + offset;
-            regionController.setPlaybackRegion(0, newMaxEnd);
-            masterMixer.setViewportMaxEnd(newMaxEnd);
+    	final long trackEnd = duration + offset;
+    	final Viewport viewport = masterMixer.getViewport();
+        if ((trackEnd > viewport.getMaxEnd())
+                || ((tracksEditorController.numberOfTracks() == 0) && (trackEnd > 0))) {
+            regionController.setPlaybackRegion(0, trackEnd);
+           	masterMixer.setViewportMaxEnd(trackEnd);
         }
 
         tracksEditorController.addNewTrack(id, icon, trackName, mediaPath,

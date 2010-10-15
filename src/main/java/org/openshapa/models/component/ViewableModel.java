@@ -75,6 +75,10 @@ public final class ViewableModel implements Viewport {
     @Override public boolean isTimeInViewport(final long time) {
         return (getViewStart() <= time) && (time <= getViewEnd());
     }
+    
+    @Override public boolean isEntireTrackVisible() {
+    	return viewStart == 0 && viewEnd == maxEnd;
+    }
 
     @Override public double getZoomLevel() {
         return getZoomSettingFor(getResolution());

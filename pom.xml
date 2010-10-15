@@ -351,8 +351,8 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>osxappbundle-maven-plugin</artifactId>
-        <!--  BugzID:306 - This version has been custom built for support of the new "resources" tag. Don't update this to the mainstream version until after the tag has been added to the SVN repository... see http://jira.codehaus.org/browse/MOJO-1527 -->
-        <version>1.0-alpha-3</version>
+        <!--  BugzID:306 - This version has been custom built for support of the new "resources" tag and so that it functions correctly via hudson. Don't update this to the mainstream version until after the tag has been added to the SVN repository... see http://jira.codehaus.org/browse/MOJO-1527 -->
+        <version>1.0-alpha-2c</version>
         <configuration>
           <bundleName>OpenSHAPA</bundleName>
           <mainClass>org.openshapa.Launcher</mainClass>
@@ -549,8 +549,8 @@
                 <preCp>jruby-complete-1.4.0.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
                 <preCp>openhashtable-0.1.jar</preCp>
-                <preCp>openshapa-lib-0.0.47.jar</preCp>
-                <preCp>openshapa-gstreamer-java-1.4.1.jar</preCp>
+                <preCp>openshapa-lib-0.0.48.jar</preCp>
+                <preCp>openshapa-gstreamer-java-1.5-SNAPSHOT-a.jar</preCp>
                 <preCp>snakeyaml-1.5.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.5.jar</preCp>
                 <preCp>miglayout-3.7.3.1-swing.jar</preCp>
@@ -618,13 +618,13 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.47</version>
+      <version>0.0.48</version>
     </dependency>
 
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-gstreamer-java</artifactId>
-      <version>1.4.1</version>
+      <version>1.5-SNAPSHOT-a</version>
     </dependency>
 
     <dependency>
