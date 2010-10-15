@@ -234,6 +234,8 @@ public final class PlaybackEngine extends Thread {
                     if (buf != null) {
                         currentTime = buf.getTimestamp().toMillis();
                     }
+
+                    buf.dispose();
                 }
             });
 
@@ -501,7 +503,6 @@ public final class PlaybackEngine extends Thread {
      */
     public void shutdown() {
         pipeline.stop();
-        pipeline.dispose();
     }
 
 }

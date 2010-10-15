@@ -4,13 +4,13 @@ import java.io.File;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import static org.gstreamer.Element.linkMany;
 import static org.gstreamer.Element.linkPadsFiltered;
 
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.gstreamer.Bin;
@@ -33,9 +33,9 @@ import org.gstreamer.elements.AppSink;
 import org.gstreamer.elements.DecodeBin;
 import org.gstreamer.elements.AppSink.NEW_BUFFER;
 
-import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
-import org.openshapa.plugins.spectrum.swing.Amplitude;
-import org.openshapa.plugins.spectrum.swing.Progress;
+import org.openshapa.plugins.spectrum.models.AmplitudeBlock;
+import org.openshapa.plugins.spectrum.models.ProcessorConstants;
+import org.openshapa.plugins.spectrum.models.StereoData;
 
 import com.sun.jna.Pointer;
 
@@ -48,54 +48,68 @@ import com.usermetrix.jclient.UserMetrix;
  * channels one and two. Assumes 16-bit audio.
  */
 public final class AmplitudeProcessor
-    extends SwingWorker<StereoAmplitudeData, Integer> {
+    extends SwingWorker<StereoData, AmplitudeBlock> {
 
     /** Logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(
             AmplitudeProcessor.class);
 
-    public enum Strategy {
-
-        // Options to this strategy is the number of points to pick per channel.
-        FIXED_HIGH_LOW
+    static {
+        Gst.init();
     }
 
     /** Media file to process. */
-    private File mediaFile;
-
-    /** Processed data handler. */
-    private Amplitude dataHandler;
+    private final File mediaFile;
 
     /** Number of channels in the audio file. */
     private final int numChannels;
 
     /** The processed amplitude data. */
-    private StereoAmplitudeData data;
+    private StereoData data;
 
-    /** The processing strategy to use. */
-    private Strategy strat;
+    private Progress progressHandler;
 
-    /** Options to the procesing strategy. */
-    private int opts;
+    /** Internal progress handler is used to put things in the right thread. */
+    private final Progress internalHandler = new Progress() {
 
-    private Progress progHandler;
+            @Override public void overallProgress(final double percentage) {
+                SwingUtilities.invokeLater(new Runnable() {
+                        @Override public void run() {
+
+                            if (progressHandler != null) {
+                                progressHandler.overallProgress(percentage);
+                            }
+                        }
+                    });
+            }
+
+            @Override public void blockDone(final AmplitudeBlock block) {
+                block.normalize();
+                publish(block);
+            }
+
+            @Override public void allDone(final StereoData allData) {
+            }
+        };
+
+    private FixedHiLoBufferProcessor bufProc;
 
     /**
      * Creates a new worker thread.
      *
      * @param mediaFile
      *            Media file to process.
-     * @param handler
-     *            Processed data handler.
      * @param numChannels
-     *            number of channels in the audio file.
+     *            Number of channels in the audio file.
+     * @param progressHandler
+     *            Progress handler.
      */
-    public AmplitudeProcessor(final File mediaFile, final Amplitude handler,
-        final int numChannels) {
+    public AmplitudeProcessor(final File mediaFile, final int numChannels,
+        final Progress progressHandler) {
         this.mediaFile = mediaFile;
-        this.dataHandler = handler;
         this.numChannels = numChannels;
-        data = new StereoAmplitudeData();
+        this.progressHandler = progressHandler;
+        data = new StereoData(ProcessorConstants.BLOCK_SZ, internalHandler);
     }
 
     /**
@@ -122,30 +136,11 @@ public final class AmplitudeProcessor
     }
 
     /**
-     * Set the processing strategy to use.
-     *
-     * @param strategy
-     *            Strategy to use.
-     * @param options
-     *            Options to the strategy.
-     */
-    public void setStrategy(final Strategy strategy, final int options) {
-        strat = strategy;
-        opts = options;
-    }
-
-    public void setProgressHandler(final Progress handler) {
-        progHandler = handler;
-    }
-
-    /**
      * Process amplitude data.
      *
      * @see javax.swing.SwingWorker#doInBackground()
      */
-    @Override protected StereoAmplitudeData doInBackground() throws Exception {
-        Gst.init();
-
+    @Override protected StereoData doInBackground() throws Exception {
         final Pipeline pipeline = new Pipeline("Processor");
 
         // Decoding bin.
@@ -176,27 +171,21 @@ public final class AmplitudeProcessor
         appSink.set("emit-signals", true);
         appSink.setSync(false);
 
-        if (progHandler != null) {
-            appSink.connect(new NEW_BUFFER() {
-                    @Override public void newBuffer(final Element elem,
-                        final Pointer userData) {
-                        publish(data.sizeL());
+        appSink.connect(new NEW_BUFFER() {
+                @Override public void newBuffer(final Element elem,
+                    final Pointer userData) {
+
+                    if (data != null) {
+                        double p = data.getSize()
+                            / (double) ProcessorConstants.NUM_POINTS;
+                        internalHandler.overallProgress(p);
                     }
-                });
-        }
+                }
+            });
 
-        switch (strat) {
-
-        case FIXED_HIGH_LOW:
-            appSink.connect(new FixedHiLoBufferProcessor(appSink, numChannels,
-                    data, opts));
-
-            break;
-
-        default:
-            pipeline.dispose();
-            throw new IllegalStateException("Processing strategy unset.");
-        }
+        bufProc = new FixedHiLoBufferProcessor(appSink, numChannels, data,
+                ProcessorConstants.NUM_POINTS);
+        appSink.connect(bufProc);
 
         audioBin.addMany(audioConvert, audioResample, audioOutput);
 
@@ -204,8 +193,8 @@ public final class AmplitudeProcessor
             LOGGER.error("Link failed: audioconvert -> audioresample");
         }
 
-        Caps caps = Caps.fromString(
-                "audio/x-raw-int, width=16, depth=16, signed=true");
+        Caps caps = Caps.fromString("audio/x-raw-int, width=16, depth="
+                + ProcessorConstants.DEPTH + ", signed=true");
 
         if (!linkPadsFiltered(audioResample, null, audioOutput, null, caps)) {
             LOGGER.error("Link failed: audioresample -> appsink");
@@ -266,38 +255,46 @@ public final class AmplitudeProcessor
             try {
                 data.wait();
             } catch (InterruptedException e) {
+                System.out.println("Interrupted.");
 
                 if (isCancelled()) {
+                    System.out.println("Cancelled");
+                    audioBin.setState(State.NULL);
+                    fileSource.setState(State.NULL);
                     pipeline.stop();
-                    pipeline.dispose();
+                    pipeline.getState(2, SECONDS);
 
                     return null;
                 }
             }
         }
 
+        audioBin.setState(State.NULL);
+        fileSource.setState(State.NULL);
         pipeline.stop();
-        pipeline.dispose();
+        pipeline.getState(2, SECONDS);
 
-        data.normalizeL();
-        data.normalizeR();
+        // Normalize any blocks that haven't been normalized.
+        for (AmplitudeBlock block : data.getDataBlocks()) {
 
-        // Calculate the time interval between points.
-        long end = MILLISECONDS.convert(data.getDataTimeEnd(),
-                data.getDataTimeUnit());
-        long start = MILLISECONDS.convert(data.getDataTimeStart(),
-                data.getDataTimeUnit());
-
-        double interval = ((end - start) / (double) data.sizeL());
-        data.setTimeInterval(interval, MILLISECONDS);
-
-        Gst.deinit();
+            if (!block.isNormalized()) {
+                block.normalize();
+            }
+        }
 
         return data;
     }
 
-    @Override protected void process(final List<Integer> ints) {
-        progHandler.setProgress(ints.get(ints.size() - 1) / (double) opts);
+    @Override protected void process(final List<AmplitudeBlock> chunks) {
+
+        // Thread got cancelled.
+        if (progressHandler == null) {
+            return;
+        }
+
+        for (AmplitudeBlock block : chunks) {
+            progressHandler.blockDone(block);
+        }
     }
 
     /**
@@ -309,21 +306,28 @@ public final class AmplitudeProcessor
 
         try {
 
-            if (progHandler != null) {
-                progHandler.setProgress(1);
-            }
-
-            StereoAmplitudeData result = get();
+            StereoData result = get();
 
             if (result != null) {
-                dataHandler.setData(result);
+                progressHandler.overallProgress(1);
+                progressHandler.allDone(result);
             }
 
         } catch (Exception e) {
-            /*
-             * Do not log; the exception that is generated is normal
-             * (thread interruptions and subsequently, task cancellation.).
-             */
+            // Do not log; the exception that is generated is normal
+            // (thread interruptions and subsequently, task cancellation.).
+        } finally {
+
+            // Have to explicitly delete all refs or we leak memory because
+            // JVM is still holding onto these threads.
+            data = null;
+
+            if (bufProc != null) {
+                bufProc.clearRefs();
+                bufProc = null;
+            }
+
+            progressHandler = null;
         }
 
     }
