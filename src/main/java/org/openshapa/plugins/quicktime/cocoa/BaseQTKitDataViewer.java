@@ -103,15 +103,21 @@ public abstract class BaseQTKitDataViewer extends BaseQuickTimeDataViewer {
             movie.stop();
         }
     }
+    
+    /** Maximum time that the movie can be out of sync before we try to correct it (milliseconds). */
+    private final long MAX_SEEK_DRIFT_TIME = 250;
 
     /**
      * {@inheritDoc}
      */
     public void seekTo(final long position) {
         if (movie != null) {
-        	System.out.println("seekTo(" + position + "), drift=" + (position - getCurrentTime()));
-        	QTTime time = new QTTime(position, Constants.TICKS_PER_SECOND);
-            movie.setCurrentTime(time);
+        	final long drift = position - getCurrentTime();
+        	if (!isPlaying() || drift >= MAX_SEEK_DRIFT_TIME) {
+	        	System.out.println("seekTo(" + position + "), drift=" + drift);
+	        	QTTime time = new QTTime(position, Constants.TICKS_PER_SECOND);
+	            movie.setCurrentTime(time);
+        	}
         }
     }
 
