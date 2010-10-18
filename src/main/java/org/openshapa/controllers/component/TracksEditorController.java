@@ -345,6 +345,13 @@ public final class TracksEditorController implements TrackMouseEventListener {
         final long MINIMUM_THRESHOLD_MILLISECONDS = 10;
         final long threshold = Math.max((long) Math.ceil(0.01F * viewport.getViewDuration()), MINIMUM_THRESHOLD_MILLISECONDS);
 
+        // Remove duplicate candidate snap points
+        for (int i = snapCandidates.size() - 1; i > 0; i--) {
+        	if (snapCandidates.get(i).equals(snapCandidates.get(i - 1))) {
+        		snapCandidates.remove(i);
+        	}
+        }
+        
         // Sort the candidate snap points
         Collections.sort(snapCandidates);
 
