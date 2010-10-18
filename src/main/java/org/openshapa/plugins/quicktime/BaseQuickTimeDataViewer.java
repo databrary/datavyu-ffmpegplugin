@@ -378,7 +378,6 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
         this.videoFile = videoFile;
         setQTDataFeed(videoFile);
         nativeVideoSize = getQTVideoSize();
-        fps = getQTFPS();
 
         setTitle(videoFile.getName());
         setName(getClass().getSimpleName() + "-" + videoFile.getName());
@@ -386,6 +385,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
         setVisible(true);
         setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(),
             (int) nativeVideoSize.getHeight());
+        fps = getQTFPS();
     }
 
     protected abstract void setQTDataFeed(final File videoFile);
