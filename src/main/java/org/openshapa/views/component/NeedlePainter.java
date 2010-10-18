@@ -1,7 +1,6 @@
 package org.openshapa.views.component;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -32,9 +31,6 @@ public final class NeedlePainter extends JComponent {
 
     private NeedleModel needleModel;
     private MixerView mixer;
-
-
-    private final Color needleColor = new Color(250, 0, 0, 100);
 
     public NeedlePainter() {
         super();
@@ -80,49 +76,68 @@ public final class NeedlePainter extends JComponent {
         final double needleHeadWidth = NeedleConstants.NEEDLE_HEAD_WIDTH;
         final double needleHeadHeight = NeedleConstants.NEEDLE_HEAD_HEIGHT;
 
+        final double zoomWindowIndicatorTopY = getSize().height - needleModel.getZoomIndicatorHeight();
+        final double transitionAreaTopY = zoomWindowIndicatorTopY - needleModel.getTimescaleTransitionHeight();
+        
         final long currentTime = needleModel.getCurrentTime();
-
-        // Don't paint if the needle if it is out of the current window
-        if (!viewport.isTimeInViewport(currentTime)) {
-            return;
+        double needlePositionX = viewport.computePixelXOffset(currentTime) + Math.ceil(needleHeadWidth);
+        final boolean isNeedleInViewport = viewport.isTimeInViewport(currentTime);
+        
+        if (isNeedleInViewport) {
+        	// draw the triangular needle head
+	        needleMarker = new GeneralPath();
+	        needleMarker.moveTo((float) (needlePositionX - needleHeadWidth), 0); // top-left
+	        needleMarker.lineTo((float) (needlePositionX + needleHeadWidth), 0); // top-right
+	        needleMarker.lineTo((float) needlePositionX, (float) needleHeadHeight); // bottom
+	        needleMarker.closePath();
+	
+	        g2d.setColor(needleModel.getNeedleColor());
+	        g2d.fill(needleMarker);
+	
+	        g2d.setColor(needleModel.getNeedleColor().darker());
+	        g2d.draw(needleMarker);
+	
+	        // Draw the timing needle
+	        float x1 = (float) needlePositionX;
+	        float y1 = (float) needleHeadHeight;
+	        float x2 = (float) needlePositionX;
+	        float y2 = (float) transitionAreaTopY;
+	
+	        GeneralPath line = new GeneralPath();
+	        line.moveTo(x1, y1);
+	        line.lineTo(x2, y2);
+	
+	        assert NeedleConstants.NEEDLE_WIDTH > 0;
+	        g2d.setStroke(new BasicStroke((float) NeedleConstants.NEEDLE_WIDTH));
+	        g2d.draw(line);
         }
 
-        Dimension size = this.getSize();
+        g2d.setColor(needleModel.getNeedleColor().darker());
 
-        // Calculate the needle position based on the selected time
-        double pos = viewport.computePixelXOffset(currentTime)
-            + Math.ceil(needleHeadWidth);
+        // paint the needle transition area
+        final double zoomWindowIndicatorX = ((double) currentTime * viewport.getViewWidth() / viewport.getMaxEnd()) + Math.ceil(NeedleConstants.NEEDLE_HEAD_WIDTH);
+        
+        final int transitionCurveBottomWeight = 10;
+        assert transitionCurveBottomWeight >= 0;
 
-        needleMarker = new GeneralPath();
+        GeneralPath shape = new GeneralPath();
+        shape.moveTo(needlePositionX, transitionAreaTopY);
+        shape.curveTo(needlePositionX,
+            (transitionAreaTopY
+                + (zoomWindowIndicatorTopY * transitionCurveBottomWeight))
+            / (transitionCurveBottomWeight + 1), zoomWindowIndicatorX,
+            transitionAreaTopY, zoomWindowIndicatorX, zoomWindowIndicatorTopY);
+        final float strokeWidth = (float) NeedleConstants.NEEDLE_WIDTH / (isNeedleInViewport ? 2.0f : 5.0f);
+        g2d.setStroke(new BasicStroke(strokeWidth));
+        g2d.draw(shape);
+        
+        // paint the needle in the zoom window indicator
 
-        // top-left corner
-        needleMarker.moveTo((float) (pos - needleHeadWidth), 0);
-
-        // top-right corner
-        needleMarker.lineTo((float) (pos + needleHeadWidth), 0);
-
-        // bottom corner
-        needleMarker.lineTo((float) pos, (float) needleHeadHeight);
-        needleMarker.closePath();
-
-        g2d.setColor(needleColor);
-        g2d.fill(needleMarker);
-
-        g2d.setColor(needleColor.darker());
-        g2d.draw(needleMarker);
-
-        // Draw the timing needle
-        float x1 = (float) pos;
-        float y1 = (float) needleHeadHeight;
-        float x2 = (float) pos;
-        float y2 = (float) size.height;
-
-        GeneralPath line = new GeneralPath();
-        line.moveTo(x1, y1);
-        line.lineTo(x2, y2);
-
-        assert NeedleConstants.NEEDLE_WIDTH > 0;
+        GeneralPath needleMarker = new GeneralPath();
+        needleMarker.moveTo(zoomWindowIndicatorX, zoomWindowIndicatorTopY);
+        needleMarker.lineTo(zoomWindowIndicatorX, getSize().height);
+        
         g2d.setStroke(new BasicStroke((float) NeedleConstants.NEEDLE_WIDTH));
-        g2d.draw(line);
+        g2d.draw(needleMarker);        
     }
 }

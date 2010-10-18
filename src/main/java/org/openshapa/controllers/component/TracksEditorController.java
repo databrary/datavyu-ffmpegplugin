@@ -44,7 +44,8 @@ public final class TracksEditorController implements TrackMouseEventListener {
     /** List of track controllers. */
     private final List<Track> tracks;
 
-    private final MixerView mixer;
+    private final MixerController mixerController;
+    private final MixerView mixerView;
 
     /** Handles the selection model for tracks. */
     private final CarriageSelection selectionHandler;
@@ -52,9 +53,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
     /**
      * Create a new tracks editor controller.
      */
-    public TracksEditorController(final MixerView mixer) {
+    public TracksEditorController(final MixerController mixerController, final MixerView mixer) {
         tracks = new LinkedList<Track>();
-        this.mixer = mixer;
+        this.mixerController = mixerController;
+        this.mixerView = mixer;
         snapMarkerController = new SnapMarkerController(mixer);
         selectionHandler = new CarriageSelection();
         initView();
@@ -106,7 +108,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
         final TrackPainter trackPainter) {
 
         // TrackController
-        final TrackController trackController = new TrackController(mixer,
+        final TrackController trackController = new TrackController(mixerView,
                 trackPainter);
         trackController.setTrackInformation(trackId, icon, trackName, mediaPath,
             duration, offset);
@@ -232,7 +234,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
      * @param snapTemporalPosition
      *            If snapping is enabled, the closest position of interest to
      *            snapTemporalPosition will be used as the first candidate for
-     *            synchonization.
+     *            synchronization.
      * @return true if the offset was set, false otherwise.
      */
     public boolean setTrackOffset(final Identifier trackId,
@@ -286,11 +288,26 @@ public final class TracksEditorController implements TrackMouseEventListener {
      */
     private SnapPoint snapOffset(final Identifier trackId,
         final long temporalSnapPosition) {
+        final Viewport viewport = mixerView.getViewport();
+    	/** Points on other (non-selected) data tracks that can be used for alignment. */
         final List<Long> snapCandidates = new ArrayList<Long>();
+        /** Points on the current/selected data track that may be used for alignment against other data tracks. */
         final List<Long> snapPoints = new LinkedList<Long>();
         final Iterator<Track> allTracks = tracks.iterator();
 
         long longestDuration = 0;
+
+        // add time zero as a candidate snap point
+        if (viewport.isTimeInViewport(0)) {
+        	snapCandidates.add(0L);
+        }
+        
+        // add the needle as a candidate snap point
+        
+        final long needlePosition = mixerController.getNeedleController().getNeedleModel().getCurrentTime();
+        if (viewport.isTimeInViewport(needlePosition)) {
+        	snapCandidates.add(needlePosition);
+        }
 
         // Compile track and candidate snap points
         while (allTracks.hasNext()) {
@@ -300,22 +317,18 @@ public final class TracksEditorController implements TrackMouseEventListener {
             final long bookmark = trackController.getBookmark();
             final long duration = trackController.getDuration();
 
-            if (track.trackId.equals(trackId)) {
-                snapPoints.add(offset);
+            final List<Long> snapList = track.trackId.equals(trackId) ? snapPoints : snapCandidates;
+            
+            if (offset > 0) {
+            	snapList.add(offset);
+            }
 
-                if (bookmark > 0) {
-                    snapPoints.add(offset + bookmark);
-                }
+            if (offset + bookmark > 0) {
+            	snapList.add(offset + bookmark);
+            }
 
-                snapPoints.add(offset + duration);
-            } else {
-                snapCandidates.add(offset);
-
-                if (bookmark > 0) {
-                    snapCandidates.add(offset + bookmark);
-                }
-
-                snapCandidates.add(offset + duration);
+            if (offset + duration > 0) {
+            	snapList.add(offset + duration);
             }
 
             if (duration > longestDuration) {
@@ -328,11 +341,17 @@ public final class TracksEditorController implements TrackMouseEventListener {
             return null;
         }
 
-        Viewport viewport = mixer.getViewport();
-
         // Calculate the snap threshold as a % of the longest track duration
-        final long threshold = (long) (0.01F * viewport.getViewDuration());
+        final long MINIMUM_THRESHOLD_MILLISECONDS = 10;
+        final long threshold = Math.max((long) Math.ceil(0.01F * viewport.getViewDuration()), MINIMUM_THRESHOLD_MILLISECONDS);
 
+        // Remove duplicate candidate snap points
+        for (int i = snapCandidates.size() - 1; i > 0; i--) {
+        	if (snapCandidates.get(i).equals(snapCandidates.get(i - 1))) {
+        		snapCandidates.remove(i);
+        	}
+        }
+        
         // Sort the candidate snap points
         Collections.sort(snapCandidates);
 
@@ -363,7 +382,9 @@ public final class TracksEditorController implements TrackMouseEventListener {
         for (Long snapPoint : snapPoints) {
             int candidateIndex = Collections.binarySearch(snapCandidates,
                     snapPoint);
-            candidateIndex = Math.abs(candidateIndex);
+            if (candidateIndex < 0) {
+            	candidateIndex = -(candidateIndex + 1);
+            }
 
             if (candidateIndex >= snapCandidates.size()) {
                 candidateIndex = snapCandidates.size() - 1;

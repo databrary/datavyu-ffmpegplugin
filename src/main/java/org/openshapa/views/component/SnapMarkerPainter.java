@@ -65,7 +65,7 @@ public final class SnapMarkerPainter extends JComponent {
         g.setColor(SNAP_MARKER_COLOR);
 
         // Calculate the needle position based on the selected time
-        int pos = (int) viewport.computePixelXOffset(markerTime);
+        int pos = (int) Math.round(viewport.computePixelXOffset(markerTime));
 
         // Draw the snap marker needle
         int x1 = pos;

@@ -131,6 +131,22 @@ public final class NeedleController implements PropertyChangeListener {
     }
 
     /**
+     * @see NeedleModel#setTimescaleTransitionHeight(int)
+     */
+    public void setTimescaleTransitionHeight(int newHeight) {
+    	needleModel.setTimescaleTransitionHeight(newHeight);
+    	view.repaint();
+    }
+    
+    /**
+     * @see NeedleModel#setZoomIndicatorHeight(int)
+     */
+    public void setZoomIndicatorHeight(int newHeight) {
+    	needleModel.setZoomIndicatorHeight(newHeight);
+    	view.repaint();
+    }
+    
+    /**
      * @return a copy of the needle model
      */
     public NeedleModel getNeedleModel() {
@@ -152,7 +168,7 @@ public final class NeedleController implements PropertyChangeListener {
     public JComponent getView() {
         return view;
     }
-
+    
     /**
      * Inner class used to handle intercepted events.
      */

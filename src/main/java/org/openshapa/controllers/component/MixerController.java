@@ -245,8 +245,11 @@ public final class MixerController implements PropertyChangeListener,
         timescaleController.addTimescaleEventListener(this);
         needleController = new NeedleController(masterMixer);
         regionController = new RegionController(masterMixer);
-        tracksEditorController = new TracksEditorController(masterMixer);
+        tracksEditorController = new TracksEditorController(this, masterMixer);
 
+        needleController.setTimescaleTransitionHeight(timescaleController.getTimescaleModel().getZoomWindowToTrackTransitionHeight());
+        needleController.setZoomIndicatorHeight(timescaleController.getTimescaleModel().getZoomWindowIndicatorHeight());
+        
         // Set up the layered pane
         layeredPane = new JLayeredPane();
         layeredPane.setLayout(new MigLayout("fillx, ins 0"));
@@ -394,7 +397,7 @@ public final class MixerController implements PropertyChangeListener,
 
             constraints.put("x2", "(filler.w-" + rightPad + ")");
             constraints.put("height",
-                Integer.toString(needleAndRegionMarkerHeight));
+                Integer.toString(needleAndRegionMarkerHeight + timescaleController.getTimescaleModel().getZoomWindowToTrackTransitionHeight() + timescaleController.getTimescaleModel().getZoomWindowIndicatorHeight() - 1));
 
             String template = "pos ${x} ${y} ${x2} n, h ${height}::";
             StrSubstitutor sub = new StrSubstitutor(constraints);
@@ -405,7 +408,7 @@ public final class MixerController implements PropertyChangeListener,
             layeredPane.add(needleView, sub.replace(template),
                 MixerConstants.NEEDLE_ZORDER);
         }
-
+        
         // Set up the snap marker's layout
         {
             JComponent markerView = tracksEditorController.getMarkerView();
@@ -1165,11 +1168,11 @@ public final class MixerController implements PropertyChangeListener,
         }
 
         @Override public void swipedLeft(final SwipeEvent e) {
-            swipeHorizontal(true);
+            swipeHorizontal(false);
         }
 
         @Override public void swipedRight(final SwipeEvent e) {
-            swipeHorizontal(false);
+            swipeHorizontal(true);
         }
 
         private void swipeHorizontal(final boolean swipeLeft) {

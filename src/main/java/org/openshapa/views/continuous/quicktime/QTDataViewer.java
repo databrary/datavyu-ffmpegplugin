@@ -157,6 +157,12 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
         return fps;
     }
 
+    /** How many milliseconds in a second? */
+    private static final int MILLI = 1000;
+
+    /** How many frames to check when correcting the FPS. */
+    private static final int CORRECTIONFRAMES = 5;
+
     /**
      * If there was a problem getting the fps, we use this method to fix it. The
      * first few frames (number of which is specified by CORRECTIONFRAMES) are
@@ -166,12 +172,8 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
      *
      * @return The best fps found in the first few frames.
      */
-    private float correctFPS() {
-
-        /** How many frames to check when correcting the FPS. */
-        final int CORRECTIONFRAMES = 5;
-        float minFrameLength = TimeUnit.MILLISECONDS.convert(1,
-                TimeUnit.SECONDS); // Set this to one second, as the "worst"
+    private float correctFPS() {        
+        float minFrameLength = MILLI; // Set this to one second, as the "worst"
         float curFrameLen = 0;
         int curTime = 0;
 
@@ -192,8 +194,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
             }
         }
 
-        return TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS)
-            / minFrameLength;
+        return MILLI / minFrameLength;
     }
 
     /**
