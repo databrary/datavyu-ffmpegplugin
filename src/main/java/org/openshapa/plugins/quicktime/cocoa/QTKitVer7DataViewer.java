@@ -45,9 +45,12 @@ public class QTKitVer7DataViewer extends BaseQTKitDataViewer {
 	  
 	        movie = QTMovie.movieWithAttributes_error(dictionary, null);
 
-	        final NSArray tracks = movie.tracksOfMediaType(QTMedia.QTMediaTypeVideo);
+                final NSArray tracks = movie.tracksOfMediaType(QTMedia.QTMediaTypeVideo);
+                final NSArray mpegTracks = movie.tracksOfMediaType(QTMedia.QTMediaTypeMPEG);
 	        if (tracks.count() >= 1) {
 	        	visualTrack = Rococoa.cast(tracks.objectAtIndex(0), QTTrack.class);
+	        } else if (mpegTracks.count() >=1) {
+                    visualTrack = Rococoa.cast(mpegTracks.objectAtIndex(0), QTTrack.class);
 	        } else {
 	        	throw new RuntimeException("media file does not contain any video tracks");
 	        }

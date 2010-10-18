@@ -49,20 +49,23 @@ public final class QTKitVerXDataViewer extends BaseQTKitDataViewer {
 	                NSString.stringWithString(QTMovie.QTMovieRateChangesPreservePitchAttribute)
 	                );
 	        NSDictionary dictionary = NSDictionary.dictionaryWithObjects_forKeys(objects, keys);
-	  
+
 	        movie = QTMovie.movieWithAttributes_error(dictionary, null);
 	        waitForMovieToLoad(movie);
 
-	        final NSArray tracks = movie.tracksOfMediaType(QTMedia.QTMediaTypeVideo);
+                final NSArray tracks = movie.tracksOfMediaType(QTMedia.QTMediaTypeVideo);
+                final NSArray mpegTracks = movie.tracksOfMediaType(QTMedia.QTMediaTypeMPEG);
 	        if (tracks.count() >= 1) {
-	        	visualTrack = Rococoa.cast(tracks.objectAtIndex(0), QTTrack.class);
-	        } else {
-	        	throw new RuntimeException("media file does not contain any video tracks");
+                    visualTrack = Rococoa.cast(tracks.objectAtIndex(0), QTTrack.class);
+	        } else if (mpegTracks.count() >=1) {
+                    visualTrack = Rococoa.cast(mpegTracks.objectAtIndex(0), QTTrack.class);
+                } else {
+                    throw new RuntimeException("media file does not contain any video tracks");
 	        }
-	        
-			final NSNumber state = Rococoa.cast(movie.attributeForKey(QTMovie.QTMovieLoadStateAttribute), NSNumber.class);;
-			System.out.println("current movie loading state=" + state.longValue());
-	        
+
+                final NSNumber state = Rococoa.cast(movie.attributeForKey(QTMovie.QTMovieLoadStateAttribute), NSNumber.class);;
+                System.out.println("current movie loading state=" + state.longValue());
+
 	        movieView.setMovie(movie);
 	        movie.gotoBeginning();
 	        
