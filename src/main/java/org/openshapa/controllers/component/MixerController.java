@@ -245,7 +245,7 @@ public final class MixerController implements PropertyChangeListener,
         timescaleController.addTimescaleEventListener(this);
         needleController = new NeedleController(masterMixer);
         regionController = new RegionController(masterMixer);
-        tracksEditorController = new TracksEditorController(masterMixer);
+        tracksEditorController = new TracksEditorController(this, masterMixer);
 
         needleController.setTimescaleTransitionHeight(timescaleController.getTimescaleModel().getZoomWindowToTrackTransitionHeight());
         needleController.setZoomIndicatorHeight(timescaleController.getTimescaleModel().getZoomWindowIndicatorHeight());
