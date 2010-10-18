@@ -505,8 +505,11 @@ public final class OpenSHAPAView extends FrameView
      */
     private void open(final OpenSHAPAFileChooser jd) {
         OpenSHAPA.getApplication().resetApp();
-
         FileFilter filter = jd.getFileFilter();
+
+        // Clear the current spreadsheet before loading the new content - we
+        // need to clean up resources.
+        clearSpreadsheet();
 
         // Opening a project or project archive file
         if ((filter instanceof SHAPAFilter) || (filter instanceof OPFFilter)) {

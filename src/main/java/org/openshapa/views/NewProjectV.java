@@ -198,6 +198,9 @@ public final class NewProjectV extends OpenSHAPADialog {
                 throw new LogicErrorException(r.getString("Error.invalidName"));
             }
 
+            // BugzID:2352 - Clean up spreadsheet resources before creating a
+            // new spreadsheet.
+            s.clearSpreadsheet();
             MacshapaDatabase database = new MacshapaDatabase(
                     Constants.TICKS_PER_SECOND);
             database.setName(getProjectName());
