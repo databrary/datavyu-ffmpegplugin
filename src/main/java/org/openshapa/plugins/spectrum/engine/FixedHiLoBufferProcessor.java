@@ -10,7 +10,7 @@ import org.gstreamer.Element;
 import org.gstreamer.elements.AppSink;
 import org.gstreamer.elements.AppSink.NEW_BUFFER;
 
-import org.openshapa.plugins.spectrum.models.StereoAmplitudeData;
+import org.openshapa.plugins.spectrum.models.StereoData;
 
 import com.sun.jna.Pointer;
 
@@ -21,13 +21,13 @@ import com.sun.jna.Pointer;
 public class FixedHiLoBufferProcessor implements NEW_BUFFER {
 
     /** The sink to pull buffers from. */
-    private final AppSink sink;
+    private AppSink sink;
 
     /** Number of audio channels in the buffer. */
     private final int mediaChannels;
 
     /** Buffer to store picked points in. */
-    private final StereoAmplitudeData data;
+    private StereoData data;
 
     /** Current time of the index in the buffer. */
     private long cur;
@@ -65,8 +65,8 @@ public class FixedHiLoBufferProcessor implements NEW_BUFFER {
      * @param numSamples
      *            Number of samples to extract.
      */
-    public FixedHiLoBufferProcessor(final AppSink sink, final int mediaChannels,
-        final StereoAmplitudeData data, final int numSamples) {
+    public FixedHiLoBufferProcessor(final AppSink sink,
+        final int mediaChannels, final StereoData data, final int numSamples) {
 
         if (mediaChannels <= 0) {
             throw new IllegalArgumentException("Expecting mediaChannels > 0");
@@ -103,6 +103,12 @@ public class FixedHiLoBufferProcessor implements NEW_BUFFER {
 
     @Override public void newBuffer(final Element elem,
         final Pointer userData) {
+
+        // Thread got cancelled.
+        if ((sink == null) || (data == null)) {
+            return;
+        }
+
         Buffer buf = sink.pullBuffer();
 
         if (buf == null) {
@@ -143,16 +149,19 @@ public class FixedHiLoBufferProcessor implements NEW_BUFFER {
 
             // 4. Finished with the current interval, update.
             if (cur >= next) {
-                // System.out.println("Adding: cur=" + cur + " next=" + next);
+                StereoData dat = data;
 
-                next += interval;
+                // Thread got cancelled.
+                if (dat == null) {
+                    return;
+                }
 
                 // 5. Record high and low values for current interval.
-                data.addDataL(curHighL);
-                data.addDataL(curLowL);
+                long curTime = dat.getDataTimeUnit().convert(cur, NANOSECONDS);
+                dat.addData(curHighL, curHighR, curTime);
+                dat.addData(curLowL, curLowR, curTime);
 
-                data.addDataR(curHighR);
-                data.addDataR(curLowR);
+                next += interval;
 
                 // 6. Reset high and low values.
                 curHighL = Double.MIN_VALUE;
@@ -168,6 +177,15 @@ public class FixedHiLoBufferProcessor implements NEW_BUFFER {
 
         prevBufTime = buf.getTimestamp().toNanos();
 
+        buf.dispose();
+    }
+
+    /**
+     * Clear any references that leak memory.
+     */
+    void clearRefs() {
+        data = null;
+        sink = null;
     }
 
 }

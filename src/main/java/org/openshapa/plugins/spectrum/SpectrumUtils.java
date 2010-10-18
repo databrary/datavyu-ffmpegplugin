@@ -38,6 +38,10 @@ public final class SpectrumUtils {
     private static final Logger LOGGER = UserMetrix.getLogger(
             SpectrumUtils.class);
 
+    static {
+        Gst.init();
+    }
+
     /**
      * Get media file duration.
      *
@@ -46,8 +50,6 @@ public final class SpectrumUtils {
      * @return Duration in milliseconds.
      */
     public static long getDuration(final File file) {
-        Gst.init();
-
         final PlayBin playBin = new PlayBin("DurationFinder");
         playBin.setAudioSink(ElementFactory.make("fakesink", "audiosink"));
         playBin.setVideoSink(ElementFactory.make("fakesink", "videosink"));
@@ -63,8 +65,6 @@ public final class SpectrumUtils {
         playBin.setState(State.NULL);
         playBin.dispose();
 
-        Gst.deinit();
-
         return result;
     }
 
@@ -76,9 +76,6 @@ public final class SpectrumUtils {
      * @return number of channels.
      */
     public static int getNumChannels(final File file) {
-
-        Gst.init();
-
         final Pipeline pipeline = new Pipeline("ChannelsFinder");
 
         DecodeBin decodeBin = new DecodeBin("DecoderBin");
@@ -177,8 +174,6 @@ public final class SpectrumUtils {
         pipeline.stop();
         pipeline.setState(State.NULL);
         pipeline.dispose();
-
-        Gst.deinit();
 
         return result.number;
     }

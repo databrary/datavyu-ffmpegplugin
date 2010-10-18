@@ -18,7 +18,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Format;
 import org.gstreamer.GhostPad;
-import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
@@ -185,8 +184,6 @@ public final class PlaybackEngine extends Thread {
      * Set up GStreamer.
      */
     private void setupGst() {
-        Gst.init();
-
         pipeline = new Pipeline("Pipeline");
 
         Element fileSource = ElementFactory.make("filesrc", "src");
@@ -237,6 +234,8 @@ public final class PlaybackEngine extends Thread {
                     if (buf != null) {
                         currentTime = buf.getTimestamp().toMillis();
                     }
+
+                    buf.dispose();
                 }
             });
 
@@ -504,9 +503,6 @@ public final class PlaybackEngine extends Thread {
      */
     public void shutdown() {
         pipeline.stop();
-        pipeline.dispose();
-
-        Gst.deinit();
     }
 
 }
