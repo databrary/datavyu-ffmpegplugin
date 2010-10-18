@@ -4,6 +4,8 @@ import gnu.trove.TDoubleArrayList;
 
 import java.util.concurrent.TimeUnit;
 
+import org.openshapa.plugins.spectrum.SpectrumConstants;
+
 
 /**
  * Represents a block of amplitude data.
@@ -186,9 +188,16 @@ public final class AmplitudeBlock {
 
         if (!normalized) {
 
+            // -1 halves the value, halve the value because the bit depth is the
+            // number of levels unsigned.
+            double max = 1 << (ProcessorConstants.DEPTH - 1);
+
             for (int i = 0; i < ampDataL.size(); i++) {
-                ampDataL.setQuick(i, ampDataL.getQuick(i) / localMaxL);
-                ampDataR.setQuick(i, ampDataR.getQuick(i) / localMaxR);
+
+                // ampDataL.setQuick(i, ampDataL.getQuick(i) / localMaxL);
+                // ampDataR.setQuick(i, ampDataR.getQuick(i) / localMaxR);
+                ampDataL.setQuick(i, ampDataL.getQuick(i) / max);
+                ampDataR.setQuick(i, ampDataR.getQuick(i) / max);
             }
 
             normalized = true;
