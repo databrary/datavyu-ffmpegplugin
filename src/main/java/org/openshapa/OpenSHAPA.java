@@ -610,10 +610,11 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         // Create video controller.
         dataController = new DataControllerV(OpenSHAPA.getApplication()
-                .getMainFrame(), false);
-
-        show(dataController);
-
+                                                      .getMainFrame(), false);
+        getApplication().show(dataController);
+        dataController.setLocation(getView().getFrame().getX(),
+                                   getView().getFrame().getY()
+                                   + getView().getFrame().getHeight());
     }
 
     /**
