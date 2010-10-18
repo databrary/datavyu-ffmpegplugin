@@ -114,7 +114,6 @@ public abstract class BaseQTKitDataViewer extends BaseQuickTimeDataViewer {
         if (movie != null) {
         	final long drift = position - getCurrentTime();
         	if (!isPlaying() || drift >= MAX_SEEK_DRIFT_TIME) {
-	        	System.out.println("seekTo(" + position + "), drift=" + drift);
 	        	QTTime time = new QTTime(position, Constants.TICKS_PER_SECOND);
 	            movie.setCurrentTime(time);
         	}
