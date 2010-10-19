@@ -96,7 +96,7 @@ public final class ColumnDataPanel extends JPanel
                 new Color(175, 175, 175)));
         this.add(bottomStrut, -1);
 
-        newCellButton = new SpreadsheetEmptyCell();
+        newCellButton = new SpreadsheetEmptyCell(model);
         newCellButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
         this.add(newCellButton, -1);
 
