@@ -96,7 +96,7 @@ public final class ColumnDataPanel extends JPanel
                 new Color(175, 175, 175)));
         this.add(bottomStrut, -1);
 
-        newCellButton = new SpreadsheetEmptyCell(model);
+        newCellButton = new SpreadsheetEmptyCell();
         newCellButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
         this.add(newCellButton, -1);
 
@@ -256,7 +256,8 @@ public final class ColumnDataPanel extends JPanel
 
     /**
      * Adds the specified component to this container at the given position.
-     * Overridden to keep bottomStrut and addNewCellButton as the last components in the column.
+     * Overridden to keep bottomStrut and addNewCellButton as the last
+     * components in the column.
      *
      * @param comp
      *            Component to add.

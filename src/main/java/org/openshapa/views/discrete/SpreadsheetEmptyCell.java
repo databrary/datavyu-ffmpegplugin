@@ -28,8 +28,6 @@ import java.awt.Color;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.MatteBorder;
-import org.openshapa.controllers.CreateNewCellC;
-import org.openshapa.models.db.legacy.DataColumn;
 
 
 /**
@@ -64,8 +62,6 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
     /** strut creates the gap between this cell and the previous cell. */
     private Filler strut;
 
-    private DataColumn parent;
-
     /**
      * The height of the visible portion of the cell requested by the active
      * SheetLayout.
@@ -89,7 +85,7 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
     /**
      * Creates new Empty SpreadsheetCell stub.
      */
-    public SpreadsheetEmptyCell(DataColumn parentColumn) {
+    public SpreadsheetEmptyCell() {
         setName(this.getClass().getSimpleName());
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
@@ -113,7 +109,6 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
         ord.setToolTipText(rMap.getString("ord.tooltip"));
         ord.addMouseListener(this);
         ord.setFocusable(true);
-        parent = parentColumn;       
 
         onset = new JLabel("--:--:--:---");
         onset.setFont(Configuration.getInstance().getSSLabelFont());
@@ -267,9 +262,9 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
      *            The mouse event that triggered this action.
      */
     @Override public void mouseClicked(final MouseEvent me) {
-        new CreateNewCellC(parent);
+        LOGGER.usage("Pressed empty cell");
+        OpenSHAPA.getDataController().pressCreateNewCellSettingOffset();
     }
-
 
     /**
      * Method to call when painting the component.
