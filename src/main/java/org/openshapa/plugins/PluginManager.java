@@ -156,7 +156,12 @@ public final class PluginManager {
                     packages.push("");
 
                     while (!workStack.empty()) {
-                        File dir = workStack.pop();
+                        // We must handle spaces in the directory name
+                        File f = workStack.pop();
+                        String s = f.getCanonicalPath();
+                        s = s.replaceAll("%20", " ");
+                        File dir = new File(s);
+
                         String pkgName = packages.pop();
 
                         // For each of the children of the directory - look for
