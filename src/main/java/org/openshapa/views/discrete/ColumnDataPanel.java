@@ -14,7 +14,6 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -23,14 +22,9 @@ import javax.swing.JTextArea;
 import javax.swing.Box.Filler;
 import javax.swing.text.BadLocationException;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 
-import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.controllers.CreateNewCellC;
 
 import org.openshapa.models.db.legacy.DataCell;
 import org.openshapa.models.db.legacy.DataColumn;
@@ -65,10 +59,12 @@ public final class ColumnDataPanel extends JPanel
     private Vector<SpreadsheetCell> cells;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(ColumnDataPanel.class);
+    private static final Logger LOGGER = UserMetrix.getLogger(ColumnDataPanel.class);
 
-    private JButton newCellButton = new JButton();
+    /** button for creating a new empty cell. */
+    private SpreadsheetEmptyCell newCellButton;
 
+    /** The model that this column represents. */
     private final DataColumn model;
 
     /**
@@ -100,24 +96,7 @@ public final class ColumnDataPanel extends JPanel
                 new Color(175, 175, 175)));
         this.add(bottomStrut, -1);
 
-        final ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-            .getContext().getResourceMap(ColumnDataPanel.class);
-        final ActionMap aMap = Application.getInstance(OpenSHAPA.class)
-            .getContext().getActionMap(ColumnDataPanel.class, this);
-
-        newCellButton.setBorder(BorderFactory.createMatteBorder(0, 1, 1, 0,
-                new Color(175, 175, 175)));
-        newCellButton.setToolTipText(rMap.getString("add.tooltip"));
-        newCellButton.setName("newCellPlusButton");
-        newCellButton.setAction(aMap.get("addNewCellToColumn"));
-        newCellButton.setText(" + ");
-        newCellButton.setBackground(Configuration.getInstance()
-            .getSSBackgroundColour());
-        newCellButton.setOpaque(true);
-        newCellButton.setForeground(Configuration.getInstance()
-            .getSSForegroundColour());
-        newCellButton.setSize(newCellButton.getWidth(),
-            SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
+        newCellButton = new SpreadsheetEmptyCell(model);
         newCellButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
         this.add(newCellButton, -1);
 
@@ -177,7 +156,7 @@ public final class ColumnDataPanel extends JPanel
 
             this.add(newCellButton);
         } catch (SystemErrorException e) {
-            logger.error("Failed to populate Spreadsheet.", e);
+            LOGGER.error("Failed to populate Spreadsheet.", e);
         }
     }
 
@@ -198,7 +177,7 @@ public final class ColumnDataPanel extends JPanel
 
             cells.clear();
         } catch (SystemErrorException se) {
-            logger.error("Unable to delete all cells", se);
+            LOGGER.error("Unable to delete all cells", se);
         }
     }
 
@@ -239,6 +218,7 @@ public final class ColumnDataPanel extends JPanel
         try {
             DataCell dc = (DataCell) db.getCell(cellID);
             SpreadsheetCell nCell = new SpreadsheetCell(db, dc, cellSelL);
+            nCell.setWidth(this.getWidth());
             db.registerDataCellListener(dc.getID(), nCell);
 
             Long newOrd = new Long(dc.getOrd());
@@ -254,7 +234,7 @@ public final class ColumnDataPanel extends JPanel
 
             nCell.requestFocus();
         } catch (SystemErrorException e) {
-            logger.error("Problem inserting a new SpreadsheetCell", e);
+            LOGGER.error("Problem inserting a new SpreadsheetCell", e);
         }
     }
 
@@ -296,6 +276,7 @@ public final class ColumnDataPanel extends JPanel
      */
     public void setWidth(final int width) {
         columnWidth = width;
+        newCellButton.setWidth(width);
     }
 
     /**
@@ -425,7 +406,7 @@ public final class ColumnDataPanel extends JPanel
                             return true;
                         }
                     } catch (BadLocationException be) {
-                        logger.error("BadLocation on arrow up", be);
+                        LOGGER.error("BadLocation on arrow up", be);
                     }
                 }
 
@@ -489,7 +470,7 @@ public final class ColumnDataPanel extends JPanel
                             return true;
                         }
                     } catch (BadLocationException be) {
-                        logger.error("BadLocation on arrow up", be);
+                        LOGGER.error("BadLocation on arrow up", be);
                     }
                 }
 
@@ -530,7 +511,7 @@ public final class ColumnDataPanel extends JPanel
                             return true;
                         }
                     } catch (BadLocationException be) {
-                        logger.error("BadLocation on arrow down", be);
+                        LOGGER.error("BadLocation on arrow down", be);
                     }
                 }
 
@@ -539,13 +520,5 @@ public final class ColumnDataPanel extends JPanel
         }
 
         return false;
-    }
-
-    /**
-     * Method to invoke when the user clicks on the "+" icon in the spreadsheet
-     * header.
-     */
-    @Action public void addNewCellToColumn() {
-        new CreateNewCellC(model);
     }
 }
