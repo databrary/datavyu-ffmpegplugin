@@ -60,27 +60,31 @@ public abstract class BaseQTKitDataViewer extends BaseQuickTimeDataViewer {
     protected abstract void setQTDataFeed(final File videoFile);
     
     protected Dimension getQTVideoSize() {
-        final NSSize videoSize = Rococoa.cast(movie.attributeForKey("QTMovieNaturalSizeAttribute"), NSValue.class).sizeValue();
-        return new Dimension(videoSize.width.intValue(), videoSize.height.intValue()); 
+    	if (visualTrack != null) {
+	        final NSSize videoSize = Rococoa.cast(movie.attributeForKey("QTMovieNaturalSizeAttribute"), NSValue.class).sizeValue();
+	        return new Dimension(videoSize.width.intValue(), videoSize.height.intValue()); 
+    	} else {
+    		return new Dimension(50, 50);
+    	}
     }
         
     protected float getQTFPS() {
-    	final float fps;
-        final QTMedia visualMedia = visualTrack.media();
-        if (visualMedia != null) {
-	        final long sampleCount = Rococoa.cast(visualMedia.attributeForKey(QTMedia.QTMediaSampleCountAttribute), NSNumber.class).longValue();
-	        final QTTime qtDuration = movie.duration();
-	        final long duration = qtDuration.timeValue;
-	        final long timescale = qtDuration.timeScale.longValue();
-	        fps = (float) sampleCount / duration * timescale; 
-        } else {
-            fps = correctFPS();
-        }
-        return fps;
+    	if (visualTrack != null) {
+	        final QTMedia visualMedia = visualTrack.media();
+	        if (visualMedia != null) {
+		        final long sampleCount = Rococoa.cast(visualMedia.attributeForKey(QTMedia.QTMediaSampleCountAttribute), NSNumber.class).longValue();
+		        final QTTime qtDuration = movie.duration();
+		        final long duration = qtDuration.timeValue;
+		        final long timescale = qtDuration.timeScale.longValue();
+		        final float fps = (float) sampleCount / duration * timescale; 
+		        return fps;
+	        }
+    	}
+        return correctFPS();
     }
     
     private float correctFPS() {
-    	//TODO
+    	//TODO - implement this more intelligently like in QTDataViewer
     	return 25;
     }
 

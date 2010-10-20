@@ -846,7 +846,7 @@ public final class DataControllerV extends OpenSHAPADialog
         }
 
         if (viewer != null) {
-            viewer.getParentJDialog().setVisible(visible);
+            viewer.setDataViewerVisible(visible);
         }
     }
 

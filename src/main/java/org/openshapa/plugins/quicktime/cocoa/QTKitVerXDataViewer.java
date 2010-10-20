@@ -53,18 +53,15 @@ public final class QTKitVerXDataViewer extends BaseQTKitDataViewer {
 	        movie = QTMovie.movieWithAttributes_error(dictionary, null);
 	        waitForMovieToLoad(movie);
 
-                final NSArray tracks = movie.tracksOfMediaType(QTMedia.QTMediaTypeVideo);
-                final NSArray mpegTracks = movie.tracksOfMediaType(QTMedia.QTMediaTypeMPEG);
+            final NSArray tracks = movie.tracksOfMediaType(QTMedia.QTMediaTypeVideo);
+            final NSArray mpegTracks = movie.tracksOfMediaType(QTMedia.QTMediaTypeMPEG);
 	        if (tracks.count() >= 1) {
-                    visualTrack = Rococoa.cast(tracks.objectAtIndex(0), QTTrack.class);
+                visualTrack = Rococoa.cast(tracks.objectAtIndex(0), QTTrack.class);
 	        } else if (mpegTracks.count() >=1) {
-                    visualTrack = Rococoa.cast(mpegTracks.objectAtIndex(0), QTTrack.class);
-                } else {
-                    throw new RuntimeException("media file does not contain any video tracks");
+                visualTrack = Rococoa.cast(mpegTracks.objectAtIndex(0), QTTrack.class);
+            } else {
+            	// no video tracks
 	        }
-
-                final NSNumber state = Rococoa.cast(movie.attributeForKey(QTMovie.QTMovieLoadStateAttribute), NSNumber.class);;
-                System.out.println("current movie loading state=" + state.longValue());
 
 	        movieView.setMovie(movie);
 	        movie.gotoBeginning();
@@ -76,8 +73,14 @@ public final class QTKitVerXDataViewer extends BaseQTKitDataViewer {
     }
     
     private static void waitForMovieToLoad(final QTMovie movie) {
+    	//TODO WARNING this code is not reliable - it can sometimes hang indefinitely. 
     	NSAutoreleasePool pool = NSAutoreleasePool.new_();
     	try {
+			final NSNumber state = Rococoa.cast(movie.attributeForKey(QTMovie.QTMovieLoadStateAttribute), NSNumber.class);;
+			if (state.longValue() != QTMovie.QTMovieLoadStateLoading) {
+				return;
+			}
+			
     		final Semaphore available = new Semaphore(1);
     		available.acquire();
             NSNotificationCenter notificationCentre = NSNotificationCenter.CLASS.defaultCenter();

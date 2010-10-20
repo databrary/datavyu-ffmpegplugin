@@ -706,4 +706,10 @@ public class GStreamerDataViewer implements DataViewer {
         final ViewerStateListener vsl) {
         viewerListeners.remove(vsl);
     }
+    
+    @Override public void setDataViewerVisible(boolean isVisible) {
+    	videoDialog.setVisible(isVisible);
+    	this.isVisible = isVisible;
+    	setVolume();
+    }
 }

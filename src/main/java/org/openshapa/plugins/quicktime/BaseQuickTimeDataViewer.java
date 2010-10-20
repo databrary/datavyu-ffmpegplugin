@@ -67,7 +67,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
     private boolean playing;
 
     /** The current video file that this viewer is representing. */
-    private File videoFile;
+    private File mediaFile;
 
     /** Volume slider. */
     private JSlider volumeSlider;
@@ -116,14 +116,6 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
     private final ImageIcon mutedIcon = new ImageIcon(getClass().getResource(
                 "/icons/volume-muted.png"));
 
-    /** Icon for hiding the video. */
-    private final ImageIcon eyeIcon = new ImageIcon(getClass().getResource(
-                "/icons/eye.png"));
-
-    /** Icon for showing the video. */
-    private final ImageIcon hiddenIcon = new ImageIcon(getClass().getResource(
-                "/icons/eye-shut.png"));
-
     /** Icon for resizing the video. */
     private final ImageIcon resizeIcon = new ImageIcon(getClass().getResource(
                 "/icons/resize.png"));
@@ -142,12 +134,10 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
             }
 
             @Override public AbstractButton getActionButton2() {
-//                return visibleButton;
                 return resizeButton;
             }
 
             @Override public AbstractButton getActionButton3() {
-//                return resizeButton;
                 return null;
             }
         };
@@ -169,7 +159,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
         playing = false;
 
         volumeButton = new JButton();
-        volumeButton.setIcon(getActionButtonIcon1());
+        volumeButton.setIcon(getVolumeButtonIcon());
         volumeButton.setBorderPainted(false);
         volumeButton.setContentAreaFilled(false);
         volumeButton.addActionListener(new ActionListener() {
@@ -206,23 +196,13 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
                 }
             });
 
-        visibleButton = new JButton();
-        visibleButton.setIcon(eyeIcon);
-        visibleButton.setBorderPainted(false);
-        visibleButton.setContentAreaFilled(false);
-        visibleButton.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(final ActionEvent e) {
-                    handleActionButtonEvent2(e);
-                }
-            });
-
         resizeButton = new JButton();
         resizeButton.setIcon(resizeIcon);
         resizeButton.setBorderPainted(false);
         resizeButton.setContentAreaFilled(false);
         resizeButton.addActionListener(new ActionListener() {
                 @Override public void actionPerformed(final ActionEvent e) {
-                    handleActionButtonEvent3(e);
+                    handleActionButtonEvent2(e);
                 }
             });
 
@@ -272,7 +252,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
      */
     private void setVolume() {
         setQTVolume(isVisible ? volume : 0F);
-        volumeButton.setIcon(getActionButtonIcon1());
+        volumeButton.setIcon(getVolumeButtonIcon());
     }
 
     protected abstract void setQTVolume(float volume);
@@ -368,23 +348,24 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
     }
 
     /**
-     * Method to open a video file for playback.
+     * Method to open a media file for playback.
      *
-     * @param videoFile
-     *            The video file that this viewer is going to display to the
+     * @param mediaFile
+     *            The media file that this viewer is going to play to the
      *            user.
      */
-    public void setDataFeed(final File videoFile) {
-        this.videoFile = videoFile;
-        setQTDataFeed(videoFile);
+    public void setDataFeed(final File mediaFile) {
+        this.mediaFile = mediaFile;
+        setQTDataFeed(mediaFile);
+        
         nativeVideoSize = getQTVideoSize();
-
-        setTitle(videoFile.getName());
-        setName(getClass().getSimpleName() + "-" + videoFile.getName());
+        setTitle(mediaFile.getName());
+        setName(getClass().getSimpleName() + "-" + mediaFile.getName());
         pack();
-        setVisible(true);
         setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(),
             (int) nativeVideoSize.getHeight());
+        super.setVisible(true);
+        
         fps = getQTFPS();
     }
 
@@ -398,7 +379,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
      * @return The file used to display this data feed.
      */
     public File getDataFeed() {
-        return videoFile;
+        return mediaFile;
     }
 
     /**
@@ -478,25 +459,12 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
         // BugzID:1400 - We don't allow volume changes while the track is
         // hidden from view.
         if (isVisible) {
-
-            // Show the volume frame.
-            volumeDialog.setVisible(true);
             volumeDialog.setLocation(volumeButton.getLocationOnScreen());
+            volumeDialog.setVisible(true);
         }
     }
 
     private void handleActionButtonEvent2(final ActionEvent event) {
-        isVisible = !isVisible;
-        this.setVisible(isVisible);
-
-        visibleButton.setIcon(getActionButtonIcon2());
-
-        notifyChange();
-
-    }
-
-    private void handleActionButtonEvent3(final ActionEvent event) {
-
         if (isVisible) {
             menuContext.show(resizeButton.getParent(), resizeButton.getX(),
                 resizeButton.getY());
@@ -574,21 +542,11 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
         viewerListeners.remove(vsl);
     }
 
-    private ImageIcon getActionButtonIcon1() {
-
+    private ImageIcon getVolumeButtonIcon() {
         if (isVisible && (volume > 0)) {
             return volumeIcon;
         } else {
             return mutedIcon;
-        }
-    }
-
-    private ImageIcon getActionButtonIcon2() {
-
-        if (isVisible) {
-            return eyeIcon;
-        } else {
-            return hiddenIcon;
         }
     }
 
@@ -651,6 +609,12 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
 
     @Override public void clearDataFeed() {
         cleanUp();
+    }
+    
+    @Override public void setDataViewerVisible(boolean isVisible) {
+    	setVisible(isVisible);
+    	this.isVisible = isVisible;
+    	setVolume();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

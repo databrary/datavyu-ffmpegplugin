@@ -19,7 +19,6 @@ import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
 
 import quicktime.qd.QDDimension;
-import quicktime.qd.QDRect;
 
 import quicktime.std.StdQTConstants;
 import quicktime.std.StdQTException;
@@ -32,8 +31,6 @@ import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 
 import com.usermetrix.jclient.UserMetrix;
-
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -113,21 +110,20 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
             visualTrack = movie.getIndTrackType(1,
                     StdQTConstants.visualMediaCharacteristic,
                     StdQTConstants.movieTrackCharacteristic);
-
-
-            visualMedia = visualTrack.getMedia();
-            this.add(QTFactory.makeQTComponent(movie).asComponent());
+            visualMedia = visualTrack != null ? visualTrack.getMedia() : null;
+            
+            add(QTFactory.makeQTComponent(movie).asComponent());
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);
         }
     }
 
     protected Dimension getQTVideoSize() {
-
         try {
-            QDDimension vtDim = visualTrack.getSize();
-
-            return new Dimension(vtDim.getWidth(), vtDim.getHeight());
+        	if (visualTrack != null) {
+	            QDDimension vtDim = visualTrack.getSize();
+	            return new Dimension(vtDim.getWidth(), vtDim.getHeight());
+        	}
         } catch (QTException e) {
             logger.error("Unable to getQTNativeVideoSize", e);
         }
@@ -139,17 +135,18 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
         float fps = 0;
 
         try {
-
-            // BugzID:928 - FPS calculations will fail when using H264.
-            // Apparently the Quicktime for Java API does not support a whole
-            // bunch of methods with H264.
-            fps = (float) visualMedia.getSampleCount()
-                / visualMedia.getDuration() * visualMedia.getTimeScale();
-
-            if ((visualMedia.getSampleCount() == 1.0)
-                    || (visualMedia.getSampleCount() == 1)) {
-                fps = correctFPS();
-            }
+        	if (visualMedia != null) {
+	            // BugzID:928 - FPS calculations will fail when using H264.
+	            // Apparently the Quicktime for Java API does not support a whole
+	            // bunch of methods with H264.
+	            fps = (float) visualMedia.getSampleCount()
+	                / visualMedia.getDuration() * visualMedia.getTimeScale();
+	
+	            if ((visualMedia.getSampleCount() == 1.0)
+	                    || (visualMedia.getSampleCount() == 1)) {
+	                fps = correctFPS();
+	            }
+        	}
         } catch (QTException e) {
             logger.error("Unable to calculate FPS", e);
         }

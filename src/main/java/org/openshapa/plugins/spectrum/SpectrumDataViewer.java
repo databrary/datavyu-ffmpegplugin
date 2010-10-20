@@ -76,7 +76,7 @@ public final class SpectrumDataViewer implements DataViewer {
 
     /** Main data viewer dialog. */
     private SpectrumDialog dialog;
-
+    
     /** Volume dialog. */
     private JDialog volDialog;
 
@@ -269,6 +269,7 @@ public final class SpectrumDataViewer implements DataViewer {
     @Override public void play() {
 
         if (engine != null) {
+        	setVolume();
             engine.startPlayback();
         }
     }
@@ -297,7 +298,7 @@ public final class SpectrumDataViewer implements DataViewer {
         // Show the dialog, set up the track.
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
-                    engine.setVolume(volSlider.getValue());
+                	setVolume();
 
                     if (dialog != null) {
                         dialog.setVisible(true);
@@ -426,28 +427,38 @@ public final class SpectrumDataViewer implements DataViewer {
 
     private void handleVolumeSliderEvent(final ChangeEvent e) {
         int vol = volSlider.getValue();
-
         if (vol == 0) {
             volButton.setIcon(VOL_MUTED);
         } else {
             volButton.setIcon(VOL_NORMAL);
         }
 
+        setVolume();
+        
         if (engine != null) {
-            engine.setVolume(vol);
-
             synchronized (this) {
-
                 for (ViewerStateListener listener : viewerListeners) {
                     listener.notifyStateChanged(null, null);
                 }
             }
         }
     }
+    
+    private void setVolume() {
+    	boolean isVisible = dialog != null ? dialog.isVisible() : true;
+    	if (engine != null) {
+    		engine.setVolume(isVisible ? volSlider.getValue() : MIN_VOLUME);
+    	}
+    }
 
     @Override public void setDatastore(final Datastore sDB) {
     }
 
+    @Override public void setDataViewerVisible(boolean isVisible) {
+    	dialog.setVisible(isVisible);
+    	setVolume();
+    }
+    
     @Override public void clearDataFeed() {
         track.deregister();
 
