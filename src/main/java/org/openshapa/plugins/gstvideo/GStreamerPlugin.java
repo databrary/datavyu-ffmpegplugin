@@ -30,7 +30,7 @@ public class GStreamerPlugin implements Plugin {
 
             {
                 ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mpeg",
-                        ".mp4");
+                        ".mp4", ".mp3");
                 ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
             }
 

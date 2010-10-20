@@ -141,6 +141,7 @@ public class GStreamerDataViewer implements DataViewer {
     private boolean isPlaying = false;
     private float playbackRate = 1;
     private VideoComponent videoComponent;
+    private OSXVideoSink osxvideosink;
 
     /** GStreamer Playbin mute volume */
     private final double MUTE_VOLUME = 0.0;
@@ -231,13 +232,23 @@ public class GStreamerDataViewer implements DataViewer {
             waitForPlaybinStateChange();
             playBin.dispose();
             playBin = null;
-            videoComponent = null;
+        }
+        
+        if (videoComponent != null) {
+        	videoComponent = null;
+        }
+        
+        if (osxvideosink != null) {
+        	osxvideosink.dispose();
+        	osxvideosink = null;
         }
 
         if (isGStreamerLoaded) {
         	Gst.deinit();
         	isGStreamerLoaded = false;
         }
+        
+        System.gc();
     }
 
     private void waitForPlaybinStateChange() {
@@ -462,7 +473,7 @@ public class GStreamerDataViewer implements DataViewer {
         }
 
         case osxRenderer: {
-            OSXVideoSink osxvideosink = new OSXVideoSink("osxvideosink");
+            osxvideosink = new OSXVideoSink("osxvideosink");
             osxvideosink.setMaximumLateness(50, TimeUnit.MILLISECONDS);
             playBin.setVideoSink(osxvideosink);
             osxvideosink.listenForNewViews(playBin.getBus());
