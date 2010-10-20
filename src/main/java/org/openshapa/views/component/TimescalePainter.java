@@ -70,7 +70,8 @@ public final class TimescalePainter extends JComponent {
     }
     
     public boolean isPointInZoomWindowIndicator(final int x, final int y) {
-    	return y >= (timescaleModel.getHeight() - timescaleModel.getZoomWindowIndicatorHeight());
+        return (x >= 0) && (x < getSize().width) && 
+    		(y >= (timescaleModel.getHeight() - timescaleModel.getZoomWindowIndicatorHeight()));
     }
 
     

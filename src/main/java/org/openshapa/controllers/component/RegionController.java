@@ -171,11 +171,12 @@ public final class RegionController implements PropertyChangeListener {
     private final class RegionMarkerListener extends MouseInputAdapter {
         private boolean onStartMarker;
         private boolean onEndMarker;
+        /** offset in pixels from the region marker position to where the marker was "picked up" for dragging */
+        private double offset;
 
         private Viewport viewport;
 
-        private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(
-                Cursor.E_RESIZE_CURSOR);
+        private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
         public RegionMarkerListener() {
@@ -198,46 +199,30 @@ public final class RegionController implements PropertyChangeListener {
             final GeneralPath endMarker = view.getEndMarkerPolygon();
 
             viewport = mixer.getViewport();
-
-            if (startMarker.contains(e.getPoint())) {
-
-                // Mouse is pressed on the needle.
-                onStartMarker = true;
-                source.setCursor(eastResizeCursor);
-            } else if (endMarker.contains(e.getPoint())) {
-                onEndMarker = true;
-                source.setCursor(eastResizeCursor);
-            } else {
-                onStartMarker = false;
-                onEndMarker = false;
-                source.setCursor(defaultCursor);
-            }
+            onStartMarker = startMarker.contains(e.getPoint());
+            onEndMarker = endMarker.contains(e.getPoint());
+            assert !(onStartMarker && onEndMarker); // can't be on both markers at the same time
+            source.setCursor((onStartMarker || onEndMarker) ? eastResizeCursor : defaultCursor);
+          	offset = e.getX() - viewport.computePixelXOffset(onStartMarker ? regionModel.getRegionStart() : regionModel.getRegionEnd()) - RegionConstants.RMARKER_WIDTH;
         }
 
         @Override public void mouseDragged(final MouseEvent e) {
-
             if (onStartMarker || onEndMarker) {
-                int x = Math.min(Math.max(e.getX(), 0), view.getSize().width);
-
-                if (onEndMarker) {
-                    x -= RegionConstants.RMARKER_WIDTH;
-                }
-
-                double newTime = viewport.computeTimeFromXOffset(x)
-                    + viewport.getViewStart();
-                newTime = Math.min(Math.max(newTime, viewport.getViewStart()),
-                        viewport.getViewEnd());
-
+            	assert viewport != null;
                 assert !(onStartMarker && onEndMarker);
-                fireMarkerEvent(onStartMarker ? Marker.START_MARKER
-                                              : Marker.END_MARKER,
-                    Math.round(newTime));
+            	
+                double x = Math.min(Math.max(e.getX() - offset, 0), view.getSize().width) - RegionConstants.RMARKER_WIDTH;
+                double newTime = viewport.computeTimeFromXOffset(x) + viewport.getViewStart();
+                newTime = Math.min(Math.max(newTime, viewport.getViewStart()), viewport.getViewEnd());
+                fireMarkerEvent(onStartMarker ? Marker.START_MARKER : Marker.END_MARKER, Math.round(newTime));
             }
         }
 
         @Override public void mouseReleased(final MouseEvent e) {
             onStartMarker = false;
             onEndMarker = false;
+            viewport = null;
+            offset = 0;
 
             final JComponent source = (JComponent) e.getSource();
             source.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));

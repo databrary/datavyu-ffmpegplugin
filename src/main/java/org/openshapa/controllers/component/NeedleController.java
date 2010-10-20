@@ -176,7 +176,10 @@ public final class NeedleController implements PropertyChangeListener {
     private final class NeedleListener extends MouseInputAdapter {
         private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
-
+        private Viewport viewport = null;
+        /** offset in pixels from the needle position to where the needle head was "picked up" for dragging */
+        private double needlePositionOffsetX = 0.0;
+        
         @Override public void mouseEntered(final MouseEvent e) {
             JComponent source = (JComponent) e.getSource();
             source.setCursor(eastResizeCursor);
@@ -192,11 +195,24 @@ public final class NeedleController implements PropertyChangeListener {
         }
 
         @Override public void mouseDragged(final MouseEvent e) {
-            final double dx = Math.min(Math.max(e.getX() - NeedleConstants.NEEDLE_HEAD_WIDTH, 0), view.getWidth());
-            final Viewport viewport = mixer.getViewport();
-            long newTime = viewport.computeTimeFromXOffset(dx) + viewport.getViewStart();
-            newTime = Math.min(Math.max(newTime, viewport.getViewStart()), viewport.getViewEnd());
-            fireNeedleEvent(newTime);
+        	if (viewport != null) {
+	            final double dx = Math.min(Math.max(e.getX() - NeedleConstants.NEEDLE_HEAD_WIDTH - needlePositionOffsetX, 0), view.getWidth());
+	            long newTime = viewport.computeTimeFromXOffset(dx) + viewport.getViewStart();
+	            newTime = Math.min(Math.max(newTime, viewport.getViewStart()), viewport.getViewEnd());
+	            fireNeedleEvent(newTime);
+        	}
+        }
+        
+        @Override public void mousePressed(MouseEvent e) {
+            viewport = mixer.getViewport();
+            final double currentNeedleX = viewport.computePixelXOffset(needleModel.getCurrentTime()) + NeedleConstants.NEEDLE_HEAD_WIDTH;
+            final int mousePressedX = e.getX();
+            needlePositionOffsetX = mousePressedX - currentNeedleX;
+        }
+
+        @Override public void mouseReleased(MouseEvent e) {
+        	viewport = null;
+        	needlePositionOffsetX = 0.0;
         }
     }
 }
