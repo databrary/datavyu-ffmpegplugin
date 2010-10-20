@@ -1,9 +1,12 @@
 package org.openshapa.views.component;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.geom.GeneralPath;
 
 import javax.swing.JComponent;
 
@@ -23,7 +26,8 @@ public final class SnapMarkerPainter extends JComponent {
     private static final long serialVersionUID = -6157748998316240030L;
 
     private static final Color SNAP_MARKER_COLOR = new Color(169, 149, 202);
-
+    private static final float SNAP_MARKER_WIDTH = 2.5f;
+    
     private SnapMarkerModel snapMarkerModel;
 
     private MixerView mixer;
@@ -55,36 +59,29 @@ public final class SnapMarkerPainter extends JComponent {
     }
     
     @Override public void paintComponent(final Graphics g) {
-
         if ((snapMarkerModel == null) || (mixer == null)) {
             return;
         }
 
-        Viewport viewport = mixer.getViewport();
-
+        final Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        final Viewport viewport = mixer.getViewport();
         final long markerTime = snapMarkerModel.getMarkerTime();
 
-        // Don't paint if the needle is out of the current window
         if (!viewport.isTimeInViewport(markerTime)) {
             return;
         }
 
-        Dimension size = this.getSize();
+        final double markerX = viewport.computePixelXOffset(markerTime);
 
-        g.setColor(SNAP_MARKER_COLOR);
-
-        // Calculate the needle position based on the selected time
-        int pos = (int) Math.round(viewport.computePixelXOffset(markerTime));
-
-        // Draw the snap marker needle
-        int x1 = pos;
-        int y1 = 0;
-        int x2 = pos + 1;
-        int y2 = size.height;
-
-        g.drawLine(x1, y1, x1, y2);
-        g.drawLine(x2, y1, x2, y2);
-
+        GeneralPath snapMarker = new GeneralPath();
+        snapMarker.moveTo(markerX, 0);
+        snapMarker.lineTo(markerX, getHeight());
+        
+        g2d.setColor(SNAP_MARKER_COLOR);
+        g2d.setStroke(new BasicStroke(SNAP_MARKER_WIDTH));
+        g2d.draw(snapMarker);
     }
-
 }
