@@ -221,14 +221,14 @@ public final class TracksEditorController implements TrackMouseEventListener {
     }
 
     /**
-     * Sets the track offset for the given media path if it exists. If offset
+     * Sets the track offset for the given media if it exists. If offset
      * snapping is enabled through {@link #setAllowSnap(boolean)}, then this
      * function will attempt to synchronize the track position with every other
      * track's position of interest. A position of interest includes the start
      * of a track, bookmarked positions, and end of a track.
      *
-     * @param mediaPath
-     *            Identifies a track through its path on the file system
+     * @param trackId
+     *            Identifies a track
      * @param newOffset
      *            New track offset position
      * @param snapTemporalPosition
@@ -356,8 +356,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
         Collections.sort(snapCandidates);
 
         // Search for a snap position nearest to temporalSnapPosition
-        int nearestIndex = Math.abs(Collections.binarySearch(snapPoints,
-                    temporalSnapPosition));
+        int nearestIndex = Collections.binarySearch(snapPoints, temporalSnapPosition);
+        if (nearestIndex < 0) {
+        	nearestIndex = -(nearestIndex + 1);
+        }
 
         if (nearestIndex >= snapPoints.size()) {
             nearestIndex = snapPoints.size() - 1;
@@ -402,7 +404,6 @@ public final class TracksEditorController implements TrackMouseEventListener {
                 final SnapPoint sp = new SnapPoint();
                 sp.snapOffset = lowerSnapTime - snapPoint;
                 sp.snapMarkerPosition = lowerSnapTime;
-
                 return sp;
             }
 
@@ -411,7 +412,6 @@ public final class TracksEditorController implements TrackMouseEventListener {
                 final SnapPoint sp = new SnapPoint();
                 sp.snapOffset = upperSnapTime - snapPoint;
                 sp.snapMarkerPosition = upperSnapTime;
-
                 return sp;
             }
         }
@@ -672,6 +672,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
 
         /** The snap marker position to paint. */
         public long snapMarkerPosition;
+        
+        public String toString() {
+        	return "[SnapPoint snapOffset=" + snapOffset + ", snapMarkerPosition=" + snapMarkerPosition + "]";
+        }
     }
 
 }
