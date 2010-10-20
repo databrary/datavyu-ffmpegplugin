@@ -86,6 +86,13 @@ public final class TimescaleModel {
     }
 
     /**
+     * @return height of the timescale area
+     */
+    public int getTimescaleHeight() {
+    	return getHeight() - getZoomWindowIndicatorHeight() - getZoomWindowToTrackTransitionHeight();
+    }
+    
+    /**
      * @return height of the timescale track
      */
     public int getHeight() {

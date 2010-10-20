@@ -1,7 +1,6 @@
 package org.openshapa.views.component;
 
 import java.awt.BasicStroke;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -51,13 +50,25 @@ public final class NeedlePainter extends JComponent {
     }
 
     @Override public boolean contains(final Point p) {
-        return (needleMarker != null) && needleMarker.contains(p);
+    	return contains(p.x, p.y);
+    }
+    
+    @Override public boolean contains(int x, int y) {
+    	return needleMarker != null && needleMarker.contains(x, y);
+    }
+    
+    public double getDataTrackTopY() {
+    	return NeedleConstants.NEEDLE_HEAD_HEIGHT;
+    }
+    
+    public double getZoomWindowIndicatorTopY() {
+    	return getSize().height - needleModel.getZoomIndicatorHeight();
     }
 
-    @Override public boolean contains(final int x, final int y) {
-        return (needleMarker != null) && needleMarker.contains(x, y);
+    public double getTransitionAreaTopY() {
+    	return getZoomWindowIndicatorTopY() - needleModel.getTimescaleTransitionHeight();
     }
-
+    
     @Override public void paintComponent(final Graphics g) {
 
         if ((needleModel == null) || (mixer == null)) {
@@ -74,13 +85,9 @@ public final class NeedlePainter extends JComponent {
             && (NeedleConstants.NEEDLE_HEAD_HEIGHT > 0);
 
         final double needleHeadWidth = NeedleConstants.NEEDLE_HEAD_WIDTH;
-        final double needleHeadHeight = NeedleConstants.NEEDLE_HEAD_HEIGHT;
-
-        final double zoomWindowIndicatorTopY = getSize().height - needleModel.getZoomIndicatorHeight();
-        final double transitionAreaTopY = zoomWindowIndicatorTopY - needleModel.getTimescaleTransitionHeight();
         
         final long currentTime = needleModel.getCurrentTime();
-        double needlePositionX = viewport.computePixelXOffset(currentTime) + Math.ceil(needleHeadWidth);
+        double needlePositionX = viewport.computePixelXOffset(currentTime) + needleHeadWidth;
         final boolean isNeedleInViewport = viewport.isTimeInViewport(currentTime);
         
         if (isNeedleInViewport) {
@@ -88,7 +95,7 @@ public final class NeedlePainter extends JComponent {
 	        needleMarker = new GeneralPath();
 	        needleMarker.moveTo((float) (needlePositionX - needleHeadWidth), 0); // top-left
 	        needleMarker.lineTo((float) (needlePositionX + needleHeadWidth), 0); // top-right
-	        needleMarker.lineTo((float) needlePositionX, (float) needleHeadHeight); // bottom
+	        needleMarker.lineTo((float) needlePositionX, (float) getDataTrackTopY()); // bottom
 	        needleMarker.closePath();
 	
 	        g2d.setColor(needleModel.getNeedleColor());
@@ -99,9 +106,9 @@ public final class NeedlePainter extends JComponent {
 	
 	        // Draw the timing needle
 	        float x1 = (float) needlePositionX;
-	        float y1 = (float) needleHeadHeight;
+	        float y1 = (float) getDataTrackTopY();
 	        float x2 = (float) needlePositionX;
-	        float y2 = (float) transitionAreaTopY;
+	        float y2 = (float) getTransitionAreaTopY();
 	
 	        GeneralPath line = new GeneralPath();
 	        line.moveTo(x1, y1);
@@ -121,12 +128,12 @@ public final class NeedlePainter extends JComponent {
         assert transitionCurveBottomWeight >= 0;
 
         GeneralPath shape = new GeneralPath();
-        shape.moveTo(needlePositionX, transitionAreaTopY);
+        shape.moveTo(needlePositionX, getTransitionAreaTopY());
         shape.curveTo(needlePositionX,
-            (transitionAreaTopY
-                + (zoomWindowIndicatorTopY * transitionCurveBottomWeight))
+            (getTransitionAreaTopY()
+                + (getZoomWindowIndicatorTopY() * transitionCurveBottomWeight))
             / (transitionCurveBottomWeight + 1), zoomWindowIndicatorX,
-            transitionAreaTopY, zoomWindowIndicatorX, zoomWindowIndicatorTopY);
+            getTransitionAreaTopY(), zoomWindowIndicatorX, getZoomWindowIndicatorTopY());
         final float strokeWidth = (float) NeedleConstants.NEEDLE_WIDTH / (isNeedleInViewport ? 2.0f : 5.0f);
         g2d.setStroke(new BasicStroke(strokeWidth));
         g2d.draw(shape);
@@ -134,7 +141,7 @@ public final class NeedlePainter extends JComponent {
         // paint the needle in the zoom window indicator
 
         GeneralPath needleMarker = new GeneralPath();
-        needleMarker.moveTo(zoomWindowIndicatorX, zoomWindowIndicatorTopY);
+        needleMarker.moveTo(zoomWindowIndicatorX, getZoomWindowIndicatorTopY());
         needleMarker.lineTo(zoomWindowIndicatorX, getSize().height);
         
         g2d.setStroke(new BasicStroke((float) NeedleConstants.NEEDLE_WIDTH));

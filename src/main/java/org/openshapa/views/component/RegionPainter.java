@@ -75,7 +75,7 @@ public final class RegionPainter extends JComponent {
     }
 
     @Override public final boolean contains(final Point p) {
-        return startMarkerPolygon.contains(p) || endMarkerPolygon.contains(p);
+        return contains(p.x, p.y);
     }
 
     @Override public final boolean contains(final int x, final int y) {

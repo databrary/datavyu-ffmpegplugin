@@ -243,5 +243,4 @@ public final class RegionController implements PropertyChangeListener {
             source.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
     }
-
 }

@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.GeneralPath;
 
@@ -55,6 +56,24 @@ public final class TimescalePainter extends JComponent {
         repaint();
     }
 
+    @Override public final boolean contains(final Point p) {
+    	return contains(p.x, p.y);
+    }
+
+    @Override public final boolean contains(final int x, final int y) {
+    	return isPointInTimescale(x, y) || isPointInZoomWindowIndicator(x, y);
+    }
+
+    public boolean isPointInTimescale(final int x, final int y) {
+        return (x >= 0) && (x < getSize().width) && 
+        	(y >= 0 && y < timescaleModel.getTimescaleHeight());
+    }
+    
+    public boolean isPointInZoomWindowIndicator(final int x, final int y) {
+    	return y >= (timescaleModel.getHeight() - timescaleModel.getZoomWindowIndicatorHeight());
+    }
+
+    
     /**
      * This method paints the timing scale.
      */

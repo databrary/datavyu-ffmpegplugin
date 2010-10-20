@@ -3,6 +3,7 @@ package org.openshapa.views.component;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
 
 import javax.swing.JComponent;
 
@@ -45,6 +46,14 @@ public final class SnapMarkerPainter extends JComponent {
         repaint();
     }
 
+    @Override public final boolean contains(final Point p) {
+        return contains(p.x, p.y);
+    }
+
+    @Override public final boolean contains(final int x, final int y) {
+    	return false;
+    }
+    
     @Override public void paintComponent(final Graphics g) {
 
         if ((snapMarkerModel == null) || (mixer == null)) {

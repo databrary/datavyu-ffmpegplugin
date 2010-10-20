@@ -20,6 +20,7 @@ import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.NeedleEventListener;
 
 import org.openshapa.models.component.MixerView;
+import org.openshapa.models.component.NeedleConstants;
 import org.openshapa.models.component.NeedleModel;
 import org.openshapa.models.component.Viewport;
 
@@ -173,8 +174,7 @@ public final class NeedleController implements PropertyChangeListener {
      * Inner class used to handle intercepted events.
      */
     private final class NeedleListener extends MouseInputAdapter {
-        private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(
-                Cursor.E_RESIZE_CURSOR);
+        private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
         @Override public void mouseEntered(final MouseEvent e) {
@@ -188,38 +188,15 @@ public final class NeedleController implements PropertyChangeListener {
         }
 
         @Override public void mouseMoved(final MouseEvent e) {
-            mouseEntered(e);
+       		mouseEntered(e);
         }
 
         @Override public void mouseDragged(final MouseEvent e) {
-            int x = e.getX();
-
-            // Bound the x values
-            if (x < 0) {
-                x = 0;
-            }
-
-            if (x > view.getSize().width) {
-                x = view.getSize().width;
-            }
-
-            Viewport viewport = mixer.getViewport();
-
-            // Calculate the time represented by the new location
-            long newTime = viewport.computeTimeFromXOffset(x)
-                + viewport.getViewStart();
-
-            if (newTime < 0) {
-                newTime = 0;
-            }
-
-            if (newTime > viewport.getViewEnd()) {
-                newTime = viewport.getViewEnd();
-            }
-
+            final double dx = Math.min(Math.max(e.getX() - NeedleConstants.NEEDLE_HEAD_WIDTH, 0), view.getWidth());
+            final Viewport viewport = mixer.getViewport();
+            long newTime = viewport.computeTimeFromXOffset(dx) + viewport.getViewStart();
+            newTime = Math.min(Math.max(newTime, viewport.getViewStart()), viewport.getViewEnd());
             fireNeedleEvent(newTime);
         }
     }
-
-
 }

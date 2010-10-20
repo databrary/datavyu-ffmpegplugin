@@ -1,6 +1,7 @@
 package org.openshapa.controllers.component;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 
 import java.beans.PropertyChangeEvent;
@@ -132,50 +133,76 @@ public final class TimescaleController implements PropertyChangeListener {
     private class TimescaleEventListener extends MouseInputAdapter {
         private Viewport viewport;
 
+        private final Cursor crosshairCursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+        private final Cursor defaultCursor = Cursor.getDefaultCursor();
+        private boolean isDraggingOnTimescale = false;
+        private boolean isDraggingOnZoomWindowIndicator = false;
+        
+        @Override public void mouseEntered(final MouseEvent e) {
+            JComponent source = (JComponent) e.getSource();
+            source.setCursor(crosshairCursor);
+        }
+
+        @Override public void mouseExited(final MouseEvent e) {
+            JComponent source = (JComponent) e.getSource();
+            source.setCursor(defaultCursor);
+        }
+
+        @Override public void mouseMoved(final MouseEvent e) {
+       		mouseEntered(e);
+        }
+        
         @Override public void mousePressed(final MouseEvent e) {
             viewport = mixer.getViewport();
 
-            if (e.getButton() == MouseEvent.BUTTON1) {
-
-                if (isMouseInsideTimescale(e)) {
-                    fireJumpEvent(getNewNeedlePosition(e), false);
+            if (view.isPointInTimescale(e.getX(), e.getY())) {
+	            if (e.getButton() == MouseEvent.BUTTON1) {
+                    fireJumpEvent(calculateNewNeedlePositionOnTimescale(e), false);
+                    isDraggingOnTimescale = true;
+                }
+            } else if (view.isPointInZoomWindowIndicator(e.getX(), e.getY())) {
+	            if (e.getButton() == MouseEvent.BUTTON1) {
+                    fireJumpEvent(calculateNewNeedlePositionOnZoomWindow(e), false);
+                    isDraggingOnZoomWindowIndicator = true;
                 }
             }
         }
 
         @Override public void mouseReleased(final MouseEvent e) {
-        }
-
-        private boolean isMouseInsideTimescale(final MouseEvent e) {
-            return (e.getX() >= 0) && ((e.getX()) < view.getSize().width);
+        	isDraggingOnTimescale = false;
+        	isDraggingOnZoomWindowIndicator = false;
         }
 
         @Override public void mouseClicked(final MouseEvent e) {
-
-            if ((e.getButton() == MouseEvent.BUTTON1)
-                    && ((e.getClickCount() % 2) == 0)) {
-                fireJumpEvent(getNewNeedlePosition(e), true);
-            }
+            if ((e.getButton() == MouseEvent.BUTTON1) && ((e.getClickCount() % 2) == 0)) {
+            	if (view.isPointInTimescale(e.getX(), e.getY())) {
+	                fireJumpEvent(calculateNewNeedlePositionOnTimescale(e), true);
+	        	} else if (view.isPointInZoomWindowIndicator(e.getX(), e.getY())) {
+	                fireJumpEvent(calculateNewNeedlePositionOnZoomWindow(e), true);
+	        	}
+        	}
         }
 
         @Override public void mouseDragged(final MouseEvent e) {
-
             if (e.getButton() == MouseEvent.BUTTON1) {
-                fireJumpEvent(getNewNeedlePosition(e), false);
-            }
+            	if (isDraggingOnTimescale) {
+            		fireJumpEvent(calculateNewNeedlePositionOnTimescale(e), false);
+	        	} else if (isDraggingOnZoomWindowIndicator) {
+            		fireJumpEvent(calculateNewNeedlePositionOnZoomWindow(e), false);
+	        	}
+        	}
         }
 
-        private long getNewNeedlePosition(final MouseEvent e) {
-            final int dx = Math.min(Math.max(e.getX(), 0),
-                    view.getSize().width - 1);
-
-            // Calculate the time represented by the new location
-            long newTime = viewport.computeTimeFromXOffset(dx)
-                + viewport.getViewStart();
-            newTime = Math.min(Math.max(newTime, viewport.getViewStart()),
-                    viewport.getViewEnd());
-
-            return newTime;
+        private long calculateNewNeedlePositionOnTimescale(final MouseEvent e) {
+            final int dx = Math.min(Math.max(e.getX(), 0), view.getSize().width);
+            final long newTime = viewport.computeTimeFromXOffset(dx) + viewport.getViewStart();
+            return Math.min(Math.max(newTime, viewport.getViewStart()), viewport.getViewEnd());
+        }
+        
+        private long calculateNewNeedlePositionOnZoomWindow(final MouseEvent e) {
+            final int dx = Math.min(Math.max(e.getX(), 0), view.getSize().width);
+            final long newTime = Math.round((double) dx * viewport.getMaxEnd() / view.getSize().width);
+            return Math.min(Math.max(newTime, 0), viewport.getMaxEnd());
         }
     }
 
