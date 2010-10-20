@@ -71,7 +71,7 @@ public final class MixerModel implements MixerView {
         change.firePropertyChange(Viewport.NAME, null, null);
     }
 
-    @Override public void setViewportMaxEnd(final long newMaxEnd) {
+    @Override public void setViewportMaxEnd(final long newMaxEnd, final boolean resetViewportWindow) {
 
         if (newMaxEnd <= 1) {
             resetViewport();
@@ -80,11 +80,10 @@ public final class MixerModel implements MixerView {
         }
 
         synchronized (this) {
-            final boolean resetViewWindow = viewport.isEntireTrackVisible();
             final long viewStart = viewport.getViewStart() <= newMaxEnd ? viewport.getViewStart() : newMaxEnd - 1;
             final long viewEnd = viewport.getViewEnd() <= newMaxEnd ? viewport.getViewEnd() : newMaxEnd;
             ViewableModel newView = new ViewableModel(newMaxEnd,
-                    viewport.getViewWidth(), resetViewWindow ? 0 : viewStart, resetViewWindow ? newMaxEnd : viewEnd);
+                    viewport.getViewWidth(), resetViewportWindow ? 0 : viewStart, resetViewportWindow ? newMaxEnd : viewEnd);
             validateConstraints(newView);
             viewport = newView;
         }

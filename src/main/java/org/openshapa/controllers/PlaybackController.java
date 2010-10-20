@@ -1057,7 +1057,7 @@ public final class PlaybackController implements PlaybackListener,
 
                         playbackModel.setMaxDuration(maxDuration);
 
-                        mixerController.setMaxEnd(maxDuration);
+                        mixerController.setMaxEnd(maxDuration, true);
 
                         // Reset visualisation of playback regions.
                         if (playbackModel.getWindowPlayEnd() > maxDuration) {
@@ -1828,7 +1828,7 @@ public final class PlaybackController implements PlaybackListener,
 
         playbackModel.setMaxDuration(maxDuration);
 
-        mixerController.setMaxEnd(maxDuration);
+        mixerController.setMaxEnd(maxDuration, false);
 
         // Reset our playback windows
         if (playbackModel.getWindowPlayEnd() > maxDuration) {

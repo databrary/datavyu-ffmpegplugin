@@ -496,8 +496,8 @@ public final class MixerController implements PropertyChangeListener,
      *            duration in milliseconds
      * @return the new maximum end time in milliseconds
      */
-    public long setMaxEnd(final long newMaxEnd) {
-        masterMixer.setViewportMaxEnd(newMaxEnd);
+    public long setMaxEnd(final long newMaxEnd, boolean resetViewportWindow) {
+        masterMixer.setViewportMaxEnd(newMaxEnd, resetViewportWindow);
 
         return masterMixer.getViewport().getMaxEnd();
     }
@@ -530,7 +530,7 @@ public final class MixerController implements PropertyChangeListener,
         if ((trackEnd > viewport.getMaxEnd())
                 || ((tracksEditorController.numberOfTracks() == 0) && (trackEnd > 0))) {
             regionController.setPlaybackRegion(0, trackEnd);
-           	masterMixer.setViewportMaxEnd(trackEnd);
+           	masterMixer.setViewportMaxEnd(trackEnd, true);
         }
 
         tracksEditorController.addNewTrack(id, icon, trackName, mediaPath,
