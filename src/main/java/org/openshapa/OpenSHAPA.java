@@ -1,5 +1,6 @@
 package org.openshapa;
 
+import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -609,12 +610,15 @@ public final class OpenSHAPA extends SingleFrameApplication
         getApplication().addExitListener(new ExitListenerImpl());
 
         // Create video controller.
-        dataController = new DataControllerV(OpenSHAPA.getApplication()
-                                                      .getMainFrame(), false);
+        dataController = new DataControllerV(OpenSHAPA.getApplication().getMainFrame(), false);
+
+        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = getView().getFrame().getX();
+        // don't let the data viewer fall below the bottom of the primary screen, but also don't let it creep up above the screen either
+        int y = getView().getFrame().getY() + getView().getFrame().getHeight();
+        y = (int) Math.max(Math.min(y, screenSize.getHeight() - dataController.getHeight()), 0);
+        dataController.setLocation(x, y);
         getApplication().show(dataController);
-        dataController.setLocation(getView().getFrame().getX(),
-                                   getView().getFrame().getY()
-                                   + getView().getFrame().getHeight());
     }
 
     /**
