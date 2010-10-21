@@ -971,6 +971,7 @@ public final class TrackController implements ViewerStateListener,
                 offsetInit = trackModel.getOffset();
                 trackPainter.setCursor(moveCursor);
                 initialState = trackModel.getState();
+                handleOffsetChanges(e);
             }
 
             if (e.isPopupTrigger()) {
@@ -979,28 +980,31 @@ public final class TrackController implements ViewerStateListener,
         }
 
         @Override public void mouseDragged(final MouseEvent e) {
-
             if (trackModel.isLocked()) {
                 return;
             }
 
+            handleOffsetChanges(e);
+        }
+        
+        private void handleOffsetChanges(final MouseEvent e) {
             final boolean hasModifiers = e.isAltDown() || e.isAltGraphDown()
-                || e.isControlDown() || e.isMetaDown() || e.isShiftDown();
+            	|| e.isControlDown() || e.isMetaDown() || e.isShiftDown();
 
-            if (inCarriage) {
-                final int xNet = e.getX() - xInit;
-                final double newOffset = viewport.computeTimeFromXOffset(xNet) + offsetInit;
-                final long temporalPosition = viewport.computeTimeFromXOffset(e.getX()) + viewport.getViewStart();
-
-                if (isMoveable) {
-                    fireCarriageOffsetChangeEvent((long) newOffset, temporalPosition, hasModifiers);
-                } else {
-                	final long threshold = calculateSnappingThreshold(viewport);
-                    if (Math.abs(newOffset - offsetInit) >= threshold) {
-                        isMoveable = true;
-                    }
-                }
-            }
+	        if (inCarriage) {
+	            final int xNet = e.getX() - xInit;
+	            final double newOffset = viewport.computeTimeFromXOffset(xNet) + offsetInit;
+	            final long temporalPosition = viewport.computeTimeFromXOffset(e.getX()) + viewport.getViewStart();
+	
+	            if (isMoveable) {
+	                fireCarriageOffsetChangeEvent((long) newOffset, temporalPosition, hasModifiers);
+	            } else {
+	            	final long threshold = calculateSnappingThreshold(viewport);
+	                if (Math.abs(newOffset - offsetInit) >= threshold) {
+	                    isMoveable = true;
+	                }
+	            }
+	        }
         }
 
         @Override public void mouseReleased(final MouseEvent e) {

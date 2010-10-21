@@ -224,8 +224,9 @@ public final class TracksEditorController implements TrackMouseEventListener {
      * Sets the track offset for the given media if it exists. If offset
      * snapping is enabled through {@link #setAllowSnap(boolean)}, then this
      * function will attempt to synchronize the track position with every other
-     * track's position of interest. A position of interest includes the start
-     * of a track, bookmarked positions, and end of a track.
+     * track's position of interest. A position of interest includes time 0, start
+     * of a track, bookmarked positions, end of a track, and the current needle 
+     * position.
      *
      * @param trackId
      *            Identifies a track
