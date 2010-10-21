@@ -341,10 +341,8 @@ public final class TracksEditorController implements TrackMouseEventListener {
             return null;
         }
 
-        // Calculate the snap threshold as a % of the longest track duration
-        final long MINIMUM_THRESHOLD_MILLISECONDS = 10;
-        final long threshold = Math.max((long) Math.ceil(0.01F * viewport.getViewDuration()), MINIMUM_THRESHOLD_MILLISECONDS);
-
+        final long snappingThreshold = TrackController.calculateSnappingThreshold(viewport);
+        
         // Remove duplicate candidate snap points
         for (int i = snapCandidates.size() - 1; i > 0; i--) {
         	if (snapCandidates.get(i).equals(snapCandidates.get(i - 1))) {
@@ -400,7 +398,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
             }
 
             if ((lowerSnapTime < snapPoint)
-                    && (Math.abs(snapPoint - lowerSnapTime) <= threshold)) {
+                    && (Math.abs(snapPoint - lowerSnapTime) < snappingThreshold)) {
                 final SnapPoint sp = new SnapPoint();
                 sp.snapOffset = lowerSnapTime - snapPoint;
                 sp.snapMarkerPosition = lowerSnapTime;
@@ -408,7 +406,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
             }
 
             // Check if the candidate snap points can be used
-            if (Math.abs(upperSnapTime - snapPoint) <= threshold) {
+            if (Math.abs(upperSnapTime - snapPoint) < snappingThreshold) {
                 final SnapPoint sp = new SnapPoint();
                 sp.snapOffset = upperSnapTime - snapPoint;
                 sp.snapMarkerPosition = upperSnapTime;
@@ -439,7 +437,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
     }
 
     /**
-     * @return True if at least one track is selected, false otherwise.s
+     * @return True if at least one track is selected, false otherwise.
      */
     public boolean hasSelectedTracks() {
         final Iterator<Track> allTracks = tracks.iterator();

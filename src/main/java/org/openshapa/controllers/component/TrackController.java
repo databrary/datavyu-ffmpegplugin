@@ -917,6 +917,17 @@ public final class TrackController implements ViewerStateListener,
     }
 
     /**
+     * Calculates the time threshold below which data tracks will snap into place. 
+     *   
+     * @param viewport current viewport
+     * @return snapping threshold in time units (milliseconds);
+     */
+    public static long calculateSnappingThreshold(final Viewport viewport) {
+        final long MINIMUM_THRESHOLD_MILLISECONDS = 10;
+        return Math.max((long) Math.ceil(0.01F * viewport.getViewDuration()), MINIMUM_THRESHOLD_MILLISECONDS);
+    }
+    
+    /**
      * Inner listener used to handle mouse events.
      */
     private class TrackPainterListener extends MouseInputAdapter {
@@ -980,18 +991,13 @@ public final class TrackController implements ViewerStateListener,
                 final int xNet = e.getX() - xInit;
 
                 // Calculate the total amount of time we offset by
-                final float newOffset = viewport.computeTimeFromXOffset(xNet)
-                    + offsetInit;
-                final long temporalPosition = viewport.computeTimeFromXOffset(
-                        e.getX()) + viewport.getViewStart();
+                final double newOffset = viewport.computeTimeFromXOffset(xNet) + offsetInit;
+                final long temporalPosition = viewport.computeTimeFromXOffset(e.getX()) + viewport.getViewStart();
 
                 if (isMoveable) {
-                    fireCarriageOffsetChangeEvent((long) newOffset,
-                        temporalPosition, hasModifiers);
+                    fireCarriageOffsetChangeEvent((long) newOffset, temporalPosition, hasModifiers);
                 } else {
-                    final long threshold = (long) (0.05F
-                            * viewport.getViewDuration());
-
+                	final long threshold = calculateSnappingThreshold(viewport);
                     if (Math.abs(newOffset - offsetInit) >= threshold) {
                         isMoveable = true;
                     }
