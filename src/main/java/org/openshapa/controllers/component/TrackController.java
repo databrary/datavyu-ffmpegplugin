@@ -605,22 +605,27 @@ public final class TrackController implements ViewerStateListener,
     }
 
     /**
-     * Invert selection state.
-     *
-     * @param hasModifiers true if modifiers were held down, false otherwise.
+     * Deselects the track if it is selected.
      */
-    private void changeSelected(final boolean hasModifiers) {
-
-        if (trackModel.isSelected()) {
-            trackModel.setSelected(false);
-        } else {
-            trackModel.setSelected(true);
-        }
-
-        trackPainter.setTrackModel(trackModel);
-        fireCarriageSelectionChangeEvent(hasModifiers);
+    private void deselectTrack() {
+    	if (trackModel.isSelected()) {
+    		trackModel.setSelected(false);
+            trackPainter.setTrackModel(trackModel);
+            fireCarriageSelectionChangeEvent(false);
+    	}
     }
-
+    
+    /**
+     * Selects the track if it isn't already selected.
+     */
+    private void selectTrack() {
+    	if (!trackModel.isSelected()) {
+    		trackModel.setSelected(true);
+            trackPainter.setTrackModel(trackModel);
+            fireCarriageSelectionChangeEvent(false);
+    	}
+    }
+    
     /**
      * Handles the event for locking and unlocking the track's movement.
      *
@@ -937,7 +942,10 @@ public final class TrackController implements ViewerStateListener,
 
         /** Is the mouse in the carriage. */
         private boolean inCarriage;
-
+        
+        /** Whether the track was selected when the mouse was first pressed. */
+        private boolean wasTrackSelected;
+        
         /** Initial x-coord position. */
         private int xInit;
 
@@ -954,22 +962,22 @@ public final class TrackController implements ViewerStateListener,
         private Viewport viewport;
 
         @Override public void mouseClicked(final MouseEvent e) {
-
-            if (trackPainter.getCarriagePolygon().contains(e.getPoint())) {
-                final boolean hasModifiers = e.isAltDown() || e.isAltGraphDown()
-                    || e.isControlDown() || e.isMetaDown() || e.isShiftDown();
-                changeSelected(hasModifiers);
+        	System.out.println("mouseclicked");
+            if (trackPainter.getCarriagePolygon().contains(e.getPoint()) && wasTrackSelected) {
+                deselectTrack();
             }
         }
 
         @Override public void mousePressed(final MouseEvent e) {
             viewport = mixer.getViewport();
+            wasTrackSelected = trackModel.isSelected();
 
             if (trackPainter.getCarriagePolygon().contains(e.getPoint())) {
                 inCarriage = true;
                 xInit = e.getX();
                 offsetInit = trackModel.getOffset();
                 trackPainter.setCursor(moveCursor);
+                selectTrack();
                 initialState = trackModel.getState();
                 handleOffsetChanges(e);
             }
