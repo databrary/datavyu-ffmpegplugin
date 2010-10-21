@@ -364,7 +364,8 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
         pack();
         setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(),
             (int) nativeVideoSize.getHeight());
-        super.setVisible(true);
+        seekTo(0);
+        setDataViewerVisible(true);
         
         fps = getQTFPS();
     }

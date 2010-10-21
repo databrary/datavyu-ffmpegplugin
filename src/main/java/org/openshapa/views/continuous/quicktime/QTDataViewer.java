@@ -235,7 +235,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
             if (movie != null) {
                 TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
-                        position);
+                    Math.min(Math.max(position, 0), getDuration() - 1));
                 movie.setTime(time);
             }
         } catch (QTException e) {
