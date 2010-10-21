@@ -1808,7 +1808,7 @@ public final class PlaybackController implements PlaybackListener,
              * Found our data viewer, update the DV offset and the settings in
              * the project file.
              */
-            if (feed.getAbsolutePath().equals(e.getTrackId())) {
+            if (viewer.getIdentifier().equals(e.getTrackId())) {
                 viewer.setOffset(e.getOffset());
             }
         }

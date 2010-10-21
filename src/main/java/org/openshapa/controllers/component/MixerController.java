@@ -950,9 +950,16 @@ public final class MixerController implements PropertyChangeListener,
      * @param e the event to handle
      */
     public void offsetChanged(final CarriageEvent e) {
-        tracksEditorController.setTrackOffset(e.getTrackId(), e.getOffset(),
-            e.getTemporalPosition());
-        fireTracksControllerEvent(TracksEvent.CARRIAGE_EVENT, e);
+        final boolean wasOffsetChanged = tracksEditorController.setTrackOffset(e.getTrackId(), e.getOffset(), e.getTemporalPosition());
+        final CarriageEvent newEvent;
+        if (wasOffsetChanged) {
+        	final long newOffset = tracksEditorController.getTrackModel(e.getTrackId()).getOffset();
+            newEvent = new CarriageEvent(e.getSource(), e.getTrackId(), newOffset, e.getBookmark(), e.getDuration(), e.getTemporalPosition(), e.getEventType(), e.hasModifiers());
+        } else {
+        	newEvent = e;
+        }
+         
+        fireTracksControllerEvent(TracksEvent.CARRIAGE_EVENT, newEvent);
         tracksPanel.invalidate();
         tracksPanel.repaint();
     }

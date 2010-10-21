@@ -249,15 +249,12 @@ public final class TracksEditorController implements TrackMouseEventListener {
                 tc.setTrackOffset(newOffset);
                 snapMarkerController.setMarkerTime(-1);
 
-                final SnapPoint snapPoint = snapOffset(trackId,
-                        snapTemporalPosition);
+                final SnapPoint snapPoint = snapOffset(trackId, snapTemporalPosition);
                 tc.setMoveable(snapPoint == null);
-
                 if (snapPoint == null) {
                     snapMarkerController.setMarkerTime(-1);
                 } else {
-                    snapMarkerController.setMarkerTime(
-                        snapPoint.snapMarkerPosition);
+                    snapMarkerController.setMarkerTime(snapPoint.snapMarkerPosition);
                     tc.setTrackOffset(newOffset + snapPoint.snapOffset);
                 }
 

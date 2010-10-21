@@ -989,8 +989,6 @@ public final class TrackController implements ViewerStateListener,
 
             if (inCarriage) {
                 final int xNet = e.getX() - xInit;
-
-                // Calculate the total amount of time we offset by
                 final double newOffset = viewport.computeTimeFromXOffset(xNet) + offsetInit;
                 final long temporalPosition = viewport.computeTimeFromXOffset(e.getX()) + viewport.getViewStart();
 
