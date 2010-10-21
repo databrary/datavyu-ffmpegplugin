@@ -913,7 +913,6 @@ public final class MixerController implements PropertyChangeListener,
         Viewport viewport = masterMixer.getViewport();
 
         final int startValue = tracksScrollBar.getValue();
-        final int endValue = startValue + tracksScrollBar.getVisibleAmount();
 
         assert tracksScrollBar.getMinimum() == 0;
 
