@@ -917,11 +917,10 @@ public final class MixerController implements PropertyChangeListener,
 
         assert tracksScrollBar.getMinimum() == 0;
 
-        final long newWindowStart = (long) Math.floor((double) startValue
+        final long newWindowStart = (long) Math.round((double) startValue
                 / tracksScrollBar.getMaximum() * viewport.getMaxEnd());
-        final long newWindowEnd = (long) Math.ceil((double) endValue
-                / tracksScrollBar.getMaximum() * viewport.getMaxEnd());
-
+        final long newWindowEnd = newWindowStart + viewport.getViewDuration() - 1;
+        
         masterMixer.setViewportWindow(newWindowStart, newWindowEnd);
 
         tracksPanel.repaint();
