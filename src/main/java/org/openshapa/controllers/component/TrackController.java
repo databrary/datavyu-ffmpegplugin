@@ -962,7 +962,6 @@ public final class TrackController implements ViewerStateListener,
         private Viewport viewport;
 
         @Override public void mouseClicked(final MouseEvent e) {
-        	System.out.println("mouseclicked");
             if (trackPainter.getCarriagePolygon().contains(e.getPoint()) && wasTrackSelected) {
                 deselectTrack();
             }
