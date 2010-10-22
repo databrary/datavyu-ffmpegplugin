@@ -112,6 +112,8 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
                     StdQTConstants.movieTrackCharacteristic);
             visualMedia = visualTrack != null ? visualTrack.getMedia() : null;
             
+            // WARNING there seems to be a bug in QTJava where the video will be rendered as blank if the
+            // QT component is added before the window is displayable/visible
             add(QTFactory.makeQTComponent(movie).asComponent());
         } catch (QTException e) {
             logger.error("Unable to setVideoFile", e);

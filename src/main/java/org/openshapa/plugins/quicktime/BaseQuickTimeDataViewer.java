@@ -356,16 +356,14 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
      */
     public void setDataFeed(final File mediaFile) {
         this.mediaFile = mediaFile;
+        setDataViewerVisible(true); // need to make the window visible before we know the dimensions because of a QTJava bug
         setQTDataFeed(mediaFile);
         
         nativeVideoSize = getQTVideoSize();
         setTitle(mediaFile.getName());
         setName(getClass().getSimpleName() + "-" + mediaFile.getName());
+        setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(), (int) nativeVideoSize.getHeight());
         pack();
-        setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(),
-            (int) nativeVideoSize.getHeight());
-        seekTo(0);
-        setDataViewerVisible(true);
         
         fps = getQTFPS();
     }
