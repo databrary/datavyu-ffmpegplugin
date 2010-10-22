@@ -84,7 +84,7 @@ public final class AmplitudeProcessor
             }
 
             @Override public void blockDone(final AmplitudeBlock block) {
-                block.normalize();
+                block.normalizeAgainst(lValNorm, rValNorm);
                 publish(block);
             }
 
@@ -102,6 +102,9 @@ public final class AmplitudeProcessor
 
     private DecodeBin decodeBin;
 
+    private double lValNorm;
+    private double rValNorm;
+
     /**
      * Creates a new worker thread.
      *
@@ -118,6 +121,27 @@ public final class AmplitudeProcessor
         this.numChannels = numChannels;
         this.progressHandler = progressHandler;
         data = new StereoData(ProcessorConstants.BLOCK_SZ, internalHandler);
+
+        lValNorm = ProcessorConstants.LEVELS;
+        rValNorm = ProcessorConstants.LEVELS;
+    }
+
+    public void disableAutoNormalize() {
+        data.setNormalizeEnabled(false);
+    }
+
+    /**
+     * Auto normalize block data against the given values.
+     *
+     * @param lVal
+     *            Normalize left channel against this value.
+     * @param rVal
+     *            Normalize right channel against this value.
+     */
+    public void autoNormalizeAgainst(final double lVal, final double rVal) {
+        data.setNormalizeEnabled(true);
+        lValNorm = lVal;
+        rValNorm = rVal;
     }
 
     /**
