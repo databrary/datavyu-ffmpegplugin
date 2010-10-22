@@ -4,8 +4,6 @@ import gnu.trove.TDoubleArrayList;
 
 import java.util.concurrent.TimeUnit;
 
-import org.openshapa.plugins.spectrum.SpectrumConstants;
-
 
 /**
  * Represents a block of amplitude data.
@@ -34,6 +32,7 @@ public final class AmplitudeBlock {
     private double localMaxR;
 
     private boolean normalized;
+    private boolean allowNormalize;
 
     /**
      * Creates a new amplitude data block.
@@ -48,6 +47,9 @@ public final class AmplitudeBlock {
         ampDataL = new TDoubleArrayList(blockSize);
         ampDataR = new TDoubleArrayList(blockSize);
         this.blockSize = blockSize;
+
+        normalized = false;
+        allowNormalize = true;
 
         localMaxL = Double.MIN_VALUE;
         localMaxR = Double.MIN_VALUE;
@@ -177,31 +179,51 @@ public final class AmplitudeBlock {
         return (sizeL() == sizeR()) && (sizeL() == blockSize);
     }
 
+    public double getMaxL() {
+        return localMaxL;
+    }
+
+    public double getMaxR() {
+        return localMaxR;
+    }
+
     /**
-     * Normalize all amplitude values with respect to {@link #getMaxVal()}.
+     * Normalize amplitude data against the given value.
      * <p>
      * <b>WARNING:</b> this is not an idempotent operation.
      * </p>
+     *
+     * @param lVal
+     * @param rVal
      */
-    public void normalize() {
+    public void normalizeAgainst(final double lVal, final double rVal) {
         assert sizeL() == sizeR();
 
-        if (!normalized) {
-
-            // -1 halves the value, halve the value because the bit depth is the
-            // number of levels unsigned.
-            double max = 1 << (ProcessorConstants.DEPTH - 1);
+        if (!normalized && allowNormalize) {
 
             for (int i = 0; i < ampDataL.size(); i++) {
-
-                // ampDataL.setQuick(i, ampDataL.getQuick(i) / localMaxL);
-                // ampDataR.setQuick(i, ampDataR.getQuick(i) / localMaxR);
-                ampDataL.setQuick(i, ampDataL.getQuick(i) / max);
-                ampDataR.setQuick(i, ampDataR.getQuick(i) / max);
+                ampDataL.setQuick(i, ampDataL.getQuick(i) / lVal);
+                ampDataR.setQuick(i, ampDataR.getQuick(i) / rVal);
             }
 
             normalized = true;
         }
+    }
+
+    /**
+     * Normalize amplitude data against {@link ProcessorConstants.LEVELS} for
+     * both channels.
+     */
+    public void normalize() {
+        normalizeAgainst(ProcessorConstants.LEVELS, ProcessorConstants.LEVELS);
+    }
+
+    public void setNormalizeAllowed(final boolean allow) {
+        allowNormalize = allow;
+    }
+
+    public boolean isNormalizeAllowed() {
+        return allowNormalize;
     }
 
     /**

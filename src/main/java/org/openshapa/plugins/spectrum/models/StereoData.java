@@ -29,8 +29,10 @@ public final class StereoData {
     /** Total pairs of data points. */
     private int size;
 
-    /** */
+    /** Progress handler. */
     private Progress progress;
+
+    private boolean normalizeEnabled;
 
     /**
      * @param blockSize
@@ -56,6 +58,22 @@ public final class StereoData {
         ampData = Lists.newArrayList();
 
         size = 0;
+
+        normalizeEnabled = true;
+    }
+
+    /**
+     * Set if block value normalization should be enabled or not.
+     */
+    public void setNormalizeEnabled(final boolean val) {
+        normalizeEnabled = val;
+    }
+
+    /**
+     * Is block value normalization enabled.
+     */
+    public boolean isNormalizeEnabled() {
+        return normalizeEnabled;
     }
 
     /**
@@ -156,6 +174,7 @@ public final class StereoData {
         // multiplied by block size.
         if ((size + 1) > (ampData.size() * blockSize)) {
             AmplitudeBlock newBlock = new AmplitudeBlock(blockSize);
+            newBlock.setNormalizeAllowed(isNormalizeEnabled());
 
             // Invariant 2: the new block's start time is the timestamp of the
             // first data point to be added to it.
@@ -191,6 +210,26 @@ public final class StereoData {
      */
     public int getSize() {
         return size;
+    }
+
+    public double getMaxL() {
+        double max = Double.MIN_VALUE;
+
+        for (AmplitudeBlock block : getDataBlocks()) {
+            max = Math.max(max, block.getMaxL());
+        }
+
+        return max;
+    }
+
+    public double getMaxR() {
+        double max = Double.MIN_VALUE;
+
+        for (AmplitudeBlock block : getDataBlocks()) {
+            max = Math.max(max, block.getMaxR());
+        }
+
+        return max;
     }
 
 }
