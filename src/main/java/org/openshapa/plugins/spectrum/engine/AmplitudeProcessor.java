@@ -5,17 +5,39 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import static org.gstreamer.Element.linkMany;
+import static org.gstreamer.Element.linkPadsFiltered;
 
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.LineIterator;
+import org.gstreamer.Bin;
+import org.gstreamer.Bus;
+import org.gstreamer.Caps;
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
+import org.gstreamer.Format;
+import org.gstreamer.GhostPad;
+import org.gstreamer.Gst;
+import org.gstreamer.GstObject;
+import org.gstreamer.Pad;
+import org.gstreamer.Pipeline;
+import org.gstreamer.SeekFlags;
+import org.gstreamer.SeekType;
+import org.gstreamer.State;
+import org.gstreamer.Structure;
 
-import org.openshapa.plugins.spectrum.SpectrumPlugin;
+import org.gstreamer.elements.AppSink;
+import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.AppSink.NEW_BUFFER;
+
 import org.openshapa.plugins.spectrum.models.AmplitudeBlock;
 import org.openshapa.plugins.spectrum.models.ProcessorConstants;
 import org.openshapa.plugins.spectrum.models.StereoData;
+
+import com.sun.jna.Pointer;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
@@ -32,6 +54,10 @@ public final class AmplitudeProcessor
     private static final Logger LOGGER = UserMetrix.getLogger(
             AmplitudeProcessor.class);
 
+    static {
+        Gst.init();
+    }
+
     /** Media file to process. */
     private final File mediaFile;
 
@@ -41,7 +67,6 @@ public final class AmplitudeProcessor
     /** The processed amplitude data. */
     private StereoData data;
 
-    /** External progress handler. */
     private Progress progressHandler;
 
     /** Internal progress handler is used to put things in the right thread. */
@@ -59,7 +84,7 @@ public final class AmplitudeProcessor
             }
 
             @Override public void blockDone(final AmplitudeBlock block) {
-                block.normalizeAgainst(lValNorm, rValNorm);
+                block.normalize();
                 publish(block);
             }
 
@@ -67,8 +92,15 @@ public final class AmplitudeProcessor
             }
         };
 
-    private double lValNorm;
-    private double rValNorm;
+    private FixedHiLoBufferProcessor bufProc;
+
+    private Pipeline pipeline;
+
+    private Bin audioBin;
+
+    private Element fileSource;
+
+    private DecodeBin decodeBin;
 
     /**
      * Creates a new worker thread.
@@ -86,26 +118,6 @@ public final class AmplitudeProcessor
         this.numChannels = numChannels;
         this.progressHandler = progressHandler;
         data = new StereoData(ProcessorConstants.BLOCK_SZ, internalHandler);
-        lValNorm = ProcessorConstants.LEVELS;
-        rValNorm = ProcessorConstants.LEVELS;
-    }
-
-    public void disableAutoNormalize() {
-        data.setNormalizeEnabled(false);
-    }
-
-    /**
-     * Auto normalize block data against the given values.
-     *
-     * @param lVal
-     *            Normalize left channel against this value.
-     * @param rVal
-     *            Normalize right channel against this value.
-     */
-    public void autoNormalizeAgainst(final double lVal, final double rVal) {
-        data.setNormalizeEnabled(true);
-        lValNorm = lVal;
-        rValNorm = rVal;
     }
 
     /**
@@ -129,6 +141,107 @@ public final class AmplitudeProcessor
         data.setDataTimeStart(start);
         data.setDataTimeEnd(end);
         data.setDataTimeUnit(unit);
+
+        setup();
+    }
+
+    private void setup() {
+        pipeline = new Pipeline("Processor");
+
+        // Decoding bin.
+        decodeBin = new DecodeBin("Decode bin");
+
+        // Source is from a file.
+        fileSource = ElementFactory.make("filesrc", "Input File");
+        fileSource.set("location", mediaFile.getAbsolutePath());
+
+        pipeline.addMany(fileSource, decodeBin);
+
+        if (!linkMany(fileSource, decodeBin)) {
+            LOGGER.error("Link failed: filesrc -> decodebin");
+        }
+
+        // Audio handling bin.
+        audioBin = new Bin("Audio bin");
+
+        // Set up audio converter.
+        Element audioConvert = ElementFactory.make("audioconvert", null);
+
+        // Set up audio resampler.
+        Element audioResample = ElementFactory.make("audioresample", null);
+
+        // Set up audio sink.
+        Element audioOutput = ElementFactory.make("appsink", "audiosink");
+        final AppSink appSink = (AppSink) audioOutput;
+        appSink.set("emit-signals", true);
+        appSink.setSync(false);
+
+        appSink.connect(new NEW_BUFFER() {
+                @Override public void newBuffer(final Element elem,
+                    final Pointer userData) {
+
+                    if (data != null) {
+                        double p = data.getSize()
+                            / (double) ProcessorConstants.NUM_POINTS;
+                        internalHandler.overallProgress(p);
+                    }
+                }
+            });
+
+        bufProc = new FixedHiLoBufferProcessor(appSink, numChannels, data,
+                ProcessorConstants.NUM_POINTS);
+        appSink.connect(bufProc);
+
+        audioBin.addMany(audioConvert, audioResample, audioOutput);
+
+        if (!linkMany(audioConvert, audioResample)) {
+            LOGGER.error("Link failed: audioconvert -> audioresample");
+        }
+
+        Caps caps = Caps.fromString("audio/x-raw-int, width=16, depth="
+                + ProcessorConstants.DEPTH + ", signed=true");
+
+        if (!linkPadsFiltered(audioResample, null, audioOutput, null, caps)) {
+            LOGGER.error("Link failed: audioresample -> appsink");
+        }
+
+        audioBin.addPad(new GhostPad("sink",
+                audioConvert.getStaticPad("sink")));
+
+        pipeline.add(audioBin);
+
+        decodeBin.connect(new DecodeBin.NEW_DECODED_PAD() {
+
+                @Override public void newDecodedPad(final Element element,
+                    final Pad pad, final boolean last) {
+
+                    if (pad.isLinked()) {
+                        return;
+                    }
+
+                    Caps caps = pad.getCaps();
+                    Structure struct = caps.getStructure(0);
+
+                    if (struct.getName().startsWith("audio/")) {
+                        Bin bin = audioBin;
+
+                        if (bin != null) {
+                            pad.link(bin.getStaticPad("sink"));
+                        }
+                    }
+                }
+            });
+
+
+        Bus bus = pipeline.getBus();
+        bus.connect(new Bus.EOS() {
+                public void endOfStream(final GstObject source) {
+
+                    synchronized (data) {
+                        data.notifyAll();
+                    }
+                }
+            });
     }
 
     /**
@@ -137,78 +250,36 @@ public final class AmplitudeProcessor
      * @see javax.swing.SwingWorker#doInBackground()
      */
     @Override protected StereoData doInBackground() throws Exception {
-        File addon = SpectrumPlugin.getAddonFile();
-
-        if (addon == null) {
-
-            // Undefined addon.
-            return null;
-        }
-
-        // Set up our external process.
-        long start = NANOSECONDS.convert(data.getDataTimeStart(),
-                data.getDataTimeUnit());
-        long end = NANOSECONDS.convert(data.getDataTimeEnd(),
-                data.getDataTimeUnit());
-        ProcessBuilder pb = new ProcessBuilder(addon.getAbsolutePath(), "-f",
-                mediaFile.getAbsolutePath(), "-c",
-                Integer.toString(numChannels), "-p",
-                Integer.toString(ProcessorConstants.NUM_POINTS), "-s",
-                Long.toString(start), "-e", Long.toString(end));
-
-        Process audioPoints = pb.start();
-        LineIterator it = IOUtils.lineIterator(audioPoints.getInputStream(),
-                "UTF-8");
-
-        try {
-
-            int lineCount = 0;
-
-            while (it.hasNext()) {
-
-                if (isCancelled()) {
-                    audioPoints.destroy();
-
-                    return null;
-                }
-
-                String line = it.nextLine();
-                String[] strData = line.split(";", 3);
-
-                if (strData.length != 3) {
-
-                    // Not a valid line.
-                    System.err.println(line);
-
-                    continue;
-                }
-
-                int left = Integer.parseInt(strData[0]);
-                int right = Integer.parseInt(strData[1]);
-                long time = Long.parseLong(strData[2]);
-                time = data.getDataTimeUnit().convert(time, NANOSECONDS);
-
-                data.addData(left, right, time);
-
-                lineCount++;
-
-                internalHandler.overallProgress(lineCount
-                    / (double) ProcessorConstants.NUM_POINTS);
-            }
-        } finally {
-            LineIterator.closeQuietly(it);
-
-            int retVal = audioPoints.exitValue();
-
-            if (retVal != 0) {
-
-                // Process ended abnormally.
-                return null;
-            }
-        }
 
         if (isCancelled()) {
             return null;
+        }
+
+        pipeline.pause();
+
+        if (pipeline.getState(2, SECONDS) != State.PAUSED) {
+            return null;
+        }
+
+        pipeline.seek(1D, Format.TIME, SeekFlags.FLUSH | SeekFlags.ACCURATE,
+            SeekType.SET,
+            NANOSECONDS.convert(data.getDataTimeStart(),
+                data.getDataTimeUnit()), SeekType.SET,
+            NANOSECONDS.convert(data.getDataTimeEnd(), data.getDataTimeUnit()));
+
+        pipeline.play();
+
+
+        synchronized (data) {
+
+            try {
+                data.wait();
+            } catch (InterruptedException e) {
+
+                if (isCancelled()) {
+                    return null;
+                }
+            }
         }
 
         // Normalize any blocks that haven't been normalized.
@@ -255,9 +326,19 @@ public final class AmplitudeProcessor
             // (thread interruptions and subsequently, task cancellation.).
         } finally {
 
+            // Dispose Gstreamer stuff.
+            audioBin.setState(State.NULL);
+            fileSource.setState(State.NULL);
+            pipeline.setState(State.NULL);
+
             // Have to explicitly delete all refs or we leak memory because
             // JVM is still holding onto these threads.
             data = null;
+
+            if (bufProc != null) {
+                bufProc.clearRefs();
+                bufProc = null;
+            }
 
             progressHandler = null;
         }

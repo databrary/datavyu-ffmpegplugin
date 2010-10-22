@@ -2,27 +2,20 @@ package org.openshapa.plugins.spectrum;
 
 import java.awt.Frame;
 
-import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 
 import java.net.URL;
 
 import java.util.List;
-import java.util.UUID;
 
 import javax.swing.ImageIcon;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 
 import org.gstreamer.Gst;
 
 import com.google.common.collect.Lists;
-
-import org.openshapa.OpenSHAPA;
-
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Filter;
 import org.openshapa.plugins.FilterNames;
@@ -81,54 +74,8 @@ public class SpectrumPlugin implements Plugin {
     static {
         Gst.init();
 
-        try {
-            unpackAddons();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
 //TODO need to do this somewhere to balance out the init/deinit calls
 //      Gst.deinit();
-    }
-
-    /** Audio plugin addon file. */
-    private static File addonFile;
-
-    /** Extract plugin addons to a temp location. */
-    private static void unpackAddons() throws IOException {
-        addonFile = File.createTempFile(UUID.randomUUID().toString(), ".exe");
-        addonFile.deleteOnExit();
-
-        switch (OpenSHAPA.getPlatform()) {
-
-        case WINDOWS:
-            FileUtils.copyInputStreamToFile(SpectrumPlugin.class
-                .getResourceAsStream(
-                    "/org/openshapa/plugins/spectrum/audio-points.exe"),
-                addonFile);
-
-            break;
-
-        case MAC: {
-            FileUtils.copyInputStreamToFile(SpectrumPlugin.class
-                .getResourceAsStream(
-                    "/org/openshapa/plugins/spectrum/audio-points"), addonFile);
-
-            ProcessBuilder chmod = new ProcessBuilder("chmod", "u+x",
-                    addonFile.getAbsolutePath());
-            chmod.start();
-
-            break;
-        }
-
-        default:
-            throw new IOException("Undefined addon process.");
-        }
-    }
-
-    /** Audio plugin addon file. */
-    public static File getAddonFile() {
-        return addonFile;
     }
 
     @Override public DataViewer getNewDataViewer(final Frame parent,

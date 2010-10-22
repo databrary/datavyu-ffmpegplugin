@@ -8,10 +8,7 @@ public interface ProcessorConstants {
     /** Size of a processed block. Must divide {@link #NUM_POINTS} evenly. */
     static final int BLOCK_SZ = 500;
 
-    /** Unsigned bit depth of the audio to process. */
+    /** Bit depth of the audio to process. */
     static final int DEPTH = 16;
-
-    /** Number of discretization levels. */
-    static final int LEVELS = 1 << (DEPTH - 1);
 
 }

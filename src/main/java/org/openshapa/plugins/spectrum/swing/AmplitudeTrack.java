@@ -34,7 +34,6 @@ import org.openshapa.models.component.Viewport;
 
 import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor;
 import org.openshapa.plugins.spectrum.models.AmplitudeBlock;
-import org.openshapa.plugins.spectrum.models.ProcessorConstants;
 import org.openshapa.plugins.spectrum.models.StereoData;
 
 import org.openshapa.views.component.TrackPainter;
@@ -70,6 +69,9 @@ public final class AmplitudeTrack extends TrackPainter
     private static final int PROG_HEIGHT = 20;
 
     private static final Color PROG_COLOR = Color.WHITE;
+
+    /** Contains the amplitude data to visualize. */
+    // private StereoData data;
 
     /** Have we already registered for property changes. */
     private boolean registered;
@@ -110,10 +112,6 @@ public final class AmplitudeTrack extends TrackPainter
 
     private volatile boolean dataAvailable;
 
-    private volatile double lValNorm;
-
-    private volatile double rValNorm;
-
     public AmplitudeTrack() {
         super();
         registered = false;
@@ -121,9 +119,6 @@ public final class AmplitudeTrack extends TrackPainter
         progHandler = new Ongoing();
         blockWorkers = new ConcurrentLinkedQueue<BlockWorker>();
         dataAvailable = false;
-
-        lValNorm = ProcessorConstants.LEVELS;
-        rValNorm = ProcessorConstants.LEVELS;
     }
 
     @Override public void deregister() {
@@ -519,7 +514,6 @@ public final class AmplitudeTrack extends TrackPainter
 
         // 2. Make the worker thread.
         processor = new AmplitudeProcessor(mediaFile, channels, progHandler);
-        processor.autoNormalizeAgainst(lValNorm, rValNorm);
         processor.setDataTimeSegment(start, end, MILLISECONDS);
         executor.execute(processor);
     }
@@ -678,7 +672,6 @@ public final class AmplitudeTrack extends TrackPainter
 
         void generateCache() {
             ap = new AmplitudeProcessor(mediaFile, channels, this);
-            ap.disableAutoNormalize();
             ap.setDataTimeSegment(start, end, MILLISECONDS);
             executor.execute(ap);
         }
@@ -750,9 +743,6 @@ public final class AmplitudeTrack extends TrackPainter
             Path2D right = new Path2D.Double();
             right.moveTo(startXPos, midYRightPos);
 
-            lValNorm = data.getMaxL();
-            rValNorm = data.getMaxR();
-
             int offsetCounter = 1;
 
             for (AmplitudeBlock block : data.getDataBlocks()) {
@@ -762,13 +752,10 @@ public final class AmplitudeTrack extends TrackPainter
                 for (int i = 0; i < leftVals.length; i++) {
                     double offset = offsetCounter * pointSpacing;
 
-                    // Manually normalize our block values against the global
-                    // max.
-                    double lVal = leftVals[i] / lValNorm;
-                    double rVal = rightVals[i] / rValNorm;
-
-                    left.lineTo(offset, midYLeftPos + (-lVal * ampHeight));
-                    right.lineTo(offset, midYRightPos + (-rVal * ampHeight));
+                    left.lineTo(offset,
+                        midYLeftPos + (-leftVals[i] * ampHeight));
+                    right.lineTo(offset,
+                        midYRightPos + (-rightVals[i] * ampHeight));
 
                     offsetCounter++;
                 }
