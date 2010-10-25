@@ -237,17 +237,18 @@ public final class AmplitudeTrack extends TrackPainter
             execProcessor();
         }
 
+        if (localAmps == null) {
+            GraphicsEnvironment ge = GraphicsEnvironment
+                .getLocalGraphicsEnvironment();
+            GraphicsDevice gs = ge.getDefaultScreenDevice();
+            GraphicsConfiguration gc = gs.getDefaultConfiguration();
+            localAmps = gc.createCompatibleImage(getWidth(), getHeight(),
+                    Transparency.TRANSLUCENT);
+        }
+
+        // Paint amplitude data.
         if (localBlocks != null) {
             g2d.drawImage(localBlocks, 0, 0, null);
-
-            if (localAmps == null) {
-                GraphicsEnvironment ge = GraphicsEnvironment
-                    .getLocalGraphicsEnvironment();
-                GraphicsDevice gs = ge.getDefaultScreenDevice();
-                GraphicsConfiguration gc = gs.getDefaultConfiguration();
-                localAmps = gc.createCompatibleImage(getWidth(), getHeight(),
-                        Transparency.TRANSLUCENT);
-            }
         } else {
 
             // Draw baseline amplitudes.
