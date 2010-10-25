@@ -125,7 +125,7 @@ public final class AmplitudeTrack extends TrackPainter
     public AmplitudeTrack() {
         super();
         registered = false;
-        executor = Executors.newCachedThreadPool();
+        executor = Executors.newFixedThreadPool(2);
         progHandler = new Ongoing();
         blockWorkers = new ConcurrentLinkedQueue<BlockWorker>();
         dataAvailable = false;
@@ -175,12 +175,12 @@ public final class AmplitudeTrack extends TrackPainter
         super.propertyChange(evt);
     }
 
-    private int computeStartXPos(final Viewport viewport) {
-        return (int) viewport.computePixelXOffset(trackModel.getOffset());
+    private double computeStartXPos(final Viewport viewport) {
+        return viewport.computePixelXOffset(trackModel.getOffset());
     }
 
-    private int computeEndXPos(final Viewport viewport) {
-        return (int) viewport.computePixelXOffset(trackModel.getDuration()
+    private double computeEndXPos(final Viewport viewport) {
+        return viewport.computePixelXOffset(trackModel.getDuration()
                 + trackModel.getOffset());
     }
 
@@ -218,8 +218,8 @@ public final class AmplitudeTrack extends TrackPainter
             RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Calculate carriage start and end pixel positions.
-        final int startXPos = computeStartXPos(viewport);
-        final int endXPos = computeEndXPos(viewport);
+        final int startXPos = (int) Math.rint(computeStartXPos(viewport));
+        final int endXPos = (int) Math.rint(computeEndXPos(viewport));
 
         // Carriage height.
         final int carriageHeight = computeCarriageHeight();
@@ -248,16 +248,6 @@ public final class AmplitudeTrack extends TrackPainter
                 localAmps = gc.createCompatibleImage(getWidth(), getHeight(),
                         Transparency.TRANSLUCENT);
             }
-
-            // Copy what's being drawn into our local cache.
-            localTM = trackModel.copy();
-            localVM = viewport;
-
-            Graphics2D localG = localAmps.createGraphics();
-            localG.setBackground(TRANSPARENT);
-            localG.clearRect(0, 0, getWidth(), getHeight());
-            localG.drawImage(localBlocks, 0, 0, null);
-            localG.dispose();
         } else {
 
             // Draw baseline amplitudes.
@@ -265,106 +255,6 @@ public final class AmplitudeTrack extends TrackPainter
             g2d.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
             g2d.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
         }
-
-        // Draw left channel data.
-        // if ((localAmps != null) && !dirty) {
-        // g2d.drawImage(localAmps, 0, 0, null);
-        // } else if (leftAmp != null) {
-        // localTM = trackModel.copy();
-        // localVM = viewport;
-        //
-        // if (localAmps != null) {
-        // localAmps.flush();
-        // localAmps = null;
-        // }
-        //
-        // // Buffer the drawn data.
-        // localAmps = new BufferedImage(getWidth(), getHeight(),
-        // BufferedImage.TYPE_4BYTE_ABGR);
-        //
-        // Graphics2D imgG = (Graphics2D) localAmps.getGraphics();
-        // imgG.setColor(DATA_COLOR);
-        // imgG.draw(leftAmp);
-        // imgG.dispose();
-        // } else if (cachedAmps != null) {
-        // BufferedImage image2 = new BufferedImage(getWidth(), getHeight(),
-        // BufferedImage.TYPE_4BYTE_ABGR);
-        // Graphics2D g3 = (Graphics2D) image2.getGraphics();
-        //
-        // g3.setBackground(new Color(0, 0, 0, 0));
-        //
-        // g3.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-        // RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        //
-        // g3.drawImage(cachedAmps, startXPos, 0, endXPos, getHeight(), 0, 0,
-        // cachedAmps.getWidth(), cachedAmps.getHeight(), null);
-        //
-        // final int x1 = (int) viewport.computePixelXOffset(
-        // localVM.getViewStart() + trackModel.getOffset()
-        // - localTM.getOffset());
-        // final int y1 = 0;
-        // final int x2 = (int) viewport.computePixelXOffset(
-        // localVM.getViewEnd() + trackModel.getOffset()
-        // - localTM.getOffset());
-        // final int y2 = getHeight();
-        //
-        // g3.clearRect(x1, y1, x2 - x1, y2 - y1);
-        //
-        // g3.drawImage(localAmps, x1, y1, x2, y2, 0, 0, localAmps.getWidth(),
-        // localAmps.getHeight(), null);
-        //
-        // g3.dispose();
-        //
-        // g2d.drawImage(image2, 0, 0, getWidth(), getHeight(), 0, 0,
-        // image2.getWidth(), image2.getHeight(), null);
-        //
-        // image2.flush();
-        // } else if (localAmps != null) {
-        // // If we don't yet have a global cached image, make sure the local
-        // // cache is painted.
-        //
-        // final int x1 = (int) viewport.computePixelXOffset(
-        // localVM.getViewStart() + trackModel.getOffset()
-        // - localTM.getOffset());
-        // final int y1 = 0;
-        // final int x2 = (int) viewport.computePixelXOffset(
-        // localVM.getViewEnd() + trackModel.getOffset()
-        // - localTM.getOffset());
-        // final int y2 = getHeight();
-        //
-        // g2d.drawImage(localAmps, x1, y1, x2, y2, 0, 0, localAmps.getWidth(),
-        // localAmps.getHeight(), null);
-        // } else {
-        //
-        // // Baseline zero amplitude.
-        // g2d.setColor(DATA_COLOR);
-        // g2d.drawLine(startXPos, midYLeftPos, endXPos, midYLeftPos);
-        // }
-        //
-        // // Draw right channel data.
-        // if ((localAmps != null) && !dirty) {
-        // // Do nothing, already drawn. Do not remove this conditional.
-        // } else if (rightAmp != null) {
-        // Graphics2D imgG = (Graphics2D) localAmps.getGraphics();
-        // imgG.setColor(DATA_COLOR);
-        // imgG.draw(rightAmp);
-        // imgG.dispose();
-        //
-        // g2d.drawImage(localAmps, 0, 0, null);
-        //
-        // dirty = false;
-        // } else if (cachedAmps != null) {
-        // // Do nothing, already drawn. Do not remove this conditional or
-        // // the baseline will be drawn.
-        // } else if (localAmps != null) {
-        // // Do nothing, already drawn. Do not remove this conditional or
-        // // the baseline will be drawn.
-        // } else {
-        //
-        // // Baseline zero amplitude.
-        // g2d.setColor(DATA_COLOR);
-        // g2d.drawLine(startXPos, midYRightPos, endXPos, midYRightPos);
-        // }
 
         // Draw progress bar.
         if (progress < 1F) {
@@ -459,8 +349,8 @@ public final class AmplitudeTrack extends TrackPainter
 
             // Draw baseline amplitudes.
             Viewport viewport = mixer.getViewport();
-            int startXPos = computeStartXPos(viewport);
-            int endXPos = computeEndXPos(viewport);
+            int startXPos = (int) Math.rint(computeStartXPos(viewport));
+            int endXPos = (int) Math.rint(computeEndXPos(viewport));
             int midYLeftPos = computeMidYLeftPos();
             int midYRightPos = computeMidYRightPos();
             g.setColor(DATA_COLOR);
@@ -479,8 +369,8 @@ public final class AmplitudeTrack extends TrackPainter
 
             // Use the global cache as a backdrop if available.
             if (cachedAmps != null) {
-                int startXPos = computeStartXPos(viewport);
-                int endXPos = computeEndXPos(viewport);
+                int startXPos = (int) Math.rint(computeStartXPos(viewport));
+                int endXPos = (int) Math.rint(computeEndXPos(viewport));
                 g.drawImage(cachedAmps, startXPos, 0, endXPos, getHeight(), 0,
                     0, cachedAmps.getWidth(), cachedAmps.getHeight(), null);
             }
@@ -510,16 +400,23 @@ public final class AmplitudeTrack extends TrackPainter
 
         // Track is past the end window, so it is not visible.
         if (viewport.getViewEnd() < trackModel.getOffset()) {
+            progress = 1; // Erase stray progress bars.
+
             return;
         }
 
         // Track is before the start window, so it is not visible.
         if ((trackModel.getDuration() + trackModel.getOffset())
                 < viewport.getViewStart()) {
+            progress = 1;
+
             return;
         }
 
+        // Track isn't zoomed in enough to need processing of new data.
         if ((viewport.getZoomLevel() < 0.01) && (cachedAmps != null)) {
+            progress = 1;
+
             return;
         }
 
@@ -548,6 +445,21 @@ public final class AmplitudeTrack extends TrackPainter
             overallProgress(1);
 
             dataAvailable = true;
+
+            executor.execute(new Runnable() {
+                    @Override public void run() {
+
+                        // Copy what's being drawn into our local cache.
+                        localVM = mixer.getViewport();
+                        localTM = trackModel.copy();
+
+                        Graphics2D localG = localAmps.createGraphics();
+                        localG.setBackground(TRANSPARENT);
+                        localG.clearRect(0, 0, getWidth(), getHeight());
+                        localG.drawImage(localBlocks, 0, 0, null);
+                        localG.dispose();
+                    }
+                });
         }
 
         @Override public void blockDone(final AmplitudeBlock block) {
