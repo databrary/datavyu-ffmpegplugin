@@ -95,7 +95,9 @@ public final class StereoData {
     public void setDataTimeStart(final long dataTimeStart) {
 
         if (ampData.isEmpty()) {
-            ampData.add(new AmplitudeBlock(blockSize));
+            AmplitudeBlock newBlock = new AmplitudeBlock(blockSize);
+            newBlock.setNormalizeAllowed(isNormalizeEnabled());
+            ampData.add(newBlock);
         }
 
         ampData.get(0).setStartTime(dataTimeStart);

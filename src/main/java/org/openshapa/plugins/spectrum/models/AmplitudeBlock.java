@@ -57,9 +57,6 @@ public final class AmplitudeBlock {
      *
      * @param blockSize
      *            Initial size of the amplitude block.
-     * @param maxVal
-     *            Maximum data point value; used to normalize data points
-     *            into [-1, 1].
      */
     public AmplitudeBlock(final int blockSize) {
         ampDataL = new TDoubleArrayList(blockSize);
@@ -222,7 +219,7 @@ public final class AmplitudeBlock {
     public void normalizeAgainst(final double lVal, final double rVal) {
         assert sizeL() == sizeR();
 
-        if (!normalized && allowNormalize) {
+        if (!isNormalized() && isNormalizeAllowed()) {
 
             for (int i = 0; i < ampDataL.size(); i++) {
                 ampDataL.setQuick(i, ampDataL.getQuick(i) / lVal);
