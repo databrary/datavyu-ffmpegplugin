@@ -83,6 +83,7 @@ public final class AmplitudeTrack extends TrackPainter
     /** Viewable model associated with the last zoomed segment. */
     private Viewport localVM;
 
+    /** Track model associated with the last zoomed segment. */
     private TrackModel localTM;
 
     /** Media file used to compute amplitude data. */
@@ -100,18 +101,25 @@ public final class AmplitudeTrack extends TrackPainter
     /** Handles task execution. */
     private final Executor executor;
 
+    /** This is the canvas that we paint on. */
     private BufferedImage localBlocks;
 
+    /** Progress handler. */
     private Ongoing progHandler;
 
+    /** Worker threads for individual blocks. */
     private Queue<BlockWorker> blockWorkers;
 
+    /** Manages background cache processing. */
     private Cache cacheHandler;
 
+    /** Do we have data that can be displayed. */
     private volatile boolean dataAvailable;
 
+    /** Left channel value to normalize against. */
     private volatile double lValNorm;
 
+    /** Right channel value to normalize against. */
     private volatile double rValNorm;
 
     public AmplitudeTrack() {
@@ -478,7 +486,7 @@ public final class AmplitudeTrack extends TrackPainter
             }
 
             // Use the local cache as a backdrop if possible.
-            if (localAmps != null) {
+            if ((localAmps != null) && (viewport.getZoomLevel() > 0.01)) {
                 final int x1 = (int) viewport.computePixelXOffset(
                         localVM.getViewStart() + trackModel.getOffset()
                         - localTM.getOffset());
@@ -508,6 +516,10 @@ public final class AmplitudeTrack extends TrackPainter
         // Track is before the start window, so it is not visible.
         if ((trackModel.getDuration() + trackModel.getOffset())
                 < viewport.getViewStart()) {
+            return;
+        }
+
+        if ((viewport.getZoomLevel() < 0.01) && (cachedAmps != null)) {
             return;
         }
 
@@ -614,7 +626,7 @@ public final class AmplitudeTrack extends TrackPainter
                     return null;
                 }
 
-                double interval = timeInterval * (i - 1);
+                double interval = timeInterval * i;
 
                 long curTime = (long) (interval + block.getStartTime()
                         + trackModel.getOffset());
@@ -704,7 +716,6 @@ public final class AmplitudeTrack extends TrackPainter
         @Override public void allDone(final StereoData allData) {
             cw = new CacheWorker();
             cw.dim = getSize();
-            cw.pointSpacing = 0.5D;
             cw.data = allData;
             executor.execute(cw);
         }
@@ -716,14 +727,12 @@ public final class AmplitudeTrack extends TrackPainter
         @Override public void overallProgress(final double percentage) {
             // Do nothing.
         }
-
     }
 
     /** Inner class for generating a global cached image. */
     private class CacheWorker extends SwingWorker<BufferedImage, Void> {
         StereoData data; // Cache data.
         Dimension dim; // Size of track.
-        double pointSpacing; // Pixel spacing between data points.
 
         /** Draw the cache data all at once onto an image buffer. */
         @Override protected BufferedImage doInBackground() throws Exception {
@@ -731,9 +740,8 @@ public final class AmplitudeTrack extends TrackPainter
                 .getLocalGraphicsEnvironment();
             GraphicsDevice gs = ge.getDefaultScreenDevice();
             GraphicsConfiguration gc = gs.getDefaultConfiguration();
-            BufferedImage img = gc.createCompatibleImage((int) (data.getSize()
-                        * pointSpacing), (int) dim.getHeight(),
-                    Transparency.TRANSLUCENT);
+            BufferedImage img = gc.createCompatibleImage((int) dim.getWidth(),
+                    (int) dim.getHeight(), Transparency.TRANSLUCENT);
 
             // Calculate carriage start pixel position.
             final double startXPos = 0;
@@ -758,14 +766,16 @@ public final class AmplitudeTrack extends TrackPainter
             lValNorm = data.getMaxL();
             rValNorm = data.getMaxR();
 
-            int offsetCounter = 1;
-
             for (AmplitudeBlock block : data.getDataBlocks()) {
                 double[] leftVals = block.getLArray();
                 double[] rightVals = block.getRArray();
 
+                double timeInterval = block.computeInterval();
+
                 for (int i = 0; i < leftVals.length; i++) {
-                    double offset = offsetCounter * pointSpacing;
+                    double interval = timeInterval * i;
+                    long curTime = (long) (interval + block.getStartTime());
+                    double offset = computeXPos(curTime);
 
                     // Manually normalize our block values against the global
                     // max.
@@ -774,8 +784,6 @@ public final class AmplitudeTrack extends TrackPainter
 
                     left.lineTo(offset, midYLeftPos + (-lVal * ampHeight));
                     right.lineTo(offset, midYRightPos + (-rVal * ampHeight));
-
-                    offsetCounter++;
                 }
             }
 
@@ -806,6 +814,10 @@ public final class AmplitudeTrack extends TrackPainter
                 dim = null;
                 cacheHandler = null;
             }
+        }
+
+        double computeXPos(final long time) {
+            return time / (data.getDataTimeEnd() / dim.getWidth());
         }
     }
 
