@@ -173,8 +173,20 @@ public final class StereoData {
         // Invariant 1: new size after adding data fits within number of blocks
         // multiplied by block size.
         if ((size + 1) > (ampData.size() * blockSize)) {
+            AmplitudeBlock prevBlock = (!ampData.isEmpty())
+                ? ampData.get(ampData.size() - 1) : null;
+
             AmplitudeBlock newBlock = new AmplitudeBlock(blockSize);
             newBlock.setNormalizeAllowed(isNormalizeEnabled());
+
+            // Set up connecting values between blocks.
+            if (prevBlock != null) {
+                newBlock.setLinkL(prevBlock.getLastL(), prevBlock.getEndTime());
+                newBlock.setLinkR(prevBlock.getLastR(), prevBlock.getEndTime());
+            } else {
+                newBlock.setLinkL(0, time);
+                newBlock.setLinkR(0, time);
+            }
 
             // Invariant 2: the new block's start time is the timestamp of the
             // first data point to be added to it.

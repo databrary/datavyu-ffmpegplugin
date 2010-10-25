@@ -580,9 +580,16 @@ public final class AmplitudeTrack extends TrackPainter
                 };
 
             // Calculate path start pixel position.
-            final double startXPos = viewport.computePixelXOffset(MILLISECONDS
-                    .convert(block.getStartTime(), block.getTimeUnit())
+            final double startXPosL = viewport.computePixelXOffset(MILLISECONDS
+                    .convert(block.getLinkLTime(), block.getTimeUnit())
                     + trackModel.getOffset());
+
+            final double startXPosR = viewport.computePixelXOffset(MILLISECONDS
+                    .convert(block.getLinkRTime(), block.getTimeUnit())
+                    + trackModel.getOffset());
+
+            // Height for 100% amplitude.
+            final double ampHeight = computeAmpHeight();
 
             // Y-coordinate for left channel.
             final double midYLeftPos = computeMidYLeftPos();
@@ -590,14 +597,11 @@ public final class AmplitudeTrack extends TrackPainter
             // Y-coordinate for right channel.
             final double midYRightPos = computeMidYRightPos();
 
-            // Height for 100% amplitude.
-            final double ampHeight = computeAmpHeight();
-
-            // Calculate left amplitude data.
-            amps[0].moveTo(startXPos, midYLeftPos);
-
-            // Calculate right amplitude data.
-            amps[1].moveTo(startXPos, midYRightPos);
+            // Start at the last position.
+            amps[0].moveTo(startXPosL,
+                midYLeftPos + (-block.getLastL() * ampHeight));
+            amps[1].moveTo(startXPosR,
+                midYRightPos + (-block.getLastR() * ampHeight));
 
             double[] leftVals = block.getLArray();
             double[] rightVals = block.getRArray();
@@ -642,7 +646,8 @@ public final class AmplitudeTrack extends TrackPainter
                     Rectangle2D rRect = amps[1].getBounds2D();
 
                     // Delete part of the backdrop that we are overwriting.
-                    int x = (int) (Math.min(lRect.getX(), rRect.getX()));
+                    int x = (int) (Math.rint(
+                                Math.min(lRect.getX(), rRect.getX())));
                     int width = (int) Math.ceil(Math.max(lRect.getWidth(),
                                 rRect.getWidth()));
                     g2d.clearRect(x, 0, width, localBlocks.getHeight());

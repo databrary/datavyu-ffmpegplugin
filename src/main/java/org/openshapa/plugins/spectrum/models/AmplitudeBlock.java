@@ -28,10 +28,28 @@ public final class AmplitudeBlock {
     /** Block size. */
     private final int blockSize;
 
+    /** Largest absolute value for the left channel in this block. */
     private double localMaxL;
+
+    /** Largest absolute value for the right channel in this block. */
     private double localMaxR;
 
+    /** The last block's left channel value to connect with. */
+    private double linkL;
+
+    /** The timestamp of the last block's left channel value. */
+    private long linkLTime;
+
+    /** The last block's right channel value to connect with. */
+    private double linkR;
+
+    /** The timestamp of the last block's right channel value. */
+    private long linkRTime;
+
+    /** Has the block been normalized. */
     private boolean normalized;
+
+    /** Can the block be normalized. */
     private boolean allowNormalize;
 
     /**
@@ -53,6 +71,11 @@ public final class AmplitudeBlock {
 
         localMaxL = Double.MIN_VALUE;
         localMaxR = Double.MIN_VALUE;
+
+        linkL = 0;
+        linkLTime = 0;
+        linkR = 0;
+        linkRTime = 0;
     }
 
     /**
@@ -218,10 +241,18 @@ public final class AmplitudeBlock {
         normalizeAgainst(ProcessorConstants.LEVELS, ProcessorConstants.LEVELS);
     }
 
+    /**
+     * Set if the block can be normalized.
+     *
+     * @param allow
+     */
     public void setNormalizeAllowed(final boolean allow) {
         allowNormalize = allow;
     }
 
+    /**
+     * Can the block be normalized.
+     */
     public boolean isNormalizeAllowed() {
         return allowNormalize;
     }
@@ -231,6 +262,84 @@ public final class AmplitudeBlock {
      */
     public boolean isNormalized() {
         return normalized;
+    }
+
+    /**
+     * Set the last block's left channel data to connect with.
+     *
+     * @param val
+     *            The amplitude value.
+     * @param timestamp
+     *            The timestamp of the amplitude value.
+     */
+    public void setLinkL(final double val, final long timestamp) {
+        linkL = val;
+        linkLTime = timestamp;
+    }
+
+    /**
+     * The last block's left channel value to connect with.
+     */
+    public double getLinkL() {
+        return linkL;
+    }
+
+    /**
+     * The timestamp of the last block's left channel value.
+     */
+    public long getLinkLTime() {
+        return linkLTime;
+    }
+
+    /**
+     * Set the last block's right channel data to connect with.
+     *
+     * @param val
+     *            The amplitude value.
+     * @param timestamp
+     *            The timestamp of the amplitude value.
+     */
+    public void setLinkR(final double val, final long timestamp) {
+        linkR = val;
+        linkRTime = timestamp;
+    }
+
+    /**
+     * The last block's right channel value to connect with.
+     */
+    public double getLinkR() {
+        return linkR;
+    }
+
+    /**
+     * The timestamp of the last block's right channel value.
+     */
+    public long getLinkRTime() {
+        return linkRTime;
+    }
+
+    /**
+     * The last left channel value in this block.
+     */
+    public double getLastL() {
+
+        if (!ampDataL.isEmpty()) {
+            return ampDataL.getQuick(ampDataL.size() - 1);
+        }
+
+        return 0;
+    }
+
+    /**
+     * The last right channel value in this block.
+     */
+    public double getLastR() {
+
+        if (!ampDataR.isEmpty()) {
+            return ampDataR.getQuick(ampDataR.size() - 1);
+        }
+
+        return 0;
     }
 
 }
