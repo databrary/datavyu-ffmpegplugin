@@ -352,7 +352,6 @@ public final class AmplitudeProcessor
 
             // Dispose Gstreamer stuff.
             audioBin.setState(State.NULL);
-            fileSource.setState(State.NULL);
             pipeline.setState(State.NULL);
 
             // Have to explicitly delete all refs or we leak memory because
