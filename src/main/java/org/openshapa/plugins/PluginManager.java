@@ -67,6 +67,9 @@ public final class PluginManager {
     /** Set of plugins. */
     private Set<Plugin> plugins;
 
+    /** Set of names of the plugins we have added. */
+    private Set<String> pluginNames;
+
     /** Mapping between plugin classifiers and plugins. */
     private Multimap<String, Plugin> pluginClassifiers;
 
@@ -82,6 +85,7 @@ public final class PluginManager {
      */
     private PluginManager() {
         plugins = Sets.newLinkedHashSet();
+        pluginNames = Sets.newHashSet();
         pluginLookup = Maps.newHashMap();
         pluginClassifiers = HashMultimap.create();
         filters = Maps.newLinkedHashMap();
@@ -299,6 +303,15 @@ public final class PluginManager {
 
                 if (PLUGIN_CLASS.isAssignableFrom(testClass)) {
                     Plugin p = (Plugin) testClass.newInstance();
+
+                    String pluginName = p.getPluginName();
+
+                    if (pluginNames.contains(p.getPluginName())) {
+                        // We already have this plugin; stop processing it
+                        return;
+                    }
+
+                    pluginNames.add(pluginName);
 
                     buildGroupFilter(p);
 
