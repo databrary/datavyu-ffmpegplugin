@@ -159,7 +159,7 @@ public final class IntDataValueEditor extends DataValueEditor {
                 }
             }
 
-            StringBuffer currentValue = new StringBuffer(getText());
+            StringBuilder currentValue = new StringBuilder(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
 
             // Only insert value into the database if it is well formed.

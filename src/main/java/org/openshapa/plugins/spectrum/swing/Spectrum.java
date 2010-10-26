@@ -97,7 +97,7 @@ public final class Spectrum extends JComponent implements SpectrumView {
 
         frequency = frequency / 1000D;
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(frequency);
 
         int decimalIdx = sb.indexOf(".");

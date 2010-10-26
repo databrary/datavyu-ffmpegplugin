@@ -66,7 +66,7 @@ public final class VENameEditor extends EditorComponent {
         if (!this.isReserved(e.getKeyChar())) {
             try {
                 removeSelectedText();
-                StringBuffer currentValue = new StringBuffer(getText());
+                StringBuilder currentValue = new StringBuilder(getText());
                 currentValue.insert(getCaretPosition(), e.getKeyChar());
                 model.setName(currentValue.toString());
 

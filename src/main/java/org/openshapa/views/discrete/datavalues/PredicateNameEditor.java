@@ -118,7 +118,7 @@ public final class PredicateNameEditor extends DataValueEditor {
             // If the character is not reserved - add it to the name of the pred
         } else if (!e.isConsumed() && !isReserved(e.getKeyChar())) {
             removeSelectedText();
-            StringBuffer cValue = new StringBuffer(getText());
+            StringBuilder cValue = new StringBuilder(getText());
             cValue.insert(getCaretPosition(), e.getKeyChar());
             pos = getCaretPosition() + 1;
             setText(cValue.toString());

@@ -47,7 +47,7 @@ public final class GroupFileFilter extends FileFilter {
             }
         }
 
-        StringBuffer sb = new StringBuffer(description);
+        StringBuilder sb = new StringBuilder(description);
         sb.append(":");
 
         for (String ext : extensions) {

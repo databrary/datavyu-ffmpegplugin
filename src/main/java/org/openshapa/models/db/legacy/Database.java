@@ -3882,7 +3882,7 @@ public abstract class Database
 
     public String getDBVersionString()
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.getType());
         sb.append(" v");
         sb.append(this.getVersion());

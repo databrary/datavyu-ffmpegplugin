@@ -611,7 +611,7 @@ public final class FloatDataValueEditor extends DataValueEditor {
     public final JTextArea removeSelectedText(final JTextArea textArea) {
 
         // Get the current value of the visual representation of this DataValue.
-        StringBuffer cValue = new StringBuffer(textArea.getText());
+        StringBuilder cValue = new StringBuilder(textArea.getText());
         JTextArea result = textArea;
 
         // Obtain the start and finish of the selected text.
