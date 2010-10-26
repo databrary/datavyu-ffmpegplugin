@@ -233,9 +233,8 @@ public final class PlaybackEngine extends Thread {
 
                     if (buf != null) {
                         currentTime = buf.getTimestamp().toMillis();
+                        buf.dispose();
                     }
-
-                    buf.dispose();
                 }
             });
 
