@@ -284,10 +284,16 @@ public final class PluginManager {
             String cName = className.replaceAll("\\.class$", "").replace('/',
                     '.');
 
-            // Ignore UI tests - when they load they mess everything up (the
-            // uispec4j interceptor kicks in and the UI stops working.
+            /* Ignore classes that:
+              - Belong to the UITests (traditionally this was because of the
+                    UISpec4J interceptor, which interrupted the UI. We still
+                    ignore UITest classes as these will not be plugins)
+              - Are part of GStreamer, or JUnitX (these cause issues and are
+                    certainly not going to be plugins either)
+            */
             if (!cName.contains("org.openshapa.uitests")
-                    && !cName.contains("org.gstreamer")) {
+                    && !cName.contains("org.gstreamer")
+                    && !cName.startsWith("junitx")) {
 
                 Class<?> testClass = Class.forName(cName);
 
