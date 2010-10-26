@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.SwingWorker;
@@ -155,6 +156,9 @@ public final class AmplitudeTrack extends TrackPainter
             cacheHandler.stopCaching();
             cacheHandler = null;
         }
+
+        // Kill off our bg threads.
+        ((ExecutorService) executor).shutdown();
 
         super.deregister();
     }
