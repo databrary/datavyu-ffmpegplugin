@@ -16,6 +16,7 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.gstreamer.Gst;
 
 import com.google.common.collect.Lists;
+
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Filter;
 import org.openshapa.plugins.FilterNames;
@@ -32,7 +33,7 @@ public class SpectrumPlugin implements Plugin {
             final List<String> ext;
 
             {
-                ext = Lists.newArrayList(".wav", ".mp3");
+                ext = Lists.newArrayList(".wav", ".mp3", ".ogg");
                 ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
             }
 
