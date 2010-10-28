@@ -19,9 +19,11 @@ import org.openshapa.event.component.TrackMouseEventListener;
 
 import org.openshapa.models.component.MixerView;
 import org.openshapa.models.component.RegionConstants;
+import org.openshapa.models.component.RegionModel;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.Viewport;
 import org.openshapa.models.id.Identifier;
+
 import org.openshapa.plugins.CustomActions;
 import org.openshapa.plugins.ViewerStateListener;
 
@@ -53,7 +55,8 @@ public final class TracksEditorController implements TrackMouseEventListener {
     /**
      * Create a new tracks editor controller.
      */
-    public TracksEditorController(final MixerController mixerController, final MixerView mixer) {
+    public TracksEditorController(final MixerController mixerController,
+        final MixerView mixer) {
         tracks = new LinkedList<Track>();
         this.mixerController = mixerController;
         this.mixerView = mixer;
@@ -225,7 +228,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
      * snapping is enabled through {@link #setAllowSnap(boolean)}, then this
      * function will attempt to synchronize the track position with every other
      * track's position of interest. A position of interest includes time 0, start
-     * of a track, bookmarked positions, end of a track, and the current needle 
+     * of a track, bookmarked positions, end of a track, and the current needle
      * position.
      *
      * @param trackId
@@ -250,12 +253,15 @@ public final class TracksEditorController implements TrackMouseEventListener {
                 tc.setTrackOffset(newOffset);
                 snapMarkerController.setMarkerTime(-1);
 
-                final SnapPoint snapPoint = snapOffset(trackId, snapTemporalPosition);
+                final SnapPoint snapPoint = snapOffset(trackId,
+                        snapTemporalPosition);
                 tc.setMoveable(snapPoint == null);
+
                 if (snapPoint == null) {
                     snapMarkerController.setMarkerTime(-1);
                 } else {
-                    snapMarkerController.setMarkerTime(snapPoint.snapMarkerPosition);
+                    snapMarkerController.setMarkerTime(
+                        snapPoint.snapMarkerPosition);
                     tc.setTrackOffset(newOffset + snapPoint.snapOffset);
                 }
 
@@ -287,8 +293,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
     private SnapPoint snapOffset(final Identifier trackId,
         final long temporalSnapPosition) {
         final Viewport viewport = mixerView.getViewport();
-    	/** Points on other (non-selected) data tracks that can be used for alignment. */
+
+        /** Points on other (non-selected) data tracks that can be used for alignment. */
         final List<Long> snapCandidates = new ArrayList<Long>();
+
         /** Points on the current/selected data track that may be used for alignment against other data tracks. */
         final List<Long> snapPoints = new LinkedList<Long>();
         final Iterator<Track> allTracks = tracks.iterator();
@@ -297,14 +305,27 @@ public final class TracksEditorController implements TrackMouseEventListener {
 
         // add time zero as a candidate snap point
         if (viewport.isTimeInViewport(0)) {
-        	snapCandidates.add(0L);
+            snapCandidates.add(0L);
         }
-        
+
         // add the needle as a candidate snap point
-        
-        final long needlePosition = mixerController.getNeedleController().getNeedleModel().getCurrentTime();
+
+        final long needlePosition = mixerController.getNeedleController()
+            .getNeedleModel().getCurrentTime();
+
         if (viewport.isTimeInViewport(needlePosition)) {
-        	snapCandidates.add(needlePosition);
+            snapCandidates.add(needlePosition);
+        }
+
+        // BugzID:2410 - Region markers are snap candidates as well.
+        RegionModel rm = mixerController.getRegionController().getRegionModel();
+
+        if (viewport.isTimeInViewport(rm.getRegionStart())) {
+            snapCandidates.add(rm.getRegionStart());
+        }
+
+        if (viewport.isTimeInViewport(rm.getRegionEnd())) {
+            snapCandidates.add(rm.getRegionEnd());
         }
 
         // Compile track and candidate snap points
@@ -315,18 +336,19 @@ public final class TracksEditorController implements TrackMouseEventListener {
             final long bookmark = trackController.getBookmark();
             final long duration = trackController.getDuration();
 
-            final List<Long> snapList = track.trackId.equals(trackId) ? snapPoints : snapCandidates;
-            
+            final List<Long> snapList = track.trackId.equals(trackId)
+                ? snapPoints : snapCandidates;
+
             if (offset > 0) {
-            	snapList.add(offset);
+                snapList.add(offset);
             }
 
-            if (offset + bookmark > 0) {
-            	snapList.add(offset + bookmark);
+            if ((offset + bookmark) > 0) {
+                snapList.add(offset + bookmark);
             }
 
-            if (offset + duration > 0) {
-            	snapList.add(offset + duration);
+            if ((offset + duration) > 0) {
+                snapList.add(offset + duration);
             }
 
             if (duration > longestDuration) {
@@ -339,22 +361,26 @@ public final class TracksEditorController implements TrackMouseEventListener {
             return null;
         }
 
-        final long snappingThreshold = TrackController.calculateSnappingThreshold(viewport);
-        
+        final long snappingThreshold = TrackController
+            .calculateSnappingThreshold(viewport);
+
         // Remove duplicate candidate snap points
         for (int i = snapCandidates.size() - 1; i > 0; i--) {
-        	if (snapCandidates.get(i).equals(snapCandidates.get(i - 1))) {
-        		snapCandidates.remove(i);
-        	}
+
+            if (snapCandidates.get(i).equals(snapCandidates.get(i - 1))) {
+                snapCandidates.remove(i);
+            }
         }
-        
+
         // Sort the candidate snap points
         Collections.sort(snapCandidates);
 
         // Search for a snap position nearest to temporalSnapPosition
-        int nearestIndex = Collections.binarySearch(snapPoints, temporalSnapPosition);
+        int nearestIndex = Collections.binarySearch(snapPoints,
+                temporalSnapPosition);
+
         if (nearestIndex < 0) {
-        	nearestIndex = -(nearestIndex + 1);
+            nearestIndex = -(nearestIndex + 1);
         }
 
         if (nearestIndex >= snapPoints.size()) {
@@ -380,8 +406,9 @@ public final class TracksEditorController implements TrackMouseEventListener {
         for (Long snapPoint : snapPoints) {
             int candidateIndex = Collections.binarySearch(snapCandidates,
                     snapPoint);
+
             if (candidateIndex < 0) {
-            	candidateIndex = -(candidateIndex + 1);
+                candidateIndex = -(candidateIndex + 1);
             }
 
             if (candidateIndex >= snapCandidates.size()) {
@@ -396,10 +423,12 @@ public final class TracksEditorController implements TrackMouseEventListener {
             }
 
             if ((lowerSnapTime < snapPoint)
-                    && (Math.abs(snapPoint - lowerSnapTime) < snappingThreshold)) {
+                    && (Math.abs(snapPoint - lowerSnapTime)
+                        < snappingThreshold)) {
                 final SnapPoint sp = new SnapPoint();
                 sp.snapOffset = lowerSnapTime - snapPoint;
                 sp.snapMarkerPosition = lowerSnapTime;
+
                 return sp;
             }
 
@@ -408,6 +437,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
                 final SnapPoint sp = new SnapPoint();
                 sp.snapOffset = upperSnapTime - snapPoint;
                 sp.snapMarkerPosition = upperSnapTime;
+
                 return sp;
             }
         }
@@ -668,9 +698,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
 
         /** The snap marker position to paint. */
         public long snapMarkerPosition;
-        
+
         public String toString() {
-        	return "[SnapPoint snapOffset=" + snapOffset + ", snapMarkerPosition=" + snapMarkerPosition + "]";
+            return "[SnapPoint snapOffset=" + snapOffset
+                + ", snapMarkerPosition=" + snapMarkerPosition + "]";
         }
     }
 
