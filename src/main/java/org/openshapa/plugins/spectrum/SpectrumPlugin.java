@@ -1,5 +1,14 @@
 package org.openshapa.plugins.spectrum;
 
+import java.io.File;
+import java.io.IOException;
+
+import java.util.UUID;
+
+import org.apache.commons.io.FileUtils;
+
+import com.sun.jna.Platform;
+
 import java.awt.Frame;
 
 import java.io.FileFilter;
@@ -75,8 +84,34 @@ public class SpectrumPlugin implements Plugin {
     static {
         Gst.init();
 
+        try {
+            unpackAddons();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 //TODO need to do this somewhere to balance out the init/deinit calls
 //      Gst.deinit();
+    }
+
+    /** Audio plugin addon file. */
+    private static File addonFile;
+
+    /** Extract plugin addons to a temp location. */
+    private static void unpackAddons() throws IOException {
+        addonFile = File.createTempFile(UUID.randomUUID().toString(), ".exe");
+        addonFile.deleteOnExit();
+
+        if (Platform.isWindows()) {
+            FileUtils.copyInputStreamToFile(SpectrumPlugin.class
+                .getResourceAsStream(
+                    "/org/openshapa/plugins/spectrum/audio-points.exe"),
+                addonFile);
+        }
+    }
+
+    /** Audio plugin addon file. */
+    public static File getAddonFile() {
+        return addonFile;
     }
 
     @Override public DataViewer getNewDataViewer(final Frame parent,

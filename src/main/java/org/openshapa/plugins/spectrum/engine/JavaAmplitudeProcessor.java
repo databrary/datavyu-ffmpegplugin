@@ -222,18 +222,6 @@ final class JavaAmplitudeProcessor extends AmplitudeProcessor {
         return data;
     }
 
-    @Override protected void process(final List<AmplitudeBlock> chunks) {
-
-        // Thread got cancelled.
-        if (progressHandler == null) {
-            return;
-        }
-
-        for (AmplitudeBlock block : chunks) {
-            progressHandler.blockDone(block);
-        }
-    }
-
     /**
      * Update the track data.
      *

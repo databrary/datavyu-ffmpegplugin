@@ -12,6 +12,8 @@ import org.openshapa.plugins.spectrum.models.AmplitudeBlock;
 import org.openshapa.plugins.spectrum.models.ProcessorConstants;
 import org.openshapa.plugins.spectrum.models.StereoData;
 
+import com.sun.jna.Platform;
+
 
 /**
  * Process amplitude data for a given media file.
@@ -81,8 +83,25 @@ public abstract class AmplitudeProcessor
         rValNorm = ProcessorConstants.LEVELS;
     }
 
+    /**
+     * Creates a new amplitude processor.
+     *
+     * @param mediaFile
+     *            Media file to process.
+     * @param numChannels
+     *            Number of channels in the audio file.
+     * @param progressHandler
+     *            Progress handler.
+     * @return An AmplitudeProcessor implementation.
+     */
     public static AmplitudeProcessor create(final File mediaFile,
         final int numChannels, final Progress progressHandler) {
+
+        if (Platform.isWindows()) {
+            return new ExternalAmplitudeProcessor(mediaFile, numChannels,
+                    progressHandler);
+        }
+
         return new JavaAmplitudeProcessor(mediaFile, numChannels,
                 progressHandler);
     }
