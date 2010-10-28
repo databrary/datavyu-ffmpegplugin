@@ -14,4 +14,7 @@ public interface ProcessorConstants {
     /** Number of discretization levels. */
     static final int LEVELS = 1 << (DEPTH - 1);
 
+    /** Zoom threshold at which audio data is processed again. */
+    static final double ZOOM_REPROCESS_THRESHOLD = 0.05D;
+
 }

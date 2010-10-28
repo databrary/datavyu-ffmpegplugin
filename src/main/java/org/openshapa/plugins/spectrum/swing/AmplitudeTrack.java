@@ -381,7 +381,9 @@ public final class AmplitudeTrack extends TrackPainter
             }
 
             // Use the local cache as a backdrop if possible.
-            if ((localAmps != null) && (viewport.getZoomLevel() > 0.01)) {
+            if ((localAmps != null)
+                    && (viewport.getZoomLevel()
+                        > ProcessorConstants.ZOOM_REPROCESS_THRESHOLD)) {
                 final int x1 = (int) viewport.computePixelXOffset(
                         localVM.getViewStart() + trackModel.getOffset()
                         - localTM.getOffset());
@@ -419,7 +421,9 @@ public final class AmplitudeTrack extends TrackPainter
         }
 
         // Track isn't zoomed in enough to need processing of new data.
-        if ((viewport.getZoomLevel() < 0.01) && (cachedAmps != null)) {
+        if ((viewport.getZoomLevel()
+                    < ProcessorConstants.ZOOM_REPROCESS_THRESHOLD)
+                && (cachedAmps != null)) {
             progress = 1;
 
             return;
