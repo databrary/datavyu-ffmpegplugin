@@ -432,7 +432,7 @@ public final class AmplitudeTrack extends TrackPainter
                 viewport.getViewEnd()) - trackModel.getOffset();
 
         // 2. Make the worker thread.
-        processor = new AmplitudeProcessor(mediaFile, channels, progHandler);
+        processor = AmplitudeProcessor.create(mediaFile, channels, progHandler);
         processor.autoNormalizeAgainst(lValNorm, rValNorm);
         processor.setDataTimeSegment(start, end, MILLISECONDS);
         executor.execute(processor);
@@ -611,7 +611,7 @@ public final class AmplitudeTrack extends TrackPainter
         CacheWorker cw; // Generates global cache.
 
         void generateCache() {
-            ap = new AmplitudeProcessor(mediaFile, channels, this);
+            ap = AmplitudeProcessor.create(mediaFile, channels, this);
             ap.disableAutoNormalize();
             ap.setDataTimeSegment(start, end, MILLISECONDS);
             executor.execute(ap);
