@@ -11,6 +11,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.CarriageEventAdapter;
@@ -141,6 +142,14 @@ public final class TracksEditorController implements TrackMouseEventListener {
         editingPanel.add(trackController.getView(),
             "pad 0 0 0 " + -RegionConstants.RMARKER_WIDTH + ", growx");
         editingPanel.invalidate();
+
+        // BugzID:2391 - Make the newly added track visible.
+        SwingUtilities.invokeLater(new Runnable() {
+                @Override public void run() {
+                    editingPanel.scrollRectToVisible(
+                        trackController.getView().getBounds());
+                }
+            });
     }
 
     /**
