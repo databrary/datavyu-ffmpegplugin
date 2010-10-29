@@ -1035,10 +1035,12 @@ public final class PlaybackController implements PlaybackListener,
                             }
                         }
 
-                        mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(maxDuration, true);
-
                         if (viewers.isEmpty()) {
+                        	mixerController.getMixerModel().getViewportModel().resetViewport();
+                        	mixerController.getMixerModel().getRegionModel().resetPlaybackRegion();
                         	mixerController.getMixerModel().getNeedleModel().setCurrentTime(0);
+                        } else {
+                            mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(maxDuration, true);
                         }
 
                         // Remove the data viewer from the tracks panel.

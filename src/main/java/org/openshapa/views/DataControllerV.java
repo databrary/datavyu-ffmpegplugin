@@ -687,6 +687,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         if (viewers.isEmpty()) {
         	mixerController.getNeedleController().resetNeedlePosition();
+        	mixerController.getMixerModel().getRegionModel().resetPlaybackRegion();
         }
     }
 
