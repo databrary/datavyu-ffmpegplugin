@@ -20,6 +20,7 @@ import org.openshapa.event.component.TrackMouseEventListener;
 
 import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.RegionConstants;
+import org.openshapa.models.component.RegionState;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.ViewportState;
 import org.openshapa.models.id.Identifier;
@@ -46,7 +47,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
     private final List<Track> tracks;
 
     private final MixerController mixerController;
-    private final MixerModel mixerView;
+    private final MixerModel mixerModel;
 
     /** Handles the selection model for tracks. */
     private final CarriageSelection selectionHandler;
@@ -54,11 +55,11 @@ public final class TracksEditorController implements TrackMouseEventListener {
     /**
      * Create a new tracks editor controller.
      */
-    public TracksEditorController(final MixerController mixerController, final MixerModel mixer) {
+    public TracksEditorController(final MixerController mixerController, final MixerModel mixerModel) {
         tracks = new LinkedList<Track>();
         this.mixerController = mixerController;
-        this.mixerView = mixer;
-        snapMarkerController = new SnapMarkerController(mixer);
+        this.mixerModel = mixerModel;
+        snapMarkerController = new SnapMarkerController(mixerModel);
         selectionHandler = new CarriageSelection();
         initView();
     }
@@ -109,7 +110,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
         final TrackPainter trackPainter) {
 
         // TrackController
-        final TrackController trackController = new TrackController(mixerView,
+        final TrackController trackController = new TrackController(mixerModel,
                 trackPainter);
         trackController.setTrackInformation(trackId, icon, trackName, mediaPath,
             duration, offset);
@@ -295,7 +296,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
      */
     private SnapPoint snapOffset(final Identifier trackId,
         final long temporalSnapPosition) {
-        final ViewportState viewport = mixerView.getViewportModel().getViewport();
+        final ViewportState viewport = mixerModel.getViewportModel().getViewport();
     	/** Points on other (non-selected) data tracks that can be used for alignment. */
         final List<Long> snapCandidates = new ArrayList<Long>();
         /** Points on the current/selected data track that may be used for alignment against other data tracks. */
@@ -309,8 +310,18 @@ public final class TracksEditorController implements TrackMouseEventListener {
         	snapCandidates.add(0L);
         }
         
-        // add the needle as a candidate snap point
+        // add region markers as snap candidates
+        final RegionState region = mixerModel.getRegionModel().getRegion();
         
+        if (viewport.isTimeInViewport(region.getRegionStart())) {
+        	snapCandidates.add(region.getRegionStart());
+        }
+        
+        if (viewport.isTimeInViewport(region.getRegionEnd())) {
+        	snapCandidates.add(region.getRegionEnd());
+        }
+
+        // add the needle as a candidate snap point
         final long needlePosition = mixerController.getNeedleController().getNeedleModel().getCurrentTime();
         if (viewport.isTimeInViewport(needlePosition)) {
         	snapCandidates.add(needlePosition);
