@@ -33,13 +33,8 @@ public final class TimescalePainter extends JComponent {
     private TimescaleModel timescaleModel;
     private MixerModel mixer;
 
-    // standard date format for clock display.
-    private SimpleDateFormat clockFormat;
-
     public TimescalePainter() {
         super();
-        clockFormat = new SimpleDateFormat("HH:mm:ss:SSS");
-        clockFormat.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
     public TimescaleModel getTimescaleModel() {

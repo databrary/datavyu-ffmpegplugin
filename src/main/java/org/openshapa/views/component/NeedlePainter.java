@@ -8,6 +8,10 @@ import java.awt.RenderingHints;
 import java.awt.geom.GeneralPath;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.SimpleTimeZone;
 
 import javax.swing.JComponent;
 
@@ -15,6 +19,7 @@ import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.NeedleConstants;
 import org.openshapa.models.component.NeedleModelImpl;
 import org.openshapa.models.component.ViewportState;
+import org.openshapa.views.DataControllerV;
 
 /**
  * This class paints a timing needle.
@@ -142,6 +147,11 @@ public final class NeedlePainter extends JComponent implements PropertyChangeLis
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (evt.getSource() == needleModel) {
 			repaint();
+			updateToolTipText();
 		}
 	}
+	
+    private void updateToolTipText() {
+        setToolTipText(DataControllerV.formatTime(needleModel.getCurrentTime()));
+    }
 }

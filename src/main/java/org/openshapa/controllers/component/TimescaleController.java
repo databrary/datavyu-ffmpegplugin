@@ -6,6 +6,10 @@ import java.awt.event.MouseEvent;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.SimpleTimeZone;
 
 import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
@@ -19,6 +23,7 @@ import org.openshapa.models.component.TimescaleConstants;
 import org.openshapa.models.component.TimescaleModel;
 import org.openshapa.models.component.ViewportState;
 
+import org.openshapa.views.DataControllerV;
 import org.openshapa.views.component.TimescalePainter;
 
 
@@ -100,6 +105,10 @@ public final class TimescaleController implements PropertyChangeListener {
         }
     }
 
+    public void jumpToTime(final long jumpTime, final boolean togglePlaybackMode) {
+    	fireJumpEvent(jumpTime, togglePlaybackMode);
+    }
+    
     /**
      * Used to fire a new event informing listeners about the new needle time.
      *
@@ -149,6 +158,13 @@ public final class TimescaleController implements PropertyChangeListener {
 
         @Override public void mouseMoved(final MouseEvent e) {
        		mouseEntered(e);
+       		
+            viewport = mixerModel.getViewportModel().getViewport();
+        	if (view.isPointInTimescale(e.getX(), e.getY())) {
+            	view.setToolTipText(DataControllerV.formatTime(calculateNewNeedlePositionOnTimescale(e)));
+        	} else {
+        		view.setToolTipText(null);
+        	}
         }
         
         @Override public void mousePressed(final MouseEvent e) {
