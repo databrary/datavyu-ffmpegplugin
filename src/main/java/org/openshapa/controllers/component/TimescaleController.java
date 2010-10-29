@@ -14,7 +14,7 @@ import javax.swing.event.MouseInputAdapter;
 import org.openshapa.event.component.TimescaleEvent;
 import org.openshapa.event.component.TimescaleListener;
 
-import org.openshapa.models.component.MixerView;
+import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.TimescaleConstants;
 import org.openshapa.models.component.TimescaleModel;
 import org.openshapa.models.component.Viewport;
@@ -32,12 +32,12 @@ public final class TimescaleController implements PropertyChangeListener {
 
     /** Models */
     private final TimescaleModel timescaleModel;
-    private final MixerView mixer;
+    private final MixerModel mixer;
 
     /** Listeners interested in needle painter events */
     private final EventListenerList listenerList;
 
-    public TimescaleController(final MixerView mixer) {
+    public TimescaleController(final MixerModel mixer) {
         view = new TimescalePainter();
 
         timescaleModel = new TimescaleModel();

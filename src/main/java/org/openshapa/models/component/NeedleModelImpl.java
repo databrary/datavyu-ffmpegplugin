@@ -1,13 +1,13 @@
 package org.openshapa.models.component;
 
 import java.awt.Color;
+import java.beans.PropertyChangeEvent;
 
 /**
  * This model provides information used to render a timing needle on the tracks
  * interface.
  */
-public final class NeedleModel {
-
+public final class NeedleModelImpl extends MixerComponentModelImpl implements NeedleModel {
     /** Current time represented by the needle */
     private long currentTime;
 
@@ -20,50 +20,61 @@ public final class NeedleModel {
     /** Height of the zoom indicator area below the timescale transition area (pixels) */
     private int zoomIndicatorHeight = 0;
     
-    public NeedleModel() {
-    }
-
-    protected NeedleModel(final NeedleModel other) {
-        currentTime = other.currentTime;
-        needleColor = other.needleColor;
-        timescaleTransitionHeight = other.timescaleTransitionHeight;
-        zoomIndicatorHeight = other.zoomIndicatorHeight;
+    public NeedleModelImpl(final MixerModel mixerModel) {
+    	super(mixerModel);
     }
 
     /**
-     * @return Current time represented by the needle
+     * {@inheritDoc}
      */
-    public long getCurrentTime() {
+    @Override public void wireListeners() {
+    	mixerModel.getRegionModel().addPropertyChangeListener(this);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public synchronized long getCurrentTime() {
         return currentTime;
     }
 
     /**
-     * Set the current time represented by the needle
-     *
-     * @param currentTime
+     * {@inheritDoc}
      */
-    public void setCurrentTime(final long currentTime) {
-        this.currentTime = currentTime;
+    public void setCurrentTime(final long time) {
+    	final long oldTime;
+    	final long newTime;
+    	
+    	synchronized(this) {
+    		oldTime = currentTime;
+    		newTime = calculateRegionBoundedTime(time);
+    		if (oldTime == newTime) {
+    			return;
+    		}
+    		this.currentTime = newTime;
+    	}
+    	
+        firePropertyChange(NeedleModel.NAME, oldTime, newTime);
     }
 
     /**
      * @return color of the needle line
      */
-    public Color getNeedleColor() {
+    public synchronized Color getNeedleColor() {
     	return needleColor;
     }
     
     /**
      * Sets the color of the needle line.
      */
-    public void setNeedleColor(final Color needleColor) {
+    public synchronized void setNeedleColor(final Color needleColor) {
     	this.needleColor = needleColor;
     }
     
     /**
      * @return height of the transition area between the timescale and zoom indicator window (pixels)
      */
-    public int getTimescaleTransitionHeight() {
+    public synchronized int getTimescaleTransitionHeight() {
     	return timescaleTransitionHeight;
     }
     
@@ -71,14 +82,14 @@ public final class NeedleModel {
      * Sets the height between the transition area and the zoom indicator window.
      * @param newHeight new height in pixels
      */
-    public void setTimescaleTransitionHeight(int newHeight) {
+    public synchronized void setTimescaleTransitionHeight(int newHeight) {
     	timescaleTransitionHeight = newHeight;
     }
     
     /**
      * @return height of the zoom indicator area below the timescale (pixels)
      */
-    public int getZoomIndicatorHeight() {
+    public synchronized int getZoomIndicatorHeight() {
     	return zoomIndicatorHeight;
     }
     
@@ -86,15 +97,26 @@ public final class NeedleModel {
      * Sets the height of the zoom indicator area below the timescale.
      * @param newHeight new height in pixels
      */
-    public void setZoomIndicatorHeight(int newHeight) {
+    public synchronized void setZoomIndicatorHeight(int newHeight) {
     	zoomIndicatorHeight = newHeight;
     }
     
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
+    @Override public void propertyChange(PropertyChangeEvent evt) {
+    	if (evt.getSource() == mixerModel.getRegionModel()) {
+	        // keep the needle within the playback region
+    		setCurrentTime(getCurrentTime());
+    	}
+    }
+    
+    private long calculateRegionBoundedTime(final long time) {
+    	final RegionState region = mixerModel.getRegionModel().getRegion();
+        return Math.min(Math.max(time, region.getRegionStart()), region.getRegionEnd());
+    }
+    
+    /**
+     * {@inheritDoc}
      */
-    @Override public boolean equals(final Object obj) {
+    @Override public synchronized boolean equals(final Object obj) {
 
         if (this == obj)
             return true;
@@ -105,7 +127,7 @@ public final class NeedleModel {
         if (getClass() != obj.getClass())
             return false;
 
-        NeedleModel other = (NeedleModel) obj;
+        NeedleModelImpl other = (NeedleModelImpl) obj;
 
         if (currentTime != other.currentTime)
             return false;
@@ -122,11 +144,10 @@ public final class NeedleModel {
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#hashCode()
+    /**
+     * {@inheritDoc}
      */
-    @Override public int hashCode() {
+    @Override public synchronized int hashCode() {
         final int prime = 31;
         int result = 1;
         result = (prime * result) + (int) (currentTime ^ (currentTime >>> 32));
@@ -136,9 +157,4 @@ public final class NeedleModel {
 
         return result;
     }
-
-    public NeedleModel copy() {
-        return new NeedleModel(this);
-    }
-
 }

@@ -17,7 +17,7 @@ import org.openshapa.event.component.CarriageEventAdapter;
 import org.openshapa.event.component.CarriageEventListener;
 import org.openshapa.event.component.TrackMouseEventListener;
 
-import org.openshapa.models.component.MixerView;
+import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.Viewport;
@@ -45,7 +45,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
     private final List<Track> tracks;
 
     private final MixerController mixerController;
-    private final MixerView mixerView;
+    private final MixerModel mixerView;
 
     /** Handles the selection model for tracks. */
     private final CarriageSelection selectionHandler;
@@ -53,7 +53,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
     /**
      * Create a new tracks editor controller.
      */
-    public TracksEditorController(final MixerController mixerController, final MixerView mixer) {
+    public TracksEditorController(final MixerController mixerController, final MixerModel mixer) {
         tracks = new LinkedList<Track>();
         this.mixerController = mixerController;
         this.mixerView = mixer;

@@ -5,7 +5,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.JComponent;
 
-import org.openshapa.models.component.MixerView;
+import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.SnapMarkerModel;
 import org.openshapa.models.component.Viewport;
 
@@ -22,9 +22,9 @@ public final class SnapMarkerController implements PropertyChangeListener {
 
     /** Models */
     private final SnapMarkerModel snapMarkerModel;
-    private final MixerView mixer;
+    private final MixerModel mixer;
 
-    public SnapMarkerController(final MixerView mixer) {
+    public SnapMarkerController(final MixerModel mixer) {
         view = new SnapMarkerPainter();
 
         snapMarkerModel = new SnapMarkerModel();

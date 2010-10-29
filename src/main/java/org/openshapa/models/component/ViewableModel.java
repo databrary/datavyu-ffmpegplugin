@@ -18,12 +18,33 @@ public final class ViewableModel implements Viewport {
     /** The end time of the zoomed window */
     private final long viewEnd;
 
+    public final static long MINIMUM_MAX_END = 60000;
+    
     public ViewableModel(final long maxEnd, final double viewWidth,
         final long viewStart, final long viewEnd) {
-        this.maxEnd = maxEnd;
+        this.maxEnd = Math.max(maxEnd, MINIMUM_MAX_END);
         this.viewWidth = viewWidth;
         this.viewStart = viewStart;
         this.viewEnd = viewEnd;
+        validateConstraints(this);
+    }
+    
+    public static void validateConstraints(final Viewport viewport) {
+        assert viewport.getViewStart() <= viewport.getViewEnd();
+        assert viewport.getMaxEnd() > 0; // this simplifies calculations in many places
+        assert viewport.getViewWidth() >= 0;
+
+        if (viewport.getViewStart() > viewport.getViewEnd()) {
+            throw new IllegalArgumentException("viewStart must be <= viewEnd");
+        }
+
+        if (viewport.getMaxEnd() <= 0) {
+            throw new IllegalArgumentException("maxEnd must be > 0");
+        }
+
+        if (viewport.getViewWidth() < 0) {
+            throw new IllegalArgumentException("viewWidth must be >= 0");
+        }
     }
 
     /**

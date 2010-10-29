@@ -16,7 +16,7 @@ import java.util.SimpleTimeZone;
 
 import javax.swing.JComponent;
 
-import org.openshapa.models.component.MixerView;
+import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.TimescaleModel;
 import org.openshapa.models.component.Viewport;
 
@@ -31,7 +31,7 @@ public final class TimescalePainter extends JComponent {
      */
     private static final long serialVersionUID = 1514199704893523855L;
     private TimescaleModel timescaleModel;
-    private MixerView mixer;
+    private MixerModel mixer;
 
     // standard date format for clock display.
     private SimpleDateFormat clockFormat;
@@ -51,7 +51,7 @@ public final class TimescalePainter extends JComponent {
         this.repaint();
     }
 
-    public void setMixerView(final MixerView mixer) {
+    public void setMixerView(final MixerModel mixer) {
         this.mixer = mixer;
         repaint();
     }

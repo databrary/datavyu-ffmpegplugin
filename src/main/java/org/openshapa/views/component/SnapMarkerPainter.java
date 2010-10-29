@@ -10,7 +10,7 @@ import java.awt.geom.GeneralPath;
 
 import javax.swing.JComponent;
 
-import org.openshapa.models.component.MixerView;
+import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.SnapMarkerModel;
 import org.openshapa.models.component.Viewport;
 
@@ -30,7 +30,7 @@ public final class SnapMarkerPainter extends JComponent {
     
     private SnapMarkerModel snapMarkerModel;
 
-    private MixerView mixer;
+    private MixerModel mixer;
 
     public SnapMarkerPainter() {
         super();
@@ -45,7 +45,7 @@ public final class SnapMarkerPainter extends JComponent {
         repaint();
     }
 
-    public void setMixerView(final MixerView mixer) {
+    public void setMixerView(final MixerModel mixer) {
         this.mixer = mixer;
         repaint();
     }

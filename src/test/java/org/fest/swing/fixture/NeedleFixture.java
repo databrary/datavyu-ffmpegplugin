@@ -40,14 +40,14 @@ public class NeedleFixture extends ComponentFixture {
      * @return Current time represented by the needle as a long.
      */
     public long getCurrentTimeAsLong() {
-        return needleC.getCurrentTime();
+        return needleC.getNeedleModel().getCurrentTime();
     }
 
     /**
      * @return Current time represented by the needle as a timestamp.
      */
     public String getCurrentTimeAsTimeStamp() {
-        return UIUtils.millisecondsToTimestamp(needleC.getCurrentTime());
+        return UIUtils.millisecondsToTimestamp(needleC.getNeedleModel().getCurrentTime());
     }
 
     public boolean isMouseOnNeedleHead() {

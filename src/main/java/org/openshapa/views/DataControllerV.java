@@ -44,15 +44,16 @@ import org.openshapa.controllers.component.MixerController;
 import org.openshapa.controllers.id.IDController;
 
 import org.openshapa.event.component.CarriageEvent;
-import org.openshapa.event.component.MarkerEvent;
-import org.openshapa.event.component.NeedleEvent;
 import org.openshapa.event.component.TimescaleEvent;
 import org.openshapa.event.component.TracksControllerEvent;
 import org.openshapa.event.component.TracksControllerListener;
 
 import org.openshapa.models.PlaybackModel;
 import org.openshapa.models.component.MixerConstants;
+import org.openshapa.models.component.RegionState;
 import org.openshapa.models.component.TimescaleConstants;
+import org.openshapa.models.component.ViewableModel;
+import org.openshapa.models.component.Viewport;
 import org.openshapa.models.id.Identifier;
 
 import org.openshapa.plugins.PluginManager;
@@ -67,6 +68,8 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -79,7 +82,7 @@ import org.openshapa.plugins.Plugin;
  * Quicktime video controller.
  */
 public final class DataControllerV extends OpenSHAPADialog
-    implements ClockListener, TracksControllerListener, DataController {
+    implements ClockListener, TracksControllerListener, DataController, PropertyChangeListener {
 
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
@@ -342,7 +345,7 @@ public final class DataControllerV extends OpenSHAPADialog
         playbackModel = new PlaybackModel();
         playbackModel.setPauseRate(0);
         playbackModel.setLastSync(0);
-        playbackModel.setMaxDuration(0);
+        playbackModel.setMaxDuration(ViewableModel.MINIMUM_MAX_END);
 
         final int defaultEndTime = (int) MixerConstants.DEFAULT_DURATION;
 
@@ -352,6 +355,8 @@ public final class DataControllerV extends OpenSHAPADialog
         mixerController = new MixerController();
         tracksPanel.add(mixerController.getTracksPanel(), "growx");
         mixerController.addTracksControllerListener(this);
+        mixerController.getMixerModel().getRegionModel().addPropertyChangeListener(this);
+        mixerController.getMixerModel().getNeedleModel().addPropertyChangeListener(this);
 
         tracksPanelEnabled = true;
         showTracksPanel(tracksPanelEnabled);
@@ -645,10 +650,8 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     public void setCurrentTime(final long milliseconds) {
         resetSync();
-        timestampLabel.setText(tracksPanelEnabled
-                ? CLOCK_FORMAT_HTML.format(milliseconds)
-                : CLOCK_FORMAT.format(milliseconds));
-        mixerController.setCurrentTime(milliseconds);
+        updateCurrentTimeLabel();
+        mixerController.getMixerModel().getNeedleModel().setCurrentTime(milliseconds);
     }
 
     private void updateCurrentTimeLabel() {
@@ -668,7 +671,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
     /** Recalculates the maximum viewer duration. */
     public void updateMaxViewerDuration() {
-        long maxDuration = 0;
+        long maxDuration = ViewableModel.MINIMUM_MAX_END;
         Iterator<DataViewer> it = viewers.iterator();
 
         while (it.hasNext()) {
@@ -679,46 +682,11 @@ public final class DataControllerV extends OpenSHAPADialog
             }
         }
 
-        playbackModel.setMaxDuration(maxDuration);
-        maxDuration = mixerController.setMaxEnd(maxDuration, true);
+        mixerController.getMixerModel().setViewportMaxEnd(maxDuration, true);
 
-        // Reset visualisation of playback regions.
-        // Always reset if there are not more viewers.
-        if ((playbackModel.getWindowPlayEnd() > maxDuration)
-                || viewers.isEmpty()) {
-            playbackModel.setWindowPlayEnd(maxDuration);
-            mixerController.setPlayRegionEnd(maxDuration);
-        }
-
-        if ((playbackModel.getWindowPlayStart()
-                    > playbackModel.getWindowPlayEnd()) || viewers.isEmpty()) {
-            playbackModel.setWindowPlayStart(0);
-            mixerController.setPlayRegionStart(
-                playbackModel.getWindowPlayStart());
-        }
-
-        // Reset visualisation of current playback time.
-        long tracksTime = mixerController.getCurrentTime();
-
-        // If there are no more viewers, move the needle back to the initial
-        // position.
         if (viewers.isEmpty()) {
-            tracksTime = 0;
+        	mixerController.getNeedleController().resetNeedlePosition();
         }
-
-        if (tracksTime < playbackModel.getWindowPlayStart()) {
-            tracksTime = playbackModel.getWindowPlayStart();
-        }
-
-        if (tracksTime > playbackModel.getWindowPlayEnd()) {
-            tracksTime = playbackModel.getWindowPlayEnd();
-        }
-
-        mixerController.setCurrentTime(tracksTime);
-
-        // Reset the clock.
-        clock.setTime(tracksTime);
-        clockStep(tracksTime);
     }
 
     /**
@@ -1729,16 +1697,7 @@ public final class DataControllerV extends OpenSHAPADialog
             maxDuration = viewer.getOffset() + viewer.getDuration();
         }
 
-        playbackModel.setMaxDuration(maxDuration);
-        mixerController.setMaxEnd(maxDuration, true);
-
-        // BugzID:2114 - Always set the model constraints if this is the first
-        // viewer we are adding in addition to when the max duration changes.
-        if ((playbackModel.getWindowPlayEnd() < maxDuration)
-                || (viewers.size() == 1)) {
-            playbackModel.setWindowPlayEnd(maxDuration);
-            mixerController.setPlayRegionEnd(maxDuration);
-        }
+        mixerController.getMixerModel().setViewportMaxEnd(maxDuration, true);
     }
 
     /**
@@ -1778,41 +1737,17 @@ public final class DataControllerV extends OpenSHAPADialog
     public void tracksControllerChanged(final TracksControllerEvent e) {
 
         switch (e.getTracksEvent()) {
-
-        case NEEDLE_EVENT:
-            handleNeedleEvent((NeedleEvent) e.getEventObject());
-
-            break;
-
-        case MARKER_EVENT:
-            handleMarkerEvent((MarkerEvent) e.getEventObject());
-
-            break;
-
         case CARRIAGE_EVENT:
             handleCarriageEvent((CarriageEvent) e.getEventObject());
-
             break;
 
         case TIMESCALE_EVENT:
             handleTimescaleEvent((TimescaleEvent) e.getEventObject());
-
             break;
 
         default:
             break;
         }
-    }
-
-    /**
-     * Handles a NeedleEvent (when the timing needle changes due to user
-     * interaction).
-     *
-     * @param e
-     *            The Needle event that triggered this action.
-     */
-    private void handleNeedleEvent(final NeedleEvent e) {
-        gotoTime(e.getTime());
     }
 
     /**
@@ -1850,101 +1785,6 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     /**
-     * Handles a MarkerEvent (when one of the region marker changes due to user
-     * interaction).
-     *
-     * @param e
-     *            The Marker Event that triggered this action.
-     */
-    private void handleMarkerEvent(final MarkerEvent e) {
-        final long newWindowTime = e.getTime();
-        final long tracksTime = mixerController.getCurrentTime();
-
-        switch (e.getMarker()) {
-
-        case START_MARKER:
-            handleStartMarkerEvent(newWindowTime, tracksTime);
-
-            break;
-
-        case END_MARKER:
-            handleEndMarkerEvent(newWindowTime, tracksTime);
-
-            break;
-
-        default:
-            throw new IllegalArgumentException("Unknown marker event.");
-        }
-    }
-
-    /**
-     * Helper method for handling the end region marker event.
-     *
-     * @param newWindowTime
-     *            New region marker time.
-     * @param tracksTime
-     *            Current time.
-     */
-    private void handleEndMarkerEvent(final long newWindowTime,
-        final long tracksTime) {
-
-        final long maxDuration = playbackModel.getMaxDuration();
-        long windowPlayEnd;
-
-        if ((newWindowTime <= maxDuration)
-                && (newWindowTime > playbackModel.getWindowPlayStart())) {
-            windowPlayEnd = newWindowTime;
-        } else if (newWindowTime > maxDuration) {
-            windowPlayEnd = maxDuration;
-        } else {
-            windowPlayEnd = playbackModel.getWindowPlayStart();
-        }
-
-        playbackModel.setWindowPlayEnd(windowPlayEnd);
-
-        mixerController.setPlayRegionEnd(windowPlayEnd);
-
-        if (tracksTime > windowPlayEnd) {
-            mixerController.setCurrentTime(windowPlayEnd);
-            clock.setTime(windowPlayEnd);
-            clockStep(windowPlayEnd);
-        }
-    }
-
-    /**
-     * Helper method for handling the start region marker event.
-     *
-     * @param newWindowTime
-     *            New region marker time.
-     * @param tracksTime
-     *            Current time.
-     */
-    private void handleStartMarkerEvent(final long newWindowTime,
-        final long tracksTime) {
-        final long windowPlayEnd = playbackModel.getWindowPlayEnd();
-        long windowPlayStart;
-
-        if ((newWindowTime < playbackModel.getMaxDuration())
-                && (newWindowTime < windowPlayEnd)) {
-            windowPlayStart = newWindowTime;
-        } else if (newWindowTime >= windowPlayEnd) {
-            windowPlayStart = windowPlayEnd;
-        } else {
-            windowPlayStart = playbackModel.getMaxDuration();
-        }
-
-        playbackModel.setWindowPlayStart(windowPlayStart);
-
-        mixerController.setPlayRegionStart(windowPlayStart);
-
-        if (tracksTime < windowPlayStart) {
-            mixerController.setCurrentTime(windowPlayStart);
-            clock.setTime(windowPlayStart);
-            clockStep(windowPlayStart);
-        }
-    }
-
-    /**
      * Handles a CarriageEvent (when the carriage moves due to user
      * interaction).
      *
@@ -1957,7 +1797,6 @@ public final class DataControllerV extends OpenSHAPADialog
 
         case OFFSET_CHANGE:
             handleCarriageOffsetChangeEvent(e);
-
             break;
 
         case CARRIAGE_LOCK:
@@ -1992,53 +1831,37 @@ public final class DataControllerV extends OpenSHAPADialog
         OpenSHAPA.getProjectController().projectChanged();
 
         // Recalculate the maximum playback duration.
-        boolean updateEndRegionMarker = playbackModel.getMaxDuration()
-            == mixerController.getRegionController().getRegionModel()
-            .getRegionEnd();
-        long maxDuration = 0;
+        long maxDuration = ViewableModel.MINIMUM_MAX_END;
 
         for (DataViewer viewer : viewers) {
-
             if ((viewer.getDuration() + viewer.getOffset()) > maxDuration) {
                 maxDuration = viewer.getDuration() + viewer.getOffset();
             }
         }
 
-        playbackModel.setMaxDuration(maxDuration);
-
-        mixerController.setMaxEnd(maxDuration, false);
-
-        // Reset our playback windows
-        if ((playbackModel.getWindowPlayEnd() > maxDuration)
-                || updateEndRegionMarker) {
-            playbackModel.setWindowPlayEnd(maxDuration);
-            mixerController.setPlayRegionEnd(maxDuration);
-        }
-
-        if (playbackModel.getWindowPlayStart()
-                > playbackModel.getWindowPlayEnd()) {
-            playbackModel.setWindowPlayStart(0);
-            mixerController.setPlayRegionStart(
-                playbackModel.getWindowPlayStart());
-        }
-
-        // Reset the time if needed
-        long tracksTime = mixerController.getCurrentTime();
-
-        if (tracksTime < playbackModel.getWindowPlayStart()) {
-            tracksTime = playbackModel.getWindowPlayStart();
-        }
-
-        if (tracksTime > playbackModel.getWindowPlayEnd()) {
-            tracksTime = playbackModel.getWindowPlayEnd();
-        }
-
-        mixerController.setCurrentTime(tracksTime);
-
-        clock.setTime(tracksTime);
-        clockStep(tracksTime);
+        mixerController.getMixerModel().setViewportMaxEnd(maxDuration, false);
     }
 
+    private void handleNeedleChanged(final PropertyChangeEvent e) {
+    	if (clock.isStopped()) {
+	        final long newTime = mixerController.getMixerModel().getNeedleModel().getCurrentTime();
+	        clock.setTime(newTime);
+	        clockStep(newTime);
+    	}
+        updateCurrentTimeLabel();
+    }
+
+	private void handleRegionChanged(final PropertyChangeEvent e) {
+        final RegionState region = mixerController.getMixerModel().getRegionModel().getRegion();
+        playbackModel.setWindowPlayStart(region.getRegionStart());
+        playbackModel.setWindowPlayEnd(region.getRegionEnd());
+	}
+    
+	private void handleViewportChanged(final PropertyChangeEvent e) {
+		final Viewport viewport = mixerController.getMixerModel().getViewport();
+        playbackModel.setMaxDuration(viewport.getMaxEnd());
+	}
+    
     // -------------------------------------------------------------------------
     // Simulated clicks (for numpad calls)
     //
@@ -2341,31 +2164,13 @@ public final class DataControllerV extends OpenSHAPADialog
     public void setRegionOfInterestAction() {
 
         try {
-            final long newWindowPlayStart = CLOCK_FORMAT.parse(
-                    findTextField.getText()).getTime();
-            final long newWindowPlayEnd = CLOCK_FORMAT.parse(
-                    findOffsetField.getText()).getTime();
-
-            playbackModel.setWindowPlayStart(newWindowPlayStart);
-            mixerController.setPlayRegionStart(newWindowPlayStart);
-
-            if (newWindowPlayStart < newWindowPlayEnd) {
-                playbackModel.setWindowPlayEnd(newWindowPlayEnd);
-                mixerController.setPlayRegionEnd(newWindowPlayEnd);
-            } else {
-                playbackModel.setWindowPlayEnd(newWindowPlayStart);
-                mixerController.setPlayRegionEnd(newWindowPlayStart);
-            }
-
-            final long currentTime = mixerController.getCurrentTime();
-
-            if (currentTime > newWindowPlayEnd) {
-                mixerController.setCurrentTime(newWindowPlayEnd);
-                clock.setTime(newWindowPlayEnd);
-            } else if (currentTime < newWindowPlayStart) {
-                mixerController.setCurrentTime(newWindowPlayStart);
-                clock.setTime(newWindowPlayStart);
-            }
+            final long findTextTime = CLOCK_FORMAT.parse(findTextField.getText()).getTime();
+            final long findOffsetTime = CLOCK_FORMAT.parse(findOffsetField.getText()).getTime();
+            
+            final long newWindowPlayStart = findTextTime;
+            final long newWindowPlayEnd = findOffsetTime > newWindowPlayStart ? findOffsetTime : newWindowPlayStart;
+            mixerController.getMixerModel().getRegionModel().setPlaybackRegion(newWindowPlayStart, newWindowPlayEnd);
+            mixerController.getMixerModel().getNeedleModel().setCurrentTime(newWindowPlayStart);
         } catch (ParseException e) {
             logger.error("Unable to set playback region of interest", e);
         }
@@ -2569,4 +2374,15 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action public void syncVideoAction() {
     }
+
+    @Override
+	public void propertyChange(PropertyChangeEvent e) {
+		if (e.getSource() == mixerController.getNeedleController().getNeedleModel()) {
+			handleNeedleChanged(e);
+		} else if (e.getSource() == mixerController.getMixerModel()) {
+			handleViewportChanged(e);
+		} else if (e.getSource() == mixerController.getRegionController().getModel()) {
+			handleRegionChanged(e);
+		}
+	}
 }

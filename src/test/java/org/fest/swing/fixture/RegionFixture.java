@@ -11,7 +11,7 @@ import org.openshapa.controllers.component.RegionController;
 
 import org.openshapa.util.UIUtils;
 
-import org.openshapa.views.component.RegionPainter;
+import org.openshapa.views.component.RegionView;
 
 
 /**
@@ -36,7 +36,7 @@ public class RegionFixture extends ComponentFixture {
      * @return Start time of the region as a long.
      */
     public long getStartTimeAsLong() {
-        return regionC.getRegionModel().getRegionStart();
+        return regionC.getModel().getRegion().getRegionStart();
     }
 
     /**
@@ -50,7 +50,7 @@ public class RegionFixture extends ComponentFixture {
      * @return End time of the region as a long.
      */
     public long getEndTimeAsLong() {
-        return regionC.getRegionModel().getRegionEnd();
+        return regionC.getModel().getRegion().getRegionEnd();
     }
 
     /**
@@ -64,7 +64,7 @@ public class RegionFixture extends ComponentFixture {
      * @return true if mouse is on the region head.
      */
     public boolean isMouseOnRegionHead() {
-        return ((RegionPainter) target).contains(
+        return ((RegionView) target).contains(
                 MouseInfo.getPointerInfo().getLocation());
     }
 
@@ -91,10 +91,10 @@ public class RegionFixture extends ComponentFixture {
      * @return Point in the centre of the start marker head
      */
     private Point getPointInStartMarker() {
-        GeneralPath startMarker = ((RegionPainter) target).getStartMarkerPolygon();
+        GeneralPath startMarker = ((RegionView) target).getStartMarkerPolygon();
         return new Point(
-                (int) startMarker.getBounds().getCenterX() + ((RegionPainter) target).getLocationOnScreen().x,
-                (int) startMarker.getBounds().getCenterY() + ((RegionPainter) target).getLocationOnScreen().y
+                (int) startMarker.getBounds().getCenterX() + ((RegionView) target).getLocationOnScreen().x,
+                (int) startMarker.getBounds().getCenterY() + ((RegionView) target).getLocationOnScreen().y
                 );
     }
 
@@ -121,10 +121,10 @@ public class RegionFixture extends ComponentFixture {
      * @return a Point in the EndMarker.
      */
     public Point getPointInEndMarker() {
-        GeneralPath endMarker = ((RegionPainter) target).getEndMarkerPolygon();
+        GeneralPath endMarker = ((RegionView) target).getEndMarkerPolygon();
         return new Point(
-                (int) endMarker.getBounds().getCenterX() + ((RegionPainter) target).getLocationOnScreen().x,
-                (int) endMarker.getBounds().getCenterY() + ((RegionPainter) target).getLocationOnScreen().y
+                (int) endMarker.getBounds().getCenterX() + ((RegionView) target).getLocationOnScreen().x,
+                (int) endMarker.getBounds().getCenterY() + ((RegionView) target).getLocationOnScreen().y
                 );
     }
 }

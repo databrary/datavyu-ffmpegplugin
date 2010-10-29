@@ -44,7 +44,7 @@ import org.openshapa.event.component.CarriageEventListener;
 import org.openshapa.event.component.TrackMouseEventListener;
 import org.openshapa.event.component.CarriageEvent.EventType;
 
-import org.openshapa.models.component.MixerView;
+import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.TrackConstants;
 import org.openshapa.models.component.TrackModel;
 import org.openshapa.models.component.Viewport;
@@ -95,7 +95,7 @@ public final class TrackController implements ViewerStateListener,
     private final JButton visibleButton;
 
     /** Viewable model. */
-    private final MixerView mixer;
+    private final MixerModel mixer;
 
     /** Track model. */
     private final TrackModel trackModel;
@@ -118,7 +118,7 @@ public final class TrackController implements ViewerStateListener,
      *
      * @param trackPainter the track painter for this controller to manage.
      */
-    public TrackController(final MixerView mixer,
+    public TrackController(final MixerModel mixer,
         final TrackPainter trackPainter) {
         isMoveable = true;
 

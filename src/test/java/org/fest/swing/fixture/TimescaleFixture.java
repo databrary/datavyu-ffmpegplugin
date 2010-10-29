@@ -7,7 +7,7 @@ import org.fest.swing.core.Robot;
 
 import org.openshapa.controllers.component.TimescaleController;
 
-import org.openshapa.models.component.MixerView;
+import org.openshapa.models.component.MixerModel;
 
 import org.openshapa.util.UIUtils;
 
@@ -22,7 +22,7 @@ public class TimescaleFixture extends ComponentFixture {
     /** The underlying timescale controller. */
     private TimescaleController timescaleC;
 
-    private MixerView mixerView;
+    private MixerModel mixerView;
 
     /**
      * Constructor.
@@ -34,7 +34,7 @@ public class TimescaleFixture extends ComponentFixture {
         super(robot, target.getView());
         timescaleC = target;
 
-        mixerView = field("mixer").ofType(MixerView.class).in(timescaleC).get();
+        mixerView = field("mixer").ofType(MixerModel.class).in(timescaleC).get();
     }
 
     /**
