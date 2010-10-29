@@ -36,8 +36,10 @@ public final class NeedleController implements PropertyChangeListener {
     /** Models */
     private final NeedleModelImpl needleModel;
     private final MixerModel mixerModel;
+    private final MixerController mixerController;
 
-    public NeedleController(final MixerModel mixer) {
+    public NeedleController(final MixerController mixerController, final MixerModel mixer) {
+    	this.mixerController = mixerController;
     	assert mixer.getNeedleModel() instanceof NeedleModelImpl; // UGLY HACK until this is fixed properly
         needleModel = (NeedleModelImpl) mixer.getNeedleModel();
 
@@ -58,11 +60,7 @@ public final class NeedleController implements PropertyChangeListener {
      * @param currentTime
      */
     public void setCurrentTime(final long currentTime) {
-        /** Format for representing time. */
-        DateFormat df = new SimpleDateFormat("HH:mm:ss:SSS");
-        df.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
         needleModel.setCurrentTime(currentTime);
-        view.setToolTipText(df.format(new Date(currentTime)));
     }
 
     /**
@@ -132,7 +130,7 @@ public final class NeedleController implements PropertyChangeListener {
 	            final double dx = Math.min(Math.max(e.getX() - NeedleConstants.NEEDLE_HEAD_WIDTH - needlePositionOffsetX, 0), view.getWidth());
 	            long newTime = viewport.computeTimeFromXOffset(dx) + viewport.getViewStart();
 	            newTime = Math.min(Math.max(newTime, viewport.getViewStart()), viewport.getViewEnd());
-	            needleModel.setCurrentTime(newTime);
+	            mixerController.getTimescaleController().jumpToTime(newTime, false); // TEMPORARY UGLY HACK
         	}
         }
         

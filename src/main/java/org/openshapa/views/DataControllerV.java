@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -156,6 +157,10 @@ public final class DataControllerV extends OpenSHAPADialog
                 + "'<font color=\"" + toRGBString(millisecondsColor)
                 + "\">'SSS'</font>" + "</html>'");
         CLOCK_FORMAT_HTML.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
+    }
+    
+    public static String formatTime(final long time) {
+    	return CLOCK_FORMAT.format(new Date(time));
     }
 
     /**

@@ -254,7 +254,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
 
         timescaleController = new TimescaleController(mixerModel);
         timescaleController.addTimescaleEventListener(this);
-        needleController = new NeedleController(mixerModel);
+        needleController = new NeedleController(this, mixerModel);
         regionController = new RegionController(mixerModel);
         tracksEditorController = new TracksEditorController(this, mixerModel);
 
