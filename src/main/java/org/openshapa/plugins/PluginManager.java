@@ -67,6 +67,9 @@ public final class PluginManager {
     /** Set of plugins. */
     private Set<Plugin> plugins;
 
+    /** Set of names of the plugins we have added. */
+    private Set<String> pluginNames;
+
     /** Mapping between plugin classifiers and plugins. */
     private Multimap<String, Plugin> pluginClassifiers;
 
@@ -82,6 +85,7 @@ public final class PluginManager {
      */
     private PluginManager() {
         plugins = Sets.newLinkedHashSet();
+        pluginNames = Sets.newHashSet();
         pluginLookup = Maps.newHashMap();
         pluginClassifiers = HashMultimap.create();
         filters = Maps.newLinkedHashMap();
@@ -284,15 +288,30 @@ public final class PluginManager {
             String cName = className.replaceAll("\\.class$", "").replace('/',
                     '.');
 
-            // Ignore UI tests - when they load they mess everything up (the
-            // uispec4j interceptor kicks in and the UI stops working.
+            /* Ignore classes that:
+              - Belong to the UITests (traditionally this was because of the
+                    UISpec4J interceptor, which interrupted the UI. We still
+                    ignore UITest classes as these will not be plugins)
+              - Are part of GStreamer, or JUnitX (these cause issues and are
+                    certainly not going to be plugins either)
+            */
             if (!cName.contains("org.openshapa.uitests")
-                    && !cName.contains("org.gstreamer")) {
+                    && !cName.contains("org.gstreamer")
+                    && !cName.startsWith("junitx")) {
 
                 Class<?> testClass = Class.forName(cName);
 
                 if (PLUGIN_CLASS.isAssignableFrom(testClass)) {
                     Plugin p = (Plugin) testClass.newInstance();
+
+                    String pluginName = p.getPluginName();
+
+                    if (pluginNames.contains(p.getPluginName())) {
+                        // We already have this plugin; stop processing it
+                        return;
+                    }
+
+                    pluginNames.add(pluginName);
 
                     buildGroupFilter(p);
 

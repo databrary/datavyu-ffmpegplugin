@@ -109,7 +109,7 @@ public final class FormalArgEditor extends EditorComponent {
 
             try {
                 removeSelectedText();
-                StringBuffer currentValue = new StringBuffer(getText());
+                StringBuilder currentValue = new StringBuilder(getText());
                 currentValue.insert(getCaretPosition(), e.getKeyChar());
                 model.setFargName("<" + currentValue.toString() + ">");
                 vocabElement.replaceFormalArg(model, argIndex);

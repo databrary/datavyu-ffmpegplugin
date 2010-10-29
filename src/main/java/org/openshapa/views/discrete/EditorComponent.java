@@ -443,7 +443,7 @@ public abstract class EditorComponent implements ClipboardOwner {
             }
 
             // Delete next character.
-            StringBuffer currentValue = new StringBuffer(getText());
+            StringBuilder currentValue = new StringBuilder(getText());
             currentValue.deleteCharAt(getCaretPosition());
 
             if (!isDeletingChar) {
@@ -480,7 +480,7 @@ public abstract class EditorComponent implements ClipboardOwner {
             }
 
             // Delete previous character.
-            StringBuffer currentValue = new StringBuffer(getText());
+            StringBuilder currentValue = new StringBuilder(getText());
             currentValue.deleteCharAt(carPosMinusOne);
             if (!isDeletingChar) {
                 currentValue.insert(carPosMinusOne, replaceChar);
@@ -500,7 +500,7 @@ public abstract class EditorComponent implements ClipboardOwner {
      */
     public final void removeSelectedText() {
         // Get the current value of the visual representation of this DataValue.
-        StringBuffer cValue = new StringBuffer(getText());
+        StringBuilder cValue = new StringBuilder(getText());
 
         // Obtain the start and finish of the selected text.
         int start = this.getSelectionStart();

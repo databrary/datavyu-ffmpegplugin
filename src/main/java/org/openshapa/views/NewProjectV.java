@@ -1,6 +1,7 @@
 package org.openshapa.views;
 
 import com.usermetrix.jclient.Logger;
+
 import java.awt.Frame;
 
 import org.jdesktop.application.Application;
@@ -15,8 +16,10 @@ import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
+
 import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle;
+
 import org.openshapa.controllers.NewProjectC;
 
 
@@ -76,7 +79,11 @@ public final class NewProjectV extends OpenSHAPADialog {
         okButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewProjectV.class);
+
+        org.jdesktop.application.ResourceMap resourceMap =
+            org.jdesktop.application.Application.getInstance(
+                org.openshapa.OpenSHAPA.class).getContext().getResourceMap(
+                NewProjectV.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
         setResizable(false);
@@ -102,61 +109,71 @@ public final class NewProjectV extends OpenSHAPADialog {
         cancelButton.setText(resourceMap.getString("cancelButton.text")); // NOI18N
         cancelButton.setName("cancelButton"); // NOI18N
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(
+                    final java.awt.event.ActionEvent evt) {
+                    cancelButtonActionPerformed(evt);
+                }
+            });
 
         okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
         okButton.setName("okButton"); // NOI18N
         okButton.setPreferredSize(new java.awt.Dimension(65, 23));
         okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(
+                    final java.awt.event.ActionEvent evt) {
+                    okButtonActionPerformed(evt);
+                }
+            });
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel1))
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                            .addComponent(nameField, GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)))
-                    .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(okButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelButton)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(nameField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 111, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(cancelButton)
-                    .addComponent(okButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        layout.setHorizontalGroup(layout.createParallelGroup(
+                GroupLayout.Alignment.LEADING).addGroup(
+                layout.createSequentialGroup().addContainerGap().addGroup(
+                    layout.createParallelGroup(
+                        GroupLayout.Alignment.LEADING).addGroup(
+                        layout.createSequentialGroup().addGroup(
+                            layout.createParallelGroup(
+                                GroupLayout.Alignment.LEADING).addComponent(
+                                jLabel2).addComponent(jLabel1)).addPreferredGap(
+                            LayoutStyle.ComponentPlacement.RELATED).addGroup(
+                            layout.createParallelGroup(
+                                GroupLayout.Alignment.TRAILING).addComponent(
+                                nameField, GroupLayout.DEFAULT_SIZE, 274,
+                                Short.MAX_VALUE).addComponent(jScrollPane1,
+                                GroupLayout.Alignment.TRAILING,
+                                GroupLayout.DEFAULT_SIZE, 274,
+                                Short.MAX_VALUE))).addGroup(
+                        GroupLayout.Alignment.TRAILING,
+                        layout.createSequentialGroup().addComponent(okButton,
+                            GroupLayout.PREFERRED_SIZE,
+                            GroupLayout.DEFAULT_SIZE,
+                            GroupLayout.PREFERRED_SIZE).addPreferredGap(
+                            LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(cancelButton))).addContainerGap()));
+        layout.setVerticalGroup(layout.createParallelGroup(
+                GroupLayout.Alignment.LEADING).addGroup(
+                layout.createSequentialGroup().addContainerGap().addGroup(
+                    layout.createParallelGroup(
+                        GroupLayout.Alignment.BASELINE).addComponent(
+                        jLabel1).addComponent(nameField,
+                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                        GroupLayout.PREFERRED_SIZE)).addPreferredGap(
+                    LayoutStyle.ComponentPlacement.RELATED).addGroup(
+                    layout.createParallelGroup(
+                        GroupLayout.Alignment.LEADING).addComponent(jLabel2)
+                        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE,
+                            111, GroupLayout.PREFERRED_SIZE)).addPreferredGap(
+                    LayoutStyle.ComponentPlacement.UNRELATED).addGroup(
+                    layout.createParallelGroup(
+                        GroupLayout.Alignment.BASELINE).addComponent(
+                        cancelButton).addComponent(okButton,
+                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                        GroupLayout.PREFERRED_SIZE)).addContainerGap(
+                    GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     /**
      * The action to invoke when a user clicks on the CANCEL button.
@@ -190,7 +207,10 @@ public final class NewProjectV extends OpenSHAPADialog {
 
         try {
             logger.usage("create new project");
-            OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
+
+            OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
+                .getMainView();
+
             // clear the contents of the existing spreadsheet.
             OpenSHAPA.getProjectController().setLastCreatedCellId(0);
 
@@ -201,6 +221,7 @@ public final class NewProjectV extends OpenSHAPADialog {
             // BugzID:2352 - Clean up spreadsheet resources before creating a
             // new spreadsheet.
             s.clearSpreadsheet();
+
             MacshapaDatabase database = new MacshapaDatabase(
                     Constants.TICKS_PER_SECOND);
             database.setName(getProjectName());
@@ -227,6 +248,9 @@ public final class NewProjectV extends OpenSHAPADialog {
         }
 
         OpenSHAPA.getApplication().resetApp();
+
+        // BugzID:2411 - Show data controller after creating a new project.
+        OpenSHAPA.getApplication().show(OpenSHAPA.getDataController());
     } // GEN-LAST:event_okButtonActionPerformed
 
     private boolean isValidProjectName(final String name) {

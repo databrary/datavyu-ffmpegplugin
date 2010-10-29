@@ -138,6 +138,14 @@ public final class TracksEditorController implements TrackMouseEventListener {
         editingPanel.add(trackController.getView(),
             "pad 0 0 0 " + -RegionConstants.RMARKER_WIDTH + ", growx");
         editingPanel.invalidate();
+
+        // BugzID:2391 - Make the newly added track visible.
+        SwingUtilities.invokeLater(new Runnable() {
+                @Override public void run() {
+                    editingPanel.scrollRectToVisible(
+                        trackController.getView().getBounds());
+                }
+            });
     }
 
     /**

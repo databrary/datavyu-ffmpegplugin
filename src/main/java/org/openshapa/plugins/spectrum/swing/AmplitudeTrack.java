@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.SwingWorker;
@@ -155,6 +156,9 @@ public final class AmplitudeTrack extends TrackPainter
             cacheHandler.stopCaching();
             cacheHandler = null;
         }
+
+        // Kill off our bg threads.
+        ((ExecutorService) executor).shutdown();
 
         super.deregister();
     }
@@ -377,7 +381,9 @@ public final class AmplitudeTrack extends TrackPainter
             }
 
             // Use the local cache as a backdrop if possible.
-            if ((localAmps != null) && (viewport.getZoomLevel() > 0.01)) {
+            if ((localAmps != null)
+                    && (viewport.getZoomLevel()
+                        > ProcessorConstants.ZOOM_REPROCESS_THRESHOLD)) {
                 final int x1 = (int) viewport.computePixelXOffset(
                         localVM.getViewStart() + trackModel.getOffset()
                         - localTM.getOffset());
@@ -415,7 +421,9 @@ public final class AmplitudeTrack extends TrackPainter
         }
 
         // Track isn't zoomed in enough to need processing of new data.
-        if ((viewport.getZoomLevel() < 0.01) && (cachedAmps != null)) {
+        if ((viewport.getZoomLevel()
+                    < ProcessorConstants.ZOOM_REPROCESS_THRESHOLD)
+                && (cachedAmps != null)) {
             progress = 1;
 
             return;
@@ -428,7 +436,7 @@ public final class AmplitudeTrack extends TrackPainter
                 viewport.getViewEnd()) - trackModel.getOffset();
 
         // 2. Make the worker thread.
-        processor = new AmplitudeProcessor(mediaFile, channels, progHandler);
+        processor = AmplitudeProcessor.create(mediaFile, channels, progHandler);
         processor.autoNormalizeAgainst(lValNorm, rValNorm);
         processor.setDataTimeSegment(start, end, MILLISECONDS);
         executor.execute(processor);
@@ -607,7 +615,7 @@ public final class AmplitudeTrack extends TrackPainter
         CacheWorker cw; // Generates global cache.
 
         void generateCache() {
-            ap = new AmplitudeProcessor(mediaFile, channels, this);
+            ap = AmplitudeProcessor.create(mediaFile, channels, this);
             ap.disableAutoNormalize();
             ap.setDataTimeSegment(start, end, MILLISECONDS);
             executor.execute(ap);
