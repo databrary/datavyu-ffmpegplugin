@@ -370,19 +370,20 @@ public final class TracksEditorController implements TrackMouseEventListener {
             nearestIndex = snapPoints.size() - 1;
         }
 
-        final long rightSnapTime = snapPoints.get(nearestIndex);
-        long leftSnapTime = rightSnapTime;
-
-        if (nearestIndex > 0) {
-            leftSnapTime = snapPoints.get(nearestIndex - 1);
-        }
-
-        // Add the closest snap point as first search position
-        if (Math.abs(rightSnapTime - temporalSnapPosition)
-                < Math.abs(temporalSnapPosition - leftSnapTime)) {
-            snapPoints.add(0, rightSnapTime);
-        } else {
-            snapPoints.add(0, leftSnapTime);
+        if (nearestIndex >= 0 && nearestIndex < snapPoints.size()) {
+	        final long rightSnapTime = snapPoints.get(nearestIndex);
+	        long leftSnapTime = rightSnapTime;
+	
+	        if (nearestIndex > 0) {
+	            leftSnapTime = snapPoints.get(nearestIndex - 1);
+	        }
+	
+	        // Add the closest snap point as first search position
+	        if (Math.abs(rightSnapTime - temporalSnapPosition) < Math.abs(temporalSnapPosition - leftSnapTime)) {
+	            snapPoints.add(0, rightSnapTime);
+	        } else {
+	            snapPoints.add(0, leftSnapTime);
+	        }
         }
 
         // Search for snap position
