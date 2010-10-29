@@ -17,7 +17,7 @@ import org.openshapa.event.component.TimescaleListener;
 import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.TimescaleConstants;
 import org.openshapa.models.component.TimescaleModel;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportState;
 
 import org.openshapa.views.component.TimescalePainter;
 
@@ -64,7 +64,7 @@ public final class TimescaleController implements PropertyChangeListener {
         view.setMixerView(mixer);
         view.setTimescaleModel(timescaleModel);
 
-        mixer.addPropertyChangeListener(this);
+        mixer.getViewportModel().addPropertyChangeListener(this);
 
         listenerList = new EventListenerList();
     }
@@ -82,7 +82,7 @@ public final class TimescaleController implements PropertyChangeListener {
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
 
-        if (Viewport.NAME.equals(evt.getPropertyName())) {
+        if (ViewportState.NAME.equals(evt.getPropertyName())) {
             view.repaint();
         }
     }
@@ -131,7 +131,7 @@ public final class TimescaleController implements PropertyChangeListener {
      * Inner class used to handle intercepted events.
      */
     private class TimescaleEventListener extends MouseInputAdapter {
-        private Viewport viewport;
+        private ViewportState viewport;
 
         private final Cursor crosshairCursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
@@ -153,7 +153,7 @@ public final class TimescaleController implements PropertyChangeListener {
         }
         
         @Override public void mousePressed(final MouseEvent e) {
-            viewport = mixer.getViewport();
+            viewport = mixer.getViewportModel().getViewport();
 
             if (view.isPointInTimescale(e.getX(), e.getY())) {
 	            if (e.getButton() == MouseEvent.BUTTON1) {

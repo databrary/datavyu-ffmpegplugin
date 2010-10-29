@@ -15,7 +15,7 @@ import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.RegionState;
 import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.RegionModel;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportState;
 
 import org.openshapa.views.component.RegionView;
 
@@ -28,7 +28,7 @@ public final class RegionController implements PropertyChangeListener {
 
     public RegionController(final MixerModel mixer) {
         this.mixerModel = mixer;
-        mixer.addPropertyChangeListener(this);
+        mixer.getViewportModel().addPropertyChangeListener(this);
 
         view = new RegionView(mixer);
 
@@ -49,7 +49,7 @@ public final class RegionController implements PropertyChangeListener {
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-        if (Viewport.NAME.equals(evt.getPropertyName())) {
+        if (ViewportState.NAME.equals(evt.getPropertyName())) {
             view.repaint();
         }
     }
@@ -63,7 +63,7 @@ public final class RegionController implements PropertyChangeListener {
         /** offset in pixels from the region marker position to where the marker was "picked up" for dragging */
         private double offset;
 
-        private Viewport viewport;
+        private ViewportState viewport;
 
         private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
@@ -86,7 +86,7 @@ public final class RegionController implements PropertyChangeListener {
             final GeneralPath startMarker = view.getStartMarkerPolygon();
             final GeneralPath endMarker = view.getEndMarkerPolygon();
             final RegionState regionState = mixerModel.getRegionModel().getRegion();
-            viewport = mixerModel.getViewport();
+            viewport = mixerModel.getViewportModel().getViewport();
             onStartMarker = startMarker.contains(e.getPoint());
             onEndMarker = endMarker.contains(e.getPoint());
             assert !(onStartMarker && onEndMarker); // can't be on both markers at the same time

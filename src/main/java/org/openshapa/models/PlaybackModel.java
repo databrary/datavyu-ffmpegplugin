@@ -1,6 +1,6 @@
 package org.openshapa.models;
 
-import org.openshapa.models.component.ViewableModel;
+import org.openshapa.models.component.ViewportStateImpl;
 
 /**
  * Model representing playback data.
@@ -20,7 +20,7 @@ public final class PlaybackModel {
     private long lastSync;
 
     /** The maximum duration out of all data being played. */
-    private long maxDuration = ViewableModel.MINIMUM_MAX_END;
+    private long maxDuration = ViewportStateImpl.MINIMUM_MAX_END;
 
     /** Are we currently faking playback of the viewers? */
     private boolean fakePlayback = false;
@@ -68,7 +68,7 @@ public final class PlaybackModel {
     }
 
     public void setMaxDuration(final long maxDuration) {
-        this.maxDuration = Math.max(maxDuration, ViewableModel.MINIMUM_MAX_END);
+        this.maxDuration = Math.max(maxDuration, ViewportStateImpl.MINIMUM_MAX_END);
     }
 
     public boolean isFakePlayback() {

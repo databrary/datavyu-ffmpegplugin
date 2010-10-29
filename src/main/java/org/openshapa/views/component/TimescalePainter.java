@@ -18,7 +18,7 @@ import javax.swing.JComponent;
 
 import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.TimescaleModel;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportState;
 
 
 /**
@@ -85,7 +85,7 @@ public final class TimescalePainter extends JComponent {
             return;
         }
 
-        Viewport viewport = mixer.getViewport();
+        ViewportState viewport = mixer.getViewportModel().getViewport();
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -250,7 +250,7 @@ public final class TimescalePainter extends JComponent {
      * @param backgroundColor
      *            background color that the markers will fade in from
      */
-    private void paintMarkers(final Graphics2D g2d, final Viewport viewport,
+    private void paintMarkers(final Graphics2D g2d, final ViewportState viewport,
         final Set<Long> plottedMarkers, final long intervalTime,
         final float width, final int intervalHeight,
         final double startFadeMsPerPx, final double stopFadeMsPerPx,

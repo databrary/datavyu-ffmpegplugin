@@ -4,7 +4,7 @@ package org.openshapa.models.component;
  * This model provides parameters used for determining what can be viewed on the
  * tracks information panel.
  */
-public final class ViewableModel implements Viewport {
+public final class ViewportStateImpl implements ViewportState {
 
     /** The end time of the longest track (offset included) in milliseconds */
     private final long maxEnd;
@@ -20,7 +20,7 @@ public final class ViewableModel implements Viewport {
 
     public final static long MINIMUM_MAX_END = 60000;
     
-    public ViewableModel(final long maxEnd, final double viewWidth,
+    public ViewportStateImpl(final long maxEnd, final double viewWidth,
         final long viewStart, final long viewEnd) {
         this.maxEnd = Math.max(maxEnd, MINIMUM_MAX_END);
         this.viewWidth = viewWidth;
@@ -29,7 +29,7 @@ public final class ViewableModel implements Viewport {
         validateConstraints(this);
     }
     
-    public static void validateConstraints(final Viewport viewport) {
+    public static void validateConstraints(final ViewportState viewport) {
         assert viewport.getViewStart() <= viewport.getViewEnd();
         assert viewport.getMaxEnd() > 0; // this simplifies calculations in many places
         assert viewport.getViewWidth() >= 0;
@@ -105,7 +105,7 @@ public final class ViewableModel implements Viewport {
         return getZoomSettingFor(getResolution());
     }
 
-    public ViewableModel zoomViewport(final double zoomLevel,
+    public ViewportStateImpl zoomViewport(final double zoomLevel,
         final long centerTime) {
         final double millisecondsPerPixel = getMillisecondsPerPixelFor(
                 zoomLevel);
@@ -156,7 +156,7 @@ public final class ViewableModel implements Viewport {
         long newEnd = newStart + newZoomWindowTimeRange - 1;
         assert (0 <= newEnd) && (newEnd <= getMaxEnd());
 
-        return new ViewableModel(getMaxEnd(), getViewWidth(), newStart, newEnd);
+        return new ViewportStateImpl(getMaxEnd(), getViewWidth(), newStart, newEnd);
     }
 
     private double getMillisecondsPerPixelFor(final double zoomSettingValue) {
@@ -205,7 +205,7 @@ public final class ViewableModel implements Viewport {
      */
     @Override public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("ViewableModel [getMaxEnd()=");
+        builder.append(getClass().getSimpleName() + " [getMaxEnd()=");
         builder.append(getMaxEnd());
         builder.append(", getResolution()=");
         builder.append(getResolution());

@@ -10,14 +10,14 @@ public class RegionModelImpl extends MixerComponentModelImpl implements RegionMo
 
     public RegionModelImpl(final MixerModel mixer) {
     	super(mixer);
-        regionState = new RegionStateImpl(0, mixer.getViewport().getMaxEnd());
+        regionState = new RegionStateImpl(0, mixer.getViewportModel().getViewport().getMaxEnd());
     }
     
     /**
      * {@inheritDoc}
      */
     @Override public void wireListeners() {
-    	mixerModel.addPropertyChangeListener(this);
+    	mixerModel.getViewportModel().addPropertyChangeListener(this);
     }
     
     /**
@@ -31,7 +31,7 @@ public class RegionModelImpl extends MixerComponentModelImpl implements RegionMo
      * {@inheritDoc}
      */
     public void resetPlaybackRegion() {
-    	setPlaybackRegion(0, mixerModel.getViewport().getMaxEnd());
+    	setPlaybackRegion(0, mixerModel.getViewportModel().getViewport().getMaxEnd());
     }
     
     /**
@@ -77,13 +77,13 @@ public class RegionModelImpl extends MixerComponentModelImpl implements RegionMo
     
     @Override public void propertyChange(PropertyChangeEvent evt) {
     	if (evt.getSource() == mixerModel) {
-        	final Viewport oldViewport = evt.getOldValue() instanceof Viewport ? (Viewport) evt.getOldValue() : null;
-        	final Viewport newViewport = evt.getNewValue() instanceof Viewport ? (Viewport) evt.getNewValue() : null;
+        	final ViewportState oldViewport = evt.getOldValue() instanceof ViewportState ? (ViewportState) evt.getOldValue() : null;
+        	final ViewportState newViewport = evt.getNewValue() instanceof ViewportState ? (ViewportState) evt.getNewValue() : null;
         	final boolean maxEndChanged = oldViewport == null || newViewport == null || oldViewport.getMaxEnd() != newViewport.getMaxEnd();
         	if (maxEndChanged) {
         		final RegionState region = mixerModel.getRegionModel().getRegion();
                 final boolean updateEndRegionMarker = oldViewport == null || oldViewport.getMaxEnd() == region.getRegionEnd();
-                final long newMaxEnd = mixerModel.getViewport().getMaxEnd();
+                final long newMaxEnd = newViewport.getMaxEnd();
                 final boolean regionStartExceedsMaxEnd = region.getRegionStart() >= newMaxEnd;
                 final boolean regionEndExceedsMaxEnd = region.getRegionEnd() > newMaxEnd;
                 

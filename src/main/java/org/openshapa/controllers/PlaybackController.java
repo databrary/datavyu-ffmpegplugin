@@ -46,8 +46,8 @@ import org.openshapa.logging.PlaybackLogging;
 import org.openshapa.models.PlaybackModel;
 import org.openshapa.models.component.MixerConstants;
 import org.openshapa.models.component.RegionState;
-import org.openshapa.models.component.ViewableModel;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportStateImpl;
+import org.openshapa.models.component.ViewportState;
 import org.openshapa.models.id.Identifier;
 
 import org.openshapa.plugins.PluginManager;
@@ -216,7 +216,7 @@ public final class PlaybackController implements PlaybackListener,
         playbackModel = new PlaybackModel();
         playbackModel.setPauseRate(0);
         playbackModel.setLastSync(0);
-        playbackModel.setMaxDuration(ViewableModel.MINIMUM_MAX_END);
+        playbackModel.setMaxDuration(ViewportStateImpl.MINIMUM_MAX_END);
 
         playbackModel.setWindowPlayStart(0);
         playbackModel.setWindowPlayEnd(MixerConstants.DEFAULT_DURATION);
@@ -1023,7 +1023,7 @@ public final class PlaybackController implements PlaybackListener,
                                     viewer.getIdentifier()));
 
                         // Recalculate the maximum playback duration.
-                        long maxDuration = ViewableModel.MINIMUM_MAX_END;
+                        long maxDuration = ViewportStateImpl.MINIMUM_MAX_END;
                         Iterator<DataViewer> it = viewers.iterator();
 
                         while (it.hasNext()) {
@@ -1035,7 +1035,7 @@ public final class PlaybackController implements PlaybackListener,
                             }
                         }
 
-                        mixerController.getMixerModel().setViewportMaxEnd(maxDuration, true);
+                        mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(maxDuration, true);
 
                         if (viewers.isEmpty()) {
                         	mixerController.getMixerModel().getNeedleModel().setCurrentTime(0);
@@ -1147,10 +1147,10 @@ public final class PlaybackController implements PlaybackListener,
                         playbackModel.setCurrentFPS(fps);
                     }
 
-                    final Viewport viewport = mixerController.getMixerModel().getViewport();
+                    final ViewportState viewport = mixerController.getMixerModel().getViewportModel().getViewport();
                     final long trackDuration = viewer.getOffset() + viewer.getDuration();
                     if (viewers.size() == 1 || viewport.getMaxEnd() < trackDuration) {
-                    	mixerController.getMixerModel().setViewportMaxEnd(trackDuration, true);
+                    	mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(trackDuration, true);
                     }
                 }
             };
@@ -1569,7 +1569,7 @@ public final class PlaybackController implements PlaybackListener,
     }
     
 	private void handleViewportChanged(final PropertyChangeEvent e) {
-		final Viewport viewport = mixerController.getMixerModel().getViewport();
+		final ViewportState viewport = mixerController.getMixerModel().getViewportModel().getViewport();
         playbackModel.setMaxDuration(viewport.getMaxEnd());
 	}
 	
@@ -1626,7 +1626,7 @@ public final class PlaybackController implements PlaybackListener,
         OpenSHAPA.getApplication().updateTitle();
 
         // Recalculate the maximum playback duration.
-        long maxDuration = ViewableModel.MINIMUM_MAX_END;
+        long maxDuration = ViewportStateImpl.MINIMUM_MAX_END;
         for (DataViewer viewer : viewers) {
         	final long trackDuration = viewer.getDuration() + viewer.getOffset();
             if (trackDuration > maxDuration) {
@@ -1634,7 +1634,7 @@ public final class PlaybackController implements PlaybackListener,
             }
         }
         
-        mixerController.getMixerModel().setViewportMaxEnd(maxDuration, false);
+        mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(maxDuration, false);
     }
 
 	@Override

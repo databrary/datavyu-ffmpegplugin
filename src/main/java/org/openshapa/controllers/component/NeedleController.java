@@ -20,7 +20,7 @@ import org.openshapa.models.component.NeedleConstants;
 import org.openshapa.models.component.NeedleModel;
 import org.openshapa.models.component.NeedleModelImpl;
 import org.openshapa.models.component.RegionState;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportState;
 
 import org.openshapa.views.component.NeedlePainter;
 
@@ -45,7 +45,7 @@ public final class NeedleController implements PropertyChangeListener {
 
         view = new NeedlePainter(needleModel);
 
-        mixer.addPropertyChangeListener(this);
+        mixer.getViewportModel().addPropertyChangeListener(this);
 
         final NeedleListener needleListener = new NeedleListener();
         view.addMouseListener(needleListener);
@@ -91,7 +91,7 @@ public final class NeedleController implements PropertyChangeListener {
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-        if (Viewport.NAME.equals(evt.getPropertyName())) {
+        if (ViewportState.NAME.equals(evt.getPropertyName())) {
             view.repaint();
         }
     }
@@ -109,7 +109,7 @@ public final class NeedleController implements PropertyChangeListener {
     private final class NeedleListener extends MouseInputAdapter {
         private final Cursor eastResizeCursor = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
-        private Viewport viewport = null;
+        private ViewportState viewport = null;
         /** offset in pixels from the needle position to where the needle head was "picked up" for dragging */
         private double needlePositionOffsetX = 0.0;
         
@@ -137,7 +137,7 @@ public final class NeedleController implements PropertyChangeListener {
         }
         
         @Override public void mousePressed(MouseEvent e) {
-            viewport = mixer.getViewport();
+            viewport = mixer.getViewportModel().getViewport();
             final double currentNeedleX = viewport.computePixelXOffset(needleModel.getCurrentTime()) + NeedleConstants.NEEDLE_HEAD_WIDTH;
             final int mousePressedX = e.getX();
             needlePositionOffsetX = mousePressedX - currentNeedleX;

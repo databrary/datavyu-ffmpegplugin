@@ -14,7 +14,7 @@ import javax.swing.JComponent;
 import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.NeedleConstants;
 import org.openshapa.models.component.NeedleModelImpl;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportState;
 
 /**
  * This class paints a timing needle.
@@ -65,7 +65,7 @@ public final class NeedlePainter extends JComponent implements PropertyChangeLis
             return;
         }
 
-        Viewport viewport = mixer.getViewport();
+        ViewportState viewport = mixer.getViewportModel().getViewport();
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

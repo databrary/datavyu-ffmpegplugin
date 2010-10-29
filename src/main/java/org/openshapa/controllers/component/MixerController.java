@@ -50,12 +50,14 @@ import org.openshapa.models.component.MixerConstants;
 import org.openshapa.models.component.MixerModelImpl;
 import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.NeedleConstants;
+import org.openshapa.models.component.RegionModel;
 import org.openshapa.models.component.RegionState;
 import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.TimescaleConstants;
 import org.openshapa.models.component.TrackConstants;
 import org.openshapa.models.component.TrackModel;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportModel;
+import org.openshapa.models.component.ViewportState;
 import org.openshapa.models.id.Identifier;
 
 import org.openshapa.views.component.TrackPainter;
@@ -132,7 +134,9 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
 
     /** Master mixer to listen to. */
     private final MixerModelImpl mixerModel;
-
+    private final ViewportModel viewportModel;
+    private final RegionModel regionModel;
+    
     /** Listens and processes gestures on Mac OS X. */
     private final OSXGestureListener osxGestureListener = Platform.isMac()
         ? new OSXGestureListener() : null;
@@ -142,8 +146,14 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      */
     public MixerController() {
         mixerModel = new MixerModelImpl();
-        mixerModel.addPropertyChangeListener(this);
-
+        
+        viewportModel = mixerModel.getViewportModel();
+        viewportModel.addPropertyChangeListener(this);
+        
+        regionModel = mixerModel.getRegionModel();
+        regionModel.addPropertyChangeListener(this);
+        
+        
         runInEDT(new Runnable() {
             @Override public void run() {
                 initView();
@@ -217,7 +227,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
                     	try {
                     		isUpdatingZoomSlide = true;
                             zoomSetting = (double) (zoomSlide.getValue() - zoomSlide.getMinimum()) / (zoomSlide.getMaximum() - zoomSlide.getMinimum() + 1);
-                            mixerModel.setViewportZoom(zoomSetting, needleController.getNeedleModel().getCurrentTime());
+                            viewportModel.setViewportZoom(zoomSetting, needleController.getNeedleModel().getCurrentTime());
                     	} finally {
                     		isUpdatingZoomSlide = false;
                     	}
@@ -371,9 +381,6 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
             String template = "pos ${x} ${y} ${x2} n, h ${height}::";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
-            mixerModel.getRegionModel().setPlaybackRegion(minStart, MixerConstants.DEFAULT_DURATION);
-            mixerModel.getRegionModel().addPropertyChangeListener(this);
-
             layeredPane.setLayer(regionView, MixerConstants.REGION_ZORDER);
             layeredPane.add(regionView, sub.replace(template),
                 MixerConstants.REGION_ZORDER);
@@ -492,9 +499,9 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      *            duration in milliseconds
      */
     public void setMaxEnd(final long newMaxEnd, boolean resetViewportWindow) {
-        mixerModel.setViewportMaxEnd(newMaxEnd, resetViewportWindow);
+    	viewportModel.setViewportMaxEnd(newMaxEnd, resetViewportWindow);
         if (resetViewportWindow) {
-        	mixerModel.getRegionModel().resetPlaybackRegion();
+        	regionModel.resetPlaybackRegion();
         }
     }
 
@@ -522,10 +529,10 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
 
         // Check if the scale needs to be updated.
     	final long trackEnd = duration + offset;
-    	final Viewport viewport = mixerModel.getViewport();
+    	final ViewportState viewport = viewportModel.getViewport();
         if ((trackEnd > viewport.getMaxEnd()) || ((tracksEditorController.numberOfTracks() == 0) && (trackEnd > 0))) {
-           	mixerModel.setViewportMaxEnd(trackEnd, true);
-           	mixerModel.getRegionModel().resetPlaybackRegion();
+        	viewportModel.setViewportMaxEnd(trackEnd, true);
+           	regionModel.resetPlaybackRegion();
         }
         
         tracksEditorController.addNewTrack(id, icon, trackName, mediaPath, duration, offset, this, trackPainter);
@@ -611,8 +618,8 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      * @param evt
      */
     public void zoomToRegion(final ActionEvent evt) {
-        final Viewport viewport = mixerModel.getViewport();
-    	final RegionState region = mixerModel.getRegionModel().getRegion();
+        final ViewportState viewport = viewportModel.getViewport();
+    	final RegionState region = regionModel.getRegion();
         
         if (region.getRegionDuration() >= 1) {
 		    final int percentOfRegionToPadOutsideMarkers = 5;
@@ -621,7 +628,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
 		    final long displayedAreaStart = Math.max(region.getRegionStart() - (region.getRegionDuration() * percentOfRegionToPadOutsideMarkers / 100), 0);
 		    final long displayedAreaEnd = Math.min(region.getRegionEnd() + (region.getRegionDuration() * percentOfRegionToPadOutsideMarkers / 100), viewport.getMaxEnd());
 		
-		    mixerModel.setViewportWindow(displayedAreaStart, displayedAreaEnd);
+		    viewportModel.setViewportWindow(displayedAreaStart, displayedAreaEnd);
 		    needleController.setCurrentTime(region.getRegionStart());
         }
     }
@@ -645,8 +652,8 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
     public void removeAll() {
         tracksEditorController.removeAllTracks();
 
-        mixerModel.resetViewport();
-        mixerModel.getRegionModel().resetPlaybackRegion();
+        viewportModel.resetViewport();
+        regionModel.resetPlaybackRegion();
         needleController.setCurrentTime(0);
 
         tracksScrollPane.validate();
@@ -698,7 +705,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         return tracksEditorController;
     }
 
-    private void updateZoomSlide(final Viewport viewport) {
+    private void updateZoomSlide(final ViewportState viewport) {
         assert SwingUtilities.isEventDispatchThread();
 
         if (isUpdatingZoomSlide) {
@@ -720,7 +727,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
     /**
      * Update scroll bar values.
      */
-    private void updateTracksScrollBar(final Viewport viewport) {
+    private void updateTracksScrollBar(final ViewportState viewport) {
         assert SwingUtilities.isEventDispatchThread();
 
         if (isUpdatingTracksScrollBar) {
@@ -780,7 +787,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      * Clears the region of interest.
      */
     public void clearRegionOfInterest() {
-        mixerModel.getRegionModel().setPlaybackRegion(minStart, mixerModel.getViewport().getMaxEnd());
+    	regionModel.resetPlaybackRegion();
     }
 
     /**
@@ -804,7 +811,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
             return;
         }
 
-        Viewport viewport = mixerModel.getViewport();
+        final ViewportState viewport = viewportModel.getViewport();
 
         final int startValue = tracksScrollBar.getValue();
 
@@ -814,7 +821,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
                 / tracksScrollBar.getMaximum() * viewport.getMaxEnd());
         final long newWindowEnd = newWindowStart + viewport.getViewDuration() - 1;
         
-        mixerModel.setViewportWindow(newWindowStart, newWindowEnd);
+        viewportModel.setViewportWindow(newWindowStart, newWindowEnd);
 
         tracksPanel.repaint();
     }
@@ -942,7 +949,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         }
     }
 
-    private void handleViewportChanged(final Viewport oldViewport, final Viewport newViewport) {
+    private void handleViewportChanged(final ViewportState oldViewport, final ViewportState newViewport) {
         runInEDT(new Runnable() {
             @Override public void run() {
                 updateZoomSlide(newViewport);
@@ -953,21 +960,21 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-        if (Viewport.NAME.equals(evt.getPropertyName())) { //TODO update this to be based on the reference
-        	final Viewport oldViewport = evt.getOldValue() instanceof Viewport ? (Viewport) evt.getOldValue() : null;
-        	final Viewport newViewport = evt.getNewValue() instanceof Viewport ? (Viewport) evt.getNewValue() : null;
+        if (ViewportState.NAME.equals(evt.getPropertyName())) { //TODO update this to be based on the reference
+        	final ViewportState oldViewport = evt.getOldValue() instanceof ViewportState ? (ViewportState) evt.getOldValue() : null;
+        	final ViewportState newViewport = evt.getNewValue() instanceof ViewportState ? (ViewportState) evt.getNewValue() : null;
             handleViewportChanged(oldViewport, newViewport);
         }
     }
 
     private void handleResize() {
-        Viewport viewport = mixerModel.getViewport();
+        final ViewportState viewport = viewportModel.getViewport();
         if (Double.isNaN(viewport.getResolution())) {
-            mixerModel.setViewport(viewport.getViewStart(),
+        	viewportModel.setViewport(viewport.getViewStart(),
                 viewport.getViewEnd(), viewport.getMaxEnd(),
                 timescaleController.getView().getWidth());
         } else {
-            mixerModel.resizeViewport(mixerModel.getViewport().getViewStart(),
+        	viewportModel.resizeViewport(viewportModel.getViewport().getViewStart(),
                 timescaleController.getView().getWidth());
         }
     }
@@ -1013,7 +1020,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
                         + (osxMagnificationGestureSum / fullZoomMotion), 0.0),
                     1.0);
 
-            mixerModel.setViewportZoom(newZoomSetting, needleController.getNeedleModel().getCurrentTime());
+            viewportModel.setViewportZoom(newZoomSetting, needleController.getNeedleModel().getCurrentTime());
         }
 
         /**
@@ -1021,8 +1028,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
          */
         @Override public void gestureBegan(final GesturePhaseEvent e) {
             osxMagnificationGestureSum = 0;
-            osxMagnificationGestureInitialZoomSetting =
-                mixerModel.getViewport().getZoomLevel();
+            osxMagnificationGestureInitialZoomSetting = viewportModel.getViewport().getZoomLevel();
         }
 
         /**

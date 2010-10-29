@@ -15,7 +15,7 @@ import javax.swing.JComponent;
 
 import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.RegionState;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportState;
 
 import org.openshapa.util.G2DUtils;
 
@@ -75,7 +75,7 @@ public final class RegionView extends JComponent implements PropertyChangeListen
      * @param timeInMilliseconds
      * @return
      */
-    private static double getXForTime(final Viewport viewport,
+    private static double getXForTime(final ViewportState viewport,
         final long timeInMilliseconds) {
         return viewport.computePixelXOffset(timeInMilliseconds) + RMARKER_WIDTH
             + 1;
@@ -86,7 +86,7 @@ public final class RegionView extends JComponent implements PropertyChangeListen
             return;
         }
 
-        final Viewport viewport = mixerModel.getViewport();
+        final ViewportState viewport = mixerModel.getViewportModel().getViewport();
         final RegionState region = mixerModel.getRegionModel().getRegion();
 
         Graphics2D g2d = (Graphics2D) g;

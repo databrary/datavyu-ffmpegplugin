@@ -1,4 +1,3 @@
-// ********* TODO rename this to RegionState
 package org.openshapa.models.component;
 
 /**

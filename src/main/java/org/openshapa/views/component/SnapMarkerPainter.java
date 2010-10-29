@@ -12,7 +12,7 @@ import javax.swing.JComponent;
 
 import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.SnapMarkerModel;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportState;
 
 
 /**
@@ -67,7 +67,7 @@ public final class SnapMarkerPainter extends JComponent {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
         
-        final Viewport viewport = mixer.getViewport();
+        final ViewportState viewport = mixer.getViewportModel().getViewport();
         final long markerTime = snapMarkerModel.getMarkerTime();
 
         if (!viewport.isTimeInViewport(markerTime)) {

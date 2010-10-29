@@ -31,7 +31,7 @@ import javax.swing.SwingWorker;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.openshapa.models.component.TrackModel;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportState;
 
 import org.openshapa.plugins.spectrum.engine.AmplitudeProcessor;
 import org.openshapa.plugins.spectrum.models.AmplitudeBlock;
@@ -82,7 +82,7 @@ public final class AmplitudeTrack extends TrackPainter
     private BufferedImage localAmps;
 
     /** Viewable model associated with the last zoomed segment. */
-    private Viewport localVM;
+    private ViewportState localVM;
 
     /** Track model associated with the last zoomed segment. */
     private TrackModel localTM;
@@ -179,11 +179,11 @@ public final class AmplitudeTrack extends TrackPainter
         super.propertyChange(evt);
     }
 
-    private double computeStartXPos(final Viewport viewport) {
+    private double computeStartXPos(final ViewportState viewport) {
         return viewport.computePixelXOffset(trackModel.getOffset());
     }
 
-    private double computeEndXPos(final Viewport viewport) {
+    private double computeEndXPos(final ViewportState viewport) {
         return viewport.computePixelXOffset(trackModel.getDuration()
                 + trackModel.getOffset());
     }
@@ -215,7 +215,7 @@ public final class AmplitudeTrack extends TrackPainter
             registered = true;
         }
 
-        Viewport viewport = mixer.getViewport();
+        final ViewportState viewport = mixer.getViewportModel().getViewport();
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -337,6 +337,8 @@ public final class AmplitudeTrack extends TrackPainter
             blockWorkers.clear();
         }
 
+        final ViewportState viewport = mixer.getViewportModel().getViewport();
+
         // Set up image for painting blocks.
         if (localBlocks == null) {
             GraphicsEnvironment ge = GraphicsEnvironment
@@ -353,7 +355,6 @@ public final class AmplitudeTrack extends TrackPainter
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
             // Draw baseline amplitudes.
-            Viewport viewport = mixer.getViewport();
             int startXPos = (int) Math.rint(computeStartXPos(viewport));
             int endXPos = (int) Math.rint(computeEndXPos(viewport));
             int midYLeftPos = computeMidYLeftPos();
@@ -369,8 +370,6 @@ public final class AmplitudeTrack extends TrackPainter
             g.clearRect(0, 0, getWidth(), getHeight());
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
-            Viewport viewport = mixer.getViewport();
 
             // Use the global cache as a backdrop if available.
             if (cachedAmps != null) {
@@ -397,12 +396,6 @@ public final class AmplitudeTrack extends TrackPainter
                 g.drawImage(localAmps, x1, y1, x2, y2, 0, 0,
                     localAmps.getWidth(), localAmps.getHeight(), null);
             }
-        }
-
-        Viewport viewport = mixer.getViewport();
-
-        if (viewport == null) {
-            return;
         }
 
         // Track is past the end window, so it is not visible.
@@ -459,7 +452,7 @@ public final class AmplitudeTrack extends TrackPainter
                     @Override public void run() {
 
                         // Copy what's being drawn into our local cache.
-                        localVM = mixer.getViewport();
+                        localVM = mixer.getViewportModel().getViewport();
                         localTM = trackModel.copy();
 
                         Graphics2D localG = localAmps.createGraphics();
@@ -474,7 +467,7 @@ public final class AmplitudeTrack extends TrackPainter
         @Override public void blockDone(final AmplitudeBlock block) {
             BlockWorker worker = new BlockWorker();
             worker.block = block;
-            worker.viewport = mixer.getViewport();
+            worker.viewport = mixer.getViewportModel().getViewport();
 
             blockWorkers.add(worker);
 
@@ -499,7 +492,7 @@ public final class AmplitudeTrack extends TrackPainter
     /** Inner class for processing an {@link AmplitudeBlock}. */
     private class BlockWorker extends SwingWorker<Path2D[], Void> {
         AmplitudeBlock block; // Block to process.
-        Viewport viewport; // Viewport to use.
+        ViewportState viewport; // Viewport to use.
 
         /** Generate paths for the block being processed. */
         @Override protected Path2D[] doInBackground() throws Exception {

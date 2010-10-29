@@ -41,7 +41,7 @@ public class TimescaleFixture extends ComponentFixture {
      * @return End time represented as a long.
      */
     public final long getEndTimeAsLong() {
-        return mixerView.getViewport().getMaxEnd();
+        return mixerView.getViewportModel().getViewport().getMaxEnd();
     }
 
     /**
@@ -55,7 +55,7 @@ public class TimescaleFixture extends ComponentFixture {
      * @return Zoom end time represented as a long.
      */
     public final long getZoomEndTimeAsLong() {
-        return mixerView.getViewport().getViewEnd();
+        return mixerView.getViewportModel().getViewport().getViewEnd();
     }
 
     /**
@@ -69,7 +69,7 @@ public class TimescaleFixture extends ComponentFixture {
      * @return Zoom end time represented as a long.
      */
     public final long getZoomStartTimeAsLong() {
-        return mixerView.getViewport().getViewStart();
+        return mixerView.getViewportModel().getViewport().getViewStart();
     }
 
     /**

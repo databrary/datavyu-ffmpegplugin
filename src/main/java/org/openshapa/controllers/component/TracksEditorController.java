@@ -21,7 +21,7 @@ import org.openshapa.event.component.TrackMouseEventListener;
 import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.RegionConstants;
 import org.openshapa.models.component.TrackModel;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportState;
 import org.openshapa.models.id.Identifier;
 import org.openshapa.plugins.CustomActions;
 import org.openshapa.plugins.ViewerStateListener;
@@ -295,7 +295,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
      */
     private SnapPoint snapOffset(final Identifier trackId,
         final long temporalSnapPosition) {
-        final Viewport viewport = mixerView.getViewport();
+        final ViewportState viewport = mixerView.getViewportModel().getViewport();
     	/** Points on other (non-selected) data tracks that can be used for alignment. */
         final List<Long> snapCandidates = new ArrayList<Long>();
         /** Points on the current/selected data track that may be used for alignment against other data tracks. */

@@ -47,7 +47,7 @@ import org.openshapa.event.component.CarriageEvent.EventType;
 import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.TrackConstants;
 import org.openshapa.models.component.TrackModel;
-import org.openshapa.models.component.Viewport;
+import org.openshapa.models.component.ViewportState;
 import org.openshapa.models.component.TrackModel.TrackState;
 import org.openshapa.models.id.Identifier;
 
@@ -138,7 +138,7 @@ public final class TrackController implements ViewerStateListener,
         trackPainter.setMixerView(mixer);
         trackPainter.setTrackModel(trackModel);
 
-        mixer.addPropertyChangeListener(this);
+        mixer.getViewportModel().addPropertyChangeListener(this);
 
         listenerList = new EventListenerList();
 
@@ -903,7 +903,7 @@ public final class TrackController implements ViewerStateListener,
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
 
-        if (Viewport.NAME.equals(evt.getPropertyName())) {
+        if (ViewportState.NAME.equals(evt.getPropertyName())) {
             view.repaint();
         }
     }
@@ -927,7 +927,7 @@ public final class TrackController implements ViewerStateListener,
      * @param viewport current viewport
      * @return snapping threshold in time units (milliseconds);
      */
-    public static long calculateSnappingThreshold(final Viewport viewport) {
+    public static long calculateSnappingThreshold(final ViewportState viewport) {
         final long MINIMUM_THRESHOLD_MILLISECONDS = 10;
         return Math.max((long) Math.ceil(0.01F * viewport.getViewDuration()), MINIMUM_THRESHOLD_MILLISECONDS);
     }
@@ -959,7 +959,7 @@ public final class TrackController implements ViewerStateListener,
         /** Default mouse cursor. */
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
-        private Viewport viewport;
+        private ViewportState viewport;
 
         @Override public void mouseClicked(final MouseEvent e) {
             if (trackPainter.getCarriagePolygon().contains(e.getPoint()) && wasTrackSelected) {
@@ -968,7 +968,7 @@ public final class TrackController implements ViewerStateListener,
         }
 
         @Override public void mousePressed(final MouseEvent e) {
-            viewport = mixer.getViewport();
+            viewport = mixer.getViewportModel().getViewport();
             wasTrackSelected = trackModel.isSelected();
 
             if (trackPainter.getCarriagePolygon().contains(e.getPoint())) {
