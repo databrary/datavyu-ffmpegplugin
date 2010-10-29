@@ -46,14 +46,12 @@ import org.openshapa.views.VariableListV;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
 
-
 import com.sun.script.jruby.JRubyScriptEngineManager;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.util.LinkedList;
-
 
 
 /**
@@ -385,7 +383,7 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         try {
             projectController.getLegacyDB().getDatabase()
-            .registerColumnListListener(listVarView);
+                .registerColumnListListener(listVarView);
         } catch (SystemErrorException e) {
             logger.error("Unable register column list listener: ", e);
         }
@@ -610,13 +608,17 @@ public final class OpenSHAPA extends SingleFrameApplication
         getApplication().addExitListener(new ExitListenerImpl());
 
         // Create video controller.
-        dataController = new DataControllerV(OpenSHAPA.getApplication().getMainFrame(), false);
+        dataController = new DataControllerV(OpenSHAPA.getApplication()
+                .getMainFrame(), false);
 
-        final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        final Dimension screenSize = Toolkit.getDefaultToolkit()
+            .getScreenSize();
         int x = getView().getFrame().getX();
+
         // don't let the data viewer fall below the bottom of the primary screen, but also don't let it creep up above the screen either
         int y = getView().getFrame().getY() + getView().getFrame().getHeight();
-        y = (int) Math.max(Math.min(y, screenSize.getHeight() - dataController.getHeight()), 0);
+        y = (int) Math.max(Math.min(y,
+                    screenSize.getHeight() - dataController.getHeight()), 0);
         dataController.setLocation(x, y);
         getApplication().show(dataController);
     }
@@ -626,6 +628,7 @@ public final class OpenSHAPA extends SingleFrameApplication
      */
     @Override protected void shutdown() {
         NativeLoader.cleanAllTmpFiles();
+        super.shutdown();
     }
 
     /**
@@ -824,16 +827,24 @@ public final class OpenSHAPA extends SingleFrameApplication
                 System.err.println("Unsupporter look and feel exception");
             }
 
-            final String jnaLibraryPath = System.getProperty("jna.library.path");
-            final StringBuilder newJnaLibraryPath = new StringBuilder(jnaLibraryPath != null ? (jnaLibraryPath + ":") : "");
-            newJnaLibraryPath.append("/System/Library/Frameworks/GStreamer.framework/Versions/0.10-" + (com.sun.jna.Platform.is64Bit() ? "x64" : "i386") + "/lib:");
+            final String jnaLibraryPath = System.getProperty(
+                    "jna.library.path");
+            final StringBuilder newJnaLibraryPath = new StringBuilder(
+                    (jnaLibraryPath != null) ? (jnaLibraryPath + ":") : "");
+            newJnaLibraryPath.append(
+                "/System/Library/Frameworks/GStreamer.framework/Versions/0.10-"
+                + (com.sun.jna.Platform.is64Bit() ? "x64" : "i386") + "/lib:");
+
             try {
-            	newJnaLibraryPath.append(NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.2") + ":");
+                newJnaLibraryPath.append(NativeLoader.unpackNativeApp(
+                        "openshapa-nativelibs-osx64-0.2") + ":");
             } catch (Exception e) {
                 System.err.println("Could not unpack native libraries:");
                 e.printStackTrace();
             }
-            System.setProperty("jna.library.path", newJnaLibraryPath.toString());
+
+            System.setProperty("jna.library.path",
+                newJnaLibraryPath.toString());
         }
 
         launch(OpenSHAPA.class, args);
