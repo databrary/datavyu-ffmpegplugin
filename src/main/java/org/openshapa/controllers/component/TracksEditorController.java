@@ -11,6 +11,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.CarriageEventAdapter;
