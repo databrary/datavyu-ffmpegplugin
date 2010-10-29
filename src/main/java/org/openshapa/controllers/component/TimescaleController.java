@@ -32,12 +32,12 @@ public final class TimescaleController implements PropertyChangeListener {
 
     /** Models */
     private final TimescaleModel timescaleModel;
-    private final MixerModel mixer;
+    private final MixerModel mixerModel;
 
     /** Listeners interested in needle painter events */
     private final EventListenerList listenerList;
 
-    public TimescaleController(final MixerModel mixer) {
+    public TimescaleController(final MixerModel mixerModel) {
         view = new TimescalePainter();
 
         timescaleModel = new TimescaleModel();
@@ -59,12 +59,12 @@ public final class TimescaleController implements PropertyChangeListener {
         view.addMouseListener(listener);
         view.addMouseMotionListener(listener);
 
-        this.mixer = mixer;
+        this.mixerModel = mixerModel;
 
-        view.setMixerView(mixer);
+        view.setMixerView(mixerModel);
         view.setTimescaleModel(timescaleModel);
 
-        mixer.getViewportModel().addPropertyChangeListener(this);
+        mixerModel.getViewportModel().addPropertyChangeListener(this);
 
         listenerList = new EventListenerList();
     }
@@ -81,8 +81,7 @@ public final class TimescaleController implements PropertyChangeListener {
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-
-        if (ViewportState.NAME.equals(evt.getPropertyName())) {
+        if (evt.getSource() == mixerModel.getViewportModel()) {
             view.repaint();
         }
     }
@@ -153,7 +152,7 @@ public final class TimescaleController implements PropertyChangeListener {
         }
         
         @Override public void mousePressed(final MouseEvent e) {
-            viewport = mixer.getViewportModel().getViewport();
+            viewport = mixerModel.getViewportModel().getViewport();
 
             if (view.isPointInTimescale(e.getX(), e.getY())) {
 	            if (e.getButton() == MouseEvent.BUTTON1) {

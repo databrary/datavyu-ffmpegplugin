@@ -1643,7 +1643,7 @@ public final class PlaybackController implements PlaybackListener,
 	public void propertyChange(PropertyChangeEvent e) {
 		if (e.getSource() == mixerController.getNeedleController().getNeedleModel()) {
 			handleNeedleChanged(e);
-		} else if (e.getSource() == mixerController.getMixerModel()) {
+		} else if (e.getSource() == mixerController.getMixerModel().getViewportModel()) {
 			handleViewportChanged(e);
 		} else if (e.getSource() == mixerController.getRegionController().getModel()) {
 			handleRegionChanged(e);

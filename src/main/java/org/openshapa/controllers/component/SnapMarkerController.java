@@ -7,7 +7,6 @@ import javax.swing.JComponent;
 
 import org.openshapa.models.component.MixerModel;
 import org.openshapa.models.component.SnapMarkerModel;
-import org.openshapa.models.component.ViewportState;
 
 import org.openshapa.views.component.SnapMarkerPainter;
 
@@ -22,20 +21,20 @@ public final class SnapMarkerController implements PropertyChangeListener {
 
     /** Models */
     private final SnapMarkerModel snapMarkerModel;
-    private final MixerModel mixer;
+    private final MixerModel mixerModel;
 
-    public SnapMarkerController(final MixerModel mixer) {
+    public SnapMarkerController(final MixerModel mixerModel) {
         view = new SnapMarkerPainter();
 
         snapMarkerModel = new SnapMarkerModel();
         snapMarkerModel.setMarkerTime(-1);
 
-        this.mixer = mixer;
+        this.mixerModel = mixerModel;
 
-        view.setMixerView(mixer);
+        view.setMixerView(mixerModel);
         view.setSnapMarkerModel(snapMarkerModel);
 
-        mixer.getViewportModel().addPropertyChangeListener(this);
+        mixerModel.getViewportModel().addPropertyChangeListener(this);
     }
 
     /**
@@ -63,8 +62,7 @@ public final class SnapMarkerController implements PropertyChangeListener {
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-
-        if (ViewportState.NAME.equals(evt.getPropertyName())) {
+        if (evt.getSource() == mixerModel.getViewportModel()) {
             view.repaint();
         }
     }

@@ -215,7 +215,7 @@ public final class AmplitudeTrack extends TrackPainter
             registered = true;
         }
 
-        final ViewportState viewport = mixer.getViewportModel().getViewport();
+        final ViewportState viewport = mixerModel.getViewportModel().getViewport();
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -337,7 +337,7 @@ public final class AmplitudeTrack extends TrackPainter
             blockWorkers.clear();
         }
 
-        final ViewportState viewport = mixer.getViewportModel().getViewport();
+        final ViewportState viewport = mixerModel.getViewportModel().getViewport();
 
         // Set up image for painting blocks.
         if (localBlocks == null) {
@@ -452,7 +452,7 @@ public final class AmplitudeTrack extends TrackPainter
                     @Override public void run() {
 
                         // Copy what's being drawn into our local cache.
-                        localVM = mixer.getViewportModel().getViewport();
+                        localVM = mixerModel.getViewportModel().getViewport();
                         localTM = trackModel.copy();
 
                         Graphics2D localG = localAmps.createGraphics();
@@ -467,7 +467,7 @@ public final class AmplitudeTrack extends TrackPainter
         @Override public void blockDone(final AmplitudeBlock block) {
             BlockWorker worker = new BlockWorker();
             worker.block = block;
-            worker.viewport = mixer.getViewportModel().getViewport();
+            worker.viewport = mixerModel.getViewportModel().getViewport();
 
             blockWorkers.add(worker);
 

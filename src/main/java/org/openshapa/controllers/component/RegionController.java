@@ -49,7 +49,7 @@ public final class RegionController implements PropertyChangeListener {
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-        if (ViewportState.NAME.equals(evt.getPropertyName())) {
+        if (evt.getSource() == mixerModel.getViewportModel()) {
             view.repaint();
         }
     }

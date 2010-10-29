@@ -960,7 +960,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-        if (ViewportState.NAME.equals(evt.getPropertyName())) { //TODO update this to be based on the reference
+        if (evt.getSource() == mixerModel.getViewportModel()) {
         	final ViewportState oldViewport = evt.getOldValue() instanceof ViewportState ? (ViewportState) evt.getOldValue() : null;
         	final ViewportState newViewport = evt.getNewValue() instanceof ViewportState ? (ViewportState) evt.getNewValue() : null;
             handleViewportChanged(oldViewport, newViewport);

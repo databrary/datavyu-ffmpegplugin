@@ -95,7 +95,7 @@ public final class TrackController implements ViewerStateListener,
     private final JButton visibleButton;
 
     /** Viewable model. */
-    private final MixerModel mixer;
+    private final MixerModel mixerModel;
 
     /** Track model. */
     private final TrackModel trackModel;
@@ -118,7 +118,7 @@ public final class TrackController implements ViewerStateListener,
      *
      * @param trackPainter the track painter for this controller to manage.
      */
-    public TrackController(final MixerModel mixer,
+    public TrackController(final MixerModel mixerModel,
         final TrackPainter trackPainter) {
         isMoveable = true;
 
@@ -129,16 +129,16 @@ public final class TrackController implements ViewerStateListener,
 
         this.trackPainter = trackPainter;
 
-        this.mixer = mixer;
+        this.mixerModel = mixerModel;
         trackModel = new TrackModel();
         trackModel.setState(TrackState.NORMAL);
         trackModel.setBookmark(-1);
         trackModel.setLocked(false);
 
-        trackPainter.setMixerView(mixer);
+        trackPainter.setMixerView(mixerModel);
         trackPainter.setTrackModel(trackModel);
 
-        mixer.getViewportModel().addPropertyChangeListener(this);
+        mixerModel.getViewportModel().addPropertyChangeListener(this);
 
         listenerList = new EventListenerList();
 
@@ -902,8 +902,7 @@ public final class TrackController implements ViewerStateListener,
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-
-        if (ViewportState.NAME.equals(evt.getPropertyName())) {
+        if (evt.getSource() == mixerModel.getViewportModel()) {
             view.repaint();
         }
     }
@@ -968,7 +967,7 @@ public final class TrackController implements ViewerStateListener,
         }
 
         @Override public void mousePressed(final MouseEvent e) {
-            viewport = mixer.getViewportModel().getViewport();
+            viewport = mixerModel.getViewportModel().getViewport();
             wasTrackSelected = trackModel.isSelected();
 
             if (trackPainter.getCarriagePolygon().contains(e.getPoint())) {

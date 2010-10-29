@@ -76,7 +76,7 @@ public class RegionModelImpl extends MixerComponentModelImpl implements RegionMo
     }
     
     @Override public void propertyChange(PropertyChangeEvent evt) {
-    	if (evt.getSource() == mixerModel) {
+    	if (evt.getSource() == mixerModel.getViewportModel()) {
         	final ViewportState oldViewport = evt.getOldValue() instanceof ViewportState ? (ViewportState) evt.getOldValue() : null;
         	final ViewportState newViewport = evt.getNewValue() instanceof ViewportState ? (ViewportState) evt.getNewValue() : null;
         	final boolean maxEndChanged = oldViewport == null || newViewport == null || oldViewport.getMaxEnd() != newViewport.getMaxEnd();

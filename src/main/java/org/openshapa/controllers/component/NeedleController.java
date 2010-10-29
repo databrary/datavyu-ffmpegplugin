@@ -35,13 +35,13 @@ public final class NeedleController implements PropertyChangeListener {
 
     /** Models */
     private final NeedleModelImpl needleModel;
-    private final MixerModel mixer;
+    private final MixerModel mixerModel;
 
     public NeedleController(final MixerModel mixer) {
     	assert mixer.getNeedleModel() instanceof NeedleModelImpl; // UGLY HACK until this is fixed properly
         needleModel = (NeedleModelImpl) mixer.getNeedleModel();
 
-        this.mixer = mixer;
+        this.mixerModel = mixer;
 
         view = new NeedlePainter(needleModel);
 
@@ -82,7 +82,7 @@ public final class NeedleController implements PropertyChangeListener {
     }
     
     public void resetNeedlePosition() {
-    	final RegionState region = mixer.getRegionModel().getRegion();
+    	final RegionState region = mixerModel.getRegionModel().getRegion();
     	setCurrentTime(region.getRegionStart());
     }
     
@@ -91,7 +91,7 @@ public final class NeedleController implements PropertyChangeListener {
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
-        if (ViewportState.NAME.equals(evt.getPropertyName())) {
+        if (evt.getSource() == mixerModel.getViewportModel()) {
             view.repaint();
         }
     }
@@ -137,7 +137,7 @@ public final class NeedleController implements PropertyChangeListener {
         }
         
         @Override public void mousePressed(MouseEvent e) {
-            viewport = mixer.getViewportModel().getViewport();
+            viewport = mixerModel.getViewportModel().getViewport();
             final double currentNeedleX = viewport.computePixelXOffset(needleModel.getCurrentTime()) + NeedleConstants.NEEDLE_HEAD_WIDTH;
             final int mousePressedX = e.getX();
             needlePositionOffsetX = mousePressedX - currentNeedleX;
