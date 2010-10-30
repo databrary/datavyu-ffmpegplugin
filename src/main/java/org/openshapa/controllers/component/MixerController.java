@@ -13,6 +13,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import java.util.EventObject;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -578,11 +579,11 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      *            True if track movement is locked, false otherwise.
      */
     public void setTrackInterfaceSettings(final Identifier trackId,
-        final long bookmark, final boolean lock) {
+        final List<Long> bookmarks, final boolean lock) {
     	runInEDT(new Runnable() {
             @Override public void run() {
-                tracksEditorController.setBookmarkPosition(trackId,
-                    bookmark);
+                tracksEditorController.setBookmarkPositions(trackId,
+                    bookmarks);
                 tracksEditorController.setMovementLock(trackId, lock);
             }
         });
@@ -601,11 +602,11 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      *            True if track movement is locked, false otherwise.
      */
     @Deprecated public void setTrackInterfaceSettings(final String mediaPath,
-        final long bookmark, final boolean lock) {
+        final List<Long> bookmarks, final boolean lock) {
         runInEDT(new Runnable() {
             @Override public void run() {
-                tracksEditorController.setBookmarkPosition(mediaPath,
-                    bookmark);
+                tracksEditorController.setBookmarkPositions(mediaPath,
+                    bookmarks);
                 tracksEditorController.setMovementLock(mediaPath, lock);
             }
         });
@@ -836,7 +837,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         final CarriageEvent newEvent;
         if (wasOffsetChanged) {
         	final long newOffset = tracksEditorController.getTrackModel(e.getTrackId()).getOffset();
-            newEvent = new CarriageEvent(e.getSource(), e.getTrackId(), newOffset, e.getBookmark(), e.getDuration(), e.getTemporalPosition(), e.getEventType(), e.hasModifiers());
+            newEvent = new CarriageEvent(e.getSource(), e.getTrackId(), newOffset, e.getBookmarks(), e.getDuration(), e.getTemporalPosition(), e.getEventType(), e.hasModifiers());
         } else {
         	newEvent = e;
         }
@@ -856,7 +857,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         trackController.addTemporalBookmark(needleController.getNeedleModel().getCurrentTime());
 
         CarriageEvent newEvent = new CarriageEvent(e.getSource(),
-                e.getTrackId(), e.getOffset(), trackController.getBookmark(),
+                e.getTrackId(), e.getOffset(), trackController.getBookmarks(),
                 e.getDuration(), e.getTemporalPosition(),
                 EventType.BOOKMARK_CHANGED, e.hasModifiers());
 

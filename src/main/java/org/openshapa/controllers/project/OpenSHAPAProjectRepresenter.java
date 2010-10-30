@@ -1,5 +1,6 @@
 package org.openshapa.controllers.project;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -75,8 +76,23 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             TrackSettings interfaceSettings = (TrackSettings) obj;
             Map<String, Object> map = new TreeMap<String, Object>();
             map.put("locked", interfaceSettings.isLocked());
-            map.put("bookmark",
-                Long.toString(interfaceSettings.getBookmarkPosition()));
+            
+            final List<Long> bookmarks = interfaceSettings.getBookmarkPositions();
+            if (bookmarks.isEmpty()) {
+                map.put("bookmark", "-1"); // DEPRECATED - only included for backwards compatibility
+                map.put("bookmarks-list", "");
+            } else {
+                map.put("bookmark", Long.toString(bookmarks.get(0))); // DEPRECATED - only included for backwards compatibility
+                
+                final StringBuilder s = new StringBuilder();
+                for (int i = 0; i < bookmarks.size(); i++) {
+                	s.append(bookmarks.get(i));
+                	if (i < bookmarks.size() - 1) {
+                		s.append(',');
+                	}
+                }
+                map.put("bookmarks-list", s.toString());
+            }
             map.put("version", TrackSettings.VERSION);
 
             return representMapping("!ts", map, Boolean.FALSE);

@@ -331,22 +331,31 @@ public final class TracksEditorController implements TrackMouseEventListener {
         while (allTracks.hasNext()) {
             final Track track = allTracks.next();
             final TrackController trackController = track.trackController;
-            final long offset = trackController.getOffset();
-            final long bookmark = trackController.getBookmark();
-            final long duration = trackController.getDuration();
-
             final List<Long> snapList = track.trackId.equals(trackId) ? snapPoints : snapCandidates;
+
+            // add the left side (start) of the track as a snap point
             
-            if (offset > 0) {
-            	snapList.add(offset);
+            final long startTime = trackController.getOffset();
+            if (startTime > 0) {
+            	snapList.add(startTime);
             }
 
-            if (offset + bookmark > 0) {
-            	snapList.add(offset + bookmark);
+            // add all of the bookmarks as snap points
+            final List<Long> bookmarks = trackController.getBookmarks();
+            
+            for (Long bookmark : bookmarks) {
+            	final long time = startTime + bookmark;
+	            if (time > 0) {
+	            	snapList.add(time);
+	            }
             }
 
-            if (offset + duration > 0) {
-            	snapList.add(offset + duration);
+            // add the right side (end) of the track as a snap point
+            final long duration = trackController.getDuration();
+            final long endTime = startTime + duration;
+            
+            if (endTime > 0) {
+            	snapList.add(endTime);
             }
 
             if (duration > longestDuration) {
@@ -507,15 +516,14 @@ public final class TracksEditorController implements TrackMouseEventListener {
      * @param mediaPath
      *            Track identifier.
      * @param position
-     *            Position of the bookmark in milliseconds.
+     *            Positions of the bookmarks in milliseconds.
      */
-    public void setBookmarkPosition(final Identifier trackId,
-        final long position) {
-
+    public void setBookmarkPositions(final Identifier trackId,
+        final List<Long> positions) {
         for (Track track : tracks) {
-
             if (track.trackId.equals(trackId)) {
-                track.trackController.addBookmark(position);
+                track.trackController.addBookmarks(positions);
+                break;
             }
         }
     }
@@ -527,16 +535,16 @@ public final class TracksEditorController implements TrackMouseEventListener {
      *            Absolute path to the media file represented by the
      *            track.
      * @param position
-     *            Position of the bookmark in milliseconds.
+     *            Positions of the bookmarks in milliseconds.
      */
-    @Deprecated public void setBookmarkPosition(final String mediaPath,
-        final long position) {
+    @Deprecated public void setBookmarkPositions(final String mediaPath,
+        final List<Long> positions) {
 
         for (Track track : tracks) {
 
             if (track.trackController.getTrackModel().getMediaPath().equals(
                         mediaPath)) {
-                track.trackController.addBookmark(position);
+                track.trackController.addBookmarks(positions);
 
                 return;
             }

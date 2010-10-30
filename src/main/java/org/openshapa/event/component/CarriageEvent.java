@@ -1,6 +1,7 @@
 package org.openshapa.event.component;
 
 import java.util.EventObject;
+import java.util.List;
 
 import org.openshapa.models.id.Identifier;
 
@@ -46,8 +47,8 @@ public final class CarriageEvent extends EventObject {
     /** Duration of the track in milliseconds. */
     private final long duration;
 
-    /** Track bookmark position in milliseconds. */
-    private final long bookmark;
+    /** Track bookmark positions in milliseconds. */
+    private final List<Long> bookmarks;
 
     /**
      * Temporal position of the mouse. Only meaningful for
@@ -72,13 +73,13 @@ public final class CarriageEvent extends EventObject {
      * @param hasModifiers;
      */
     public CarriageEvent(final Object source, final Identifier trackId,
-        final long offset, final long bookmark, final long duration,
+        final long offset, final List<Long> bookmarks, final long duration,
         final long temporalPosition, final EventType eventType,
         final boolean hasModifiers) {
         super(source);
         this.trackId = trackId;
         this.offset = offset;
-        this.bookmark = bookmark;
+        this.bookmarks = bookmarks;
         this.duration = duration;
         this.temporalPosition = temporalPosition;
         this.eventType = eventType;
@@ -93,10 +94,10 @@ public final class CarriageEvent extends EventObject {
     }
 
     /**
-     * @return the bookmark
+     * @return the bookmarks
      */
-    public long getBookmark() {
-        return bookmark;
+    public List<Long> getBookmarks() {
+        return bookmarks;
     }
 
     /**

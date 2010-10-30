@@ -18,6 +18,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -132,7 +133,7 @@ public final class TrackController implements ViewerStateListener,
         this.mixerModel = mixerModel;
         trackModel = new TrackModel();
         trackModel.setState(TrackState.NORMAL);
-        trackModel.setBookmark(-1);
+        trackModel.clearBookmarks();
         trackModel.setLocked(false);
 
         trackPainter.setMixerView(mixerModel);
@@ -366,13 +367,16 @@ public final class TrackController implements ViewerStateListener,
      *            bookmark position in milliseconds
      */
     public void addBookmark(final long bookmark) {
-
         if ((0 <= bookmark) && (bookmark <= trackModel.getDuration())) {
-            trackModel.setBookmark(bookmark);
+            trackModel.addBookmark(bookmark);
             trackPainter.setTrackModel(trackModel);
         }
     }
 
+    public void addBookmarks(final List<Long> bookmarks) {
+    	trackModel.addBookmarks(bookmarks);
+    }
+    
     /**
      * Add a bookmark location to the track. Track offsets are taken into
      * account. This call is the same as addBookmark(position - offset).
@@ -424,11 +428,11 @@ public final class TrackController implements ViewerStateListener,
     }
 
     /**
-     * @return Bookmarked position in milliseconds. Does not take into account
+     * @return Bookmarked positions in milliseconds. Does not take into account
      *         any offsets.
      */
-    public long getBookmark() {
-        return trackModel.getBookmark();
+    public List<Long> getBookmarks() {
+        return trackModel.getBookmarks();
     }
 
     /**
@@ -600,7 +604,7 @@ public final class TrackController implements ViewerStateListener,
      * Remove the track's bookmark.
      */
     private void clearBookmarkAction() {
-        trackModel.setBookmark(-1);
+        trackModel.clearBookmarks();
         trackPainter.setTrackModel(trackModel);
     }
 
@@ -752,7 +756,7 @@ public final class TrackController implements ViewerStateListener,
 
         synchronized (this) {
             final CarriageEvent e = new CarriageEvent(this, trackModel.getId(),
-                    newOffset, trackModel.getBookmark(),
+                    newOffset, trackModel.getBookmarks(),
                     trackModel.getDuration(), temporalPosition,
                     EventType.OFFSET_CHANGE, hasModifiers);
             final Object[] listeners = listenerList.getListenerList();
@@ -777,7 +781,7 @@ public final class TrackController implements ViewerStateListener,
 
         synchronized (this) {
             final CarriageEvent e = new CarriageEvent(this, trackModel.getId(),
-                    trackModel.getOffset(), trackModel.getBookmark(),
+                    trackModel.getOffset(), trackModel.getBookmarks(),
                     trackModel.getDuration(), 0, EventType.BOOKMARK_REQUEST,
                     false);
             final Object[] listeners = listenerList.getListenerList();
@@ -803,7 +807,7 @@ public final class TrackController implements ViewerStateListener,
 
         synchronized (this) {
             final CarriageEvent e = new CarriageEvent(this, trackModel.getId(),
-                    trackModel.getOffset(), trackModel.getBookmark(),
+                    trackModel.getOffset(), trackModel.getBookmarks(),
                     trackModel.getDuration(), 0, EventType.BOOKMARK_SAVE,
                     false);
             final Object[] listeners = listenerList.getListenerList();
@@ -830,7 +834,7 @@ public final class TrackController implements ViewerStateListener,
 
         synchronized (this) {
             final CarriageEvent e = new CarriageEvent(this, trackModel.getId(),
-                    trackModel.getOffset(), trackModel.getBookmark(),
+                    trackModel.getOffset(), trackModel.getBookmarks(),
                     trackModel.getDuration(), 0, EventType.CARRIAGE_SELECTION,
                     hasModifiers);
             final Object[] listeners = listenerList.getListenerList();
@@ -856,7 +860,7 @@ public final class TrackController implements ViewerStateListener,
 
         synchronized (this) {
             final CarriageEvent e = new CarriageEvent(this, trackModel.getId(),
-                    trackModel.getOffset(), trackModel.getBookmark(),
+                    trackModel.getOffset(), trackModel.getBookmarks(),
                     trackModel.getDuration(), 0, EventType.CARRIAGE_LOCK,
                     false);
 

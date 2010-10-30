@@ -129,9 +129,23 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             }
 
             ts.setLocked((Boolean) values.get("locked"));
-            ts.setBookmarkPosition(Long.parseLong(
-                    (String) values.get("bookmark")));
-
+            
+            if (values.containsKey("bookmark")) { // DEPRECATED - only included for backwards compatibility
+            	ts.getBookmarkPositions().add(Long.parseLong((String) values.get("bookmark")));
+            }
+            
+            if (values.containsKey("bookmarks-list")) {
+            	final String [] bookmarksList = ((String) values.get("bookmarks-list")).split(",");
+            	for (String bookmark : bookmarksList) {
+            		if (bookmark != null && !bookmark.isEmpty()) {
+            			final long bookmarkTime = Long.parseLong(bookmark);
+            			if (!ts.getBookmarkPositions().contains(bookmarkTime)) {
+            				ts.getBookmarkPositions().add(bookmarkTime);
+            			}
+            		}
+            	}
+            }
+            
             return ts;
         }
     }

@@ -368,7 +368,7 @@ public final class ProjectController {
             if (setting.getTrackSettings() != null) {
                 final TrackSettings ts = setting.getTrackSettings();
                 mixerController.setTrackInterfaceSettings(viewer
-                    .getIdentifier(), ts.getBookmarkPosition(), ts.isLocked());
+                    .getIdentifier(), ts.getBookmarkPositions(), ts.isLocked());
             }
 
             mixerController.bindTrackActions(viewer.getIdentifier(),
@@ -397,7 +397,7 @@ public final class ProjectController {
             }
 
             mixerController.setTrackInterfaceSettings(setting.getFilePath(),
-                setting.getBookmarkPosition(), setting.isLocked());
+                setting.getBookmarkPositions(), setting.isLocked());
         }
 
         if (!missingFilesList.isEmpty() || !missingPluginList.isEmpty()) {
@@ -477,7 +477,7 @@ public final class ProjectController {
             TrackModel tm = dataController.getMixerController().getTrackModel(
                     viewer.getIdentifier());
             TrackSettings ts = new TrackSettings();
-            ts.setBookmarkPosition(tm.getBookmark());
+            ts.setBookmarkPositions(tm.getBookmarks());
             ts.setLocked(tm.isLocked());
 
             vs.setTrackSettings(ts);

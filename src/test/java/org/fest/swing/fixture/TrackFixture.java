@@ -5,6 +5,7 @@ import java.awt.MouseInfo;
 import static org.fest.reflect.core.Reflection.field;
 
 import java.awt.Point;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -73,7 +74,8 @@ public class TrackFixture extends ComponentFixture {
      * @return Offset of track as a long.
      */
     public long getBookmarkTimeAsLong() {
-        return trackC.getBookmark();
+    	final List<Long> bookmarks = trackC.getBookmarks();
+        return bookmarks.isEmpty() ? -1 : bookmarks.get(0);
     }
 
     /**

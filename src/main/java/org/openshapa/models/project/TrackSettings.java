@@ -1,5 +1,8 @@
 package org.openshapa.models.project;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class is used to store user interface settings relating to a given
  * track.
@@ -17,11 +20,11 @@ public final class TrackSettings {
     /** Is the track's movement locked on the interface */
     private boolean isLocked;
 
-    /** The track's bookmark position */
-    private long bookmarkPosition;
+    /** The track's bookmark positions */
+    private List<Long> bookmarkPositions;
 
     public TrackSettings() {
-        bookmarkPosition = -1;
+    	bookmarkPositions = new ArrayList<Long> ();
     }
 
     /**
@@ -32,7 +35,7 @@ public final class TrackSettings {
     private TrackSettings(final TrackSettings other) {
         filePath = other.filePath;
         isLocked = other.isLocked;
-        bookmarkPosition = other.bookmarkPosition;
+        bookmarkPositions = other.bookmarkPositions;
     }
 
     /**
@@ -53,16 +56,16 @@ public final class TrackSettings {
     /**
      * @return the bookmark position
      */
-    public long getBookmarkPosition() {
-        return bookmarkPosition;
+    public List<Long> getBookmarkPositions() {
+        return bookmarkPositions;
     }
 
     /**
      * @param bookmarkPosition
      *            the bookmark position to set
      */
-    public void setBookmarkPosition(final long bookmarkPosition) {
-        this.bookmarkPosition = bookmarkPosition;
+    public void setBookmarkPositions(final List<Long> bookmarkPositions) {
+        this.bookmarkPositions = bookmarkPositions;
     }
 
     /**
