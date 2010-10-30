@@ -951,21 +951,32 @@ public final class TrackController implements ViewerStateListener,
         /** Initial track state. */
         private TrackState initialState;
 
-        /** Mouse cursor for moving. */
-        private final Cursor moveCursor = Cursor.getPredefinedCursor(
-                Cursor.MOVE_CURSOR);
-
+        /** Mouse cursor when hovering over a track that can be moved. */
+        private final Cursor moveableTrackHoverCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+        
         /** Default mouse cursor. */
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
         private ViewportState viewport;
 
+        @Override public void mouseEntered(final MouseEvent e) {
+        	updateCursor(e);
+        }
         @Override public void mouseClicked(final MouseEvent e) {
             if (trackPainter.getCarriagePolygon().contains(e.getPoint()) && wasTrackSelected) {
                 deselectTrack();
             }
         }
 
+        @Override public void mouseMoved(final MouseEvent e) {
+        	updateCursor(e);
+        }
+        
+        private void updateCursor(final MouseEvent e) {
+        	final boolean isHovering = trackPainter.getCarriagePolygon().contains(e.getPoint());
+        	trackPainter.setCursor(!trackModel.isLocked() && isHovering ? moveableTrackHoverCursor : defaultCursor);
+        }
+        
         @Override public void mousePressed(final MouseEvent e) {
             viewport = mixerModel.getViewportModel().getViewport();
             wasTrackSelected = trackModel.isSelected();
@@ -974,7 +985,6 @@ public final class TrackController implements ViewerStateListener,
                 inCarriage = true;
                 xInit = e.getX();
                 offsetInit = trackModel.getOffset();
-                trackPainter.setCursor(moveCursor);
                 selectTrack();
                 initialState = trackModel.getState();
                 handleOffsetChanges(e);
