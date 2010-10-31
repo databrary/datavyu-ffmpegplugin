@@ -3,6 +3,7 @@ package org.openshapa.models.project;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * This class is used to store user interface settings relating to a given
  * track.
@@ -24,7 +25,7 @@ public final class TrackSettings {
     private List<Long> bookmarkPositions;
 
     public TrackSettings() {
-    	bookmarkPositions = new ArrayList<Long> ();
+        bookmarkPositions = new ArrayList<Long>();
     }
 
     /**
@@ -54,10 +55,19 @@ public final class TrackSettings {
     }
 
     /**
-     * @return the bookmark position
+     * @return bookmark positions
      */
     public List<Long> getBookmarkPositions() {
         return bookmarkPositions;
+    }
+
+    /**
+     * Add a bookmark position to our settings.
+     *
+     * @param position
+     */
+    public void addBookmarkPosition(final long position) {
+        bookmarkPositions.add(position);
     }
 
     /**

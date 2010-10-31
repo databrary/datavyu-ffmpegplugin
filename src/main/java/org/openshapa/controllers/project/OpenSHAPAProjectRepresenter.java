@@ -9,6 +9,7 @@ import org.openshapa.models.project.TrackSettings;
 import org.openshapa.models.project.ViewerSetting;
 
 import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
@@ -40,7 +41,7 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             map.put("dbFile", project.getDatabaseFileName());
             map.put("viewerSettings", project.getViewerSettings());
 
-            return representMapping("!project", map, Boolean.FALSE);
+            return representMapping(new Tag("!project"), map, Boolean.FALSE);
         }
     }
 
@@ -64,7 +65,7 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             // BugzID:2107
             map.put("trackSettings", viewerSetting.getTrackSettings());
 
-            return representMapping("!vs", map, Boolean.FALSE);
+            return representMapping(new Tag("!vs"), map, Boolean.FALSE);
         }
     }
 
@@ -76,26 +77,26 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             TrackSettings interfaceSettings = (TrackSettings) obj;
             Map<String, Object> map = new TreeMap<String, Object>();
             map.put("locked", interfaceSettings.isLocked());
-            
-            final List<Long> bookmarks = interfaceSettings.getBookmarkPositions();
+
+            final List<Long> bookmarks =
+                interfaceSettings.getBookmarkPositions();
+
             if (bookmarks.isEmpty()) {
-                map.put("bookmark", "-1"); // DEPRECATED - only included for backwards compatibility
-                map.put("bookmarks-list", "");
+
+                // DEPRECATED - only included for backwards compatibility
+                map.put("bookmark", "-1");
+                map.put("bookmarks", bookmarks);
             } else {
-                map.put("bookmark", Long.toString(bookmarks.get(0))); // DEPRECATED - only included for backwards compatibility
-                
-                final StringBuilder s = new StringBuilder();
-                for (int i = 0; i < bookmarks.size(); i++) {
-                	s.append(bookmarks.get(i));
-                	if (i < bookmarks.size() - 1) {
-                		s.append(',');
-                	}
-                }
-                map.put("bookmarks-list", s.toString());
+
+                // DEPRECATED - only included for backwards compatibility
+                map.put("bookmark", Long.toString(bookmarks.get(0)));
+
+                map.put("bookmarks", bookmarks);
             }
+
             map.put("version", TrackSettings.VERSION);
 
-            return representMapping("!ts", map, Boolean.FALSE);
+            return representMapping(new Tag("!ts"), map, Boolean.FALSE);
         }
     }
 

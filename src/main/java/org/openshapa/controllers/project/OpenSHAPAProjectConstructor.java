@@ -22,9 +22,9 @@ public class OpenSHAPAProjectConstructor extends Constructor {
      * Default Constructor.
      */
     public OpenSHAPAProjectConstructor() {
-        yamlConstructors.put("!vs", new ConstructViewerSetting());
-        yamlConstructors.put("!project", new ConstructProject());
-        yamlConstructors.put("!ts", new ConstructTrackSettings());
+        yamlMultiConstructors.put("!vs", new ConstructViewerSetting());
+        yamlMultiConstructors.put("!project", new ConstructProject());
+        yamlMultiConstructors.put("!ts", new ConstructTrackSettings());
     }
 
     /**
@@ -129,23 +129,29 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             }
 
             ts.setLocked((Boolean) values.get("locked"));
-            
-            if (values.containsKey("bookmark")) { // DEPRECATED - only included for backwards compatibility
-            	ts.getBookmarkPositions().add(Long.parseLong((String) values.get("bookmark")));
+
+            if (values.containsKey("bookmark")) {
+
+                // DEPRECATED - only included for backwards compatibility
+                ts.addBookmarkPosition(Long.parseLong(
+                        (String) values.get("bookmark")));
             }
-            
-            if (values.containsKey("bookmarks-list")) {
-            	final String [] bookmarksList = ((String) values.get("bookmarks-list")).split(",");
-            	for (String bookmark : bookmarksList) {
-            		if (bookmark != null && !bookmark.isEmpty()) {
-            			final long bookmarkTime = Long.parseLong(bookmark);
-            			if (!ts.getBookmarkPositions().contains(bookmarkTime)) {
-            				ts.getBookmarkPositions().add(bookmarkTime);
-            			}
-            		}
-            	}
+
+            if (values.containsKey("bookmarks")) {
+                List bookmarks = (List) values.get("bookmarks");
+
+                for (Object time : bookmarks) {
+
+                    // Ugly; the deserializer chooses the smallest data
+                    // type which can represent the value.
+                    if (time instanceof Integer) {
+                        ts.addBookmarkPosition((Integer) time);
+                    } else if (time instanceof Long) {
+                        ts.addBookmarkPosition((Long) time);
+                    }
+                }
             }
-            
+
             return ts;
         }
     }
