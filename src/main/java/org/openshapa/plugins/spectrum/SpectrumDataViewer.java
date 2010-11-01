@@ -76,7 +76,7 @@ public final class SpectrumDataViewer implements DataViewer {
 
     /** Main data viewer dialog. */
     private SpectrumDialog dialog;
-    
+
     /** Volume dialog. */
     private JDialog volDialog;
 
@@ -97,6 +97,8 @@ public final class SpectrumDataViewer implements DataViewer {
 
     /** Duration of media file in milliseconds. */
     private long duration;
+
+    private int preMuteVol;
 
     /** Playback engine. */
     private PlaybackEngine engine;
@@ -121,12 +123,12 @@ public final class SpectrumDataViewer implements DataViewer {
                     dialog.setDefaultCloseOperation(
                         WindowConstants.HIDE_ON_CLOSE);
 
-                    // BugzID:2304 - Rubbish action handles this.
-                    // dialog.addWindowListener(new WindowAdapter() {
-                    // public void windowClosing(final WindowEvent evt) {
-                    // dialogClosing(evt);
-                    // }
-                    // });
+                    // BugzID:2431 - Mute when viewer is hidden.
+                    dialog.addWindowListener(new WindowAdapter() {
+                            public void windowClosing(final WindowEvent evt) {
+                                muteVolume();
+                            }
+                        });
 
                     volButton = new JButton();
                     volButton.setIcon(VOL_NORMAL);
@@ -191,7 +193,7 @@ public final class SpectrumDataViewer implements DataViewer {
                     muteVol.addActionListener(new ActionListener() {
                             @Override public void actionPerformed(
                                 final ActionEvent e) {
-                                handleMuteVol(e);
+                                muteVolume();
                             }
                         });
 
@@ -213,7 +215,6 @@ public final class SpectrumDataViewer implements DataViewer {
         } else {
             SwingUtilities.invokeLater(edtTask);
         }
-
     }
 
     @Override public long getCurrentTime() throws Exception {
@@ -269,7 +270,7 @@ public final class SpectrumDataViewer implements DataViewer {
     @Override public void play() {
 
         if (engine != null) {
-        	setVolume();
+            setVolume();
             engine.startPlayback();
         }
     }
@@ -298,7 +299,7 @@ public final class SpectrumDataViewer implements DataViewer {
         // Show the dialog, set up the track.
         Runnable edtTask = new Runnable() {
                 @Override public void run() {
-                	setVolume();
+                    setVolume();
 
                     if (dialog != null) {
                         dialog.setVisible(true);
@@ -421,12 +422,14 @@ public final class SpectrumDataViewer implements DataViewer {
         volSlider.setValue(MAX_VOLUME);
     }
 
-    private void handleMuteVol(final ActionEvent e) {
+    private void muteVolume() {
+        preMuteVol = volSlider.getValue();
         volSlider.setValue(MIN_VOLUME);
     }
 
     private void handleVolumeSliderEvent(final ChangeEvent e) {
         int vol = volSlider.getValue();
+
         if (vol == 0) {
             volButton.setIcon(VOL_MUTED);
         } else {
@@ -434,31 +437,39 @@ public final class SpectrumDataViewer implements DataViewer {
         }
 
         setVolume();
-        
+
         if (engine != null) {
+
             synchronized (this) {
+
                 for (ViewerStateListener listener : viewerListeners) {
                     listener.notifyStateChanged(null, null);
                 }
             }
         }
     }
-    
+
     private void setVolume() {
-    	boolean isVisible = dialog != null ? dialog.isVisible() : true;
-    	if (engine != null) {
-    		engine.setVolume(isVisible ? volSlider.getValue() : MIN_VOLUME);
-    	}
+        boolean isVisible = (dialog != null) ? dialog.isVisible() : true;
+
+        if (engine != null) {
+            engine.setVolume(isVisible ? volSlider.getValue() : MIN_VOLUME);
+        }
     }
 
     @Override public void setDatastore(final Datastore sDB) {
     }
 
-    @Override public void setDataViewerVisible(boolean isVisible) {
-    	dialog.setVisible(isVisible);
-    	setVolume();
+    @Override public void setDataViewerVisible(final boolean isVisible) {
+        dialog.setVisible(isVisible);
+
+        if (isVisible) {
+            volSlider.setValue(preMuteVol);
+        } else {
+            muteVolume();
+        }
     }
-    
+
     @Override public void clearDataFeed() {
         track.deregister();
 
