@@ -94,11 +94,12 @@ public final class Tile {
 
     /**
      * Calculate remainder tiles if an item with dimension d is placed inside
-     * this tile. The minimum number of remainder tiles are calculated.
+     * this tile. The minimum number of remainder tiles are calculated. Assumes
+     * that the item will be placed in the top left corner.
      *
      * @param d
      */
-    public Iterable<Tile> remainder(final Dimension d) {
+    public Iterable<Tile> subtract(final Dimension d) {
 
         if (d == null) {
             throw new NullPointerException();
@@ -106,23 +107,92 @@ public final class Tile {
 
         List<Tile> remainders = Lists.newLinkedList();
 
-        // Calculate horizontal remainders.
-        if (d.width < width) {
-            int rwidth = width - d.width;
-            int rx = x + d.width;
-            remainders.add(new Tile(rwidth, height, rx, y));
-        }
+        if ((d.width < width) && (d.height < height)) {
+            // We will get two blocks in this case. What we want to do is get
+            // a split with the largest tile possible. This means having
+            // to choose between splitting the tile either horizontally or
+            // vertically.
 
-        // Calculate vertical remainders.
-        if (d.height < height) {
-            int rheight = height - d.height;
-            int ry = y + d.height;
+            // Calculate vertical split advantage.
+            int va1 = (width - d.width) * height;
+            int va2 = d.width * (height - d.height);
+            int maxVA = Math.max(va1, va2);
 
-            // Using d.width is intentional.
-            remainders.add(new Tile(d.width, rheight, x, ry));
+            // Calculate horizontal split advantage.
+            int ha1 = (width - d.width) * (height - d.height);
+            int ha2 = width * (height - d.height);
+            int maxHA = Math.max(ha1, ha2);
+
+            if (maxVA >= maxHA) {
+
+                // Vertical is better.
+                remainders.add(new Tile(width - d.width, height, x + d.width,
+                        y));
+                remainders.add(new Tile(d.width, height - d.height, x,
+                        y + d.height));
+            } else {
+
+                // Horizontal is better.
+                remainders.add(new Tile(width - d.width, height - d.height,
+                        x + d.width, y));
+                remainders.add(new Tile(width, height - d.height, x,
+                        y + d.height));
+            }
+
+        } else {
+
+            // Calculate horizontal remainders.
+            if (d.width < width) {
+                int rwidth = width - d.width;
+                int rx = x + d.width;
+                remainders.add(new Tile(rwidth, height, rx, y));
+            }
+
+            // Calculate vertical remainders.
+            if (d.height < height) {
+                int rheight = height - d.height;
+                int ry = y + d.height;
+
+                // Using d.width is intentional.
+                remainders.add(new Tile(d.width, rheight, x, ry));
+            }
         }
 
         return remainders;
+    }
+
+    /**
+     * Subtracts the given item's bounds from this tile, returning .
+     *
+     * @param r
+     * @return
+     */
+    public Iterable<Tile> subtract(final Rectangle r) {
+        List<Tile> remainders = Lists.newLinkedList();
+
+        // TODO finish this.
+
+        if (outside(r)) {
+
+            // If the rectangle is outside of this tile, then our tile is
+            // unchanged.
+            remainders.add(this);
+
+            return remainders;
+        }
+
+        // The rectangle is (partially) contained in this tile.
+
+
+        return remainders;
+    }
+
+    /**
+     * Calculates if the given rectangle is completely outside of this tile.
+     */
+    private boolean outside(final Rectangle r) {
+        return ((r.x + r.width) < x) || ((r.x + r.width) > (x + width))
+            || ((r.y + r.height) < y) || ((r.y + r.height) > (y + height));
     }
 
     /**

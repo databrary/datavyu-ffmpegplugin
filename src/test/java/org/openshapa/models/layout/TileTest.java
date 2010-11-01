@@ -17,7 +17,7 @@ import com.google.common.collect.Iterables;
         Tile tile = new Tile(1000, 1000, 0, 0);
         Dimension d = new Dimension(1000, 1000);
 
-        Iterable<Tile> remainders = tile.remainder(d);
+        Iterable<Tile> remainders = tile.subtract(d);
         assertEquals(0, Iterables.size(remainders));
     }
 
@@ -25,7 +25,7 @@ import com.google.common.collect.Iterables;
         Tile tile = new Tile(1000, 1000, 0, 0);
         Dimension d = new Dimension(1000, 500);
 
-        Iterable<Tile> remainders = tile.remainder(d);
+        Iterable<Tile> remainders = tile.subtract(d);
         assertEquals(1, Iterables.size(remainders));
 
         Tile r = Iterables.get(remainders, 0);
@@ -39,7 +39,7 @@ import com.google.common.collect.Iterables;
         Tile tile = new Tile(1000, 1000, 0, 0);
         Dimension d = new Dimension(500, 1000);
 
-        Iterable<Tile> remainders = tile.remainder(d);
+        Iterable<Tile> remainders = tile.subtract(d);
         assertEquals(1, Iterables.size(remainders));
 
         Tile r = Iterables.get(remainders, 0);
@@ -53,7 +53,7 @@ import com.google.common.collect.Iterables;
         Tile tile = new Tile(1000, 1000, 0, 0);
         Dimension d = new Dimension(500, 500);
 
-        Iterable<Tile> remainders = tile.remainder(d);
+        Iterable<Tile> remainders = tile.subtract(d);
         assertEquals(2, Iterables.size(remainders));
 
         Tile expected1 = new Tile(500, 1000, 500, 0);
@@ -67,7 +67,7 @@ import com.google.common.collect.Iterables;
         Tile tile = new Tile(1000, 1000, 100, 100);
         Dimension d = new Dimension(1000, 1000);
 
-        Iterable<Tile> remainders = tile.remainder(d);
+        Iterable<Tile> remainders = tile.subtract(d);
         assertEquals(0, Iterables.size(remainders));
     }
 
@@ -75,7 +75,7 @@ import com.google.common.collect.Iterables;
         Tile tile = new Tile(1000, 1000, 100, 100);
         Dimension d = new Dimension(1000, 500);
 
-        Iterable<Tile> remainders = tile.remainder(d);
+        Iterable<Tile> remainders = tile.subtract(d);
         assertEquals(1, Iterables.size(remainders));
 
         Tile r = Iterables.get(remainders, 0);
@@ -89,7 +89,7 @@ import com.google.common.collect.Iterables;
         Tile tile = new Tile(1000, 1000, 100, 100);
         Dimension d = new Dimension(500, 1000);
 
-        Iterable<Tile> remainders = tile.remainder(d);
+        Iterable<Tile> remainders = tile.subtract(d);
         assertEquals(1, Iterables.size(remainders));
 
         Tile r = Iterables.get(remainders, 0);
@@ -103,7 +103,7 @@ import com.google.common.collect.Iterables;
         Tile tile = new Tile(1000, 1000, 100, 100);
         Dimension d = new Dimension(500, 500);
 
-        Iterable<Tile> remainders = tile.remainder(d);
+        Iterable<Tile> remainders = tile.subtract(d);
         assertEquals(2, Iterables.size(remainders));
 
         Tile expected1 = new Tile(500, 1000, 600, 100);

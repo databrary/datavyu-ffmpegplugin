@@ -5,10 +5,7 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.PriorityQueue;
 
 import org.openshapa.OpenSHAPA;
 
@@ -18,9 +15,6 @@ import org.openshapa.models.layout.WindowComparator;
 
 import org.openshapa.plugins.DataViewer;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
 
 /**
  * Automatic window tiling using first-fit decreasing greedy algorithm.
@@ -28,12 +22,12 @@ import com.google.common.collect.Sets;
  */
 public final class AutoWindowTiler {
 
-    private final Set<Tile> tiles;
-    private final List<Window> windows;
+    private final PriorityQueue<Tile> tiles;
+    private final PriorityQueue<Window> windows;
 
     public AutoWindowTiler() {
-        tiles = Sets.newTreeSet(new TileComparator());
-        windows = Lists.newArrayList();
+        tiles = new PriorityQueue<Tile>(2, new TileComparator());
+        windows = new PriorityQueue<Window>(2, new WindowComparator());
     }
 
     public void tile() {
@@ -50,23 +44,15 @@ public final class AutoWindowTiler {
             windows.add(dv.getParentJDialog());
         }
 
-        Collections.sort(windows, new WindowComparator());
-
         while (!windows.isEmpty() && !tiles.isEmpty()) {
+            Window window = windows.poll();
 
-            // Remove the last window because it is the largest. We could have
-            // sorted it in descending order but this would cause our remove
-            // operation to be O(n).
-            Window window = windows.remove(windows.size() - 1);
-
-            Iterator<Tile> it = tiles.iterator();
-            Tile tile = it.next();
-            it.remove();
+            Tile tile = tiles.poll();
 
             Rectangle newBounds = tile.fitToTile(window.getBounds().getSize());
             window.setBounds(newBounds);
 
-            for (Tile leftover : tile.remainder(newBounds.getSize())) {
+            for (Tile leftover : tile.subtract(newBounds.getSize())) {
                 tiles.add(leftover);
             }
         }
