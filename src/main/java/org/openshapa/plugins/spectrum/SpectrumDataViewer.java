@@ -98,6 +98,7 @@ public final class SpectrumDataViewer implements DataViewer {
     /** Duration of media file in milliseconds. */
     private long duration;
 
+    /** Viewer volume before a mute. */
     private int preMuteVol;
 
     /** Playback engine. */
