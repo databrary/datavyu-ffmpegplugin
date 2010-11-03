@@ -258,4 +258,11 @@ import com.google.common.collect.Iterables;
         assertFalse(tile.outside(other));
     }
 
+    public void testOutside3() {
+        Tile tile = new Tile(100, 100, 100, 100);
+        Tile other = new Tile(1000, 1000, 0, 0);
+
+        assertFalse(tile.outside(other));
+    }
+
 }

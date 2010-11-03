@@ -42,7 +42,18 @@ public final class SingleWindowTiler {
             }
         }
 
+        /*
+         * The following code is an adaptation of "Dr Dobbs - The Maximal
+         * Rectangle Problem". The main difference between the journal and this
+         * implementation is that the journal has as input an MxN matrix while
+         * we have as input a collection of tiles.
+         */
+
         Tile best = null;
+
+        // The cache is updated from right-to-left. It is used to determine
+        // the longest column extent for a given row (number of empty pixels to
+        // the right of the current row).
         int[] cache = new int[scrDim.height];
         Stack<Pair> s = new Stack<Pair>();
 
@@ -58,12 +69,13 @@ public final class SingleWindowTiler {
                     width = cache[y];
                 }
 
-
                 if (cache[y] < width) {
                     Pair p = null;
 
                     do {
                         p = s.pop();
+
+                        // System.out.println((width * (y - p.y)));
 
                         if ((width * (y - p.y)) > area(best)) {
                             best = new Tile(width, y - p.y, x, p.y);
@@ -82,9 +94,14 @@ public final class SingleWindowTiler {
         }
 
         if (best != null) {
+            // System.out.println(best);
+
             Rectangle newBounds = best.fitToTile(w.getBounds().getSize());
             w.setBounds(newBounds);
         }
+        // else {
+        // System.out.println("No tile found");
+        // }
 
     }
 
@@ -115,7 +132,7 @@ public final class SingleWindowTiler {
 
         for (Tile t : tiles) {
 
-            if (t.inside(x, y)) {
+            if (t.enclosesPoint(x, y)) {
                 return false;
             }
         }

@@ -176,41 +176,58 @@ public final class Tile {
     }
 
     /**
-     * Calculates if the given rectangle is completely outside of this tile.
-     */
-    public boolean outside(final Rectangle r) {
-        return ((r.x + r.width) < x) || ((r.x + r.width) > (x + width))
-            || ((r.y + r.height) < y) || ((r.y + r.height) > (y + height));
-    }
-
-    /**
      * Calculates if the given tile is completely outside of this tile.
      */
     public boolean outside(final Tile t) {
 
         // Test if all of the corners in t are outside.
-        if (inside(t.x, t.y)) {
+        if (enclosesPoint(t.x, t.y)) {
             return false;
         }
 
-        if (inside(t.x + t.width, t.y)) {
+        if (enclosesPoint(t.x + t.width - 1, t.y)) {
             return false;
         }
 
-        if (inside(t.x, t.y + t.height)) {
+        if (enclosesPoint(t.x, t.y + t.height - 1)) {
             return false;
         }
 
-        if (inside(t.x + t.width, t.y + t.height)) {
+        if (enclosesPoint(t.x + t.width - 1, t.y + t.height - 1)) {
+            return false;
+        }
+
+        // Test if this tile is outside of the given tile (for cases when the
+        // given tile encloses this tile).
+        if (t.enclosesPoint(x, y)) {
+            return false;
+        }
+
+        if (t.enclosesPoint(x + width - 1, y)) {
+            return false;
+        }
+
+        if (t.enclosesPoint(x, y + height - 1)) {
+            return false;
+        }
+
+        if (t.enclosesPoint(x + width - 1, y + height - 1)) {
             return false;
         }
 
         return true;
     }
 
-    public boolean inside(final int px, final int py) {
-        return (x <= px) && (px <= (x + width - 1)) && (y <= py)
-            && (py <= (y + height - 1));
+    /**
+     * Test if a point is inside this tile.
+     *
+     * @param px
+     * @param py
+     * @return True if the given point is inside this tile; false otherwise.
+     */
+    public boolean enclosesPoint(final int px, final int py) {
+        return (x <= px) && (px < (x + width)) && (y <= py)
+            && (py < (y + height));
     }
 
     /**
