@@ -27,6 +27,13 @@ public final class Tile {
         this.y = y;
     }
 
+    public Tile(final Rectangle r) {
+        this.width = r.width;
+        this.height = r.height;
+        this.x = r.x;
+        this.y = r.y;
+    }
+
     /**
      * @return the width
      */
@@ -162,37 +169,48 @@ public final class Tile {
     }
 
     /**
-     * Subtracts the given item's bounds from this tile, returning .
-     *
-     * @param r
-     * @return
+     * Area of this tile.
      */
-    public Iterable<Tile> subtract(final Rectangle r) {
-        List<Tile> remainders = Lists.newLinkedList();
-
-        // TODO finish this.
-
-        if (outside(r)) {
-
-            // If the rectangle is outside of this tile, then our tile is
-            // unchanged.
-            remainders.add(this);
-
-            return remainders;
-        }
-
-        // The rectangle is (partially) contained in this tile.
-
-
-        return remainders;
+    public int area() {
+        return width * height;
     }
 
     /**
      * Calculates if the given rectangle is completely outside of this tile.
      */
-    private boolean outside(final Rectangle r) {
+    public boolean outside(final Rectangle r) {
         return ((r.x + r.width) < x) || ((r.x + r.width) > (x + width))
             || ((r.y + r.height) < y) || ((r.y + r.height) > (y + height));
+    }
+
+    /**
+     * Calculates if the given tile is completely outside of this tile.
+     */
+    public boolean outside(final Tile t) {
+
+        // Test if all of the corners in t are outside.
+        if (inside(t.x, t.y)) {
+            return false;
+        }
+
+        if (inside(t.x + t.width, t.y)) {
+            return false;
+        }
+
+        if (inside(t.x, t.y + t.height)) {
+            return false;
+        }
+
+        if (inside(t.x + t.width, t.y + t.height)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean inside(final int px, final int py) {
+        return (x <= px) && (px <= (x + width - 1)) && (y <= py)
+            && (py <= (y + height - 1));
     }
 
     /**

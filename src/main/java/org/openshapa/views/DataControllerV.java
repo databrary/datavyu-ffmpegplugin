@@ -22,6 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 
@@ -43,6 +44,7 @@ import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
 import org.openshapa.controllers.component.MixerController;
 import org.openshapa.controllers.id.IDController;
+import org.openshapa.controllers.layout.SingleWindowTiler;
 
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.TimescaleEvent;
@@ -69,6 +71,7 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 import java.awt.event.WindowListener;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -83,7 +86,8 @@ import org.openshapa.plugins.Plugin;
  * Quicktime video controller.
  */
 public final class DataControllerV extends OpenSHAPADialog
-    implements ClockListener, TracksControllerListener, DataController, PropertyChangeListener {
+    implements ClockListener, TracksControllerListener, DataController,
+        PropertyChangeListener {
 
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
@@ -157,10 +161,6 @@ public final class DataControllerV extends OpenSHAPADialog
                 + "'<font color=\"" + toRGBString(millisecondsColor)
                 + "\">'SSS'</font>" + "</html>'");
         CLOCK_FORMAT_HTML.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
-    }
-    
-    public static String formatTime(final long time) {
-    	return CLOCK_FORMAT.format(new Date(time));
     }
 
     /**
@@ -360,13 +360,20 @@ public final class DataControllerV extends OpenSHAPADialog
         mixerController = new MixerController();
         tracksPanel.add(mixerController.getTracksPanel(), "growx");
         mixerController.addTracksControllerListener(this);
-        mixerController.getMixerModel().getViewportModel().addPropertyChangeListener(this);
-        mixerController.getMixerModel().getRegionModel().addPropertyChangeListener(this);
-        mixerController.getMixerModel().getNeedleModel().addPropertyChangeListener(this);
+        mixerController.getMixerModel().getViewportModel()
+            .addPropertyChangeListener(this);
+        mixerController.getMixerModel().getRegionModel()
+            .addPropertyChangeListener(this);
+        mixerController.getMixerModel().getNeedleModel()
+            .addPropertyChangeListener(this);
 
         tracksPanelEnabled = true;
         showTracksPanel(tracksPanelEnabled);
         updateCurrentTimeLabel();
+    }
+
+    public static String formatTime(final long time) {
+        return CLOCK_FORMAT.format(new Date(time));
     }
 
     private static String toRGBString(final Color color) {
@@ -657,7 +664,8 @@ public final class DataControllerV extends OpenSHAPADialog
     public void setCurrentTime(final long milliseconds) {
         resetSync();
         updateCurrentTimeLabel();
-        mixerController.getMixerModel().getNeedleModel().setCurrentTime(milliseconds);
+        mixerController.getMixerModel().getNeedleModel().setCurrentTime(
+            milliseconds);
     }
 
     private void updateCurrentTimeLabel() {
@@ -688,11 +696,13 @@ public final class DataControllerV extends OpenSHAPADialog
             }
         }
 
-        mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(maxDuration, true);
+        mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(
+            maxDuration, true);
 
         if (viewers.isEmpty()) {
-        	mixerController.getNeedleController().resetNeedlePosition();
-        	mixerController.getMixerModel().getRegionModel().resetPlaybackRegion();
+            mixerController.getNeedleController().resetNeedlePosition();
+            mixerController.getMixerModel().getRegionModel()
+                .resetPlaybackRegion();
         }
     }
 
@@ -1704,7 +1714,15 @@ public final class DataControllerV extends OpenSHAPADialog
             maxDuration = viewer.getOffset() + viewer.getDuration();
         }
 
-        mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(maxDuration, true);
+        mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(
+            maxDuration, true);
+
+        SwingUtilities.invokeLater(new Runnable() {
+                @Override public void run() {
+                    SingleWindowTiler swt = new SingleWindowTiler();
+                    swt.tile(viewer.getParentJDialog());
+                }
+            });
     }
 
     /**
@@ -1744,12 +1762,15 @@ public final class DataControllerV extends OpenSHAPADialog
     public void tracksControllerChanged(final TracksControllerEvent e) {
 
         switch (e.getTracksEvent()) {
+
         case CARRIAGE_EVENT:
             handleCarriageEvent((CarriageEvent) e.getEventObject());
+
             break;
 
         case TIMESCALE_EVENT:
             handleTimescaleEvent((TimescaleEvent) e.getEventObject());
+
             break;
 
         default:
@@ -1804,6 +1825,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         case OFFSET_CHANGE:
             handleCarriageOffsetChangeEvent(e);
+
             break;
 
         case CARRIAGE_LOCK:
@@ -1841,34 +1863,41 @@ public final class DataControllerV extends OpenSHAPADialog
         long maxDuration = ViewportStateImpl.MINIMUM_MAX_END;
 
         for (DataViewer viewer : viewers) {
+
             if ((viewer.getDuration() + viewer.getOffset()) > maxDuration) {
                 maxDuration = viewer.getDuration() + viewer.getOffset();
             }
         }
 
-        mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(maxDuration, false);
+        mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(
+            maxDuration, false);
     }
 
     private void handleNeedleChanged(final PropertyChangeEvent e) {
-    	if (clock.isStopped()) {
-	        final long newTime = mixerController.getMixerModel().getNeedleModel().getCurrentTime();
-	        clock.setTime(newTime);
-	        clockStep(newTime);
-    	}
+
+        if (clock.isStopped()) {
+            final long newTime = mixerController.getMixerModel()
+                .getNeedleModel().getCurrentTime();
+            clock.setTime(newTime);
+            clockStep(newTime);
+        }
+
         updateCurrentTimeLabel();
     }
 
-	private void handleRegionChanged(final PropertyChangeEvent e) {
-        final RegionState region = mixerController.getMixerModel().getRegionModel().getRegion();
+    private void handleRegionChanged(final PropertyChangeEvent e) {
+        final RegionState region = mixerController.getMixerModel()
+            .getRegionModel().getRegion();
         playbackModel.setWindowPlayStart(region.getRegionStart());
         playbackModel.setWindowPlayEnd(region.getRegionEnd());
-	}
-    
-	private void handleViewportChanged(final PropertyChangeEvent e) {
-		final ViewportState viewport = mixerController.getMixerModel().getViewportModel().getViewport();
+    }
+
+    private void handleViewportChanged(final PropertyChangeEvent e) {
+        final ViewportState viewport = mixerController.getMixerModel()
+            .getViewportModel().getViewport();
         playbackModel.setMaxDuration(viewport.getMaxEnd());
-	}
-    
+    }
+
     // -------------------------------------------------------------------------
     // Simulated clicks (for numpad calls)
     //
@@ -2171,13 +2200,18 @@ public final class DataControllerV extends OpenSHAPADialog
     public void setRegionOfInterestAction() {
 
         try {
-            final long findTextTime = CLOCK_FORMAT.parse(findTextField.getText()).getTime();
-            final long findOffsetTime = CLOCK_FORMAT.parse(findOffsetField.getText()).getTime();
-            
+            final long findTextTime = CLOCK_FORMAT.parse(
+                    findTextField.getText()).getTime();
+            final long findOffsetTime = CLOCK_FORMAT.parse(
+                    findOffsetField.getText()).getTime();
+
             final long newWindowPlayStart = findTextTime;
-            final long newWindowPlayEnd = findOffsetTime > newWindowPlayStart ? findOffsetTime : newWindowPlayStart;
-            mixerController.getMixerModel().getRegionModel().setPlaybackRegion(newWindowPlayStart, newWindowPlayEnd);
-            mixerController.getMixerModel().getNeedleModel().setCurrentTime(newWindowPlayStart);
+            final long newWindowPlayEnd = (findOffsetTime > newWindowPlayStart)
+                ? findOffsetTime : newWindowPlayStart;
+            mixerController.getMixerModel().getRegionModel().setPlaybackRegion(
+                newWindowPlayStart, newWindowPlayEnd);
+            mixerController.getMixerModel().getNeedleModel().setCurrentTime(
+                newWindowPlayStart);
         } catch (ParseException e) {
             logger.error("Unable to set playback region of interest", e);
         }
@@ -2382,14 +2416,17 @@ public final class DataControllerV extends OpenSHAPADialog
     @Action public void syncVideoAction() {
     }
 
-    @Override
-	public void propertyChange(PropertyChangeEvent e) {
-		if (e.getSource() == mixerController.getNeedleController().getNeedleModel()) {
-			handleNeedleChanged(e);
-		} else if (e.getSource() == mixerController.getMixerModel().getViewportModel()) {
-			handleViewportChanged(e);
-		} else if (e.getSource() == mixerController.getRegionController().getModel()) {
-			handleRegionChanged(e);
-		}
-	}
+    @Override public void propertyChange(final PropertyChangeEvent e) {
+
+        if (e.getSource()
+                == mixerController.getNeedleController().getNeedleModel()) {
+            handleNeedleChanged(e);
+        } else if (e.getSource()
+                == mixerController.getMixerModel().getViewportModel()) {
+            handleViewportChanged(e);
+        } else if (e.getSource()
+                == mixerController.getRegionController().getModel()) {
+            handleRegionChanged(e);
+        }
+    }
 }

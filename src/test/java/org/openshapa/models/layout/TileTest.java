@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertFalse;
 
 import org.testng.annotations.Test;
 
@@ -241,6 +242,20 @@ import com.google.common.collect.Iterables;
         // note: we are rounding down
         Rectangle expected = new Rectangle(12, 12, 1000, 916);
         assertEquals(expected, tile.fitToTile(d));
+    }
+
+    public void testOutside1() {
+        Tile tile = new Tile(1000, 1000, 0, 0);
+        Tile other = new Tile(1000, 1000, 1000, 0);
+
+        assertTrue(tile.outside(other));
+    }
+
+    public void testOutside2() {
+        Tile tile = new Tile(1000, 1000, 0, 0);
+        Tile other = new Tile(1000, 1000, 500, 0);
+
+        assertFalse(tile.outside(other));
     }
 
 }
