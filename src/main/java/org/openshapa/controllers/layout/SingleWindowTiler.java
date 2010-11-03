@@ -1,8 +1,8 @@
 package org.openshapa.controllers.layout;
 
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.Window;
 
 import java.util.List;
@@ -28,7 +28,8 @@ public final class SingleWindowTiler {
     public void tile(final Window w) {
 
         // Add the main screen as our initial tile.
-        Dimension scrDim = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension scrDim = GraphicsEnvironment.getLocalGraphicsEnvironment()
+            .getMaximumWindowBounds().getSize();
 
         // Add all OpenSHAPA windows except the given window to our list of
         // tiles.
@@ -59,6 +60,8 @@ public final class SingleWindowTiler {
 
         for (int x = scrDim.width - 1; x >= 0; x--) {
             updateCache(cache, x);
+
+            // System.out.println(Arrays.toString(cache));
 
             int width = 0;
 
