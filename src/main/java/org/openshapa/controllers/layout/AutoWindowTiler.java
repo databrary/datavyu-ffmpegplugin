@@ -1,6 +1,7 @@
 package org.openshapa.controllers.layout;
 
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -33,8 +34,9 @@ public final class AutoWindowTiler {
     public void tile() {
 
         // Add the main screen as our initial tile.
-        Dimension scrDim = Toolkit.getDefaultToolkit().getScreenSize();
-        Tile screen = new Tile(scrDim.width, scrDim.height, 0, 0);
+        Rectangle scrBounds = GraphicsEnvironment.getLocalGraphicsEnvironment()
+            .getMaximumWindowBounds();
+        Tile screen = new Tile(scrBounds);
         tiles.add(screen);
 
         // Add all resizable OpenSHAPA windows to our list of windows.
