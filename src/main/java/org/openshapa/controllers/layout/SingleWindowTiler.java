@@ -28,8 +28,9 @@ public final class SingleWindowTiler {
     public void tile(final Window w) {
 
         // Add the main screen as our initial tile.
-        Dimension scrDim = GraphicsEnvironment.getLocalGraphicsEnvironment()
-            .getMaximumWindowBounds().getSize();
+        Rectangle scrBounds = GraphicsEnvironment.getLocalGraphicsEnvironment()
+            .getMaximumWindowBounds();
+        Dimension scrDim = scrBounds.getSize();
 
         // Add all OpenSHAPA windows except the given window to our list of
         // tiles.
@@ -58,14 +59,18 @@ public final class SingleWindowTiler {
         int[] cache = new int[scrDim.height];
         Stack<Pair> s = new Stack<Pair>();
 
-        for (int x = scrDim.width - 1; x >= 0; x--) {
-            updateCache(cache, x);
+        int cols = scrBounds.width;
+        int minX = scrBounds.x;
+        int rows = scrBounds.height;
+        int minY = scrBounds.y;
+        int maxY = minY + rows - 1;
 
-            // System.out.println(Arrays.toString(cache));
+        for (int x = minX + cols - 1; x >= minX; x--) {
+            updateCache(cache, x);
 
             int width = 0;
 
-            for (int y = 0; y < scrDim.height; y++) {
+            for (int y = minY; y < maxY; y++) {
 
                 if (cache[y] > width) {
                     s.push(new Pair(y, width));
@@ -78,10 +83,12 @@ public final class SingleWindowTiler {
                     do {
                         p = s.pop();
 
-                        // System.out.println((width * (y - p.y)));
+                        Tile current = new Tile(width, y - p.y + 1, x, p.y);
 
-                        if ((width * (y - p.y)) > area(best)) {
-                            best = new Tile(width, y - p.y, x, p.y);
+                        if (current.area() > area(best)) {
+
+                            // System.out.println(best);
+                            best = current;
                         }
 
                         width = p.width;
@@ -105,7 +112,6 @@ public final class SingleWindowTiler {
         // else {
         // System.out.println("No tile found");
         // }
-
     }
 
 
