@@ -16,6 +16,7 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.gstreamer.Gst;
 
 import com.google.common.collect.Lists;
+
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Filter;
 import org.openshapa.plugins.FilterNames;
@@ -76,5 +77,9 @@ public class GStreamerPlugin implements Plugin {
 
     @Override public String getPluginName() {
         return "UNSTABLE: GStreamer Video";
+    }
+
+    @Override public Class<? extends DataViewer> getViewerClass() {
+        return GStreamerDataViewer.class;
     }
 }

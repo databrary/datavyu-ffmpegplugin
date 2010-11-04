@@ -138,4 +138,8 @@ public class SpectrumPlugin implements Plugin {
     @Override public String getPluginName() {
         return "UNSTABLE: Audio Spectrum";
     }
+
+    @Override public Class<? extends DataViewer> getViewerClass() {
+        return SpectrumDataViewer.class;
+    }
 }

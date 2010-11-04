@@ -79,4 +79,13 @@ public final class QTPlugin implements Plugin {
         return "QuickTime Video";
     }
 
+    @Override public Class<? extends DataViewer> getViewerClass() {
+
+        if (Platform.isMac() || Platform.isWindows()) {
+            return QTDataViewer.class;
+        }
+
+        return null;
+    }
+
 }

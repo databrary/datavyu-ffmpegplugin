@@ -160,10 +160,12 @@ public final class PluginManager {
                     packages.push("");
 
                     while (!workStack.empty()) {
+
                         // We must handle spaces in the directory name
                         File f = workStack.pop();
                         String s = f.getCanonicalPath();
                         s = s.replaceAll("%20", " ");
+
                         File dir = new File(s);
 
                         String pkgName = packages.pop();
@@ -307,6 +309,7 @@ public final class PluginManager {
                     String pluginName = p.getPluginName();
 
                     if (pluginNames.contains(p.getPluginName())) {
+
                         // We already have this plugin; stop processing it
                         return;
                     }
@@ -325,17 +328,12 @@ public final class PluginManager {
                     // BugzID:2110
                     pluginClassifiers.put(p.getClassifier(), p);
 
-                    // We call this with no parent frame because asking
-                    // OpenSHAPA for its mainframe before it is created ruins
-                    // all the dialogs (and menus).
-                    final DataViewer newDataViewer;
-
                     try {
-                        newDataViewer = p.getNewDataViewer(null, false);
+                        final Class<? extends DataViewer> cdv =
+                            p.getViewerClass();
 
-                        if (newDataViewer != null) {
-                            pluginLookup.put(newDataViewer.getClass().getName(),
-                                p);
+                        if (cdv != null) {
+                            pluginLookup.put(cdv.getName(), p);
                         }
                     } catch (Throwable e) {
                         e.printStackTrace();

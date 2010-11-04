@@ -14,6 +14,7 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import com.google.common.collect.Lists;
 
 import com.sun.jna.Platform;
+
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Filter;
 import org.openshapa.plugins.FilterNames;
@@ -74,6 +75,15 @@ public final class QTCocoaPlugin implements Plugin {
 
     @Override public String getPluginName() {
         return "UNSTABLE: QTKit Cocoa Video";
+    }
+
+    @Override public Class<? extends DataViewer> getViewerClass() {
+
+        if (Platform.isMac()) {
+            return QTKitVerXDataViewer.class;
+        }
+
+        return null;
     }
 
 }
