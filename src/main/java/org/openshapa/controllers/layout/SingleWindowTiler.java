@@ -30,7 +30,6 @@ public final class SingleWindowTiler {
         // Add the main screen as our initial tile.
         Rectangle scrBounds = GraphicsEnvironment.getLocalGraphicsEnvironment()
             .getMaximumWindowBounds();
-        Dimension scrDim = scrBounds.getSize();
 
         // Add all OpenSHAPA windows except the given window to our list of
         // tiles.
@@ -53,10 +52,6 @@ public final class SingleWindowTiler {
 
         Tile best = null;
 
-        // The cache is updated from right-to-left. It is used to determine
-        // the longest column extent for a given row (number of empty pixels to
-        // the right of the current row).
-        int[] cache = new int[scrDim.height];
         Stack<Pair> s = new Stack<Pair>();
 
         int cols = scrBounds.width;
@@ -64,6 +59,8 @@ public final class SingleWindowTiler {
         int rows = scrBounds.height;
         int minY = scrBounds.y;
         int maxY = minY + rows - 1;
+
+        int[] cache = new int[maxY + 1];
 
         for (int x = minX + cols - 2; x >= minX; x--) {
             updateCache(cache, x);
@@ -107,7 +104,9 @@ public final class SingleWindowTiler {
         }
     }
 
-
+    // The cache is updated from right-to-left. It is used to determine
+    // the longest column extent for a given row (number of empty pixels to
+    // the right of the current row).
     private void updateCache(final int[] cache, final int x) {
 
         for (int y = 0; y < cache.length; y++) {
