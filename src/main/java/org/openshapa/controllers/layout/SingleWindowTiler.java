@@ -65,7 +65,7 @@ public final class SingleWindowTiler {
         int minY = scrBounds.y;
         int maxY = minY + rows - 1;
 
-        for (int x = minX + cols - 1; x >= minX; x--) {
+        for (int x = minX + cols - 2; x >= minX; x--) {
             updateCache(cache, x);
 
             int width = 0;
@@ -86,8 +86,6 @@ public final class SingleWindowTiler {
                         Tile current = new Tile(width, y - p.y + 1, x, p.y);
 
                         if (current.area() > area(best)) {
-
-                            // System.out.println(best);
                             best = current;
                         }
 
@@ -104,14 +102,9 @@ public final class SingleWindowTiler {
         }
 
         if (best != null) {
-            // System.out.println(best);
-
             Rectangle newBounds = best.fitToTile(w.getBounds().getSize());
             w.setBounds(newBounds);
         }
-        // else {
-        // System.out.println("No tile found");
-        // }
     }
 
 
