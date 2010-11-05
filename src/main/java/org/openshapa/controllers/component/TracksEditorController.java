@@ -2,11 +2,9 @@ package org.openshapa.controllers.component;
 
 import java.awt.event.MouseEvent;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -31,6 +29,9 @@ import org.openshapa.plugins.ViewerStateListener;
 import org.openshapa.views.component.TrackPainter;
 import org.openshapa.views.component.TracksEditorPainter;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 
 /**
  * Tracks editor controller is responsible for managing multiple TrackController
@@ -45,7 +46,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
     private final SnapMarkerController snapMarkerController;
 
     /** List of track controllers. */
-    private final List<Track> tracks;
+    private final Map<Identifier, TrackController> tracks;
 
     private final MixerController mixerController;
     private final MixerModel mixerModel;
@@ -58,7 +59,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
      */
     public TracksEditorController(final MixerController mixerController,
         final MixerModel mixerModel) {
-        tracks = new LinkedList<Track>();
+        tracks = Maps.newLinkedHashMap();
         this.mixerController = mixerController;
         this.mixerModel = mixerModel;
         snapMarkerController = new SnapMarkerController(mixerModel);
@@ -127,17 +128,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
         }
 
         trackController.addCarriageEventListener(selectionHandler);
-
         trackController.addTrackMouseEventListener(this);
-
         trackController.attachAsWindowListener();
 
-
-        final Track track = new Track();
-        track.trackId = trackId;
-        track.trackController = trackController;
-
-        tracks.add(track);
+        tracks.put(trackId, trackController);
 
         editingPanel.add(trackController.getView(),
             "pad 0 0 0 " + -RegionConstants.RMARKER_WIDTH + ", growx");
@@ -163,28 +157,19 @@ public final class TracksEditorController implements TrackMouseEventListener {
     public void bindTrackActions(final Identifier trackId,
         final CustomActions actions) {
 
-        for (Track track : tracks) {
+        TrackController tc = tracks.get(trackId);
 
-            if (track.trackId.equals(trackId)) {
-                TrackController tc = track.trackController;
-                tc.bindTrackActions(actions);
-            }
+        if (tc != null) {
+            tc.bindTrackActions(actions);
         }
     }
 
     public ViewerStateListener getViewerStateListener(
         final Identifier trackId) {
 
-        for (Track track : tracks) {
+        TrackController tc = tracks.get(trackId);
 
-            if (track.trackId.equals(trackId)) {
-                TrackController tc = track.trackController;
-
-                return tc;
-            }
-        }
-
-        return null;
+        return tc;
     }
 
     /**
@@ -197,26 +182,23 @@ public final class TracksEditorController implements TrackMouseEventListener {
      */
     public boolean removeTrack(final Identifier trackId,
         final CarriageEventListener listener) {
-        final Iterator<Track> allTracks = tracks.iterator();
 
-        while (allTracks.hasNext()) {
-            final Track track = allTracks.next();
+        if (tracks.containsKey(trackId)) {
+            TrackController tc = tracks.get(trackId);
 
-            if (track.trackId.equals(trackId)) {
-                editingPanel.remove(track.trackController.getView());
-                track.trackController.removeCarriageEventListener(listener);
-                track.trackController.removeCarriageEventListener(
-                    selectionHandler);
-                track.trackController.removeTrackMouseEventListener(this);
-                allTracks.remove();
-                editingPanel.validate();
-                editingPanel.repaint();
+            tc.removeCarriageEventListener(listener);
+            tc.removeCarriageEventListener(selectionHandler);
+            tc.removeTrackMouseEventListener(this);
 
-                return true;
-            }
+            editingPanel.remove(tc.getView());
+            editingPanel.validate();
+            editingPanel.repaint();
+
+            return true;
+
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     /**
@@ -224,13 +206,14 @@ public final class TracksEditorController implements TrackMouseEventListener {
      */
     public void removeAllTracks() {
 
-        for (Track track : tracks) {
-            track.trackController.removeTrackMouseEventListener(this);
-            track.trackController.removeCarriageEventListener(selectionHandler);
+        for (TrackController tc : tracks.values()) {
+            tc.removeTrackMouseEventListener(this);
+            tc.removeCarriageEventListener(selectionHandler);
         }
 
         tracks.clear();
         editingPanel.removeAll();
+        editingPanel.repaint();
     }
 
     /**
@@ -253,33 +236,27 @@ public final class TracksEditorController implements TrackMouseEventListener {
      */
     public boolean setTrackOffset(final Identifier trackId,
         final long newOffset, final long snapTemporalPosition) {
-        final Iterator<Track> allTracks = tracks.iterator();
 
-        while (allTracks.hasNext()) {
-            final Track track = allTracks.next();
+        TrackController tc = tracks.get(trackId);
 
-            if (track.trackId.equals(trackId)) {
-                final TrackController tc = track.trackController;
-                tc.setTrackOffset(newOffset);
-                snapMarkerController.setMarkerTime(-1);
-
-                final SnapPoint snapPoint = snapOffset(trackId,
-                        snapTemporalPosition);
-                tc.setMoveable(snapPoint == null);
-
-                if (snapPoint == null) {
-                    snapMarkerController.setMarkerTime(-1);
-                } else {
-                    snapMarkerController.setMarkerTime(
-                        snapPoint.snapMarkerPosition);
-                    tc.setTrackOffset(newOffset + snapPoint.snapOffset);
-                }
-
-                return true;
-            }
+        if (tc == null) {
+            return false;
         }
 
-        return false;
+        tc.setTrackOffset(newOffset);
+        snapMarkerController.setMarkerTime(-1);
+
+        SnapPoint snapPoint = snapOffset(trackId, snapTemporalPosition);
+        tc.setMoveable(snapPoint == null);
+
+        if (snapPoint == null) {
+            snapMarkerController.setMarkerTime(-1);
+        } else {
+            snapMarkerController.setMarkerTime(snapPoint.snapMarkerPosition);
+            tc.setTrackOffset(newOffset + snapPoint.snapOffset);
+        }
+
+        return true;
     }
 
     /**
@@ -305,12 +282,13 @@ public final class TracksEditorController implements TrackMouseEventListener {
         final ViewportState viewport = mixerModel.getViewportModel()
             .getViewport();
 
-        /** Points on other (non-selected) data tracks that can be used for alignment. */
-        final List<Long> snapCandidates = new ArrayList<Long>();
+        // Points on other (non-selected) data tracks that can be used for
+        // alignment.
+        final List<Long> snapCandidates = Lists.newArrayList();
 
-        /** Points on the current/selected data track that may be used for alignment against other data tracks. */
-        final List<Long> snapPoints = new LinkedList<Long>();
-        final Iterator<Track> allTracks = tracks.iterator();
+        // Points on the current/selected data track that may be used for
+        // alignment against other data tracks.
+        final List<Long> snapPoints = Lists.newArrayList();
 
         long longestDuration = 0;
 
@@ -339,24 +317,20 @@ public final class TracksEditorController implements TrackMouseEventListener {
         }
 
         // Compile track and candidate snap points
-        while (allTracks.hasNext()) {
-            final Track track = allTracks.next();
-            final TrackController trackController = track.trackController;
-            final List<Long> snapList = track.trackId.equals(trackId)
-                ? snapPoints : snapCandidates;
+        for (TrackController tc : tracks.values()) {
+            final List<Long> snapList =
+                tc.getTrackModel().getId().equals(trackId) ? snapPoints
+                                                           : snapCandidates;
 
             // add the left side (start) of the track as a snap point
-
-            final long startTime = trackController.getOffset();
+            final long startTime = tc.getOffset();
 
             if (startTime > 0) {
                 snapList.add(startTime);
             }
 
             // add all of the bookmarks as snap points
-            final List<Long> bookmarks = trackController.getBookmarks();
-
-            for (Long bookmark : bookmarks) {
+            for (Long bookmark : tc.getBookmarks()) {
                 final long time = startTime + bookmark;
 
                 if (time > 0) {
@@ -365,7 +339,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
             }
 
             // add the right side (end) of the track as a snap point
-            final long duration = trackController.getDuration();
+            final long duration = tc.getDuration();
             final long endTime = startTime + duration;
 
             if (endTime > 0) {
@@ -475,14 +449,12 @@ public final class TracksEditorController implements TrackMouseEventListener {
      *            temporal position in milliseconds
      */
     public void addTemporalBookmarkToSelected(final long position) {
-        final Iterator<Track> allTracks = tracks.iterator();
 
-        while (allTracks.hasNext()) {
-            final TrackController track = allTracks.next().trackController;
+        for (TrackController tc : tracks.values()) {
 
-            if (track.isSelected()) {
-                track.addTemporalBookmark(position);
-                track.saveBookmark();
+            if (tc.isSelected()) {
+                tc.addTemporalBookmark(position);
+                tc.saveBookmark();
             }
         }
     }
@@ -491,12 +463,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
      * @return True if at least one track is selected, false otherwise.
      */
     public boolean hasSelectedTracks() {
-        final Iterator<Track> allTracks = tracks.iterator();
 
-        while (allTracks.hasNext()) {
-            final TrackController track = allTracks.next().trackController;
+        for (TrackController tc : tracks.values()) {
 
-            if (track.isSelected()) {
+            if (tc.isSelected()) {
                 return true;
             }
         }
@@ -519,8 +489,8 @@ public final class TracksEditorController implements TrackMouseEventListener {
      */
     public void setLockedState(final boolean lockState) {
 
-        for (Track track : tracks) {
-            track.trackController.setLocked(lockState);
+        for (TrackController tc : tracks.values()) {
+            tc.setLocked(lockState);
         }
     }
 
@@ -543,14 +513,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
      */
     public void setBookmarkPositions(final Identifier trackId,
         final List<Long> positions) {
+        TrackController tc = tracks.get(trackId);
 
-        for (Track track : tracks) {
-
-            if (track.trackId.equals(trackId)) {
-                track.trackController.addBookmarks(positions);
-
-                break;
-            }
+        if (tc != null) {
+            tc.addBookmarks(positions);
         }
     }
 
@@ -566,11 +532,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
     @Deprecated public void setBookmarkPositions(final String mediaPath,
         final List<Long> positions) {
 
-        for (Track track : tracks) {
+        for (TrackController tc : tracks.values()) {
 
-            if (track.trackController.getTrackModel().getMediaPath().equals(
-                        mediaPath)) {
-                track.trackController.addBookmarks(positions);
+            if (tc.getTrackModel().getMediaPath().equals(mediaPath)) {
+                tc.addBookmarks(positions);
 
                 return;
             }
@@ -587,12 +552,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
      *            true if the track's movement is locked, false otherwise.
      */
     public void setMovementLock(final Identifier trackId, final boolean lock) {
+        TrackController tc = tracks.get(trackId);
 
-        for (Track track : tracks) {
-
-            if (track.trackId.equals(trackId)) {
-                track.trackController.setLocked(lock);
-            }
+        if (tc != null) {
+            tc.setLocked(lock);
         }
     }
 
@@ -609,11 +572,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
     @Deprecated public void setMovementLock(final String mediaPath,
         final boolean lock) {
 
-        for (Track track : tracks) {
+        for (TrackController tc : tracks.values()) {
 
-            if (track.trackController.getTrackModel().getMediaPath().equals(
-                        mediaPath)) {
-                track.trackController.setLocked(lock);
+            if (tc.getTrackModel().getMediaPath().equals(mediaPath)) {
+                tc.setLocked(lock);
 
                 return;
             }
@@ -630,45 +592,32 @@ public final class TracksEditorController implements TrackMouseEventListener {
      *         otherwise.
      */
     public TrackModel getTrackModel(final Identifier trackId) {
+        TrackController tc = tracks.get(trackId);
 
-        for (Track track : tracks) {
-
-            if (track.trackId.equals(trackId)) {
-                assert track.trackController.getTrackModel().getId().equals(
-                        trackId);
-
-                return track.trackController.getTrackModel();
-            }
-        }
-
-        return null;
+        return (tc != null) ? tc.getTrackModel() : null;
     }
 
     /**
      * @return A clone of all track models currently in uses.
      */
     public Iterable<TrackModel> getAllTrackModels() {
-        final List<TrackModel> models = new LinkedList<TrackModel>();
+        List<TrackModel> models = Lists.newArrayList();
 
-        for (Track track : tracks) {
-            models.add(track.trackController.getTrackModel());
+        for (TrackController tc : tracks.values()) {
+            models.add(tc.getTrackModel());
         }
 
         return models;
     }
 
     /**
+     * Used for tests through reflection.
+     *
      * @return All track controllers.
      */
+    @SuppressWarnings("unused")
     private List<TrackController> getAllTrackControllers() {
-        final List<TrackController> controllers =
-            new ArrayList<TrackController>();
-
-        for (Track track : tracks) {
-            controllers.add(track.trackController);
-        }
-
-        return controllers;
+        return Lists.newArrayList(tracks.values());
     }
 
     /**
@@ -677,10 +626,10 @@ public final class TracksEditorController implements TrackMouseEventListener {
      */
     private void deselectExcept(final TrackController selected) {
 
-        for (Track track : tracks) {
+        for (TrackController tc : tracks.values()) {
 
-            if (track.trackController != selected) {
-                track.trackController.deselect();
+            if (tc != selected) {
+                tc.deselect();
             }
         }
     }
@@ -698,19 +647,6 @@ public final class TracksEditorController implements TrackMouseEventListener {
             }
         }
 
-    }
-
-    /**
-     * Inner class for associating track identifier to a
-     * track controller.
-     */
-    private static class Track {
-
-        /** Track identifier. */
-        public Identifier trackId;
-
-        /** The controller associated with the track. */
-        public TrackController trackController;
     }
 
     /**
