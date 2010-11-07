@@ -165,11 +165,6 @@ public final class SpreadsheetPanel extends JPanel
         scrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER,
             rightCorner);
 
-        // set the database and layout the columns
-        setDatabase(db);
-        buildColumns();
-        setLayoutType(SheetLayoutType.Ordinal);
-
         // add a listener for window resize events
         scrollPane.addComponentListener(this);
 
@@ -193,6 +188,11 @@ public final class SpreadsheetPanel extends JPanel
         newVarFillerCol = new Filler(newVar.getMinimumSize(),
                 newVar.getPreferredSize(), newVar.getMaximumSize());
         mainView.add(newVarFillerCol);
+
+        // set the database and layout the columns
+        setDatabase(db);
+        buildColumns();
+        setLayoutType(SheetLayoutType.Ordinal);
 
         // Enable drag and drop support.
         setDropTarget(new DropTarget(this, new SSDropTarget()));
@@ -256,8 +256,10 @@ public final class SpreadsheetPanel extends JPanel
         SpreadsheetColumn col = new SpreadsheetColumn(db, colID, this, this);
         col.registerListeners();
 
-        // add the datapanel to the scrollpane viewport
+
         mainView.remove(newVarFillerCol);
+
+        // add the datapanel to the scrollpane viewport
         mainView.add(col.getDataPanel());
         mainView.add(newVarFillerCol);
 
