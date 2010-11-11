@@ -89,6 +89,8 @@ public final class DataControllerV extends OpenSHAPADialog
     implements ClockListener, TracksControllerListener, DataController,
         PropertyChangeListener {
 
+    private static final double LOW_RATE = 5D;
+
     /** One second in milliseconds. */
     private static final long ONE_SECOND = 1000L;
 
@@ -520,6 +522,14 @@ public final class DataControllerV extends OpenSHAPADialog
                             v.stop();
                         }
 
+                        // For plugins with low data rate, use frame rate
+                        // to determine threshold.
+                        if ((0 < v.getFrameRate())
+                                && (v.getFrameRate() <= LOW_RATE)) {
+                            thresh = (long) (ONE_SECOND / v.getFrameRate()
+                                    / clock.getRate());
+                        }
+
                         /*
                          * Only synchronise the data viewers if we have a
                          * noticable drift.
@@ -528,6 +538,10 @@ public final class DataControllerV extends OpenSHAPADialog
                                 && (Math.abs(
                                         v.getCurrentTime()
                                         - (time - v.getOffset())) > thresh)) {
+
+                            System.out.printf("T=%d V=%d\n", time,
+                                v.getCurrentTime());
+
                             v.seekTo(time - v.getOffset());
                         }
                     }
