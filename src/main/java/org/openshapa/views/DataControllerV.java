@@ -538,10 +538,6 @@ public final class DataControllerV extends OpenSHAPADialog
                                 && (Math.abs(
                                         v.getCurrentTime()
                                         - (time - v.getOffset())) > thresh)) {
-
-                            System.out.printf("T=%d V=%d\n", time,
-                                v.getCurrentTime());
-
                             v.seekTo(time - v.getOffset());
                         }
                     }
