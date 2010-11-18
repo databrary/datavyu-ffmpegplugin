@@ -1,9 +1,15 @@
 #-------------------------------------------------------------------
-# OpenSHAPA API v 0.95
+# OpenSHAPA API v 0.983
 
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
+# 0.98 10/10/10 - Added function to get list of columns, fixed up the import
+#                 Macshapa function.  It should work for most files now.
+# 0.97 8/11/10 -  Added a function to check for valid codes in a variable,
+#                 and fixed a bug with check_rel.
+# 0.96 8/11/10 -  Added a function to check reliability between two columns
+#                 and print either to a file or to the console.
 # 0.95 7/22/10 -  Added a function to transfer columns between files and
 #                 added headers to functions that didn't have any.
 # 0.94 7/22/10 -  Fixed the save_db function so it works with opf files
@@ -39,6 +45,7 @@
 require 'java'
 require 'csv'
 require 'time'
+#require 'ftools'
 
 import 'org.openshapa.models.db.legacy.Database'
 import 'org.openshapa.models.db.legacy.DataColumn'
@@ -236,6 +243,29 @@ class Variable
    def sort_cells()
       cells.sort! { |a,b| a.onset <=> b.onset }
    end
+
+
+   #-------------------------------------------------------------------
+   # Method name: change_arg_name
+   # Function: Creates a new, blank cell at the end of this variable's cell array
+   # Arguments:
+   # => old_name: the name of the argument you want to change
+   # => new_name: the name you want to change old_name to
+   # Returns:
+   # => nothing.
+   # Usage:
+   #       trial = getVariable("trial")
+   #
+   #-------------------------------------------------------------------
+   def change_arg_name(old_name, new_name)
+      for c in cells
+         d = Cell.new
+      end
+   end
+
+   def sort_cells()
+      cells.sort! { |a,b| a.onset <=> b.onset }
+   end
 end
 
 #-------------------------------------------------------------------
@@ -259,13 +289,12 @@ def getVariable(name)
       end
    end
 
-   puts "Got column index."
-   puts index
+   #puts "Got column index."
+   #puts index
 
 
    dc = $db.get_data_column(index)
    mve = $db.get_matrix_ve(dc.get_its_mve_id)
-
 
    # Convert each cell into an array and store in an array of arrays
    cells = Array.new
@@ -294,6 +323,7 @@ def getVariable(name)
    v.old_args = arg_names
    #v.type = dc.get_its_mve_type
    v.set_cells(cells, arg_names)
+
 
    return v
 end
@@ -326,11 +356,11 @@ def setVariable(name, var)
       c << Array.new
       var.arglist.each do |arg|
          t = eval "cell.#{arg}"
-         c[2] << t
+         c[2] << t.to_s()
       end
       cells << c
    end
-
+    print "creating column"
    # If the column already exists, delete it and build a new one.
    # If it doesn't, just add a new one.
    if not $db.col_name_in_use(name)
@@ -366,6 +396,7 @@ def setVariable(name, var)
    mve0 = $db.get_matrix_ve(col.its_mve_id)
    matID0 = mve0.get_id()
    cells.each do |cell|
+       print "writing cell"
       c = DataCell.new($db, col.get_id, matID0)
       mat = Matrix.new($db, matID0)
 
@@ -393,7 +424,6 @@ def setVariable(name, var)
       c.set_val(mat)
       $db.append_cell(c)
    end
-   puts "ecells"
 end
 
 #-------------------------------------------------------------------
@@ -611,17 +641,24 @@ end
 # setVariable("test",test)
 # -------------------------------------------------------------------
 def create_mutually_exclusive(name, var1name, var2name)
-   var1 = getVariable(var1name)
-   var2 = getVariable(var2name)
+   if var1name.class == "".class
+      var1 = getVariable(var1name)
+   end
+   if var2name.class == "".class
+      var2 = getVariable(var2name)
+   end
 
    var1_argprefix = var1.name.gsub(/(\W)+/,"").downcase + "_"
    var2_argprefix = var2.name.gsub(/(\W)+/,"").downcase + "_"
+   puts var2_argprefix
 
    var1_argprefix.gsub(".", "")
+   var2_argprefix.gsub(".","")
 
    v1arglist = var1.arglist.map { |arg| var1_argprefix + arg }
    v2arglist = var2.arglist.map { |arg| var2_argprefix + arg }
 
+   puts v1arglist, v2arglist
    args = Array.new
    args << (var1_argprefix + "ordinal")
    args += v1arglist
@@ -673,11 +710,13 @@ def create_mutually_exclusive(name, var1name, var2name)
          cell2.change_arg("offset", prev_over.offset)
          for arg in mutex.arglist
             v = nil
-            if arg.include?(var2.name + "_")
+            if arg.index(var2_argprefix) == 0
+
                a = arg.gsub(var2_argprefix, "")
                puts "Argname:" + arg
                v = eval "prev_over.#{a}"
-            elsif arg.include?(var1.name + "_")
+            elsif arg.index(var1_argprefix) == 0
+
                a = arg.gsub(var1_argprefix, "")
                puts "Argname:" + arg
                v = eval "v1cell.#{a}"
@@ -709,11 +748,11 @@ def create_mutually_exclusive(name, var1name, var2name)
             cell1.change_arg("offset", wcell.offset)
             for arg in mutex.arglist
                v = nil
-               if arg.include?(var2.name + "_")
+               if arg.index(var2_argprefix) == 0
                   a = arg.gsub(var2_argprefix, "")
                   v = eval "wcell.#{a}"
-               elsif arg.include?(var1.name + "_")
-                  a = arg.gsub(var1_argprefix, "")
+               elsif arg.index(var1_argprefix) == 0
+               a = arg.gsub(var1_argprefix, "")
                   v = eval "v1cell.#{a}"
                end
                cell1.change_arg(arg, v)
@@ -735,10 +774,10 @@ def create_mutually_exclusive(name, var1name, var2name)
          cell1.change_arg("offset", v1cell.offset)
          for arg in mutex.arglist
             v = nil
-            if arg.include?(var2.name + "_")
+            if arg.index(var2_argprefix) == 0
                a = arg.gsub(var2_argprefix, "")
                v = eval "next_over.#{a}"
-            elsif arg.include?(var1.name + "_")
+            elsif arg.index(var1_argprefix) == 0
                a = arg.gsub(var1_argprefix, "")
                v = eval "v1cell.#{a}"
             end
@@ -787,10 +826,12 @@ def create_mutually_exclusive(name, var1name, var2name)
             cell1.change_arg("offset", wcell.offset)
             for arg in mutex.arglist
                v = nil
-               if arg.include?(var1.name + "_")
+               if arg.index(var1_argprefix) == 0
+
                   a = arg.gsub(var1_argprefix, "")
                   v = eval "wcell.#{a}"
-               elsif arg.include?(var2.name + "_")
+               elsif arg.index(var2_argprefix) == 0
+
                   a = arg.gsub(var2_argprefix, "")
                   v = eval "v2cell.#{a}"
                end
@@ -823,7 +864,8 @@ def create_mutually_exclusive(name, var1name, var2name)
       cell.change_arg("onset", c.onset)
       cell.change_arg("offset", c.offset)
       for arg in mutex.arglist
-         if arg.include?(var1.name + "_")
+         if arg.index(var1_argprefix) == 0
+
             puts "C:",arg, v, c.arglist
 
             a = arg.gsub(var1_argprefix, "")
@@ -837,7 +879,8 @@ def create_mutually_exclusive(name, var1name, var2name)
       cell.change_arg("onset", c.onset)
       cell.change_arg("offset", c.offset)
       for arg in mutex.arglist
-         if arg.include?(var2.name + "_")
+         if arg.index(var2_argprefix) == 0
+
             puts arg, v, c.arglist
 
             a = arg.gsub(var2_argprefix, "")
@@ -880,7 +923,8 @@ def create_mutually_exclusive(name, var1name, var2name)
                cell.change_arg("offset", mcell_next.onset - 1)
                for arg in mutex.arglist
                   a = arg.gsub(var1_argprefix, "")
-                  if arg.include?(var1.name + "_")
+                  if arg.index(var1_argprefix) == 0
+
                      puts "ONE SIDE +1-1:", arg, v, cell.onset, cell.offset
                      v = eval "v1cell.#{a}"
                      cell.change_arg(arg, v)
@@ -899,7 +943,8 @@ def create_mutually_exclusive(name, var1name, var2name)
                   cell.change_arg("offset", v1cell.offset)
                   for arg in mutex.arglist
                      a = arg.gsub(var1_argprefix, "")
-                     if arg.include?(var1.name + "_")
+                     if arg.index(var1_argprefix) == 0
+
                         puts "ONE SIDE ==on:" , arg, v, v1cell.arglist, cell.onset, cell.offset
                         v = eval "v1cell.#{a}"
                         cell.change_arg(arg, v)
@@ -914,7 +959,7 @@ def create_mutually_exclusive(name, var1name, var2name)
                #             cell.change_arg("offset", mcell_cur.onset - 1)
                #             for arg in mutex.arglist
                #               a = arg.gsub(var1_argprefix, "")
-               #               if arg.include?(var1.name + "_")
+               #               if arg.include?(var1_argprefix)
                #                 v = eval "v1cell.#{a}"
                #                 puts "ONE SIDE ==off:", arg, v, v1cell.onset, v1cell.offset, cell.onset, cell.offset, mcell_cur.onset, mcell_cur.offset
                #                 cell.change_arg(arg, v)
@@ -955,7 +1000,8 @@ def create_mutually_exclusive(name, var1name, var2name)
                cell.change_arg("offset", mcell_next.onset - 1)
                for arg in mutex.arglist
                   a = arg.gsub(var2_argprefix, "")
-                  if arg.include?(var2.name + "_")
+                  if arg.index(var2_argprefix) == 0
+
                      v = eval "v2cell.#{a}"
                      puts "V2 Single:", arg, v, v2cell.arglist, cell.onset, cell.offset
                      cell.change_arg(arg, v)
@@ -974,7 +1020,8 @@ def create_mutually_exclusive(name, var1name, var2name)
                   cell.change_arg("offset", v2cell.offset)
                   for arg in mutex.arglist
                      a = arg.gsub(var2_argprefix, "")
-                     if arg.include?(var2.name + "_")
+                     if arg.index(var2_argprefix) == 0
+
                         v = eval "v2cell.#{a}"
                         puts "V2 Single:",arg, v, v2cell.arglist, cell.onset, cell.offset
                         cell.change_arg(arg, v)
@@ -992,7 +1039,8 @@ def create_mutually_exclusive(name, var1name, var2name)
                   cell.change_arg("offset", mcell_next.onset - 1)
                   for arg in mutex.arglist
                      a = arg.gsub(var2_argprefix, "")
-                     if arg.include?(var2.name + "_")
+                     if arg.index(var2_argprefix) == 0
+
                         v = eval "v2cell.#{a}"
                         puts "V2 Single:", arg, v, v2cell.arglist, cell.onset, cell.offset
                         cell.change_arg(arg, v)
@@ -1057,13 +1105,19 @@ def load_db(filename)
    # (i.e .odb or .csv file) call open_c.open_database("filename") instead. These
    # methods do *NOT* open the project within the OpenSHAPA UI.
    #
-   open_c.open_project(filename)
+   db = nil
+   proj = nil
+   if filename.include?(".csv")
+      open_c.open_database(filename)
+   else
+      open_c.open_project(filename)
+      # Get the project that was opened (if you want).
+      proj = open_c.get_project
+   end
 
    # Get the database that was opened.
    db = open_c.get_database
 
-   # Get the project that was opened (if you want).
-   proj = open_c.get_project
 
    # If the open went well - query the database, do calculations or whatever
    unless db.nil?
@@ -1138,7 +1192,7 @@ end
 
 
 #-------------------------------------------------------------------
-# Method name: open_macshapa_closed_db
+# Method name: load_macshapa_db
 # Function: Opens an old, closed database format MacSHAPA file and loads
 #     it into the current open database.
 #
@@ -1160,7 +1214,8 @@ end
 # Example:
 # $db,$pj = load_db("/Users/username/Desktop/test.opf")
 # -------------------------------------------------------------------
-def open_macshapa_closed_db(filename, write_to_gui)
+def load_macshapa_db(filename, write_to_gui)
+
 
    # Create a new DB for us to use so we don't touch the GUI... some of these
    # files can be huge.
@@ -1193,7 +1248,7 @@ def open_macshapa_closed_db(filename, write_to_gui)
    while predIndex < varIndex
       l = lines[predIndex].split(/ /)[5]
       varname = l[0..l.index("(") - 1]
-      if varname != "###QueryVar###" and varname != "div"
+      if varname != "###QueryVar###" and varname != "div" and varname != "qnotes"
          variables[varname] = l[l.index("(")+1..l.length-2].split(/,/)
          varIdent << l
       end
@@ -1203,7 +1258,6 @@ def open_macshapa_closed_db(filename, write_to_gui)
    # Create the columns for the variables
    variables.each do |key, value|
       # Create column
-      puts key
       if !$db.col_name_in_use(key)
          col = DataColumn.new($db, key, MatrixVocabElement::MatrixType::MATRIX)
          $db.add_column(col)
@@ -1251,12 +1305,12 @@ def open_macshapa_closed_db(filename, write_to_gui)
 
             #Found it!  Now build the cells
             while varSection[start] != "0"
-
+               varSection[start]
                if stringCol == false
-                  cellData = varSection[start].split(/[\t\s]/)
+                  cellData = varSection[start].split(/[\t]/)
+                  cellData[cellData.length - 1] = cellData[cellData.length-1][cellData[cellData.length-1].index("(")..cellData[cellData.length-1].length]
+
                else
-                  puts "Processing string variable..."
-                  puts cellData
                   cellData = varSection[start].split(/[\t]/)
                end
 
@@ -1274,25 +1328,35 @@ def open_macshapa_closed_db(filename, write_to_gui)
 
                # Split up cell data
                data = cellData[cellData.length - 1]
-               #puts data
-
                if stringCol == false
                   data = data[1..data.length-2]
+                  data = data.gsub(/[() ]*/, "")
                   data = data.split(/,/)
-               else
+               elsif data != nil #Then this is a string var
                   data = data.strip()
-                  data = data.gsub(",", "")
+                  if data.split(" ").length > 1
+                      data = data[data.index(" ")..data.length] # Remove the char count
+                      data = data.gsub("/", " or ")
+                      data = data.gsub(/[^\w ]*/, "")
+                      data = data.gsub(/  /," ")
+                  else
+                      data = ""
+                  end
+               else
+                  data = Array.new
+                  data << nil
                end
-               #puts data
 
                # Cycle thru cell data arguments and fill them into the cell matrix
                narg = 0
                data.each do |d|
                   fargid = mve.get_formal_arg(narg).get_id()
+                  d = d.strip()
                   if d == "" or d == nil or d.index("<") != nil
                      fdv = NominalDataValue.new($db, fargid)
                      fdv.clearValue()
                   else
+                     d = d.strip()
                      fdv = NominalDataValue.new($db, fargid, d)
                   end
                   mat.replaceArg(narg,fdv)
@@ -1312,7 +1376,6 @@ def open_macshapa_closed_db(filename, write_to_gui)
 
    return $db, $pj
 end
-
 
 #-------------------------------------------------------------------
 # Method name: transfer_columns
@@ -1396,6 +1459,196 @@ def transfer_columns(db1, db2, remove, *varnames)
    end
 
    puts "Columns transferred successfully."
+end
+
+
+#-------------------------------------------------------------------
+# Method name: check_rel
+# Function: Do a quick, in OpenSHAPA, check of reliability errors.
+# Arguments:
+# => main_col (required): Either the string name or the Ruby column from getVariable
+#     of the primary column to compare against.
+# => rel_col (required): Either the string name or the Ruby column from getVariable
+#     of the reliability column to compare to the primary column.
+# => match_arg (required): The string of the argument to use to match the relability
+#     cells to the primary cells.  This must be a unique identifier between the cells.
+# => time_tolerance (required): The amount of slack you allow, in milliseconds, for
+#     difference between onset and offset before it is considered an error.  Set to 0
+#     for no difference allowed and to a very large number for infinite distance allowed.
+# => dump_file (optional): The full string path to dump the relability output to.  This
+#     can be used for multi-file dumps or just to keep a log.  You can also give it a Ruby
+#     File object if a file is already started.
+#
+# Returns:
+# => Nothing but the console and file output.
+#
+# Example:
+#  check_rel("trial", "rel.trial", "trialnum", 100, "/Users/motoruser/Desktop/Relcheck.txt")
+#   or
+#  check_rel("trial", "rel.trial", "trialnum", 100)
+# -------------------------------------------------------------------
+def check_rel(main_col, rel_col, match_arg, time_tolerance, *dump_file)
+   # Make the match_arg conform to the method format that is used
+   if ["0","1","2","3","4","5","6","7","8","9"].include?(match_arg[0].chr)
+      match_arg = match_arg[1..match_arg.length]
+   end
+   match_arg = match_arg.gsub(/(\W)+/,"").downcase
+
+   # Set up our method variables
+   dump_file = dump_file[0]
+   if main_col.class == "".class
+      main_col = getVariable(main_col)
+   end
+   if rel_col.class == "".class
+      rel_col = getVariable(rel_col)
+   end
+
+   printing = false
+   if dump_file != nil
+      if dump_file.class == "".class
+         dump_file = open(dump_file,'a')
+      end
+      printing = true
+   end
+
+   # Define interal function for printing errors
+   def print_err(m_cell, r_cell, arg, dump_file, main_col, rel_col)
+      main_val = eval "m_cell.#{arg}"
+      rel_val = eval "r_cell.#{arg}"
+      err_str = "ERROR in " + main_col.name + " at Ordinal " + m_cell.ordinal.to_s + ", rel ordinal " + r_cell.ordinal.to_s + " in argument " + arg + ": " + main_val.to_s + ", " + rel_val.to_s + "\n"
+      if dump_file != nil
+         dump_file.write(err_str)
+      end
+      print err_str
+   end
+
+   # Build error array
+   errors = Hash.new
+   for arg in main_col.arglist
+      errors[arg] = 0
+   end
+   errors["onset"] = 0
+   errors["offset"] = 0
+
+   # Now check the cells
+   for mc in main_col.cells
+      main_bind = eval "mc.#{match_arg}"
+      for rc in rel_col.cells
+         rel_bind = eval "rc.#{match_arg}"
+         if main_bind == rel_bind
+            # Then check these cells match, check them for errors
+           if (mc.onset - rc.onset).abs >= time_tolerance
+              print_err(mc, rc, "onset", dump_file, main_col, rel_col)
+              errors["onset"] = errors["onset"] + 1
+           end
+           if (mc.offset - rc.offset).abs >= time_tolerance
+              print_err(mc, rc, "offset", dump_file, main_col, rel_col)
+              errors["offset"] = errors["offset"] + 1
+           end
+
+            for arg in main_col.arglist
+                 main_val = eval "mc.#{arg}"
+                 rel_val = eval "rc.#{arg}"
+                 if main_val != rel_val
+                    print_err(mc, rc, arg, dump_file, main_col, rel_col)
+                    errors[arg] = errors[arg] + 1
+                 end
+            end
+         end
+      end
+   end
+
+   for arg, errs in errors
+      str = "Total errors for " + arg + ": " + errs.to_s + ", Agreement:" + "%.2f" % (100 * (1.0 - (errs / rel_col.cells.length.to_f))) + "%\n"
+      print str
+      if dump_file != nil
+         dump_file.write(str)
+      end
+   end
+dump_file.flush()
+end
+
+#-------------------------------------------------------------------
+# Method name: check_valid_codes
+# Function: Do a quick, in OpenSHAPA, check of valid codes.
+# Arguments:
+# => val (required): The variable that the codes belong to.
+# => dump_file (required): The full path of the file to dump output to.
+#     Use "" to not dump to a file.  You may also pass a Ruby File object.
+# => arg_code_pairs (required): A list of the argument names and valid codes
+#     in the following format: "argument_name", ["y","n"], "argument2", ["j","k","m"]
+# Returns:
+# => Nothing but the console and file output.
+#
+# Example:
+#  check_valid_codes("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", [1,2,3])
+# -------------------------------------------------------------------
+
+def check_valid_codes(var, dump_file, *arg_code_pairs)
+   if var.class == "".class
+      var = getVariable(var)
+   end
+
+   if dump_file != ""
+      if dump_file.class == "".class
+         dump_file = open(dump_file, 'a')
+      end
+   end
+
+   # Make the argument/code hash
+   arg_code = Hash.new
+   for i in 0...arg_code_pairs.length
+      if i % 2 == 0
+         if arg_code_pairs[i].class != "".class
+            puts 'FATAL ERROR in argument/valid code array.  Exiting.  Please check to make sure it is in the format "argumentname", ["valid","codes"]'
+            exit
+         end
+         arg = arg_code_pairs[i]
+         if ["0","1","2","3","4","5","6","7","8","9"].include?(arg[1].chr)
+            arg = arg[1..arg.length]
+         end
+         arg = arg.gsub(/(\W )+/,"").downcase
+
+         arg_code[arg] = arg_code_pairs[i+1]
+      end
+   end
+
+   errors = false
+   for cell in var.cells
+      for arg, code in arg_code
+         val = eval "cell.#{arg}"
+         if not code.include?(val)
+            errors = true
+            str = "Code ERROR: Var: " + var.name + "\tOrdinal: " + cell.ordinal.to_s + "\tArg: " + arg + "\tVal: " + val + "\n"
+            print str
+            if dump_file != ""
+               dump_file.write(str)
+            end
+         end
+      end
+   end
+   if not errors
+      puts "No errors found."
+   end
+end
+
+
+def getColumnList()
+   col_list = Array.new
+   $db.get_col_order_vector.each do |col_index|
+      col_list << $db.get_data_column(col_index).get_name
+   end
+
+   return col_list
+end
+
+# This requires a column where the first cell in the column is the onset
+# of the sync point, where 0 turns to 1 in the video.  If you just want to
+# match the first motion point with the first frame of video, then leave
+# this argument blank.
+def importDataSource(file, *sync_column)
+
+
 end
 
 #-----------------------------------------------------------------
