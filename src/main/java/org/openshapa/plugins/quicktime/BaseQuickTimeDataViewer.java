@@ -361,7 +361,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
         pack();
         invalidate();
 
-        // BugzID:679: Need to make the window visible before we know the
+        // BugzID:679 + 2407: Need to make the window visible before we know the
         // dimensions because of a QTJava bug
         setDataViewerVisible(true);
         setQTDataFeed(mediaFile);
