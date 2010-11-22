@@ -52,9 +52,9 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
             new CompoundBorder(
                 new MatteBorder(0, 0, 1, 0, new Color(175, 175, 175)),
                 new MatteBorder(0, 0, 3, 0,
-                    Configuration.getInstance().getSSBackgroundColour())),
+                    addAlpha(Configuration.getInstance().getSSBackgroundColour(), ALPHA))),
             new MatteBorder(3, 3, 0, 3,
-                Configuration.getInstance().getSSBackgroundColour()));
+                addAlpha(Configuration.getInstance().getSSBackgroundColour(), ALPHA)));
 
     /** The panel that displays the cell. */
     private JPanel cellPanel;
@@ -180,7 +180,7 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
         parent = newCol;
     }
 
-    private Color addAlpha(final Color col, final int alpha) {
+    private static Color addAlpha(final Color col, final int alpha) {
         return new Color(col.getRed(), col.getGreen(), col.getBlue(), alpha);
     }
 
