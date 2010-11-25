@@ -74,6 +74,7 @@ import java.awt.event.WindowListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.ActionMap;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -289,7 +290,7 @@ public final class DataControllerV extends OpenSHAPADialog
     private javax.swing.JButton setCellOnsetButton;
 
     /** */
-    private javax.swing.JButton setNewCellOffsetButton;
+    private javax.swing.JButton instantCellButton;
 
     /** */
     private javax.swing.JButton showTracksButton;
@@ -851,7 +852,6 @@ public final class DataControllerV extends OpenSHAPADialog
      * @return True if the plugin should be removed, false otherwise.
      */
     private boolean shouldRemove() {
-//        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
             .getResourceMap(OpenSHAPA.class);
 
@@ -880,34 +880,50 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     /**
+     * Helper method for Building a button for the data controller - sets the
+     * icon, selected icon, action map and name.
+     *
+     * @param rMap The resource map that holds the icons for this button.
+     * @param aMap The action map holding the action that this button invokes.
+     * @param name The prefix to use when looking for actions and buttons.
+     * @param modifier The modifier (if any) to apply to the prefix. Maybe null.
+     *
+     * @return A configured button.
+     */
+    private JButton buildButton(final ResourceMap rMap,
+                                final ActionMap aMap,
+                                final String name,
+                                final String modifier) {
+
+        JButton result = new JButton();
+        result.setAction(aMap.get(name + "Action"));
+        if (modifier == null) {
+            result.setIcon(rMap.getIcon(name + "Button.icon"));
+            result.setPressedIcon(rMap.getIcon(name + "SelectedButton.icon"));
+        } else {
+            result.setIcon(rMap.getIcon(modifier + name + "Button.icon"));
+            result.setPressedIcon(rMap.getIcon(modifier + name + "SelectedButton.icon"));
+        }
+        result.setFocusPainted(false);
+        result.setName(name + "Button");
+
+        return result;
+    }
+
+    /**
      * Initialize the view for Macs.
      */
     private void initComponentsMac() {
         gridButtonPanel = new javax.swing.JPanel();
         syncCtrlButton = new javax.swing.JButton();
         syncButton = new javax.swing.JButton();
-        setCellOnsetButton = new javax.swing.JButton();
-        setCellOffsetButton = new javax.swing.JButton();
-        rewindButton = new javax.swing.JButton();
-        playButton = new javax.swing.JButton();
-        forwardButton = new javax.swing.JButton();
-        goBackButton = new javax.swing.JButton();
-        shuttleBackButton = new javax.swing.JButton();
-        pauseButton = new javax.swing.JButton();
-        shuttleForwardButton = new javax.swing.JButton();
-        findButton = new javax.swing.JButton();
-        jogBackButton = new javax.swing.JButton();
-        stopButton = new javax.swing.JButton();
-        createNewCellSettingOffset = new javax.swing.JButton();
-        jogForwardButton = new javax.swing.JButton();
-        setNewCellOffsetButton = new javax.swing.JButton();
+
         goBackTextField = new javax.swing.JTextField();
         findTextField = new javax.swing.JTextField();
         syncVideoButton = new javax.swing.JButton();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
         lblSpeed = new javax.swing.JLabel();
-        createNewCell = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
@@ -986,26 +1002,16 @@ public final class DataControllerV extends OpenSHAPADialog
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application
             .getInstance(org.openshapa.OpenSHAPA.class).getContext()
             .getActionMap(DataControllerV.class, this);
-        setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction"));
-        setCellOnsetButton.setIcon(resourceMap.getIcon(
-                "setCellOnsetButton.icon"));
-        setCellOnsetButton.setFocusPainted(false);
-        setCellOnsetButton.setName("setCellOnsetButton");
-        setCellOnsetButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/set-cell-onset-selected.png")));
+
+        // Set cell onset button.
+        setCellOnsetButton = buildButton(resourceMap, actionMap,
+                                         "setCellOnset", null);
         gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
 
-        // Set cell offset button
-        setCellOffsetButton.setAction(actionMap.get("setCellOffsetAction"));
-        setCellOffsetButton.setIcon(resourceMap.getIcon(
-                "setCellOffsetButton.icon"));
-        setCellOffsetButton.setFocusPainted(false);
-        setCellOffsetButton.setName("setCellOffsetButton");
-        setCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/set-cell-offset-selected.png")));
-        gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
+        // Instant cell button.
+        instantCellButton = buildButton(resourceMap, actionMap,
+                                        "instantCell", null);
+        gridButtonPanel.add(instantCellButton, "w 45!, h 45!");
 
         // Sync video button
         syncVideoButton.setEnabled(false);
@@ -1013,44 +1019,24 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(syncVideoButton, "w 80!, h 45!");
 
         // Rewind video button
-        rewindButton.setAction(actionMap.get("rewindAction"));
-        rewindButton.setIcon(resourceMap.getIcon("rewindButton.icon"));
-        rewindButton.setFocusPainted(false);
-        rewindButton.setName("rewindButton");
-        rewindButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/rewind-selected.png")));
+        rewindButton = buildButton(resourceMap, actionMap,
+                                   "rewind", null);
         gridButtonPanel.add(rewindButton, "w 45!, h 45!");
 
         // Play video button
-        playButton.setAction(actionMap.get("playAction"));
-        playButton.setIcon(resourceMap.getIcon("playButton.icon"));
-        playButton.setFocusPainted(false);
-        playButton.setName("playButton");
-        playButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/play-selected.png")));
+        playButton = buildButton(resourceMap, actionMap,
+                                 "play", null);
         playButton.setRequestFocusEnabled(false);
         gridButtonPanel.add(playButton, "w 45!, h 45!");
 
         // Fast forward button
-        forwardButton.setAction(actionMap.get("forwardAction"));
-        forwardButton.setIcon(resourceMap.getIcon("forwardButton.icon"));
-        forwardButton.setFocusPainted(false);
-        forwardButton.setName("forwardButton");
-        forwardButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/fast-forward-selected.png")));
+        forwardButton = buildButton(resourceMap, actionMap,
+                                    "forward", null);
         gridButtonPanel.add(forwardButton, "w 45!, h 45!");
 
         // Go back button
-        goBackButton.setAction(actionMap.get("goBackAction"));
-        goBackButton.setIcon(resourceMap.getIcon("goBackButton.icon"));
-        goBackButton.setFocusPainted(false);
-        goBackButton.setName("goBackButton");
-        goBackButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/go-back-selected.png")));
+        goBackButton = buildButton(resourceMap, actionMap,
+                                   "goBack", null);
         gridButtonPanel.add(goBackButton, "w 45!, h 45!");
 
         // Go back text field
@@ -1060,45 +1046,23 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(goBackTextField, "w 80!, h 45!");
 
         // Shuttle back button
-        shuttleBackButton.setAction(actionMap.get("shuttleBackAction"));
-        shuttleBackButton.setIcon(resourceMap.getIcon(
-                "shuttleBackButton.icon"));
-        shuttleBackButton.setFocusPainted(false);
-        shuttleBackButton.setName("shuttleBackButton");
-        shuttleBackButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/shuttle-backward-selected.png")));
+        shuttleBackButton = buildButton(resourceMap, actionMap,
+                                        "shuttleBack", null);
         gridButtonPanel.add(shuttleBackButton, "w 45!, h 45!");
 
         // Stop button
-        stopButton.setAction(actionMap.get("stopAction"));
-        stopButton.setIcon(resourceMap.getIcon("stopButton.icon"));
-        stopButton.setFocusPainted(false);
-        stopButton.setName("stopButton");
-        stopButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/stop-selected.png")));
+        stopButton = buildButton(resourceMap, actionMap,
+                                 "stop", null);
         gridButtonPanel.add(stopButton, "w 45!, h 45!");
 
         // Shuttle forward button
-        shuttleForwardButton.setAction(actionMap.get("shuttleForwardAction"));
-        shuttleForwardButton.setIcon(resourceMap.getIcon(
-                "shuttleForwardButton.icon"));
-        shuttleForwardButton.setFocusPainted(false);
-        shuttleForwardButton.setName("shuttleForwardButton");
-        shuttleForwardButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/shuttle-forward-selected.png")));
+        shuttleForwardButton = buildButton(resourceMap, actionMap,
+                                           "shuttleForward", null);
         gridButtonPanel.add(shuttleForwardButton, "w 45!, h 45!");
 
         // Find button
-        findButton.setAction(actionMap.get("findAction"));
-        findButton.setIcon(resourceMap.getIcon("findButton.icon"));
-        findButton.setFocusPainted(false);
-        findButton.setName("findButton");
-        findButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/find-selected.png")));
+        findButton = buildButton(resourceMap, actionMap,
+                                 "find", null);
         gridButtonPanel.add(findButton, "w 45!, h 45!");
 
         // Find text field
@@ -1108,47 +1072,25 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(findTextField, "w 80!, h 45!");
 
         // Jog back button
-        jogBackButton.setAction(actionMap.get("jogBackAction"));
-        jogBackButton.setIcon(resourceMap.getIcon("jogBackButton.icon"));
-        jogBackButton.setFocusPainted(false);
-        jogBackButton.setName("jogBackButton");
-        jogBackButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/jog-backward-selected.png")));
+        jogBackButton = buildButton(resourceMap, actionMap,
+                                    "jogBack", null);
         gridButtonPanel.add(jogBackButton, "w 45!, h 45!");
 
         // Pause button
-        pauseButton.setAction(actionMap.get("pauseAction"));
-        pauseButton.setIcon(resourceMap.getIcon("pauseButton.icon"));
-        pauseButton.setFocusPainted(false);
-        pauseButton.setName("pauseButton");
-        pauseButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/pause-selected.png")));
+        pauseButton = buildButton(resourceMap, actionMap,
+                                  "pause", null);
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
         // Jog forward button
-        jogForwardButton.setAction(actionMap.get("jogForwardAction"));
-        jogForwardButton.setIcon(resourceMap.getIcon("jogForwardButton.icon"));
-        jogForwardButton.setFocusPainted(false);
-        jogForwardButton.setName("jogForwardButton");
-        jogForwardButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/jog-forward-selected.png")));
+        jogForwardButton = buildButton(resourceMap, actionMap,
+                                       "jogForward", null);
         gridButtonPanel.add(jogForwardButton, "w 45!, h 45!");
 
         // Create new cell button
-        createNewCell.setAction(actionMap.get("createCellAction"));
-        createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon"));
-        createNewCell.setText(resourceMap.getString("createNewCell.text"));
+        createNewCell = buildButton(resourceMap, actionMap, "createNewCell", null);
         createNewCell.setAlignmentY(0.0F);
-        createNewCell.setFocusPainted(false);
         createNewCell.setHorizontalTextPosition(
             javax.swing.SwingConstants.CENTER);
-        createNewCell.setName("createNewCellButton");
-        createNewCell.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/create-new-cell-selected.png")));
         gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 92!");
 
         // Find offset field
@@ -1161,28 +1103,14 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(findOffsetField, "w 80!, h 45!");
 
         // Create new cell setting offset button
-        createNewCellSettingOffset.setAction(actionMap.get(
-                "createNewCellAction"));
-        createNewCellSettingOffset.setIcon(resourceMap.getIcon(
-                "createNewCellButton.icon"));
-        createNewCellSettingOffset.setFocusPainted(false);
-        createNewCellSettingOffset.setName("newCellAndOnsetButton");
-        createNewCellSettingOffset.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/"
-                    + "create-new-cell-and-set-onset-selected.png")));
+        createNewCellSettingOffset = buildButton(resourceMap, actionMap,
+                                                 "createNewCellAndSetOnset", null);
         gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 92!, h 45!");
 
-        // Set new cell offset button
-        setNewCellOffsetButton.setAction(actionMap.get("setNewCellStopTime"));
-        setNewCellOffsetButton.setIcon(resourceMap.getIcon(
-                "setNewCellOnsetButton.icon"));
-        setNewCellOffsetButton.setFocusPainted(false);
-        setNewCellOffsetButton.setName("newCellOffsetButton");
-        setNewCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/set-new-cell-offset-selected.png")));
-        gridButtonPanel.add(setNewCellOffsetButton, "w 45!, h 45!");
+        // Set cell offset button
+        setCellOffsetButton = buildButton(resourceMap, actionMap,
+                                          "setCellOffset", null);
+        gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
 
         // Show tracks button
         showTracksButton.setIcon(resourceMap.getIcon(
@@ -1216,21 +1144,6 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel = new javax.swing.JPanel();
         syncCtrlButton = new javax.swing.JButton();
         syncButton = new javax.swing.JButton();
-        setCellOnsetButton = new javax.swing.JButton();
-        setCellOffsetButton = new javax.swing.JButton();
-        rewindButton = new javax.swing.JButton();
-        playButton = new javax.swing.JButton();
-        forwardButton = new javax.swing.JButton();
-        goBackButton = new javax.swing.JButton();
-        shuttleBackButton = new javax.swing.JButton();
-        pauseButton = new javax.swing.JButton();
-        shuttleForwardButton = new javax.swing.JButton();
-        findButton = new javax.swing.JButton();
-        jogBackButton = new javax.swing.JButton();
-        stopButton = new javax.swing.JButton();
-        createNewCellSettingOffset = new javax.swing.JButton();
-        jogForwardButton = new javax.swing.JButton();
-        setNewCellOffsetButton = new javax.swing.JButton();
         goBackTextField = new javax.swing.JTextField();
         findTextField = new javax.swing.JTextField();
         syncVideoButton = new javax.swing.JButton();
@@ -1314,35 +1227,18 @@ public final class DataControllerV extends OpenSHAPADialog
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application
             .getInstance(org.openshapa.OpenSHAPA.class).getContext()
             .getActionMap(DataControllerV.class, this);
-        setCellOnsetButton.setAction(actionMap.get("setCellOnsetAction"));
-        setCellOnsetButton.setIcon(resourceMap.getIcon(
-                "setCellOnsetButton.icon"));
-        setCellOnsetButton.setFocusPainted(false);
-        setCellOnsetButton.setName("setCellOnsetButton");
-        setCellOnsetButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/set-cell-onset-selected.png")));
+
+        setCellOnsetButton = buildButton(resourceMap, actionMap,
+                                         "setCellOnset", null);
         gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
 
-        // Set cell offset button
-        setCellOffsetButton.setAction(actionMap.get("setCellOffsetAction"));
-        setCellOffsetButton.setIcon(resourceMap.getIcon(
-                "setCellOffsetButton.icon"));
-        setCellOffsetButton.setFocusPainted(false);
-        setCellOffsetButton.setName("setCellOffsetButton");
-        setCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/set-cell-offset-selected.png")));
-        gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
+        // Set new cell offset button
+        instantCellButton = buildButton(resourceMap, actionMap,
+                                        "instantCell", null);
+        gridButtonPanel.add(instantCellButton, "w 45!, h 45!");
 
         // Go back button
-        goBackButton.setAction(actionMap.get("goBackAction"));
-        goBackButton.setIcon(resourceMap.getIcon("goBackButton.icon"));
-        goBackButton.setFocusPainted(false);
-        goBackButton.setName("goBackButton");
-        goBackButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/go-back-selected.png")));
+        goBackButton = buildButton(resourceMap, actionMap, "goBack", null);
         gridButtonPanel.add(goBackButton, "w 45!, h 45!");
 
         // Sync video button
@@ -1351,46 +1247,20 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(syncVideoButton, "w 80!, h 45!");
 
         // Rewind video button
-        rewindButton.setAction(actionMap.get("rewindAction"));
-        rewindButton.setIcon(resourceMap.getIcon("rewindButton.icon"));
-        rewindButton.setFocusPainted(false);
-        rewindButton.setName("rewindButton");
-        rewindButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/rewind-selected.png")));
+        rewindButton = buildButton(resourceMap, actionMap, "rewindAction", null);
         gridButtonPanel.add(rewindButton, "w 45!, h 45!");
 
         // Play video button
-        playButton.setAction(actionMap.get("playAction"));
-        playButton.setIcon(resourceMap.getIcon("playButton.icon"));
-        playButton.setFocusPainted(false);
-        playButton.setName("playButton");
-        playButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/play-selected.png")));
+        playButton = buildButton(resourceMap, actionMap, "play", null);
         playButton.setRequestFocusEnabled(false);
         gridButtonPanel.add(playButton, "w 45!, h 45!");
 
         // Fast forward button
-        forwardButton.setAction(actionMap.get("forwardAction"));
-        forwardButton.setIcon(resourceMap.getIcon("forwardButton.icon"));
-        forwardButton.setFocusPainted(false);
-        forwardButton.setName("forwardButton");
-        forwardButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/fast-forward-selected.png")));
+        forwardButton = buildButton(resourceMap, actionMap, "forward", null);
         gridButtonPanel.add(forwardButton, "w 45!, h 45!");
 
         // Find button
-        findButton.setAction(actionMap.get("findAction"));
-        findButton.setIcon(new ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/find-win.png")));
-        findButton.setFocusPainted(false);
-        findButton.setName("findButton");
-        findButton.setPressedIcon(new ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/find-win-selected.png")));
+        findButton = buildButton(resourceMap, actionMap, "find", "win");
         gridButtonPanel.add(findButton, "span 1 2, w 45!, h 95!");
 
         // Go back text field
@@ -1400,35 +1270,15 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(goBackTextField, "w 80!, h 45!");
 
         // Shuttle back button
-        shuttleBackButton.setAction(actionMap.get("shuttleBackAction"));
-        shuttleBackButton.setIcon(resourceMap.getIcon(
-                "shuttleBackButton.icon"));
-        shuttleBackButton.setFocusPainted(false);
-        shuttleBackButton.setName("shuttleBackButton");
-        shuttleBackButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/shuttle-backward-selected.png")));
+        shuttleBackButton = buildButton(resourceMap, actionMap, "shuttleBack", null);
         gridButtonPanel.add(shuttleBackButton, "w 45!, h 45!");
 
         // Stop button
-        stopButton.setAction(actionMap.get("stopAction"));
-        stopButton.setIcon(resourceMap.getIcon("stopButton.icon"));
-        stopButton.setFocusPainted(false);
-        stopButton.setName("stopButton");
-        stopButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/stop-selected.png")));
+        stopButton = buildButton(resourceMap, actionMap, "stop", null);
         gridButtonPanel.add(stopButton, "w 45!, h 45!");
 
         // Shuttle forward button
-        shuttleForwardButton.setAction(actionMap.get("shuttleForwardAction"));
-        shuttleForwardButton.setIcon(resourceMap.getIcon(
-                "shuttleForwardButton.icon"));
-        shuttleForwardButton.setFocusPainted(false);
-        shuttleForwardButton.setName("shuttleForwardButton");
-        shuttleForwardButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/shuttle-forward-selected.png")));
+        shuttleForwardButton = buildButton(resourceMap, actionMap, "shuttleForward", null);
         gridButtonPanel.add(shuttleForwardButton, "w 45!, h 45!");
 
         // Find text field
@@ -1438,47 +1288,21 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(findTextField, "w 80!, h 45!");
 
         // Jog back button
-        jogBackButton.setAction(actionMap.get("jogBackAction"));
-        jogBackButton.setIcon(resourceMap.getIcon("jogBackButton.icon"));
-        jogBackButton.setFocusPainted(false);
-        jogBackButton.setName("jogBackButton");
-        jogBackButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/jog-backward-selected.png")));
+        jogBackButton = buildButton(resourceMap, actionMap, "jogBack", null);
         gridButtonPanel.add(jogBackButton, "w 45!, h 45!");
 
         // Pause button
-        pauseButton.setAction(actionMap.get("pauseAction"));
-        pauseButton.setIcon(resourceMap.getIcon("pauseButton.icon"));
-        pauseButton.setFocusPainted(false);
-        pauseButton.setName("pauseButton");
-        pauseButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/pause-selected.png")));
+        pauseButton = buildButton(resourceMap, actionMap, "pause", null);
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
         // Jog forward button
-        jogForwardButton.setAction(actionMap.get("jogForwardAction"));
-        jogForwardButton.setIcon(resourceMap.getIcon("jogForwardButton.icon"));
-        jogForwardButton.setFocusPainted(false);
-        jogForwardButton.setName("jogForwardButton");
-        jogForwardButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/jog-forward-selected.png")));
+        jogForwardButton = buildButton(resourceMap, actionMap, "jogForward", null);
         gridButtonPanel.add(jogForwardButton, "w 45!, h 45!");
 
         // Create new cell button
-        createNewCell.setAction(actionMap.get("createCellAction"));
-        createNewCell.setIcon(resourceMap.getIcon("createNewCell.icon"));
-        createNewCell.setText(resourceMap.getString("createNewCell.text"));
+        createNewCell = buildButton(resourceMap, actionMap, "createCell", null);
         createNewCell.setAlignmentY(0.0F);
-        createNewCell.setFocusPainted(false);
-        createNewCell.setHorizontalTextPosition(
-            javax.swing.SwingConstants.CENTER);
-        createNewCell.setName("createNewCellButton");
-        createNewCell.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/create-new-cell-selected.png")));
+        createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 95!");
 
         // Find offset field
@@ -1491,28 +1315,14 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(findOffsetField, "w 80!, h 45!");
 
         // Create new cell setting offset button
-        createNewCellSettingOffset.setAction(actionMap.get(
-                "createNewCellAction"));
-        createNewCellSettingOffset.setIcon(resourceMap.getIcon(
-                "createNewCellButton.icon"));
-        createNewCellSettingOffset.setFocusPainted(false);
-        createNewCellSettingOffset.setName("newCellAndOnsetButton");
-        createNewCellSettingOffset.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/"
-                    + "create-new-cell-and-set-onset-selected.png")));
+        createNewCellSettingOffset = buildButton(resourceMap, actionMap,
+                                                 "createNewCellAndSetOnset", null);
         gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 95!, h 45!");
 
-        // Set new cell offset button
-        setNewCellOffsetButton.setAction(actionMap.get("setNewCellStopTime"));
-        setNewCellOffsetButton.setIcon(resourceMap.getIcon(
-                "setNewCellOnsetButton.icon"));
-        setNewCellOffsetButton.setFocusPainted(false);
-        setNewCellOffsetButton.setName("newCellOffsetButton");
-        setNewCellOffsetButton.setPressedIcon(new javax.swing.ImageIcon(
-                getClass().getResource(
-                    "/icons/DataController/eng/set-new-cell-offset-selected.png")));
-        gridButtonPanel.add(setNewCellOffsetButton, "w 45!, h 45!");
+        // Set cell offset button
+        setCellOffsetButton = buildButton(resourceMap, actionMap,
+                                          "setCellOffset", null);
+        gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
 
         // Show tracks button
         showTracksButton.setIcon(resourceMap.getIcon(
@@ -1963,8 +1773,8 @@ public final class DataControllerV extends OpenSHAPADialog
     }
 
     /** Simulates set new cell onset button clicked. */
-    public void pressSetNewCellOnset() {
-        setNewCellOffsetButton.doClick();
+    public void pressInstantCell() {
+        instantCellButton.doClick();
     }
 
     /** Simulates go back button clicked. */
@@ -2397,7 +2207,7 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Action to invoke when the user clicks on the create new cell button.
      */
-    @Action public void createCellAction() {
+    @Action public void createNewCellAction() {
         logger.usage("New cell");
         new CreateNewCellC();
     }
@@ -2405,7 +2215,7 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Action to invoke when the user clicks on the new cell button.
      */
-    @Action public void createNewCellAction() {
+    @Action public void createNewCellAndSetOnsetAction() {
         logger.usage("New cell set onset");
         new CreateNewCellC(getCurrentTime());
     }
@@ -2413,7 +2223,7 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Action to invoke when the user clicks on the new cell offset button.
      */
-    @Action public void setNewCellStopTime() {
+    @Action public void instantCellAction() {
         logger.usage("Set new cell offset");
         new CreateNewCellC(getCurrentTime());
         new SetNewCellStopTimeC(getCurrentTime());

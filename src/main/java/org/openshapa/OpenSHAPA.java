@@ -259,7 +259,7 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         case KeyEvent.VK_ASTERISK:
         case KeyEvent.VK_MULTIPLY:
-            dataController.pressSetCellOffset();
+            dataController.pressInstantCell();
 
             break;
 
@@ -322,7 +322,7 @@ public final class OpenSHAPA extends SingleFrameApplication
             break;
 
         case KeyEvent.VK_DECIMAL:
-            dataController.pressSetNewCellOnset();
+            dataController.pressSetCellOffset();
 
             break;
 
