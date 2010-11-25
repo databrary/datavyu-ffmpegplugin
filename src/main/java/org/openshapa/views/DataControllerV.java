@@ -1247,7 +1247,7 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(syncVideoButton, "w 80!, h 45!");
 
         // Rewind video button
-        rewindButton = buildButton(resourceMap, actionMap, "rewindAction", null);
+        rewindButton = buildButton(resourceMap, actionMap, "rewind", null);
         gridButtonPanel.add(rewindButton, "w 45!, h 45!");
 
         // Play video button
@@ -1270,7 +1270,8 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(goBackTextField, "w 80!, h 45!");
 
         // Shuttle back button
-        shuttleBackButton = buildButton(resourceMap, actionMap, "shuttleBack", null);
+        shuttleBackButton = buildButton(resourceMap, actionMap,
+                                        "shuttleBack", null);
         gridButtonPanel.add(shuttleBackButton, "w 45!, h 45!");
 
         // Stop button
@@ -1278,7 +1279,8 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(stopButton, "w 45!, h 45!");
 
         // Shuttle forward button
-        shuttleForwardButton = buildButton(resourceMap, actionMap, "shuttleForward", null);
+        shuttleForwardButton = buildButton(resourceMap, actionMap,
+                                           "shuttleForward", null);
         gridButtonPanel.add(shuttleForwardButton, "w 45!, h 45!");
 
         // Find text field
@@ -1296,11 +1298,14 @@ public final class DataControllerV extends OpenSHAPADialog
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
         // Jog forward button
-        jogForwardButton = buildButton(resourceMap, actionMap, "jogForward", null);
+        jogForwardButton = buildButton(resourceMap, actionMap,
+                                       "jogForward", null);
         gridButtonPanel.add(jogForwardButton, "w 45!, h 45!");
 
         // Create new cell button
-        createNewCell = buildButton(resourceMap, actionMap, "createCell", null);
+        createNewCell = buildButton(resourceMap, actionMap,
+
+                "createNewCell", null);
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 95!");
