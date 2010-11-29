@@ -182,10 +182,7 @@ public final class PluginManager {
 
                             // If the file is a directory, add to work list.
                             if (file.isDirectory()) {
-                                System.out.println(file);
                                 workStack.push(file);
-                                System.out.println(pkgName + file.getName()
-                                        + ".");
                                 packages.push(pkgName + file.getName() + ".");
 
                                 // If we are dealling with a class file -
