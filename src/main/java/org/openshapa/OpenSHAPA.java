@@ -87,12 +87,6 @@ public final class OpenSHAPA extends SingleFrameApplication
      */
     private static OpenSHAPAView VIEW;
 
-    /** the maximum size of the recently ran script list. */
-    private static final int MAX_RECENT_SCRIPT_SIZE = 5;
-
-    /** the maximum size of the recently opened files list. */
-    private static final int MAX_RECENT_FILE_SIZE = 5;
-
     /** All the supported platforms that OpenSHAPA runs on. */
     public enum Platform {
 
@@ -120,12 +114,6 @@ public final class OpenSHAPA extends SingleFrameApplication
 
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(OpenSHAPA.class);
-
-    /** The list of scripts that the user has last invoked. */
-    private List<File> lastScriptsExecuted;
-
-    /** The list of files that the user last opened. */
-    private List<File> lastFilesOpened;
 
     /** The view to use when listing all variables in the database. */
     private VariableListV listVarView;
@@ -601,8 +589,6 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         // Make a new project
         projectController = new ProjectController();
-        lastScriptsExecuted = new LinkedList<File>();
-        lastFilesOpened = new LinkedList<File>();
 
         // Initialize plugin manager
         PluginManager.getInstance();
@@ -669,41 +655,6 @@ public final class OpenSHAPA extends SingleFrameApplication
      *            The parent window.
      */
     @Override protected void configureWindow(final java.awt.Window root) {
-    }
-
-    /**
-     * Add a recently opened script file to the list of recently opened scripts.
-     *
-     * @param file
-     *            The file to add.
-     */
-    public void addScriptFile(final File file) {
-
-        if (!lastScriptsExecuted.contains(file)) {
-
-            if (lastScriptsExecuted.size() == MAX_RECENT_SCRIPT_SIZE) {
-                lastScriptsExecuted.remove(MAX_RECENT_SCRIPT_SIZE - 1);
-            }
-
-            lastScriptsExecuted.add(0, file);
-        }
-    }
-
-    /**
-     * Add a recently opened project file to the list of recently opened files.
-     *
-     * @param file
-     */
-    public void addProjectFile(final File file) {
-
-        if (!lastFilesOpened.contains(file)) {
-
-            if (lastFilesOpened.size() == MAX_RECENT_FILE_SIZE) {
-                lastFilesOpened.remove(MAX_RECENT_FILE_SIZE - 1);
-            }
-
-            lastFilesOpened.add(0, file);
-        }
     }
 
     /**
@@ -790,21 +741,6 @@ public final class OpenSHAPA extends SingleFrameApplication
      */
     public static DataControllerV getDataController() {
         return OpenSHAPA.getApplication().dataController;
-    }
-
-    /**
-     * @return The list of last scripts that have been executed, ordered by the
-     *         most recent first.
-     */
-    public static Iterable<File> getLastScriptsExecuted() {
-        return OpenSHAPA.getApplication().lastScriptsExecuted;
-    }
-
-    /**
-     * @return The list of last opened files, ordered by the most recent first.
-     */
-    public static Iterable<File> getLastFilesOpened() {
-        return OpenSHAPA.getApplication().lastFilesOpened;
     }
 
     /**
