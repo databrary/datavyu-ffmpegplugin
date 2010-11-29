@@ -12,9 +12,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+
 public class MacOSJFC extends BaseJFC {
-    @Override
-    protected JDialog createDialog(final Component parent) {
+    @Override protected JDialog createDialog(final Component parent) {
         JDialog dialog = super.createDialog(parent);
 
         JLabel pluginSelect = new JLabel();
@@ -27,6 +27,7 @@ public class MacOSJFC extends BaseJFC {
 
         JPanel pluginPanel = new JPanel(new GridBagLayout());
         pluginPanel.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 0));
+
         {
             GridBagConstraints c = new GridBagConstraints();
             c.fill = GridBagConstraints.HORIZONTAL;
@@ -37,6 +38,7 @@ public class MacOSJFC extends BaseJFC {
 
             pluginPanel.add(pluginSelect, c);
         }
+
         {
             GridBagConstraints c = new GridBagConstraints();
             c.fill = GridBagConstraints.HORIZONTAL;
@@ -46,6 +48,7 @@ public class MacOSJFC extends BaseJFC {
 
             pluginPanel.add(pluginsBox, c);
         }
+
         {
             GridBagConstraints c = new GridBagConstraints();
             c.fill = GridBagConstraints.HORIZONTAL;

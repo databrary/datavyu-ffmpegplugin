@@ -6,7 +6,9 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+
 import java.io.File;
+
 import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.Stack;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -26,13 +29,18 @@ import org.jdesktop.application.LocalStorage;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SessionStorage;
 import org.jdesktop.application.SingleFrameApplication;
+
 import org.openshapa.controllers.project.ProjectController;
+
 import org.openshapa.models.db.legacy.LogicErrorException;
 import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.models.project.Project;
+
 import org.openshapa.plugins.PluginManager;
+
 import org.openshapa.util.MacHandler;
 import org.openshapa.util.NativeLoader;
+
 import org.openshapa.views.AboutV;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAView;
@@ -42,18 +50,22 @@ import org.openshapa.views.VariableListV;
 import ch.randelshofer.quaqua.QuaquaManager;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
+
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+
 
 /**
  * The main class of the application.
  */
-public final class OpenSHAPA extends SingleFrameApplication implements
-        KeyEventDispatcher {
+public final class OpenSHAPA extends SingleFrameApplication
+    implements KeyEventDispatcher {
 
     /** Load required native libraries (JNI). */
     static {
+
         if (getPlatform() == Platform.MAC) {
+
             try {
                 NativeLoader.LoadNativeLib("quaqua64");
             } catch (Exception e) {
@@ -138,7 +150,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * Dispatches the keystroke to the correct action.
-     * 
+     *
      * @param evt
      *            The event that triggered this action.
      * @return true if the KeyboardFocusManager should take no further action
@@ -379,12 +391,12 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      */
     public void showVariableList() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        listVarView = new VariableListV(mainFrame, false, projectController
-                .getLegacyDB().getDatabase());
+        listVarView = new VariableListV(mainFrame, false,
+                projectController.getLegacyDB().getDatabase());
 
         try {
             projectController.getLegacyDB().getDatabase()
-                    .registerColumnListListener(listVarView);
+                .registerColumnListListener(listVarView);
         } catch (SystemErrorException e) {
             logger.error("Unable register column list listener: ", e);
         }
@@ -403,18 +415,17 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * Show a warning dialog to the user.
-     * 
+     *
      * @param e
      *            The LogicErrorException to present to the user.
      */
     public void showWarningDialog(final LogicErrorException e) {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                .getContext().getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
 
         JOptionPane.showMessageDialog(mainFrame, e.getMessage(),
-                rMap.getString("WarningDialog.title"),
-                JOptionPane.WARNING_MESSAGE);
+            rMap.getString("WarningDialog.title"), JOptionPane.WARNING_MESSAGE);
     }
 
     /**
@@ -422,12 +433,12 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      */
     public void showErrorDialog() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                .getContext().getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
 
         JOptionPane.showMessageDialog(mainFrame,
-                rMap.getString("ErrorDialog.message"),
-                rMap.getString("ErrorDialog.title"), JOptionPane.ERROR_MESSAGE);
+            rMap.getString("ErrorDialog.message"),
+            rMap.getString("ErrorDialog.title"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -436,13 +447,13 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      * database information is being lost (e.g. on an "open" or "new"
      * instruction). In all interpretations, "true" indicates that all unsaved
      * changes are to be discarded.
-     * 
+     *
      * @return True for quit, false otherwise.
      */
     public boolean safeQuit() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                .getContext().getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
 
         if (projectController.isChanged()) {
 
@@ -467,7 +478,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
             // Button behaviour is platform dependent.
             return (getPlatform() == Platform.MAC) ? (selection == 1)
-                    : (selection == 0);
+                                                   : (selection == 0);
         } else {
 
             // Project hasn't been changed.
@@ -477,12 +488,11 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * Action to call when the application is exiting.
-     * 
+     *
      * @param event
      *            The event that triggered this action.
      */
-    @Override
-    protected void end() {
+    @Override protected void end() {
         OpenSHAPA.getApplication().getMainFrame().setVisible(false);
         UserMetrix.shutdown();
         super.end();
@@ -491,13 +501,13 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     /**
      * If the user is trying to save over an existing file, prompt them whether
      * they they wish to continue.
-     * 
+     *
      * @return True for overwrite, false otherwise.
      */
     public boolean overwriteExisting() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                .getContext().getResourceMap(OpenSHAPA.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
         String defaultOpt = "Cancel";
         String altOpt = "Overwrite";
 
@@ -513,7 +523,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
         int sel =
 
-        JOptionPane.showOptionDialog(mainFrame,
+            JOptionPane.showOptionDialog(mainFrame,
                 rMap.getString("OverwriteDialog.message"),
                 rMap.getString("OverwriteDialog.title"),
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
@@ -527,15 +537,17 @@ public final class OpenSHAPA extends SingleFrameApplication implements
         }
     }
 
-    @Override
-    protected void initialize(String[] args) {
+    @Override protected void initialize(final String[] args) {
+
         if (getPlatform() == Platform.MAC) {
+
             try {
                 UIManager.setLookAndFeel(QuaquaManager.getLookAndFeel());
             } catch (UnsupportedLookAndFeelException e) {
                 System.err.println("Failed to set Quaqua LNF");
                 e.printStackTrace();
             }
+
             new MacHandler();
         }
     }
@@ -543,21 +555,21 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     /**
      * At startup create and show the main frame of the application.
      */
-    @Override
-    protected void startup() {
+    @Override protected void startup() {
         windows = new Stack<Window>();
 
         // Initalise the logger (UserMetrix).
         LocalStorage ls = OpenSHAPA.getApplication().getContext()
-                .getLocalStorage();
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                .getContext().getResourceMap(OpenSHAPA.class);
+            .getLocalStorage();
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(OpenSHAPA.class);
 
-        com.usermetrix.jclient.Configuration config = new com.usermetrix.jclient.Configuration(
-                2);
+        com.usermetrix.jclient.Configuration config =
+            new com.usermetrix.jclient.Configuration(2);
         config.setTmpDirectory(ls.getDirectory().toString() + File.separator);
-        config.addMetaData("build", rMap.getString("Application.version") + ":"
-                + rMap.getString("Application.build"));
+        config.addMetaData("build",
+            rMap.getString("Application.version") + ":"
+            + rMap.getString("Application.build"));
         UserMetrix.initalise(config);
         logger = UserMetrix.getLogger(OpenSHAPA.class);
 
@@ -566,7 +578,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
             UserMetrix.setCanSendLogs(false);
         } else {
             UserMetrix.setCanSendLogs(Configuration.getInstance()
-                    .getCanSendLogs());
+                .getCanSendLogs());
         }
 
         // Initalise scripting engine
@@ -628,14 +640,14 @@ public final class OpenSHAPA extends SingleFrameApplication implements
                 .getMainFrame(), false);
 
         final Dimension screenSize = Toolkit.getDefaultToolkit()
-                .getScreenSize();
+            .getScreenSize();
         int x = getView().getFrame().getX();
 
         // don't let the data viewer fall below the bottom of the primary
         // screen, but also don't let it creep up above the screen either
         int y = getView().getFrame().getY() + getView().getFrame().getHeight();
         y = (int) Math.max(Math.min(y,
-                screenSize.getHeight() - dataController.getHeight()), 0);
+                    screenSize.getHeight() - dataController.getHeight()), 0);
         dataController.setLocation(x, y);
         getApplication().show(dataController);
     }
@@ -643,8 +655,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     /**
      * Clean up after ourselves.
      */
-    @Override
-    protected void shutdown() {
+    @Override protected void shutdown() {
         NativeLoader.cleanAllTmpFiles();
         super.shutdown();
     }
@@ -653,17 +664,16 @@ public final class OpenSHAPA extends SingleFrameApplication implements
      * This method is to initialize the specified window by injecting resources.
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
-     * 
+     *
      * @param root
      *            The parent window.
      */
-    @Override
-    protected void configureWindow(final java.awt.Window root) {
+    @Override protected void configureWindow(final java.awt.Window root) {
     }
 
     /**
      * Add a recently opened script file to the list of recently opened scripts.
-     * 
+     *
      * @param file
      *            The file to add.
      */
@@ -681,7 +691,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * Add a recently opened project file to the list of recently opened files.
-     * 
+     *
      * @param file
      */
     public void addProjectFile(final File file) {
@@ -702,14 +712,13 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     public void updateTitle() {
         SwingUtilities.invokeLater(new Runnable() {
 
-            @Override
-            public void run() {
+                @Override public void run() {
 
-                if (VIEW != null) {
-                    VIEW.updateTitle();
+                    if (VIEW != null) {
+                        VIEW.updateTitle();
+                    }
                 }
-            }
-        });
+            });
 
     }
 
@@ -720,7 +729,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * A convenient static getter for the application instance.
-     * 
+     *
      * @return The instance of the OpenSHAPA application.
      */
     public static OpenSHAPA getApplication() {
@@ -729,7 +738,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * A convenient static getter for the application session storage.
-     * 
+     *
      * @return The SessionStorage for the OpenSHAPA application.
      */
     public static SessionStorage getSessionStorage() {
@@ -747,7 +756,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     /**
      * Gets the single instance project associated with the currently running
      * with OpenSHAPA.
-     * 
+     *
      * @return The single project in use with this instance of OpenSHAPA
      */
     public static ProjectController getProjectController() {
@@ -764,7 +773,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     /**
      * Creates a new project controller, using the given project as the
      * underlying project.
-     * 
+     *
      * @param project
      */
     public static void newProjectController(final Project project) {
@@ -775,7 +784,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
     /**
      * Gets the single instance of the data controller that is currently used
      * with OpenSHAPA.
-     * 
+     *
      * @return The single data controller in use with this instance of
      *         OpenSHAPA.
      */
@@ -821,7 +830,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
     /**
      * Main method launching the application.
-     * 
+     *
      * @param args
      *            The command line arguments passed to OpenSHAPA.
      */
@@ -832,36 +841,33 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty(
-                    "com.apple.mrj.application.apple.menu.about.name",
-                    "OpenSHAPA");
+                "com.apple.mrj.application.apple.menu.about.name", "OpenSHAPA");
             System.setProperty("Quaqua.jniIsPreloaded", "true");
 
-            final String jnaLibraryPath = System
-                    .getProperty("jna.library.path");
+            final String jnaLibraryPath = System.getProperty(
+                    "jna.library.path");
             final StringBuilder newJnaLibraryPath = new StringBuilder(
                     (jnaLibraryPath != null) ? (jnaLibraryPath + ":") : "");
-            newJnaLibraryPath
-                    .append("/System/Library/Frameworks/GStreamer.framework/Versions/0.10-"
-                            + (com.sun.jna.Platform.is64Bit() ? "x64" : "i386")
-                            + "/lib:");
+            newJnaLibraryPath.append(
+                "/System/Library/Frameworks/GStreamer.framework/Versions/0.10-"
+                + (com.sun.jna.Platform.is64Bit() ? "x64" : "i386") + "/lib:");
 
             try {
-                newJnaLibraryPath.append(NativeLoader
-                        .unpackNativeApp("openshapa-nativelibs-osx64-0.2")
-                        + ":");
+                newJnaLibraryPath.append(NativeLoader.unpackNativeApp(
+                        "openshapa-nativelibs-osx64-0.2") + ":");
             } catch (Exception e) {
                 System.err.println("Could not unpack native libraries:");
                 e.printStackTrace();
             }
 
-            System.setProperty("jna.library.path", newJnaLibraryPath.toString());
+            System.setProperty("jna.library.path",
+                newJnaLibraryPath.toString());
         }
 
         launch(OpenSHAPA.class, args);
     }
 
-    @Override
-    public void show(final JDialog dialog) {
+    @Override public void show(final JDialog dialog) {
 
         if (windows == null) {
             windows = new Stack<Window>();
@@ -871,8 +877,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
         super.show(dialog);
     }
 
-    @Override
-    public void show(final JFrame frame) {
+    @Override public void show(final JFrame frame) {
 
         if (windows == null) {
             windows = new Stack<Window>();
@@ -919,7 +924,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
         /**
          * Calls safeQuit to check if we can exit.
-         * 
+         *
          * @param arg0
          *            The event generating the quit call.
          * @return True if the application can quit, false otherwise.
@@ -930,7 +935,7 @@ public final class OpenSHAPA extends SingleFrameApplication implements
 
         /**
          * Cleanup would occur here, but we choose to do nothing for now.
-         * 
+         *
          * @param arg0
          *            The event generating the quit call.
          */
