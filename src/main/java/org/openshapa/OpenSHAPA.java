@@ -857,17 +857,6 @@ public final class OpenSHAPA extends SingleFrameApplication implements
             System.setProperty("jna.library.path", newJnaLibraryPath.toString());
         }
 
-        if (getPlatform() == Platform.MAC) {
-            // PlatformUtils.registerOSXMethods(getApplication());
-            try {
-                UIManager.setLookAndFeel(QuaquaManager.getLookAndFeel());
-            } catch (UnsupportedLookAndFeelException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            // new MacHandler();
-        }
-
         launch(OpenSHAPA.class, args);
     }
 
