@@ -264,6 +264,12 @@
           <artifactId>openshapa-nativelibs-osx64</artifactId>
           <version>0.2</version> <!--  NB: You'll need to update org.openshapa.OpenSHAPA when this changes. -->
         </dependency>
+        
+        <dependency>
+          <groupId>ch.randelshofer.quaqua</groupId>
+          <artifactId>quaqua-osx64</artifactId>
+          <version>7.0.1</version>
+        </dependency>
       </dependencies>
     </profile>
 
@@ -712,6 +718,12 @@
         <groupId>gnu</groupId>
         <artifactId>trove</artifactId>
         <version>2.1.0</version>
+    </dependency>
+    
+        <dependency>
+        <groupId>ch.randelshofer.quaqua</groupId>
+        <artifactId>quaqua-filechooser-only</artifactId>
+        <version>7.0.1</version>
     </dependency>
   </dependencies>
 </project>
