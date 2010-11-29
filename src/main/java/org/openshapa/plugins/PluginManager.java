@@ -105,6 +105,12 @@ public final class PluginManager {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             URL resource = loader.getResource("");
 
+            // Quaqua workaround
+            if (resource != null
+                    && resource.toString().equals("file:/System/Library/Java/")) {
+                resource = null;
+            }
+
             // The classloader references a jar - open the jar file up and
             // iterate through all the entries and add the entries that are
             // concrete Plugins.
@@ -137,7 +143,6 @@ public final class PluginManager {
                 // is a directory add it to our workStack, otherwise check to
                 // see if it is a concrete plugin.
             } else {
-
                 // If we are running from a test we need to look in more than
                 // one place for classes - add all these places to the workstack
                 Enumeration<URL> resources = loader.getResources("");
