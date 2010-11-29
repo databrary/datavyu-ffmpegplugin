@@ -230,6 +230,10 @@ public final class OpenSHAPA extends SingleFrameApplication
             }
         }
 
+        if (evt.getKeyCode() == KeyEvent.VK_CLEAR) {
+            dataController.pressSetCellOnset();
+        }
+
         /**
          * The following cases handle numpad keystrokes.
          */
@@ -254,13 +258,30 @@ public final class OpenSHAPA extends SingleFrameApplication
         switch (evt.getKeyCode()) {
 
         case KeyEvent.VK_DIVIDE:
-            dataController.pressSetCellOnset();
+            if (getPlatform().equals(Platform.MAC)) {
+                dataController.pressSetCellOffsetOSX();
+            } else {
+                if (modifiers == InputEvent.SHIFT_MASK) {
+                    dataController.pressSetCellOffset();
+                } else {
+                    dataController.pressSetCellOnset();
+                }
+            }
+
+            break;
+
+        case KeyEvent.VK_EQUALS:
+            if (getPlatform().equals(Platform.MAC)) {
+                dataController.pressPointCell();
+            }
 
             break;
 
         case KeyEvent.VK_ASTERISK:
         case KeyEvent.VK_MULTIPLY:
-            dataController.pressInstantCell();
+            if (!getPlatform().equals(Platform.MAC)) {
+                dataController.pressPointCell();
+            }
 
             break;
 
