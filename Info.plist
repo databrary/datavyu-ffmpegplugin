@@ -55,6 +55,8 @@
         <string>$JAVAROOT/repo/apple/java/applejavaextensions/1.4/applejavaextensions-1.4.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openshapa-nativelibs-osx64/0.2/openshapa-nativelibs-osx64-0.2.jar</string>
         <string>$JAVAROOT/repo/gnu/trove/2.1.0/trove-2.1.0.jar</string>
+        <string>$JAVAROOT/repo/ch/randelshofer/quaqua/quaqua-osx64/7.0.1/quaqua-osx64-7.0.1.jar</string>
+        <string>$JAVAROOT/repo/ch/randelshofer/quaqua/quaqua-filechooser-only/7.0.1/quaqua-filechooser-only-7.0.1.jar</string>
         <!-- start of rococoa dependencies -->
         <string>$JAVAROOT/repo/org/rococoa/rococoa-cocoa/0.5.1x3/rococoa-cocoa-0.5.1x3.jar</string>
         <string>$JAVAROOT/repo/org/rococoa/rococoa-core/0.5.1x3/rococoa-core-0.5.1x3.jar</string>
