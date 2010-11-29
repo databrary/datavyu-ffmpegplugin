@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 
 import java.util.EventObject;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
@@ -42,16 +43,16 @@ import org.openshapa.util.NativeLoader;
 
 import org.openshapa.views.AboutV;
 import org.openshapa.views.DataControllerV;
-import org.openshapa.views.VariableListV;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
+import org.openshapa.views.VariableListV;
+
+import ch.randelshofer.quaqua.QuaquaManager;
 
 import com.sun.script.jruby.JRubyScriptEngineManager;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-
-import java.util.LinkedList;
 
 
 /**
@@ -59,6 +60,19 @@ import java.util.LinkedList;
  */
 public final class OpenSHAPA extends SingleFrameApplication
     implements KeyEventDispatcher {
+
+    /** Load required native libraries (JNI). */
+    static {
+
+        if (getPlatform() == Platform.MAC) {
+
+            try {
+                NativeLoader.LoadNativeLib("quaqua64");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     /** The desired minimum initial width. */
     private static final int INITMINX = 600;
@@ -152,7 +166,6 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         // BugzID:468 - Define accelerator keys based on OS.
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-
 
         // If we are typing a key that is a shortcut - we consume it straight
         // away.
@@ -524,6 +537,21 @@ public final class OpenSHAPA extends SingleFrameApplication
         }
     }
 
+    @Override protected void initialize(final String[] args) {
+
+        if (getPlatform() == Platform.MAC) {
+
+            try {
+                UIManager.setLookAndFeel(QuaquaManager.getLookAndFeel());
+            } catch (UnsupportedLookAndFeelException e) {
+                System.err.println("Failed to set Quaqua LNF");
+                e.printStackTrace();
+            }
+
+            new MacHandler();
+        }
+    }
+
     /**
      * At startup create and show the main frame of the application.
      */
@@ -615,7 +643,8 @@ public final class OpenSHAPA extends SingleFrameApplication
             .getScreenSize();
         int x = getView().getFrame().getX();
 
-        // don't let the data viewer fall below the bottom of the primary screen, but also don't let it creep up above the screen either
+        // don't let the data viewer fall below the bottom of the primary
+        // screen, but also don't let it creep up above the screen either
         int y = getView().getFrame().getY() + getView().getFrame().getHeight();
         y = (int) Math.max(Math.min(y,
                     screenSize.getHeight() - dataController.getHeight()), 0);
@@ -645,7 +674,8 @@ public final class OpenSHAPA extends SingleFrameApplication
     /**
      * Add a recently opened script file to the list of recently opened scripts.
      *
-     * @param file The file to add.
+     * @param file
+     *            The file to add.
      */
     public void addScriptFile(final File file) {
 
@@ -661,6 +691,7 @@ public final class OpenSHAPA extends SingleFrameApplication
 
     /**
      * Add a recently opened project file to the list of recently opened files.
+     *
      * @param file
      */
     public void addProjectFile(final File file) {
@@ -763,7 +794,7 @@ public final class OpenSHAPA extends SingleFrameApplication
 
     /**
      * @return The list of last scripts that have been executed, ordered by the
-     *  most recent first.
+     *         most recent first.
      */
     public static Iterable<File> getLastScriptsExecuted() {
         return OpenSHAPA.getApplication().lastScriptsExecuted;
@@ -808,24 +839,10 @@ public final class OpenSHAPA extends SingleFrameApplication
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
 
-            try {
-                System.setProperty("apple.laf.useScreenMenuBar", "true");
-                System.setProperty(
-                    "com.apple.mrj.application.apple.menu.about.name",
-                    "OpenSHAPA");
-                UIManager.setLookAndFeel(UIManager
-                    .getSystemLookAndFeelClassName());
-                new MacHandler();
-            } catch (ClassNotFoundException cnfe) {
-                System.err.println("Unable to start OpenSHAPA");
-                // logger.error("Unable to start OpenSHAPA", cnfe);
-            } catch (InstantiationException ie) {
-                System.err.println("Unable to instantiate OpenSHAPA");
-            } catch (IllegalAccessException iae) {
-                System.err.println("Unable to access OpenSHAPA");
-            } catch (UnsupportedLookAndFeelException ulafe) {
-                System.err.println("Unsupporter look and feel exception");
-            }
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty(
+                "com.apple.mrj.application.apple.menu.about.name", "OpenSHAPA");
+            System.setProperty("Quaqua.jniIsPreloaded", "true");
 
             final String jnaLibraryPath = System.getProperty(
                     "jna.library.path");

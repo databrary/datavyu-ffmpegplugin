@@ -1,13 +1,5 @@
 package org.openshapa.plugins;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-
-import com.usermetrix.jclient.Logger;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -36,6 +28,13 @@ import org.openshapa.OpenSHAPA;
 
 import org.openshapa.views.continuous.quicktime.QTDataViewer;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+
+import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
 
@@ -113,6 +112,13 @@ public final class PluginManager {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             URL resource = loader.getResource("");
 
+            // Quaqua workaround
+            if ((resource != null)
+                    && resource.toString().equals(
+                        "file:/System/Library/Java/")) {
+                resource = null;
+            }
+
             // The classloader references a jar - open the jar file up and
             // iterate through all the entries and add the entries that are
             // concrete Plugins.
@@ -154,7 +160,15 @@ public final class PluginManager {
 
                 while (resources.hasMoreElements()) {
                     workStack.clear();
-                    workStack.push(new File(resources.nextElement().getFile()));
+
+                    File res = new File(resources.nextElement().getFile());
+
+                    // Dirty hack for Quaqua.
+                    if (res.equals(new File("/System/Library/Java"))) {
+                        continue;
+                    }
+
+                    workStack.push(res);
 
                     packages.clear();
                     packages.push("");
@@ -233,7 +247,6 @@ public final class PluginManager {
                     while (entries.hasMoreElements()) {
                         String name = entries.nextElement().getName();
 
-
                         // Found a class file - attempt to add it as a plugin.
                         if (name.endsWith(".class")) {
                             addPlugin(name);
@@ -290,15 +303,16 @@ public final class PluginManager {
             String cName = className.replaceAll("\\.class$", "").replace('/',
                     '.');
 
-            /* Ignore classes that:
-              - Belong to the UITests (traditionally this was because of the
-                    UISpec4J interceptor, which interrupted the UI. We still
-                    ignore UITest classes as these will not be plugins)
-              - Are part of GStreamer, or JUnitX (these cause issues and are
-                    certainly not going to be plugins either)
-            */
+            /*
+             * Ignore classes that: - Belong to the UITests (traditionally this
+             * was because of the UISpec4J interceptor, which interrupted the
+             * UI. We still ignore UITest classes as these will not be plugins)
+             * - Are part of GStreamer, or JUnitX (these cause issues and are
+             * certainly not going to be plugins either)
+             */
             if (!cName.contains("org.openshapa.uitests")
                     && !cName.contains("org.gstreamer")
+                    && !cName.contains("ch.randelshofer")
                     && !cName.startsWith("junitx")) {
 
                 Class<?> testClass = Class.forName(cName);
