@@ -1221,7 +1221,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         // Set new cell offset button
         pointCellButton = buildButton(resourceMap, actionMap,
-                                        "instantCell", "win");
+                                      "pointCell", "win");
         gridButtonPanel.add(pointCellButton, "w 45!, h 45!");
 
         // Go back button
