@@ -978,7 +978,6 @@ public final class MixerController implements PropertyChangeListener,
     }
 
     private void updateGlobalLockToggle() {
-        System.out.println(tracksEditorController.isAnyTrackUnlocked());
 
         if (tracksEditorController.isAnyTrackUnlocked()) {
             lockToggle.setSelected(false);
