@@ -79,10 +79,12 @@ import com.sun.jna.Platform;
 
 import org.openshapa.plugins.CustomActions;
 
+
 /**
  * This class manages the tracks information interface.
  */
-public final class MixerController implements PropertyChangeListener, CarriageEventListener, AdjustmentListener, TimescaleListener {
+public final class MixerController implements PropertyChangeListener,
+    CarriageEventListener, AdjustmentListener, TimescaleListener {
 
     /** Root interface panel. */
     private JPanel tracksPanel;
@@ -121,6 +123,9 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
     /** Bookmark (create snap point) button. */
     private JButton bookmarkButton;
 
+    /** Button for locking and unlocking all tracks. */
+    private JToggleButton lockToggle;
+
     /** Tracks horizontal scroll bar. */
     private JScrollBar tracksScrollBar;
     private boolean isUpdatingTracksScrollBar = false;
@@ -137,7 +142,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
     private final MixerModelImpl mixerModel;
     private final ViewportModel viewportModel;
     private final RegionModel regionModel;
-    
+
     /** Listens and processes gestures on Mac OS X. */
     private final OSXGestureListener osxGestureListener = Platform.isMac()
         ? new OSXGestureListener() : null;
@@ -147,22 +152,23 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      */
     public MixerController() {
         mixerModel = new MixerModelImpl();
-        
+
         viewportModel = mixerModel.getViewportModel();
         viewportModel.addPropertyChangeListener(this);
-        
+
         regionModel = mixerModel.getRegionModel();
         regionModel.addPropertyChangeListener(this);
-        
-        
+
+
         runInEDT(new Runnable() {
-            @Override public void run() {
-                initView();
-            }
-        });
+                @Override public void run() {
+                    initView();
+                }
+            });
     }
-    
+
     private static void runInEDT(final Runnable task) {
+
         if (SwingUtilities.isEventDispatchThread()) {
             task.run();
         } else {
@@ -188,7 +194,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         }
 
         // Menu buttons
-        JToggleButton lockToggle = new JToggleButton("Lock");
+        lockToggle = new JToggleButton("Lock all");
         lockToggle.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     lockToggleHandler(e);
@@ -224,14 +230,23 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         zoomSlide = new JSlider(JSlider.HORIZONTAL, 1, 1000, 1);
         zoomSlide.addChangeListener(new ChangeListener() {
                 public void stateChanged(final ChangeEvent e) {
-                    if (!isUpdatingZoomSlide && zoomSlide.getValueIsAdjusting()) {
-                    	try {
-                    		isUpdatingZoomSlide = true;
-                            zoomSetting = (double) (zoomSlide.getValue() - zoomSlide.getMinimum()) / (zoomSlide.getMaximum() - zoomSlide.getMinimum() + 1);
-                            viewportModel.setViewportZoom(zoomSetting, needleController.getNeedleModel().getCurrentTime());
-                    	} finally {
-                    		isUpdatingZoomSlide = false;
-                    	}
+
+                    if (!isUpdatingZoomSlide
+                            && zoomSlide.getValueIsAdjusting()) {
+
+                        try {
+                            isUpdatingZoomSlide = true;
+                            zoomSetting =
+                                (double) (zoomSlide.getValue()
+                                    - zoomSlide.getMinimum())
+                                / (zoomSlide.getMaximum()
+                                    - zoomSlide.getMinimum() + 1);
+                            viewportModel.setViewportZoom(zoomSetting,
+                                needleController.getNeedleModel()
+                                    .getCurrentTime());
+                        } finally {
+                            isUpdatingZoomSlide = false;
+                        }
                     }
                 }
             });
@@ -259,9 +274,13 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         regionController = new RegionController(mixerModel);
         tracksEditorController = new TracksEditorController(this, mixerModel);
 
-        needleController.setTimescaleTransitionHeight(timescaleController.getTimescaleModel().getZoomWindowToTrackTransitionHeight());
-        needleController.setZoomIndicatorHeight(timescaleController.getTimescaleModel().getZoomWindowIndicatorHeight());
-        
+        needleController.setTimescaleTransitionHeight(
+            timescaleController.getTimescaleModel()
+                .getZoomWindowToTrackTransitionHeight());
+        needleController.setZoomIndicatorHeight(
+            timescaleController.getTimescaleModel()
+                .getZoomWindowIndicatorHeight());
+
         // Set up the layered pane
         layeredPane = new JLayeredPane();
         layeredPane.setLayout(new MigLayout("fillx, ins 0"));
@@ -405,7 +424,12 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
 
             constraints.put("x2", "(filler.w-" + rightPad + ")");
             constraints.put("height",
-                Integer.toString(needleAndRegionMarkerHeight + timescaleController.getTimescaleModel().getZoomWindowToTrackTransitionHeight() + timescaleController.getTimescaleModel().getZoomWindowIndicatorHeight() - 1));
+                Integer.toString(
+                    needleAndRegionMarkerHeight
+                    + timescaleController.getTimescaleModel()
+                        .getZoomWindowToTrackTransitionHeight()
+                    + timescaleController.getTimescaleModel()
+                        .getZoomWindowIndicatorHeight() - 1));
 
             String template = "pos ${x} ${y} ${x2} n, h ${height}::";
             StrSubstitutor sub = new StrSubstitutor(constraints);
@@ -414,7 +438,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
             layeredPane.add(needleView, sub.replace(template),
                 MixerConstants.NEEDLE_ZORDER);
         }
-        
+
         // Set up the snap marker's layout
         {
             JComponent markerView = tracksEditorController.getMarkerView();
@@ -474,10 +498,12 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         {
             Map<String, String> constraints = Maps.newHashMap();
             constraints.put("span", "6");
-            constraints.put("width", Integer.toString(MixerConstants.MIXER_MIN_WIDTH));
+            constraints.put("width",
+                Integer.toString(MixerConstants.MIXER_MIN_WIDTH));
             constraints.put("height", Integer.toString(layeredPaneHeight));
 
-            String template = "growx, span ${span}, w ${width}::, h ${height}::, wrap";
+            String template =
+                "growx, span ${span}, w ${width}::, h ${height}::, wrap";
             StrSubstitutor sub = new StrSubstitutor(constraints);
 
             tracksPanel.add(layeredPane, sub.replace(template));
@@ -499,10 +525,12 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      * @param newMaxEnd
      *            duration in milliseconds
      */
-    public void setMaxEnd(final long newMaxEnd, boolean resetViewportWindow) {
-    	viewportModel.setViewportMaxEnd(newMaxEnd, resetViewportWindow);
+    public void setMaxEnd(final long newMaxEnd,
+        final boolean resetViewportWindow) {
+        viewportModel.setViewportMaxEnd(newMaxEnd, resetViewportWindow);
+
         if (resetViewportWindow) {
-        	regionModel.resetPlaybackRegion();
+            regionModel.resetPlaybackRegion();
         }
     }
 
@@ -529,15 +557,21 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         final long offset, final TrackPainter trackPainter) {
 
         // Check if the scale needs to be updated.
-    	final long trackEnd = duration + offset;
-    	final ViewportState viewport = viewportModel.getViewport();
-        if ((trackEnd > viewport.getMaxEnd()) || ((tracksEditorController.numberOfTracks() == 0) && (trackEnd > 0))) {
-        	viewportModel.setViewportMaxEnd(trackEnd, true);
-           	regionModel.resetPlaybackRegion();
+        final long trackEnd = duration + offset;
+        final ViewportState viewport = viewportModel.getViewport();
+
+        if ((trackEnd > viewport.getMaxEnd())
+                || ((tracksEditorController.numberOfTracks() == 0)
+                    && (trackEnd > 0))) {
+            viewportModel.setViewportMaxEnd(trackEnd, true);
+            regionModel.resetPlaybackRegion();
         }
-        
-        tracksEditorController.addNewTrack(id, icon, trackName, mediaPath, duration, offset, this, trackPainter);
+
+        tracksEditorController.addNewTrack(id, icon, trackName, mediaPath,
+            duration, offset, this, trackPainter);
         tracksScrollPane.validate();
+
+        updateGlobalLockToggle();
     }
 
     /** Clears the region of interest and zooms all the way out. */
@@ -562,10 +596,10 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         }
 
         runInEDT(new Runnable() {
-            @Override public void run() {
-                tracksEditorController.bindTrackActions(trackId, actions);
-            }
-        });
+                @Override public void run() {
+                    tracksEditorController.bindTrackActions(trackId, actions);
+                }
+            });
     }
 
     /**
@@ -580,13 +614,13 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      */
     public void setTrackInterfaceSettings(final Identifier trackId,
         final List<Long> bookmarks, final boolean lock) {
-    	runInEDT(new Runnable() {
-            @Override public void run() {
-                tracksEditorController.setBookmarkPositions(trackId,
-                    bookmarks);
-                tracksEditorController.setMovementLock(trackId, lock);
-            }
-        });
+        runInEDT(new Runnable() {
+                @Override public void run() {
+                    tracksEditorController.setBookmarkPositions(trackId,
+                        bookmarks);
+                    tracksEditorController.setMovementLock(trackId, lock);
+                }
+            });
     }
 
     /**
@@ -604,12 +638,12 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
     @Deprecated public void setTrackInterfaceSettings(final String mediaPath,
         final List<Long> bookmarks, final boolean lock) {
         runInEDT(new Runnable() {
-            @Override public void run() {
-                tracksEditorController.setBookmarkPositions(mediaPath,
-                    bookmarks);
-                tracksEditorController.setMovementLock(mediaPath, lock);
-            }
-        });
+                @Override public void run() {
+                    tracksEditorController.setBookmarkPositions(mediaPath,
+                        bookmarks);
+                    tracksEditorController.setMovementLock(mediaPath, lock);
+                }
+            });
     }
 
     /**
@@ -620,17 +654,24 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      */
     public void zoomToRegion(final ActionEvent evt) {
         final ViewportState viewport = viewportModel.getViewport();
-    	final RegionState region = regionModel.getRegion();
-        
+        final RegionState region = regionModel.getRegion();
+
         if (region.getRegionDuration() >= 1) {
-		    final int percentOfRegionToPadOutsideMarkers = 5;
-		    assert (percentOfRegionToPadOutsideMarkers >= 0) && (percentOfRegionToPadOutsideMarkers <= 100);
-		
-		    final long displayedAreaStart = Math.max(region.getRegionStart() - (region.getRegionDuration() * percentOfRegionToPadOutsideMarkers / 100), 0);
-		    final long displayedAreaEnd = Math.min(region.getRegionEnd() + (region.getRegionDuration() * percentOfRegionToPadOutsideMarkers / 100), viewport.getMaxEnd());
-		
-		    viewportModel.setViewportWindow(displayedAreaStart, displayedAreaEnd);
-		    needleController.setCurrentTime(region.getRegionStart());
+            final int percentOfRegionToPadOutsideMarkers = 5;
+            assert (percentOfRegionToPadOutsideMarkers >= 0)
+                && (percentOfRegionToPadOutsideMarkers <= 100);
+
+            final long displayedAreaStart = Math.max(region.getRegionStart()
+                    - (region.getRegionDuration()
+                        * percentOfRegionToPadOutsideMarkers / 100), 0);
+            final long displayedAreaEnd = Math.min(region.getRegionEnd()
+                    + (region.getRegionDuration()
+                        * percentOfRegionToPadOutsideMarkers / 100),
+                    viewport.getMaxEnd());
+
+            viewportModel.setViewportWindow(displayedAreaStart,
+                displayedAreaEnd);
+            needleController.setCurrentTime(region.getRegionStart());
         }
     }
 
@@ -645,6 +686,8 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
 
         // Update tracks panel display
         tracksScrollPane.validate();
+
+        updateGlobalLockToggle();
     }
 
     /**
@@ -661,6 +704,8 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
 
         tracksPanel.validate();
         tracksPanel.repaint();
+
+        updateGlobalLockToggle();
     }
 
     /**
@@ -675,9 +720,9 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
     }
 
     public MixerModel getMixerModel() {
-    	return mixerModel;
+        return mixerModel;
     }
-    
+
     /**
      * @return NeedleController.
      */
@@ -710,9 +755,9 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         assert SwingUtilities.isEventDispatchThread();
 
         if (isUpdatingZoomSlide) {
-        	return;
+            return;
         }
-        
+
         try {
             isUpdatingZoomSlide = true;
 
@@ -761,7 +806,8 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      * Handles the event for adding a temporal bookmark to selected tracks.
      */
     private void addBookmarkHandler() {
-        tracksEditorController.addTemporalBookmarkToSelected(needleController.getNeedleModel().getCurrentTime());
+        tracksEditorController.addTemporalBookmarkToSelected(
+            needleController.getNeedleModel().getCurrentTime());
     }
 
     /**
@@ -788,7 +834,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      * Clears the region of interest.
      */
     public void clearRegionOfInterest() {
-    	regionModel.resetPlaybackRegion();
+        regionModel.resetPlaybackRegion();
     }
 
     /**
@@ -799,6 +845,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
     private void lockToggleHandler(final ActionEvent e) {
         JToggleButton toggle = (JToggleButton) e.getSource();
         tracksEditorController.setLockedState(toggle.isSelected());
+        updateGlobalLockToggle();
     }
 
     /**
@@ -820,8 +867,9 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
 
         final long newWindowStart = (long) Math.round((double) startValue
                 / tracksScrollBar.getMaximum() * viewport.getMaxEnd());
-        final long newWindowEnd = newWindowStart + viewport.getViewDuration() - 1;
-        
+        final long newWindowEnd = newWindowStart + viewport.getViewDuration()
+            - 1;
+
         viewportModel.setViewportWindow(newWindowStart, newWindowEnd);
 
         tracksPanel.repaint();
@@ -833,15 +881,21 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      * @param e the event to handle
      */
     public void offsetChanged(final CarriageEvent e) {
-        final boolean wasOffsetChanged = tracksEditorController.setTrackOffset(e.getTrackId(), e.getOffset(), e.getTemporalPosition());
+        final boolean wasOffsetChanged = tracksEditorController.setTrackOffset(
+                e.getTrackId(), e.getOffset(), e.getTemporalPosition());
         final CarriageEvent newEvent;
+
         if (wasOffsetChanged) {
-        	final long newOffset = tracksEditorController.getTrackModel(e.getTrackId()).getOffset();
-            newEvent = new CarriageEvent(e.getSource(), e.getTrackId(), newOffset, e.getBookmarks(), e.getDuration(), e.getTemporalPosition(), e.getEventType(), e.hasModifiers());
+            final long newOffset = tracksEditorController.getTrackModel(
+                    e.getTrackId()).getOffset();
+            newEvent = new CarriageEvent(e.getSource(), e.getTrackId(),
+                    newOffset, e.getBookmarks(), e.getDuration(),
+                    e.getTemporalPosition(), e.getEventType(),
+                    e.hasModifiers());
         } else {
-        	newEvent = e;
+            newEvent = e;
         }
-         
+
         fireTracksControllerEvent(TracksEvent.CARRIAGE_EVENT, newEvent);
         tracksPanel.invalidate();
         tracksPanel.repaint();
@@ -854,7 +908,8 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      */
     public void requestBookmark(final CarriageEvent e) {
         TrackController trackController = (TrackController) e.getSource();
-        trackController.addTemporalBookmark(needleController.getNeedleModel().getCurrentTime());
+        trackController.addTemporalBookmark(needleController.getNeedleModel()
+            .getCurrentTime());
 
         CarriageEvent newEvent = new CarriageEvent(e.getSource(),
                 e.getTrackId(), e.getOffset(), trackController.getBookmarks(),
@@ -880,6 +935,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
      */
     public void lockStateChanged(final CarriageEvent e) {
         fireTracksControllerEvent(TracksEvent.CARRIAGE_EVENT, e);
+        updateGlobalLockToggle();
     }
 
     /**
@@ -921,6 +977,18 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         }
     }
 
+    private void updateGlobalLockToggle() {
+        System.out.println(tracksEditorController.isAnyTrackUnlocked());
+
+        if (tracksEditorController.isAnyTrackUnlocked()) {
+            lockToggle.setSelected(false);
+            lockToggle.setText("Lock all");
+        } else {
+            lockToggle.setSelected(true);
+            lockToggle.setText("Unlock all");
+        }
+    }
+
     /**
      * Used to fire a new event informing listeners about new child component
      * events.
@@ -950,33 +1018,40 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         }
     }
 
-    private void handleViewportChanged(final ViewportState oldViewport, final ViewportState newViewport) {
+    private void handleViewportChanged(final ViewportState oldViewport,
+        final ViewportState newViewport) {
         runInEDT(new Runnable() {
-            @Override public void run() {
-                updateZoomSlide(newViewport);
-                updateTracksScrollBar(newViewport);
-                tracksScrollPane.repaint();
-            }
-        });
+                @Override public void run() {
+                    updateZoomSlide(newViewport);
+                    updateTracksScrollBar(newViewport);
+                    tracksScrollPane.repaint();
+                }
+            });
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
+
         if (evt.getSource() == mixerModel.getViewportModel()) {
-        	final ViewportState oldViewport = evt.getOldValue() instanceof ViewportState ? (ViewportState) evt.getOldValue() : null;
-        	final ViewportState newViewport = evt.getNewValue() instanceof ViewportState ? (ViewportState) evt.getNewValue() : null;
+            final ViewportState oldViewport =
+                (evt.getOldValue() instanceof ViewportState)
+                ? (ViewportState) evt.getOldValue() : null;
+            final ViewportState newViewport =
+                (evt.getNewValue() instanceof ViewportState)
+                ? (ViewportState) evt.getNewValue() : null;
             handleViewportChanged(oldViewport, newViewport);
         }
     }
 
     private void handleResize() {
         final ViewportState viewport = viewportModel.getViewport();
+
         if (Double.isNaN(viewport.getResolution())) {
-        	viewportModel.setViewport(viewport.getViewStart(),
+            viewportModel.setViewport(viewport.getViewStart(),
                 viewport.getViewEnd(), viewport.getMaxEnd(),
                 timescaleController.getView().getWidth());
         } else {
-        	viewportModel.resizeViewport(viewportModel.getViewport().getViewStart(),
-                timescaleController.getView().getWidth());
+            viewportModel.resizeViewport(viewportModel.getViewport()
+                .getViewStart(), timescaleController.getView().getWidth());
         }
     }
 
@@ -987,7 +1062,8 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         }
     }
 
-    private class OSXGestureListener implements MagnificationListener, GesturePhaseListener, SwipeListener {
+    private class OSXGestureListener implements MagnificationListener,
+        GesturePhaseListener, SwipeListener {
 
         /**
          * Cumulative sum of the current zoom gesture, where positive values
@@ -1021,7 +1097,8 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
                         + (osxMagnificationGestureSum / fullZoomMotion), 0.0),
                     1.0);
 
-            viewportModel.setViewportZoom(newZoomSetting, needleController.getNeedleModel().getCurrentTime());
+            viewportModel.setViewportZoom(newZoomSetting,
+                needleController.getNeedleModel().getCurrentTime());
         }
 
         /**
@@ -1029,7 +1106,8 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
          */
         @Override public void gestureBegan(final GesturePhaseEvent e) {
             osxMagnificationGestureSum = 0;
-            osxMagnificationGestureInitialZoomSetting = viewportModel.getViewport().getZoomLevel();
+            osxMagnificationGestureInitialZoomSetting =
+                viewportModel.getViewport().getZoomLevel();
         }
 
         /**
@@ -1050,6 +1128,7 @@ public final class MixerController implements PropertyChangeListener, CarriageEv
         }
 
         private void swipeHorizontal(final boolean swipeLeft) {
+
             /** The number of horizontal swipe actions needed to move the scroll bar along by the visible amount (i.e. a page left/right action) */
             final int swipesPerVisibleAmount = 5;
             final int newValue = tracksScrollBar.getValue()
