@@ -33,7 +33,7 @@
             <key>CFBundleTypeName</key>
             <string>OpenSHAPA Project File</string>
             <key>CFBundleTypeRole</key>
-            <string>Viewer</string>
+            <string>Editor</string>
             <key>LSItemContentTypes</key>
             <array>
                 <string>public.archive</string>
