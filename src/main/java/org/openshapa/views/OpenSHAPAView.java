@@ -28,6 +28,8 @@ import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.RecentFiles;
+
 import org.openshapa.OpenSHAPA.Platform;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.DeleteCellC;
@@ -548,7 +550,7 @@ public final class OpenSHAPAView extends FrameView implements
         showSpreadsheet();
 
         // Update the list of recently opened files.
-        OpenSHAPA.getApplication().addProjectFile(jd.getSelectedFile());
+        RecentFiles.rememberProject(jd.getSelectedFile());
     }
 
     private void openDatabase(final File databaseFile) {
@@ -1277,7 +1279,7 @@ public final class OpenSHAPAView extends FrameView implements
             openRecentFileMenu.remove(1);
         }
 
-        for (File file : OpenSHAPA.getLastFilesOpened()) {
+        for (File file : RecentFiles.getRecentProjects()) {
             openRecentFileMenu.add(createRecentFileMenuItem(file));
         }
 
@@ -1347,9 +1349,7 @@ public final class OpenSHAPAView extends FrameView implements
             runRecentScriptMenu.remove(1);
         }
 
-        // LinkedList<File> lastScripts = OpenSHAPA.getLastScriptsExecuted();
-
-        for (File f : OpenSHAPA.getLastScriptsExecuted()) {
+        for (File f : RecentFiles.getRecentScripts()) {
             runRecentScriptMenu.add(createScriptMenuItemFromFile(f));
         }
     } // GEN-LAST:event_populateRecentScripts

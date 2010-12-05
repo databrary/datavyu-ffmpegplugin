@@ -2,11 +2,14 @@ package org.openshapa.plugins;
 
 import java.io.File;
 import java.io.IOException;
+
 import java.lang.reflect.Method;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -20,7 +23,9 @@ import java.util.jar.JarFile;
 import javax.swing.filechooser.FileFilter;
 
 import org.jdesktop.application.LocalStorage;
+
 import org.openshapa.OpenSHAPA;
+
 import org.openshapa.views.continuous.quicktime.QTDataViewer;
 
 import com.google.common.collect.HashMultimap;
@@ -28,8 +33,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+
 
 /**
  * This class manages and wrangles all the viewer plugins currently availble to
@@ -106,8 +113,9 @@ public final class PluginManager {
             URL resource = loader.getResource("");
 
             // Quaqua workaround
-            if (resource != null
-                    && resource.toString().equals("file:/System/Library/Java/")) {
+            if ((resource != null)
+                    && resource.toString().equals(
+                        "file:/System/Library/Java/")) {
                 resource = null;
             }
 
@@ -143,6 +151,7 @@ public final class PluginManager {
                 // is a directory add it to our workStack, otherwise check to
                 // see if it is a concrete plugin.
             } else {
+
                 // If we are running from a test we need to look in more than
                 // one place for classes - add all these places to the workstack
                 Enumeration<URL> resources = loader.getResources("");
@@ -151,12 +160,14 @@ public final class PluginManager {
 
                 while (resources.hasMoreElements()) {
                     workStack.clear();
+
                     File res = new File(resources.nextElement().getFile());
 
                     // Dirty hack for Quaqua.
                     if (res.equals(new File("/System/Library/Java"))) {
                         continue;
                     }
+
                     workStack.push(res);
 
                     packages.clear();
@@ -204,8 +215,9 @@ public final class PluginManager {
             // in the "plugins" directory for jar files that correctly conform
             // to the OpenSHAPA plugin interface.
             LocalStorage ls = OpenSHAPA.getApplication().getContext()
-                    .getLocalStorage();
-            File pluginDir = new File(ls.getDirectory().toString() + "/plugins");
+                .getLocalStorage();
+            File pluginDir = new File(ls.getDirectory().toString()
+                    + "/plugins");
 
             // Unable to find plugin directory or any entries within the plugin
             // directory - don't bother attempting to add more plugins to
@@ -255,7 +267,7 @@ public final class PluginManager {
 
     /**
      * Injects A plugin into the classpath.
-     * 
+     *
      * @param f
      *            The jar file to inject into the classpath.
      * @throws IOException
@@ -263,7 +275,7 @@ public final class PluginManager {
      */
     private void injectPlugin(final File f) throws IOException {
         URLClassLoader sysLoader = (URLClassLoader) ClassLoader
-                .getSystemClassLoader();
+            .getSystemClassLoader();
         Class<?> sysclass = URLClassLoader.class;
 
         try {
@@ -280,7 +292,7 @@ public final class PluginManager {
      * Attempts to add an instance of the supplied class name as a plugin to the
      * plugin manager. Will only add the class if it implements the plugin
      * interface.
-     * 
+     *
      * @param className
      *            The fully qualified class name to attempt to add to the list
      *            of plugins.
@@ -331,8 +343,8 @@ public final class PluginManager {
                     pluginClassifiers.put(p.getClassifier(), p);
 
                     try {
-                        final Class<? extends DataViewer> cdv = p
-                                .getViewerClass();
+                        final Class<? extends DataViewer> cdv =
+                            p.getViewerClass();
 
                         if (cdv != null) {
                             pluginLookup.put(cdv.getName(), p);
@@ -340,7 +352,7 @@ public final class PluginManager {
                     } catch (Throwable e) {
                         e.printStackTrace();
                         logger.error("Unable to load plugin "
-                                + p.getClass().getName(), e);
+                            + p.getClass().getName(), e);
                     }
                 }
             }
@@ -376,21 +388,20 @@ public final class PluginManager {
     public Iterable<Plugin> getPlugins() {
         List<Plugin> p = Lists.newArrayList(plugins);
         Collections.sort(p, new Comparator<Plugin>() {
-            @Override
-            public int compare(final Plugin o1, final Plugin o2) {
+                @Override public int compare(final Plugin o1, final Plugin o2) {
 
-                // Want the QuickTime video plugin to always be first.
-                if ("QuickTime Video".equals(o1.getPluginName())) {
-                    return -1;
+                    // Want the QuickTime video plugin to always be first.
+                    if ("QuickTime Video".equals(o1.getPluginName())) {
+                        return -1;
+                    }
+
+                    if ("QuickTime Video".equals(o2.getPluginName())) {
+                        return 1;
+                    }
+
+                    return o1.getPluginName().compareTo(o2.getPluginName());
                 }
-
-                if ("QuickTime Video".equals(o2.getPluginName())) {
-                    return 1;
-                }
-
-                return o1.getPluginName().compareTo(o2.getPluginName());
-            }
-        });
+            });
 
         return p;
     }
@@ -398,14 +409,15 @@ public final class PluginManager {
     /**
      * Searches for and returns a plugin compatible with the given classifier
      * and data file.
-     * 
+     *
      * @param classifier
      *            Plugin classifier string.
      * @param file
      *            The data file to open.
      * @return The first compatible plugin that is found, null otherwise.
      */
-    public Plugin getCompatiblePlugin(final String classifier, final File file) {
+    public Plugin getCompatiblePlugin(final String classifier,
+        final File file) {
 
         for (Plugin candidate : pluginClassifiers.get(classifier)) {
 
@@ -429,8 +441,8 @@ public final class PluginManager {
      */
     public Plugin getAssociatedPlugin(final String dataViewer) {
 
-        if ("org.openshapa.plugins.quicktime.java.QTJavaDataViewer"
-                .equals(dataViewer)) {
+        if ("org.openshapa.plugins.quicktime.java.QTJavaDataViewer".equals(
+                    dataViewer)) {
             return pluginLookup.get(QTDataViewer.class.getCanonicalName());
         }
 

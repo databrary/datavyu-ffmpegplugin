@@ -184,7 +184,7 @@ public final class TracksEditorController implements TrackMouseEventListener {
         final CarriageEventListener listener) {
 
         if (tracks.containsKey(trackId)) {
-            TrackController tc = tracks.get(trackId);
+            TrackController tc = tracks.remove(trackId);
 
             tc.removeCarriageEventListener(listener);
             tc.removeCarriageEventListener(selectionHandler);
@@ -608,6 +608,18 @@ public final class TracksEditorController implements TrackMouseEventListener {
         }
 
         return models;
+    }
+
+    public boolean isAnyTrackUnlocked() {
+
+        for (TrackController tc : tracks.values()) {
+
+            if (!tc.getTrackModel().isLocked()) {
+                return true;
+            }
+        }
+
+        return tracks.isEmpty();
     }
 
     /**

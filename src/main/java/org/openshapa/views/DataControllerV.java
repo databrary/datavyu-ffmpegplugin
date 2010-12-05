@@ -284,13 +284,16 @@ public final class DataControllerV extends OpenSHAPADialog
     private javax.swing.JButton rewindButton;
 
     /** */
+    private javax.swing.JButton osxsetCellOffsetButton;
+
+    /** */
     private javax.swing.JButton setCellOffsetButton;
 
     /** */
     private javax.swing.JButton setCellOnsetButton;
 
     /** */
-    private javax.swing.JButton instantCellButton;
+    private javax.swing.JButton pointCellButton;
 
     /** */
     private javax.swing.JButton showTracksButton;
@@ -303,15 +306,6 @@ public final class DataControllerV extends OpenSHAPADialog
 
     /** */
     private javax.swing.JButton stopButton;
-
-    /** */
-    private javax.swing.JButton syncButton;
-
-    /** */
-    private javax.swing.JButton syncCtrlButton;
-
-    /** */
-    private javax.swing.JButton syncVideoButton;
 
     /** */
     private javax.swing.JLabel timestampLabel;
@@ -915,12 +909,9 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void initComponentsMac() {
         gridButtonPanel = new javax.swing.JPanel();
-        syncCtrlButton = new javax.swing.JButton();
-        syncButton = new javax.swing.JButton();
 
         goBackTextField = new javax.swing.JTextField();
         findTextField = new javax.swing.JTextField();
-        syncVideoButton = new javax.swing.JButton();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
         lblSpeed = new javax.swing.JLabel();
@@ -986,37 +977,39 @@ public final class DataControllerV extends OpenSHAPADialog
         jLabel2.setText("x");
         timestampPanel.add(jLabel2);
 
-        gridButtonPanel.add(timestampPanel, "span 3, pushx, growx");
-
-        // Sync control button
-        syncCtrlButton.setEnabled(false);
-        syncCtrlButton.setFocusPainted(false);
-        gridButtonPanel.add(syncCtrlButton, "w 45!, h 45!");
-
-        // Sync button
-        syncButton.setEnabled(false);
-        syncButton.setFocusPainted(false);
-        gridButtonPanel.add(syncButton, "w 45!, h 45!");
-
         // Set cell onset button
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application
             .getInstance(org.openshapa.OpenSHAPA.class).getContext()
             .getActionMap(DataControllerV.class, this);
 
-        // Set cell onset button.
+        gridButtonPanel.add(timestampPanel, "span 3, pushx, growx");
+
+        // placeholder
         setCellOnsetButton = buildButton(resourceMap, actionMap,
                                          "setCellOnset", null);
         gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
 
+        // Sync button
+        pointCellButton = buildButton(resourceMap, actionMap,
+                                 "pointCell", null);
+        gridButtonPanel.add(pointCellButton, "w 45!, h 45!");
+
+        // Set cell onset button.
+        osxsetCellOffsetButton = buildButton(resourceMap, actionMap,
+                                         "setCellOffset", "osx");
+        gridButtonPanel.add(osxsetCellOffsetButton, "w 45!, h 45!");
+
         // Instant cell button.
-        instantCellButton = buildButton(resourceMap, actionMap,
-                                        "instantCell", null);
-        gridButtonPanel.add(instantCellButton, "w 45!, h 45!");
+        JButton placeholder2 = new JButton();
+        placeholder2.setEnabled(false);
+        placeholder2.setFocusPainted(false);
+        gridButtonPanel.add(placeholder2, "w 45!, h 45!");
 
         // Sync video button
-        syncVideoButton.setEnabled(false);
-        syncVideoButton.setFocusPainted(false);
-        gridButtonPanel.add(syncVideoButton, "w 80!, h 45!");
+        JButton placeholder3 = new JButton();
+        placeholder3.setEnabled(false);
+        placeholder3.setFocusPainted(false);
+        gridButtonPanel.add(placeholder3, "w 80!, h 45!");
 
         // Rewind video button
         rewindButton = buildButton(resourceMap, actionMap,
@@ -1142,11 +1135,8 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void initComponents() {
         gridButtonPanel = new javax.swing.JPanel();
-        syncCtrlButton = new javax.swing.JButton();
-        syncButton = new javax.swing.JButton();
         goBackTextField = new javax.swing.JTextField();
         findTextField = new javax.swing.JTextField();
-        syncVideoButton = new javax.swing.JButton();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
         lblSpeed = new javax.swing.JLabel();
@@ -1213,38 +1203,36 @@ public final class DataControllerV extends OpenSHAPADialog
         jLabel2.setText("x");
         timestampPanel.add(jLabel2);
 
-        gridButtonPanel.add(timestampPanel, "span 3, pushx, growx");
-
-        // Sync control button
-        syncCtrlButton.setEnabled(false);
-        syncCtrlButton.setFocusPainted(false);
-        gridButtonPanel.add(syncCtrlButton, "w 45!, h 45!");
-
-        // Sync button
-        syncButton.setEnabled(false);
-
-        // Set cell onset button
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application
             .getInstance(org.openshapa.OpenSHAPA.class).getContext()
             .getActionMap(DataControllerV.class, this);
 
+        gridButtonPanel.add(timestampPanel, "span 3, pushx, growx");
+
+        JButton placeholder = new JButton();
+        placeholder.setEnabled(false);
+        placeholder.setFocusPainted(false);
+        gridButtonPanel.add(placeholder, "w 45!, h 45!");
+
+        // Set cell onset button
         setCellOnsetButton = buildButton(resourceMap, actionMap,
-                                         "setCellOnset", null);
+                                         "setCellOnset", "win");
         gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
 
         // Set new cell offset button
-        instantCellButton = buildButton(resourceMap, actionMap,
-                                        "instantCell", null);
-        gridButtonPanel.add(instantCellButton, "w 45!, h 45!");
+        pointCellButton = buildButton(resourceMap, actionMap,
+                                      "pointCell", "win");
+        gridButtonPanel.add(pointCellButton, "w 45!, h 45!");
 
         // Go back button
         goBackButton = buildButton(resourceMap, actionMap, "goBack", null);
         gridButtonPanel.add(goBackButton, "w 45!, h 45!");
 
         // Sync video button
-        syncVideoButton.setEnabled(false);
-        syncVideoButton.setFocusPainted(false);
-        gridButtonPanel.add(syncVideoButton, "w 80!, h 45!");
+        JButton placeholder2 = new JButton();
+        placeholder2.setEnabled(false);
+        placeholder2.setFocusPainted(false);
+        gridButtonPanel.add(placeholder2, "w 80!, h 45!");
 
         // Rewind video button
         rewindButton = buildButton(resourceMap, actionMap, "rewind", null);
@@ -1304,8 +1292,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         // Create new cell button
         createNewCell = buildButton(resourceMap, actionMap,
-
-                "createNewCell", null);
+                                    "createNewCell", null);
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 95!");
@@ -1777,9 +1764,14 @@ public final class DataControllerV extends OpenSHAPADialog
         setCellOffsetButton.doClick();
     }
 
+    /** Simulates set cell offset button clicked. */
+    public void pressSetCellOffsetOSX() {
+        osxsetCellOffsetButton.doClick();
+    }
+
     /** Simulates set new cell onset button clicked. */
-    public void pressInstantCell() {
-        instantCellButton.doClick();
+    public void pressPointCell() {
+        pointCellButton.doClick();
     }
 
     /** Simulates go back button clicked. */
@@ -1795,21 +1787,6 @@ public final class DataControllerV extends OpenSHAPADialog
     /** Simulates create new cell setting offset button clicked. */
     public void pressCreateNewCellSettingOffset() {
         createNewCellSettingOffset.doClick();
-    }
-
-    /** Simulates sync button clicked. */
-    public void pressSyncButton() {
-        syncButton.doClick();
-    }
-
-    /** Simulates sync button clicked. */
-    public void pressSyncCtrlButton() {
-        syncCtrlButton.doClick();
-    }
-
-    /** Simulates sync button clicked. */
-    public void pressSyncVideoButton() {
-        syncVideoButton.doClick();
     }
 
     // ------------------------------------------------------------------------
@@ -2228,7 +2205,7 @@ public final class DataControllerV extends OpenSHAPADialog
     /**
      * Action to invoke when the user clicks on the new cell offset button.
      */
-    @Action public void instantCellAction() {
+    @Action public void pointCellAction() {
         logger.usage("Set new cell offset");
         new CreateNewCellC(getCurrentTime());
         new SetNewCellStopTimeC(getCurrentTime());

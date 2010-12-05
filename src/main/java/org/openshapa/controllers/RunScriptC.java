@@ -19,6 +19,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
 
 import org.openshapa.OpenSHAPA;
+import org.openshapa.RecentFiles;
 
 import org.openshapa.util.FileFilters.RBFilter;
 
@@ -112,7 +113,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
         ScriptEngine rubyEngine = OpenSHAPA.getScriptingEngine();
 
-        OpenSHAPA.getApplication().addScriptFile(scriptFile);
+        RecentFiles.rememberScript(scriptFile);
 
         try {
             rubyEngine.getContext().setWriter(consoleWriter);

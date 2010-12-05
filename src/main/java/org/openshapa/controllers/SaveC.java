@@ -1,6 +1,7 @@
 package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -20,6 +21,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
+import org.openshapa.RecentFiles;
 
 
 /**
@@ -57,6 +59,7 @@ public final class SaveC {
 
         SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
         saveDBC.saveDatabase(databaseFile, database);
+        RecentFiles.rememberProject(databaseFile);
     }
 
     /**
@@ -100,6 +103,8 @@ public final class SaveC {
 
             fos.flush();
             fos.close();
+
+            RecentFiles.rememberProject(projectFile);
         } catch (FileNotFoundException e) {
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                 .getContext().getResourceMap(OpenSHAPA.class);

@@ -215,7 +215,8 @@ public final class AmplitudeTrack extends TrackPainter
             registered = true;
         }
 
-        final ViewportState viewport = mixerModel.getViewportModel().getViewport();
+        final ViewportState viewport = mixerModel.getViewportModel()
+            .getViewport();
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -311,6 +312,11 @@ public final class AmplitudeTrack extends TrackPainter
             return;
         }
 
+        // Component has been de-registered.
+        if (mixerModel == null) {
+            return;
+        }
+
         // Generate cache if we haven't.
         if ((cachedAmps == null) && (cacheHandler == null)) {
             cacheHandler = new Cache();
@@ -337,7 +343,8 @@ public final class AmplitudeTrack extends TrackPainter
             blockWorkers.clear();
         }
 
-        final ViewportState viewport = mixerModel.getViewportModel().getViewport();
+        final ViewportState viewport = mixerModel.getViewportModel()
+            .getViewport();
 
         // Set up image for painting blocks.
         if (localBlocks == null) {
