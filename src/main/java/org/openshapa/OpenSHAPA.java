@@ -38,12 +38,15 @@ import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.MacHandler;
 import org.openshapa.util.NativeLoader;
+import org.openshapa.util.WindowsFileAssociations;
 
 import org.openshapa.views.AboutV;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
 import org.openshapa.views.VariableListV;
+
+import ca.beq.util.win32.registry.Win32Exception;
 
 import ch.randelshofer.quaqua.QuaquaManager;
 
@@ -75,17 +78,18 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         break;
 
-        case WINDOWS: {
-
-            try {
-                NativeLoader.loadLibFromResource("jRegistryKey");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        break;
-
+        // This is for BugzID:1288.
+//        case WINDOWS: {
+//
+//            try {
+//                NativeLoader.loadLibFromResource("jRegistryKey");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        break;
+//
         }
     }
 
@@ -581,6 +585,16 @@ public final class OpenSHAPA extends SingleFrameApplication
 
             new MacHandler();
         }
+
+        // BugzID:1288
+//        if (getPlatform() == Platform.WINDOWS) {
+//
+//            try {
+//                WindowsFileAssociations.setup();
+//            } catch (Win32Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         // This is for handling files opened from the command line.
         if (args.length > 0) {
