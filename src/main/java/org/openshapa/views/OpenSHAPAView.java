@@ -512,7 +512,7 @@ public final class OpenSHAPAView extends FrameView
         }
     }
 
-    /** Simulate loading an OpenSHAPA project from disk. */
+    /** Simulate loading an OpenSHAPA project from file chooser. */
     public void open(final File file) {
 
         if (!OpenSHAPA.getApplication().safeQuit()) {
