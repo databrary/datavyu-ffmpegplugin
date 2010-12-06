@@ -1,6 +1,7 @@
 package org.openshapa.util;
 
 import java.io.File;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,14 +12,15 @@ import org.openshapa.OpenSHAPA;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
+
 /**
  * Ok this curly piece of work is a bit body of reflection to basically achieve
  * the following snippet of code that will ultimately compile on any platform.
- * 
+ *
  * public class MacOSAboutHandler extends Application {
- * 
+ *
  * public MacOSAboutHandler() { addApplicationListener(new AboutBoxHandler()); }
- * 
+ *
  * class AboutBoxHandler extends ApplicationAdapter { public void
  * handleAbout(ApplicationEvent event) {
  * OpenSHAPA.getApplication().showAboutWindow(); event.setHandled(true); } } }
@@ -66,19 +68,19 @@ public class MacHandler {
 
         /**
          * Called when a method in the proxy object is being invoked.
-         * 
+         *
          * @param proxy
          *            The object we are proxying.
          * @param method
          *            The method that is being invoked.
          * @param args
          *            The arguments being supplied to the method.
-         * 
-         * 
+         *
+         *
          * @return Value for the method being invoked.
          */
         public Object invoke(final Object proxy, final Method method,
-                final Object[] args) {
+            final Object[] args) {
 
             try {
                 Class ae = Class.forName("com.apple.eawt.ApplicationEvent");
@@ -95,8 +97,8 @@ public class MacHandler {
                     boolean shouldQuit = OpenSHAPA.getApplication().safeQuit();
 
                     if (shouldQuit) {
-                        OpenSHAPA.getApplication().getMainFrame()
-                                .setVisible(false);
+                        OpenSHAPA.getApplication().getMainFrame().setVisible(
+                            false);
                         NativeLoader.cleanAllTmpFiles();
                         UserMetrix.shutdown();
                     }
@@ -108,11 +110,11 @@ public class MacHandler {
                 } else if ("handleOpenFile".equals(method.getName())) {
                     Method getFilename = ae.getMethod("getFilename", null);
 
-                    String fileName = (String) getFilename
-                            .invoke(args[0], null);
+                    String fileName = (String) getFilename.invoke(args[0],
+                            null);
 
-                    OpenSHAPA.getApplication().getView()
-                            .open(new File(fileName));
+                    OpenSHAPA.getApplication().getView().open(new File(
+                            fileName));
 
                     Method setHandled = ae.getMethod("setHandled",
                             boolean.class);
