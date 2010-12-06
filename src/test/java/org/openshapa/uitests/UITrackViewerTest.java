@@ -35,7 +35,6 @@ import org.fest.swing.util.Platform;
 
 import org.openshapa.OpenSHAPA;
 
-
 import org.openshapa.util.UIUtils;
 
 import org.openshapa.views.DataControllerV;
@@ -46,7 +45,6 @@ import org.openshapa.models.db.legacy.TimeStamp;
 
 import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.util.UIImageUtils;
-
 
 import org.testng.Assert;
 
@@ -75,7 +73,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
      * has resulted in consistent behaviour.
      */
     @AfterMethod @BeforeMethod protected void deleteFiles() {
-        
+
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
@@ -113,7 +111,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -122,8 +120,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         // 3. Check that the needle is initially 0.
         TimeStamp currTS;
@@ -142,7 +139,9 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         final long startTime = System.currentTimeMillis();
         final long maxTestRunTime = 10 * 1000;
 
-        while (lessThan6seconds && System.currentTimeMillis() < startTime + maxTestRunTime) {
+        while (lessThan6seconds
+                && (System.currentTimeMillis() < (startTime + maxTestRunTime))) {
+
             try {
                 dcf.getTrackMixerController().getNeedle().drag(20);
                 currTS = new TimeStamp(dcf.getCurrentTime());
@@ -161,7 +160,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
                 Level.SEVERE, null, ex);
         }
 
-        Assert.assertTrue(System.currentTimeMillis() < startTime + maxTestRunTime, "test timed out");
+        Assert.assertTrue(System.currentTimeMillis()
+            < (startTime + maxTestRunTime), "test timed out");
         Assert.assertEquals(dcf.getCurrentTime(),
             dcf.getTrackMixerController().getNeedle()
                 .getCurrentTimeAsTimeStamp());
@@ -174,7 +174,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -183,8 +183,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         // 4. Move needle beyond end time
         NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
@@ -209,7 +208,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -218,8 +217,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         // Double click 1/3, 1/2, 3/4 way of timescale
         NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
@@ -230,7 +228,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         tf.singleClickAt(third);
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:20:000");
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), dcf.getCurrentTime());
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            dcf.getCurrentTime());
 
         tf.singleClickAt(half);
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:30:000");
@@ -250,7 +249,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -262,8 +261,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         // Zoom in fully
         zoomSlider.slideToMaximum();
@@ -277,7 +275,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         tf.singleClickAt(third);
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:219");
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), dcf.getCurrentTime());
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            dcf.getCurrentTime());
 
         tf.singleClickAt(half);
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:00:328");
@@ -297,7 +296,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -306,8 +305,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         // Create new variable and new cell
         mainFrameFixture.createNewVariable("v",
@@ -366,7 +364,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -375,8 +373,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         RegionFixture region = dcf.getTrackMixerController().getRegion();
         NeedleFixture needle = dcf.getTrackMixerController().getNeedle();
@@ -470,7 +467,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -479,8 +476,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         // 4. Drag track
         TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
@@ -494,7 +490,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         long offset = track.getOffsetTimeAsLong();
         Assert.assertTrue(offset > 0, "offset=" + offset);
 
-        File unLockedImage = new File(testFolder + "/ui/lockButtonUnlocked.png");
+        File unLockedImage = new File(testFolder
+                + "/ui/lockButtonUnlocked.png");
         File lockedImage = new File(testFolder + "/ui/lockButtonLocked.png");
         Assert.assertTrue(UIImageUtils.areImagesEqual(
                 UIImageUtils.captureAsScreenshot(
@@ -542,11 +539,11 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).focus();
         vidWindows.get(0).resizeHeightTo(300);
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         // c. Open second video
-        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
+        final File videoFile2 = new File(testFolder
+                + "/ui/head_turns_copy.mov");
         Assert.assertTrue(videoFile2.exists());
 
         UIUtils.openData(videoFile2, dcf);
@@ -732,7 +729,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getZoomSlider();
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -741,11 +738,11 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         // 3. Zoom track
-        zoomSlider.slideTo((zoomSlider.component().getMinimum() + zoomSlider.component().getMaximum()) / 2);
+        zoomSlider.slideTo((zoomSlider.component().getMinimum()
+                + zoomSlider.component().getMaximum()) / 2);
 
         // 4. Drag track
         TrackFixture track = dcf.getTrackMixerController().getTracksEditor()
@@ -759,7 +756,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         long offset = track.getOffsetTimeAsLong();
         Assert.assertTrue(offset > 0, "offset=" + offset);
 
-        File unLockedImage = new File(testFolder + "/ui/lockButtonUnlocked.png");
+        File unLockedImage = new File(testFolder
+                + "/ui/lockButtonUnlocked.png");
         File lockedImage = new File(testFolder + "/ui/lockButtonLocked.png");
         Assert.assertTrue(UIImageUtils.areImagesEqual(
                 UIImageUtils.captureAsScreenshot(
@@ -789,11 +787,12 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
 
         zoomSlider.slideToMaximum();
         dcf.getTrackMixerController().getHorizontalScrollBar()
-                .scrollToMaximum();
+            .scrollToMaximum();
+
         // 6. Try to drag track, shouldn't be able to. track.drag(150);
         Assert.assertEquals(track.getOffsetTimeAsLong(), offset);
-        track.drag(-100); Assert.assertEquals(track.getOffsetTimeAsLong(),
-                offset);
+        track.drag(-100);
+        Assert.assertEquals(track.getOffsetTimeAsLong(), offset);
     }
 
     /**
@@ -807,7 +806,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .getZoomSlider();
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -816,11 +815,11 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         // 3. Zoom to halfway. This is an abitrary zoom value.
-        zoomSlider.slideTo((zoomSlider.component().getMinimum() + zoomSlider.component().getMaximum()) / 2);
+        zoomSlider.slideTo((zoomSlider.component().getMinimum()
+                + zoomSlider.component().getMaximum()) / 2);
 
         // At halfway zoom point, these are the expected timestamps
         final String timeAtLeftEndOfTrack = "00:00:00:000";
@@ -835,31 +834,34 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             needle.drag(widthOfTrack);
         }
 
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), timeAtRightEndOfTrack);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            timeAtRightEndOfTrack);
 
         // 5. Try to move the needle beyond the left edge
         needle.drag(-1 * widthOfTrack);
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), timeAtLeftEndOfTrack);
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
+            timeAtLeftEndOfTrack);
 
         // 6. Try to move the needle beyond the right edge
         while (needle.getCurrentTimeAsLong() <= 0) {
             needle.drag(widthOfTrack);
         }
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), timeAtRightEndOfTrack);
 
-        dcf.getTrackMixerController().getHorizontalScrollBar().scrollToMaximum();
         Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
-                "00:00:30:000");
+            timeAtRightEndOfTrack);
+
+        dcf.getTrackMixerController().getHorizontalScrollBar()
+            .scrollToMaximum();
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:30:000");
+
         while (needle.getCurrentTimeAsLong() <= 0) {
             needle.drag(widthOfTrack);
         }
 
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
-                "00:01:00:000");
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:01:00:000");
 
         // 5. Move needle beyond start time needle.drag(-1 * widthOfTrack);
-        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(),
-                "00:00:30:000");
+        Assert.assertEquals(needle.getCurrentTimeAsTimeStamp(), "00:00:30:000");
 
     }
 
@@ -884,11 +886,11 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         vidWindows.get(0).focus();
         vidWindows.get(0).resizeHeightTo(300);
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         // c. Open second video
-        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
+        final File videoFile2 = new File(testFolder
+                + "/ui/head_turns_copy.mov");
         Assert.assertTrue(videoFile2.exists());
 
         UIUtils.openData(videoFile2, dcf);
@@ -1069,7 +1071,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
         UIUtils.openData(videoFile, dcf);
@@ -1077,8 +1079,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
@@ -1119,7 +1120,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -1128,8 +1129,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
@@ -1171,7 +1171,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -1180,8 +1180,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
@@ -1310,7 +1309,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -1319,8 +1318,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
@@ -1446,7 +1444,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -1455,8 +1453,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         // Create new variable and new cell
         mainFrameFixture.createNewVariable("v",
@@ -1500,16 +1497,16 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        
 
         // c. Open videos
-        
+
         final File videoFile1 = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile1.exists());
 
         UIUtils.openData(videoFile1, dcf);
 
-        final File videoFile2 = new File(testFolder + "/ui/head_turns_copy.mov");
+        final File videoFile2 = new File(testFolder
+                + "/ui/head_turns_copy.mov");
         Assert.assertTrue(videoFile2.exists());
 
         UIUtils.openData(videoFile2, dcf);
@@ -1532,7 +1529,8 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
         // Lock 1st track
-        File unLockedImage = new File(testFolder + "/ui/lockButtonUnlocked.png");
+        File unLockedImage = new File(testFolder
+                + "/ui/lockButtonUnlocked.png");
         File lockedImage = new File(testFolder + "/ui/lockButtonLocked.png");
         TrackFixture track1 = dcf.getTrackMixerController().getTracksEditor()
             .getTrack(0);
@@ -1557,8 +1555,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         Assert.assertTrue(UIImageUtils.areImagesEqual(
                 UIImageUtils.captureAsScreenshot(
                     track2.getActionButton2().component()), eyeClosedImage,
-                0.01,
-                0.01));
+                0.01, 0.01));
         Assert.assertFalse(UIImageUtils.areImagesEqual(
                 UIImageUtils.captureAsScreenshot(
                     track2.getActionButton2().component()), eyeOpenImage, 0.01,
@@ -1581,8 +1578,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         track3.pressActionButton1();
 
         JSliderFixture volumeSlider = vidWindows.get(2).dialog("volumeDialog")
-            .slider(
-                "volumeSlider");
+            .slider("volumeSlider");
         volumeSlider.slideToMinimum();
 
         track3.click();
@@ -1603,7 +1599,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
-            fc.setFileFilter(new OPFFilter());
+            fc.setFileFilter(OPFFilter.INSTANCE);
 
             fc.setSelectedFile(tempFile);
 
@@ -1613,7 +1609,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
 
             mainFrameFixture.fileChooser().component().setFileFilter(
-                new OPFFilter());
+                OPFFilter.INSTANCE);
             mainFrameFixture.fileChooser().selectFile(tempFile).approve();
         }
 
@@ -1640,7 +1636,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
 
-            fc.setFileFilter(new OPFFilter());
+            fc.setFileFilter(OPFFilter.INSTANCE);
             fc.setSelectedFile(tempFile);
 
             method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
@@ -1657,7 +1653,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             }
 
             mainFrameFixture.fileChooser().component().setFileFilter(
-                new OPFFilter());
+                OPFFilter.INSTANCE);
 
             mainFrameFixture.fileChooser().selectFile(tempFile).approve();
         }
@@ -1702,8 +1698,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         Assert.assertTrue(UIImageUtils.areImagesEqual(
                 UIImageUtils.captureAsScreenshot(
                     track22.getActionButton2().component()), eyeClosedImage,
-                0.01,
-                0.01));
+                0.01, 0.01));
         Assert.assertFalse(UIImageUtils.areImagesEqual(
                 UIImageUtils.captureAsScreenshot(
                     track22.getActionButton2().component()), eyeOpenImage, 0.01,
@@ -1740,7 +1735,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -1749,8 +1744,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 
@@ -1779,8 +1773,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
             .pressActionButton1();
 
         JSliderFixture volumeSlider = vidWindows.get(0).dialog("volumeDialog")
-            .slider(
-                "volumeSlider");
+            .slider("volumeSlider");
         volumeSlider.slideToMinimum();
 
         track.click();
@@ -1819,7 +1812,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // c. Open video
-        
+
         final File videoFile = new File(testFolder + "/ui/head_turns.mov");
         Assert.assertTrue(videoFile.exists());
 
@@ -1828,8 +1821,7 @@ public final class UITrackViewerTest extends OpenSHAPATestClass {
         // 2. Get window
         ArrayList<DialogFixture> vidWindows = dcf.getVideoWindows();
 
-        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10,
-                100));
+        vidWindows.get(0).moveTo(new Point(dcf.getWidth() + 10, 100));
 
         vidWindows.get(0).component().setAlwaysOnTop(true);
 

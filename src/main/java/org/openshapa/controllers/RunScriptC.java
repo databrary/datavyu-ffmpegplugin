@@ -65,7 +65,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      */
     public RunScriptC() throws IOException {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
-        jd.addChoosableFileFilter(new RBFilter());
+        jd.addChoosableFileFilter(RBFilter.INSTANCE);
 
         int result = jd.showOpenDialog(OpenSHAPA.getApplication()
                 .getMainFrame());

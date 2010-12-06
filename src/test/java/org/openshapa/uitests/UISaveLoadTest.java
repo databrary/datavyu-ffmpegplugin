@@ -12,7 +12,6 @@ import java.io.IOException;
 
 import java.util.Vector;
 
-
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.DialogFixture;
@@ -68,7 +67,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
          * not always delete them during the test case. Doing the deletes here
          * has resulted in consistent behaviour.
          */
-        
+
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
@@ -99,9 +98,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     private void saveAsTest(final String fileName, final String extension)
         throws IOException {
-                
+
         File demoFile = new File(testFolder + "/ui/demo_data_to_csv2.rb");
-        File toSave = new File(tempFolder + "/" + fileName);;
+        File toSave = new File(tempFolder + "/" + fileName);
+        ;
         Assert.assertTrue(demoFile.exists(),
             "Expecting demo_data_to_csv.rb to exist");
 
@@ -118,11 +118,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             fc.setVisible(false);
 
             if (extension.equals("opf")) {
-                fc.setFileFilter(new OPFFilter());
+                fc.setFileFilter(OPFFilter.INSTANCE);
             } else if (extension.equals("csv")) {
-                fc.setFileFilter(new CSVFilter());
+                fc.setFileFilter(CSVFilter.INSTANCE);
             }
-
 
             fc.setSelectedFile(toSave);
 
@@ -138,10 +137,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
             if (extension.equals("opf")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
-                    new OPFFilter());
+                    OPFFilter.INSTANCE);
             } else if (extension.equals("csv")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
-                    new CSVFilter());
+                    CSVFilter.INSTANCE);
             }
 
             mainFrameFixture.fileChooser().selectFile(toSave).approve();
@@ -162,9 +161,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         File expectedOutputFile = null;
 
         if (extension.equals("csv")) {
-            expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
-            UIFileUtils.loadFile(mainFrameFixture, new File(pc.getProjectDirectory(),
-                    pc.getDatabaseFileName()));
+            expectedOutputFile = new File(testFolder
+                    + "/ui/demo_data_to_csv2.csv");
+            UIFileUtils.loadFile(mainFrameFixture,
+                new File(pc.getProjectDirectory(), pc.getDatabaseFileName()));
             outputFile = saveAsCSV(fileName + "new");
         } else if (extension.equals("opf")) {
 
@@ -174,7 +174,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             UIFileUtils.loadFile(mainFrameFixture, justSaved);
             outputFile = saveAsCSV(fileName);
 
-            expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
+            expectedOutputFile = new File(testFolder
+                    + "/ui/demo_data_to_csv2.csv");
         }
 
         Assert.assertTrue(outputFile.exists(),
@@ -192,14 +193,14 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      * @return CSV file that was just saved.
      */
     private File saveAsCSV(final String fileName) {
-        
+
         File toSave;
         String csvFileName = fileName + ".csv";
 
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
-            fc.setFileFilter(new CSVFilter());
+            fc.setFileFilter(CSVFilter.INSTANCE);
 
             toSave = new File(tempFolder + "/" + csvFileName);
 
@@ -211,7 +212,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
 
             mainFrameFixture.fileChooser().component().setFileFilter(
-                new CSVFilter());
+                CSVFilter.INSTANCE);
 
             toSave = new File(tempFolder + "/" + csvFileName);
             mainFrameFixture.fileChooser().selectFile(toSave).approve();
@@ -219,8 +220,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
         return toSave;
     }
-    
-    
+
+
     /**
      * Test saving a database to a file with Save.
      * @param fileName
@@ -234,6 +235,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         throws IOException {
 
         File toSave = new File(tempFolder + "/" + fileName + "." + extension);
+
         // 1. Click save on empty project. Expecting it to act like Save As
         Assert.assertFalse(toSave.exists());
 
@@ -242,7 +244,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         // Check that no asterisk is present
         Assert.assertFalse(mainFrameFixture.getTitle().endsWith("*"));
 
-        
+
         File demoFile = new File(testFolder + "/ui/demo_data_to_csv2.rb");
         Assert.assertTrue(demoFile.exists(),
             "Expecting demo_data_to_csv2.rb to exist");
@@ -282,9 +284,10 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         File expectedOutputFile = null;
 
         if (extension.equals("csv")) {
-            expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
-            UIFileUtils.loadFile(mainFrameFixture, new File(pc.getProjectDirectory(),
-                    pc.getDatabaseFileName()));
+            expectedOutputFile = new File(testFolder
+                    + "/ui/demo_data_to_csv2.csv");
+            UIFileUtils.loadFile(mainFrameFixture,
+                new File(pc.getProjectDirectory(), pc.getDatabaseFileName()));
             outputFile = saveAsCSV(fileName + "new");
 
         } else if (extension.equals("opf")) {
@@ -295,7 +298,8 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             UIFileUtils.loadFile(mainFrameFixture, toSave);
             outputFile = saveAsCSV(fileName);
 
-            expectedOutputFile = new File(testFolder + "/ui/demo_data_to_csv2.csv");
+            expectedOutputFile = new File(testFolder
+                    + "/ui/demo_data_to_csv2.csv");
         }
 
         Assert.assertTrue(outputFile.exists(),
@@ -321,7 +325,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         final String expectedOutputFile) throws IOException,
         LogicErrorException {
         final String root = testFolder + "/ui/";
-        
+
 
         File testCSV = new File(tempFolder + inputFile);
 
@@ -372,7 +376,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
             mainFrameFixture.fileChooser().component().setFileFilter(
-                new OPFFilter());
+                OPFFilter.INSTANCE);
             mainFrameFixture.fileChooser().selectFile(savedSHAPA).approve();
         }
 
@@ -402,7 +406,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     private void legacyFileLoadTest(final String inputFile,
         final String expectedOutputFile) throws IOException {
-        
+
 
         File iFile = new File(testFolder + "/ui/" + inputFile);
         File eoFile = new File(testFolder + "/ui/" + expectedOutputFile);
@@ -465,6 +469,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     @Test public void testODBtoOPF() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         String inputFile = "macshapa-file.odb";
         String odbOutputCSV = "odbCSV.csv";
         String opfOutputCSV = "opfCSV.csv";
@@ -509,8 +514,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         File opfCSV = saveAsCSV("opf");
 
         // Compare CSV files
-        Assert.assertTrue(odbCSV.exists(),
-            "Expecting odb CSV to exist.");
+        Assert.assertTrue(odbCSV.exists(), "Expecting odb CSV to exist.");
         Assert.assertTrue(opfCSV.exists(),
             "Expecting reference output to exist.");
 
@@ -524,6 +528,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      */
     /*BugzID:1941@Test*/ public void testLoadOPFv1() throws Exception {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
+
         String inputFilename = "oldProjectFormat.opf";
         File inputFile = new File(testFolder + "/ui/" + inputFilename);
         Assert.assertTrue(inputFile.exists());
@@ -763,7 +768,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         // Delete confounding files from previous test
-        
+
         File location1 = new File(testFolder + "ui/location1/location2.opf");
         File location2 = new File(testFolder + "ui/location2/location1.opf");
         location1.delete();
@@ -790,7 +795,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
         final String root = testFolder + "/ui/";
-        
+
 
         // Check if file exists and you do not have permission
         File noWrite = new File(root + "/noWrite/test.opf");
@@ -828,9 +833,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
     @Test public void testBug1568() throws IOException {
         System.err.println(new Exception().getStackTrace()[0].getMethodName());
 
-        
 
-        
         File toSave = null;
 
         // Create new text variable
@@ -868,7 +871,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
 
-            fc.setFileFilter(new OPFFilter());
+            fc.setFileFilter(OPFFilter.INSTANCE);
 
             toSave = new File(tempFolder + "/slashFile.opf");
 
@@ -880,7 +883,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
 
             mainFrameFixture.fileChooser().component().setFileFilter(
-                new OPFFilter());
+                OPFFilter.INSTANCE);
 
             toSave = new File(tempFolder + "/slashFile.opf");
             mainFrameFixture.fileChooser().selectFile(toSave).approve();
@@ -933,7 +936,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
             }
 
             mainFrameFixture.fileChooser().component().setFileFilter(
-                new OPFFilter());
+                OPFFilter.INSTANCE);
 
             mainFrameFixture.fileChooser().selectFile(missingVidFile).approve();
         }

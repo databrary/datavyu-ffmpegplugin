@@ -2,14 +2,10 @@ package org.openshapa.util;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+
 import static org.fest.reflect.core.Reflection.method;
 
-
 import java.io.File;
-
-
-
-
 
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
@@ -18,15 +14,15 @@ import org.fest.swing.fixture.OpenSHAPAFrameFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.util.Platform;
 
-
-
 import org.openshapa.OpenSHAPA;
+
 import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.MODBFilter;
 import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
+
 import org.openshapa.views.OpenSHAPAFileChooser;
-import org.openshapa.views.discrete.SpreadsheetView;
+
 import org.testng.Assert;
 
 
@@ -45,7 +41,8 @@ public final class UIFileUtils {
      * Loads file after creating a new project.
      * @param file opf file to load
      */
-    public static void loadFile(final OpenSHAPAFrameFixture mainFrameFixture, final File file) {
+    public static void loadFile(final OpenSHAPAFrameFixture mainFrameFixture,
+        final File file) {
 
         String ext = getExtension(file);
 
@@ -81,15 +78,15 @@ public final class UIFileUtils {
             fc.setVisible(false);
 
             if (ext.equalsIgnoreCase("csv")) {
-                fc.setFileFilter(new CSVFilter());
+                fc.setFileFilter(CSVFilter.INSTANCE);
             } else if (ext.equalsIgnoreCase("opf")) {
-                fc.setFileFilter(new OPFFilter());
+                fc.setFileFilter(OPFFilter.INSTANCE);
             } else if (ext.equalsIgnoreCase("odb")) {
-                fc.setFileFilter(new MODBFilter());
+                fc.setFileFilter(MODBFilter.INSTANCE);
             } else if (ext.equalsIgnoreCase("shapa")) {
-                fc.setFileFilter(new SHAPAFilter());
+                fc.setFileFilter(SHAPAFilter.INSTANCE);
             } else {
-                Assert.assertTrue(false, "Bad file extension:" + ext);
+                Assert.fail("Bad file extension:" + ext);
             }
 
             fc.setSelectedFile(file);
@@ -109,25 +106,26 @@ public final class UIFileUtils {
 
             if (ext.equalsIgnoreCase("csv")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
-                    new CSVFilter());
+                    CSVFilter.INSTANCE);
             } else if (ext.equalsIgnoreCase("opf")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
-                    new OPFFilter());
+                    OPFFilter.INSTANCE);
             } else if (ext.equalsIgnoreCase("odb")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
-                    new MODBFilter());
+                    MODBFilter.INSTANCE);
             } else if (ext.equalsIgnoreCase("shapa")) {
                 mainFrameFixture.fileChooser().component().setFileFilter(
-                        new SHAPAFilter());
+                    SHAPAFilter.INSTANCE);
             } else {
-                Assert.assertTrue(false, "Bad file extension:" + ext);
+                Assert.fail("Bad file extension:" + ext);
             }
 
             mainFrameFixture.fileChooser().selectFile(file).approve();
         }
     }
 
-    public static void saveFile(OpenSHAPAFrameFixture mainFrameFixture, File fileToSave) {
+    public static void saveFile(final OpenSHAPAFrameFixture mainFrameFixture,
+        final File fileToSave) {
         String ext = getExtension(fileToSave);
 
         if (Platform.isOSX()) {
@@ -135,13 +133,13 @@ public final class UIFileUtils {
             fc.setVisible(false);
 
             if (ext.equalsIgnoreCase("opf")) {
-                fc.setFileFilter(new OPFFilter());
+                fc.setFileFilter(OPFFilter.INSTANCE);
             } else if (ext.equalsIgnoreCase("csv")) {
-                fc.setFileFilter(new CSVFilter());
+                fc.setFileFilter(CSVFilter.INSTANCE);
             } else if (ext.equalsIgnoreCase("odb")) {
-                fc.setFileFilter(new MODBFilter());
+                fc.setFileFilter(MODBFilter.INSTANCE);
             } else {
-                Assert.assertTrue(false, "Bad file extension:" + ext);
+                Assert.fail("Bad file extension:" + ext);
             }
 
             fc.setSelectedFile(fileToSave);
@@ -150,30 +148,33 @@ public final class UIFileUtils {
                 OpenSHAPA.getView()).invoke(fc);
         } else {
 
-            SpreadsheetPanelFixture spreadsheet = mainFrameFixture.getSpreadsheet();
+            SpreadsheetPanelFixture spreadsheet =
+                mainFrameFixture.getSpreadsheet();
             mainFrameFixture.clickMenuItemWithPath("File", "Save");
 
             if (!fileToSave.exists()) {
+
                 if (ext.equals("opf")) {
                     mainFrameFixture.fileChooser().component().setFileFilter(
-                        new OPFFilter());
+                        OPFFilter.INSTANCE);
                 } else if (ext.equals("csv")) {
                     mainFrameFixture.fileChooser().component().setFileFilter(
-                        new CSVFilter());
+                        CSVFilter.INSTANCE);
                 } else if (ext.equals("odb")) {
                     mainFrameFixture.fileChooser().component().setFileFilter(
-                        new MODBFilter());
+                        MODBFilter.INSTANCE);
                 } else {
-                    Assert.assertTrue(false, "Bad file extension:" + ext);
+                    Assert.fail("Bad file extension:" + ext);
                 }
-            
+
                 mainFrameFixture.fileChooser().selectFile(fileToSave).approve();
             }
         }
     }
 
-    public static String getExtension(File file) {
+    public static String getExtension(final File file) {
         String[] fileNameParts = file.getName().split("\\.");
+
         if (fileNameParts.length > 1) {
             return fileNameParts[fileNameParts.length - 1];
         } else {
@@ -181,5 +182,5 @@ public final class UIFileUtils {
         }
     }
 
-    
+
 }

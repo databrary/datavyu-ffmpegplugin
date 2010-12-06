@@ -46,7 +46,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
     * has resulted in consistent behaviour.
     */
     @AfterMethod @BeforeMethod protected void deleteFiles() {
-        
+
 
         // Delete temporary CSV and SHAPA files
         FilenameFilter ff = new FilenameFilter() {
@@ -239,7 +239,8 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         }
 
         if (type.equalsIgnoreCase("FLOAT")) {
-            Assert.assertTrue(UIUtils.equalValues(cell.cellValue().text(), "0.0"));
+            Assert.assertTrue(UIUtils.equalValues(cell.cellValue().text(),
+                    "0.0"));
         } else {
             Assert.assertEquals(cell.cellValue().text(), "<val>");
         }
@@ -278,7 +279,8 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         }
 
         if (type.equalsIgnoreCase("FLOAT")) {
-            Assert.assertTrue(UIUtils.equalValues(cell.cellValue().text(), "0.0"));
+            Assert.assertTrue(UIUtils.equalValues(cell.cellValue().text(),
+                    "0.0"));
         } else {
             Assert.assertEquals(cell.cellValue().text(), "<val>");
         }
@@ -320,7 +322,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
         if (Platform.isOSX()) {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
-            fc.setFileFilter(new OPFFilter());
+            fc.setFileFilter(OPFFilter.INSTANCE);
 
             fc.setSelectedFile(tempFile);
 
@@ -330,7 +332,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
 
             mainFrameFixture.fileChooser().component().setFileFilter(
-                new OPFFilter());
+                OPFFilter.INSTANCE);
             mainFrameFixture.fileChooser().selectFile(tempFile).approve();
         }
 
@@ -366,7 +368,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
             OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
             fc.setVisible(false);
 
-            fc.setFileFilter(new OPFFilter());
+            fc.setFileFilter(OPFFilter.INSTANCE);
             fc.setSelectedFile(tempFile);
 
             method("open").withParameterTypes(OpenSHAPAFileChooser.class).in(
@@ -383,7 +385,7 @@ public final class UIDeleteCellValueTest extends OpenSHAPATestClass {
             }
 
             mainFrameFixture.fileChooser().component().setFileFilter(
-                new OPFFilter());
+                OPFFilter.INSTANCE);
 
             mainFrameFixture.fileChooser().selectFile(tempFile).approve();
         }
