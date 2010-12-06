@@ -136,6 +136,9 @@ public final class OpenSHAPA extends SingleFrameApplication
     /** Opened windows. */
     private Stack<Window> windows;
 
+    /** File path from the command line. */
+    private String commandLineFile;
+
     /**
      * Dispatches the keystroke to the correct action.
      *
@@ -258,9 +261,11 @@ public final class OpenSHAPA extends SingleFrameApplication
         switch (evt.getKeyCode()) {
 
         case KeyEvent.VK_DIVIDE:
+
             if (getPlatform().equals(Platform.MAC)) {
                 dataController.pressSetCellOffsetOSX();
             } else {
+
                 if (modifiers == InputEvent.SHIFT_MASK) {
                     dataController.pressSetCellOffset();
                 } else {
@@ -271,6 +276,7 @@ public final class OpenSHAPA extends SingleFrameApplication
             break;
 
         case KeyEvent.VK_EQUALS:
+
             if (getPlatform().equals(Platform.MAC)) {
                 dataController.pressPointCell();
             }
@@ -279,6 +285,7 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         case KeyEvent.VK_ASTERISK:
         case KeyEvent.VK_MULTIPLY:
+
             if (!getPlatform().equals(Platform.MAC)) {
                 dataController.pressPointCell();
             }
@@ -559,12 +566,12 @@ public final class OpenSHAPA extends SingleFrameApplication
 
             new MacHandler();
         }
-    }
 
-    /**
-     * At startup create and show the main frame of the application.
-     */
-    @Override protected void startup() {
+        // This is for handling files opened from the command line.
+        if (args.length > 0) {
+            commandLineFile = args[0];
+        }
+
         windows = new Stack<Window>();
 
         // Initalise the logger (UserMetrix).
@@ -608,11 +615,17 @@ public final class OpenSHAPA extends SingleFrameApplication
             rubyEngine = m.getEngineByName("jruby");
         }
 
-        // Make a new project
-        projectController = new ProjectController();
-
         // Initialize plugin manager
         PluginManager.getInstance();
+
+        // Make a new project
+        projectController = new ProjectController();
+    }
+
+    /**
+     * At startup create and show the main frame of the application.
+     */
+    @Override protected void startup() {
 
         // Make view the new view so we can keep track of it for hotkeys.
         VIEW = new OpenSHAPAView(this);
@@ -640,11 +653,10 @@ public final class OpenSHAPA extends SingleFrameApplication
         // Allow changes to the database to propagate up and signify db modified
         canSetUnsaved = true;
 
-        getApplication().addExitListener(new ExitListenerImpl());
+        addExitListener(new ExitListenerImpl());
 
         // Create video controller.
-        dataController = new DataControllerV(OpenSHAPA.getApplication()
-                .getMainFrame(), false);
+        dataController = new DataControllerV(getMainFrame(), false);
 
         final Dimension screenSize = Toolkit.getDefaultToolkit()
             .getScreenSize();
@@ -656,7 +668,15 @@ public final class OpenSHAPA extends SingleFrameApplication
         y = (int) Math.max(Math.min(y,
                     screenSize.getHeight() - dataController.getHeight()), 0);
         dataController.setLocation(x, y);
-        getApplication().show(dataController);
+        show(dataController);
+    }
+
+    @Override protected void ready() {
+
+        if (commandLineFile != null) {
+            getView().open(new File(commandLineFile));
+            commandLineFile = null;
+        }
     }
 
     /**
