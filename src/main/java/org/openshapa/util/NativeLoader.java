@@ -127,7 +127,7 @@ public class NativeLoader {
      * @throws Exception
      *             If unable to unpack the native app to a temporary location.
      */
-    static public String unpackNativeApp(final String appJar) throws Exception {
+    public static String unpackNativeApp(final String appJar) throws Exception {
         final String nativeLibraryPath;
 
         if (nativeLibFolder == null) {
@@ -211,7 +211,7 @@ public class NativeLoader {
     /**
      * Cleans all the temporary files created by the native loader.
      */
-    static public void cleanAllTmpFiles() {
+    public static void cleanAllTmpFiles() {
         System.err.println("cleaning temp files");
 
         for (File loadedLib : Iterables.reverse(loadedLibs)) {
