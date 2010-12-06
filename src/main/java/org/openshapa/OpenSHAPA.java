@@ -10,8 +10,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 
 import java.util.EventObject;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Stack;
 
 import javax.script.ScriptEngine;
@@ -64,13 +62,30 @@ public final class OpenSHAPA extends SingleFrameApplication
     /** Load required native libraries (JNI). */
     static {
 
-        if (getPlatform() == Platform.MAC) {
+        switch (getPlatform()) {
+
+        case MAC: {
 
             try {
                 NativeLoader.LoadNativeLib("quaqua64");
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        break;
+
+        case WINDOWS: {
+
+            try {
+                NativeLoader.loadLibFromResource("jRegistryKey");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        break;
+
         }
     }
 

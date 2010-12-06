@@ -106,6 +106,7 @@
         <string>$JAVAROOT/repo/gnu/trove/2.1.0/trove-2.1.0.jar</string>
         <string>$JAVAROOT/repo/ch/randelshofer/quaqua/quaqua-osx64/7.0.1/quaqua-osx64-7.0.1.jar</string>
         <string>$JAVAROOT/repo/ch/randelshofer/quaqua/quaqua-filechooser-only/7.0.1/quaqua-filechooser-only-7.0.1.jar</string>
+        <string>$JAVAROOT/repo/ca/beq/jregistrykey/1.4.5/jregistrykey-1.4.5.jar</string>
         <!-- start of rococoa dependencies -->
         <string>$JAVAROOT/repo/org/rococoa/rococoa-cocoa/0.5.1x3/rococoa-cocoa-0.5.1x3.jar</string>
         <string>$JAVAROOT/repo/org/rococoa/rococoa-core/0.5.1x3/rococoa-core-0.5.1x3.jar</string>

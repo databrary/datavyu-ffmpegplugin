@@ -227,6 +227,12 @@
       <url>http://maven2.usermetrix.com</url>
       <layout>default</layout>
     </repository>
+    
+    <repository>
+      <id>hello2morrorw</id>
+      <url>http://maven.hello2morrow.com/repository</url>
+      <layout>default</layout>
+    </repository>
   </repositories>
 
   <!-- External plugin repositories - where to find third-part dependencies. -->
@@ -566,6 +572,7 @@
                 <preCp>commons-lang-2.5.jar</preCp>
                 <preCp>QTJava-7.jar</preCp>
                 <preCp>trove-2.1.0.jar</preCp>
+                <preCp>jregistrykey-1.4.5.jar</preCp>
             </classPath>
         </configuration>
       </plugin>
@@ -697,33 +704,39 @@
     </dependency>
     
     <dependency>
-    	<groupId>org.rococoa</groupId>
-    	<artifactId>rococoa-core</artifactId>
-    	<version>0.5.1x3</version>
+      <groupId>org.rococoa</groupId>
+      <artifactId>rococoa-core</artifactId>
+      <version>0.5.1x3</version>
     </dependency>
  
     <dependency>
-    	<groupId>org.rococoa</groupId>
-    	<artifactId>rococoa-cocoa</artifactId>
-    	<version>0.5.1x3</version>
+      <groupId>org.rococoa</groupId>
+      <artifactId>rococoa-cocoa</artifactId>
+      <version>0.5.1x3</version>
     </dependency>
 
     <dependency>
-        <groupId>com.google.collections</groupId>
-        <artifactId>google-collections</artifactId>
-        <version>1.0</version>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
+      <version>1.0</version>
     </dependency>
 
     <dependency>
-        <groupId>gnu</groupId>
-        <artifactId>trove</artifactId>
-        <version>2.1.0</version>
+      <groupId>gnu</groupId>
+      <artifactId>trove</artifactId>
+      <version>2.1.0</version>
     </dependency>
     
-        <dependency>
-        <groupId>ch.randelshofer.quaqua</groupId>
-        <artifactId>quaqua-filechooser-only</artifactId>
-        <version>7.0.1</version>
+    <dependency>
+      <groupId>ch.randelshofer.quaqua</groupId>
+      <artifactId>quaqua-filechooser-only</artifactId>
+      <version>7.0.1</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>ca.beq</groupId>
+      <artifactId>jregistrykey</artifactId>
+      <version>1.4.5</version>
     </dependency>
   </dependencies>
 </project>
