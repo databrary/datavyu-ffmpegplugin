@@ -2,9 +2,11 @@ package org.openshapa.views.discrete;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.HeadlessException;
+
 import java.util.logging.Level;
 
 import java.awt.Dimension;
@@ -13,16 +15,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+
 import java.util.Vector;
+
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
+
 import org.openshapa.models.db.legacy.Column;
 import org.openshapa.models.db.legacy.DataColumn;
 import org.openshapa.models.db.legacy.Database;
@@ -30,15 +37,23 @@ import org.openshapa.models.db.legacy.ExternalCascadeListener;
 import org.openshapa.models.db.legacy.ExternalDataColumnListener;
 import org.openshapa.models.db.legacy.LogicErrorException;
 import org.openshapa.models.db.legacy.SystemErrorException;
+
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
+
 
 /**
  * This class maintains the visual representation of the column in the
  * Spreadsheet window.
  */
 public final class SpreadsheetColumn extends JLabel
-implements ExternalDataColumnListener, ExternalCascadeListener,
-           MouseListener, MouseMotionListener {
+    implements ExternalDataColumnListener, ExternalCascadeListener,
+        MouseListener, MouseMotionListener {
+
+    /** Default column width. */
+    private static final int DEFAULT_COLUMN_WIDTH = 230;
+
+    /** Default column height. */
+    public static final int DEFAULT_HEADER_HEIGHT = 16;
 
     /** Database reference. */
     private Database database;
@@ -54,12 +69,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
 
     /** Records changes to column during a cascade. */
     private ColumnChanges colChanges;
-
-    /** Default column width. */
-    private static final int DEFAULT_COLUMN_WIDTH = 230;
-
-    /** Default column height. */
-    public static final int DEFAULT_HEADER_HEIGHT = 16;
 
     /** Width of the column in pixels. */
     private int width = DEFAULT_COLUMN_WIDTH;
@@ -82,40 +91,6 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
     /** column selection listener to notify of column selection changes. */
     private ColumnSelectionListener columnSelList;
 
-     /**
-     * Private class for recording the changes reported by the listener
-     * callbacks on this column.
-     */
-    private final class ColumnChanges {
-        /** nameChanged. */
-        private boolean nameChanged;
-        /** List of cell IDs of newly inserted cells. */
-        private Vector<Long> cellInserted;
-        /** List of cell IDs of deleted cells. */
-        private Vector<Long> cellDeleted;
-        /** colDeleted. */
-        private boolean colDeleted;
-
-        /**
-         * ColumnChanges constructor.
-         */
-        private ColumnChanges() {
-            cellInserted = new Vector<Long>();
-            cellDeleted = new Vector<Long>();
-            reset();
-        }
-
-        /**
-         * Reset the ColumnChanges flags and lists.
-         */
-        private void reset() {
-            nameChanged = false;
-            cellInserted.clear();
-            cellDeleted.clear();
-            colDeleted = false;
-        }
-    }
-
     /**
      * Creates new SpreadsheetColumn.
      *
@@ -124,10 +99,9 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param cellSelL Spreadsheet cell selection listener to notify
      * @param colSelL Column selection listener to notify.
      */
-    public SpreadsheetColumn(final Database db,
-                             final long colID,
-                             final CellSelectionListener cellSelL,
-                             final ColumnSelectionListener colSelL) {
+    public SpreadsheetColumn(final Database db, final long colID,
+        final CellSelectionListener cellSelL,
+        final ColumnSelectionListener colSelL) {
         this.database = db;
         this.dbColID = colID;
         this.cellSelList = cellSelL;
@@ -145,14 +119,15 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
             setMaximumSize(this.getHeaderSize());
             this.addMouseListener(this);
             this.addMouseMotionListener(this);
-            this.setText(dbColumn.getName() + "  ("
-                         + dbColumn.getItsMveType() + ")");
+            this.setText(dbColumn.getName() + "  (" + dbColumn.getItsMveType()
+                + ")");
 
             datapanel = new ColumnDataPanel(width, dbColumn, cellSelL);
 
         } catch (SystemErrorException e) {
             logger.error("Problem retrieving DataColumn", e);
         }
+
         colChanges = new ColumnChanges();
     }
 
@@ -161,6 +136,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * this class of events.
      */
     public void registerListeners() {
+
         try {
             database.registerDataColumnListener(dbColID, this);
             database.registerCascadeListener(this);
@@ -175,6 +151,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * notiying it of events.
      */
     public void deregisterListeners() {
+
         try {
             database.deregisterDataColumnListener(dbColID, this);
             database.deregisterCascadeListener(this);
@@ -189,13 +166,20 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @throws HeadlessException
      */
     public void showChangeVarNameDialog() throws HeadlessException {
+
         //Edit variable name on double click
         String newName = "";
+
         while (newName != null) {
-            newName = (String) JOptionPane.showInputDialog(null, null, "New variable name", JOptionPane.PLAIN_MESSAGE, null, null, getColumnName());
+            newName = (String) JOptionPane.showInputDialog(null, null,
+                    "New variable name", JOptionPane.PLAIN_MESSAGE, null, null,
+                    getColumnName());
+
             if (newName != null) {
+
                 try {
                     setColumnName(newName);
+
                     break;
                 } catch (LogicErrorException ex) {
                     continue;
@@ -228,16 +212,20 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
     public void setWidth(final int colWidth) {
         logger.usage("set column width");
         width = colWidth;
+
         Dimension dim = getHeaderSize();
         this.setPreferredSize(dim);
         this.setMaximumSize(dim);
+
         Dimension dim2 = getHeaderSize();
         dim2.height = Integer.MAX_VALUE;
 
         datapanel.setWidth(width);
+
         for (SpreadsheetCell cell : getCells()) {
             cell.setWidth(width);
         }
+
         this.revalidate();
         datapanel.revalidate();
         // Whereever we resize we will need to spreadsheetPanel.relayoutCells();
@@ -276,8 +264,10 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param isSelected Selected state.
      */
     public void setSelected(final boolean isSelected) {
+
         try {
             logger.usage("select column");
+
             DataColumn dc = database.getDataColumn(dbColID);
             this.selected = isSelected;
 
@@ -285,7 +275,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
             database.replaceColumn(dc);
 
         } catch (SystemErrorException e) {
-           logger.error("Failed setting column select state.", e);
+            logger.error("Failed setting column select state.", e);
         }
 
         if (selected) {
@@ -293,6 +283,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
         } else {
             setBackground(backColor);
         }
+
         repaint();
     }
 
@@ -301,11 +292,13 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      */
     public boolean isSelected() {
         DataColumn dc = null;
+
         try {
             dc = database.getDataColumn(dbColID);
         } catch (SystemErrorException e) {
             logger.error("Unable to get selected columns", e);
         }
+
         return dc.getSelected();
     }
 
@@ -322,27 +315,33 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param db The database.
      */
     public void endCascade(final Database db) {
+
         if (colChanges.colDeleted) {
+
             // Not tested yet should be handled by ColumnListener in spreadsheet
             return;
         }
 
         if (colChanges.cellDeleted.size() > 0) {
+
             for (Long cellID : colChanges.cellDeleted) {
                 datapanel.deleteCellByID(cellID);
             }
         }
+
         if (colChanges.cellInserted.size() > 0) {
+
             for (Long cellID : colChanges.cellInserted) {
                 datapanel.insertCellByID(db, cellID, cellSelList);
             }
         }
 
         if (colChanges.nameChanged) {
+
             try {
                 DataColumn dbColumn = db.getDataColumn(dbColID);
-                this.setText(dbColumn.getName()
-                             + "  (" + dbColumn.getItsMveType() + ")");
+                this.setText(dbColumn.getName() + "  ("
+                    + dbColumn.getItsMveType() + ")");
             } catch (SystemErrorException e) {
                 logger.error("Problem getting data column", e);
             }
@@ -357,9 +356,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param colID The ID assigned to the DataColumn.
      * @param cellID ID of the DataCell that is being deleted.
      */
-    public void DColCellDeletion(final Database db,
-                                 final long colID,
-                                 final long cellID) {
+    public void DColCellDeletion(final Database db, final long colID,
+        final long cellID) {
         colChanges.cellDeleted.add(cellID);
     }
 
@@ -370,9 +368,8 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param colID The ID assigned to the DataColumn.
      * @param cellID ID of the DataCell that is being inserted.
      */
-    public void DColCellInsertion(final Database db,
-                                  final long colID,
-                                  final long cellID) {
+    public void DColCellInsertion(final Database db, final long colID,
+        final long cellID) {
         colChanges.cellInserted.add(cellID);
     }
 
@@ -397,23 +394,14 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param oldSelected Old Selected value.
      * @param newSelected New Selected value.
      */
-    public void DColConfigChanged(final Database db,
-                                  final long colID,
-                                  final boolean nameChanged,
-                                  final String oldName,
-                                  final String newName,
-                                  final boolean hiddenChanged,
-                                  final boolean oldHidden,
-                                  final boolean newHidden,
-                                  final boolean readOnlyChanged,
-                                  final boolean oldReadOnly,
-                                  final boolean newReadOnly,
-                                  final boolean varLenChanged,
-                                  final boolean oldVarLen,
-                                  final boolean newVarLen,
-                                  final boolean selectedChanged,
-                                  final boolean oldSelected,
-                                  final boolean newSelected) {
+    public void DColConfigChanged(final Database db, final long colID,
+        final boolean nameChanged, final String oldName, final String newName,
+        final boolean hiddenChanged, final boolean oldHidden,
+        final boolean newHidden, final boolean readOnlyChanged,
+        final boolean oldReadOnly, final boolean newReadOnly,
+        final boolean varLenChanged, final boolean oldVarLen,
+        final boolean newVarLen, final boolean selectedChanged,
+        final boolean oldSelected, final boolean newSelected) {
         colChanges.nameChanged = nameChanged;
     }
 
@@ -422,8 +410,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param db The database.
      * @param colID The ID assigned to the DataColumn.
      */
-    public void DColDeleted(final Database db,
-                            final long colID) {
+    public void DColDeleted(final Database db, final long colID) {
         colChanges.colDeleted = true;
     }
 
@@ -440,6 +427,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param bottom Number of pixels to set.
      */
     public void setBottomBound(final int bottom) {
+
         if (bottom < 0) {
             datapanel.setPreferredSize(null);
         } else {
@@ -460,6 +448,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * will request focus for the datapanel of the column.
      */
     public void requestFocus() {
+
         if (datapanel.getCells().size() > 0) {
             datapanel.getCells().firstElement().requestFocusInWindow();
         } else {
@@ -473,6 +462,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param me The mouse event that triggered this action.
      */
     public void mouseEntered(final MouseEvent me) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
     }
 
     /**
@@ -481,7 +471,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param me The mouse event that triggered this action.
      */
     public void mouseExited(final MouseEvent me) {
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        setCursor(Cursor.getDefaultCursor());
     }
 
     /**
@@ -506,46 +496,54 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param me The mouse event that triggered this action.
      */
     public void mouseClicked(final MouseEvent me) {
+
         if (me.getClickCount() == 2) {
             showChangeVarNameDialog();
         } else {
             int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
-            boolean groupSel = ((me.getModifiers() & ActionEvent.SHIFT_MASK) != 0
-                           || (me.getModifiers() & keyMask) != 0);
+            boolean groupSel = (((me.getModifiers() & ActionEvent.SHIFT_MASK)
+                        != 0) || ((me.getModifiers() & keyMask) != 0));
             boolean curSelected = this.isSelected();
 
             if (!groupSel) {
                 this.columnSelList.clearColumnSelection();
             }
+
             this.setSelected(!curSelected);
             this.columnSelList.addColumnToSelection(this);
         }
+
         me.consume();
     }
 
-     /**
-     * Returns the header name of this SpreadsheetColumn.
-     * @param col SpreadsheetColumn
-     * @return header name of col
-     */
+    /**
+    * Returns the header name of this SpreadsheetColumn.
+    * @param col SpreadsheetColumn
+    * @return header name of col
+    */
     public String getColumnName() {
+
         try {
             return database.getDataColumn(dbColID).getName();
         } catch (SystemErrorException ex) {
-            java.util.logging.Logger.getLogger(SpreadsheetColumn.class.getName()).log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SpreadsheetColumn.class
+                .getName()).log(Level.SEVERE, null, ex);
         }
+
         return null;
     }
 
-    public void setColumnName(String newName) throws LogicErrorException, SystemErrorException {
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                      .getContext()
-                                      .getResourceMap(Column.class);
+    public void setColumnName(final String newName) throws LogicErrorException,
+        SystemErrorException {
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+            .getResourceMap(Column.class);
 
         try {
             DataColumn dc = database.getDataColumn(dbColID);
-            if ((!dc.getName().equals(newName) && (DataColumn.isValidColumnName(database, newName)))) {
+
+            if ((!dc.getName().equals(newName)
+                        && (DataColumn.isValidColumnName(database, newName)))) {
                 dc.setName(newName);
                 database.replaceColumn(dc);
             }
@@ -566,27 +564,34 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
      * @param me The mouse event that triggered this action
      */
     public void mouseDragged(final MouseEvent me) {
+
         // BugzID:660 - Implements columns dragging.
         if (draggable) {
             int newWidth = me.getX();
+
             if (newWidth >= this.getMinimumSize().width) {
                 this.setWidth(newWidth);
             }
         }
+
         if (moveable) {
-             setCursor(new Cursor(Cursor.MOVE_CURSOR));
-             final int columnWidth = this.getSize().width;
-             if (me.getX() > columnWidth) {
-                 int positions = Math.round((me.getX() * 1F) / (columnWidth * 1F));
-                 SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA
-                         .getApplication().getMainView().getComponent();
-                 sp.moveColumnRight(this.getColID(), positions);
-             } else if (me.getX() < 0) {
-                 int positions = Math.round((me.getX() * -1F) / (columnWidth * 1F));
-                 SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA
-                         .getApplication().getMainView().getComponent();
-                 sp.moveColumnLeft(this.getColID(), positions);
-             }
+            setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+
+            final int columnWidth = this.getSize().width;
+
+            if (me.getX() > columnWidth) {
+                int positions = Math.round((me.getX() * 1F)
+                        / (columnWidth * 1F));
+                SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA
+                    .getApplication().getMainView().getComponent();
+                sp.moveColumnRight(this.getColID(), positions);
+            } else if (me.getX() < 0) {
+                int positions = Math.round((me.getX() * -1F)
+                        / (columnWidth * 1F));
+                SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA
+                    .getApplication().getMainView().getComponent();
+                sp.moveColumnLeft(this.getColID(), positions);
+            }
         }
     }
 
@@ -602,21 +607,58 @@ implements ExternalDataColumnListener, ExternalCascadeListener,
         final int rangeEnd = Math.round(3F * componentWidth / 4F);
 
         // BugzID:660 - Implements columns dragging.
-        if (componentWidth - xCoord < 4) {
-            setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
+        if ((componentWidth - xCoord) < 4) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
             draggable = true;
-        // BugzID:128 - Implements moveable columns
+
+            // BugzID:128 - Implements moveable columns
         } else if ((rangeStart <= xCoord) && (xCoord <= rangeEnd)) {
             moveable = true;
         } else {
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             draggable = false;
             moveable = false;
         }
     }
-    
-    @Action
-    public void addNewCellToVar() {
+
+    @Action public void addNewCellToVar() {
 //        new NewVariableC();
+    }
+
+    /**
+    * Private class for recording the changes reported by the listener
+    * callbacks on this column.
+    */
+    private final class ColumnChanges {
+
+        /** nameChanged. */
+        private boolean nameChanged;
+
+        /** List of cell IDs of newly inserted cells. */
+        private Vector<Long> cellInserted;
+
+        /** List of cell IDs of deleted cells. */
+        private Vector<Long> cellDeleted;
+
+        /** colDeleted. */
+        private boolean colDeleted;
+
+        /**
+         * ColumnChanges constructor.
+         */
+        private ColumnChanges() {
+            cellInserted = new Vector<Long>();
+            cellDeleted = new Vector<Long>();
+            reset();
+        }
+
+        /**
+         * Reset the ColumnChanges flags and lists.
+         */
+        private void reset() {
+            nameChanged = false;
+            cellInserted.clear();
+            cellDeleted.clear();
+            colDeleted = false;
+        }
     }
 }
