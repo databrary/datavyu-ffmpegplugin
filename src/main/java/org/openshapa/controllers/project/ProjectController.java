@@ -2,6 +2,7 @@ package org.openshapa.controllers.project;
 
 import java.io.File;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,7 +10,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
@@ -26,7 +32,7 @@ import org.openshapa.models.project.ViewerSetting;
 
 import org.openshapa.plugins.PluginManager;
 
-import org.openshapa.util.FileUtils;
+//import org.openshapa.util.FileUtils;
 
 import org.openshapa.views.DataControllerV;
 
@@ -296,35 +302,23 @@ public final class ProjectController {
         for (ViewerSetting setting : project.getViewerSettings()) {
             showController = true;
 
-            // Try searching the absolute path stored in the file.
             File file = new File(setting.getFilePath());
-            String projDir = project.getProjectDirectory();
 
-            // If that doesn't work - try generating & using a relative path.
+            File currentDir = new File(project.getProjectDirectory());
+            String dataFileName = FilenameUtils.getName(setting.getFilePath());
+
+
             if (!file.exists()) {
 
-                // BugzID:1804 - If absolute path does not find the file, look
-                // in the relative path (as long as we are dealing with a newer
-                // project file type).
-                if (project.getOriginalProjectDirectory() != null) {
-                    file = FileUtils.getRelativeFile(project, file);
+                // Look for a file that _might_ be the file we are looking for.
+                File searchedFile = huntForFile(currentDir, dataFileName);
+
+                if (searchedFile != null) {
+                    file = searchedFile;
                 }
             }
 
-            // If that doesn't work look in the project directory, plus the
-            // last folder in the file's absolute path.
-            if (!file.exists()) {
-                file = new File(projDir + File.separator
-                        + file.getParentFile().getName(), file.getName());
-            }
-
-            // 2. The project directory.
-            if (!file.exists()) {
-                file = new File(projDir,
-                        FilenameUtils.getName(setting.getFilePath()));
-            }
-
-            // Give up - couldn't find it.
+            // The file is actually missing.
             if (!file.exists()) {
                 missingFilesList.add(setting.getFilePath());
 
@@ -393,11 +387,19 @@ public final class ProjectController {
                 // in the relative path (as long as we are dealing with a newer
                 // project file type).
                 if (project.getOriginalProjectDirectory() != null) {
-                    file = FileUtils.getRelativeFile(project, file);
+
+                    File searchedFile = huntForFile(new File(
+                                project.getProjectDirectory()), file.getName());
+
+                    if (searchedFile != null) {
+                        file = searchedFile;
+                    }
                 }
             }
 
             if (!file.exists()) {
+                missingFilesList.add(setting.getFilePath());
+
                 continue;
             }
 
@@ -516,6 +518,83 @@ public final class ProjectController {
      */
     public Project getProject() {
         return project;
+    }
+
+    private File huntForFile(final File workingDir, final String fileName) {
+        // If we can't find the file, we will start looking for the file
+        // using the easiest solution first and bump up the complexity as
+        // we go along.
+
+
+        // Solution 1: It is in the same directory as the project file.
+        File file = new File(workingDir, fileName);
+
+        if (file.exists()) {
+            return file;
+        }
+
+        IOFileFilter fileNameFilter = FileFilterUtils.nameFileFilter(fileName);
+
+        // Solution 2: It is in a sub-directory of the project file.
+        // We will just limit ourselves to one directory below the
+        // current directory.
+        for (File sub : workingDir.listFiles()) {
+
+            if (sub.isDirectory()) {
+                Iterator<File> subFiles = FileUtils.iterateFiles(sub,
+                        fileNameFilter, null);
+
+                if (subFiles.hasNext()) {
+                    file = subFiles.next();
+                }
+            }
+        }
+
+        if (file.exists()) {
+            return file;
+        }
+
+
+        // Solution 3: It is in the parent of the current directory.
+        {
+            Iterator<File> subFiles = FileUtils.iterateFiles(
+                    workingDir.getParentFile(), fileNameFilter, null);
+
+            if (subFiles.hasNext()) {
+                file = subFiles.next();
+            }
+
+            if (file.exists()) {
+                return file;
+            }
+        }
+
+
+        // Solution 4: It is in an adjacent directory.
+        {
+            File parent = workingDir.getParentFile();
+
+            if (parent != null) {
+
+                for (File sub : parent.listFiles()) {
+
+                    if (sub.isDirectory()) {
+                        Iterator<File> subFiles = FileUtils.iterateFiles(sub,
+                                fileNameFilter, null);
+
+                        if (subFiles.hasNext()) {
+                            file = subFiles.next();
+                        }
+                    }
+                }
+            }
+
+            if (file.exists()) {
+                return file;
+            }
+        }
+
+        return null;
     }
 
 }
