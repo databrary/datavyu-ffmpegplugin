@@ -525,7 +525,6 @@ public final class ProjectController {
         // using the easiest solution first and bump up the complexity as
         // we go along.
 
-
         // Solution 1: It is in the same directory as the project file.
         File file = new File(workingDir, fileName);
 
@@ -536,22 +535,17 @@ public final class ProjectController {
         IOFileFilter fileNameFilter = FileFilterUtils.nameFileFilter(fileName);
 
         // Solution 2: It is in a sub-directory of the project file.
-        // We will just limit ourselves to one directory below the
-        // current directory.
-        for (File sub : workingDir.listFiles()) {
+        {
+            Iterator<File> subFiles = FileUtils.iterateFiles(workingDir,
+                    fileNameFilter, TrueFileFilter.TRUE);
 
-            if (sub.isDirectory()) {
-                Iterator<File> subFiles = FileUtils.iterateFiles(sub,
-                        fileNameFilter, null);
-
-                if (subFiles.hasNext()) {
-                    file = subFiles.next();
-                }
+            if (subFiles.hasNext()) {
+                file = subFiles.next();
             }
-        }
 
-        if (file.exists()) {
-            return file;
+            if (file.exists()) {
+                return file;
+            }
         }
 
 
@@ -575,17 +569,11 @@ public final class ProjectController {
             File parent = workingDir.getParentFile();
 
             if (parent != null) {
+                Iterator<File> subFiles = FileUtils.iterateFiles(parent,
+                        fileNameFilter, TrueFileFilter.TRUE);
 
-                for (File sub : parent.listFiles()) {
-
-                    if (sub.isDirectory()) {
-                        Iterator<File> subFiles = FileUtils.iterateFiles(sub,
-                                fileNameFilter, null);
-
-                        if (subFiles.hasNext()) {
-                            file = subFiles.next();
-                        }
-                    }
+                if (subFiles.hasNext()) {
+                    file = subFiles.next();
                 }
             }
 
