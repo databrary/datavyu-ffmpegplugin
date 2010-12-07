@@ -9,6 +9,8 @@ import java.awt.event.KeyEvent;
 
 import java.io.File;
 
+import java.nio.charset.Charset;
+
 import java.util.EventObject;
 import java.util.Stack;
 
@@ -21,6 +23,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import org.eclipse.swt.custom.VerifyKeyListener;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.LocalStorage;
@@ -180,24 +184,37 @@ public final class OpenSHAPA extends SingleFrameApplication
         // If we are typing a key that is a shortcut - we consume it straight
         // away.
         if ((evt.getID() == KeyEvent.KEY_TYPED) && (modifiers == keyMask)) {
+            System.out.println("shortcut!");
 
-            switch (evt.getKeyChar()) {
+            // Broken switch statement.
+            // getKeyChar returns UNICODE characters. The problem becomes
+            // finding which Unicode standard is being used, because the tables
+            // aren't matching.
+            // switch (evt.getKeyChar()) {
+            //
+            // case '+':
+            // case '-':
+            // case 'o':
+            // case '\u0053':
+            // case '\u0073':
+            // case 19: // Save, 's'
+            // System.out.println("Save");
+            //
+            // case 'n':
+            // case 'l':
+            // case 'r':
+            // evt.consume();
+            //
+            // return true;
+            //
+            // default:
+            // break;
+            // }
 
-            case '+':
-            case '-':
-            case 'o':
-            case 's':
-            case 'n':
-            case 'l':
-            case 'r':
-                evt.consume();
-
-                return true;
-
-            default:
-                break;
-            }
+            System.out.println((int) evt.getKeyChar());
+            System.out.println(String.valueOf(evt.getKeyChar()));
         }
+
 
         if ((evt.getID() == KeyEvent.KEY_PRESSED)
                 && (evt.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD)) {
