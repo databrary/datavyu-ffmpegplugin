@@ -43,6 +43,7 @@ import org.openshapa.plugins.PluginManager;
 import org.openshapa.util.MacHandler;
 import org.openshapa.util.NativeLoader;
 import org.openshapa.util.WindowsFileAssociations;
+import org.openshapa.util.WindowsKeyChar;
 
 import org.openshapa.views.AboutV;
 import org.openshapa.views.DataControllerV;
@@ -184,35 +185,109 @@ public final class OpenSHAPA extends SingleFrameApplication
         // If we are typing a key that is a shortcut - we consume it straight
         // away.
         if ((evt.getID() == KeyEvent.KEY_TYPED) && (modifiers == keyMask)) {
-            System.out.println("shortcut!");
 
-            // Broken switch statement.
-            // getKeyChar returns UNICODE characters. The problem becomes
-            // finding which Unicode standard is being used, because the tables
-            // aren't matching.
-            // switch (evt.getKeyChar()) {
-            //
-            // case '+':
-            // case '-':
-            // case 'o':
-            // case '\u0053':
-            // case '\u0073':
-            // case 19: // Save, 's'
-            // System.out.println("Save");
-            //
-            // case 'n':
-            // case 'l':
-            // case 'r':
-            // evt.consume();
-            //
-            // return true;
-            //
-            // default:
-            // break;
-            // }
+            switch (getPlatform()) {
 
-            System.out.println((int) evt.getKeyChar());
-            System.out.println(String.valueOf(evt.getKeyChar()));
+            // Code table used by Windows is different.
+            case WINDOWS: {
+
+                // System.out.println((int) evt.getKeyChar());
+
+                switch (WindowsKeyChar.remap(evt.getKeyChar())) {
+
+                case '+':
+                case '-':
+                    // Plus and minus do not respond. Uncomment
+                    // the printout above to see what I mean.
+
+                case 'O':
+                    getView().open();
+                    evt.consume();
+
+                    return true;
+
+                case 'S':
+                    getView().save();
+                    evt.consume();
+
+                    return true;
+
+                case 'N':
+                    getView().showNewProjectForm();
+                    evt.consume();
+
+                    return true;
+
+                case 'L':
+                    getView().newCellLeft();
+                    evt.consume();
+
+                    return true;
+
+                case 'R':
+                    getView().newCellRight();
+                    evt.consume();
+
+                    return true;
+
+                default:
+                    break;
+                }
+            }
+
+            break;
+
+            default: {
+
+                switch (evt.getKeyChar()) {
+
+                case '=': // Can't access + without shift.
+                    getView().zoomIn();
+                    evt.consume();
+
+                    return true;
+
+                case '-':
+                    getView().zoomOut();
+                    evt.consume();
+
+                    return true;
+
+                case 'o':
+                    getView().open();
+                    evt.consume();
+
+                    return true;
+
+                case 's':
+                    getView().save();
+                    evt.consume();
+
+                    return true;
+
+                case 'n':
+                    getView().showNewProjectForm();
+                    evt.consume();
+
+                    return true;
+
+                case 'l':
+                    getView().newCellLeft();
+                    evt.consume();
+
+                    return true;
+
+                case 'r':
+                    getView().newCellRight();
+                    evt.consume();
+
+                    return true;
+
+                default:
+                    break;
+                }
+            }
+            }
         }
 
 

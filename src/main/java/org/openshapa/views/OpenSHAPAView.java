@@ -1381,8 +1381,12 @@ public final class OpenSHAPAView extends FrameView
      */
     private void zoomInMenuItemActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_zoomInMenuItemActionPerformed
-        changeFontSize(ZOOM_INTERVAL);
+        zoomIn();
     } // GEN-LAST:event_zoomInMenuItemActionPerformed
+
+    public void zoomIn() {
+        changeFontSize(ZOOM_INTERVAL);
+    }
 
     /**
      * Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL points.
@@ -1391,8 +1395,12 @@ public final class OpenSHAPAView extends FrameView
      */
     private void zoomOutMenuItemActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_zoomOutMenuItemActionPerformed
-        changeFontSize(-ZOOM_INTERVAL);
+        zoomOut();
     } // GEN-LAST:event_zoomOutMenuItemActionPerformed
+
+    public void zoomOut() {
+        changeFontSize(-ZOOM_INTERVAL);
+    }
 
     /**
      * Function to reset the zoom level to the default size.
@@ -1500,8 +1508,12 @@ public final class OpenSHAPAView extends FrameView
      */
     private void newCellLeftMenuItemActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellLeftMenuItemActionPerformed
-        new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.LEFT);
+        newCellLeft();
     } // GEN-LAST:event_newCellLeftMenuItemActionPerformed
+
+    public void newCellLeft() {
+        new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.LEFT);
+    }
 
     /**
      * The action to invoke when the user selects new cell to the right from the
@@ -1512,8 +1524,12 @@ public final class OpenSHAPAView extends FrameView
      */
     private void newCellRightMenuItemActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellRightMenuItemActionPerformed
-        new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.RIGHT);
+        newCellRight();
     } // GEN-LAST:event_newCellRightMenuItemActionPerformed
+
+    public void newCellRight() {
+        new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.RIGHT);
+    }
 
     /**
      * Changes the font size by adding sizeDif to the current size. Then it
