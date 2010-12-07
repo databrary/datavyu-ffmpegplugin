@@ -13,8 +13,51 @@ import org.openshapa.models.project.Project;
 public final class FileUtils {
 
     public static String getFilenameNoExtension(final String filename) {
-
         return FilenameUtils.removeExtension(filename);
+    }
+
+    /**
+     * Generates the longest common directory for the two given absolute paths.
+     *
+     * @param path1
+     * @param path2
+     * @return String representing the longest common directory for path1 and
+     *         path2. null if no such common directory (i.e. if the files were
+     *         on different drives)
+     */
+    public static String longestCommonDir(final String path1,
+        final String path2) {
+
+        if ((path1 == null) || (path2 == null)) {
+            throw new NullPointerException();
+        }
+
+        String pathA = FilenameUtils.normalize(path1, true);
+        String pathB = FilenameUtils.normalize(path2, true);
+
+        final char sep = '/';
+
+        int iA = pathA.indexOf(sep);
+        int iB = pathB.indexOf(sep);
+
+        if ((iA == -1) || (iB == -1)) {
+            return null;
+        }
+
+        String lcd = null;
+
+        while (pathA.substring(0, iA).equals(pathB.substring(0, iB))) {
+            lcd = pathA.substring(0, iA + 1);
+
+            iA = pathA.indexOf(sep, iA + 1);
+            iB = pathB.indexOf(sep, iB + 1);
+
+            if ((iA == -1) || (iB == -1)) {
+                break;
+            }
+        }
+
+        return lcd;
     }
 
     /**
