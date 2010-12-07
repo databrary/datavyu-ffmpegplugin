@@ -96,4 +96,18 @@ public class FileUtilsTest {
         assertEquals(1, FileUtils.levelDifference(base, target));
     }
 
+    @Test public void testLevelDifference7() {
+        String base = "/a/b/";
+        String target = "/";
+
+        assertEquals(-1, FileUtils.levelDifference(base, target));
+    }
+
+    @Test public void testLevelDifference8() {
+        String base = "C:/a/b/";
+        String target = "C:/";
+
+        assertEquals(-1, FileUtils.levelDifference(base, target));
+    }
+
 }
