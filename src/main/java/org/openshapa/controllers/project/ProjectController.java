@@ -399,6 +399,18 @@ public final class ProjectController {
 
             if (!file.exists()) {
 
+                // Look for a file by generating OS-independent paths.
+                File searchedFile = genRelative(
+                        project.getOriginalProjectDirectory(),
+                        setting.getFilePath(), project.getProjectDirectory());
+
+                if (searchedFile != null) {
+                    file = searchedFile;
+                }
+            }
+
+            if (!file.exists()) {
+
                 // BugzID:1804 - If absolute path does not find the file, look
                 // in the relative path (as long as we are dealing with a newer
                 // project file type).
