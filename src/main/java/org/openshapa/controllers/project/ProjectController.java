@@ -46,8 +46,6 @@ import org.openshapa.models.db.legacy.MacshapaDatabase;
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Plugin;
 
-import org.testng.internal.ObjectFactoryImpl;
-
 
 /**
  * This class is responsible for managing a project.
