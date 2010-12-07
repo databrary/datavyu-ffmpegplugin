@@ -33,6 +33,8 @@ import org.openshapa.plugins.PluginManager;
 
 //import org.openshapa.util.FileUtils;
 
+import org.openshapa.util.OFileUtils;
+
 import org.openshapa.views.DataControllerV;
 
 import com.google.common.collect.Lists;
@@ -43,6 +45,8 @@ import org.openshapa.models.db.legacy.MacshapaDatabase;
 
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Plugin;
+
+import org.testng.internal.ObjectFactoryImpl;
 
 
 /**
@@ -306,10 +310,23 @@ public final class ProjectController {
             File currentDir = new File(project.getProjectDirectory());
             String dataFileName = FilenameUtils.getName(setting.getFilePath());
 
+            if (!file.exists()) {
+
+                // Look for a file by generating OS-independent paths.
+                File searchedFile = genRelative(
+                        project.getOriginalProjectDirectory(),
+                        setting.getFilePath(), project.getProjectDirectory());
+
+                if (searchedFile != null) {
+                    file = searchedFile;
+                }
+            }
 
             if (!file.exists()) {
 
                 // Look for a file that _might_ be the file we are looking for.
+                // This is a brute force search. Ideally we would never want to
+                // do this.
                 File searchedFile = huntForFile(currentDir, dataFileName);
 
                 if (searchedFile != null) {
@@ -519,9 +536,53 @@ public final class ProjectController {
         return project;
     }
 
-    // private void genRelative(final File ) {
-    //
-    // }
+    private File genRelative(final String originalDir,
+        final String originalFilePath, final String currentDir) {
+
+        // 1. Find the longest common directory for the original dir and
+        // original file path.
+        String baseLCD = OFileUtils.longestCommonDir(originalDir,
+                originalFilePath);
+
+        if (baseLCD == null) {
+            return null;
+        }
+
+        // 2. Use the longest common directory to find the difference in
+        // directory levels with the original directory. The LCD is the original
+        // base dir.
+        int diff = OFileUtils.levelDifference(baseLCD, originalDir);
+
+        if (diff == -1) {
+            return null;
+        }
+
+        // 3. Use the difference in levels to generate a new base directory
+        // using the current directory.
+        File newBase = new File(currentDir);
+
+        while (diff > 0) {
+            newBase = newBase.getParentFile();
+
+            if (newBase == null) {
+                return null;
+            }
+
+            diff--;
+        }
+
+        // 4. Find the path relative to the original base directory for the
+        // original file path.
+        String rel = OFileUtils.relativeToBase(baseLCD, originalFilePath);
+
+        if (rel == null) {
+            return null;
+        }
+
+        // 5. Combine the relative path with the current base dir and return
+        // that as the file to try.
+        return new File(newBase, rel);
+    }
 
     private File huntForFile(final File workingDir, final String fileName) {
         // If we can't find the file, we will start looking for the file
