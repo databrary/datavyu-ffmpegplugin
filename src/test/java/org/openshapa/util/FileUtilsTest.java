@@ -110,4 +110,39 @@ public class FileUtilsTest {
         assertEquals(-1, FileUtils.levelDifference(base, target));
     }
 
+    @Test public void relativeToBase1() {
+        String base = "C:\\Windows\\Boot\\";
+        String target = "C:\\Windows\\Boot\\Fonts\\foo.ttf";
+
+        assertEquals("Fonts/foo.ttf", FileUtils.relativeToBase(base, target));
+    }
+
+    @Test public void relativeToBase2() {
+        String base = "C:\\Windows\\Boot\\";
+        String target = "C:\\Windows\\Boot\\boot.rom";
+
+        assertEquals("boot.rom", FileUtils.relativeToBase(base, target));
+    }
+
+    @Test public void relativeToBase3() {
+        String base = "/a/b/";
+        String target = "/a/b/boot.rom";
+
+        assertEquals("boot.rom", FileUtils.relativeToBase(base, target));
+    }
+
+    @Test public void relativeToBase4() {
+        String base = "/a/b/";
+        String target = "/a/b/c/d/e.file";
+
+        assertEquals("c/d/e.file", FileUtils.relativeToBase(base, target));
+    }
+
+    @Test public void relativeToBase5() {
+        String base = "C:\\Windows\\Boot\\";
+        String target = "/a/b/c/d/e.file";
+
+        assertNull(FileUtils.relativeToBase(base, target));
+    }
+
 }

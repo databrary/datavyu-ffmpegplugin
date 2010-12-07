@@ -67,6 +67,7 @@ public final class FileUtils {
      * basePath and path must be valid paths of the same filesystem and mount
      * point.
      * basePath and path must be absolute paths.
+     * Directories must have '/' at the end of the path.
      *
      * @param basePath
      * @param path
@@ -97,6 +98,33 @@ public final class FileUtils {
         }
 
         return diff;
+    }
+
+    /**
+     * Generate a string S such that basePath.concat(S).equals(filePath)
+     * basePath must be a predecessor of file path.
+     * basePath must be a directory.
+     * Directories must have '/' at the end of the path.
+     *
+     * @param basePath
+     * @param filePath
+     * @return null if filePath does not have basePath as a prefix.
+     */
+    public static String relativeToBase(final String basePath,
+        final String filePath) {
+
+        if ((basePath == null) || (filePath == null)) {
+            throw new NullPointerException();
+        }
+
+        String base = FilenameUtils.normalize(basePath, true);
+        String file = FilenameUtils.normalize(filePath, true);
+
+        if (!file.startsWith(base)) {
+            return null;
+        }
+
+        return file.substring(base.length());
     }
 
     /**
