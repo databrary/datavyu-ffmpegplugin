@@ -187,7 +187,7 @@ public final class OpenSHAPA extends SingleFrameApplication
         if ((evt.getID() == KeyEvent.KEY_TYPED) && (modifiers == keyMask)) {
 
             // VIEW also has the fun of key accelerator handling. If it is
-            // focused, let it handle the fun or everything is done this. If it
+            // focused, let it handle the fun or everything is done twice. If it
             // doesn't have focus we manually handle it in the switch below.
             if (getView().getFrame().isFocused()) {
                 evt.consume();
