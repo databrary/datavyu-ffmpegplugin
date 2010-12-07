@@ -400,6 +400,7 @@ public final class ProjectController {
             if (!file.exists()) {
 
                 // Look for a file by generating OS-independent paths.
+                // This is not guaranteed for older project file formats.
                 File searchedFile = genRelative(
                         project.getOriginalProjectDirectory(),
                         setting.getFilePath(), project.getProjectDirectory());
