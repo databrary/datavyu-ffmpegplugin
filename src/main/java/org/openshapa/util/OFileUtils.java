@@ -10,7 +10,7 @@ import org.openshapa.models.project.Project;
 /**
  * Utilities for files.
  */
-public final class FileUtils {
+public final class OFileUtils {
 
     public static String getFilenameNoExtension(final String filename) {
         return FilenameUtils.removeExtension(filename);
