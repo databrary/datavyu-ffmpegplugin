@@ -31,8 +31,6 @@ import org.openshapa.models.project.ViewerSetting;
 
 import org.openshapa.plugins.PluginManager;
 
-//import org.openshapa.util.FileUtils;
-
 import org.openshapa.util.OFileUtils;
 
 import org.openshapa.views.DataControllerV;
