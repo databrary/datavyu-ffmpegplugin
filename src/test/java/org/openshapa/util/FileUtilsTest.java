@@ -53,4 +53,47 @@ public class FileUtilsTest {
 
         assertNull(FileUtils.longestCommonDir(target, base));
     }
+
+    @Test public void testLevelDifference1() {
+        String base = "C:\\Windows\\";
+        String target = "C:\\Windows\\Boot\\Fonts\\";
+
+        assertEquals(2, FileUtils.levelDifference(base, target));
+    }
+
+    @Test public void testLevelDifference2() {
+        String base = "C:\\Windows\\";
+        String target = "C:\\Windows\\";
+
+        assertEquals(0, FileUtils.levelDifference(base, target));
+    }
+
+    @Test public void testLevelDifference3() {
+        String base = "C:\\Windows\\Boot\\";
+        String target = "C:\\Windows\\Boot\\Fonts\\foo.ttf";
+
+        assertEquals(1, FileUtils.levelDifference(base, target));
+    }
+
+    @Test public void testLevelDifference4() {
+        String base = "/a/";
+        String target = "/a/b/f/";
+
+        assertEquals(2, FileUtils.levelDifference(base, target));
+    }
+
+    @Test public void testLevelDifference5() {
+        String base = "/a/";
+        String target = "/a/";
+
+        assertEquals(0, FileUtils.levelDifference(base, target));
+    }
+
+    @Test public void testLevelDifference6() {
+        String base = "/a/b/";
+        String target = "/a/b/f/foo.ttf";
+
+        assertEquals(1, FileUtils.levelDifference(base, target));
+    }
+
 }

@@ -61,6 +61,45 @@ public final class FileUtils {
     }
 
     /**
+     * Calculate the difference in directory levels between basePath and path.
+     * basePath must be a predecessor of path.
+     * basePath must be a directory.
+     * basePath and path must be valid paths of the same filesystem and mount
+     * point.
+     * basePath and path must be absolute paths.
+     *
+     * @param basePath
+     * @param path
+     * @return a positive integer >= 0 denoting the difference in directory
+     *         levels if the difference can be determined. -1 if the difference
+     *         cannot be determined.
+     */
+    public static int levelDifference(final String basePath,
+        final String path) {
+
+        if ((basePath == null) || (path == null)) {
+            throw new NullPointerException();
+        }
+
+        File base = new File(basePath);
+        File ancestor = new File(FilenameUtils.getFullPath(path));
+
+        int diff = 0;
+
+        while (!base.equals(ancestor)) {
+            ancestor = ancestor.getParentFile();
+
+            if (ancestor != null) {
+                diff++;
+            } else {
+                return -1;
+            }
+        }
+
+        return diff;
+    }
+
+    /**
      * Builds a relative filepath to check for data files that were missing
      * from their absolute path.
      * @param proj The project file, which importantly stores the original
