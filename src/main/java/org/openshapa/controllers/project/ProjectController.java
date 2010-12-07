@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.commons.io.FilenameUtils;
+
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
@@ -29,11 +31,14 @@ import org.openshapa.util.FileUtils;
 import org.openshapa.views.DataControllerV;
 
 import com.google.common.collect.Lists;
+
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.legacy.MacshapaDatabase;
+
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Plugin;
+
 
 /**
  * This class is responsible for managing a project.
@@ -145,8 +150,7 @@ public final class ProjectController {
      *
      * @param newDB The new MacshapaDatabase to use.
      */
-    @Deprecated
-    public void setDatabase(MacshapaDatabase newDB) {
+    @Deprecated public void setDatabase(final MacshapaDatabase newDB) {
         db.setDatabase(newDB);
     }
 
@@ -316,7 +320,8 @@ public final class ProjectController {
 
             // 2. The project directory.
             if (!file.exists()) {
-                file = new File(projDir, file.getName());
+                file = new File(projDir,
+                        FilenameUtils.getName(setting.getFilePath()));
             }
 
             // Give up - couldn't find it.
