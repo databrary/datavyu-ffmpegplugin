@@ -55,6 +55,7 @@ import org.openshapa.models.id.Identifier;
 import org.openshapa.plugins.CustomActions;
 import org.openshapa.plugins.ViewerStateListener;
 
+import org.openshapa.views.DataControllerV;
 import org.openshapa.views.component.TrackPainter;
 
 
@@ -85,6 +86,10 @@ public final class TrackController implements ViewerStateListener,
 
     /** Right click menu. */
     private final JPopupMenu menu;
+
+    private final JMenuItem setBookmarkMenuItem;
+
+    private final JMenuItem clearBookmarkMenuItem;
 
     /** Button for (un)locking the track. */
     private final JButton lockUnlockButton;
@@ -148,15 +153,16 @@ public final class TrackController implements ViewerStateListener,
         trackPainter.addMouseMotionListener(painterListener);
 
         menu = new JPopupMenu();
+        menu.setName("trackPopUpMenu");
 
-        JMenuItem setBookmarkMenuItem = new JMenuItem("Set bookmark");
+        setBookmarkMenuItem = new JMenuItem("Set bookmark");
         setBookmarkMenuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     TrackController.this.setBookmarkAction();
                 }
             });
 
-        JMenuItem clearBookmarkMenuItem = new JMenuItem("Clear bookmark");
+        clearBookmarkMenuItem = new JMenuItem("Clear bookmarks");
         clearBookmarkMenuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
                     TrackController.this.clearBookmarkAction();
@@ -164,8 +170,6 @@ public final class TrackController implements ViewerStateListener,
             });
         menu.add(setBookmarkMenuItem);
         menu.add(clearBookmarkMenuItem);
-
-        menu.setName("trackPopUpMenu");
 
         trackPainter.add(menu);
 
@@ -294,6 +298,32 @@ public final class TrackController implements ViewerStateListener,
         view.validate();
     }
 
+    private void updatePopupMenu() {
+
+        // 1. Remove every other popup menu item apart from the defaults.
+        menu.removeAll();
+        menu.add(setBookmarkMenuItem);
+        menu.add(clearBookmarkMenuItem);
+
+        // 2. Add a divider if there are bookmarks.
+        if (!trackModel.getBookmarks().isEmpty()) {
+            menu.addSeparator();
+        }
+
+        // 3. Add menu item for deleting individual bookmarks
+        for (final Long bookmark : trackModel.getBookmarks()) {
+            String text = DataControllerV.formatTime(bookmark);
+            JMenuItem delete = new JMenuItem("Delete bookmark " + text);
+            delete.addActionListener(new ActionListener() {
+                    @Override public void actionPerformed(final ActionEvent e) {
+                        removeBookmark(bookmark);
+                    }
+                });
+
+            menu.add(delete);
+        }
+    }
+
     /**
      * Sets the track information to use.
      *
@@ -367,16 +397,27 @@ public final class TrackController implements ViewerStateListener,
      *            bookmark position in milliseconds
      */
     public void addBookmark(final long bookmark) {
+
         if ((0 <= bookmark) && (bookmark <= trackModel.getDuration())) {
             trackModel.addBookmark(bookmark);
             trackPainter.setTrackModel(trackModel);
         }
+
+        updatePopupMenu();
     }
 
     public void addBookmarks(final List<Long> bookmarks) {
-    	trackModel.addBookmarks(bookmarks);
+        trackModel.addBookmarks(bookmarks);
+        trackPainter.setTrackModel(trackModel);
+        updatePopupMenu();
     }
-    
+
+    public void removeBookmark(final long bookmark) {
+        trackModel.removeBookmark(bookmark);
+        trackPainter.setTrackModel(trackModel);
+        updatePopupMenu();
+    }
+
     /**
      * Add a bookmark location to the track. Track offsets are taken into
      * account. This call is the same as addBookmark(position - offset).
@@ -612,24 +653,26 @@ public final class TrackController implements ViewerStateListener,
      * Deselects the track if it is selected.
      */
     private void deselectTrack() {
-    	if (trackModel.isSelected()) {
-    		trackModel.setSelected(false);
+
+        if (trackModel.isSelected()) {
+            trackModel.setSelected(false);
             trackPainter.setTrackModel(trackModel);
             fireCarriageSelectionChangeEvent(false);
-    	}
+        }
     }
-    
+
     /**
      * Selects the track if it isn't already selected.
      */
     private void selectTrack() {
-    	if (!trackModel.isSelected()) {
-    		trackModel.setSelected(true);
+
+        if (!trackModel.isSelected()) {
+            trackModel.setSelected(true);
             trackPainter.setTrackModel(trackModel);
             fireCarriageSelectionChangeEvent(false);
-    	}
+        }
     }
-    
+
     /**
      * Handles the event for locking and unlocking the track's movement.
      *
@@ -906,6 +949,7 @@ public final class TrackController implements ViewerStateListener,
     }
 
     @Override public void propertyChange(final PropertyChangeEvent evt) {
+
         if (evt.getSource() == mixerModel.getViewportModel()) {
             view.repaint();
         }
@@ -925,16 +969,19 @@ public final class TrackController implements ViewerStateListener,
     }
 
     /**
-     * Calculates the time threshold below which data tracks will snap into place. 
-     *   
+     * Calculates the time threshold below which data tracks will snap into place.
+     *
      * @param viewport current viewport
      * @return snapping threshold in time units (milliseconds);
      */
-    public static long calculateSnappingThreshold(final ViewportState viewport) {
+    public static long calculateSnappingThreshold(
+        final ViewportState viewport) {
         final long MINIMUM_THRESHOLD_MILLISECONDS = 10;
-        return Math.max((long) Math.ceil(0.01F * viewport.getViewDuration()), MINIMUM_THRESHOLD_MILLISECONDS);
+
+        return Math.max((long) Math.ceil(0.01F * viewport.getViewDuration()),
+                MINIMUM_THRESHOLD_MILLISECONDS);
     }
-    
+
     /**
      * Inner listener used to handle mouse events.
      */
@@ -945,10 +992,10 @@ public final class TrackController implements ViewerStateListener,
 
         /** Is the mouse in the carriage. */
         private boolean inCarriage;
-        
+
         /** Whether the track was selected when the mouse was first pressed. */
         private boolean wasTrackSelected;
-        
+
         /** Initial x-coord position. */
         private int xInit;
 
@@ -956,31 +1003,37 @@ public final class TrackController implements ViewerStateListener,
         private TrackState initialState;
 
         /** Mouse cursor when hovering over a track that can be moved. */
-        private final Cursor moveableTrackHoverCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
-        
+        private final Cursor moveableTrackHoverCursor = Cursor
+            .getPredefinedCursor(Cursor.HAND_CURSOR);
+
         /** Default mouse cursor. */
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
 
         private ViewportState viewport;
 
         @Override public void mouseEntered(final MouseEvent e) {
-        	updateCursor(e);
+            updateCursor(e);
         }
+
         @Override public void mouseClicked(final MouseEvent e) {
-            if (trackPainter.getCarriagePolygon().contains(e.getPoint()) && wasTrackSelected) {
+
+            if (trackPainter.getCarriagePolygon().contains(e.getPoint())
+                    && wasTrackSelected) {
                 deselectTrack();
             }
         }
 
         @Override public void mouseMoved(final MouseEvent e) {
-        	updateCursor(e);
+            updateCursor(e);
         }
-        
+
         private void updateCursor(final MouseEvent e) {
-        	final boolean isHovering = trackPainter.getCarriagePolygon().contains(e.getPoint());
-        	trackPainter.setCursor(!trackModel.isLocked() && isHovering ? moveableTrackHoverCursor : defaultCursor);
+            final boolean isHovering = trackPainter.getCarriagePolygon()
+                .contains(e.getPoint());
+            trackPainter.setCursor((!trackModel.isLocked() && isHovering)
+                    ? moveableTrackHoverCursor : defaultCursor);
         }
-        
+
         @Override public void mousePressed(final MouseEvent e) {
             viewport = mixerModel.getViewportModel().getViewport();
             wasTrackSelected = trackModel.isSelected();
@@ -1000,31 +1053,36 @@ public final class TrackController implements ViewerStateListener,
         }
 
         @Override public void mouseDragged(final MouseEvent e) {
+
             if (trackModel.isLocked()) {
                 return;
             }
 
             handleOffsetChanges(e);
         }
-        
+
         private void handleOffsetChanges(final MouseEvent e) {
             final boolean hasModifiers = e.isAltDown() || e.isAltGraphDown()
-            	|| e.isControlDown() || e.isMetaDown() || e.isShiftDown();
+                || e.isControlDown() || e.isMetaDown() || e.isShiftDown();
 
-	        if (inCarriage) {
-	            final int xNet = e.getX() - xInit;
-	            final double newOffset = viewport.computeTimeFromXOffset(xNet) + offsetInit;
-	            final long temporalPosition = viewport.computeTimeFromXOffset(e.getX()) + viewport.getViewStart();
-	
-	            if (isMoveable) {
-	                fireCarriageOffsetChangeEvent((long) newOffset, temporalPosition, hasModifiers);
-	            } else {
-	            	final long threshold = calculateSnappingThreshold(viewport);
-	                if (Math.abs(newOffset - offsetInit) >= threshold) {
-	                    isMoveable = true;
-	                }
-	            }
-	        }
+            if (inCarriage) {
+                final int xNet = e.getX() - xInit;
+                final double newOffset = viewport.computeTimeFromXOffset(xNet)
+                    + offsetInit;
+                final long temporalPosition = viewport.computeTimeFromXOffset(
+                        e.getX()) + viewport.getViewStart();
+
+                if (isMoveable) {
+                    fireCarriageOffsetChangeEvent((long) newOffset,
+                        temporalPosition, hasModifiers);
+                } else {
+                    final long threshold = calculateSnappingThreshold(viewport);
+
+                    if (Math.abs(newOffset - offsetInit) >= threshold) {
+                        isMoveable = true;
+                    }
+                }
+            }
         }
 
         @Override public void mouseReleased(final MouseEvent e) {
