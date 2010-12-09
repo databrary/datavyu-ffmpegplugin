@@ -84,14 +84,16 @@ public enum RecentFiles {
 
     private static void remember(final List<File> history, final File file) {
 
-        if (!history.contains(file)) {
-
-            if (history.size() == HISTORY_LIMIT) {
-                history.remove(HISTORY_LIMIT - 1);
-            }
-
-            history.add(0, file);
+        if (history.contains(file)) {
+            history.remove(file);
         }
+
+        if (history.size() == HISTORY_LIMIT) {
+            history.remove(HISTORY_LIMIT - 1);
+        }
+
+        history.add(0, file);
+
     }
 
     /**
