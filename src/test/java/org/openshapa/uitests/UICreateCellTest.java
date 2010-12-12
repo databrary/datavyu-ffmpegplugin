@@ -2,6 +2,7 @@ package org.openshapa.uitests;
 
 import org.fest.swing.fixture.SpreadsheetColumnFixture;
 import org.fest.swing.util.Platform;
+
 import org.openshapa.util.UIUtils;
 
 import org.testng.Assert;
@@ -18,7 +19,7 @@ public final class UICreateCellTest extends OpenSHAPATestClass {
      * Test creating new cells with the new cell button.
      */
     @Test public void testCreateNewCellWithButton() {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        printTestName();
 
         //Create column of each type
         for (String var : UIUtils.VAR_TYPES) {
@@ -27,7 +28,7 @@ public final class UICreateCellTest extends OpenSHAPATestClass {
 
         spreadsheet = mainFrameFixture.getSpreadsheet();
         Assert.assertEquals(spreadsheet.allColumns().size(),
-                UIUtils.VAR_TYPES.length);
+            UIUtils.VAR_TYPES.length);
 
         //Create cell for each column
         for (SpreadsheetColumnFixture col : spreadsheet.allColumns()) {
@@ -40,7 +41,7 @@ public final class UICreateCellTest extends OpenSHAPATestClass {
      * Test creating cells to the left and right.
      */
     @Test public void testCreateCellLeftRight() {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        printTestName();
 
         // Left column
         mainFrameFixture.createNewVariable("L", "TEXT");
@@ -121,7 +122,7 @@ public final class UICreateCellTest extends OpenSHAPATestClass {
      * Test for bug 698.
      */
     @Test public void testBug698() {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        printTestName();
 
         // Left column
         mainFrameFixture.createNewVariable("L", "TEXT");

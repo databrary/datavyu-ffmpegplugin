@@ -20,6 +20,8 @@ import org.openshapa.OpenSHAPA;
 
 import org.openshapa.util.ConfigProperties;
 
+import org.openshapa.views.DataControllerV;
+
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
@@ -31,6 +33,7 @@ import org.testng.annotations.BeforeSuite;
  * class.
  */
 @GUITest public class OpenSHAPATestClass {
+
     static {
 
         try {
@@ -126,6 +129,9 @@ import org.testng.annotations.BeforeSuite;
         // Set common variables
         // Get Spreadsheet
         spreadsheet = mainFrameFixture.getSpreadsheet();
+
+        // Close the data controller
+        mainFrameFixture.dialog(DataControllerV.class.getSimpleName()).close();
     }
 
     /** Releases application after all tests in suite are finished. */
@@ -140,5 +146,10 @@ import org.testng.annotations.BeforeSuite;
         if (mainFrameFixture == null) {
             mainFrameFixture = OpenSHAPAInstance.getFixture();
         }
+    }
+
+    public void printTestName() {
+        System.err.println(Thread.currentThread().getStackTrace()[2]
+            .getMethodName());
     }
 }
