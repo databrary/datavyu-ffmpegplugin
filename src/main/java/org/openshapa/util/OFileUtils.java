@@ -76,10 +76,12 @@ public final class OFileUtils {
             throw new NullPointerException();
         }
 
-        File base = new File(basePath);
-        File ancestor = new File(FilenameUtils.getFullPath(path));
+        File base = new File(FilenameUtils.normalize(basePath, true));
+        File ancestor = new File(FilenameUtils.getFullPath(
+                    FilenameUtils.normalize(path, true)));
 
         int diff = 0;
+
 
         while (!base.equals(ancestor)) {
             ancestor = ancestor.getParentFile();
