@@ -111,7 +111,7 @@ public class OpenSHAPAFrameFixture extends FrameFixture {
         }
 
         // 1. Create new variable
-        menuItemWithPath("Spreadsheet", "New Variable").click();
+        clickMenuItemWithPath("Spreadsheet", "New Variable");
 
         DialogFixture newVariableDialog = WindowFinder.findDialog(
                 NewVariableV.class).withTimeout(DIALOG_TIMEOUT).using(robot);
@@ -178,8 +178,8 @@ public class OpenSHAPAFrameFixture extends FrameFixture {
      * Closes the script console.
      */
     public final void closeScriptConsoleOnFinish() {
-        DialogFixture scriptConsole = WindowFinder.findDialog(
-                ConsoleV.class).withTimeout(DIALOG_TIMEOUT).using(robot);
+        DialogFixture scriptConsole = WindowFinder.findDialog(ConsoleV.class)
+            .withTimeout(DIALOG_TIMEOUT).using(robot);
 
         long currentTime = System.currentTimeMillis();
         long maxTime = currentTime + UIUtils.SCRIPT_LOAD_TIMEOUT;
@@ -200,8 +200,8 @@ public class OpenSHAPAFrameFixture extends FrameFixture {
     public final DataControllerFixture openDataController() {
         clickMenuItemWithPath("Controller", "Data Viewer Controller");
 
-        DialogFixture dcf = WindowFinder.findDialog(
-                DataControllerV.class).withTimeout(DIALOG_TIMEOUT).using(robot);
+        DialogFixture dcf = WindowFinder.findDialog(DataControllerV.class)
+            .withTimeout(DIALOG_TIMEOUT).using(robot);
         dcf.moveTo(new Point(0, 100));
 
         return new DataControllerFixture(robot,
@@ -218,23 +218,23 @@ public class OpenSHAPAFrameFixture extends FrameFixture {
         final int yLocation) {
         clickMenuItemWithPath("Controller", "Data Viewer Controller");
 
-        DialogFixture dcf = WindowFinder.findDialog(
-                DataControllerV.class).withTimeout(DIALOG_TIMEOUT).using(robot);
+        DialogFixture dcf = WindowFinder.findDialog(DataControllerV.class)
+            .withTimeout(DIALOG_TIMEOUT).using(robot);
         dcf.moveTo(new Point(xLocation, yLocation));
 
         return new DataControllerFixture(robot,
                 (DataControllerV) dcf.component());
     }
 
-     /**
-     * Open and return the data controller.
-     * @return VocabEditorDialogFixture for vocab editor
-     */
+    /**
+    * Open and return the data controller.
+    * @return VocabEditorDialogFixture for vocab editor
+    */
     public final VocabEditorDialogFixture openVocabEditor() {
         clickMenuItemWithPath("Spreadsheet", "Vocab Editor");
 
-        DialogFixture ve = WindowFinder.findDialog(
-                VocabEditorV.class).withTimeout(DIALOG_TIMEOUT).using(robot);
+        DialogFixture ve = WindowFinder.findDialog(VocabEditorV.class)
+            .withTimeout(DIALOG_TIMEOUT).using(robot);
         ve.moveTo(new Point(100, 100));
 
         return new VocabEditorDialogFixture(robot,
@@ -248,8 +248,8 @@ public class OpenSHAPAFrameFixture extends FrameFixture {
     public final VariableListDialogFixture openVariableList() {
         clickMenuItemWithPath("Spreadsheet", "Variable List");
 
-        DialogFixture vl = WindowFinder.findDialog(
-                VariableListV.class).withTimeout(DIALOG_TIMEOUT).using(robot);
+        DialogFixture vl = WindowFinder.findDialog(VariableListV.class)
+            .withTimeout(DIALOG_TIMEOUT).using(robot);
         vl.moveTo(new Point(300, 100));
 
         return new VariableListDialogFixture(robot,
