@@ -80,6 +80,10 @@ import org.testng.annotations.BeforeSuite;
         fixture.moveToFront();
 
         OpenSHAPAInstance.setFixture(fixture);
+
+        // Close the data controller
+        fixture.dialog(DataControllerV.class.getSimpleName()).close();
+
         // ScreenshotOnFailureListener sofl = new ScreenshotOnFailureListener();
     }
 

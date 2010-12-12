@@ -31,7 +31,7 @@ public final class UIBug309Test extends OpenSHAPATestClass {
      *             on any error
      */
     @Test public void testEnterInsteadOfClicking() throws Exception {
-        System.err.println(new Exception().getStackTrace()[0].getMethodName());
+        printTestName();
 
         String varName = "v";
         String varType = VAR_TYPES[(int) (Math.random() * VAR_TYPES.length)];
