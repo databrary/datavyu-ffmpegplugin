@@ -224,7 +224,7 @@
 
     <repository>
       <id>usermetrix</id>
-      <url>http://maven2.usermetrix.com</url>
+      <url>http://usermetrix.com/maven2</url>
       <layout>default</layout>
     </repository>
     
