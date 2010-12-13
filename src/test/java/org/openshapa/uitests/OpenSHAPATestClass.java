@@ -117,7 +117,7 @@ import org.testng.annotations.BeforeSuite;
         }
 
         try {
-            mainFrameFixture.show();
+            mainFrameFixture.maximize();
 
             JOptionPaneFixture warning = mainFrameFixture.optionPane(Timeout
                     .timeout(2, TimeUnit.SECONDS));
