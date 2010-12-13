@@ -122,12 +122,8 @@ import org.testng.annotations.BeforeSuite;
         }
 
         // Get New Database dialog
-        DialogFixture newProjectDialog;
-
-        newProjectDialog = mainFrameFixture.dialog("NewProjectV");
-
+        DialogFixture newProjectDialog = mainFrameFixture.dialog();
         newProjectDialog.textBox("nameField").enterText("n");
-
         newProjectDialog.button("okButton").click();
 
         // Set common variables
