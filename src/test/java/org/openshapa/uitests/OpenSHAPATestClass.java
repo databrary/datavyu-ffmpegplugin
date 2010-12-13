@@ -3,6 +3,8 @@ package org.openshapa.uitests;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
+import java.util.concurrent.TimeUnit;
+
 import junitx.util.PrivateAccessor;
 
 import org.fest.swing.annotation.GUITest;
@@ -13,6 +15,7 @@ import org.fest.swing.fixture.JOptionPaneFixture;
 import org.fest.swing.fixture.OpenSHAPAFrameFixture;
 import org.fest.swing.fixture.SpreadsheetPanelFixture;
 import org.fest.swing.launcher.ApplicationLauncher;
+import org.fest.swing.timing.Timeout;
 import org.fest.swing.util.Platform;
 
 import org.openshapa.Configuration;
@@ -114,7 +117,8 @@ import org.testng.annotations.BeforeSuite;
         }
 
         try {
-            JOptionPaneFixture warning = mainFrameFixture.optionPane();
+            JOptionPaneFixture warning = mainFrameFixture.optionPane(Timeout
+                    .timeout(2, TimeUnit.SECONDS));
             warning.requireTitle("Unsaved changes");
             warning.buttonWithText("OK").click();
         } catch (Exception e) {
@@ -122,7 +126,8 @@ import org.testng.annotations.BeforeSuite;
         }
 
         // Get New Database dialog
-        DialogFixture newProjectDialog = mainFrameFixture.dialog();
+        DialogFixture newProjectDialog = mainFrameFixture.dialog(Timeout
+                .timeout(2, TimeUnit.SECONDS));
         newProjectDialog.textBox("nameField").enterText("n");
         newProjectDialog.button("okButton").click();
 
