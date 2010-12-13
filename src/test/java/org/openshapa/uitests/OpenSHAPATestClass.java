@@ -116,26 +116,15 @@ import org.testng.annotations.BeforeSuite;
             mainFrameFixture.clickMenuItemWithPath("File", "New");
         }
 
-
-        int i = 5;
-
-        while (i > 0) {
-
-            try {
-                JOptionPaneFixture warning = mainFrameFixture.optionPane(Timeout
-                        .timeout(2, TimeUnit.SECONDS));
-                warning.requireTitle("Unsaved changes");
-                warning.buttonWithText("OK").click();
-
-                break;
-            } catch (Exception e) {
-                i--;
-            }
+        try {
+            JOptionPaneFixture warning = mainFrameFixture.optionPane();
+            warning.requireTitle("Unsaved changes");
+            warning.buttonWithText("OK").click();
+        } catch (Exception e) {
         }
 
         // Get New Database dialog
-        DialogFixture newProjectDialog = mainFrameFixture.dialog(Timeout
-                .timeout(2, TimeUnit.SECONDS));
+        DialogFixture newProjectDialog = mainFrameFixture.dialog();
         newProjectDialog.textBox("nameField").enterText("n");
         newProjectDialog.button("okButton").click();
 
