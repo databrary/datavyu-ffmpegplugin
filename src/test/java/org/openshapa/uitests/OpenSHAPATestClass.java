@@ -110,8 +110,9 @@ import org.testng.annotations.BeforeSuite;
 
         // Create a new project, this is for the discard changes dialog.
         if (Platform.isOSX()) {
-            mainFrameFixture.pressAndReleaseKey(KeyPressInfo.keyCode(
-                    KeyEvent.VK_N).modifiers(InputEvent.META_MASK));
+            OpenSHAPA.getView().showNewProjectForm();
+            // mainFrameFixture.pressAndReleaseKey(KeyPressInfo.keyCode(
+            // KeyEvent.VK_N).modifiers(InputEvent.META_MASK));
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "New");
         }
