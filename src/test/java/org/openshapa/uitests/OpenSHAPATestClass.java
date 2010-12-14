@@ -5,9 +5,12 @@ import java.awt.event.KeyEvent;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JOptionPane;
+
 import junitx.util.PrivateAccessor;
 
 import org.fest.swing.annotation.GUITest;
+import org.fest.swing.core.BasicComponentFinder;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.DialogFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
@@ -110,15 +113,19 @@ import org.testng.annotations.BeforeSuite;
 
         // Create a new project, this is for the discard changes dialog.
         if (Platform.isOSX()) {
-            OpenSHAPA.getView().showNewProjectForm();
-            // mainFrameFixture.pressAndReleaseKey(KeyPressInfo.keyCode(
-            // KeyEvent.VK_N).modifiers(InputEvent.META_MASK));
+            mainFrameFixture.pressAndReleaseKey(KeyPressInfo.keyCode(
+                    KeyEvent.VK_N).modifiers(InputEvent.META_MASK));
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "New");
         }
 
         try {
-            JOptionPaneFixture warning = mainFrameFixture.optionPane();
+            JOptionPane warningPane = BasicComponentFinder
+                .finderWithCurrentAwtHierarchy().findByType(JOptionPane.class);
+
+            // JOptionPaneFixture warning = mainFrameFixture.optionPane();
+            JOptionPaneFixture warning = new JOptionPaneFixture(
+                    mainFrameFixture.robot, warningPane);
             warning.requireTitle("Unsaved changes");
             warning.buttonWithText("OK").click();
         } catch (Exception e) {
