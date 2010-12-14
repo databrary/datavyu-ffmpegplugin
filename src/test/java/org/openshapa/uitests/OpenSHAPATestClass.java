@@ -120,12 +120,7 @@ import org.testng.annotations.BeforeSuite;
         }
 
         try {
-            JOptionPane warningPane = BasicComponentFinder
-                .finderWithCurrentAwtHierarchy().findByType(JOptionPane.class);
-
-            // JOptionPaneFixture warning = mainFrameFixture.optionPane();
-            JOptionPaneFixture warning = new JOptionPaneFixture(
-                    mainFrameFixture.robot, warningPane);
+            JOptionPaneFixture warning = mainFrameFixture.optionPane();
             warning.requireTitle("Unsaved changes");
             warning.buttonWithText("OK").click();
         } catch (Exception e) {
