@@ -1543,6 +1543,7 @@ public final class DataControllerV extends OpenSHAPADialog
     @Action public void setCellOnsetAction() {
         logger.usage("Set cell onset");
         new SetSelectedCellStartTimeC(getCurrentTime());
+        setFindTime(getCurrentTime());
     }
 
     /**
