@@ -4,7 +4,7 @@
   <groupId>org.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>1.11</version>
+  <version>2.00</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
@@ -39,34 +39,9 @@
     </developer>
 
     <developer>
-      <id>michael</id>
-      <name>Michael Muthukrishna</name>
-      <email>michael.muthukrishna@_no_spam_nicta.com.au</email>
-      <organization>NICTA</organization>
-      <organizationUrl>www.nicta.com.au</organizationUrl>
-      <roles>
-        <role>Developer</role>
-        <role>Tester</role>
-      </roles>
-      <timezone>+10</timezone>
-    </developer>
-
-    <developer>
       <id>doug</id>
       <name>Douglas Teoh</name>
       <email>douglas.teoh@_no_spam_nicta.com.au</email>
-      <organization>NICTA</organization>
-      <organizationUrl>www.nicta.com.au</organizationUrl>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>+10</timezone>
-    </developer>
-
-    <developer>
-      <id>nicholas</id>
-      <name>Nicholas Allen</name>
-      <email>nicholas.allen@_no_spam_nicta.com.au</email>
       <organization>NICTA</organization>
       <organizationUrl>www.nicta.com.au</organizationUrl>
       <roles>
@@ -107,6 +82,43 @@
         <role>Developer</role>
       </roles>
       <timezone>-5</timezone>
+    </developer>
+
+    <developer>
+      <id>Nick</id>
+      <name>Nicholas Robert Stevens</name>
+      <email>nicholas.stevens1@_no_spam_uqconnect.edu.au</email>
+      <organization>UQ</organization>
+      <organizationUrl>http://uq.edu.au/</organizationUrl>
+      <roles>
+        <role>Former Developer</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+
+    <developer>
+      <id>nicholas</id>
+      <name>Nicholas Allen</name>
+      <email>nicholas.allen@_no_spam_nicta.com.au</email>
+      <organization>NICTA</organization>
+      <organizationUrl>www.nicta.com.au</organizationUrl>
+      <roles>
+        <role>Former Developer</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+
+    <developer>
+      <id>michael</id>
+      <name>Michael Muthukrishna</name>
+      <email>michael.muthukrishna@_no_spam_nicta.com.au</email>
+      <organization>NICTA</organization>
+      <organizationUrl>www.nicta.com.au</organizationUrl>
+      <roles>
+        <role>Former Developer</role>
+        <role>Former Tester</role>
+      </roles>
+      <timezone>+10</timezone>
     </developer>
 
     <developer>

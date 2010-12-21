@@ -84,7 +84,7 @@
       <string>$JAVAROOT/../splash.png</string>
       <key>ClassPath</key>
       <array>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa/1.11/openshapa-1.11.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa/2.00/openshapa-2.00.jar</string>
         <!-- JNA 3.2.7 needs to be ahead of the other dependencies so that it is found first (instead of the older versions bundled elsewhere) -->
         <string>$JAVAROOT/repo/net/java/dev/jna/jna/3.2.7/jna-3.2.7.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
