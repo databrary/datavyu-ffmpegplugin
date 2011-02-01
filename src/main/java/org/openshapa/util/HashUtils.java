@@ -1,9 +1,23 @@
 package org.openshapa.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.DigestInputStream;
+import java.security.NoSuchAlgorithmException;
+
+import com.usermetrix.jclient.UserMetrix;
+import com.usermetrix.jclient.Logger;
+
 /**
  * Class for a couple of helper functions for generating hashcodes.
  */
 public final class HashUtils {
+
+    /** The logger for this class. */
+    private static Logger logger = UserMetrix.getLogger(HashUtils.class);
 
     /**
      * Generates a hash code for the supplied object.
@@ -31,6 +45,51 @@ public final class HashUtils {
         return (int)(l ^ (l >>> 32));
     }
 
+    /**
+     * Computes the MD5 digest for a given file.
+     *
+     * @param file The file over which to compute the MD5 digest
+     * @return The hex string MD5 digest for the file. Returns null in case of an exception.
+     */
+    public static String computeDigest(final File file) {
+        if (!file.exists())
+            return null;
+
+        logger.usage("Compute MD5 digest for file " + file.getName());
+        String md5 = null;
+        byte[] buffer = new byte[8192];
+        MessageDigest md = null;
+        FileInputStream fis = null;
+        DigestInputStream dis = null;
+
+        try {
+
+            md = MessageDigest.getInstance("MD5");
+            fis = new FileInputStream(file);
+            dis = new DigestInputStream(fis, md);
+            while (dis.read(buffer) != -1) { }
+            md5 = convertToHex(md.digest());
+
+        } catch (NoSuchAlgorithmException nsae) {
+            logger.error("Unable to instantiate MD5 algorithm for file " + file.getName(), nsae);
+        } catch (FileNotFoundException fnfe) {
+            logger.error("Unable to find file " + file.getName(), fnfe);
+        } catch (IOException ioe) {
+            logger.error("Unable to compute MD5 digest for file " + file.getName(), ioe);
+        } finally {
+            try {
+                if (dis != null)
+                    dis.close();
+                if (fis != null)
+                    fis.close();
+            } catch (IOException ioe) {
+                logger.error("Unable to close InputStream. Exception in finally clause.", ioe);
+            }
+        }
+
+        return md5;
+    }
+    
     /**
      * Given a SHA-1 message digest in byte array form, create it's string
      * representation.

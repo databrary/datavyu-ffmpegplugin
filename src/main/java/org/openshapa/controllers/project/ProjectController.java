@@ -32,6 +32,7 @@ import org.openshapa.models.project.ViewerSetting;
 import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.OFileUtils;
+import org.openshapa.util.HashUtils;
 
 import org.openshapa.views.DataControllerV;
 
@@ -337,6 +338,14 @@ public final class ProjectController {
                 continue;
             }
 
+            // BugzID:2482
+            // A file has been found. Now validate that it is the correct file.
+            String originalDigest = setting.getDigest();
+            if (originalDigest != null &! originalDigest.equals(HashUtils.computeDigest(file))) {
+                missingFilesList.add(setting.getFilePath());
+                continue;
+            }
+            
             Plugin plugin = pm.getAssociatedPlugin(setting.getPluginName());
 
             // BugzID:2110
@@ -492,6 +501,12 @@ public final class ProjectController {
             ViewerSetting vs = new ViewerSetting();
             vs.setFilePath(viewer.getDataFeed().getAbsolutePath());
             vs.setPluginName(viewer.getClass().getName());
+
+            // BugzID:2482
+            String digest = HashUtils.computeDigest(new File(vs.getFilePath()));
+            if (digest != null) {
+                vs.setDigest(digest);
+            }
 
             // BugzID:2108
             Plugin p = PluginManager.getInstance().getAssociatedPlugin(
