@@ -350,9 +350,14 @@ public final class PluginManager {
                             pluginLookup.put(cdv.getName(), p);
                         }
                     } catch (Throwable e) {
+                    	String msg = String.format(
+                    			"Unable to load plugin: %s", 
+                    			p.getClass().getName()
+                			);
+                    	System.err.println(msg);
                         e.printStackTrace();
-                        logger.error("Unable to load plugin "
-                            + p.getClass().getName(), e);
+                        
+                        logger.error(msg, e);
                     }
                 }
             }
