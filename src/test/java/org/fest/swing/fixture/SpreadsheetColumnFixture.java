@@ -1,12 +1,11 @@
 package org.fest.swing.fixture;
 
+import java.util.List;
 import static org.fest.reflect.core.Reflection.field;
 
 import java.util.Vector;
 
-import javax.swing.JButton;
 
-import org.fest.reflect.core.Reflection;
 
 import org.fest.swing.core.Robot;
 
@@ -70,9 +69,9 @@ public class SpreadsheetColumnFixture extends JLabelFixture {
      * @return Returns fixture for spreadsheet cell based on cell ID number.
      */
     public final SpreadsheetCellFixture cell(final int id) {
-        Vector<SpreadsheetCell> colCells = ssColumn.getCells();
+        List<SpreadsheetCell> colCells = ssColumn.getCells();
         SpreadsheetCellFixture result = new SpreadsheetCellFixture(r,
-                colCells.elementAt(id - 1));
+                colCells.get(id - 1));
 
         if (result.getID() == id) {
             return result;
@@ -85,7 +84,7 @@ public class SpreadsheetColumnFixture extends JLabelFixture {
 
                 if (i > -1) {
                     result = new SpreadsheetCellFixture(r,
-                            colCells.elementAt(i));
+                            colCells.get(i));
 
                     if (result.getID() == id) {
                         return result;
@@ -97,7 +96,7 @@ public class SpreadsheetColumnFixture extends JLabelFixture {
 
                 if (j < numOfCells()) {
                     result = new SpreadsheetCellFixture(r,
-                            colCells.elementAt(j));
+                            colCells.get(j));
 
                     if (result.getID() == id) {
                         return result;
@@ -109,7 +108,7 @@ public class SpreadsheetColumnFixture extends JLabelFixture {
             }
         }
 
-        return new SpreadsheetCellFixture(r, colCells.elementAt(id - 1));
+        return new SpreadsheetCellFixture(r, colCells.get(id - 1));
     }
 
     /**
@@ -117,7 +116,7 @@ public class SpreadsheetColumnFixture extends JLabelFixture {
      * @return Vector of SpreadsheetCellFixture for all cells in column
      */
     public final Vector<SpreadsheetCellFixture> allCells() {
-        Vector<SpreadsheetCell> cells = ssColumn.getCells();
+        List<SpreadsheetCell> cells = ssColumn.getCells();
         Vector<SpreadsheetCellFixture> result =
             new Vector<SpreadsheetCellFixture>();
 

@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.List;
 
 import java.util.Vector;
 
@@ -447,7 +448,7 @@ public final class SpreadsheetColumn extends JLabel
     /**
      * @return The SpreadsheetCells in this column.
      */
-    public Vector<SpreadsheetCell> getCells() {
+    public List<SpreadsheetCell> getCells() {
         return datapanel.getCells();
     }
 
@@ -459,7 +460,7 @@ public final class SpreadsheetColumn extends JLabel
     public void requestFocus() {
 
         if (datapanel.getCells().size() > 0) {
-            datapanel.getCells().firstElement().requestFocusInWindow();
+            datapanel.getCells().get(0).requestFocusInWindow();
         } else {
             datapanel.requestFocusInWindow();
         }

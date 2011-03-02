@@ -36,6 +36,7 @@ import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.util.List;
 
 
 /**
@@ -56,7 +57,7 @@ public final class ColumnDataPanel extends JPanel
     private CellSelectionListener cellSelectionL;
 
     /** Collection of the SpreadsheetCells held in by this data panel. */
-    private Vector<SpreadsheetCell> cells;
+    private List<SpreadsheetCell> cells;
 
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(ColumnDataPanel.class);
@@ -80,7 +81,7 @@ public final class ColumnDataPanel extends JPanel
 
         // Store member variables.
         columnWidth = width;
-        cells = new Vector<SpreadsheetCell>();
+        cells = new ArrayList<SpreadsheetCell>();
         cellSelectionL = cellSelL;
 
         // Create visual container for spreadsheet cells.
@@ -221,7 +222,7 @@ public final class ColumnDataPanel extends JPanel
             nCell.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
             if (cells.size() > newOrd.intValue()) {
-                cells.insertElementAt(nCell, newOrd.intValue() - 1);
+                cells.add(newOrd.intValue() - 1, nCell);
                 this.add(nCell, newOrd.intValue() - 1);
             } else {
                 cells.add(nCell);
@@ -308,7 +309,7 @@ public final class ColumnDataPanel extends JPanel
     /**
      * @return The SpreadsheetCells in this column.
      */
-    public Vector<SpreadsheetCell> getCells() {
+    public List<SpreadsheetCell> getCells() {
         return cells;
     }
 
