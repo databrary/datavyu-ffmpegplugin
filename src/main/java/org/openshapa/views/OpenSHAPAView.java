@@ -239,8 +239,7 @@ public final class OpenSHAPAView extends FrameView
             panel.removeFileDropEventListener(this);
         }
 
-        panel = new SpreadsheetPanel(OpenSHAPA.getProjectController()
-                .getLegacyDB().getDatabase());
+        panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         setComponent(panel);
@@ -690,8 +689,7 @@ public final class OpenSHAPAView extends FrameView
             this.clearSpreadsheet();
         }
 
-        panel = new SpreadsheetPanel(OpenSHAPA.getProjectController()
-                .getLegacyDB().getDatabase());
+        panel = new SpreadsheetPanel(OpenSHAPA.getProjectController().getDB());
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         setComponent(panel);
@@ -729,7 +727,6 @@ public final class OpenSHAPAView extends FrameView
             .getDatabase();
 
         for (DataColumn col : cols) {
-
             try {
                 col.setHidden(true);
                 col.setSelected(false);

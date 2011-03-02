@@ -34,7 +34,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.Box.Filler;
 
 import org.jdesktop.application.Action;
@@ -63,6 +62,8 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedDatabase;
 
 
 /**
@@ -89,10 +90,10 @@ public final class SpreadsheetPanel extends JPanel
     private JPanel headerView;
 
     /** The Database being viewed. */
-    private Database database;
+    private Datastore datastore;
 
     /** Vector of the Spreadsheetcolumns added to the Spreadsheet. */
-    private Vector<SpreadsheetColumn> columns;
+    private List<SpreadsheetColumn> columns;
 
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(SpreadsheetPanel.class);
@@ -127,7 +128,7 @@ public final class SpreadsheetPanel extends JPanel
      * @param db The model (i.e. database) that we are creating the view
      * (i.e. Spreadsheet panel) for.
      */
-    public SpreadsheetPanel(final Database db) {
+    public SpreadsheetPanel(final Datastore db) {
         setName(this.getClass().getSimpleName());
         setLayout(new BorderLayout());
 
@@ -227,13 +228,13 @@ public final class SpreadsheetPanel extends JPanel
     private void buildColumns() {
 
         try {
-            Vector<Long> dbColIds = getDatabase().getColOrderVector();
+            Vector<Long> dbColIds = getLegacyDatabase().getColOrderVector();
 
             for (int i = 0; i < dbColIds.size(); i++) {
 
-                if (!getDatabase().getColumn(dbColIds.elementAt(i))
+                if (!getLegacyDatabase().getColumn(dbColIds.elementAt(i))
                         .getHidden()) {
-                    addColumn(getDatabase(), dbColIds.elementAt(i));
+                    addColumn(getDatastore(), dbColIds.elementAt(i));
                 }
             }
         } catch (SystemErrorException e) {
@@ -247,7 +248,7 @@ public final class SpreadsheetPanel extends JPanel
      * @param db database.
      * @param colID ID of the column to add.
      */
-    private void addColumn(final Database db, final long colID) {
+    private void addColumn(final Datastore db, final long colID) {
 
         // Remove previous instance of newVar from the header.
         headerView.remove(newVar);
@@ -313,7 +314,7 @@ public final class SpreadsheetPanel extends JPanel
      * @return the vector of Spreadsheet columns.
      * Need for UISpec4J testing
      */
-    public Vector<SpreadsheetColumn> getColumns() {
+    public List<SpreadsheetColumn> getColumns() {
         return columns;
     }
 
@@ -342,24 +343,26 @@ public final class SpreadsheetPanel extends JPanel
      *
      * @param db Database to set
      */
-    public void setDatabase(final Database db) {
+    public void setDatabase(final Datastore db) {
 
         // check if we need to deregister
-        if ((database != null) && (database != db)) {
+        if ((datastore != null) && (datastore != db)) {
 
             try {
-                database.deregisterColumnListListener(this);
+                DeprecatedDatabase dd = (DeprecatedDatabase) db;
+                dd.getDatabase().deregisterColumnListListener(this);
             } catch (SystemErrorException e) {
                 logger.error("deregisterColumnListListener failed", e);
             }
         }
 
         // set the database
-        database = db;
+        datastore = db;
 
         // register as a columnListListener
         try {
-            db.registerColumnListListener(this);
+            DeprecatedDatabase dd = (DeprecatedDatabase) db;
+            dd.getDatabase().registerColumnListListener(this);
         } catch (SystemErrorException e) {
             logger.error("registerColumnListListener failed", e);
         }
@@ -373,8 +376,12 @@ public final class SpreadsheetPanel extends JPanel
     /**
      * @return Database this spreadsheet displays
      */
-    public Database getDatabase() {
-        return (database);
+    public Datastore getDatastore() {
+        return (datastore);
+    }
+
+    @Deprecated public Database getLegacyDatabase() {
+        return ((DeprecatedDatabase) datastore).getDatabase();
     }
 
     /**
@@ -403,7 +410,7 @@ public final class SpreadsheetPanel extends JPanel
     public void colInsertion(final Database db, final long colID,
         final Vector<Long> oldCov, final Vector<Long> newCov) {
         deselectAll();
-        addColumn(db, colID);
+        addColumn(datastore, colID);
     }
 
     /**
@@ -522,7 +529,7 @@ public final class SpreadsheetPanel extends JPanel
         Vector<DataColumn> selcols = new Vector<DataColumn>();
 
         try {
-            Vector<DataColumn> cols = database.getDataColumns();
+            Vector<DataColumn> cols = getLegacyDatabase().getDataColumns();
             int numCols = cols.size();
 
             for (int i = 0; i < numCols; i++) {
@@ -554,7 +561,7 @@ public final class SpreadsheetPanel extends JPanel
 
         try {
             Vector<DataCell> selectedCells = getSelectedCells();
-            Vector<Long> columnOrder = database.getColOrderVector();
+            Vector<Long> columnOrder = getLegacyDatabase().getColOrderVector();
 
             // For each of the selected cells search to see if we have a column
             // to the left.
@@ -592,7 +599,7 @@ public final class SpreadsheetPanel extends JPanel
         Vector<DataCell> selcells = new Vector<DataCell>();
 
         try {
-            Vector<DataColumn> cols = database.getDataColumns();
+            Vector<DataColumn> cols = getLegacyDatabase().getDataColumns();
             int numCols = cols.size();
 
             for (int i = 0; i < numCols; i++) {
@@ -708,7 +715,7 @@ public final class SpreadsheetPanel extends JPanel
         // What index does the given column sit at
         for (int i = 0; i < columns.size(); i++) {
 
-            if (columns.elementAt(i).getColID() == colID) {
+            if (columns.get(i).getColID() == colID) {
                 columnIndex = i;
             }
         }
@@ -741,7 +748,7 @@ public final class SpreadsheetPanel extends JPanel
         // What index does the column sit at
         for (int i = 0; i < columns.size(); i++) {
 
-            if (columns.elementAt(i).getColID() == colID) {
+            if (columns.get(i).getColID() == colID) {
                 columnIndex = i;
             }
         }
@@ -777,21 +784,21 @@ public final class SpreadsheetPanel extends JPanel
         try {
 
             // Write the new column order back to the database.
-            Vector<Long> orderVec = database.getColOrderVector();
+            Vector<Long> orderVec = getLegacyDatabase().getColOrderVector();
 
             Long sourceColumn = orderVec.elementAt(source);
             orderVec.removeElementAt(source);
             orderVec.insertElementAt(sourceColumn, destination);
 
-            database.setColOrderVector(orderVec);
+            getLegacyDatabase().setColOrderVector(orderVec);
         } catch (SystemErrorException se) {
             logger.error("Unable to shuffle column order", se);
         }
 
         // Reorder the columns vector
-        SpreadsheetColumn sourceColumn = columns.elementAt(source);
-        columns.removeElementAt(source);
-        columns.insertElementAt(sourceColumn, destination);
+        SpreadsheetColumn sourceColumn = columns.get(source);
+        columns.remove(source);
+        columns.add(destination, sourceColumn);
 
         // Reorder the header components
         Vector<Component> newHeaders = new Vector<Component>();
@@ -843,9 +850,10 @@ public final class SpreadsheetPanel extends JPanel
         try {
 
             if (lastSelectedCell != null) {
-                DataCell c1 = (DataCell) database.getCell(
-                        lastSelectedCell.getCellID());
-                DataCell c2 = (DataCell) database.getCell(cell.getCellID());
+                DataCell c1 = (DataCell) getLegacyDatabase()
+                                         .getCell(lastSelectedCell.getCellID());
+                DataCell c2 = (DataCell) getLegacyDatabase()
+                                         .getCell(cell.getCellID());
 
                 // We can only do continous selections in a single column at
                 // at the moment.

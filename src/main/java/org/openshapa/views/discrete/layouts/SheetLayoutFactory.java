@@ -1,7 +1,7 @@
 package org.openshapa.views.discrete.layouts;
 
+import java.util.List;
 import org.openshapa.views.discrete.SpreadsheetColumn;
-import java.util.Vector;
 
 /**
  * Factory for SheetLayouts.
@@ -34,7 +34,7 @@ public final class SheetLayoutFactory {
      * @return SheetLayout to use.
      */
     public static SheetLayout getLayout(final SheetLayoutType type,
-                                        final Vector<SpreadsheetColumn> cols) {
+                                        final List<SpreadsheetColumn> cols) {
 
         switch (type) {
             case Ordinal:

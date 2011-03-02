@@ -29,6 +29,8 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedDatabase;
 
 import org.openshapa.models.db.legacy.Column;
 import org.openshapa.models.db.legacy.DataColumn;
@@ -56,7 +58,7 @@ public final class SpreadsheetColumn extends JLabel
     public static final int DEFAULT_HEADER_HEIGHT = 16;
 
     /** Database reference. */
-    private Database database;
+    private Datastore database;
 
     /** Database reference colID of the DataColumn this column displays. */
     private long dbColID;
@@ -99,7 +101,7 @@ public final class SpreadsheetColumn extends JLabel
      * @param cellSelL Spreadsheet cell selection listener to notify
      * @param colSelL Column selection listener to notify.
      */
-    public SpreadsheetColumn(final Database db, final long colID,
+    public SpreadsheetColumn(final Datastore db, final long colID,
         final CellSelectionListener cellSelL,
         final ColumnSelectionListener colSelL) {
         this.database = db;
@@ -108,7 +110,7 @@ public final class SpreadsheetColumn extends JLabel
         this.columnSelList = colSelL;
 
         try {
-            DataColumn dbColumn = database.getDataColumn(dbColID);
+            DataColumn dbColumn = getLegacyDatabase().getDataColumn(dbColID);
 
             setOpaque(true);
             setHorizontalAlignment(JLabel.CENTER);
@@ -132,14 +134,21 @@ public final class SpreadsheetColumn extends JLabel
     }
 
     /**
+     * @return The legacy database.
+     */
+    @Deprecated public Database getLegacyDatabase() {
+        return ((DeprecatedDatabase) database).getDatabase();
+    }
+
+    /**
      * Registers this spreadsheet column with everything that needs to notify
      * this class of events.
      */
     public void registerListeners() {
 
         try {
-            database.registerDataColumnListener(dbColID, this);
-            database.registerCascadeListener(this);
+            getLegacyDatabase().registerDataColumnListener(dbColID, this);
+            getLegacyDatabase().registerCascadeListener(this);
             datapanel.registerListeners();
         } catch (SystemErrorException e) {
             logger.error("Unable to register listeners for the column.", e);
@@ -153,8 +162,8 @@ public final class SpreadsheetColumn extends JLabel
     public void deregisterListeners() {
 
         try {
-            database.deregisterDataColumnListener(dbColID, this);
-            database.deregisterCascadeListener(this);
+            getLegacyDatabase().deregisterDataColumnListener(dbColID, this);
+            getLegacyDatabase().deregisterCascadeListener(this);
             datapanel.deregisterListeners();
         } catch (SystemErrorException e) {
             logger.error("Unable to register listeners for the column.", e);
@@ -268,11 +277,11 @@ public final class SpreadsheetColumn extends JLabel
         try {
             logger.usage("select column");
 
-            DataColumn dc = database.getDataColumn(dbColID);
+            DataColumn dc = getLegacyDatabase().getDataColumn(dbColID);
             this.selected = isSelected;
 
             dc.setSelected(isSelected);
-            database.replaceColumn(dc);
+            getLegacyDatabase().replaceColumn(dc);
 
         } catch (SystemErrorException e) {
             logger.error("Failed setting column select state.", e);
@@ -294,7 +303,7 @@ public final class SpreadsheetColumn extends JLabel
         DataColumn dc = null;
 
         try {
-            dc = database.getDataColumn(dbColID);
+            dc = getLegacyDatabase().getDataColumn(dbColID);
         } catch (SystemErrorException e) {
             logger.error("Unable to get selected columns", e);
         }
@@ -525,7 +534,7 @@ public final class SpreadsheetColumn extends JLabel
     public String getColumnName() {
 
         try {
-            return database.getDataColumn(dbColID).getName();
+            return getLegacyDatabase().getDataColumn(dbColID).getName();
         } catch (SystemErrorException ex) {
             java.util.logging.Logger.getLogger(SpreadsheetColumn.class
                 .getName()).log(Level.SEVERE, null, ex);
@@ -540,12 +549,12 @@ public final class SpreadsheetColumn extends JLabel
             .getResourceMap(Column.class);
 
         try {
-            DataColumn dc = database.getDataColumn(dbColID);
+            DataColumn dc = getLegacyDatabase().getDataColumn(dbColID);
 
             if ((!dc.getName().equals(newName)
-                        && (DataColumn.isValidColumnName(database, newName)))) {
+                        && (DataColumn.isValidColumnName(getLegacyDatabase(), newName)))) {
                 dc.setName(newName);
-                database.replaceColumn(dc);
+                getLegacyDatabase().replaceColumn(dc);
             }
         } catch (LogicErrorException fe) {
             OpenSHAPA.getApplication().showWarningDialog(fe);

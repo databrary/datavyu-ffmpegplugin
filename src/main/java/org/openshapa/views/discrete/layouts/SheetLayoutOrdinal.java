@@ -1,8 +1,8 @@
 package org.openshapa.views.discrete.layouts;
 
+import java.util.List;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
-import java.util.Vector;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 /**
@@ -15,7 +15,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
      * SheetLayoutOrdinal constructor.
      * @param cols Reference to the SpreadsheetColumns in the spreadsheet.
      */
-    public SheetLayoutOrdinal(final Vector<SpreadsheetColumn> cols) {
+    public SheetLayoutOrdinal(final List<SpreadsheetColumn> cols) {
         setColumns(cols);
         for (SpreadsheetColumn col : cols) {
             col.resetLayoutManager(SheetLayoutType.Ordinal);

@@ -3,6 +3,7 @@ package org.openshapa.views;
 import com.google.common.collect.HashBiMap;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.util.List;
 import java.util.logging.Level;
 import org.openshapa.OpenSHAPA;
 import java.util.Vector;
@@ -68,7 +69,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
     public void populateTable() {
         // Populate table with a variable listing from the database
         try {
-            Vector<SpreadsheetColumn> ssColumns = OpenSHAPA.getView().getSpreadsheetPanel().getColumns();
+            List<SpreadsheetColumn> ssColumns = OpenSHAPA.getView().getSpreadsheetPanel().getColumns();
             Vector<DataColumn> dbColumns = database.getDataColumns();
             //This is just in case something weird has happened
             if (ssColumns.size() != database.getColumns().size()) {
@@ -80,7 +81,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                 //This is what should normally happen
             } else {
                 for (int i = 0; i < ssColumns.size(); i++) {
-                    SpreadsheetColumn ssColumn = ssColumns.elementAt(i);
+                    SpreadsheetColumn ssColumn = ssColumns.get(i);
                     DataColumn dbColumn = getDataColumn(ssColumn.getColID());
                     if (dbColumn != null) {
                         // TODO bug #21 Add comment field.

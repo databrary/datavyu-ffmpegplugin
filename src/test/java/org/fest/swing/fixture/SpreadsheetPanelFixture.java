@@ -1,5 +1,6 @@
 package org.fest.swing.fixture;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.fest.swing.core.Robot;
@@ -34,7 +35,7 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
      * @return SpreadsheetColumnFixture for column, null if not found.
      */
     public final SpreadsheetColumnFixture column(final int column) {
-        Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();
+        List<SpreadsheetColumn> ssCols = ssPanel.getColumns();
 
         int count = 0;
 
@@ -56,7 +57,7 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
      * @return SpreadsheetColumnFixture for column, null if not found.
      */
     public final SpreadsheetColumnFixture column(final String columnName) {
-        Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();
+        List<SpreadsheetColumn> ssCols = ssPanel.getColumns();
 
         for (SpreadsheetColumn c : ssCols) {
             String headerText = c.getText();
@@ -76,7 +77,7 @@ public class SpreadsheetPanelFixture extends JPanelFixture {
      * @return Vector all Spreadsheet columns
      */
     public final Vector<SpreadsheetColumnFixture> allColumns() {
-        Vector<SpreadsheetColumn> ssCols = ssPanel.getColumns();
+        List<SpreadsheetColumn> ssCols = ssPanel.getColumns();
         Vector<SpreadsheetColumnFixture> result =
             new Vector<SpreadsheetColumnFixture>();
 

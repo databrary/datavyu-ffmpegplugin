@@ -2,6 +2,7 @@ package org.openshapa.views.discrete.layouts;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.util.List;
 
 import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetCell;
@@ -174,7 +175,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
      * SheetLayoutWeakTemporal constructor.
      * @param cols Reference to the SpreadsheetColumns in the spreadsheet.
      */
-    public SheetLayoutWeakTemporal(final Vector<SpreadsheetColumn> cols) {
+    public SheetLayoutWeakTemporal(final List<SpreadsheetColumn> cols) {
         setColumns(cols);
         colsInfo = new Vector<ColumnTemporalInfo>();
         for (SpreadsheetColumn col : cols) {

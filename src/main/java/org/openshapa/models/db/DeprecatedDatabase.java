@@ -57,6 +57,10 @@ import org.openshapa.util.Constants;
         legacyDB = newDB;
     }
 
+    @Override public String getName() {
+        return legacyDB.getName();
+    }
+
     @Override public List<Variable> getAllVariables() {
         List<Variable> result = new ArrayList<Variable>();
 

@@ -64,9 +64,6 @@ public final class ColumnDataPanel extends JPanel
     /** button for creating a new empty cell. */
     private SpreadsheetEmptyCell newCellButton;
 
-    /** The model that this column represents. */
-    private final DataColumn model;
-
     /**
      * Creates a new ColumnDataPanel.
      *
@@ -85,7 +82,6 @@ public final class ColumnDataPanel extends JPanel
         columnWidth = width;
         cells = new Vector<SpreadsheetCell>();
         cellSelectionL = cellSelL;
-        this.model = model;
 
         // Create visual container for spreadsheet cells.
         Dimension d = new Dimension(0, Constants.BOTTOM_MARGIN);

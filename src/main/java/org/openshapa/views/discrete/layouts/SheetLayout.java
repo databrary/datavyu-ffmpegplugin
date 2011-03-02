@@ -1,7 +1,7 @@
 package org.openshapa.views.discrete.layouts;
 
+import java.util.List;
 import org.openshapa.views.discrete.SpreadsheetColumn;
-import java.util.Vector;
 
 /**
  * SheetLayout - abstract class for spreadsheet layouts.
@@ -9,7 +9,7 @@ import java.util.Vector;
 public abstract class SheetLayout {
 
     /** Vector of the Spreadsheetcolumns in the spreadsheet. */
-    private Vector<SpreadsheetColumn> columns;
+    private List<SpreadsheetColumn> columns;
 
     /**
      * SheetLayout constructor.
@@ -26,14 +26,14 @@ public abstract class SheetLayout {
     /**
      * Setup a reference to the SpreadsheetColumns in the spreadsheet.
      */
-    protected void setColumns(Vector<SpreadsheetColumn> cols) {
+    protected void setColumns(List<SpreadsheetColumn> cols) {
         columns = cols;
     }
 
     /**
      * @return SpreadsheetColumns in the spreadsheet.
      */
-    protected Vector<SpreadsheetColumn> getColumns() {
+    protected List<SpreadsheetColumn> getColumns() {
         return columns;
     }
 
